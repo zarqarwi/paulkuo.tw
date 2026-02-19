@@ -1,6 +1,12 @@
-// Cloudflare Pages Function: DeepL API Proxy
+// Cloudflare Pages Function: DeepL Translation Proxy
 // Route: /api/translate
-// Keeps API key server-side, never exposed to client
+// Purpose: Proxy translation requests to DeepL API, keeping API key server-side
+
+const LANG_MAP = {
+  'zh-CN': 'ZH-HANS',
+  'en': 'EN',
+  'ja': 'JA'
+};
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -10,6 +16,7 @@ export async function onRequestPost(context) {
     'Access-Control-Allow-Origin': 'https://paulkuo.tw',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
   };
 
   // Handle preflight
@@ -18,21 +25,20 @@ export async function onRequestPost(context) {
   }
 
   try {
-    const body = await request.json();
-    const { texts, target_lang } = body;
+    const { texts, target_lang } = await request.json();
 
-    // Validation
+    // Validate
     if (!texts || !Array.isArray(texts) || texts.length === 0) {
       return new Response(JSON.stringify({ error: 'texts array required' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: corsHeaders
       });
     }
 
-    if (!target_lang || !['zh-CN', 'en', 'ja'].includes(target_lang)) {
-      return new Response(JSON.stringify({ error: 'Invalid target_lang' }), {
+    if (!target_lang || !LANG_MAP[target_lang]) {
+      return new Response(JSON.stringify({ error: 'Invalid target_lang. Use: zh-CN, en, ja' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: corsHeaders
       });
     }
 
@@ -40,57 +46,54 @@ export async function onRequestPost(context) {
     if (texts.length > 10) {
       return new Response(JSON.stringify({ error: 'Max 10 texts per request' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: corsHeaders
       });
     }
 
-    // Map to DeepL language codes
-    const langMap = { 'zh-CN': 'ZH-HANS', 'en': 'EN', 'ja': 'JA' };
-    const deeplTarget = langMap[target_lang];
-
-    // Call DeepL API
     const apiKey = env.DEEPL_API_KEY;
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'API key not configured' }), {
+      return new Response(JSON.stringify({ error: 'Translation service not configured' }), {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: corsHeaders
       });
     }
 
-    const params = new URLSearchParams();
-    texts.forEach(t => params.append('text', t));
-    params.append('target_lang', deeplTarget);
-    params.append('source_lang', 'ZH');
-    params.append('tag_handling', 'html');
-
-    const deeplRes = await fetch('https://api-free.deepl.com/v2/translate', {
+    // Call DeepL API
+    const deepLResponse = await fetch('https://api-free.deepl.com/v2/translate', {
       method: 'POST',
       headers: {
         'Authorization': `DeepL-Auth-Key ${apiKey}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json'
       },
-      body: params.toString(),
+      body: JSON.stringify({
+        text: texts,
+        source_lang: 'ZH',
+        target_lang: LANG_MAP[target_lang],
+        preserve_formatting: true
+      })
     });
 
-    if (!deeplRes.ok) {
-      const errText = await deeplRes.text();
-      return new Response(JSON.stringify({ error: `DeepL API error: ${deeplRes.status}`, details: errText }), {
+    if (!deepLResponse.ok) {
+      const errText = await deepLResponse.text();
+      console.error('DeepL API error:', deepLResponse.status, errText);
+      return new Response(JSON.stringify({ error: 'Translation service error' }), {
         status: 502,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: corsHeaders
       });
     }
 
-    const deeplData = await deeplRes.json();
-    const translations = deeplData.translations.map(t => t.text);
+    const result = await deepLResponse.json();
+    const translations = result.translations.map(t => t.text);
 
     return new Response(JSON.stringify({ translations }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: corsHeaders
     });
 
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
+  } catch (err) {
+    console.error('Translate function error:', err);
+    return new Response(JSON.stringify({ error: 'Internal error' }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: corsHeaders
     });
   }
 }
@@ -101,7 +104,7 @@ export async function onRequestOptions() {
     headers: {
       'Access-Control-Allow-Origin': 'https://paulkuo.tw',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
   });
 }
