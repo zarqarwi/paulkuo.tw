@@ -250,9 +250,9 @@ main { padding-top: var(--nav-height); }
 .timeline-text { font-size: 0.88rem; color: var(--text-secondary); font-family: var(--font-cjk); }
 .timeline-text strong { color: var(--text-primary); }
 
-.about-pillars-section { margin-top: 48px; padding-top: 40px; border-top: 1px solid var(--border); grid-column: 1 / -1; }
+.about-pillars-section { margin-top: 48px; padding-top: 40px; border-top: 1px solid var(--border); }
 .about-pillars-section h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--brand-navy); margin-bottom: 24px; }
-.about-pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.about-pillar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
 .about-pillar-item { padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-light); background: var(--bg-card); }
 .about-pillar-item h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
 .about-pillar-item p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0; }
