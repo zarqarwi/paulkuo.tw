@@ -66,7 +66,7 @@
   "about.timeline.seminary": "China Evangelical Seminary · Theological Training",
   "about.pillars.title": "Five Pillars",
   "about.pillar.ai.desc": "AGI pathways, AI × industry applications, multi-model collaboration, reshaping individual capability boundaries",
-  "about.pillar.circular.desc": "Circular economy, carbon trading, urban mining, PCB metal recovery, ESG governance",
+  "about.pillar.circular.desc": "Circular economy, carbon trading, urban mining, PCB recycling, ESG governance",
   "about.pillar.faith.desc": "Theology × social governance, philosophical critique, burnout society, Niebuhr, Marcuse",
   "about.pillar.startup.desc": "Twenty years of startup experience, investment ecosystem critique, Taiwan startup environment, AppWorks experience",
   "about.pillar.life.desc": "Reading notes, parenting, sailing, family memory, cross-cultural exploration",
@@ -112,7 +112,7 @@
   "blog.page.life1.title": "The Weight the Dharma Vessel Bore for Mother: Those Extra Six Years",
   "blog.page.life1.desc": "Some burdens in life cannot be handled with efficiency.",
   "blog.page.life2.title": "At the Age of Knowing Destiny, Witnessing Taiwan's Deep Bond with the Ocean",
-  "blog.page.life2.desc": "On a sailboat in Anping, I discovered there are still so many untold stories between myself and this island.",
+  "blog.page.life2.desc": "On a movement in Anping, I discovered there are still so many untold stories between myself and this island.",
   "feed.title": "Live Feed",
   "feed.subtitle": "Real-time updates from 8 platforms.",
   "projects.circleflow.desc.short": "Data infrastructure for the circular economy — making the flow, value, and ownership of resources visible, traceable, and governable.",
@@ -137,5 +137,6 @@
   "projects.brand.sig": "Discourse order is being redistributed by platforms and algorithms. This infrastructure addresses the question: how can an individual maintain the independence and continuity of intellectual output without depending on any single platform?",
   "projects.content.desc": "When discourse power is monopolized by algorithms, independent expression requires its own infrastructure.",
   "projects.content.sig": "Discourse order is being redistributed by platforms and algorithms. This infrastructure addresses the question: how can an individual maintain the independence and continuity of intellectual output without depending on any single platform?",
-  "projects.tajp.sig": "When industrial cooperation crosses borders, obstacles often lie not in technology but in differences of institutions, culture, and risk perception. This work addresses trust order — how to build sustainable cooperative structures across civilizational contexts, turning the flow of technology and value into long-term institutions rather than short-term opportunities."
+  "projects.tajp.sig": "When industrial cooperation crosses borders, obstacles often lie not in technology but in differences of institutions, culture, and risk perception. This work addresses trust order — how to build sustainable cooperative structures across civilizational contexts, turning the flow of technology and value into long-term institutions rather than short-term opportunities.",
+  "blog.life2.desc": "Through physical movement, I reconnected with this island and realized there are still so many unfinished stories."
 }
