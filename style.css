@@ -240,8 +240,8 @@ main { padding-top: var(--nav-height); }
 /* ===== ABOUT ===== */
 .about-section { background: var(--bg-section); }
 .about-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: start; }
-.about-photo { width: 280px; height: 340px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy-light) 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 4rem; font-family: var(--font-display); position: relative; overflow: hidden; }
-.about-photo::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(transparent, rgba(0,0,0,0.2)); }
+.about-photo { width: 280px; height: 340px; border-radius: var(--radius-lg); overflow: hidden; position: relative; } .about-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+
 .about-content h2 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--brand-navy); margin-bottom: 24px; }
 .about-content p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.85; margin-bottom: 20px; font-family: var(--font-cjk); }
 .about-timeline { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--border); }
