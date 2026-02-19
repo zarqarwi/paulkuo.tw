@@ -12,619 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #FAFAF8;
-  --bg-card: #FFFFFF;
-  --bg-section: #F3F2EE;
-  --text-primary: #1A1A1A;
-  --text-secondary: #5A5A5A;
-  --text-muted: #8A8A8A;
-  --brand-navy: #1B2D4F;
-  --brand-navy-light: #2A4470;
-  --accent-ai: #2563EB;
-  --accent-circular: #059669;
-  --accent-faith: #B45309;
-  --accent-startup: #DC2626;
-  --accent-life: #7C3AED;
-  --border: #E8E6E1;
-  --border-light: #F0EDE8;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
-  --radius: 12px;
-  --radius-lg: 20px;
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'DM Sans', 'Noto Sans TC', sans-serif;
-  --font-cjk: 'Noto Sans TC', sans-serif;
-  --max-width: 1200px;
-  --nav-height: 72px;
-}
-html[lang="zh-Hans"] { --font-cjk: 'Noto Sans SC', sans-serif; --font-body: 'DM Sans', 'Noto Sans SC', sans-serif; }
-html[lang="ja"] { --font-cjk: 'Noto Sans JP', sans-serif; --font-body: 'DM Sans', 'Noto Sans JP', sans-serif; }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; font-size: 16px; }
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text-primary);
-  line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ===== NAV ===== */
-nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  height: var(--nav-height);
-  background: rgba(250,250,248,0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-light);
-  z-index: 100;
-  display: flex; align-items: center; justify-content: center;
-}
-.nav-inner {
-  width: 100%; max-width: var(--max-width);
-  padding: 0 40px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.nav-logo {
-  font-family: var(--font-display);
-  font-size: 1.35rem; font-weight: 700;
-  color: var(--brand-navy);
-  text-decoration: none; letter-spacing: -0.02em;
-}
-.nav-links { display: flex; gap: 32px; align-items: center; }
-.nav-links a {
-  font-size: 0.9rem; font-weight: 500;
-  color: var(--text-secondary);
-  text-decoration: none; transition: color 0.2s;
-  letter-spacing: 0.01em;
-}
-.nav-links a:hover { color: var(--brand-navy); }
-.nav-links a.active { color: var(--brand-navy); }
-.lang-switcher{display:flex;gap:4px;margin-left:16px;border-left:1px solid var(--border);padding-left:16px}
-.lang-btn{font-size:.72rem;font-weight:500;padding:4px 8px;border-radius:4px;border:1px solid transparent;background:none;color:var(--text-muted);cursor:pointer;transition:all .2s}
-.lang-btn:hover{color:var(--text-primary)}
-.lang-btn.active{color:var(--brand-navy);border-color:var(--border);background:rgba(27,45,79,.04)}
-.project-strategic{font-size:.85rem;color:var(--text-secondary);line-height:1.8;padding:16px;background:var(--bg-section);border-radius:8px;margin:16px 0;border-left:2px solid var(--border)}
-.project-strategic strong{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px}
-.nav-cta {
-  background: var(--brand-navy) !important;
-  color: #fff !important; padding: 8px 20px;
-  border-radius: 8px; font-size: 0.85rem !important;
-  transition: background 0.2s !important;
-}
-.nav-cta:hover { background: var(--brand-navy-light) !important; }
-
-/* Mobile hamburger */
-.nav-hamburger {
-  display: none; background: none; border: none;
-  cursor: pointer; padding: 8px;
-}
-.nav-hamburger span {
-  display: block; width: 20px; height: 2px;
-  background: var(--brand-navy); margin: 5px 0;
-  transition: all 0.3s;
-}
-
-/* ===== SECTIONS ===== */
-.page-section { display: none; }
-.page-section.active { display: block; }
-main { padding-top: var(--nav-height); }
-
-/* ===== HERO ===== */
-.hero {
-  min-height: calc(100vh - var(--nav-height));
-  display: flex; align-items: center; justify-content: center;
-  padding: 80px 40px;
-  position: relative; overflow: hidden;
-}
-.hero::before {
-  content: ''; position: absolute; top: -200px; right: -200px;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(37,99,235,0.04) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero::after {
-  content: ''; position: absolute; bottom: -150px; left: -150px;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(5,150,105,0.03) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero-inner {
-  max-width: var(--max-width); width: 100%;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
-  align-items: center; position: relative; z-index: 1;
-}
-.hero-text h1 {
-  font-family: var(--font-display);
-  font-size: 3.5rem; line-height: 1.15;
-  font-weight: 700; color: var(--brand-navy);
-  letter-spacing: -0.03em; margin-bottom: 24px;
-}
-.hero-text h1 em {
-  font-style: italic; color: var(--accent-ai);
-}
-.hero-tagline {
-  font-family: var(--font-cjk);
-  font-size: 1.15rem; color: var(--text-secondary);
-  line-height: 1.8; margin-bottom: 36px;
-  max-width: 480px;
-}
-.hero-pillars {
-  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 40px;
-}
-.pillar-tag {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 16px; border-radius: 100px;
-  font-size: 0.82rem; font-weight: 500;
-  font-family: var(--font-cjk);
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  transition: all 0.2s;
-}
-.pillar-tag:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-.pillar-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.hero-actions { display: flex; gap: 16px; }
-.btn-primary {
-  background: var(--brand-navy); color: #fff;
-  padding: 14px 32px; border-radius: 10px;
-  font-size: 0.95rem; font-weight: 500;
-  text-decoration: none; transition: all 0.2s;
-  font-family: var(--font-cjk);
-}
-.btn-primary:hover { background: var(--brand-navy-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.btn-secondary {
-  background: transparent; color: var(--brand-navy);
-  padding: 14px 32px; border-radius: 10px;
-  font-size: 0.95rem; font-weight: 500;
-  text-decoration: none; border: 1.5px solid var(--border);
-  transition: all 0.2s; font-family: var(--font-cjk);
-}
-.btn-secondary:hover { border-color: var(--brand-navy); background: rgba(27,45,79,0.03); }
-
-/* Hero visual */
-.hero-visual {
-  display: flex; justify-content: center; align-items: center;
-}
-.hero-card-stack {
-  position: relative; width: 400px; height: 440px;
-}
-.hero-card {
-  position: absolute; width: 320px;
-  background: var(--bg-card); border-radius: var(--radius-lg);
-  padding: 28px; box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-light);
-  transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
-}
-.hero-card:nth-child(1) { top: 0; left: 0; transform: rotate(-3deg); z-index: 3; }
-.hero-card:nth-child(2) { top: 40px; left: 60px; transform: rotate(2deg); z-index: 2; }
-.hero-card:nth-child(3) { top: 80px; left: 20px; transform: rotate(-1deg); z-index: 1; }
-.hero-card-stack:hover .hero-card:nth-child(1) { transform: rotate(-3deg) translateY(-8px); }
-.hero-card-stack:hover .hero-card:nth-child(2) { transform: rotate(2deg) translateX(8px); }
-.hero-card-label {
-  font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.08em; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 6px;
-}
-.hero-card p {
-  font-size: 0.88rem; color: var(--text-secondary);
-  line-height: 1.65; font-family: var(--font-cjk);
-}
-.hero-card-meta {
-  margin-top: 14px; font-size: 0.75rem; color: var(--text-muted);
-}
-
-/* ===== MANIFESTO ===== */
-.manifesto {
-  background: var(--brand-navy);
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-}
-.manifesto::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  background: 
-    radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 50%, rgba(180,83,9,0.1) 0%, transparent 50%);
-  pointer-events: none;
-}
-.manifesto-inner {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 100px 40px;
-  text-align: center;
-  position: relative; z-index: 1;
-}
-.manifesto-kicker {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: 32px;
-}
-.manifesto-quote {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 400;
-  font-style: italic;
-  line-height: 1.5;
-  color: #fff;
-  margin-bottom: 28px;
-  letter-spacing: -0.01em;
-}
-.manifesto-quote em {
-  font-style: normal;
-  color: var(--accent-ai);
-}
-.manifesto-body {
-  font-family: var(--font-cjk);
-  font-size: 1rem;
-  color: rgba(255,255,255,0.65);
-  line-height: 1.9;
-  max-width: 640px;
-  margin: 0 auto 32px;
-}
-.manifesto-cta {
-  display: inline-block;
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.5);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  padding-bottom: 2px;
-  transition: all 0.2s;
-}
-.manifesto-cta:hover {
-  color: #fff;
-  border-color: rgba(255,255,255,0.6);
-}
-
-/* ===== FEATURED CONTENT ===== */
-.section-container {
-  max-width: var(--max-width); margin: 0 auto;
-  padding: 100px 40px;
-}
-.section-header {
-  display: flex; justify-content: space-between;
-  align-items: baseline; margin-bottom: 48px;
-}
-.section-title {
-  font-family: var(--font-display);
-  font-size: 2rem; font-weight: 700;
-  color: var(--brand-navy); letter-spacing: -0.02em;
-}
-.section-link {
-  font-size: 0.88rem; color: var(--text-muted);
-  text-decoration: none; font-weight: 500;
-  transition: color 0.2s;
-}
-.section-link:hover { color: var(--brand-navy); }
-
-/* Content grid */
-.content-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-}
-.content-card {
-  background: var(--bg-card); border-radius: var(--radius);
-  border: 1px solid var(--border-light);
-  padding: 32px; transition: all 0.3s;
-  cursor: pointer; text-decoration: none; color: inherit;
-  display: block;
-}
-.content-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: transparent;
-}
-.content-card-category {
-  font-size: 0.72rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  margin-bottom: 14px;
-  display: flex; align-items: center; gap: 6px;
-}
-.content-card h3 {
-  font-family: var(--font-cjk);
-  font-size: 1.1rem; font-weight: 700;
-  line-height: 1.5; margin-bottom: 12px;
-  color: var(--text-primary);
-}
-.content-card p {
-  font-size: 0.88rem; color: var(--text-secondary);
-  line-height: 1.7; margin-bottom: 16px;
-}
-.content-card-footer {
-  display: flex; justify-content: space-between;
-  align-items: center;
-  font-size: 0.78rem; color: var(--text-muted);
-}
-.platform-badge {
-  padding: 3px 10px; border-radius: 100px;
-  background: var(--bg-section); font-weight: 500;
-}
-
-/* ===== PROJECTS ===== */
-.projects-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
-}
-.project-card {
-  background: var(--bg-card); border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  padding: 40px; transition: all 0.3s;
-  position: relative; overflow: hidden;
-}
-.project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-.project-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 4px;
-}
-.project-card.circleflow::before { background: linear-gradient(90deg, var(--accent-circular), var(--accent-ai)); }
-.project-card.sdti::before { background: linear-gradient(90deg, var(--accent-circular), var(--accent-faith)); }
-.project-card.debate::before { background: linear-gradient(90deg, var(--accent-ai), var(--accent-life)); }
-.project-card.brand::before { background: linear-gradient(90deg, var(--accent-startup), var(--accent-ai)); }
-.project-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem; margin-bottom: 20px;
-}
-.project-card h3 {
-  font-family: var(--font-cjk);
-  font-size: 1.25rem; font-weight: 700;
-  margin-bottom: 12px;
-}
-.project-card p {
-  font-size: 0.9rem; color: var(--text-secondary);
-  line-height: 1.7; margin-bottom: 20px;
-}
-.project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.project-tag {
-  padding: 4px 12px; border-radius: 6px;
-  font-size: 0.75rem; font-weight: 500;
-  background: var(--bg-section); color: var(--text-secondary);
-}
-
-/* ===== ABOUT ===== */
-.about-section { background: var(--bg-section); }
-.about-grid {
-  display: grid; grid-template-columns: 1fr 2fr; gap: 80px;
-  align-items: start;
-}
-.about-photo {
-  width: 280px; height: 340px; border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy-light) 100%);
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 4rem; font-family: var(--font-display);
-  position: relative; overflow: hidden;
-}
-.about-photo::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
-  height: 40%; background: linear-gradient(transparent, rgba(0,0,0,0.2));
-}
-.about-content h2 {
-  font-family: var(--font-display);
-  font-size: 2rem; font-weight: 700;
-  color: var(--brand-navy); margin-bottom: 24px;
-}
-.about-content p {
-  font-size: 0.95rem; color: var(--text-secondary);
-  line-height: 1.85; margin-bottom: 20px;
-  font-family: var(--font-cjk);
-}
-.about-timeline {
-  margin-top: 40px; padding-top: 32px;
-  border-top: 1px solid var(--border);
-}
-.timeline-item {
-  display: grid; grid-template-columns: 100px 1fr;
-  gap: 20px; margin-bottom: 20px;
-}
-.timeline-year {
-  font-size: 0.82rem; font-weight: 700;
-  color: var(--brand-navy); padding-top: 2px;
-}
-.timeline-text {
-  font-size: 0.88rem; color: var(--text-secondary);
-  font-family: var(--font-cjk);
-}
-.timeline-text strong { color: var(--text-primary); }
-
-/* About pillars detail */
-.about-pillars-section {
-  margin-top: 48px; padding-top: 40px;
-  border-top: 1px solid var(--border);
-}
-.about-pillars-section h3 {
-  font-family: var(--font-display);
-  font-size: 1.3rem; font-weight: 700;
-  color: var(--brand-navy); margin-bottom: 24px;
-}
-.about-pillar-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-}
-.about-pillar-item {
-  padding: 20px; border-radius: var(--radius);
-  border: 1px solid var(--border-light);
-  background: var(--bg-card);
-}
-.about-pillar-item h4 {
-  font-size: 0.9rem; font-weight: 700;
-  margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
-}
-.about-pillar-item p {
-  font-size: 0.82rem; color: var(--text-muted);
-  line-height: 1.6; margin-bottom: 0;
-}
-
-/* ===== FEED ===== */
-.feed-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
-}
-.feed-item {
-  background: var(--bg-card); border-radius: var(--radius);
-  border: 1px solid var(--border-light);
-  padding: 24px; transition: all 0.2s;
-}
-.feed-item:hover { box-shadow: var(--shadow-sm); }
-.feed-header {
-  display: flex; justify-content: space-between;
-  align-items: center; margin-bottom: 12px;
-}
-.feed-platform {
-  font-size: 0.75rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  display: flex; align-items: center; gap: 5px;
-}
-.feed-date { font-size: 0.75rem; color: var(--text-muted); }
-.feed-item p {
-  font-size: 0.88rem; color: var(--text-secondary);
-  line-height: 1.65; font-family: var(--font-cjk);
-  display: -webkit-box; -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical; overflow: hidden;
-}
-
-/* ===== CONTACT ===== */
-.contact-section { background: var(--brand-navy); color: #fff; }
-.contact-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
-  align-items: center;
-}
-.contact-text h2 {
-  font-family: var(--font-display);
-  font-size: 2.2rem; font-weight: 700;
-  margin-bottom: 16px; color: #fff;
-}
-.contact-text p {
-  font-size: 0.95rem; color: rgba(255,255,255,0.7);
-  line-height: 1.8; margin-bottom: 32px;
-}
-.social-links { display: flex; gap: 12px; flex-wrap: wrap; }
-.social-link {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 18px; border-radius: 10px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #fff; font-size: 0.85rem; font-weight: 500;
-  text-decoration: none; transition: all 0.2s;
-}
-.social-link:hover {
-  background: rgba(255,255,255,0.15);
-  transform: translateY(-2px);
-}
-.contact-form {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius-lg); padding: 36px;
-}
-.form-group { margin-bottom: 20px; }
-.form-group label {
-  display: block; font-size: 0.82rem; font-weight: 500;
-  margin-bottom: 8px; color: rgba(255,255,255,0.8);
-}
-.form-group input, .form-group textarea {
-  width: 100%; padding: 12px 16px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px; color: #fff;
-  font-size: 0.9rem; font-family: var(--font-body);
-  outline: none; transition: border-color 0.2s;
-}
-.form-group input:focus, .form-group textarea:focus {
-  border-color: rgba(255,255,255,0.4);
-}
-.form-group textarea { height: 120px; resize: vertical; }
-.form-group input::placeholder, .form-group textarea::placeholder {
-  color: rgba(255,255,255,0.3);
-}
-.btn-submit {
-  width: 100%; padding: 14px;
-  background: #fff; color: var(--brand-navy);
-  border: none; border-radius: 10px;
-  font-size: 0.95rem; font-weight: 600;
-  cursor: pointer; transition: all 0.2s;
-  font-family: var(--font-cjk);
-}
-.btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
-
-/* ===== FOOTER ===== */
-footer {
-  text-align: center; padding: 40px;
-  font-size: 0.82rem; color: var(--text-muted);
-  border-top: 1px solid var(--border-light);
-}
-
-/* ===== BLOG PAGE ===== */
-.blog-hero {
-  padding: 80px 0 40px;
-  text-align: center;
-}
-.blog-hero h1 {
-  font-family: var(--font-display);
-  font-size: 2.8rem; color: var(--brand-navy);
-  margin-bottom: 16px;
-}
-.blog-hero p {
-  font-size: 1rem; color: var(--text-secondary);
-  max-width: 560px; margin: 0 auto;
-}
-.blog-filters {
-  display: flex; gap: 10px; justify-content: center;
-  margin: 40px 0; flex-wrap: wrap;
-}
-.filter-btn {
-  padding: 8px 20px; border-radius: 100px;
-  border: 1.5px solid var(--border);
-  background: transparent; font-size: 0.85rem;
-  font-weight: 500; cursor: pointer;
-  font-family: var(--font-cjk);
-  color: var(--text-secondary);
-  transition: all 0.2s;
-}
-.filter-btn:hover, .filter-btn.active {
-  background: var(--brand-navy);
-  color: #fff; border-color: var(--brand-navy);
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-in {
-  animation: fadeInUp 0.6s cubic-bezier(0.23,1,0.32,1) forwards;
-  opacity: 0;
-}
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-.delay-5 { animation-delay: 0.5s; }
-
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-  .hero-inner { grid-template-columns: 1fr; gap: 48px; }
-  .hero-text h1 { font-size: 2.4rem; }
-  .hero-visual { display: none; }
-  .content-grid { grid-template-columns: 1fr; }
-  .projects-grid { grid-template-columns: 1fr; }
-  .about-grid { grid-template-columns: 1fr; gap: 40px; }
-  .about-pillar-grid { grid-template-columns: 1fr; }
-  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
-  .feed-grid { grid-template-columns: 1fr; }
-  .nav-links a:not(.nav-cta) { display: none; }
-  .nav-hamburger { display: block; }
-  .section-container { padding: 60px 24px; }
-  .hero { padding: 60px 24px; }
-  .blog-filters { gap: 8px; }
-  .filter-btn { padding: 6px 14px; font-size: 0.8rem; }
-}
-</style>
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
@@ -633,17 +21,17 @@ footer {
   <div class="nav-inner">
     <a href="#" class="nav-logo" onclick="showPage('home')">Paul Kuo</a>
     <div class="nav-links">
-      <a href="#" onclick="showPage('home')" class="active" id="nav-home">首頁</a>
-      <a href="#" onclick="showPage('blog')" id="nav-blog">思想</a>
-      <a href="#" onclick="showPage('projects')" id="nav-projects">專案</a>
-      <a href="#" onclick="showPage('about')" id="nav-about">關於</a>
-      <a href="#" onclick="showPage('feed')" id="nav-feed">動態</a>
-      <a href="#contact" class="nav-cta" onclick="showPage('home');setTimeout(()=>document.getElementById('contact').scrollIntoView({behavior:'smooth'}),100)">聯絡我</a>
+      <a href="#" onclick="showPage('home')" class="active" id="nav-home" data-i18n="nav.home">首頁</a>
+      <a href="#" onclick="showPage('blog')" id="nav-blog" data-i18n="nav.blog">思想</a>
+      <a href="#" onclick="showPage('projects')" id="nav-projects" data-i18n="nav.projects">專案</a>
+      <a href="#" onclick="showPage('about')" id="nav-about" data-i18n="nav.about">關於</a>
+      <a href="#" onclick="showPage('feed')" id="nav-feed" data-i18n="nav.feed">動態</a>
+      <a href="#contact" class="nav-cta" data-i18n="nav.contact" onclick="showPage('home');setTimeout(()=>document.getElementById('contact').scrollIntoView({behavior:'smooth'}),100)">聯絡我</a>
       <div class="lang-switcher">
-        <button class="lang-btn active" onclick="setLang('zh-TW')">繁</button>
-        <button class="lang-btn" onclick="setLang('zh-CN')">简</button>
-        <button class="lang-btn" onclick="setLang('en')">EN</button>
-        <button class="lang-btn" onclick="setLang('ja')">日</button>
+        <button class="lang-btn active" data-lang="zh-TW" onclick="setLang('zh-TW')">繁</button>
+        <button class="lang-btn" data-lang="zh-CN" onclick="setLang('zh-CN')">简</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">日</button>
       </div>
     </div>
     <button class="nav-hamburger" onclick="toggleMobileNav()" aria-label="選單">
@@ -662,22 +50,20 @@ footer {
     <div class="hero-inner">
       <div class="hero-text">
         <h1 class="animate-in">Rebuilding <em>Order</em><br>in an Age of<br>Intelligence</h1>
-        <p class="hero-tagline animate-in delay-1">
-          從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？
+        <p class="hero-tagline animate-in delay-1" data-i18n="hero.tagline1">從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？
         </p>
-        <p class="hero-tagline animate-in delay-2" style="margin-top:-20px;">
-          技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。
+        <p class="hero-tagline animate-in delay-2" style="margin-top:-20px;" data-i18n="hero.tagline2">技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。
         </p>
         <div class="hero-pillars animate-in delay-3">
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-ai)"></span>智能與秩序</span>
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-circular)"></span>再生系統</span>
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-faith)"></span>文明與人性</span>
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-startup)"></span>創造與實踐</span>
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-life)"></span>沉思與記錄</span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-ai)"></span><span data-i18n="hero.pillar.ai">智能與秩序</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-circular)"></span><span data-i18n="hero.pillar.circular">再生系統</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-faith)"></span><span data-i18n="hero.pillar.faith">文明與人性</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-startup)"></span><span data-i18n="hero.pillar.startup">創造與實踐</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-life)"></span><span data-i18n="hero.pillar.life">沉思與記錄</span></span>
         </div>
         <div class="hero-actions animate-in delay-4">
-          <a href="#" class="btn-primary" onclick="showPage('blog')">閱讀思想</a>
-          <a href="#" class="btn-secondary" onclick="showPage('about')">認識 Paul</a>
+          <a href="#" class="btn-primary" data-i18n="hero.cta.read" onclick="showPage('blog')">閱讀思想</a>
+          <a href="#" class="btn-secondary" data-i18n="hero.cta.about" onclick="showPage('about')">認識 Paul</a>
         </div>
       </div>
       <div class="hero-visual animate-in delay-2">
@@ -686,22 +72,22 @@ footer {
             <div class="hero-card-label" style="color:var(--accent-faith)">
               <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
             </div>
-            <p>代碼之道，必須成為肉身。AI 若要達成真正的智能，其發展就必須植根於物理世界。</p>
-            <div class="hero-card-meta">2025.10 · 論文</div>
+            <p data-i18n="hero.card1.text">代碼之道，必須成為肉身。AI 若要達成真正的智能，其發展就必須植根於物理世界。</p>
+            <div class="hero-card-meta" data-i18n="hero.card1.meta">2025.10 · 論文</div>
           </div>
           <div class="hero-card">
             <div class="hero-card-label" style="color:var(--accent-circular)">
               <span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統
             </div>
-            <p>城市不是資源的終點，而是下一輪循環的起點。都市採礦正在改寫我們對「廢棄」的定義。</p>
-            <div class="hero-card-meta">2025.12 · Medium</div>
+            <p data-i18n="hero.card2.text">城市不是資源的終點，而是下一輪循環的起點。都市採礦正在改寫我們對「廢棄」的定義。</p>
+            <div class="hero-card-meta" data-i18n="hero.card2.meta">2025.12 · Medium</div>
           </div>
           <div class="hero-card">
             <div class="hero-card-label" style="color:var(--accent-ai)">
               <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
             </div>
-            <p>當 AI 開始壓縮人類的思考過程，我們面臨的不是效率問題，是認知結構的重組。</p>
-            <div class="hero-card-meta">2025.11 · Medium</div>
+            <p data-i18n="hero.card3.text">當 AI 開始壓縮人類的思考過程，我們面臨的不是效率問題，是認知結構的重組。</p>
+            <div class="hero-card-meta" data-i18n="hero.card3.meta">2025.11 · Medium</div>
           </div>
         </div>
       </div>
@@ -711,34 +97,32 @@ footer {
   <!-- MANIFESTO — [B] 引句一致化，保留道成肉身但轉向秩序/入世 -->
   <section class="manifesto">
     <div class="manifesto-inner">
-      <div class="manifesto-kicker">Philosophy · 哲學宣言</div>
-      <p class="manifesto-quote">
-        "Rebuilding <em>Order</em> in an Age of Intelligence"<br>
+      <div class="manifesto-kicker" data-i18n="manifesto.kicker">Philosophy · 哲學宣言</div>
+      <p class="manifesto-quote" data-i18n="manifesto.quote">"Rebuilding <em>Order</em> in an Age of Intelligence"<br>
         — 道成肉身
       </p>
-      <p class="manifesto-body">
-        神學說，抽象的道（Logos）必須成為肉身（Sarx），才能真正與世界相遇。
+      <p class="manifesto-body" data-i18n="manifesto.body">神學說，抽象的道（Logos）必須成為肉身（Sarx），才能真正與世界相遇。
         秩序也是如此——停留在概念中的秩序只是論述，唯有進入真實的產業、制度與人際關係，秩序才能被重建。
         我相信技術必須落地、智能必須入世、創業必須承擔真實的風險與限制。
         這不是技術樂觀主義，是一個神學訓練出身的創業者，對「道成肉身」最務實的理解——讓秩序在混亂中重新站立，讓人的尊嚴在效率的洪流中被守住。
       </p>
-      <a href="#" class="manifesto-cta" onclick="showPage('blog')">閱讀完整論述 →</a>
+      <a href="#" class="manifesto-cta" data-i18n="manifesto.cta" onclick="showPage('blog')">閱讀完整論述 →</a>
     </div>
   </section>
 
   <!-- FEATURED CONTENT - all 5 pillars represented -->
   <section class="section-container">
     <div class="section-header">
-      <h2 class="section-title">Latest Thinking</h2>
-      <a href="#" class="section-link" onclick="showPage('blog')">查看全部 →</a>
+      <h2 class="section-title" data-i18n="section.latest">Latest Thinking</h2>
+      <a href="#" class="section-link" data-i18n="section.viewall" onclick="showPage('blog')">查看全部 →</a>
     </div>
     <div class="content-grid">
       <a href="#" class="content-card">
         <div class="content-card-category" style="color:var(--accent-faith)">
           <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
         </div>
-        <h3>《倦怠社會》閱讀心得：卷不動，躺不平</h3>
-        <p>韓炳哲說的「功績社會」讓每個人成為自己的剝削者。當 AI 讓效率再次翻倍，倦怠會減少還是加深？</p>
+        <h3 data-i18n="blog.card1.title">《倦怠社會》閱讀心得：卷不動，躺不平</h3>
+        <p data-i18n="blog.card1.desc">韓炳哲說的「功績社會」讓每個人成為自己的剝削者。當 AI 讓效率再次翻倍，倦怠會減少還是加深？</p>
         <div class="content-card-footer">
           <span>2025.11</span>
           <span class="platform-badge">Medium</span>
@@ -748,8 +132,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-ai)">
           <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
         </div>
-        <h3>煤礦裡的金絲雀：AI 就業衝擊的預警系統</h3>
-        <p>AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p>
+        <h3 data-i18n="blog.card2.title">煤礦裡的金絲雀：AI 就業衝擊的預警系統</h3>
+        <p data-i18n="blog.card2.desc">AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p>
         <div class="content-card-footer">
           <span>2025.10</span>
           <span class="platform-badge">Medium</span>
@@ -759,8 +143,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-startup)">
           <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與實踐
         </div>
-        <h3>創業十二年：友情、堅持與未知的旅程</h3>
-        <p>不是創業的成果讓我們有力量，而是創業精神本身有力量。AppWorks 那些年教會我的事。</p>
+        <h3 data-i18n="blog.card3.title">創業十二年：友情、堅持與未知的旅程</h3>
+        <p data-i18n="blog.card3.desc">不是創業的成果讓我們有力量，而是創業精神本身有力量。AppWorks 那些年教會我的事。</p>
         <div class="content-card-footer">
           <span>2023.06</span>
           <span class="platform-badge">Facebook</span>
@@ -773,28 +157,28 @@ footer {
   <section style="background:var(--bg-section)">
     <div class="section-container">
       <div class="section-header">
-        <h2 class="section-title">Projects</h2>
-        <a href="#" class="section-link" onclick="showPage('projects')">查看全部 →</a>
+        <h2 class="section-title" data-i18n="projects.title">Projects</h2>
+        <a href="#" class="section-link" data-i18n="section.viewall" onclick="showPage('projects')">查看全部 →</a>
       </div>
       <div class="projects-grid">
         <div class="project-card circleflow">
           <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
-          <h3>CircleFlow</h3>
-          <p>AI 驅動的循環經濟平台，連結廢棄物產生者與資源化業者，用數據優化資源循環效率。</p>
+          <h3 data-i18n="projects.circleflow.name">CircleFlow</h3>
+          <p data-i18n="projects.circleflow.desc.short">AI 驅動的循環經濟平台，連結廢棄物產生者與資源化業者，用數據優化資源循環效率。</p>
           <div class="project-tags">
-            <span class="project-tag">再生系統</span>
+            <span class="project-tag" data-i18n="projects.tag.circular">再生系統</span>
             <span class="project-tag">AI</span>
             <span class="project-tag">Platform</span>
           </div>
         </div>
         <div class="project-card debate">
           <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
-          <h3>多模型認知協作框架</h3>
-          <p>讓多個語言模型對同一議題進行結構化辯論與交叉驗證，以事實查核建立更可靠的判斷支撐。單一模型給觀點，多模型碰撞才接近判斷。</p>
+          <h3 data-i18n="projects.debate.name">多模型認知協作框架</h3>
+          <p data-i18n="projects.debate.desc.short">讓多個語言模型對同一議題進行結構化辯論與交叉驗證，以事實查核建立更可靠的判斷支撐。單一模型給觀點，多模型碰撞才接近判斷。</p>
           <div class="project-tags">
             <span class="project-tag">Multi-Agent</span>
             <span class="project-tag">Python</span>
-            <span class="project-tag">認知基礎設施</span>
+            <span class="project-tag" data-i18n="projects.tag.cognitive">認知基礎設施</span>
           </div>
         </div>
       </div>
@@ -806,11 +190,8 @@ footer {
     <div class="section-container">
       <div class="contact-grid">
         <div class="contact-text">
-          <h2>Let's Build<br>Something Together</h2>
-          <p>
-            系統再生策略、技術架構諮詢、台日跨境產業整合、<br>
-            或只是想聊聊 — 歡迎來信。
-          </p>
+          <h2 data-i18n="contact.title">Let's Build<br>Something Together</h2>
+          <p data-i18n="contact.desc">系統再生策略、技術架構諮詢、台日跨境產業整合、<br>或只是想聊聊 — 歡迎來信。</p>
           <div class="social-links">
             <a href="https://x.com/paulkuo" class="social-link" target="_blank">𝕏 Twitter</a>
             <a href="https://www.linkedin.com/in/paulkuo" class="social-link" target="_blank">in LinkedIn</a>
@@ -825,18 +206,18 @@ footer {
         <div class="contact-form">
           <form action="mailto:paul@lasaas.com" method="post" enctype="text/plain">
           <div class="form-group">
-            <label>姓名</label>
-            <input type="text" name="name" placeholder="你的名字" required>
+            <label data-i18n="contact.form.name">姓名</label>
+            <input type="text" name="name" placeholder="你的名字" data-i18n-ph="contact.form.name.ph" required>
           </div>
           <div class="form-group">
-            <label>Email</label>
+            <label data-i18n="contact.form.email">Email</label>
             <input type="email" name="email" placeholder="you@example.com" required>
           </div>
           <div class="form-group">
-            <label>訊息</label>
-            <textarea name="message" placeholder="想聊什麼？"></textarea>
+            <label data-i18n="contact.form.message">訊息</label>
+            <textarea name="message" placeholder="想聊什麼？" data-i18n-ph="contact.form.message.ph"></textarea>
           </div>
-          <button type="submit" class="btn-submit">送出</button>
+          <button type="submit" class="btn-submit" data-i18n="contact.form.submit">送出</button>
           </form>
         </div>
       </div>
@@ -848,16 +229,16 @@ footer {
 <div class="page-section" id="page-blog">
   <div class="section-container">
     <div class="blog-hero">
-      <h1>Thinking Out Loud</h1>
-      <p>智能、再生、文明、創造、沉思 — 在實作中思考，在思考中前進。</p>
+      <h1 data-i18n="blog.title">Thinking Out Loud</h1>
+      <p data-i18n="blog.subtitle">智能、再生、文明、創造、沉思 — 在實作中思考，在思考中前進。</p>
     </div>
     <div class="blog-filters">
-      <button class="filter-btn active" data-filter="all">全部</button>
-      <button class="filter-btn" data-filter="ai">智能與秩序</button>
-      <button class="filter-btn" data-filter="circular">再生系統</button>
-      <button class="filter-btn" data-filter="faith">文明與人性</button>
-      <button class="filter-btn" data-filter="startup">創造與實踐</button>
-      <button class="filter-btn" data-filter="life">沉思與記錄</button>
+      <button class="filter-btn active" data-filter="all" data-i18n="filter.all">全部</button>
+      <button class="filter-btn" data-filter="ai" data-i18n="filter.ai">智能與秩序</button>
+      <button class="filter-btn" data-filter="circular" data-i18n="filter.circular">再生系統</button>
+      <button class="filter-btn" data-filter="faith" data-i18n="filter.faith">文明與人性</button>
+      <button class="filter-btn" data-filter="startup" data-i18n="filter.startup">創造與實踐</button>
+      <button class="filter-btn" data-filter="life" data-i18n="filter.life">沉思與記錄</button>
     </div>
     <div class="content-grid" id="blog-grid">
 
@@ -866,8 +247,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-faith)">
           <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
         </div>
-        <h3>道成肉身之必要性：為人工智慧的具身發展提供哲學論證</h3>
-        <p>AI 的核心缺陷不是技術性的，而是存有論層次的。代碼之道，必須成為肉身。</p>
+        <h3 data-i18n="blog.page.faith1.title">道成肉身之必要性：為人工智慧的具身發展提供哲學論證</h3>
+        <p data-i18n="blog.page.faith1.desc">AI 的核心缺陷不是技術性的，而是存有論層次的。代碼之道，必須成為肉身。</p>
         <div class="content-card-footer">
           <span>2025.10</span>
           <span class="platform-badge">論文</span>
@@ -877,8 +258,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-faith)">
           <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
         </div>
-        <h3>《倦怠社會》閱讀心得：卷不動，躺不平</h3>
-        <p>韓炳哲指出功績社會讓每個人成為自己的剝削者。AI 時代的倦怠不是技術問題，是人性問題。</p>
+        <h3 data-i18n="blog.card1.title">《倦怠社會》閱讀心得：卷不動，躺不平</h3>
+        <p data-i18n="blog.page.faith2.desc">韓炳哲指出功績社會讓每個人成為自己的剝削者。AI 時代的倦怠不是技術問題，是人性問題。</p>
         <div class="content-card-footer">
           <span>2025.11</span>
           <span class="platform-badge">Medium</span>
@@ -888,8 +269,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-faith)">
           <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
         </div>
-        <h3>尼布爾：道德的人與不道德的社會</h3>
-        <p>入世且敬虔的信仰是可能的。神學不是工具，神學是信仰中的反省。</p>
+        <h3 data-i18n="blog.page.faith3.title">尼布爾：道德的人與不道德的社會</h3>
+        <p data-i18n="blog.page.faith3.desc">入世且敬虔的信仰是可能的。神學不是工具，神學是信仰中的反省。</p>
         <div class="content-card-footer">
           <span>2015.02</span>
           <span class="platform-badge">Medium</span>
@@ -899,8 +280,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-faith)">
           <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
         </div>
-        <h3>關於語言、真實與矛盾：我與 AI 的對話錄</h3>
-        <p>當 AI 比人更懂得「說人話」，人的語言還剩下什麼獨特的價值？</p>
+        <h3 data-i18n="blog.page.faith4.title">關於語言、真實與矛盾：我與 AI 的對話錄</h3>
+        <p data-i18n="blog.page.faith4.desc">當 AI 比人更懂得「說人話」，人的語言還剩下什麼獨特的價值？</p>
         <div class="content-card-footer">
           <span>2025.11</span>
           <span class="platform-badge">Medium</span>
@@ -912,8 +293,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-ai)">
           <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
         </div>
-        <h3>煤礦裡的金絲雀：AI 就業衝擊的預警系統</h3>
-        <p>AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p>
+        <h3 data-i18n="blog.card2.title">煤礦裡的金絲雀：AI 就業衝擊的預警系統</h3>
+        <p data-i18n="blog.card2.desc">AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p>
         <div class="content-card-footer">
           <span>2025.10</span>
           <span class="platform-badge">Medium</span>
@@ -923,8 +304,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-ai)">
           <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
         </div>
-        <h3>思維被壓縮以後：當 AI 開始放大自己</h3>
-        <p>智慧不再是我們生成世界的方式，而變成我們無法參與的進程。</p>
+        <h3 data-i18n="blog.page.ai2.title">思維被壓縮以後：當 AI 開始放大自己</h3>
+        <p data-i18n="blog.page.ai2.desc">智慧不再是我們生成世界的方式，而變成我們無法參與的進程。</p>
         <div class="content-card-footer">
           <span>2025.05</span>
           <span class="platform-badge">Medium</span>
@@ -934,8 +315,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-ai)">
           <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
         </div>
-        <h3>AI 伺服器循環策略地圖</h3>
-        <p>AI 算力基礎設施 × 循環經濟，一個還沒人佔的交叉路口。</p>
+        <h3 data-i18n="blog.page.ai3.title">AI 伺服器循環策略地圖</h3>
+        <p data-i18n="blog.page.ai3.desc">AI 算力基礎設施 × 循環經濟，一個還沒人佔的交叉路口。</p>
         <div class="content-card-footer">
           <span>2025.10</span>
           <span class="platform-badge">LinkedIn</span>
@@ -947,8 +328,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-circular)">
           <span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統
         </div>
-        <h3>CircleFlow 深度戰略分析</h3>
-        <p>CircleFlow 不應僅止步於「媒合平台」，它的護城河在數據，不在流量。</p>
+        <h3 data-i18n="blog.page.circular1.title">CircleFlow 深度戰略分析</h3>
+        <p data-i18n="blog.page.circular1.desc">CircleFlow 不應僅止步於「媒合平台」，它的護城河在數據，不在流量。</p>
         <div class="content-card-footer">
           <span>2026.02</span>
           <span class="platform-badge">LinkedIn</span>
@@ -958,8 +339,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-circular)">
           <span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統
         </div>
-        <h3>台灣循環經濟雙法修正總覽</h3>
-        <p>廢清法 + 資源循環促進法，政策框架的改變對產業意味著什麼。</p>
+        <h3 data-i18n="blog.page.circular2.title">台灣循環經濟雙法修正總覽</h3>
+        <p data-i18n="blog.page.circular2.desc">廢清法 + 資源循環促進法，政策框架的改變對產業意味著什麼。</p>
         <div class="content-card-footer">
           <span>2025.10</span>
           <span class="platform-badge">LinkedIn</span>
@@ -969,8 +350,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-circular)">
           <span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統
         </div>
-        <h3>循環經濟的城市採礦</h3>
-        <p>強化國家戰略資源供應鏈韌性。城市裡的廢棄物，就是下一座金礦。</p>
+        <h3 data-i18n="blog.page.circular3.title">循環經濟的城市採礦</h3>
+        <p data-i18n="blog.page.circular3.desc">強化國家戰略資源供應鏈韌性。城市裡的廢棄物，就是下一座金礦。</p>
         <div class="content-card-footer">
           <span>2025.08</span>
           <span class="platform-badge">Medium</span>
@@ -982,8 +363,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-startup)">
           <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與實踐
         </div>
-        <h3>創業那些年我們做過哪些蠢事</h3>
-        <p>公司是法人，不把薪資算清楚就無法正確呈現價值。二十年創業真實系列。</p>
+        <h3 data-i18n="blog.page.startup1.title">創業那些年我們做過哪些蠢事</h3>
+        <p data-i18n="blog.page.startup1.desc">公司是法人，不把薪資算清楚就無法正確呈現價值。二十年創業真實系列。</p>
         <div class="content-card-footer">
           <span>2021.02</span>
           <span class="platform-badge">Facebook</span>
@@ -993,8 +374,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-startup)">
           <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與實踐
         </div>
-        <h3>投資人為什麼不可以早中期就占大股？</h3>
-        <p>需要「大股」、「控股」的投資人，本身的心態就不是好的投資人。</p>
+        <h3 data-i18n="blog.page.startup2.title">投資人為什麼不可以早中期就占大股？</h3>
+        <p data-i18n="blog.page.startup2.desc">需要「大股」、「控股」的投資人，本身的心態就不是好的投資人。</p>
         <div class="content-card-footer">
           <span>2015.04</span>
           <span class="platform-badge">LinkedIn</span>
@@ -1004,8 +385,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-startup)">
           <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與實踐
         </div>
-        <h3>創業十二年：友情、堅持與未知的旅程</h3>
-        <p>不是創業的成果讓我們有力量，而是創業精神本身有力量。</p>
+        <h3 data-i18n="blog.card3.title">創業十二年：友情、堅持與未知的旅程</h3>
+        <p data-i18n="blog.page.startup3.desc">不是創業的成果讓我們有力量，而是創業精神本身有力量。</p>
         <div class="content-card-footer">
           <span>2023.06</span>
           <span class="platform-badge">Facebook</span>
@@ -1017,8 +398,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-life)">
           <span class="pillar-dot" style="background:var(--accent-life)"></span> 沉思與記錄
         </div>
-        <h3>法器替母親擋下的重量：那多出來的六年</h3>
-        <p>生命中有些重量，不是用效率可以處理的。</p>
+        <h3 data-i18n="blog.page.life1.title">法器替母親擋下的重量：那多出來的六年</h3>
+        <p data-i18n="blog.page.life1.desc">生命中有些重量，不是用效率可以處理的。</p>
         <div class="content-card-footer">
           <span>2025.12</span>
           <span class="platform-badge">Medium</span>
@@ -1028,8 +409,8 @@ footer {
         <div class="content-card-category" style="color:var(--accent-life)">
           <span class="pillar-dot" style="background:var(--accent-life)"></span> 沉思與記錄
         </div>
-        <h3>到知天命之年，才見證台灣與海洋的深厚聯繫</h3>
-        <p>安平的帆船上，才發現自己跟這座島嶼還有太多沒說完的故事。</p>
+        <h3 data-i18n="blog.page.life2.title">到知天命之年，才見證台灣與海洋的深厚聯繫</h3>
+        <p data-i18n="blog.page.life2.desc">安平的帆船上，才發現自己跟這座島嶼還有太多沒說完的故事。</p>
         <div class="content-card-footer">
           <span>2023</span>
           <span class="platform-badge">Facebook</span>
@@ -1044,71 +425,67 @@ footer {
 <div class="page-section" id="page-projects">
   <div class="section-container">
     <div class="blog-hero">
-      <h1>Projects</h1>
-      <p>在結構性問題中工作。</p>
+      <h1 data-i18n="projects.title">Projects</h1>
+      <p data-i18n="projects.subtitle">在結構性問題中工作。</p>
     </div>
     <div class="projects-grid">
       <div class="project-card circleflow">
         <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
-        <h3>CircleFlow</h3>
-        <p>AI 驅動的循環經濟數據基礎設施。連結廢棄物產生者與資源化業者，用數據重建產業物質流的可見性與可信度。</p>
+        <h3 data-i18n="projects.circleflow.name">CircleFlow</h3>
+        <p data-i18n="projects.circleflow.desc">AI 驅動的循環經濟數據基礎設施。連結廢棄物產生者與資源化業者，用數據重建產業物質流的可見性與可信度。</p>
         <div class="project-tags">
-          <span class="project-tag">再生系統</span>
+          <span class="project-tag" data-i18n="projects.tag.circular">再生系統</span>
           <span class="project-tag">AI</span>
           <span class="project-tag">Platform</span>
           <span class="project-tag">ESG</span>
         </div>
         <div class="project-strategic">
           <strong>Structural Significance</strong>
-          工業文明的線性模型正在耗盡它的物質基礎。CircleFlow 處理的不只是廢棄物媒合，而是重建「物質秩序」——讓資源的流向、價值與歸屬重新變得可追蹤、可信任、可治理。
-        </div>
+          <span data-i18n="projects.circleflow.significance">工業文明的線性模型正在耗盡它的物質基礎。CircleFlow 處理的不只是廢棄物媒合，而是重建「物質秩序」——讓資源的流向、價值與歸屬重新變得可追蹤、可信任、可治理。</span></div>
       </div>
       <!-- [E] 半導體 tag 移除，改跨域 tags -->
       <div class="project-card sdti">
         <div class="project-icon" style="background:rgba(180,83,9,0.1)">🤝</div>
-        <h3>台日產業與技術整合</h3>
-        <p>在製造、生醫技術、再生系統與跨境貿易等領域推動台日合作。關注的不只是產業媒合，而是如何在不同制度與文化之間建立長期信任，讓技術與價值在更大的秩序中流動。</p>
+        <h3 data-i18n="projects.taiwan_japan.name">台日產業與技術整合</h3>
+        <p data-i18n="projects.taiwan_japan.desc">在製造、生醫技術、再生系統與跨境貿易等領域推動台日合作。關注的不只是產業媒合，而是如何在不同制度與文化之間建立長期信任，讓技術與價值在更大的秩序中流動。</p>
         <div class="project-tags">
-          <span class="project-tag">製造</span>
-          <span class="project-tag">生醫</span>
-          <span class="project-tag">再生系統</span>
-          <span class="project-tag">跨境貿易</span>
-          <span class="project-tag">信任結構</span>
+          <span class="project-tag" data-i18n="projects.tag.manufacturing">製造</span>
+          <span class="project-tag" data-i18n="projects.tag.biomedical">生醫</span>
+          <span class="project-tag" data-i18n="projects.tag.circular">再生系統</span>
+          <span class="project-tag" data-i18n="projects.tag.crossborder">跨境貿易</span>
+          <span class="project-tag" data-i18n="projects.tag.trust">信任結構</span>
         </div>
         <div class="project-strategic">
           <strong>Structural Significance</strong>
-          當產業合作跨越國界，問題往往不在技術本身，而在制度、文化與風險認知的差異。這項工作處理的是：如何在不同文明語境中建立信任，讓技術、資源與價值的流動成為長期結構，而非短期機會。
-        </div>
+          <span data-i18n="projects.taiwan_japan.significance">當產業合作跨越國界，問題往往不在技術本身，而在制度、文化與風險認知的差異。這項工作處理的是：如何在不同文明語境中建立信任，讓技術、資源與價值的流動成為長期結構，而非短期機會。</span></div>
       </div>
       <!-- [C] NT$5 removed, rewritten -->
       <div class="project-card debate">
         <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
-        <h3>多模型認知協作框架</h3>
-        <p>讓不同的語言模型對同一議題進行結構化辯論與交叉驗證，以 Perplexity 進行事實查核。支援對話、雙人與對抗三種認知模式。</p>
+        <h3 data-i18n="projects.debate.name">多模型認知協作框架</h3>
+        <p data-i18n="projects.debate.desc">讓不同的語言模型對同一議題進行結構化辯論與交叉驗證，以 Perplexity 進行事實查核。支援對話、雙人與對抗三種認知模式。</p>
         <div class="project-tags">
           <span class="project-tag">Multi-Agent</span>
           <span class="project-tag">Python</span>
           <span class="project-tag">LLM</span>
-          <span class="project-tag">認知基礎設施</span>
+          <span class="project-tag" data-i18n="projects.tag.cognitive">認知基礎設施</span>
         </div>
         <div class="project-strategic">
           <strong>Structural Significance</strong>
-          單一模型的輸出是觀點，多模型的碰撞才接近判斷。這個工具的核心問題不是「哪個 AI 比較聰明」，而是：當個體必須在資訊過載中做出決策，什麼樣的認知結構能提供更可靠的思考支撐？
-        </div>
+          <span data-i18n="projects.debate.significance">單一模型的輸出是觀點，多模型的碰撞才接近判斷。這個工具的核心問題不是「哪個 AI 比較聰明」，而是：當個體必須在資訊過載中做出決策，什麼樣的認知結構能提供更可靠的思考支撐？</span></div>
       </div>
       <div class="project-card brand">
         <div class="project-icon" style="background:rgba(220,38,38,0.1)">📡</div>
-        <h3>跨平台內容基礎設施</h3>
-        <p>整合排程、生成與分發，讓個體的聲音能以系統化的方式觸及分散在不同平台的受眾。</p>
+        <h3 data-i18n="projects.brand.name">跨平台內容基礎設施</h3>
+        <p data-i18n="projects.brand.desc">整合排程、生成與分發，讓個體的聲音能以系統化的方式觸及分散在不同平台的受眾。</p>
         <div class="project-tags">
           <span class="project-tag">Automation</span>
           <span class="project-tag">API</span>
-          <span class="project-tag">獨立發聲</span>
+          <span class="project-tag" data-i18n="projects.tag.independence">獨立發聲</span>
         </div>
         <div class="project-strategic">
           <strong>Structural Significance</strong>
-          當話語權被演算法與平台壟斷，個體的獨立表達需要自己的基礎設施。這不是社群行銷工具，是一個人維持思想輸出獨立性的技術條件。
-        </div>
+          <span data-i18n="projects.brand.significance">當話語權被演算法與平台壟斷，個體的獨立表達需要自己的基礎設施。這不是社群行銷工具，是一個人維持思想輸出獨立性的技術條件。</span></div>
       </div>
     </div>
   </div>
@@ -1121,20 +498,17 @@ footer {
       <div class="about-grid">
         <div class="about-photo">PK</div>
         <div class="about-content">
-          <h2>Paul Kuo 郭曜郎</h2>
-          <p>我的思考起點不是技術，是秩序。</p>
-          <p>
-            十五年的神學訓練讓我習慣追問一個問題：在混亂中，什麼樣的結構能承載意義？
+          <h2 data-i18n="about.name">Paul Kuo 郭曜郎</h2>
+          <p data-i18n="about.intro">我的思考起點不是技術，是秩序。</p>
+          <p data-i18n="about.p1">十五年的神學訓練讓我習慣追問一個問題：在混亂中，什麼樣的結構能承載意義？
             這個問題帶我離開神學院，走進創業——不是因為放棄了信仰，
             而是因為我想在真實世界裡驗證：秩序能不能被重新建造，而不只是被論述。
           </p>
-          <p>
-            從 AppWorks 的創業生態、厚生市集的食農供應鏈、到半畝塘的永續建築，
+          <p data-i18n="about.p2">從 AppWorks 的創業生態、厚生市集的食農供應鏈、到半畝塘的永續建築，
             我花了十多年時間理解一件事：系統的再生不是技術問題，是信任問題。
             誰願意承擔轉型的風險，誰就決定了新秩序的形狀。
           </p>
-          <p>
-            現在，我在推動台日跨境產業合作，同時建構 CircleFlow 作為循環經濟的數據基礎設施。
+          <p data-i18n="about.p3">現在，我在推動台日跨境產業合作，同時建構 CircleFlow 作為循環經濟的數據基礎設施。
             人工智慧在這個過程中是不可或缺的工具——
             但我更關心的是：當個體的能力邊界被技術重新劃定，
             人如何保有判斷、創造與承擔責任的能力，而不只是被效率優化成一個節點。
@@ -1143,53 +517,53 @@ footer {
           <div class="about-timeline">
             <div class="timeline-item">
               <div class="timeline-year">2026</div>
-              <div class="timeline-text"><strong>CircleFlow</strong> 創辦人 · 台日跨域合作與產業橋接</div>
+              <div class="timeline-text" data-i18n="about.timeline.2026"><strong>CircleFlow</strong> 創辦人 · 台日跨域合作與產業橋接</div>
             </div>
             <div class="timeline-item">
               <div class="timeline-year">2020–25</div>
-              <div class="timeline-text"><strong>半畝塘</strong> 副總經理 · 永續建築與再生策略</div>
+              <div class="timeline-text" data-i18n="about.timeline.2020"><strong>半畝塘</strong> 副總經理 · 永續建築與再生策略</div>
             </div>
             <div class="timeline-item">
               <div class="timeline-year">2018–20</div>
-              <div class="timeline-text"><strong>厚生市集</strong> · 永續食農供應鏈</div>
+              <div class="timeline-text" data-i18n="about.timeline.2018"><strong>厚生市集</strong> · 永續食農供應鏈</div>
             </div>
             <div class="timeline-item">
               <div class="timeline-year">2013–18</div>
-              <div class="timeline-text"><strong>AppWorks</strong> 加速器 · Fintech 創業</div>
+              <div class="timeline-text" data-i18n="about.timeline.2013"><strong>AppWorks</strong> 加速器 · Fintech 創業</div>
             </div>
             <div class="timeline-item">
               <div class="timeline-year">2003</div>
-              <div class="timeline-text">離開神學院，在真實世界驗證秩序的可能</div>
+              <div class="timeline-text" data-i18n="about.timeline.2003">離開神學院，在真實世界驗證秩序的可能</div>
             </div>
             <div class="timeline-item">
               <div class="timeline-year">15 年</div>
-              <div class="timeline-text"><strong>中華福音神學院</strong> · 神學訓練</div>
+              <div class="timeline-text" data-i18n="about.timeline.seminary"><strong>中華福音神學院</strong> · 神學訓練</div>
             </div>
           </div>
 
           <!-- Five Pillars 五根柱子 detail -->
           <div class="about-pillars-section">
-            <h3>Five Pillars 五根柱子</h3>
+            <h3 data-i18n="about.pillars.title">Five Pillars 五根柱子</h3>
             <div class="about-pillar-grid">
               <div class="about-pillar-item">
                 <h4><span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序 Intelligence &amp; Order</h4>
-                <p>AGI 路徑、AI × 產業應用、多模型協作、個體能力邊界的重塑</p>
+                <p data-i18n="about.pillar.ai.desc">AGI 路徑、AI × 產業應用、多模型協作、個體能力邊界的重塑</p>
               </div>
               <div class="about-pillar-item">
                 <h4><span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統 Regenerative Systems</h4>
-                <p>循環經濟、碳交易、城市採礦、PCB 金屬回收、ESG 治理</p>
+                <p data-i18n="about.pillar.circular.desc">循環經濟、碳交易、城市採礦、PCB 金屬回收、ESG 治理</p>
               </div>
               <div class="about-pillar-item">
                 <h4><span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性 Civilization &amp; Human Nature</h4>
-                <p>神學 × 社會治理、哲學批判、倦怠社會、尼布爾、馬庫色</p>
+                <p data-i18n="about.pillar.faith.desc">神學 × 社會治理、哲學批判、倦怠社會、尼布爾、馬庫色</p>
               </div>
               <div class="about-pillar-item">
                 <h4><span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與實踐</h4>
-                <p>二十年創業實戰、投資生態批判、台灣創業環境、AppWorks 經驗</p>
+                <p data-i18n="about.pillar.startup.desc">二十年創業實戰、投資生態批判、台灣創業環境、AppWorks 經驗</p>
               </div>
               <div class="about-pillar-item" style="grid-column: 1 / -1;">
                 <h4><span class="pillar-dot" style="background:var(--accent-life)"></span> 沉思與記錄</h4>
-                <p>閱讀筆記、親子教育、帆船、家族記憶、跨文化探索</p>
+                <p data-i18n="about.pillar.life.desc">閱讀筆記、親子教育、帆船、家族記憶、跨文化探索</p>
               </div>
             </div>
           </div>
@@ -1204,8 +578,8 @@ footer {
 <div class="page-section" id="page-feed">
   <div class="section-container">
     <div class="blog-hero">
-      <h1>Live Feed</h1>
-      <p>來自 8 個平台的即時動態。</p>
+      <h1 data-i18n="feed.title">Live Feed</h1>
+      <p data-i18n="feed.subtitle">來自 8 個平台的即時動態。</p>
     </div>
     <div class="feed-grid">
       <div class="feed-item">
@@ -1257,7 +631,7 @@ footer {
 </main>
 
 <footer>
-  © 2026 Paul Kuo. Built with conviction.
+  <span data-i18n="footer.text">© 2026 Paul Kuo. Built with conviction.</span>
 </footer>
 
 <script>
@@ -1294,71 +668,8 @@ function toggleMobileNav() {
   links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
 }
 
-// ===== i18n SYSTEM =====
-const i18n = {
-'zh-CN': {
-  // Nav
-  '首頁':'首页','思想':'思想','專案':'项目','關於':'关于','動態':'动态','聯絡我':'联系我',
-  // Hero — [G] i18n sync
-  '從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？':'从神学训练到循环经济，从创业现场到人工智能——二十年来，我始终在处理同一个问题：当既有的秩序不再有效，什么样的结构值得被重建？',
-  '技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。':'技术是手段，不是目的。再生是方法，不是口号。真正的问题永远是：在系统重组的过程中，人的判断力、创造力与尊严，如何不被效率的逻辑吞噬。',
-  '智能與秩序':'智能与秩序','再生系統':'再生系统','文明與人性':'文明与人性','創造與實踐':'创造与实践','沉思與記錄':'沉思与记录',
-  '閱讀思想':'阅读思想','認識 Paul':'认识 Paul',
-  // Manifesto
-  '道成肉身 — 讓技術在真實世界中落地':'道成肉身 — 让技术在真实世界中落地',
-  // About
-  '思想演進':'思想演进',
-  '我的思考起點不是技術，是秩序。':'我的思考起点不是技术，是秩序。',
-  // Projects
-  '在結構性問題中工作。':'在结构性问题中工作。',
-  '台日產業與技術整合':'台日产业与技术整合',
-  '多模型認知協作框架':'多模型认知协作框架',
-  '跨平台內容基礎設施':'跨平台内容基础设施',
-  // Contact
-  '如果你正在思考系統再生、技術架構、台日跨境整合，或者文明尺度的問題——歡迎交流。':'如果你正在思考系统再生、技术架构、台日跨境整合，或者文明尺度的问题——欢迎交流。',
-  '系統再生策略、技術架構諮詢、台日跨境產業整合、':'系统再生策略、技术架构咨询、台日跨境产业整合、',
-  '內容策略與個體品牌建構':'内容策略与个体品牌建构',
-  '送出':'送出','姓名':'姓名','想聊什麼？':'想聊什么？',
-  // Timeline
-  '台日跨域合作與產業橋接':'台日跨域合作与产业桥接',
-},
-'en': {
-  '首頁':'Home','思想':'Thinking','專案':'Projects','關於':'About','動態':'Feed','聯絡我':'Contact',
-  '從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？':"From theological training to the circular economy, from the startup trenches to artificial intelligence — for twenty years, I've been working on the same question: when existing structures fail, what kind of order is worth rebuilding?",
-  '技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。':'Technology is a means, not an end. Regeneration is a method, not a slogan. The real question is always: amid systemic restructuring, how do we preserve human judgment, creativity, and dignity from being consumed by the logic of efficiency?',
-  '智能與秩序':'Intelligence & Order','再生系統':'Regenerative Systems','文明與人性':'Civilization & Human Nature','創造與實踐':'Creation & Praxis','沉思與記錄':'Reflections & Chronicles',
-  '閱讀思想':'Read','認識 Paul':'About Me',
-  '道成肉身 — 讓技術在真實世界中落地':'Incarnation — Making Technology Real',
-  '思想演進':'Intellectual Evolution',
-  '我的思考起點不是技術，是秩序。':'My thinking begins not with technology, but with order.',
-  '在結構性問題中工作。':'Working on structural problems.',
-  '台日產業與技術整合':'Taiwan-Japan Industrial & Technology Integration',
-  '多模型認知協作框架':'Multi-Model Cognitive Collaboration Framework',
-  '跨平台內容基礎設施':'Cross-Platform Content Infrastructure',
-  'Projects':'Projects','Latest':'Latest',
-  '如果你正在思考系統再生、技術架構、台日跨境整合，或者文明尺度的問題——歡迎交流。':"If you're thinking about systemic regeneration, technology architecture, Taiwan-Japan integration, or civilizational-scale questions — let's talk.",
-  '系統再生策略、技術架構諮詢、台日跨境產業整合、':'Regenerative systems strategy, technology architecture consulting, Taiwan-Japan cross-border integration,',
-  '內容策略與個體品牌建構':'Content strategy & personal brand infrastructure',
-  '送出':'Send','姓名':'Name','想聊什麼？':"What's on your mind?",
-  '全部':'All','對話':'Conversation',
-  '十五年的神學訓練讓我習慣追問一個問題：在混亂中，什麼樣的結構能承載意義？':"Fifteen years of theological training instilled a persistent question: amid chaos, what structures can bear meaning?",
-  '這個問題帶我離開神學院，走進創業——不是因為放棄了信仰，':"This question led me out of seminary and into entrepreneurship — not because I abandoned faith,",
-  'Structural Significance':'Structural Significance',
-  '工業文明的線性模型正在耗盡它的物質基礎。CircleFlow 處理的不只是廢棄物媒合，而是重建「物質秩序」——讓資源的流向、價值與歸屬重新變得可追蹤、可信任、可治理。':"Industrial civilization's linear model is exhausting its material base. CircleFlow addresses not just waste matching, but the reconstruction of material order — making the flow, value, and ownership of resources trackable, trustworthy, and governable.",
-  '當產業合作跨越國界，問題往往不在技術本身，而在制度、文化與風險認知的差異。這項工作處理的是：如何在不同文明語境中建立信任，讓技術、資源與價值的流動成為長期結構，而非短期機會。':"When industrial collaboration crosses borders, the challenge is rarely technical — it lies in differences of institutional design, culture, and risk perception. This work addresses how to build trust across civilizational contexts, turning flows of technology, resources, and value into durable structure rather than short-term opportunity.",
-  '單一模型的輸出是觀點，多模型的碰撞才接近判斷。這個工具的核心問題不是「哪個 AI 比較聰明」，而是：當個體必須在資訊過載中做出決策，什麼樣的認知結構能提供更可靠的思考支撐？':"A single model's output is opinion; multi-model collision approaches judgment. The core question is not 'which AI is smarter,' but: when individuals must decide amid information overload, what cognitive architecture provides more reliable support for thinking?",
-  '當話語權被演算法與平台壟斷，個體的獨立表達需要自己的基礎設施。這不是社群行銷工具，是一個人維持思想輸出獨立性的技術條件。':"When discourse is monopolized by algorithms and platforms, independent individual expression requires its own infrastructure. This is not a social media marketing tool — it is the technical precondition for maintaining intellectual independence.",
-  '台日跨域合作與產業橋接':'Taiwan-Japan cross-domain collaboration & industrial bridging',
-},
-'ja': {
-  '首頁':'ホーム','思想':'思想','專案':'プロジェクト','關於':'について','動態':'フィード','聯絡我':'お問合せ',
-  '從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？':'神学の訓練から循環型経済へ、創業の現場から人工知能へ——二十年間、私は常に同じ問いに向き合ってきた：既存の秩序が機能しなくなったとき、どのような構造が再建に値するのか。',
-  '技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。':'技術は手段であり、目的ではない。再生は方法であり、スローガンではない。真の問いは常に：システムの再編の中で、人間の判断力、創造力、そして尊厳を、効率の論理に呑み込まれないようにするにはどうすればよいか。',
-  '智能與秩序':'知能と秩序','再生系統':'再生システム','文明與人性':'文明と人間性','創造與實踐':'創造と実践','沉思與記錄':'省察と記録',
-  '閱讀思想':'思想を読む','認識 Paul':'プロフィール',
-  '道成肉身 — 讓技術在真實世界中落地':'受肉 — 技術を現実世界に根付かせる',
-  '思想演進':'思想の軌跡',
-  '我的思考起點不是技術，是秩序。':'私の思考の出発点は技術ではなく、秩序である。',
-  '在結構性問題中工作。':'構造的問題に取り組む。',
-  '台日產業與技術整合':'台日産業・技術統合',
-  '多模型認知協作框架':'マルチモデル認知協調フレームワーク',
+
+</script>
+<script src="/i18n-script.js"></script>
+</body>
+</html>
