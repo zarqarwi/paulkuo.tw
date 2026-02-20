@@ -31,7 +31,7 @@
           type: 'string',
           enum: ['ai', 'circular', 'faith', 'startup', 'life'],
           description:
-            'Filter by content pillar: ai (Intelligence & Order), circular (Regenerative Systems), faith (Civilization & Human Nature), startup (Creation & Enterprise), life (Reflections & Memory)',
+            'Filter by content pillar: ai (Intelligence & Order), circular (Recycling & Reuse), faith (Civilization & Human Nature), startup (Creation & Enterprise), life (Reflections & Memory)',
         },
       },
     },
@@ -100,7 +100,7 @@
         ],
         contentPillars: [
           { id: 'ai', name: 'Intelligence & Order', nameZh: '智能與秩序' },
-          { id: 'circular', name: 'Regenerative Systems', nameZh: '再生系統' },
+          { id: 'circular', name: 'Recycling & Reuse', nameZh: '循環再利用' },
           { id: 'faith', name: 'Civilization & Human Nature', nameZh: '文明與人性' },
           { id: 'startup', name: 'Creation & Enterprise', nameZh: '創造與建構' },
           { id: 'life', name: 'Reflections & Memory', nameZh: '沉思與記憶' },
