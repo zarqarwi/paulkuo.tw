@@ -1,0 +1,93 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  activePage?: string;
+}
+
+const {
+  title = 'Paul Kuo — Rebuilding Order in an Age of Intelligence',
+  description = '在技術與文明的交匯處，重建秩序、循環再利用、守護人性尊嚴。',
+  ogImage = 'https://paulkuo.tw/paul-photo.jpg',
+  activePage = 'home'
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <meta name="author" content="Paul Kuo">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={Astro.url.href}>
+  <meta property="og:image" content={ogImage}>
+  <meta property="og:locale" content="zh_TW">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={ogImage}>
+  <link rel="canonical" href={Astro.url.href}>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="alternate" type="application/ld+json" href="/llm-context.json" title="Machine-readable article index">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳到主要內容</a>
+
+  <nav role="navigation" aria-label="主要導覽列">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">Paul Kuo</a>
+      <div class="nav-links" id="nav-links-menu">
+        <a href="/" class:list={[{ active: activePage === 'home' }]}>首頁</a>
+        <a href="/blog/" class:list={[{ active: activePage === 'blog' }]}>思想</a>
+        <a href="/projects/" class:list={[{ active: activePage === 'projects' }]}>專案</a>
+        <a href="/about/" class:list={[{ active: activePage === 'about' }]}>關於</a>
+        <a href="/feed/" class:list={[{ active: activePage === 'feed' }]}>動態</a>
+        <a href="/#contact" class="nav-cta">聯絡我</a>
+      </div>
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="zh-TW" onclick="setLang('zh-TW')">繁</button>
+        <button class="lang-btn" data-lang="zh-CN" onclick="setLang('zh-CN')">简</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">日</button>
+      </div>
+      <button class="nav-hamburger" onclick="toggleMobileNav()" aria-label="開啟導覽選單" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main id="main-content" role="main">
+    <slot />
+  </main>
+
+  <footer role="contentinfo">
+    <span>© 2026 Paul Kuo. Built with conviction.</span>
+  </footer>
+
+  <script is:inline>
+    function toggleMobileNav() {
+      const links = document.querySelector('.nav-links');
+      const btn = document.querySelector('.nav-hamburger');
+      const isOpen = links?.classList.contains('mobile-open');
+      if (isOpen) { links?.classList.remove('mobile-open'); }
+      else { links?.classList.add('mobile-open'); }
+      btn?.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    }
+  </script>
+  <script src="/i18n-script.js" is:inline></script>
+  <script src="/webmcp.js" is:inline></script>
+</body>
+</html>
