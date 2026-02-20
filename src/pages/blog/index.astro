@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { articles, PILLAR_COLORS } from '../../data/articles';
+
+const allArticles = await getCollection('articles', ({ data }) => {
+  return data.lang === 'zh' && !data.draft;
+});
+
+const sortedArticles = allArticles.sort((a, b) =>
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+---
+
+<BaseLayout
+  title="Thinking Out Loud — Paul Kuo"
+  description="智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。"
+  activePage="blog"
+>
+  <div class="section-container" style="padding-top:120px;">
+    <header class="blog-hero">
+      <h1 data-i18n="blog.title">Thinking Out Loud</h1>
+      <p data-i18n="blog.subtitle">智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。</p>
+    </header>
+
+    <aside class="blog-filters" role="group" aria-label="文章分類篩選">
+      <button class="filter-btn active" data-filter="all" aria-pressed="true" data-i18n="filter.all">全部</button>
+      <button class="filter-btn" data-filter="ai" aria-pressed="false" data-i18n="filter.ai">智能與秩序</button>
+      <button class="filter-btn" data-filter="circular" aria-pressed="false" data-i18n="filter.circular">循環再利用</button>
+      <button class="filter-btn" data-filter="faith" aria-pressed="false" data-i18n="filter.faith">文明與人性</button>
+      <button class="filter-btn" data-filter="startup" aria-pressed="false" data-i18n="filter.startup">創造與建構</button>
+      <button class="filter-btn" data-filter="life" aria-pressed="false" data-i18n="filter.life">沉思與記憶</button>
+    </aside>
+
+    <div class="content-grid" id="blog-grid">
+      {sortedArticles.map(article => {
+        const color = PILLAR_COLORS[article.data.pillar] || 'var(--accent-ai)';
+        const dateStr = new Date(article.data.date).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit' });
+        return (
+          <article class="content-card" data-pillar={article.data.pillar} itemscope itemtype="https://schema.org/BlogPosting">
+            <a href={`/blog/${article.data.canonicalSlug}/`} style="text-decoration:none;color:inherit;display:block;">
+              <header>
+                <div class="content-card-category" style={`color:${color}`}>
+                  <span class="pillar-dot" style={`background:${color}`}></span>
+                  <span itemprop="articleSection">{article.data.pillarLabel}</span>
+                </div>
+                <h2 itemprop="headline">{article.data.title}</h2>
+              </header>
+              <div class="prose">
+                <p itemprop="abstract">{article.data.description}</p>
+              </div>
+              <footer class="content-card-footer">
+                <time datetime={article.data.date.toISOString()} itemprop="datePublished">{dateStr}</time>
+                <span class="platform-badge">{article.data.platform}</span>
+              </footer>
+            </a>
+            <meta itemprop="author" content="Paul Kuo">
+          </article>
+        );
+      })}
+
+      {/* Fallback: articles from data registry without .md content yet */}
+      {articles
+        .filter(a => !sortedArticles.find(sa => sa.data.canonicalSlug === a.slug))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .map(article => {
+          const color = PILLAR_COLORS[article.pillar] || 'var(--accent-ai)';
+          const dateStr = new Date(article.date).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit' });
+          return (
+            <article class="content-card" data-pillar={article.pillar} itemscope itemtype="https://schema.org/BlogPosting">
+              <header>
+                <div class="content-card-category" style={`color:${color}`}>
+                  <span class="pillar-dot" style={`background:${color}`}></span>
+                  <span itemprop="articleSection">{article.pillarLabel}</span>
+                </div>
+                <h2 itemprop="headline">{article.title}</h2>
+              </header>
+              <div class="prose">
+                <p itemprop="abstract">{article.description}</p>
+              </div>
+              <footer class="content-card-footer">
+                <time datetime={article.date} itemprop="datePublished">{dateStr}</time>
+                <span class="platform-badge">{article.platform}</span>
+              </footer>
+              <meta itemprop="author" content="Paul Kuo">
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        this.classList.add('active');
+        this.setAttribute('aria-pressed', 'true');
+        const filter = this.dataset.filter;
+        document.querySelectorAll('#blog-grid .content-card').forEach(card => {
+          if (filter === 'all' || card.dataset.pillar === filter) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</BaseLayout>
