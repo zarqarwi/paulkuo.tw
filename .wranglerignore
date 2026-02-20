@@ -1,6 +1,18 @@
-.git
-src
-node_modules
-.wrangler
-DEVLOG.md
+# Git internals
+.git/**
+
+# Wrangler temp files
+.wrangler/**
+
+# Dev & build tooling
+node_modules/**
+src/**
+
+# Non-deployable files
 README.md
+DEVLOG.md
+_phase2_ref.txt
+wrangler.jsonc
+package.json
+package-lock.json
+.gitignore
