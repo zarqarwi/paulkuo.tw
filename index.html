@@ -261,7 +261,12 @@
           </div>
         </div>
         <div class="contact-form">
-          <form action="mailto:paul@lasaas.com" method="post" enctype="text/plain">
+          <form action="mailto:paul@lasaas.com" method="post" enctype="text/plain"
+                toolname="contact_paul_kuo"
+                tooldescription="Send a direct message or inquiry to Paul Kuo regarding consulting, speaking, or collaborations on circular economy, AI systems, Taiwan-Japan cooperation, or theological ethics."
+                toolparamdescription-name="Full name of the person reaching out"
+                toolparamdescription-email="Email address for reply"
+                toolparamdescription-message="The inquiry or message content">
           <div class="form-group">
             <label for="contact-name" data-i18n="contact.form.name">姓名</label>
             <input id="contact-name" type="text" name="name" placeholder="你的名字" data-i18n-ph="contact.form.name.ph" required>
@@ -743,5 +748,6 @@ function toggleMobileNav() {
 }
 </script>
 <script src="/i18n-script.js"></script>
+<script src="/webmcp.js"></script>
 </body>
 </html>
