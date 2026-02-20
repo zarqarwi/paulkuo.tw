@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PILLAR_MAP } from '../config';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const pillars = Object.entries(PILLAR_MAP);
+---
+<BaseLayout title="Thinking Out Loud — Paul Kuo" description="智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。">
+  <div class="section-container">
+    <div class="blog-hero">
+      <h1>Thinking Out Loud</h1>
+      <p>智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。</p>
+    </div>
+
+    <div class="blog-filters">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      {pillars.map(([key, p]) => (
+        <button class="filter-btn" data-filter={key}>{p.label}</button>
+      ))}
+    </div>
+
+    <div class="content-grid" id="blog-grid">
+      {articles.map((article) => {
+        const p = PILLAR_MAP[article.data.pillar];
+        const dateStr = article.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit' });
+        return (
+          <a href={`/articles/${article.id.replace(/\.md$/, "")}`} class="content-card" data-pillar={article.data.pillar}>
+            <div class="content-card-category" style={`color:${p.color}`}>
+              <span class="pillar-dot" style={`background:${p.color}`}></span> {p.label}
+            </div>
+            <h3>{article.data.title}</h3>
+            <p>{article.data.description}</p>
+            <div class="content-card-footer">
+              <span>{dateStr}</span>
+              {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+    {articles.length === 0 && (
+      <div style="text-align:center; padding:80px 0; color:var(--text-muted);">
+        <p>旗艦文章即將上線。</p>
+      </div>
+    )}
+  </div>
+
+  <script>
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function(this: HTMLElement) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const filter = this.dataset.filter;
+        document.querySelectorAll('#blog-grid .content-card').forEach(card => {
+          const el = card as HTMLElement;
+          el.style.display = (filter === 'all' || el.dataset.pillar === filter) ? 'block' : 'none';
+        });
+      });
+    });
+  </script>
+</BaseLayout>
