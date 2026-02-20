@@ -1,0 +1,86 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    titleEn?: string;
+    description: string;
+    date: Date;
+    pillar: string;
+    pillarLabel: string;
+    platform: string;
+    tags: string[];
+    lang: string;
+    canonicalSlug: string;
+  };
+}
+
+const { frontmatter } = Astro.props;
+const formattedDate = new Date(frontmatter.date).toLocaleDateString('zh-TW', {
+  year: 'numeric', month: 'long', day: 'numeric'
+});
+
+const pillarColors: Record<string, string> = {
+  ai: 'var(--accent-ai)',
+  circular: 'var(--accent-circular)',
+  faith: 'var(--accent-faith)',
+  startup: 'var(--accent-startup)',
+  life: 'var(--accent-life)',
+};
+---
+
+<BaseLayout
+  title={`${frontmatter.title} — Paul Kuo`}
+  description={frontmatter.description}
+  activePage="blog"
+>
+  <article class="article-page" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="section-container">
+      <header class="article-header">
+        <div class="content-card-category" style={`color:${pillarColors[frontmatter.pillar] || 'var(--accent-ai)'}`}>
+          <span class="pillar-dot" style={`background:${pillarColors[frontmatter.pillar] || 'var(--accent-ai)'}`}></span>
+          <span itemprop="articleSection">{frontmatter.pillarLabel}</span>
+        </div>
+        <h1 itemprop="headline">{frontmatter.title}</h1>
+        {frontmatter.titleEn && (
+          <p class="article-title-en">{frontmatter.titleEn}</p>
+        )}
+        <div class="article-meta">
+          <time datetime={frontmatter.date.toISOString()} itemprop="datePublished">{formattedDate}</time>
+          <span class="platform-badge">{frontmatter.platform}</span>
+          {frontmatter.tags.map(tag => (
+            <span class="article-tag">{tag}</span>
+          ))}
+        </div>
+        <nav class="article-langs" aria-label="語言版本">
+          <a href={`/blog/${frontmatter.canonicalSlug}/`} class:list={[{ active: frontmatter.lang === 'zh' }]}>繁中</a>
+          <a href={`/blog/en/${frontmatter.canonicalSlug}/`} class:list={[{ active: frontmatter.lang === 'en' }]}>EN</a>
+          <a href={`/blog/ja/${frontmatter.canonicalSlug}/`} class:list={[{ active: frontmatter.lang === 'ja' }]}>日本語</a>
+          <a href={`/blog/zh-cn/${frontmatter.canonicalSlug}/`} class:list={[{ active: frontmatter.lang === 'zh-cn' }]}>简中</a>
+        </nav>
+      </header>
+      <div class="article-content prose" itemprop="articleBody">
+        <slot />
+      </div>
+      <footer class="article-footer">
+        <a href="/blog/" class="btn-secondary">← 返回思想</a>
+        <meta itemprop="author" content="Paul Kuo">
+      </footer>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-page { padding: 120px 0 80px; }
+  .article-header { max-width: 720px; margin: 0 auto 48px; }
+  .article-header h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 16px 0 8px; line-height: 1.3; }
+  .article-title-en { font-family: 'Playfair Display', serif; font-style: italic; color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 16px; }
+  .article-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; color: var(--text-secondary); font-size: 0.9rem; }
+  .article-tag { background: var(--bg-section); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+  .article-langs { display: flex; gap: 12px; margin-top: 12px; }
+  .article-langs a { padding: 4px 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; text-decoration: none; color: var(--text-secondary); transition: all 0.2s; }
+  .article-langs a.active, .article-langs a:hover { background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary); }
+  .article-content { max-width: 720px; margin: 0 auto; }
+  .article-footer { max-width: 720px; margin: 48px auto 0; padding-top: 24px; border-top: 1px solid var(--border); }
+</style>
