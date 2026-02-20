@@ -22,6 +22,7 @@
 <meta name="twitter:image" content="https://paulkuo.tw/paul-photo.jpg">
 <link rel="canonical" href="https://paulkuo.tw">
 <link rel="icon" type="image/png" href="/favicon.png">
+<link rel="alternate" type="application/ld+json" href="/llm-context.json" title="Machine-readable article index">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
@@ -102,10 +103,8 @@
     <div class="hero-inner">
       <div class="hero-text">
         <h1 class="animate-in">Rebuilding <em>Order</em><br>in an Age of<br>Intelligence</h1>
-        <p class="hero-tagline animate-in delay-1" data-i18n="hero.tagline1">從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？
-        </p>
-        <p class="hero-tagline animate-in delay-2" style="margin-top:-20px;" data-i18n="hero.tagline2">技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。
-        </p>
+        <p class="hero-tagline animate-in delay-1" data-i18n="hero.tagline1">從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？</p>
+        <p class="hero-tagline animate-in delay-2" style="margin-top:-20px;" data-i18n="hero.tagline2">技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。</p>
         <div class="hero-pillars animate-in delay-3">
           <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-ai)"></span><span data-i18n="hero.pillar.ai">智能與秩序</span></span>
           <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-circular)"></span><span data-i18n="hero.pillar.circular">再生系統</span></span>
@@ -149,14 +148,10 @@
   <section class="manifesto" aria-label="哲學宣言">
     <div class="manifesto-inner">
       <div class="manifesto-kicker" data-i18n="manifesto.kicker">Philosophy · 哲學宣言</div>
-      <p class="manifesto-quote" data-i18n="manifesto.quote">"Rebuilding <em>Order</em> in an Age of Intelligence"<br>
-        — 道成肉身
-      </p>
-      <p class="manifesto-body" data-i18n="manifesto.body">基督教神學的道（Logos, 基督）必須成為肉身（Sarx,耶穌），才能真正與世界相遇。
-        秩序也是如此——停留在概念中的秩序只是論述，唯有進入真實的產業、制度與人際關係，秩序才能被重建。
-        技術必須落地、智能必須入世、創業要能解決人類的痛苦與慾望。
-        無關技術樂觀主義，而是一個神學訓練出身的創業者，對「道成肉身」最務實的理解——讓秩序在混亂中重新站立，讓人的尊嚴在效率的洪流中被守住。
-      </p>
+      <p class="manifesto-quote" data-i18n="manifesto.quote">"Rebuilding <em>Order</em> in an Age of Intelligence"<br>— 道成肉身</p>
+      <div class="prose">
+        <p class="manifesto-body" data-i18n="manifesto.body">基督教神學的道（Logos, 基督）必須成為肉身（Sarx,耶穌），才能真正與世界相遇。秩序也是如此——停留在概念中的秩序只是論述，唯有進入真實的產業、制度與人際關係，秩序才能被重建。技術必須落地、智能必須入世、創業要能解決人類的痛苦與慾望。無關技術樂觀主義，而是一個神學訓練出身的創業者，對「道成肉身」最務實的理解——讓秩序在混亂中重新站立，讓人的尊嚴在效率的洪流中被守住。</p>
+      </div>
       <a href="#" class="manifesto-cta" data-i18n="manifesto.cta" onclick="showPage('blog')">閱讀完整論述 →</a>
     </div>
   </section>
@@ -167,39 +162,54 @@
       <a href="#" class="section-link" data-i18n="section.viewall" onclick="showPage('blog')">查看全部 →</a>
     </div>
     <div class="content-grid">
-      <a href="#" class="content-card">
-        <div class="content-card-category" style="color:var(--accent-faith)">
-          <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
+      <article class="content-card" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-faith)">
+            <span class="pillar-dot" style="background:var(--accent-faith)"></span> <span itemprop="articleSection">文明與人性</span>
+          </div>
+          <h3 itemprop="headline" data-i18n="blog.card1.title">《倦怠社會》閱讀心得：卷不動，躺不平</h3>
+        </header>
+        <div class="prose">
+          <p itemprop="abstract" data-i18n="blog.card1.desc">韓炳哲說的「功績社會」讓每個人成為自己的剝削者。當 AI 讓效率再次翻倍，倦怠會減少還是加深？</p>
         </div>
-        <h3 data-i18n="blog.card1.title">《倦怠社會》閱讀心得：卷不動，躺不平</h3>
-        <p data-i18n="blog.card1.desc">韓炳哲說的「功績社會」讓每個人成為自己的剝削者。當 AI 讓效率再次翻倍，倦怠會減少還是加深？</p>
-        <div class="content-card-footer">
-          <span>2025.11</span>
+        <footer class="content-card-footer">
+          <time datetime="2025-11-01" itemprop="datePublished">2025.11</time>
           <span class="platform-badge">Medium</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+      <article class="content-card" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-ai)">
+            <span class="pillar-dot" style="background:var(--accent-ai)"></span> <span itemprop="articleSection">智能與秩序</span>
+          </div>
+          <h3 itemprop="headline" data-i18n="blog.card2.title">煤礦裡的金絲雀：AI 就業衝擊的預警系統</h3>
+        </header>
+        <div class="prose">
+          <p itemprop="abstract" data-i18n="blog.card2.desc">AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p>
         </div>
-      </a>
-      <a href="#" class="content-card">
-        <div class="content-card-category" style="color:var(--accent-ai)">
-          <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
-        </div>
-        <h3 data-i18n="blog.card2.title">煤礦裡的金絲雀：AI 就業衝擊的預警系統</h3>
-        <p data-i18n="blog.card2.desc">AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p>
-        <div class="content-card-footer">
-          <span>2025.10</span>
+        <footer class="content-card-footer">
+          <time datetime="2025-10-15" itemprop="datePublished">2025.10</time>
           <span class="platform-badge">Medium</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+      <article class="content-card" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-startup)">
+            <span class="pillar-dot" style="background:var(--accent-startup)"></span> <span itemprop="articleSection">創造與建構</span>
+          </div>
+          <h3 itemprop="headline" data-i18n="blog.card3.title">創業十二年：友情、堅持與未知的旅程</h3>
+        </header>
+        <div class="prose">
+          <p itemprop="abstract" data-i18n="blog.card3.desc">不是創業的成果讓我們有力量，而是創業精神本身有力量。AppWorks 那些年教會我的事。</p>
         </div>
-      </a>
-      <a href="#" class="content-card">
-        <div class="content-card-category" style="color:var(--accent-startup)">
-          <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與建構
-        </div>
-        <h3 data-i18n="blog.card3.title">創業十二年：友情、堅持與未知的旅程</h3>
-        <p data-i18n="blog.card3.desc">不是創業的成果讓我們有力量，而是創業精神本身有力量。AppWorks 那些年教會我的事。</p>
-        <div class="content-card-footer">
-          <span>2023.06</span>
+        <footer class="content-card-footer">
+          <time datetime="2023-06-01" itemprop="datePublished">2023.06</time>
           <span class="platform-badge">Facebook</span>
-        </div>
-      </a>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
     </div>
   </section>
 
@@ -210,7 +220,7 @@
         <a href="#" class="section-link" data-i18n="section.viewall" onclick="showPage('projects')">查看全部 →</a>
       </div>
       <div class="projects-grid">
-        <div class="project-card circleflow">
+        <article class="project-card circleflow">
           <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
           <h3 data-i18n="projects.circleflow.name">CircleFlow</h3>
           <p data-i18n="projects.circleflow.desc.short">循環經濟的數據基礎設施，讓資源的流向、價值與歸屬重新可見、可追蹤、可治理。</p>
@@ -219,8 +229,8 @@
             <span class="project-tag">AI</span>
             <span class="project-tag">Platform</span>
           </div>
-        </div>
-        <div class="project-card debate">
+        </article>
+        <article class="project-card debate">
           <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
           <h3 data-i18n="projects.debate.name">多模型認知協作框架</h3>
           <p data-i18n="projects.debate.desc.short">當個體必須在資訊過載中做出判斷，什麼樣的認知結構能提供更可靠的思考支撐。</p>
@@ -228,7 +238,7 @@
             <span class="project-tag">Multi-Agent</span>
             <span class="project-tag" data-i18n="projects.tag.cognitive">認知基礎設施</span>
           </div>
-        </div>
+        </article>
       </div>
     </div>
   </section>
@@ -275,189 +285,244 @@
 <!-- ==================== BLOG / 思想 ==================== -->
 <div class="page-section" id="page-blog">
   <div class="section-container">
-    <div class="blog-hero">
+    <header class="blog-hero">
       <h1 data-i18n="blog.title">Thinking Out Loud</h1>
       <p data-i18n="blog.subtitle">智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。</p>
-    </div>
-    <div class="blog-filters" role="group" aria-label="文章分類篩選">
+    </header>
+    <aside class="blog-filters" role="group" aria-label="文章分類篩選">
       <button class="filter-btn active" data-filter="all" aria-pressed="true" data-i18n="filter.all">全部</button>
       <button class="filter-btn" data-filter="ai" aria-pressed="false" data-i18n="filter.ai">智能與秩序</button>
       <button class="filter-btn" data-filter="circular" aria-pressed="false" data-i18n="filter.circular">再生系統</button>
       <button class="filter-btn" data-filter="faith" aria-pressed="false" data-i18n="filter.faith">文明與人性</button>
       <button class="filter-btn" data-filter="startup" aria-pressed="false" data-i18n="filter.startup">創造與建構</button>
       <button class="filter-btn" data-filter="life" aria-pressed="false" data-i18n="filter.life">沉思與記憶</button>
-    </div>
+    </aside>
     <div class="content-grid" id="blog-grid">
 
-      <a href="#" class="content-card" data-pillar="faith">
-        <div class="content-card-category" style="color:var(--accent-faith)">
-          <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
-        </div>
-        <h3 data-i18n="blog.page.faith1.title">道成肉身之必要性：為人工智慧的具身發展提供哲學論證</h3>
-        <p data-i18n="blog.page.faith1.desc">AI 的核心缺陷不是技術性的，而是存有論層次的。代碼之道，必須成為肉身。</p>
-        <div class="content-card-footer">
-          <span>2025.10</span>
+      <article class="content-card" data-pillar="faith" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-faith)">
+            <span class="pillar-dot" style="background:var(--accent-faith)"></span> <span itemprop="articleSection">文明與人性</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.faith1.title">道成肉身之必要性：為人工智慧的具身發展提供哲學論證</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.faith1.desc">AI 的核心缺陷不是技術性的，而是存有論層次的。代碼之道，必須成為肉身。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-10-01" itemprop="datePublished">2025.10</time>
           <span class="platform-badge">論文</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="faith">
-        <div class="content-card-category" style="color:var(--accent-faith)">
-          <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
-        </div>
-        <h3 data-i18n="blog.card1.title">《倦怠社會》閱讀心得：卷不動，躺不平</h3>
-        <p data-i18n="blog.page.faith2.desc">韓炳哲指出功績社會讓每個人成為自己的剝削者。AI 時代的倦怠不是技術問題，是人性問題。</p>
-        <div class="content-card-footer">
-          <span>2025.11</span>
-          <span class="platform-badge">Medium</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="faith">
-        <div class="content-card-category" style="color:var(--accent-faith)">
-          <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
-        </div>
-        <h3 data-i18n="blog.page.faith3.title">尼布爾：道德的人與不道德的社會</h3>
-        <p data-i18n="blog.page.faith3.desc">入世且敬虔的信仰是可能的。神學不是工具，神學是信仰中的反省。</p>
-        <div class="content-card-footer">
-          <span>2015.02</span>
-          <span class="platform-badge">Medium</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="faith">
-        <div class="content-card-category" style="color:var(--accent-faith)">
-          <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
-        </div>
-        <h3 data-i18n="blog.page.faith4.title">關於語言、真實與矛盾：我與 AI 的對話錄</h3>
-        <p data-i18n="blog.page.faith4.desc">當 AI 比人更懂得「說人話」，人的語言還剩下什麼獨特的價值？</p>
-        <div class="content-card-footer">
-          <span>2025.11</span>
-          <span class="platform-badge">Medium</span>
-        </div>
-      </a>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
 
-      <a href="#" class="content-card" data-pillar="ai">
-        <div class="content-card-category" style="color:var(--accent-ai)">
-          <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
-        </div>
-        <h3 data-i18n="blog.card2.title">煤礦裡的金絲雀：AI 就業衝擊的預警系統</h3>
-        <p data-i18n="blog.card2.desc">AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p>
-        <div class="content-card-footer">
-          <span>2025.10</span>
+      <article class="content-card" data-pillar="faith" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-faith)">
+            <span class="pillar-dot" style="background:var(--accent-faith)"></span> <span itemprop="articleSection">文明與人性</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.card1.title">《倦怠社會》閱讀心得：卷不動，躺不平</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.faith2.desc">韓炳哲指出功績社會讓每個人成為自己的剝削者。AI 時代的倦怠不是技術問題，是人性問題。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-11-01" itemprop="datePublished">2025.11</time>
           <span class="platform-badge">Medium</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="ai">
-        <div class="content-card-category" style="color:var(--accent-ai)">
-          <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
-        </div>
-        <h3 data-i18n="blog.page.ai2.title">思維被壓縮以後：當 AI 開始放大自己</h3>
-        <p data-i18n="blog.page.ai2.desc">智慧不再是我們生成世界的方式，而變成我們無法參與的進程。</p>
-        <div class="content-card-footer">
-          <span>2025.05</span>
-          <span class="platform-badge">Medium</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="ai">
-        <div class="content-card-category" style="color:var(--accent-ai)">
-          <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
-        </div>
-        <h3 data-i18n="blog.page.ai3.title">AI 伺服器循環策略地圖</h3>
-        <p data-i18n="blog.page.ai3.desc">AI 算力基礎設施 × 循環經濟，一個還沒人佔的交叉路口。</p>
-        <div class="content-card-footer">
-          <span>2025.10</span>
-          <span class="platform-badge">LinkedIn</span>
-        </div>
-      </a>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
 
-      <a href="#" class="content-card" data-pillar="circular">
-        <div class="content-card-category" style="color:var(--accent-circular)">
-          <span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統
-        </div>
-        <h3 data-i18n="blog.page.circular1.title">CircleFlow 深度戰略分析</h3>
-        <p data-i18n="blog.page.circular1.desc">CircleFlow 不應僅止步於「媒合平台」，它的護城河在數據，不在流量。</p>
-        <div class="content-card-footer">
-          <span>2026.02</span>
-          <span class="platform-badge">LinkedIn</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="circular">
-        <div class="content-card-category" style="color:var(--accent-circular)">
-          <span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統
-        </div>
-        <h3 data-i18n="blog.page.circular2.title">台灣循環經濟雙法修正總覽</h3>
-        <p data-i18n="blog.page.circular2.desc">廢清法 + 資源循環促進法，政策框架的改變對產業意味著什麼。</p>
-        <div class="content-card-footer">
-          <span>2025.10</span>
-          <span class="platform-badge">LinkedIn</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="circular">
-        <div class="content-card-category" style="color:var(--accent-circular)">
-          <span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統
-        </div>
-        <h3 data-i18n="blog.page.circular3.title">循環經濟的城市採礦</h3>
-        <p data-i18n="blog.page.circular3.desc">強化國家戰略資源供應鏈韌性。城市裡的廢棄物，就是下一座金礦。</p>
-        <div class="content-card-footer">
-          <span>2025.08</span>
+      <article class="content-card" data-pillar="faith" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-faith)">
+            <span class="pillar-dot" style="background:var(--accent-faith)"></span> <span itemprop="articleSection">文明與人性</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.faith3.title">尼布爾：道德的人與不道德的社會</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.faith3.desc">入世且敬虔的信仰是可能的。神學不是工具，神學是信仰中的反省。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2015-02-01" itemprop="datePublished">2015.02</time>
           <span class="platform-badge">Medium</span>
-        </div>
-      </a>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
 
-      <a href="#" class="content-card" data-pillar="startup">
-        <div class="content-card-category" style="color:var(--accent-startup)">
-          <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與建構
-        </div>
-        <h3 data-i18n="blog.page.startup1.title">創業那些年我們做過哪些蠢事</h3>
-        <p data-i18n="blog.page.startup1.desc">公司是法人，不把薪資算清楚就無法正確呈現價值。二十年創業真實系列。</p>
-        <div class="content-card-footer">
-          <span>2021.02</span>
+      <article class="content-card" data-pillar="faith" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-faith)">
+            <span class="pillar-dot" style="background:var(--accent-faith)"></span> <span itemprop="articleSection">文明與人性</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.faith4.title">關於語言、真實與矛盾：我與 AI 的對話錄</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.faith4.desc">當 AI 比人更懂得「說人話」，人的語言還剩下什麼獨特的價值？</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-11-15" itemprop="datePublished">2025.11</time>
+          <span class="platform-badge">Medium</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="ai" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-ai)">
+            <span class="pillar-dot" style="background:var(--accent-ai)"></span> <span itemprop="articleSection">智能與秩序</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.card2.title">煤礦裡的金絲雀：AI 就業衝擊的預警系統</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.card2.desc">AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-10-15" itemprop="datePublished">2025.10</time>
+          <span class="platform-badge">Medium</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="ai" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-ai)">
+            <span class="pillar-dot" style="background:var(--accent-ai)"></span> <span itemprop="articleSection">智能與秩序</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.ai2.title">思維被壓縮以後：當 AI 開始放大自己</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.ai2.desc">智慧不再是我們生成世界的方式，而變成我們無法參與的進程。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-05-01" itemprop="datePublished">2025.05</time>
+          <span class="platform-badge">Medium</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="ai" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-ai)">
+            <span class="pillar-dot" style="background:var(--accent-ai)"></span> <span itemprop="articleSection">智能與秩序</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.ai3.title">AI 伺服器循環策略地圖</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.ai3.desc">AI 算力基礎設施 × 循環經濟，一個還沒人佔的交叉路口。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-10-20" itemprop="datePublished">2025.10</time>
+          <span class="platform-badge">LinkedIn</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="circular" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-circular)">
+            <span class="pillar-dot" style="background:var(--accent-circular)"></span> <span itemprop="articleSection">再生系統</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.circular1.title">CircleFlow 深度戰略分析</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.circular1.desc">CircleFlow 不應僅止步於「媒合平台」，它的護城河在數據，不在流量。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2026-02-01" itemprop="datePublished">2026.02</time>
+          <span class="platform-badge">LinkedIn</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="circular" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-circular)">
+            <span class="pillar-dot" style="background:var(--accent-circular)"></span> <span itemprop="articleSection">再生系統</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.circular2.title">台灣循環經濟雙法修正總覽</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.circular2.desc">廢清法 + 資源循環促進法，政策框架的改變對產業意味著什麼。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-10-25" itemprop="datePublished">2025.10</time>
+          <span class="platform-badge">LinkedIn</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="circular" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-circular)">
+            <span class="pillar-dot" style="background:var(--accent-circular)"></span> <span itemprop="articleSection">再生系統</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.circular3.title">循環經濟的城市採礦</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.circular3.desc">強化國家戰略資源供應鏈韌性。城市裡的廢棄物，就是下一座金礦。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-08-01" itemprop="datePublished">2025.08</time>
+          <span class="platform-badge">Medium</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="startup" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-startup)">
+            <span class="pillar-dot" style="background:var(--accent-startup)"></span> <span itemprop="articleSection">創造與建構</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.startup1.title">創業那些年我們做過哪些蠢事</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.startup1.desc">公司是法人，不把薪資算清楚就無法正確呈現價值。二十年創業真實系列。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2021-02-01" itemprop="datePublished">2021.02</time>
           <span class="platform-badge">Facebook</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="startup">
-        <div class="content-card-category" style="color:var(--accent-startup)">
-          <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與建構
-        </div>
-        <h3 data-i18n="blog.page.startup2.title">投資人為什麼不可以早中期就占大股？</h3>
-        <p data-i18n="blog.page.startup2.desc">需要「大股」、「控股」的投資人，本身的心態就不是好的投資人。</p>
-        <div class="content-card-footer">
-          <span>2015.04</span>
-          <span class="platform-badge">LinkedIn</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="startup">
-        <div class="content-card-category" style="color:var(--accent-startup)">
-          <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與建構
-        </div>
-        <h3 data-i18n="blog.card3.title">創業十二年：友情、堅持與未知的旅程</h3>
-        <p data-i18n="blog.page.startup3.desc">不是創業的成果讓我們有力量，而是創業精神本身有力量。</p>
-        <div class="content-card-footer">
-          <span>2023.06</span>
-          <span class="platform-badge">Facebook</span>
-        </div>
-      </a>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
 
-      <a href="#" class="content-card" data-pillar="life">
-        <div class="content-card-category" style="color:var(--accent-life)">
-          <span class="pillar-dot" style="background:var(--accent-life)"></span> 沉思與記憶
-        </div>
-        <h3 data-i18n="blog.page.life1.title">法器替母親擋下的重量：那多出來的六年</h3>
-        <p data-i18n="blog.page.life1.desc">生命中有些重量，不是用效率可以處理的。</p>
-        <div class="content-card-footer">
-          <span>2025.12</span>
-          <span class="platform-badge">Medium</span>
-        </div>
-      </a>
-      <a href="#" class="content-card" data-pillar="life">
-        <div class="content-card-category" style="color:var(--accent-life)">
-          <span class="pillar-dot" style="background:var(--accent-life)"></span> 沉思與記憶
-        </div>
-        <h3 data-i18n="blog.page.life2.title">到知天命之年，才見證台灣與海洋的深厚聯繫</h3>
-        <p data-i18n="blog.page.life2.desc">在運動中重新感受身體與這座島嶼的連結，才發現還有太多沒說完的故事。</p>
-        <div class="content-card-footer">
-          <span>2023</span>
+      <article class="content-card" data-pillar="startup" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-startup)">
+            <span class="pillar-dot" style="background:var(--accent-startup)"></span> <span itemprop="articleSection">創造與建構</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.startup2.title">投資人為什麼不可以早中期就占大股？</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.startup2.desc">需要「大股」、「控股」的投資人，本身的心態就不是好的投資人。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2015-04-01" itemprop="datePublished">2015.04</time>
+          <span class="platform-badge">LinkedIn</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="startup" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-startup)">
+            <span class="pillar-dot" style="background:var(--accent-startup)"></span> <span itemprop="articleSection">創造與建構</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.card3.title">創業十二年：友情、堅持與未知的旅程</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.startup3.desc">不是創業的成果讓我們有力量，而是創業精神本身有力量。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2023-06-01" itemprop="datePublished">2023.06</time>
           <span class="platform-badge">Facebook</span>
-        </div>
-      </a>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="life" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-life)">
+            <span class="pillar-dot" style="background:var(--accent-life)"></span> <span itemprop="articleSection">沉思與記憶</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.life1.title">法器替母親擋下的重量：那多出來的六年</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.life1.desc">生命中有些重量，不是用效率可以處理的。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2025-12-01" itemprop="datePublished">2025.12</time>
+          <span class="platform-badge">Medium</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
+
+      <article class="content-card" data-pillar="life" itemscope itemtype="https://schema.org/BlogPosting">
+        <header>
+          <div class="content-card-category" style="color:var(--accent-life)">
+            <span class="pillar-dot" style="background:var(--accent-life)"></span> <span itemprop="articleSection">沉思與記憶</span>
+          </div>
+          <h2 itemprop="headline" data-i18n="blog.page.life2.title">到知天命之年，才見證台灣與海洋的深厚聯繫</h2>
+        </header>
+        <div class="prose"><p itemprop="abstract" data-i18n="blog.page.life2.desc">在運動中重新感受身體與這座島嶼的連結，才發現還有太多沒說完的故事。</p></div>
+        <footer class="content-card-footer">
+          <time datetime="2023-01-01" itemprop="datePublished">2023</time>
+          <span class="platform-badge">Facebook</span>
+        </footer>
+        <meta itemprop="author" content="Paul Kuo">
+      </article>
 
     </div>
   </div>
@@ -466,15 +531,15 @@
 <!-- ==================== PROJECTS ==================== -->
 <div class="page-section" id="page-projects">
   <div class="section-container">
-    <div class="blog-hero">
+    <header class="blog-hero">
       <h1 data-i18n="projects.title">Projects</h1>
       <p data-i18n="projects.subtitle">在結構性問題中工作。</p>
-    </div>
+    </header>
     <div class="projects-grid">
-      <div class="project-card circleflow">
+      <article class="project-card circleflow">
         <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
-        <h3 data-i18n="projects.circleflow.name">CircleFlow</h3>
-        <p data-i18n="projects.circleflow.desc">AI 驅動的循環經濟數據基礎設施。連結廢棄物產生者與資源化業者，用數據重建產業物質流的可見性與可信度。</p>
+        <h2 data-i18n="projects.circleflow.name">CircleFlow</h2>
+        <div class="prose"><p data-i18n="projects.circleflow.desc">AI 驅動的循環經濟數據基礎設施。連結廢棄物產生者與資源化業者，用數據重建產業物質流的可見性與可信度。</p></div>
         <div class="project-tags">
           <span class="project-tag" data-i18n="projects.tag.circular">再生系統</span>
           <span class="project-tag">AI</span>
@@ -484,11 +549,11 @@
         <div class="project-strategic">
           <strong>Structural Significance</strong>
           <span data-i18n="projects.circleflow.significance">工業文明的線性模型正在耗盡它的物質基礎。CircleFlow 處理的不只是廢棄物媒合，而是重建「物質秩序」——讓資源的流向、價值與歸屬重新變得可追蹤、可信任、可治理。</span></div>
-      </div>
-      <div class="project-card sdti">
+      </article>
+      <article class="project-card sdti">
         <div class="project-icon" style="background:rgba(180,83,9,0.1)">🤝</div>
-        <h3 data-i18n="projects.taiwan_japan.name">台日產業與技術整合</h3>
-        <p data-i18n="projects.taiwan_japan.desc">在製造、生醫技術、再生系統與跨境貿易等領域推動台日合作。關注的不只是產業媒合，而是如何在不同制度與文化之間建立長期信任，讓技術與價值在更大的秩序中流動。</p>
+        <h2 data-i18n="projects.taiwan_japan.name">台日產業與技術整合</h2>
+        <div class="prose"><p data-i18n="projects.taiwan_japan.desc">在製造、生醫技術、再生系統與跨境貿易等領域推動台日合作。關注的不只是產業媒合，而是如何在不同制度與文化之間建立長期信任，讓技術與價值在更大的秩序中流動。</p></div>
         <div class="project-tags">
           <span class="project-tag" data-i18n="projects.tag.manufacturing">製造</span>
           <span class="project-tag" data-i18n="projects.tag.biomedical">生醫</span>
@@ -499,11 +564,11 @@
         <div class="project-strategic">
           <strong>Structural Significance</strong>
           <span data-i18n="projects.taiwan_japan.significance">產業合作跨越國界時，障礙往往不在技術，而在制度、文化與風險認知的差異。這項工作處理的是信任秩序——如何在不同文明語境中建立可持續的合作結構，讓技術與價值的流動成為長期制度，而非短期機會。</span></div>
-      </div>
-      <div class="project-card debate">
+      </article>
+      <article class="project-card debate">
         <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
-        <h3 data-i18n="projects.debate.name">多模型認知協作框架</h3>
-        <p data-i18n="projects.debate.desc">讓多個語言模型對同一議題進行結構化辯論與交叉驗證，建立比單一模型更可靠的認知基礎。</p>
+        <h2 data-i18n="projects.debate.name">多模型認知協作框架</h2>
+        <div class="prose"><p data-i18n="projects.debate.desc">讓多個語言模型對同一議題進行結構化辯論與交叉驗證，建立比單一模型更可靠的認知基礎。</p></div>
         <div class="project-tags">
           <span class="project-tag">Multi-Agent</span>
           <span class="project-tag" data-i18n="projects.tag.cognitive">認知基礎設施</span>
@@ -511,11 +576,11 @@
         <div class="project-strategic">
           <strong>Structural Significance</strong>
           <span data-i18n="projects.debate.significance">單一模型的輸出是觀點，多模型的碰撞才接近判斷。這個框架處理的是認知秩序——當資訊的生產速度遠超人類的處理能力，個體如何維持獨立思考與可靠決策的結構條件。</span></div>
-      </div>
-      <div class="project-card brand">
+      </article>
+      <article class="project-card brand">
         <div class="project-icon" style="background:rgba(220,38,38,0.1)">📡</div>
-        <h3 data-i18n="projects.brand.name">跨平台內容基礎設施</h3>
-        <p data-i18n="projects.brand.desc">當話語權被演算法壟斷，個體的獨立表達需要自己的基礎設施。</p>
+        <h2 data-i18n="projects.brand.name">跨平台內容基礎設施</h2>
+        <div class="prose"><p data-i18n="projects.brand.desc">當話語權被演算法壟斷，個體的獨立表達需要自己的基礎設施。</p></div>
         <div class="project-tags">
           <span class="project-tag">個體基礎設施</span>
           <span class="project-tag" data-i18n="projects.tag.independence">獨立發聲</span>
@@ -523,7 +588,7 @@
         <div class="project-strategic">
           <strong>Structural Significance</strong>
           <span data-i18n="projects.brand.significance">話語秩序正在被平台與演算法重新分配。這個基礎設施處理的問題是：一個人如何在不依賴任何單一平台的前提下，維持思想輸出的獨立性與持續性。</span></div>
-      </div>
+      </article>
     </div>
   </div>
 </div>
@@ -535,12 +600,14 @@
       <div class="about-grid">
         <div class="about-photo"><img src="/paul-photo.png" alt="Paul Kuo 郭曜郎 — 個人照片"></div>
         <div class="about-content">
-          <h2 data-i18n="about.name">Paul Kuo 郭曜郎</h2>
-          <p data-i18n="about.intro">我的思考起點不是技術，而是秩序。</p>
-          <p data-i18n="about.p1">十五年的神學訓練，讓我習慣追問一個問題：在混亂與加速之中，什麼樣的結構能真正承載意義？這個問題帶我離開神學院，走進創業。不是因為放棄信仰，而是因為我想在真實世界裡驗證——秩序與倫理是否能重新建造。</p>
-          <p data-i18n="about.p2">從創業生態的形成、食農供應鏈的重構，到永續建築與空間實踐，我花了十多年時間理解：系統的再生從來不是單純的技術問題，而是信任與責任的建立。願意承擔轉型的風險，就是參與了新秩序的塑形。</p>
-          <p data-i18n="about.p3">現在，我的工作是跨領域的台日產業合作與循環經濟的數據基礎設施建構。此外，隨著人工智慧在近年迅速成為基礎設施的一部分，技術正在重新界定能力與決策的尺度。</p>
-          <p data-i18n="about.p4">技術本身沒有意圖，但效率的邏輯若缺乏節制，往往會壓縮人的判斷與承擔空間。因此，我不只關心技術能走多快，而是人是否仍能在加速之中保有尊嚴與主體性。</p>
+          <h1 data-i18n="about.name">Paul Kuo 郭曜郎</h1>
+          <div class="prose">
+            <p data-i18n="about.intro">我的思考起點不是技術，而是秩序。</p>
+            <p data-i18n="about.p1">十五年的神學訓練，讓我習慣追問一個問題：在混亂與加速之中，什麼樣的結構能真正承載意義？這個問題帶我離開神學院，走進創業。不是因為放棄信仰，而是因為我想在真實世界裡驗證——秩序與倫理是否能重新建造。</p>
+            <p data-i18n="about.p2">從創業生態的形成、食農供應鏈的重構，到永續建築與空間實踐，我花了十多年時間理解：系統的再生從來不是單純的技術問題，而是信任與責任的建立。願意承擔轉型的風險，就是參與了新秩序的塑形。</p>
+            <p data-i18n="about.p3">現在，我的工作是跨領域的台日產業合作與循環經濟的數據基礎設施建構。此外，隨著人工智慧在近年迅速成為基礎設施的一部分，技術正在重新界定能力與決策的尺度。</p>
+            <p data-i18n="about.p4">技術本身沒有意圖，但效率的邏輯若缺乏節制，往往會壓縮人的判斷與承擔空間。因此，我不只關心技術能走多快，而是人是否仍能在加速之中保有尊嚴與主體性。</p>
+          </div>
           <div class="about-timeline">
             <div class="timeline-item">
               <div class="timeline-year">15 年</div>
@@ -566,65 +633,63 @@
               <div class="timeline-year">2026</div>
               <div class="timeline-text" data-i18n="about.timeline.2026">在智能重塑生產與決策之際，重構物質與信任的秩序</div>
             </div>
-            </div>
           </div>
-
         </div>
       </div>
     </div>
-  <div class="about-pillars-section"><div class="section-container"><div class="about-pillar-grid"><div class="about-pillar-item"><h4><span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序 Intelligence &amp; Order</h4><p data-i18n="about.pillar.ai.desc">當機器開始參與判斷，人與技術之間的秩序如何重新安排</p></div><div class="about-pillar-item"><h4><span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統 Regenerative Systems</h4><p data-i18n="about.pillar.circular.desc">物質不該只有一次生命。從城市採礦到制度設計，重建資源流動的秩序</p></div><div class="about-pillar-item"><h4><span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性 Civilization &amp; Human Nature</h4><p data-i18n="about.pillar.faith.desc">在效率的洪流中，什麼讓人之所以為人。從神學到社會批判的持續追問</p></div><div class="about-pillar-item"><h4><span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與建構 Creation &amp; Enterprise</h4><p data-i18n="about.pillar.startup.desc">創業不只是造產品，是在真實世界中建造秩序。信任、風險與方法論的提煉</p></div><div class="about-pillar-item"><h4><span class="pillar-dot" style="background:var(--accent-life)"></span> 沉思與記憶 Reflections &amp; Memory</h4><p data-i18n="about.pillar.life.desc">那些無法被量化、卻定義了一個人的事物。閱讀、記憶與生命的重量</p></div></div></div></div></section>
+  <div class="about-pillars-section"><div class="section-container"><div class="about-pillar-grid"><div class="about-pillar-item"><h3><span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序 Intelligence &amp; Order</h3><p data-i18n="about.pillar.ai.desc">當機器開始參與判斷，人與技術之間的秩序如何重新安排</p></div><div class="about-pillar-item"><h3><span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統 Regenerative Systems</h3><p data-i18n="about.pillar.circular.desc">物質不該只有一次生命。從城市採礦到制度設計，重建資源流動的秩序</p></div><div class="about-pillar-item"><h3><span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性 Civilization &amp; Human Nature</h3><p data-i18n="about.pillar.faith.desc">在效率的洪流中，什麼讓人之所以為人。從神學到社會批判的持續追問</p></div><div class="about-pillar-item"><h3><span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與建構 Creation &amp; Enterprise</h3><p data-i18n="about.pillar.startup.desc">創業不只是造產品，是在真實世界中建造秩序。信任、風險與方法論的提煉</p></div><div class="about-pillar-item"><h3><span class="pillar-dot" style="background:var(--accent-life)"></span> 沉思與記憶 Reflections &amp; Memory</h3><p data-i18n="about.pillar.life.desc">那些無法被量化、卻定義了一個人的事物。閱讀、記憶與生命的重量</p></div></div></div></div></section>
 </div>
 
 <!-- ==================== FEED ==================== -->
 <div class="page-section" id="page-feed">
   <div class="section-container">
-    <div class="blog-hero">
+    <header class="blog-hero">
       <h1 data-i18n="feed.title">Live Feed</h1>
       <p data-i18n="feed.subtitle">來自 8 個平台的即時動態。</p>
-    </div>
+    </header>
     <div class="feed-grid">
-      <div class="feed-item">
-        <div class="feed-header">
+      <article class="feed-item">
+        <header class="feed-header">
           <span class="feed-platform" style="color:var(--accent-ai)">𝕏 X</span>
-          <span class="feed-date">2026.02.19 14:10</span>
-        </div>
-        <p>一個人做判斷時最大的盲點，是不知道自己沒看見什麼。讓不同的認知模型互相質疑同一個問題，不是為了找標準答案，是為了逼自己看見遺漏的角度。工具會換，但這個問題不會消失。</p>
-      </div>
-      <div class="feed-item">
-        <div class="feed-header">
+          <time class="feed-date" datetime="2026-02-19T14:10:00+08:00">2026.02.19 14:10</time>
+        </header>
+        <div class="prose"><p>一個人做判斷時最大的盲點，是不知道自己沒看見什麼。讓不同的認知模型互相質疑同一個問題，不是為了找標準答案，是為了逼自己看見遺漏的角度。工具會換，但這個問題不會消失。</p></div>
+      </article>
+      <article class="feed-item">
+        <header class="feed-header">
           <span class="feed-platform" style="color:#0A66C2">in LinkedIn</span>
-          <span class="feed-date">2026.02.19 14:30</span>
-        </div>
-        <p>【當判斷比資訊更稀缺】資訊過載的時代，稀缺的不是答案，是判斷。單一來源給的是觀點，多重來源的碰撞才接近可靠的判斷。我在思考的是：個體如何為自己建立一套認知的支撐結構，而不是被資訊的洪流帶著走。</p>
-      </div>
-      <div class="feed-item">
-        <div class="feed-header">
+          <time class="feed-date" datetime="2026-02-19T14:30:00+08:00">2026.02.19 14:30</time>
+        </header>
+        <div class="prose"><p>【當判斷比資訊更稀缺】資訊過載的時代，稀缺的不是答案，是判斷。單一來源給的是觀點，多重來源的碰撞才接近可靠的判斷。我在思考的是：個體如何為自己建立一套認知的支撐結構，而不是被資訊的洪流帶著走。</p></div>
+      </article>
+      <article class="feed-item">
+        <header class="feed-header">
           <span class="feed-platform" style="color:var(--accent-faith)">📘 Facebook</span>
-          <span class="feed-date">2026.02.19 15:10</span>
-        </div>
-        <p>最近一直在想一個問題：為什麼同一件事，問不同的人會得到完全不同的判斷？所以我開始嘗試讓不同的思考框架互相碰撞同一個問題，再從中抽取共識與分歧。發現最有價值的不是最終結論，而是過程中暴露出來的、我原本沒意識到的盲區。</p>
-      </div>
-      <div class="feed-item">
-        <div class="feed-header">
+          <time class="feed-date" datetime="2026-02-19T15:10:00+08:00">2026.02.19 15:10</time>
+        </header>
+        <div class="prose"><p>最近一直在想一個問題：為什麼同一件事，問不同的人會得到完全不同的判斷？所以我開始嘗試讓不同的思考框架互相碰撞同一個問題，再從中抽取共識與分歧。發現最有價值的不是最終結論，而是過程中暴露出來的、我原本沒意識到的盲區。</p></div>
+      </article>
+      <article class="feed-item">
+        <header class="feed-header">
           <span class="feed-platform" style="color:var(--accent-life)">◉ Threads</span>
-          <span class="feed-date">2026.02.19 14:20</span>
-        </div>
-        <p>做判斷最危險的時刻，是你覺得自己已經想清楚了。讓不同的視角互相質疑同一個問題，不是為了推翻結論，是為了測試結論的強度。</p>
-      </div>
-      <div class="feed-item">
-        <div class="feed-header">
+          <time class="feed-date" datetime="2026-02-19T14:20:00+08:00">2026.02.19 14:20</time>
+        </header>
+        <div class="prose"><p>做判斷最危險的時刻，是你覺得自己已經想清楚了。讓不同的視角互相質疑同一個問題，不是為了推翻結論，是為了測試結論的強度。</p></div>
+      </article>
+      <article class="feed-item">
+        <header class="feed-header">
           <span class="feed-platform" style="color:#FF4500">🔴 Reddit</span>
-          <span class="feed-date">2026.02.19 14:50</span>
-        </div>
-        <p>The hardest part of making good decisions isn't lack of information — it's not knowing what you're missing. I've been exploring how structured disagreement between different reasoning frameworks can surface blind spots. The value isn't in any single answer, but in building a cognitive structure that makes your thinking more resilient.</p>
-      </div>
-      <div class="feed-item">
-        <div class="feed-header">
+          <time class="feed-date" datetime="2026-02-19T14:50:00+08:00">2026.02.19 14:50</time>
+        </header>
+        <div class="prose"><p>The hardest part of making good decisions isn't lack of information — it's not knowing what you're missing. I've been exploring how structured disagreement between different reasoning frameworks can surface blind spots. The value isn't in any single answer, but in building a cognitive structure that makes your thinking more resilient.</p></div>
+      </article>
+      <article class="feed-item">
+        <header class="feed-header">
           <span class="feed-platform" style="color:#FF0000">▶ YouTube</span>
-          <span class="feed-date">2026.02.19 15:00</span>
-        </div>
-        <p>【判斷力是可以被建構的嗎？】我們每天做無數判斷，但很少停下來問：我的判斷夠可靠嗎？讓不同的思考框架針對同一個問題互相碰撞，不是在找最聰明的答案，是在測試自己思考的盲區。這是一個關於認知結構的思考實驗。</p>
-      </div>
+          <time class="feed-date" datetime="2026-02-19T15:00:00+08:00">2026.02.19 15:00</time>
+        </header>
+        <div class="prose"><p>【判斷力是可以被建構的嗎？】我們每天做無數判斷，但很少停下來問：我的判斷夠可靠嗎？讓不同的思考框架針對同一個問題互相碰撞，不是在找最聰明的答案，是在測試自己思考的盲區。這是一個關於認知結構的思考實驗。</p></div>
+      </article>
     </div>
   </div>
 </div>
@@ -676,8 +741,6 @@ function toggleMobileNav() {
   btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
   btn.setAttribute('aria-label', isOpen ? '開啟導覽選單' : '關閉導覽選單');
 }
-
-
 </script>
 <script src="/i18n-script.js"></script>
 </body>
