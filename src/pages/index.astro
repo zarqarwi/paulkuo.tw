@@ -1,81 +1,55 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { PILLAR_MAP, SITE } from '../config';
+import { articles, PILLAR_COLORS } from '../data/articles';
 
-const allArticles = (await getCollection('articles', ({ id, data }) => !data.draft && data.featured && !id.includes('/')))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 3);
-
-const articles = allArticles.length > 0 
-  ? allArticles 
-  : (await getCollection('articles', ({ id, data }) => !data.draft && !id.includes('/')))
-      .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-      .slice(0, 3);
-
-const personSchema = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "name": SITE.author,
-  "alternateName": SITE.authorAlt,
-  "url": SITE.url,
-  "description": SITE.description,
-  "sameAs": [
-    "https://www.linkedin.com/in/kuoyaolang",
-    "https://x.com/zarqarwi",
-    "https://www.threads.net/@zarqarwi",
-    "https://www.youtube.com/@kuopaul8265",
-    "https://www.facebook.com/guo.yao.lang.2025",
-    "https://www.instagram.com/zarqarwi",
-    "https://bsky.app/profile/paulkuo.bsky.social",
-    "https://www.reddit.com/user/Constant-Variety1656"
-  ],
-  "jobTitle": "Business Development",
-  "knowsAbout": ["Circular Economy", "AI", "Semiconductor", "Theology", "Startup"]
-});
+const featured = articles.slice().sort((a, b) =>
+  new Date(b.date).getTime() - new Date(a.date).getTime()
+).slice(0, 3);
 ---
-<BaseLayout title={SITE.title} schemaJson={personSchema}>
+
+<BaseLayout activePage="home">
+
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" aria-label="主要介紹">
     <div class="hero-inner">
       <div class="hero-text">
         <h1 class="animate-in">Rebuilding <em>Order</em><br>in an Age of<br>Intelligence</h1>
-        <p class="hero-tagline animate-in delay-1">從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？</p>
-        <p class="hero-tagline animate-in delay-2" style="margin-top:-20px;">技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。</p>
+        <p class="hero-tagline animate-in delay-1" data-i18n="hero.tagline1">從神學訓練到循環經濟，從創業現場到人工智慧——二十年來，我始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？</p>
+        <p class="hero-tagline animate-in delay-2" style="margin-top:-20px;" data-i18n="hero.tagline2">技術是手段，不是目的。再生是方法，不是口號。真正的問題永遠是：在系統重組的過程中，人的判斷力、創造力與尊嚴，如何不被效率的邏輯吞噬。</p>
         <div class="hero-pillars animate-in delay-3">
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-ai)" aria-hidden="true"></span><span>智能與秩序</span></span>
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-circular)" aria-hidden="true"></span><span>再生系統</span></span>
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-faith)" aria-hidden="true"></span><span>文明與人性</span></span>
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-startup)" aria-hidden="true"></span><span>創造與建構</span></span>
-          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-life)" aria-hidden="true"></span><span>沉思與記憶</span></span>
+          <a href="/blog/?filter=ai" class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-ai)"></span><span data-i18n="hero.pillar.ai">智能與秩序</span></a>
+          <a href="/blog/?filter=circular" class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-circular)"></span><span data-i18n="hero.pillar.circular">循環再利用</span></a>
+          <a href="/blog/?filter=faith" class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-faith)"></span><span data-i18n="hero.pillar.faith">文明與人性</span></a>
+          <a href="/blog/?filter=startup" class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-startup)"></span><span data-i18n="hero.pillar.startup">創造與建構</span></a>
+          <a href="/blog/?filter=life" class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-life)"></span><span data-i18n="hero.pillar.life">沉思與記憶</span></a>
         </div>
         <div class="hero-actions animate-in delay-4">
-          <a href="/blog" class="btn-primary">閱讀思想</a>
-          <a href="/about" class="btn-secondary">認識 Paul</a>
+          <a href="/blog/" class="btn-primary" data-i18n="hero.cta.read">閱讀思想</a>
+          <a href="/about/" class="btn-secondary" data-i18n="hero.cta.about">認識 Paul</a>
         </div>
       </div>
-      <div class="hero-visual animate-in delay-2">
+      <div class="hero-visual animate-in delay-2" aria-hidden="true">
         <div class="hero-card-stack">
           <div class="hero-card">
             <div class="hero-card-label" style="color:var(--accent-faith)">
-              <span class="pillar-dot" style="background:var(--accent-faith)" aria-hidden="true"></span> 文明與人性
+              <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
             </div>
-            <p>代碼之道，必須成為肉身。AI 若要達成真正的智能，其發展就必須植根於物理世界。</p>
-            <div class="hero-card-meta">2025.10 · 論文</div>
+            <p data-i18n="hero.card1.text">代碼之道，必須成為肉身。AI 若要達成真正的智能，其發展就必須植根於物理世界。</p>
+            <div class="hero-card-meta" data-i18n="hero.card1.meta">2025.10 · 論文</div>
           </div>
           <div class="hero-card">
             <div class="hero-card-label" style="color:var(--accent-circular)">
-              <span class="pillar-dot" style="background:var(--accent-circular)" aria-hidden="true"></span> 再生系統
+              <span class="pillar-dot" style="background:var(--accent-circular)"></span> 循環再利用
             </div>
-            <p>城市不是資源的終點，而是下一輪循環的起點。都市採礦正在改寫我們對「廢棄」的定義。</p>
-            <div class="hero-card-meta">2025.12 · Medium</div>
+            <p data-i18n="hero.card2.text">城市不是資源的終點，而是下一輪循環的起點。都市採礦正在改寫我們對「廢棄」的定義。</p>
+            <div class="hero-card-meta" data-i18n="hero.card2.meta">2025.12 · Medium</div>
           </div>
           <div class="hero-card">
             <div class="hero-card-label" style="color:var(--accent-ai)">
-              <span class="pillar-dot" style="background:var(--accent-ai)" aria-hidden="true"></span> 智能與秩序
+              <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
             </div>
-            <p>當 AI 開始壓縮人類的思考過程，我們面臨的不是效率問題，是認知結構的重組。</p>
-            <div class="hero-card-meta">2025.11 · Medium</div>
+            <p data-i18n="hero.card3.text">當 AI 開始壓縮人類的思考過程，我們面臨的不是效率問題，是認知結構的重組。</p>
+            <div class="hero-card-meta" data-i18n="hero.card3.meta">2025.11 · Medium</div>
           </div>
         </div>
       </div>
@@ -83,94 +57,72 @@ const personSchema = JSON.stringify({
   </section>
 
   <!-- MANIFESTO -->
-  <section class="manifesto">
+  <section class="manifesto" aria-label="哲學宣言">
     <div class="manifesto-inner">
-      <div class="manifesto-kicker">Philosophy · 哲學宣言</div>
-      <p class="manifesto-quote">"Rebuilding <em>Order</em> in an Age of Intelligence"<br>— 道成肉身</p>
-      <p class="manifesto-body">基督教神學的道（Logos, 基督）必須成為肉身（Sarx,耶穌），才能真正與世界相遇。秩序也是如此——停留在概念中的秩序只是論述，唯有進入真實的產業、制度與人際關係，秩序才能被重建。技術必須落地、智能必須入世、創業要能解決人類的痛苦與慕望。無關技術樂觀主義，而是一個神學訓練出身的創業者，對「道成肉身」最務實的理解——讓秩序在混亂中重新站立，讓人的尊嚴在效率的洪流中被守住。</p>
-      <a href="/blog" class="manifesto-cta">閱讀完整論述 →</a>
+      <div class="manifesto-kicker" data-i18n="manifesto.kicker">Philosophy · 哲學宣言</div>
+      <p class="manifesto-quote" data-i18n="manifesto.quote">"Rebuilding <em>Order</em> in an Age of Intelligence"<br>— 道成肉身</p>
+      <div class="prose">
+        <p class="manifesto-body" data-i18n="manifesto.body">基督教神學的道（Logos, 基督）必須成為肉身（Sarx,耶穌），才能真正與世界相遇。秩序也是如此——停留在概念中的秩序只是論述，唯有進入真實的產業、制度與人際關係，秩序才能被重建。技術必須落地、智能必須入世、創業要能解決人類的痛苦與慾望。無關技術樂觀主義，而是一個神學訓練出身的創業者，對「道成肉身」最務實的理解——讓秩序在混亂中重新站立，讓人的尊嚴在效率的洪流中被守住。</p>
+      </div>
+      <a href="/blog/" class="manifesto-cta" data-i18n="manifesto.cta">閱讀完整論述 →</a>
     </div>
   </section>
 
-  <!-- LATEST THINKING -->
-  <section class="section-container" aria-labelledby="latest-thinking-title">
+  <!-- FEATURED ARTICLES -->
+  <section class="section-container" aria-label="精選文章">
     <div class="section-header">
-      <h2 class="section-title" id="latest-thinking-title">Latest Thinking</h2>
-      <a href="/blog" class="section-link">查看全部 →</a>
+      <h2 class="section-title" data-i18n="section.latest">Latest Thinking</h2>
+      <a href="/blog/" class="section-link" data-i18n="section.viewall">查看全部 →</a>
     </div>
     <div class="content-grid">
-      {articles.length > 0 ? articles.map((article) => {
-        const p = PILLAR_MAP[article.data.pillar];
-        const isoDate = article.data.date.toISOString().split('T')[0];
-        const dateStr = article.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit' });
+      {featured.map(article => {
+        const color = PILLAR_COLORS[article.pillar];
         return (
-          <article class="content-card-wrapper">
-            <a href={`/articles/${article.id.replace(/\.md$/, "")}`} class="content-card">
-              <div class="content-card-category" style={`color:${p.color}`}>
-                <span class="pillar-dot" style={`background:${p.color}`} aria-hidden="true"></span> {p.label}
+          <article class="content-card" itemscope itemtype="https://schema.org/BlogPosting">
+            <a href={`/blog/${article.slug}/`} style="text-decoration:none;color:inherit;">
+              <header>
+                <div class="content-card-category" style={`color:${color}`}>
+                  <span class="pillar-dot" style={`background:${color}`}></span>
+                  <span itemprop="articleSection">{article.pillarLabel}</span>
+                </div>
+                <h3 itemprop="headline">{article.title}</h3>
+              </header>
+              <div class="prose">
+                <p itemprop="abstract">{article.description}</p>
               </div>
-              <h3>{article.data.title}</h3>
-              <p>{article.data.description}</p>
-              <div class="content-card-footer">
-                <time datetime={isoDate}>{dateStr}</time>
-                {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
-              </div>
+              <footer class="content-card-footer">
+                <time datetime={article.date} itemprop="datePublished">{new Date(article.date).toLocaleDateString('zh-TW', {year:'numeric',month:'2-digit'})}</time>
+                <span class="platform-badge">{article.platform}</span>
+              </footer>
             </a>
           </article>
         );
-      }) : (
-        <>
-          <article class="content-card" style="opacity:0.6; pointer-events:none;">
-            <div class="content-card-category" style="color:var(--accent-faith)">
-              <span class="pillar-dot" style="background:var(--accent-faith)" aria-hidden="true"></span> 文明與人性
-            </div>
-            <h3>道成肉身之必要性：為人工智慧的具身發展提供哲學論證</h3>
-            <p>AI 的核心缺陷不是技術性的，而是存有論層次的。代碼之道，必須成為肉身。</p>
-            <div class="content-card-footer"><time datetime="2025-10-01">2025.10</time><span class="platform-badge">論文</span></div>
-          </article>
-          <article class="content-card" style="opacity:0.6; pointer-events:none;">
-            <div class="content-card-category" style="color:var(--accent-ai)">
-              <span class="pillar-dot" style="background:var(--accent-ai)" aria-hidden="true"></span> 智能與秩序
-            </div>
-            <h3>煤礦裡的金絲雀：AI 就業衝擊的預警系統</h3>
-            <p>AI 不是未來才會搶工作，它已經在搶了。問題是我們有沒有看懂哪些訊號。</p>
-            <div class="content-card-footer"><time datetime="2025-10-01">2025.10</time><span class="platform-badge">Medium</span></div>
-          </article>
-          <article class="content-card" style="opacity:0.6; pointer-events:none;">
-            <div class="content-card-category" style="color:var(--accent-startup)">
-              <span class="pillar-dot" style="background:var(--accent-startup)" aria-hidden="true"></span> 創造與建構
-            </div>
-            <h3>創業十二年：友情、堅持與未知的旅程</h3>
-            <p>不是創業的成果讓我們有力量，而是創業精神本身有力量。</p>
-            <div class="content-card-footer"><time datetime="2023-06-01">2023.06</time><span class="platform-badge">Facebook</span></div>
-          </article>
-        </>
-      )}
+      })}
     </div>
   </section>
 
-  <!-- PROJECTS -->
-  <section style="background:var(--bg-section)" aria-labelledby="projects-title">
+  <!-- PROJECTS PREVIEW -->
+  <section style="background:var(--bg-section)" aria-label="專案預覽">
     <div class="section-container">
       <div class="section-header">
-        <h2 class="section-title" id="projects-title">Projects</h2>
-        <a href="/projects" class="section-link">查看全部 →</a>
+        <h2 class="section-title" data-i18n="projects.title">Projects</h2>
+        <a href="/projects/" class="section-link" data-i18n="section.viewall">查看全部 →</a>
       </div>
       <div class="projects-grid">
         <article class="project-card circleflow">
           <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
-          <h3>CircleFlow</h3>
-          <p>循環經濟的數據基礎設施，讓資源的流向、價值與歸屬重新可見、可追蹤、可治理。</p>
+          <h3 data-i18n="projects.circleflow.name">CircleFlow</h3>
+          <p data-i18n="projects.circleflow.desc.short">循環經濟的數據基礎設施，讓資源的流向、價值與歸屬重新可見、可追蹤、可治理。</p>
           <div class="project-tags">
-            <span class="project-tag">再生系統</span>
+            <span class="project-tag">循環再利用</span>
             <span class="project-tag">AI</span>
             <span class="project-tag">Platform</span>
           </div>
         </article>
         <article class="project-card debate">
           <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
-          <h3>多模型認知協作框架</h3>
-          <p>當個體必須在資訊過載中做出判斷，什麼樣的認知結構能提供更可靠的思考支撐。</p>
+          <h3 data-i18n="projects.debate.name">多模型認知協作框架</h3>
+          <p data-i18n="projects.debate.desc.short">當個體必須在資訊過載中做出判斷，什麼樣的認知結構能提供更可靠的思考支撐。</p>
           <div class="project-tags">
             <span class="project-tag">Multi-Agent</span>
             <span class="project-tag">認知基礎設施</span>
@@ -180,141 +132,43 @@ const personSchema = JSON.stringify({
     </div>
   </section>
 
-  <!-- LIVE FEED -->
-  <section class="section-container" aria-labelledby="feed-title">
-    <div class="section-header">
-      <h2 class="section-title" id="feed-title">Live Feed</h2>
-      <a href="/feed" class="section-link">查看全部 →</a>
-    </div>
-    <div class="feed-grid">
-      <article class="feed-item">
-        <div class="feed-header">
-          <span class="feed-platform" style="color:var(--accent-ai)">𝕏 X</span>
-          <time class="feed-date" datetime="2026-02-19T14:10:00+08:00">2026.02.19 14:10</time>
-        </div>
-        <p>一個人做判斷時最大的盲點，是不知道自己沒看見什麼。讓不同的認知模型互相質疑同一個問題，不是為了找標準答案，是為了逼自己看見遺漏的角度。工具會換，但這個問題不會消失。</p>
-      </article>
-      <article class="feed-item">
-        <div class="feed-header">
-          <span class="feed-platform" style="color:#0A66C2">in LinkedIn</span>
-          <time class="feed-date" datetime="2026-02-19T14:30:00+08:00">2026.02.19 14:30</time>
-        </div>
-        <p>【當判斷比資訊更稀缺】資訊過載的時代，稀缺的不是答案，是判斷。單一來源給的是觀點，多重來源的碰撞才接近可靠的判斷。我在思考的是：個體如何為自己建立一套認知的支撐結構，而不是被資訊的洪流帶著走。</p>
-      </article>
-      <article class="feed-item">
-        <div class="feed-header">
-          <span class="feed-platform" style="color:var(--accent-faith)">📘 Facebook</span>
-          <time class="feed-date" datetime="2026-02-19T15:10:00+08:00">2026.02.19 15:10</time>
-        </div>
-        <p>最近一直在想一個問題：為什麼同一件事，問不同的人會得到完全不同的判斷？所以我開始嘗試讓不同的思考框架互相碰撞同一個問題，再從中抽取共識與分歧。發現最有價值的不是最終結論，而是過程中暴露出來的、我原本沒意識到的盲區。</p>
-      </article>
-      <article class="feed-item">
-        <div class="feed-header">
-          <span class="feed-platform" style="color:var(--accent-life)">◉ Threads</span>
-          <time class="feed-date" datetime="2026-02-19T14:20:00+08:00">2026.02.19 14:20</time>
-        </div>
-        <p>做判斷最危險的時刻，是你覺得自己已經想清楚了。讓不同的視角互相質疑同一個問題，不是為了推翻結論，是為了測試結論的強度。</p>
-      </article>
-      <article class="feed-item">
-        <div class="feed-header">
-          <span class="feed-platform" style="color:#FF4500">🔴 Reddit</span>
-          <time class="feed-date" datetime="2026-02-19T14:50:00+08:00">2026.02.19 14:50</time>
-        </div>
-        <p>The hardest part of making good decisions isn’t lack of information — it’s not knowing what you’re missing. I’ve been exploring how structured disagreement between different reasoning frameworks can surface blind spots.</p>
-      </article>
-      <article class="feed-item">
-        <div class="feed-header">
-          <span class="feed-platform" style="color:#FF0000">▶ YouTube</span>
-          <time class="feed-date" datetime="2026-02-19T15:00:00+08:00">2026.02.19 15:00</time>
-        </div>
-        <p>【判斷力是可以被建構的嗎？】我們每天做無數判斷，但很少停下來問：我的判斷夠可靠嗎？讓不同的思考框架針對同一個問題互相碰撞，不是在找最聰明的答案，是在測試自己思考的盲區。</p>
-      </article>
-    </div>
-  </section>
-
   <!-- CONTACT -->
-  <section class="contact-section" id="contact" aria-labelledby="contact-title">
+  <section class="contact-section" id="contact" aria-label="聯絡方式">
     <div class="section-container">
       <div class="contact-grid">
         <div class="contact-text">
-          <h2 id="contact-title">Let's Build<br>Something Together</h2>
-          <p>無論你是在思考如何讓技術回到人性與秩序的實作場景、想深化循環再生服務與架構布局、或希望探索台日跨境合作的可能，<br>都歡迎來信一起對話、激盪或合作。</p>
+          <h2 data-i18n="contact.title">Let's Build<br>Something Together</h2>
+          <p data-i18n="contact.desc">無論你是在思考如何讓技術回到人性與秩序的實作場景、想深化循環再生服務與架構布局、或希望探索台日跨境合作的可能，<br>都歡迎來信一起對話、激盪或合作。</p>
           <div class="social-links">
-            <a href="https://x.com/zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="前往 Paul Kuo 的 X (Twitter)">𝕏 Twitter</a>
-            <a href="https://www.linkedin.com/in/kuoyaolang" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="前往 Paul Kuo 的 LinkedIn">in LinkedIn</a>
-            <a href="https://www.threads.net/@zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="前往 Paul Kuo 的 Threads">◉ Threads</a>
-            <a href="https://www.youtube.com/@kuopaul8265" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="前往 Paul Kuo 的 YouTube">▶ YouTube</a>
-            <a href="https://www.facebook.com/guo.yao.lang.2025" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="前往 Paul Kuo 的 Facebook">📘 Facebook</a>
-            <a href="https://www.instagram.com/zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="前往 Paul Kuo 的 Instagram">📷 Instagram</a>
-            <a href="https://bsky.app/profile/paulkuo.bsky.social" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="前往 Paul Kuo 的 Bluesky">🦋 Bluesky</a>
-            <a href="https://www.reddit.com/user/Constant-Variety1656" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="前往 Paul Kuo 的 Reddit">🔴 Reddit</a>
+            <a href="https://x.com/zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer">𝕏 Twitter</a>
+            <a href="https://www.linkedin.com/in/kuoyaolang" class="social-link" target="_blank" rel="noopener noreferrer">in LinkedIn</a>
+            <a href="https://www.threads.net/@zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer">◉ Threads</a>
+            <a href="https://www.youtube.com/@kuopaul8265" class="social-link" target="_blank" rel="noopener noreferrer">▶ YouTube</a>
+            <a href="https://www.facebook.com/guo.yao.lang.2025?locale=zh_TW" class="social-link" target="_blank" rel="noopener noreferrer">📘 Facebook</a>
+            <a href="https://www.instagram.com/zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer">📷 Instagram</a>
+            <a href="https://bsky.app/profile/paulkuo.bsky.social" class="social-link" target="_blank" rel="noopener noreferrer">🦋 Bluesky</a>
+            <a href="https://www.reddit.com/user/Constant-Variety1656" class="social-link" target="_blank" rel="noopener noreferrer">🔴 Reddit</a>
           </div>
         </div>
         <div class="contact-form">
-          <form id="contact-form" novalidate>
+          <form action="mailto:paul@lasaas.com" method="post" enctype="text/plain">
             <div class="form-group">
-              <label for="contact-name">姓名</label>
-              <input type="text" id="contact-name" name="name" placeholder="你的名字" required autocomplete="name">
+              <label for="contact-name" data-i18n="contact.form.name">姓名</label>
+              <input id="contact-name" type="text" name="name" placeholder="你的名字" required>
             </div>
             <div class="form-group">
-              <label for="contact-email">Email</label>
-              <input type="email" id="contact-email" name="email" placeholder="you@example.com" required autocomplete="email">
+              <label for="contact-email" data-i18n="contact.form.email">Email</label>
+              <input id="contact-email" type="email" name="email" placeholder="you@example.com" required>
             </div>
             <div class="form-group">
-              <label for="contact-message">訊息</label>
-              <textarea id="contact-message" name="message" placeholder="想聊什麼？" required></textarea>
+              <label for="contact-message" data-i18n="contact.form.message">訊息</label>
+              <textarea id="contact-message" name="message" placeholder="想聊什麼？"></textarea>
             </div>
-            <button type="submit" class="btn-submit" id="submit-btn">
-              <span class="btn-text">送出</span>
-              <span class="btn-spinner" aria-hidden="true"></span>
-            </button>
-            <div id="form-status" class="form-status" role="alert" aria-live="polite"></div>
+            <button type="submit" class="btn-submit" data-i18n="contact.form.submit">送出</button>
           </form>
         </div>
       </div>
     </div>
   </section>
-  <script>
-    const form = document.getElementById('contact-form') as HTMLFormElement;
-    const btn = document.getElementById('submit-btn') as HTMLButtonElement;
-    const status = document.getElementById('form-status') as HTMLElement;
 
-    form?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      btn.disabled = true;
-      btn.classList.add('loading');
-      status.className = 'form-status';
-      status.textContent = '';
-
-      const name = (form.querySelector('[name=name]') as HTMLInputElement).value.trim();
-      const email = (form.querySelector('[name=email]') as HTMLInputElement).value.trim();
-      const message = (form.querySelector('[name=message]') as HTMLTextAreaElement).value.trim();
-
-      if (!name || !email || !message) {
-        btn.disabled = false;
-        btn.classList.remove('loading');
-        status.className = 'form-status error';
-        status.textContent = '請填寫所有欄位';
-        return;
-      }
-
-      try {
-        const mailtoLink = `mailto:paul@lasaas.com?subject=${encodeURIComponent(`網站訊息：${name}`)}&body=${encodeURIComponent(`姓名: ${name}\nEmail: ${email}\n\n${message}`)}`;
-        window.location.href = mailtoLink;
-        
-        setTimeout(() => {
-          btn.disabled = false;
-          btn.classList.remove('loading');
-          status.className = 'form-status success';
-          status.textContent = '已開啟郵件用戶端，請完成寄送。感謝！';
-          form.reset();
-        }, 1000);
-      } catch (err) {
-        btn.disabled = false;
-        btn.classList.remove('loading');
-        status.className = 'form-status error';
-        status.textContent = '發生錯誤，請直接寄信至 paul@lasaas.com';
-      }
-    });
-  </script>
 </BaseLayout>
