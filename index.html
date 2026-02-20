@@ -5,24 +5,75 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Paul Kuo — Rebuilding Order in an Age of Intelligence</title>
 <meta name="description" content="Paul Kuo 郭曜郎 — 在技術與文明的交匯處，重建秩序、再生系統、守護人性尊嚴。">
+<meta name="author" content="Paul Kuo">
+<meta name="robots" content="index, follow">
 <meta property="og:title" content="Paul Kuo — Rebuilding Order in an Age of Intelligence">
 <meta property="og:description" content="在技術與文明的交匯處，重建秩序、再生系統、守護人性尊嚴。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://paulkuo.tw">
+<meta property="og:image" content="https://paulkuo.tw/paul-photo.jpg">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="en">
+<meta property="og:locale:alternate" content="ja">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Paul Kuo — Rebuilding Order in an Age of Intelligence">
+<meta name="twitter:description" content="在技術與文明的交匯處，重建秩序、再生系統、守護人性尊嚴。">
+<meta name="twitter:image" content="https://paulkuo.tw/paul-photo.jpg">
+<link rel="canonical" href="https://paulkuo.tw">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://paulkuo.tw/#person",
+      "name": "Paul Kuo",
+      "alternateName": "郭曜郎",
+      "url": "https://paulkuo.tw",
+      "image": "https://paulkuo.tw/paul-photo.jpg",
+      "description": "在技術與文明的交匯處，重建秩序、再生系統、守護人性尊嚴。",
+      "knowsAbout": ["Circular Economy","Artificial Intelligence","Urban Mining","Multi-Agent Cognitive Systems","Taiwan-Japan Industrial Cooperation","Theological Ethics","Startup Ecosystems"],
+      "sameAs": [
+        "https://x.com/paulkuo",
+        "https://www.linkedin.com/in/kuoyaolang",
+        "https://www.threads.net/@zarqarwi",
+        "https://www.youtube.com/@kuopaul8265",
+        "https://www.facebook.com/zarqarwi",
+        "https://www.instagram.com/zarqarwi",
+        "https://bsky.app/profile/paulkuo.bsky.social",
+        "https://www.reddit.com/user/Constant-Variety1656"
+      ],
+      "jobTitle": "Commercial Integration and AI Digital Development Director",
+      "worksFor": {"@type":"Organization","name":"SDTI"}
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://paulkuo.tw/#website",
+      "url": "https://paulkuo.tw",
+      "name": "Paul Kuo — Rebuilding Order in an Age of Intelligence",
+      "publisher": {"@id":"https://paulkuo.tw/#person"},
+      "inLanguage": ["zh-Hant","zh-Hans","en","ja"]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
+<!-- Skip Navigation -->
+<a href="#main-content" class="skip-link">跳到主要內容</a>
+
 <!-- NAV -->
-<nav>
+<nav role="navigation" aria-label="主要導覽列">
   <div class="nav-inner">
     <a href="#" class="nav-logo" onclick="showPage('home')">Paul Kuo</a>
-    <div class="nav-links">
+    <div class="nav-links" id="nav-links-menu">
       <a href="#" onclick="showPage('home')" class="active" id="nav-home" data-i18n="nav.home">首頁</a>
       <a href="#" onclick="showPage('blog')" id="nav-blog" data-i18n="nav.blog">思想</a>
       <a href="#" onclick="showPage('projects')" id="nav-projects" data-i18n="nav.projects">專案</a>
@@ -36,19 +87,18 @@
         <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">日</button>
       </div>
     </div>
-    <button class="nav-hamburger" onclick="toggleMobileNav()" aria-label="選單">
+    <button class="nav-hamburger" onclick="toggleMobileNav()" aria-label="開啟導覽選單" aria-expanded="false" aria-controls="nav-links-menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
 
-<main>
+<main id="main-content" role="main">
 
 <!-- ==================== HOME ==================== -->
 <div class="page-section active" id="page-home">
 
-  <!-- HERO — [A] 主標全面替換 -->
-  <section class="hero">
+  <section class="hero" aria-label="主要介紹">
     <div class="hero-inner">
       <div class="hero-text">
         <h1 class="animate-in">Rebuilding <em>Order</em><br>in an Age of<br>Intelligence</h1>
@@ -68,7 +118,7 @@
           <a href="#" class="btn-secondary" data-i18n="hero.cta.about" onclick="showPage('about')">認識 Paul</a>
         </div>
       </div>
-      <div class="hero-visual animate-in delay-2">
+      <div class="hero-visual animate-in delay-2" aria-hidden="true">
         <div class="hero-card-stack">
           <div class="hero-card">
             <div class="hero-card-label" style="color:var(--accent-faith)">
@@ -96,8 +146,7 @@
     </div>
   </section>
 
-  <!-- MANIFESTO — [B] 引句一致化，保留道成肉身但轉向秩序/入世 -->
-  <section class="manifesto">
+  <section class="manifesto" aria-label="哲學宣言">
     <div class="manifesto-inner">
       <div class="manifesto-kicker" data-i18n="manifesto.kicker">Philosophy · 哲學宣言</div>
       <p class="manifesto-quote" data-i18n="manifesto.quote">"Rebuilding <em>Order</em> in an Age of Intelligence"<br>
@@ -112,8 +161,7 @@
     </div>
   </section>
 
-  <!-- FEATURED CONTENT - all 5 pillars represented -->
-  <section class="section-container">
+  <section class="section-container" aria-label="精選文章">
     <div class="section-header">
       <h2 class="section-title" data-i18n="section.latest">Latest Thinking</h2>
       <a href="#" class="section-link" data-i18n="section.viewall" onclick="showPage('blog')">查看全部 →</a>
@@ -155,8 +203,7 @@
     </div>
   </section>
 
-  <!-- PROJECTS PREVIEW — [C] NT$5 removed -->
-  <section style="background:var(--bg-section)">
+  <section style="background:var(--bg-section)" aria-label="專案預覽">
     <div class="section-container">
       <div class="section-header">
         <h2 class="section-title" data-i18n="projects.title">Projects</h2>
@@ -186,37 +233,36 @@
     </div>
   </section>
 
-  <!-- CONTACT — [F] Social links fixed -->
-  <section class="contact-section" id="contact">
+  <section class="contact-section" id="contact" aria-label="聯絡方式">
     <div class="section-container">
       <div class="contact-grid">
         <div class="contact-text">
           <h2 data-i18n="contact.title">Let's Build<br>Something Together</h2>
           <p data-i18n="contact.desc">無論你是在思考如何讓技術回到人性與秩序的實作場景、想深化循環再生服務與架構布局、或希望探索台日跨境合作的可能，<br>都歡迎來信一起對話、激盪或合作。</p>
           <div class="social-links">
-            <a href="https://x.com/paulkuo" class="social-link" target="_blank">𝕏 Twitter</a>
-            <a href="https://www.linkedin.com/in/kuoyaolang" class="social-link" target="_blank">in LinkedIn</a>
-            <a href="https://www.threads.net/@zarqarwi" class="social-link" target="_blank">◉ Threads</a>
-            <a href="https://www.youtube.com/@kuopaul8265" class="social-link" target="_blank">▶ YouTube</a>
-            <a href="https://www.facebook.com/zarqarwi" class="social-link" target="_blank">📘 Facebook</a>
-            <a href="https://www.instagram.com/zarqarwi" class="social-link" target="_blank">📷 Instagram</a>
-            <a href="https://bsky.app/profile/paulkuo.bsky.social" class="social-link" target="_blank">🦋 Bluesky</a>
-            <a href="https://www.reddit.com/user/Constant-Variety1656" class="social-link" target="_blank">🔴 Reddit</a>
+            <a href="https://x.com/paulkuo" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="在 Twitter 上追蹤 Paul Kuo">𝕏 Twitter</a>
+            <a href="https://www.linkedin.com/in/kuoyaolang" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="在 LinkedIn 上連結 Paul Kuo">in LinkedIn</a>
+            <a href="https://www.threads.net/@zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="在 Threads 上追蹤 Paul Kuo">◉ Threads</a>
+            <a href="https://www.youtube.com/@kuopaul8265" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="訂閱 Paul Kuo 的 YouTube 頻道">▶ YouTube</a>
+            <a href="https://www.facebook.com/zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="在 Facebook 上追蹤 Paul Kuo">📘 Facebook</a>
+            <a href="https://www.instagram.com/zarqarwi" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="在 Instagram 上追蹤 Paul Kuo">📷 Instagram</a>
+            <a href="https://bsky.app/profile/paulkuo.bsky.social" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="在 Bluesky 上追蹤 Paul Kuo">🦋 Bluesky</a>
+            <a href="https://www.reddit.com/user/Constant-Variety1656" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="在 Reddit 上追蹤 Paul Kuo">🔴 Reddit</a>
           </div>
         </div>
         <div class="contact-form">
           <form action="mailto:paul@lasaas.com" method="post" enctype="text/plain">
           <div class="form-group">
-            <label data-i18n="contact.form.name">姓名</label>
-            <input type="text" name="name" placeholder="你的名字" data-i18n-ph="contact.form.name.ph" required>
+            <label for="contact-name" data-i18n="contact.form.name">姓名</label>
+            <input id="contact-name" type="text" name="name" placeholder="你的名字" data-i18n-ph="contact.form.name.ph" required>
           </div>
           <div class="form-group">
-            <label data-i18n="contact.form.email">Email</label>
-            <input type="email" name="email" placeholder="you@example.com" required>
+            <label for="contact-email" data-i18n="contact.form.email">Email</label>
+            <input id="contact-email" type="email" name="email" placeholder="you@example.com" required>
           </div>
           <div class="form-group">
-            <label data-i18n="contact.form.message">訊息</label>
-            <textarea name="message" placeholder="想聊什麼？" data-i18n-ph="contact.form.message.ph"></textarea>
+            <label for="contact-message" data-i18n="contact.form.message">訊息</label>
+            <textarea id="contact-message" name="message" placeholder="想聊什麼？" data-i18n-ph="contact.form.message.ph"></textarea>
           </div>
           <button type="submit" class="btn-submit" data-i18n="contact.form.submit">送出</button>
           </form>
@@ -233,17 +279,16 @@
       <h1 data-i18n="blog.title">Thinking Out Loud</h1>
       <p data-i18n="blog.subtitle">智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。</p>
     </div>
-    <div class="blog-filters">
-      <button class="filter-btn active" data-filter="all" data-i18n="filter.all">全部</button>
-      <button class="filter-btn" data-filter="ai" data-i18n="filter.ai">智能與秩序</button>
-      <button class="filter-btn" data-filter="circular" data-i18n="filter.circular">再生系統</button>
-      <button class="filter-btn" data-filter="faith" data-i18n="filter.faith">文明與人性</button>
-      <button class="filter-btn" data-filter="startup" data-i18n="filter.startup">創造與建構</button>
-      <button class="filter-btn" data-filter="life" data-i18n="filter.life">沉思與記憶</button>
+    <div class="blog-filters" role="group" aria-label="文章分類篩選">
+      <button class="filter-btn active" data-filter="all" aria-pressed="true" data-i18n="filter.all">全部</button>
+      <button class="filter-btn" data-filter="ai" aria-pressed="false" data-i18n="filter.ai">智能與秩序</button>
+      <button class="filter-btn" data-filter="circular" aria-pressed="false" data-i18n="filter.circular">再生系統</button>
+      <button class="filter-btn" data-filter="faith" aria-pressed="false" data-i18n="filter.faith">文明與人性</button>
+      <button class="filter-btn" data-filter="startup" aria-pressed="false" data-i18n="filter.startup">創造與建構</button>
+      <button class="filter-btn" data-filter="life" aria-pressed="false" data-i18n="filter.life">沉思與記憶</button>
     </div>
     <div class="content-grid" id="blog-grid">
 
-      <!-- 文明與人性 -->
       <a href="#" class="content-card" data-pillar="faith">
         <div class="content-card-category" style="color:var(--accent-faith)">
           <span class="pillar-dot" style="background:var(--accent-faith)"></span> 文明與人性
@@ -289,7 +334,6 @@
         </div>
       </a>
 
-      <!-- 智能與秩序 -->
       <a href="#" class="content-card" data-pillar="ai">
         <div class="content-card-category" style="color:var(--accent-ai)">
           <span class="pillar-dot" style="background:var(--accent-ai)"></span> 智能與秩序
@@ -324,7 +368,6 @@
         </div>
       </a>
 
-      <!-- 再生系統 -->
       <a href="#" class="content-card" data-pillar="circular">
         <div class="content-card-category" style="color:var(--accent-circular)">
           <span class="pillar-dot" style="background:var(--accent-circular)"></span> 再生系統
@@ -359,7 +402,6 @@
         </div>
       </a>
 
-      <!-- 創造與建構 -->
       <a href="#" class="content-card" data-pillar="startup">
         <div class="content-card-category" style="color:var(--accent-startup)">
           <span class="pillar-dot" style="background:var(--accent-startup)"></span> 創造與建構
@@ -394,7 +436,6 @@
         </div>
       </a>
 
-      <!-- 沉思與記憶 -->
       <a href="#" class="content-card" data-pillar="life">
         <div class="content-card-category" style="color:var(--accent-life)">
           <span class="pillar-dot" style="background:var(--accent-life)"></span> 沉思與記憶
@@ -444,7 +485,6 @@
           <strong>Structural Significance</strong>
           <span data-i18n="projects.circleflow.significance">工業文明的線性模型正在耗盡它的物質基礎。CircleFlow 處理的不只是廢棄物媒合，而是重建「物質秩序」——讓資源的流向、價值與歸屬重新變得可追蹤、可信任、可治理。</span></div>
       </div>
-      <!-- [E] 半導體 tag 移除，改跨域 tags -->
       <div class="project-card sdti">
         <div class="project-icon" style="background:rgba(180,83,9,0.1)">🤝</div>
         <h3 data-i18n="projects.taiwan_japan.name">台日產業與技術整合</h3>
@@ -460,7 +500,6 @@
           <strong>Structural Significance</strong>
           <span data-i18n="projects.taiwan_japan.significance">產業合作跨越國界時，障礙往往不在技術，而在制度、文化與風險認知的差異。這項工作處理的是信任秩序——如何在不同文明語境中建立可持續的合作結構，讓技術與價值的流動成為長期制度，而非短期機會。</span></div>
       </div>
-      <!-- [C] NT$5 removed, rewritten -->
       <div class="project-card debate">
         <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
         <h3 data-i18n="projects.debate.name">多模型認知協作框架</h3>
@@ -494,7 +533,7 @@
   <section class="about-section">
     <div class="section-container">
       <div class="about-grid">
-        <div class="about-photo"><img src="/paul-photo.png" alt="Paul Kuo"></div>
+        <div class="about-photo"><img src="/paul-photo.png" alt="Paul Kuo 郭曜郎 — 個人照片"></div>
         <div class="about-content">
           <h2 data-i18n="about.name">Paul Kuo 郭曜郎</h2>
           <p data-i18n="about.intro">我的思考起點不是技術，而是秩序。</p>
@@ -502,7 +541,6 @@
           <p data-i18n="about.p2">從創業生態的形成、食農供應鏈的重構，到永續建築與空間實踐，我花了十多年時間理解：系統的再生從來不是單純的技術問題，而是信任與責任的建立。願意承擔轉型的風險，就是參與了新秩序的塑形。</p>
           <p data-i18n="about.p3">現在，我的工作是跨領域的台日產業合作與循環經濟的數據基礎設施建構。此外，隨著人工智慧在近年迅速成為基礎設施的一部分，技術正在重新界定能力與決策的尺度。</p>
           <p data-i18n="about.p4">技術本身沒有意圖，但效率的邏輯若缺乏節制，往往會壓縮人的判斷與承擔空間。因此，我不只關心技術能走多快，而是人是否仍能在加速之中保有尊嚴與主體性。</p>
-          <!-- [D] SDTI 移除，改台日跨域合作 -->
           <div class="about-timeline">
             <div class="timeline-item">
               <div class="timeline-year">15 年</div>
@@ -530,8 +568,6 @@
             </div>
             </div>
           </div>
-
-          
 
         </div>
       </div>
@@ -595,7 +631,7 @@
 
 </main>
 
-<footer>
+<footer role="contentinfo">
   <span data-i18n="footer.text">© 2026 Paul Kuo. Built with conviction.</span>
 </footer>
 
@@ -609,11 +645,15 @@ function showPage(page) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Filter buttons with actual filtering
+// Filter buttons with actual filtering + aria-pressed
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
     this.classList.add('active');
+    this.setAttribute('aria-pressed', 'true');
 
     const filter = this.dataset.filter;
     const cards = document.querySelectorAll('#blog-grid .content-card');
@@ -627,10 +667,14 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   });
 });
 
-// Mobile nav toggle
+// Mobile nav toggle with ARIA
 function toggleMobileNav() {
   const links = document.querySelector('.nav-links');
-  links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+  const btn = document.querySelector('.nav-hamburger');
+  const isOpen = links.style.display === 'flex';
+  links.style.display = isOpen ? 'none' : 'flex';
+  btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+  btn.setAttribute('aria-label', isOpen ? '開啟導覽選單' : '關閉導覽選單');
 }
 
 

@@ -39,6 +39,49 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ===== PHASE 3: SEO & ACCESSIBILITY ===== */
+
+/* Skip to content link */
+.skip-link {
+  position: absolute; top: -100%; left: 16px;
+  background: var(--brand-navy); color: #fff;
+  padding: 12px 24px; border-radius: 0 0 8px 8px;
+  font-size: 0.9rem; font-weight: 600;
+  text-decoration: none; z-index: 200;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* Focus visible — keyboard navigation indicator */
+*:focus-visible {
+  outline: 3px solid var(--accent-ai);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--accent-ai);
+  outline-offset: 3px;
+}
+*:focus:not(:focus-visible) { outline: none; }
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-in { opacity: 1; transform: none; }
+}
+
 /* ===== NAV ===== */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
@@ -245,7 +288,7 @@ main { padding-top: var(--nav-height); }
 }
 .content-card-footer {
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 0.75rem; color: var(--text-muted);
+  font-size: 0.75rem; color: #6b6b6b;
   padding-top: 14px; border-top: 1px solid var(--border-light);
   margin-top: auto;
 }
@@ -292,7 +335,7 @@ main { padding-top: var(--nav-height); }
 .feed-item:hover { box-shadow: var(--shadow-sm); }
 .feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .feed-platform { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 5px; }
-.feed-date { font-size: 0.75rem; color: var(--text-muted); }
+.feed-date { font-size: 0.75rem; color: #6b6b6b; }
 .feed-item p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; font-family: var(--font-cjk); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* ===== CONTACT ===== */
