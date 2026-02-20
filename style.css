@@ -554,18 +554,26 @@ html[lang="en"] p {
     padding: 14px 20px !important;
     border-bottom: none !important;
   }
-  .nav-links.mobile-open .lang-switcher {
-    display: flex;
-    margin: 16px 0 0 0;
-    padding: 12px 0 0 0;
-    border-left: none;
-    border-top: 1px solid var(--border);
-    justify-content: center;
-    gap: 8px;
-  }
+
   .about-pillar-item:hover {
     background: var(--bg-section);
     transform: translateY(-2px);
     transition: all 0.2s;
+  }
+}
+
+/* Lang switcher always visible on mobile nav bar */
+@media (max-width: 768px) {
+  .lang-switcher {
+    display: flex !important;
+    border-left: none;
+    margin-left: auto;
+    margin-right: 8px;
+    padding-left: 0;
+    gap: 2px;
+  }
+  .lang-btn {
+    font-size: 0.65rem;
+    padding: 3px 6px;
   }
 }
