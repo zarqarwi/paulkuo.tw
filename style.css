@@ -304,6 +304,99 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .delay-4 { animation-delay: 0.4s; }
 .delay-5 { animation-delay: 0.5s; }
 
+/* ===== PHASE 1: CJK PROFESSIONAL TYPOGRAPHY ===== */
+
+/* --- Traditional Chinese (zh-TW / zh-Hant) --- */
+html[lang="zh-Hant"] body,
+html[lang="zh-TW"] body {
+  font-family: 'DM Sans', 'Noto Sans TC', 'PingFang TC', 'Heiti TC', '微軟正黑體', system-ui, sans-serif;
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+html[lang="zh-Hant"] p,
+html[lang="zh-TW"] p {
+  text-align: justify;
+  text-justify: inter-ideograph;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+  margin-bottom: 1.1em;
+}
+html[lang="zh-Hant"] .hero-tagline,
+html[lang="zh-TW"] .hero-tagline {
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+html[lang="zh-Hant"] .about-content p,
+html[lang="zh-TW"] .about-content p {
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+html[lang="zh-Hant"] .manifesto-body,
+html[lang="zh-TW"] .manifesto-body {
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+/* --- Simplified Chinese (zh-Hans / zh-CN) --- */
+html[lang="zh-Hans"] body,
+html[lang="zh-CN"] body {
+  font-family: 'DM Sans', 'Noto Sans SC', 'PingFang SC', 'Heiti SC', '微软雅黑', system-ui, sans-serif;
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+html[lang="zh-Hans"] p,
+html[lang="zh-CN"] p {
+  text-align: justify;
+  text-justify: inter-ideograph;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+  margin-bottom: 1.1em;
+}
+html[lang="zh-Hans"] .hero-tagline,
+html[lang="zh-CN"] .hero-tagline {
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+html[lang="zh-Hans"] .manifesto-body,
+html[lang="zh-CN"] .manifesto-body {
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+/* --- Japanese (ja) --- */
+html[lang="ja"] body {
+  font-family: 'DM Sans', 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Meiryo', system-ui, sans-serif;
+  letter-spacing: 0;
+  line-height: 1.65;
+  font-feature-settings: 'palt' 1;
+}
+html[lang="ja"] p {
+  text-align: justify;
+  text-justify: inter-ideograph;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+  margin-bottom: 1.1em;
+  font-feature-settings: 'palt' 1;
+}
+html[lang="ja"] .hero-tagline {
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+html[lang="ja"] .manifesto-body {
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+}
+
+/* --- English (en) — keep current wider spacing --- */
+html[lang="en"] body {
+  line-height: 1.7;
+  letter-spacing: normal;
+}
+html[lang="en"] p {
+  line-height: 1.75;
+  margin-bottom: 1.2em;
+}
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
   .hero-inner { grid-template-columns: 1fr; gap: 48px; }
