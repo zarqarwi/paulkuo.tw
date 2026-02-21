@@ -475,7 +475,7 @@ html[lang="en"] .article-body p {
   font-size: 1.05rem;
   line-height: 1.6;
   color: var(--text-primary);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   letter-spacing: normal;
 }
 html[lang="en"] .article-body li {
@@ -499,7 +499,7 @@ html[lang="zh-Hant"] .article-body p,
 html[lang="zh-TW"] .article-body p {
   font-size: 1.05rem;
   line-height: 1.6;
-  margin-bottom: 1.1em;
+  margin-bottom: 0.5em;
   color: var(--text-primary);
   letter-spacing: normal;
 }
@@ -549,7 +549,7 @@ html[lang="zh-Hans"] .article-body p,
 html[lang="zh-CN"] .article-body p {
   font-size: 1.05rem;
   line-height: 1.6;
-  margin-bottom: 1.1em;
+  margin-bottom: 0.5em;
   color: var(--text-primary);
   letter-spacing: normal;
 }
@@ -584,7 +584,7 @@ html[lang="ja"] .article-body {
 html[lang="ja"] .article-body p {
   font-size: 1.05rem;
   line-height: 1.75;
-  margin-bottom: 1.3em;
+  margin-bottom: 0.7em;
   color: var(--text-primary);
 }
 html[lang="ja"] .article-body li {
