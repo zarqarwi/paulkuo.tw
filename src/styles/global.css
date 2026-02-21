@@ -93,7 +93,23 @@ body::after {
   100% { opacity: 0.5; }
 }
 
-/* ===== NAV ===== */
+/* ===== READING PROGRESS BAR ===== */
+.reading-progress {
+  position: fixed;
+  top: 0; left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand-navy), var(--accent-ai));
+  z-index: 10000;
+  transition: width 0.1s linear;
+  opacity: 0;
+  pointer-events: none;
+}
+.reading-progress.visible {
+  opacity: 1;
+}
+
+/* ===== SMART HEADER ===== */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
   height: var(--nav-height);
@@ -103,7 +119,16 @@ nav {
   border-bottom: 1px solid var(--border-light);
   z-index: 100;
   display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.23,1,0.32,1), background 0.3s;
 }
+nav.nav-hidden {
+  transform: translateY(-100%);
+}
+nav.nav-scrolled {
+  background: rgba(250,250,248,0.97);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
 .nav-inner {
   width: 100%; max-width: var(--max-width);
   padding: 0 40px;
