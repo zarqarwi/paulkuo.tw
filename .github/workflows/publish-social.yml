@@ -35,21 +35,29 @@ jobs:
             exit 0
           fi
 
-          # 自動觸發：掃最近 10 個 commit 找新增的文章
+          # 🔴 FIX: 只偵測「新增」的文章（--diff-filter=A），排除修改/刪除
           NEW_ARTICLES=""
-          for i in $(seq 1 9); do
-            DIFF=$(git diff --name-only HEAD~$((i+1)) HEAD~$i -- 'src/content/articles/*.md' 2>/dev/null | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
+          for i in $(seq 0 8); do
+            DIFF=$(git diff --diff-filter=A --name-only HEAD~$((i+1)) HEAD~$i -- 'src/content/articles/*.md' 2>/dev/null | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
             if [ -n "$DIFF" ]; then
               NEW_ARTICLES="$DIFF"
-              echo "📝 Found new article in HEAD~$((i+1))..HEAD~$i"
+              echo "📝 Found NEW article (added) in HEAD~$((i+1))..HEAD~$i"
               break
             fi
           done
 
-          # 也查 HEAD~1..HEAD
-          LATEST=$(git diff --name-only HEAD~1 HEAD -- 'src/content/articles/*.md' 2>/dev/null | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
-          if [ -n "$LATEST" ]; then
-            NEW_ARTICLES="$LATEST"
+          # 🔴 FIX: dedup — 檢查是否已經發佈過（published-slugs.json）
+          if [ -n "$NEW_ARTICLES" ] && [ -f "data/published-slugs.json" ]; then
+            FILTERED=""
+            for f in $NEW_ARTICLES; do
+              SLUG=$(basename "$f" .md)
+              if grep -q "\"$SLUG\"" data/published-slugs.json; then
+                echo "⏭️  Already published: $SLUG"
+              else
+                FILTERED="$FILTERED$f"$'\n'
+              fi
+            done
+            NEW_ARTICLES=$(echo "$FILTERED" | sed '/^$/d')
           fi
 
           echo "articles<<EOF" >> $GITHUB_OUTPUT
@@ -61,7 +69,7 @@ jobs:
             echo "ℹ️  No new articles to publish"
           else
             echo "skip=false" >> $GITHUB_OUTPUT
-            echo "📝 New articles found:"
+            echo "📝 New articles to publish:"
             echo "$NEW_ARTICLES"
           fi
 
@@ -83,3 +91,33 @@ jobs:
           SITE_URL: "https://paulkuo.tw"
         run: |
           node scripts/publish-social.mjs "${{ steps.detect.outputs.articles }}"
+
+      - name: Record published slugs
+        if: steps.detect.outputs.skip == 'false'
+        run: |
+          mkdir -p data
+          # 初始化或讀取
+          if [ ! -f data/published-slugs.json ]; then
+            echo '[]' > data/published-slugs.json
+          fi
+
+          # 把這次發佈的 slug 加進去
+          ARTICLES="${{ steps.detect.outputs.articles }}"
+          for f in $ARTICLES; do
+            SLUG=$(basename "$f" .md)
+            python3 -c "
+          import json
+          with open('data/published-slugs.json') as f:
+              slugs = json.load(f)
+          if '$SLUG' not in slugs:
+              slugs.append('$SLUG')
+          with open('data/published-slugs.json','w') as f:
+              json.dump(slugs, f, indent=2)
+          "
+          done
+
+          # commit 回 repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/published-slugs.json data/social-logs/
+          git diff --staged --quiet || git commit -m "chore: record published slugs" && git push || true

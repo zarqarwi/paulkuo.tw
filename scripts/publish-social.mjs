@@ -5,8 +5,8 @@
  * 流程：讀文章 → Claude 產摘要 → DALL-E 生圖 → freeimage 上傳 → OneUp 排程
  */
 
-import { readFileSync } from 'fs';
-import { basename } from 'path';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { basename, join } from 'path';
 
 // ── 設定 ────────────────────────────────────────────
 const SITE_URL = process.env.SITE_URL || 'https://paulkuo.tw';
@@ -232,6 +232,13 @@ async function main() {
     // 2. 產生各平台摘要
     console.log('   📝 Generating platform summaries...');
     const summaries = await generateSummaries(article);
+
+    // 2.5 存檔摘要（可追溯）
+    const logDir = 'data/social-logs';
+    mkdirSync(logDir, { recursive: true });
+    const logFile = join(logDir, `${article.slug}-${new Date().toISOString().slice(0,10)}.json`);
+    writeFileSync(logFile, JSON.stringify({ slug: article.slug, title: article.title, url: article.url, summaries, timestamp: new Date().toISOString() }, null, 2));
+    console.log(`   💾 Summaries saved: ${logFile}`);
 
     // 3. 生成配圖
     const imageBuffer = await generateImage(article.title, article.pillar);

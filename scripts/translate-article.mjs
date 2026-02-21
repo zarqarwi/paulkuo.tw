@@ -111,12 +111,27 @@ async function main() {
     console.log('📝 No git diff available, checking all articles...');
   }
 
-  // Fallback: translate all root-level .md files
+  // 🔴 FIX: Fallback 加上限，最多翻 5 篇（避免意外翻全部 60+ 篇爆 API 費用）
+  const MAX_FALLBACK = 5;
   if (filesToTranslate.length === 0) {
     if (existsSync(ARTICLES_DIR)) {
-      filesToTranslate = readdirSync(ARTICLES_DIR)
+      const allFiles = readdirSync(ARTICLES_DIR)
         .filter(f => f.endsWith('.md'))
         .map(f => join(ARTICLES_DIR, f));
+      
+      // 只翻還沒有翻譯版本的檔案
+      const untranslated = allFiles.filter(f => {
+        const slug = basename(f, '.md');
+        return !existsSync(join(ARTICLES_DIR, 'en', `${slug}.md`));
+      });
+
+      if (untranslated.length > MAX_FALLBACK) {
+        console.log(`⚠️  Fallback: ${untranslated.length} untranslated articles found, limiting to ${MAX_FALLBACK}`);
+        console.log('   Run manually for bulk translation.');
+        filesToTranslate = untranslated.slice(0, MAX_FALLBACK);
+      } else {
+        filesToTranslate = untranslated;
+      }
     }
   }
 
