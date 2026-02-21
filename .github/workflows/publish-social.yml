@@ -5,26 +5,57 @@ on:
     workflows: ["Build & Deploy"]
     types: [completed]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      article_path:
+        description: '文章路徑（例: src/content/articles/xxx.md）'
+        required: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 10
 
       - name: Find new articles
         id: detect
         run: |
-          # 找出最新 commit 新增的文章（不含翻譯檔）
-          NEW_ARTICLES=$(git diff --name-only HEAD~1 HEAD -- 'src/content/articles/*.md' | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
+          # 手動觸發時用指定的文章路徑
+          if [ -n "${{ github.event.inputs.article_path }}" ]; then
+            echo "articles=${{ github.event.inputs.article_path }}" >> $GITHUB_OUTPUT
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "📝 Manual trigger: ${{ github.event.inputs.article_path }}"
+            exit 0
+          fi
+
+          # 自動觸發：掃最近 10 個 commit 找新增的文章
+          NEW_ARTICLES=""
+          for i in $(seq 1 9); do
+            DIFF=$(git diff --name-only HEAD~$((i+1)) HEAD~$i -- 'src/content/articles/*.md' 2>/dev/null | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
+            if [ -n "$DIFF" ]; then
+              NEW_ARTICLES="$DIFF"
+              echo "📝 Found new article in HEAD~$((i+1))..HEAD~$i"
+              break
+            fi
+          done
+
+          # 也查 HEAD~1..HEAD
+          LATEST=$(git diff --name-only HEAD~1 HEAD -- 'src/content/articles/*.md' 2>/dev/null | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
+          if [ -n "$LATEST" ]; then
+            NEW_ARTICLES="$LATEST"
+          fi
+
           echo "articles<<EOF" >> $GITHUB_OUTPUT
           echo "$NEW_ARTICLES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+
           if [ -z "$NEW_ARTICLES" ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
             echo "ℹ️  No new articles to publish"
@@ -39,10 +70,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Install dependencies
-        if: steps.detect.outputs.skip == 'false'
-        run: npm install sharp@0.33
 
       - name: Generate summaries and publish
         if: steps.detect.outputs.skip == 'false'
