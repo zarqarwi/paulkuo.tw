@@ -3,6 +3,8 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import feedJson from '../data/feed.json';
+import CostTicker from '../components/CostTicker.astro';
+import CostAnalytics from '../components/CostAnalytics.astro';
 const feedData = feedJson.items || [];
 
 const allArticles = (await getCollection('articles', ({ data }) => !data.draft && data.featured))
@@ -57,6 +59,9 @@ const homeSchema = JSON.stringify({
 });
 ---
 <BaseLayout title={SITE.title} schemaJson={homeSchema}>
+
+  <!-- COST TICKER -->
+  <CostTicker />
 
   <!-- HERO -->
   <section class="hero">
@@ -175,6 +180,9 @@ const homeSchema = JSON.stringify({
       <h2 class="section-title">消息</h2>
     </div>
     <p style="color:var(--text-secondary); margin-bottom:32px;">來自 8 個平台的即時動態。</p>
+
+    <!-- COST ANALYTICS -->
+    <CostAnalytics />
     <div class="feed-grid">
       {feedData.length > 0 ? feedData.slice(0, 8).map((item) => {
         const dtParts = item.datetime.replace(/[-:\/]/g, ' ').split(' ');
