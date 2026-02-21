@@ -3,16 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="Fitbit Sleep Analysis — Paul Kuo" description="Fitbit 單裝置睡眠健康報告（33個月）">
 
-<div id="authGate" class="dashboard-auth">
-  <div class="auth-card">
-    <h2>🛏️ Fitbit Sleep Report</h2>
-    <p>輸入存取密碼</p>
-    <input type="password" id="authInput" placeholder="Password" autofocus />
-    <button id="authBtn">進入</button>
-  </div>
-</div>
-
-<div id="mainContent" class="health-container" style="display:none">
+<div id="mainContent" class="health-container" >
   <header class="health-header">
     <div>
       <h1>🛏️ Paul 睡眠健康報告</h1>
@@ -137,14 +128,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script is:inline>
-const PASS = 'paulkuo2026';
-const gate = document.getElementById('authGate');
 const main = document.getElementById('mainContent');
-const inp = document.getElementById('authInput');
-const btn = document.getElementById('authBtn');
+initAll();
 
-if (sessionStorage.getItem('health_auth') === 'ok') { gate.style.display='none'; main.style.display='block'; initAll(); }
-btn.onclick = () => { if(inp.value===PASS){sessionStorage.setItem('health_auth','ok');gate.style.display='none';main.style.display='block';initAll();}else{inp.style.border='2px solid #ef4444';} };
 inp.onkeydown = e => { if(e.key==='Enter') btn.click(); };
 
 // Tabs
@@ -249,13 +235,6 @@ function initAll(){
 </script>
 
 <style>
-  .dashboard-auth{display:flex;align-items:center;justify-content:center;min-height:60vh}
-  .auth-card{background:#1f2937;padding:2rem;border-radius:1rem;text-align:center;border:1px solid #374151}
-  .auth-card h2{color:#fff;margin-bottom:.5rem}
-  .auth-card p{color:#9ca3af;margin-bottom:1rem;font-size:.9rem}
-  .auth-card input{background:#111827;color:#fff;border:1px solid #4b5563;padding:.6rem 1rem;border-radius:.5rem;width:200px;margin-right:.5rem}
-  .auth-card button{background:#2563eb;color:#fff;border:none;padding:.6rem 1.2rem;border-radius:.5rem;cursor:pointer}
-  .auth-card button:hover{background:#1d4ed8}
 
   .health-container{max-width:960px;margin:0 auto;padding:1rem}
   .health-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}

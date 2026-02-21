@@ -3,16 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="Health Dashboard — Paul Kuo" description="Fitbit + Apple Watch 雙裝置健康分析">
 
-<div id="authGate" class="dashboard-auth">
-  <div class="auth-card">
-    <h2>🏥 Health Dashboard</h2>
-    <p>輸入存取密碼</p>
-    <input type="password" id="authInput" placeholder="Password" autofocus />
-    <button id="authBtn">進入</button>
-  </div>
-</div>
-
-<div id="healthMain" class="health-container" style="display:none">
+<div id="healthMain" class="health-container" >
   <header class="health-header">
     <div>
       <h1>🏥 Paul 雙裝置健康分析</h1>
@@ -130,39 +121,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
 
 <script is:inline>
-// ── Auth ──
-const DASH_KEY = 'paulkuo2026';
-const authGate = document.getElementById('authGate');
-const healthMain = document.getElementById('healthMain');
-const authInput = document.getElementById('authInput');
-const authBtn = document.getElementById('authBtn');
-
-function checkAuth() {
-  const urlKey = new URLSearchParams(window.location.search).get('key');
-  const stored = sessionStorage.getItem('health_auth');
-  if (urlKey === DASH_KEY || stored === DASH_KEY) {
-    sessionStorage.setItem('health_auth', DASH_KEY);
-    authGate.style.display = 'none';
-    healthMain.style.display = 'block';
-    initDashboard();
-  }
-}
-checkAuth();
-
-authBtn.addEventListener('click', () => {
-  if (authInput.value === DASH_KEY) {
-    sessionStorage.setItem('health_auth', DASH_KEY);
-    authGate.style.display = 'none';
-    healthMain.style.display = 'block';
-    initDashboard();
-  } else {
-    authInput.style.borderColor = '#ef4444';
-    authInput.value = '';
-    authInput.placeholder = '密碼錯誤';
-  }
-});
-authInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
-
 // ── Tabs ──
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -178,6 +136,7 @@ const DATA = [{"month":"2023-05","fb_nights":21,"fb_avg_sleep":363.5,"fb_avg_eff
 
 const charts = {};
 let initialized = false;
+initDashboard();
 
 function fmt(m) { if (!m && m !== 0) return '—'; const h = Math.floor(m/60); const mi = Math.round(m%60); return h+'h'+String(mi).padStart(2,'0')+'m'; }
 
