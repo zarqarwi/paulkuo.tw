@@ -1,9 +1,0 @@
-{
-  "access_token": "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyM1YyQkgiLCJzdWIiOiI5WjdEQ0MiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyaHIgcmFjdCBycHJvIiwiZXhwIjoxNzcxNjk2MzMyLCJpYXQiOjE3NzE2Njc1MzJ9.EWXaEfnCaLXd6hE3byg0rvWoctlMhLvZlJT7TMAopUs",
-  "expires_in": 28800,
-  "refresh_token": "4e239beafd328fc7edce7484ef010da128c984a8065f1ed58e5edca46c0bf46f",
-  "scope": "heartrate profile activity",
-  "token_type": "Bearer",
-  "user_id": "9Z7DCC",
-  "expires_at": 1771696332.184656
-}

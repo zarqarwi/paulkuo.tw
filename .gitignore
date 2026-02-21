@@ -37,3 +37,8 @@ gen-lang-client-*.json
 
 paulkuo_backup.html
 recover_articles.py
+
+# Fitbit credentials & logs
+scripts/.fitbit_token
+scripts/*.log
+
