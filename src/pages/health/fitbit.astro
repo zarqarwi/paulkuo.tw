@@ -3,13 +3,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="Fitbit Sleep Analysis — Paul Kuo" description="Fitbit 單裝置睡眠健康報告（33個月）">
 
-<div id="mainContent" class="health-container" >
+<div id="mainContent" class="health-container">
   <header class="health-header">
     <div>
       <h1>🛏️ Paul 睡眠健康報告</h1>
       <p class="health-subtitle">Fitbit 單裝置 · 2023/05–2026/02 · 883 天紀錄 · 約 33 個月</p>
     </div>
-    <a href="/health/dual" class="nav-link">→ 雙裝置整合分析</a>
+    <a href="/health/dual" class="health-nav-link">→ 雙裝置整合分析</a>
   </header>
 
   <div class="health-tabs">
@@ -23,10 +23,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <!-- Tab 0: 總覽 -->
   <div class="tab-content active" data-tab="0">
     <div class="kpi-grid kpi-4col">
-      <div class="kpi"><span class="kpi-label">全期平均睡眠</span><span class="kpi-value" style="color:#60a5fa" id="kpi-avg"></span><span class="kpi-sub" id="kpi-avg-sub"></span></div>
-      <div class="kpi"><span class="kpi-label">全期平均效率</span><span class="kpi-value" style="color:#f59e0b" id="kpi-eff"></span><span class="kpi-sub">85%以上為佳</span></div>
-      <div class="kpi"><span class="kpi-label">最佳月份</span><span class="kpi-value" style="color:#34d399" id="kpi-best"></span><span class="kpi-sub" id="kpi-best-sub"></span></div>
-      <div class="kpi"><span class="kpi-label">最差月份</span><span class="kpi-value" style="color:#ef4444" id="kpi-worst"></span><span class="kpi-sub" id="kpi-worst-sub"></span></div>
+      <div class="kpi"><span class="kpi-label">全期平均睡眠</span><span class="kpi-value" style="color:var(--accent-ai)" id="kpi-avg"></span><span class="kpi-sub" id="kpi-avg-sub"></span></div>
+      <div class="kpi"><span class="kpi-label">全期平均效率</span><span class="kpi-value" style="color:var(--accent-faith)" id="kpi-eff"></span><span class="kpi-sub">85%以上為佳</span></div>
+      <div class="kpi"><span class="kpi-label">最佳月份</span><span class="kpi-value" style="color:var(--accent-circular)" id="kpi-best"></span><span class="kpi-sub" id="kpi-best-sub"></span></div>
+      <div class="kpi"><span class="kpi-label">最差月份</span><span class="kpi-value" style="color:var(--accent-startup)" id="kpi-worst"></span><span class="kpi-sub" id="kpi-worst-sub"></span></div>
     </div>
 
     <div class="chart-panel full-width">
@@ -83,8 +83,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       <div class="chart-wrap tall"><canvas id="stagesChart"></canvas></div>
     </div>
     <div class="kpi-grid kpi-2col">
-      <div class="kpi"><span class="kpi-label">深層睡眠高峰</span><span class="kpi-value" style="color:#6366f1">2023/09 — 73分</span><span class="kpi-sub">目前 53 分（↓27%）</span></div>
-      <div class="kpi"><span class="kpi-label">REM 高峰</span><span class="kpi-value" style="color:#a78bfa">2024/04 — 87分</span><span class="kpi-sub">目前 65 分（↓25%）</span></div>
+      <div class="kpi"><span class="kpi-label">深層睡眠高峰</span><span class="kpi-value" style="color:var(--accent-life)">2023/09 — 73分</span><span class="kpi-sub">目前 53 分（↓27%）</span></div>
+      <div class="kpi"><span class="kpi-label">REM 高峰</span><span class="kpi-value" style="color:var(--accent-ai)">2024/04 — 87分</span><span class="kpi-sub">目前 65 分（↓25%）</span></div>
     </div>
     <div class="chart-panel full-width">
       <h3>睡眠階段解讀</h3>
@@ -128,18 +128,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script is:inline>
-const main = document.getElementById('mainContent');
-initAll();
-
-inp.onkeydown = e => { if(e.key==='Enter') btn.click(); };
-
 // Tabs
 document.querySelectorAll('.tab-btn').forEach(b => {
   b.onclick = () => {
     document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
-    document.querySelector(`.tab-content[data-tab="${b.dataset.tab}"]`).classList.add('active');
+    document.querySelector('.tab-content[data-tab="'+b.dataset.tab+'"]').classList.add('active');
   };
 });
 
@@ -194,6 +189,21 @@ const QUARTERS = [
 
 function fmt(mins){ return Math.floor(mins/60)+'h'+String(Math.round(mins%60)).padStart(2,'0')+'m'; }
 
+// Light theme chart defaults
+const textColor = '#5A5A5A';
+const gridColor = 'rgba(0,0,0,0.06)';
+const chartOpts = {
+  responsive:true,
+  maintainAspectRatio:false,
+  plugins:{
+    legend:{labels:{color:textColor, font:{family:'DM Sans, Noto Sans TC, sans-serif'}}},
+  },
+  scales:{
+    x:{ticks:{color:textColor,maxRotation:45,font:{size:11}},grid:{color:gridColor}},
+    y:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}
+  }
+};
+
 function initAll(){
   const totalSleep = MONTHLY.reduce((a,d)=>a+d.avgSleep*d.days,0);
   const totalDays = MONTHLY.reduce((a,d)=>a+d.days,0);
@@ -214,73 +224,234 @@ function initAll(){
   const tbody = document.getElementById('yearlyTable');
   YEARLY.forEach((y,i) => {
     const diff = i>0 ? y.avgSleep-YEARLY[i-1].avgSleep : 0;
-    const diffColor = diff>0?'#34d399':diff<0?'#ef4444':'#9ca3af';
-    const diffText = i===0?'\u2014':(diff>0?'+':'')+diff+'\u5206';
+    const diffColor = diff>0?'#059669':diff<0?'#DC2626':'#8A8A8A';
+    const diffText = i===0?'—':(diff>0?'+':'')+diff+'分';
     tbody.innerHTML += '<tr><td>'+y.year+'</td><td>'+fmt(y.avgSleep)+'</td><td>'+y.eff+'%</td><td>'+y.days+'</td><td style="color:'+diffColor+'">'+diffText+'</td></tr>';
   });
 
-  const chartOpts = {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d1d5db'}},tooltip:{callbacks:{}}},scales:{x:{ticks:{color:'#9ca3af',maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#9ca3af'},grid:{color:'rgba(255,255,255,0.08)'}}}};
+  // Yearly bar chart
+  new Chart(document.getElementById('yearlyBarChart'),{type:'bar',data:{labels:YEARLY.map(y=>y.year),datasets:[{label:'平均睡眠(分)',data:YEARLY.map(y=>y.avgSleep),backgroundColor:YEARLY.map(y=>y.avgSleep>=360?'#2563EB':'#B45309'),borderRadius:6}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:300,max:430,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
 
-  new Chart(document.getElementById('yearlyBarChart'),{type:'bar',data:{labels:YEARLY.map(y=>y.year),datasets:[{label:'\u5e73\u5747\u7761\u7720(\u5206)',data:YEARLY.map(y=>y.avgSleep),backgroundColor:YEARLY.map(y=>y.avgSleep>=360?'#60a5fa':'#f59e0b'),borderRadius:6}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:300,max:430,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
+  // Duration chart
+  new Chart(document.getElementById('durationChart'),{type:'bar',data:{labels:MONTHLY.map(d=>d.month.slice(2)),datasets:[{label:'平均睡眠(分)',data:MONTHLY.map(d=>d.avgSleep),backgroundColor:MONTHLY.map(d=>d.avgSleep<300?'#DC2626':'#2563EB'),borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:250,max:420,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
 
-  new Chart(document.getElementById('durationChart'),{type:'bar',data:{labels:MONTHLY.map(d=>d.month.slice(2)),datasets:[{label:'\u5e73\u5747\u7761\u7720(\u5206)',data:MONTHLY.map(d=>d.avgSleep),backgroundColor:MONTHLY.map(d=>d.avgSleep<300?'#ef4444':'#60a5fa'),borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:250,max:420,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
+  // Quarter chart
+  new Chart(document.getElementById('quarterChart'),{type:'bar',data:{labels:QUARTERS.map(q=>q.q),datasets:[{label:'季度平均(分)',data:QUARTERS.map(q=>q.avg),backgroundColor:QUARTERS.map(q=>q.avg>=360?'#2563EB':q.avg>=320?'#B45309':'#DC2626'),borderRadius:6}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:280,max:400,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
 
-  new Chart(document.getElementById('quarterChart'),{type:'bar',data:{labels:QUARTERS.map(q=>q.q),datasets:[{label:'\u5b63\u5ea6\u5e73\u5747(\u5206)',data:QUARTERS.map(q=>q.avg),backgroundColor:QUARTERS.map(q=>q.avg>=360?'#60a5fa':q.avg>=320?'#f59e0b':'#ef4444'),borderRadius:6}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:280,max:400,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
+  // Efficiency chart
+  new Chart(document.getElementById('efficiencyChart'),{type:'bar',data:{labels:MONTHLY.map(d=>d.month.slice(2)),datasets:[{label:'效率%',data:MONTHLY.map(d=>d.eff),backgroundColor:MONTHLY.map(d=>d.eff<75?'#DC2626':'#B45309'),borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:70,max:100}}}});
 
-  new Chart(document.getElementById('efficiencyChart'),{type:'bar',data:{labels:MONTHLY.map(d=>d.month.slice(2)),datasets:[{label:'\u6548\u7387%',data:MONTHLY.map(d=>d.eff),backgroundColor:MONTHLY.map(d=>d.eff<75?'#ef4444':'#f59e0b'),borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:70,max:100}}}});
-
+  // Stages chart
   const stageData = MONTHLY.filter(d=>d.deep!=null);
-  new Chart(document.getElementById('stagesChart'),{type:'bar',data:{labels:stageData.map(d=>d.month.slice(2)),datasets:[{label:'\u6df1\u5c64',data:stageData.map(d=>d.deep),backgroundColor:'#6366f1',borderRadius:4},{label:'REM',data:stageData.map(d=>d.rem),backgroundColor:'#a78bfa',borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:0,max:100}}}});
+  new Chart(document.getElementById('stagesChart'),{type:'bar',data:{labels:stageData.map(d=>d.month.slice(2)),datasets:[{label:'深層',data:stageData.map(d=>d.deep),backgroundColor:'#7C3AED',borderRadius:4},{label:'REM',data:stageData.map(d=>d.rem),backgroundColor:'#2563EB',borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:0,max:100}}}});
 }
+
+initAll();
 </script>
 
 <style>
+  .health-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
 
-  .health-container{max-width:960px;margin:0 auto;padding:1rem}
-  .health-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
-  .health-header h1{color:#fff;font-size:1.5rem;margin:0}
-  .health-subtitle{color:#9ca3af;font-size:.85rem;margin-top:.25rem}
-  .nav-link{color:#60a5fa;text-decoration:none;font-size:.85rem;padding:.4rem .8rem;border:1px solid #374151;border-radius:.5rem;white-space:nowrap}
-  .nav-link:hover{background:#1f2937}
+  .health-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .health-header h1 {
+    color: var(--brand-navy);
+    font-family: var(--font-cjk);
+    font-size: 1.6rem;
+    margin: 0;
+    font-weight: 700;
+  }
+  .health-subtitle {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+  }
+  .health-nav-link {
+    color: var(--accent-ai);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .health-nav-link:hover {
+    background: rgba(37,99,235,0.04);
+    border-color: var(--accent-ai);
+  }
 
-  .health-tabs{display:flex;gap:.25rem;margin-bottom:1.5rem;overflow-x:auto;padding-bottom:.25rem}
-  .tab-btn{background:#1f2937;color:#9ca3af;border:none;padding:.5rem .75rem;border-radius:.5rem;cursor:pointer;font-size:.85rem;white-space:nowrap;transition:all .2s}
-  .tab-btn:hover{background:#374151}
-  .tab-btn.active{background:#2563eb;color:#fff}
-  .tab-content{display:none}
-  .tab-content.active{display:block}
+  /* Tabs */
+  .health-tabs {
+    display: flex;
+    gap: 0.35rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+  .tab-btn {
+    background: var(--bg-section);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: var(--font-cjk);
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover {
+    background: var(--bg-card);
+    border-color: var(--border);
+    color: var(--brand-navy);
+  }
+  .tab-btn.active {
+    background: var(--brand-navy);
+    color: #fff;
+    border-color: var(--brand-navy);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
-  .kpi-grid{display:grid;gap:.75rem;margin-bottom:1.5rem}
-  .kpi-4col{grid-template-columns:repeat(4,1fr)}
-  .kpi-2col{grid-template-columns:repeat(2,1fr)}
-  .kpi{background:#1f2937;padding:1rem;border-radius:.75rem;border:1px solid #374151}
-  .kpi-label{display:block;color:#9ca3af;font-size:.75rem;margin-bottom:.25rem}
-  .kpi-value{display:block;font-size:1.25rem;font-weight:700}
-  .kpi-sub{display:block;color:#6b7280;font-size:.7rem;margin-top:.25rem}
+  /* KPI Cards */
+  .kpi-grid { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+  .kpi-4col { grid-template-columns: repeat(4, 1fr); }
+  .kpi-2col { grid-template-columns: repeat(2, 1fr); }
+  .kpi {
+    background: var(--bg-card);
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    transition: all 0.2s;
+  }
+  .kpi:hover {
+    box-shadow: var(--shadow-sm);
+  }
+  .kpi-label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+  }
+  .kpi-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: var(--font-cjk);
+  }
+  .kpi-sub {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    margin-top: 0.3rem;
+  }
 
-  .chart-panel{background:#1f2937;padding:1.25rem;border-radius:.75rem;border:1px solid #374151;margin-bottom:1rem}
-  .chart-panel h3{color:#d1d5db;font-size:.9rem;margin:0 0 .75rem}
-  .chart-wrap{position:relative;height:250px}
-  .chart-wrap.tall{height:300px}
-  .chart-note{color:#6b7280;font-size:.75rem;margin-top:.5rem}
-  .full-width{width:100%}
+  /* Chart Panels */
+  .chart-panel {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    margin-bottom: 1rem;
+  }
+  .chart-panel:hover {
+    box-shadow: var(--shadow-sm);
+  }
+  .chart-panel h3 {
+    color: var(--brand-navy);
+    font-size: 0.95rem;
+    font-family: var(--font-cjk);
+    font-weight: 700;
+    margin: 0 0 1rem;
+  }
+  .chart-wrap { position: relative; height: 250px; }
+  .chart-wrap.tall { height: 300px; }
+  .chart-note {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  .full-width { width: 100%; }
 
-  .findings-list{display:flex;flex-direction:column;gap:.75rem}
-  .finding{display:flex;gap:.5rem;font-size:.875rem;color:#d1d5db;line-height:1.5}
-  .finding strong{font-weight:600}
-  .dot{flex-shrink:0;margin-top:.25rem}
-  .dot.red{color:#ef4444}.dot.yellow{color:#eab308}.dot.orange{color:#f97316}.dot.blue{color:#60a5fa}.dot.purple{color:#a78bfa}.dot.green{color:#34d399}
+  /* Findings */
+  .findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .finding {
+    display: flex;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    font-family: var(--font-cjk);
+  }
+  .finding strong {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .dot {
+    flex-shrink: 0;
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+  }
+  .dot.red { color: #DC2626; }
+  .dot.yellow { color: #B45309; }
+  .dot.orange { color: #EA580C; }
+  .dot.blue { color: #2563EB; }
+  .dot.purple { color: #7C3AED; }
+  .dot.green { color: #059669; }
 
-  .action-box{background:linear-gradient(135deg,#1f2937,#111827);border-color:#1e40af}
+  /* Action Box */
+  .action-box {
+    background: linear-gradient(135deg, rgba(5,150,105,0.03), rgba(37,99,235,0.03));
+    border-color: rgba(5,150,105,0.2);
+  }
 
-  .data-table{width:100%;border-collapse:collapse;font-size:.875rem}
-  .data-table th{text-align:left;color:#9ca3af;padding:.5rem;border-bottom:1px solid #374151}
-  .data-table td{padding:.5rem;color:#d1d5db;border-bottom:1px solid #1f2937}
+  /* Data Table */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    font-family: var(--font-cjk);
+  }
+  .data-table th {
+    text-align: left;
+    color: var(--text-muted);
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .data-table td {
+    padding: 0.6rem 0.75rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .data-table tr:hover td {
+    background: var(--bg-section);
+  }
 
-  @media(max-width:768px){
-    .kpi-4col{grid-template-columns:repeat(2,1fr)}
-    .kpi-2col{grid-template-columns:1fr}
-    .health-header{flex-direction:column}
+  @media (max-width: 768px) {
+    .kpi-4col { grid-template-columns: repeat(2, 1fr); }
+    .kpi-2col { grid-template-columns: 1fr; }
+    .health-header { flex-direction: column; }
+    .health-container { padding: 1rem; }
   }
 </style>
 
