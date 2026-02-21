@@ -132,9 +132,14 @@ async function main() {
 
   // Load credentials
   let credentials;
-  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_B64) {
+    // Base64-encoded JSON — safest way to pass through GitHub Secrets
+    const raw = Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT_B64, 'base64').toString('utf-8');
+    credentials = JSON.parse(raw);
+    console.log('  Using env GOOGLE_SERVICE_ACCOUNT_B64 (base64)');
+    console.log(`  Service account: ${credentials.client_email}`);
+  } else if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
     let raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-    // Fix escaped newlines in private_key (common GitHub Secrets issue)
     credentials = JSON.parse(raw);
     if (credentials.private_key) {
       credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');

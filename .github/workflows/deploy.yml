@@ -6,6 +6,9 @@ on:
   repository_dispatch:
     types: [content-updated]
   workflow_dispatch:
+  schedule:
+    # 每天台灣時間 08:00 (UTC 00:00) 自動更新社群動態
+    - cron: '0 0 * * *'
 
 jobs:
   deploy:
@@ -34,14 +37,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Feed data comes from committed src/data/feed.json
-      # Update locally: node scripts/fetch-feed.mjs && git commit
-      # TODO: fix CI Google Sheets auth (private_key newline issue) to enable auto-fetch
+      - name: Fetch social feed
+        run: node scripts/fetch-feed.mjs
+        continue-on-error: true
+        env:
+          GOOGLE_SERVICE_ACCOUNT_B64: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_B64 }}
 
       - name: Build
         run: npm run build
-        env:
-          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
