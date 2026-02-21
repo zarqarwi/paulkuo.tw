@@ -13,6 +13,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'fs';
 import { execSync } from 'child_process';
 import { join, basename } from 'path';
+import { logCost } from './cost-tracker.mjs';
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 if (!ANTHROPIC_API_KEY) {
@@ -78,6 +79,10 @@ ${content}`
   }
 
   const data = await response.json();
+  // 費用追蹤
+  const usage = data.usage || {};
+  logCost({ service: 'anthropic', model: 'claude-sonnet', action: `translate-${locale.code}`, source: 'translate-article', inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0 });
+
   let text = data.content[0].text;
   
   // Strip any accidental code fences

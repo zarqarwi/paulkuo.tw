@@ -85,6 +85,26 @@ def make_slug(title: str) -> str:
     return slug[:80] if slug else f"debate-{datetime.now().strftime('%Y%m%d')}"
 
 
+# ── 費用追蹤 ───────────────────────────────
+def _log_cost_jsonl(service, model, action, source, input_tokens=0, output_tokens=0, cost_usd=None, note=""):
+    pricing = {"claude-sonnet": (3.0, 15.0), "gpt-4o": (2.5, 10.0)}
+    p = pricing.get(model, (0, 0))
+    if cost_usd is None:
+        cost_usd = (input_tokens / 1_000_000) * p[0] + (output_tokens / 1_000_000) * p[1]
+    record = {
+        "timestamp": datetime.now().isoformat(),
+        "service": service, "model": model,
+        "action": action, "source": source,
+        "inputTokens": input_tokens, "outputTokens": output_tokens,
+        "costUSD": round(cost_usd, 6),
+        "costTWD": round(cost_usd * 32.5, 2),
+        "note": note,
+    }
+    cost_file = Path(__file__).parent.parent / "data" / "costs.jsonl"
+    cost_file.parent.mkdir(parents=True, exist_ok=True)
+    with open(cost_file, "a") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
 # ── Claude API 呼叫 ──────────────────────────────────
 def call_claude(debate_content: str, debate_filename: str) -> dict:
     """用 Claude 將辯論紀錄轉成文章格式"""
@@ -143,6 +163,15 @@ def call_claude(debate_content: str, debate_filename: str) -> dict:
     print("   🤖 呼叫 Claude API 轉換中...")
     with urllib.request.urlopen(req, timeout=120) as resp:
         data = json.loads(resp.read())
+
+    # 費用追蹤
+    usage = data.get("usage", {})
+    _log_cost_jsonl(
+        service="anthropic", model="claude-sonnet",
+        action="debate-to-article", source="debate-to-article",
+        input_tokens=usage.get("input_tokens", 0),
+        output_tokens=usage.get("output_tokens", 0),
+    )
 
     text = data["content"][0]["text"]
 

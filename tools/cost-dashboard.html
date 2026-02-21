@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paul Kuo — API 費用儀表板</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e1a; --surface: #111827; --surface-2: #1a2235; --border: #1f2937;
+    --text: #e2e8f0; --text-dim: #64748b; --accent: #6366f1; --accent-glow: rgba(99,102,241,0.15);
+    --green: #10b981; --amber: #f59e0b; --red: #ef4444; --blue: #3b82f6;
+    --purple: #8b5cf6; --cyan: #06b6d4; --orange: #f97316; --pink: #ec4899;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans TC',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:2rem; }
+  .header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); }
+  .header h1 { font-family:'JetBrains Mono',monospace; font-size:1.5rem; font-weight:700; background:linear-gradient(135deg,var(--accent),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .header .subtitle { color:var(--text-dim); font-size:0.85rem; margin-top:0.25rem; }
+  .header .file-input { display:flex; align-items:center; gap:0.75rem; }
+  .header input[type="file"] { display:none; }
+  .header label,.header button { font-family:'JetBrains Mono',monospace; font-size:0.8rem; padding:0.5rem 1rem; background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:6px; cursor:pointer; transition:all 0.2s; }
+  .header label:hover,.header button:hover { border-color:var(--accent); background:var(--accent-glow); }
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:2rem; }
+  .kpi { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.25rem 1.5rem; position:relative; overflow:hidden; }
+  .kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .kpi:nth-child(1)::before { background:var(--accent); } .kpi:nth-child(2)::before { background:var(--green); }
+  .kpi:nth-child(3)::before { background:var(--amber); } .kpi:nth-child(4)::before { background:var(--cyan); }
+  .kpi:nth-child(5)::before { background:var(--pink); }
+  .kpi .label { font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em; }
+  .kpi .value { font-family:'JetBrains Mono',monospace; font-size:1.75rem; font-weight:700; margin-top:0.25rem; }
+  .kpi .sub { font-size:0.8rem; color:var(--text-dim); margin-top:0.15rem; font-family:'JetBrains Mono',monospace; }
+  .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2rem; }
+  .chart-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
+  .chart-card.full { grid-column:1/-1; }
+  .chart-card h3 { font-family:'JetBrains Mono',monospace; font-size:0.9rem; margin-bottom:1rem; color:var(--text-dim); }
+  .chart-wrapper { position:relative; height:280px; } .chart-wrapper.tall { height:350px; }
+  .table-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:2rem; }
+  .table-card h3 { font-family:'JetBrains Mono',monospace; font-size:0.9rem; margin-bottom:1rem; color:var(--text-dim); }
+  table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+  th { text-align:left; color:var(--text-dim); font-weight:500; padding:0.6rem 0.75rem; border-bottom:1px solid var(--border); }
+  td { padding:0.6rem 0.75rem; border-bottom:1px solid rgba(31,41,55,0.5); font-family:'JetBrains Mono',monospace; font-size:0.8rem; }
+  tr:hover td { background:var(--accent-glow); }
+  .tag { display:inline-block; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; }
+  .tag-anthropic { background:rgba(99,102,241,0.2); color:#818cf8; }
+  .tag-openai { background:rgba(16,185,129,0.2); color:#34d399; }
+  .tag-google { background:rgba(59,130,246,0.2); color:#60a5fa; }
+  .tag-xai { background:rgba(249,115,22,0.2); color:#fb923c; }
+  .tag-perplexity { background:rgba(139,92,246,0.2); color:#a78bfa; }
+  .empty-state { text-align:center; padding:4rem 2rem; color:var(--text-dim); }
+  .empty-state .icon { font-size:3rem; margin-bottom:1rem; opacity:0.5; }
+  .empty-state p { max-width:400px; margin:0 auto; line-height:1.6; }
+  .empty-state code { background:var(--surface-2); padding:0.2rem 0.5rem; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; }
+  @media (max-width:768px) { body{padding:1rem;} .charts-grid{grid-template-columns:1fr;} .kpi-grid{grid-template-columns:repeat(2,1fr);} .header{flex-direction:column;align-items:flex-start;gap:1rem;} }
+</style>
+</head>
+<body>
+<div class="header">
+  <div><h1>💰 API Cost Dashboard</h1><div class="subtitle">paulkuo.tw 自動化管線費用追蹤</div></div>
+  <div class="file-input">
+    <label for="fileInput">📂 載入 costs.jsonl</label>
+    <input type="file" id="fileInput" accept=".jsonl,.json,.txt">
+    <button id="demoBtn">📊 Demo Data</button>
+  </div>
+</div>
+<div id="kpiSection" class="kpi-grid"></div>
+<div id="chartsSection" class="charts-grid"></div>
+<div id="tableSection"></div>
+<div id="emptyState" class="empty-state">
+  <div class="icon">📊</div>
+  <p>載入 <code>data/costs.jsonl</code> 檔案，或點「Demo Data」查看範例。<br><br>每次 API 呼叫會自動記錄到這個檔案。</p>
+</div>
+<script>
+const SERVICE_COLORS = { anthropic:'#6366f1', openai:'#10b981', google:'#3b82f6', xai:'#f97316', perplexity:'#8b5cf6' };
+const SOURCE_COLORS = { 'debate-engine':'#f59e0b', 'translate-article':'#3b82f6', 'publish-social':'#ec4899', 'debate-to-article':'#06b6d4' };
+const ACTION_LABELS = { debate:'辯論', 'translate-en':'翻譯EN', 'translate-ja':'翻譯JA', 'translate-zh-cn':'翻譯簡中', 'social-summary':'社群摘要', 'image-gen':'配圖', 'debate-to-article':'辯論轉文章', factcheck:'事實查核' };
+let charts = {};
+function parseJSONL(text) { return text.trim().split('\n').filter(Boolean).map(l => { try{return JSON.parse(l)}catch{return null} }).filter(Boolean); }
+function generateDemoData() {
+  const records = [], now = new Date();
+  for (let d=29;d>=0;d--) {
+    const date=new Date(now); date.setDate(date.getDate()-d); const dateStr=date.toISOString();
+    const debateCount = Math.random()>0.5 ? Math.floor(Math.random()*2)+1 : 0;
+    for (let i=0;i<debateCount;i++) {
+      [{s:'openai',m:'gpt-4o'},{s:'google',m:'gemini-2.5-pro'},{s:'xai',m:'grok-3'}].forEach(x => {
+        const inp=3000+Math.random()*5000, out=2000+Math.random()*4000, c=(inp/1e6)*2.5+(out/1e6)*10;
+        records.push({timestamp:dateStr,service:x.s,model:x.m,action:'debate',source:'debate-engine',inputTokens:Math.round(inp),outputTokens:Math.round(out),costUSD:+c.toFixed(6),costTWD:+(c*32.5).toFixed(2),note:'辯論'});
+      });
+      if(Math.random()>0.3) records.push({timestamp:dateStr,service:'perplexity',model:'perplexity',action:'factcheck',source:'debate-engine',inputTokens:0,outputTokens:0,costUSD:0.005,costTWD:0.16,note:''});
+    }
+    if(Math.random()>0.6) {
+      const i1=4000+Math.random()*8000,o1=2000+Math.random()*6000,c1=(i1/1e6)*3+(o1/1e6)*15;
+      records.push({timestamp:dateStr,service:'anthropic',model:'claude-sonnet',action:'debate-to-article',source:'debate-to-article',inputTokens:Math.round(i1),outputTokens:Math.round(o1),costUSD:+c1.toFixed(6),costTWD:+(c1*32.5).toFixed(2),note:''});
+      ['en','ja','zh-cn'].forEach(lang => { const i2=2000+Math.random()*4000,o2=2000+Math.random()*5000,c2=(i2/1e6)*3+(o2/1e6)*15; records.push({timestamp:dateStr,service:'anthropic',model:'claude-sonnet',action:`translate-${lang}`,source:'translate-article',inputTokens:Math.round(i2),outputTokens:Math.round(o2),costUSD:+c2.toFixed(6),costTWD:+(c2*32.5).toFixed(2),note:''}); });
+      const i3=3000+Math.random()*3000,o3=1500+Math.random()*2000,c3=(i3/1e6)*3+(o3/1e6)*15;
+      records.push({timestamp:dateStr,service:'anthropic',model:'claude-sonnet',action:'social-summary',source:'publish-social',inputTokens:Math.round(i3),outputTokens:Math.round(o3),costUSD:+c3.toFixed(6),costTWD:+(c3*32.5).toFixed(2),note:''});
+      records.push({timestamp:dateStr,service:'openai',model:'dall-e-3',action:'image-gen',source:'publish-social',inputTokens:0,outputTokens:0,costUSD:0.04,costTWD:1.3,note:''});
+    }
+  }
+  return records;
+}
+function render(records) {
+  document.getElementById('emptyState').style.display='none';
+  const totalUSD=records.reduce((s,r)=>s+r.costUSD,0), totalTWD=totalUSD*32.5, totalCalls=records.length;
+  const days=[...new Set(records.map(r=>r.timestamp.slice(0,10)))], avgPerDay=totalUSD/(days.length||1);
+  const thisMonth=new Date().toISOString().slice(0,7), monthUSD=records.filter(r=>r.timestamp.startsWith(thisMonth)).reduce((s,r)=>s+r.costUSD,0);
+  document.getElementById('kpiSection').innerHTML=`
+    <div class="kpi"><div class="label">累計費用</div><div class="value" style="color:#6366f1">$${totalUSD.toFixed(2)}</div><div class="sub">NT$${totalTWD.toFixed(0)}</div></div>
+    <div class="kpi"><div class="label">本月費用</div><div class="value" style="color:#10b981">$${monthUSD.toFixed(2)}</div><div class="sub">NT$${(monthUSD*32.5).toFixed(0)}</div></div>
+    <div class="kpi"><div class="label">日均費用</div><div class="value" style="color:#f59e0b">$${avgPerDay.toFixed(3)}</div><div class="sub">NT$${(avgPerDay*32.5).toFixed(1)}/天</div></div>
+    <div class="kpi"><div class="label">API 呼叫次數</div><div class="value" style="color:#06b6d4">${totalCalls}</div><div class="sub">${days.length} 天</div></div>
+    <div class="kpi"><div class="label">Token 總量</div><div class="value" style="color:#ec4899">${(records.reduce((s,r)=>s+r.inputTokens+r.outputTokens,0)/1000).toFixed(0)}K</div><div class="sub">input + output</div></div>`;
+  Object.values(charts).forEach(c=>c.destroy()); charts={};
+  document.getElementById('chartsSection').innerHTML=`
+    <div class="chart-card full"><h3>📈 每日費用趨勢 (USD)</h3><div class="chart-wrapper tall"><canvas id="dailyChart"></canvas></div></div>
+    <div class="chart-card"><h3>🏢 依服務商分佈</h3><div class="chart-wrapper"><canvas id="serviceChart"></canvas></div></div>
+    <div class="chart-card"><h3>⚙️ 依來源分佈</h3><div class="chart-wrapper"><canvas id="sourceChart"></canvas></div></div>`;
+  const dailyData={}, sources=[...new Set(records.map(r=>r.source))];
+  days.sort().forEach(d=>{dailyData[d]={};sources.forEach(s=>dailyData[d][s]=0)});
+  records.forEach(r=>{const d=r.timestamp.slice(0,10);if(dailyData[d])dailyData[d][r.source]+=r.costUSD});
+  const sortedDays=Object.keys(dailyData).sort();
+  charts.daily=new Chart(document.getElementById('dailyChart'),{type:'bar',data:{labels:sortedDays.map(d=>d.slice(5)),datasets:sources.map(s=>({label:s,data:sortedDays.map(d=>+dailyData[d][s].toFixed(4)),backgroundColor:SOURCE_COLORS[s]||'#64748b',borderRadius:2}))},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#64748b',font:{family:'JetBrains Mono',size:10}}},y:{stacked:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#64748b',font:{family:'JetBrains Mono',size:10},callback:v=>'$'+v.toFixed(2)}}},plugins:{legend:{labels:{color:'#94a3b8',font:{family:'JetBrains Mono',size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: $${ctx.raw.toFixed(4)}`}}}}});
+  const byService={}; records.forEach(r=>{byService[r.service]=(byService[r.service]||0)+r.costUSD});
+  const sk=Object.keys(byService).sort((a,b)=>byService[b]-byService[a]);
+  charts.service=new Chart(document.getElementById('serviceChart'),{type:'doughnut',data:{labels:sk,datasets:[{data:sk.map(k=>+byService[k].toFixed(4)),backgroundColor:sk.map(k=>SERVICE_COLORS[k]||'#64748b'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:'#94a3b8',font:{family:'JetBrains Mono',size:11},padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: $${ctx.raw.toFixed(4)} (${((ctx.raw/totalUSD)*100).toFixed(1)}%)`}}}}});
+  const bySource={}; records.forEach(r=>{bySource[r.source]=(bySource[r.source]||0)+r.costUSD});
+  const srk=Object.keys(bySource).sort((a,b)=>bySource[b]-bySource[a]);
+  charts.source=new Chart(document.getElementById('sourceChart'),{type:'doughnut',data:{labels:srk,datasets:[{data:srk.map(k=>+bySource[k].toFixed(4)),backgroundColor:srk.map(k=>SOURCE_COLORS[k]||'#64748b'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:'#94a3b8',font:{family:'JetBrains Mono',size:11},padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: $${ctx.raw.toFixed(4)} (${((ctx.raw/totalUSD)*100).toFixed(1)}%)`}}}}});
+  const recent=[...records].sort((a,b)=>b.timestamp.localeCompare(a.timestamp)).slice(0,50);
+  document.getElementById('tableSection').innerHTML=`<div class="table-card"><h3>📋 最近 50 筆記錄</h3><div style="overflow-x:auto"><table><thead><tr><th>時間</th><th>服務</th><th>動作</th><th>來源</th><th>Input</th><th>Output</th><th>費用</th><th>備註</th></tr></thead><tbody>${recent.map(r=>`<tr><td>${r.timestamp.slice(0,16).replace('T',' ')}</td><td><span class="tag tag-${r.service}">${r.service}</span></td><td>${ACTION_LABELS[r.action]||r.action}</td><td>${r.source}</td><td>${r.inputTokens?r.inputTokens.toLocaleString():'-'}</td><td>${r.outputTokens?r.outputTokens.toLocaleString():'-'}</td><td>$${r.costUSD.toFixed(4)}</td><td style="color:var(--text-dim);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.note||''}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+document.getElementById('fileInput').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>render(parseJSONL(ev.target.result));r.readAsText(f)});
+document.getElementById('demoBtn').addEventListener('click',()=>render(generateDemoData()));
+</script>
+</body>
+</html>

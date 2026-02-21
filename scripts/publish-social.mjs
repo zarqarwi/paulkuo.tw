@@ -9,6 +9,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { basename, join } from 'path';
 
 import { PLATFORM_IDS, MANUAL_PLATFORMS, CHAR_LIMITS, DEFAULT_REDDIT_SUBREDDIT } from './platform-config.mjs';
+import { logCost } from './cost-tracker.mjs';
 
 // ── 設定 ────────────────────────────────────────────
 const SITE_URL = process.env.SITE_URL || 'https://paulkuo.tw';
@@ -88,7 +89,11 @@ ${article.body.slice(0, 2000)}
   if (text.startsWith('```')) {
     text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
   }
-  return JSON.parse(text);
+  const parsed = JSON.parse(text);
+  // 費用追蹤
+  const usage = data.usage || {};
+  logCost({ service: 'anthropic', model: 'claude-sonnet', action: 'social-summary', source: 'publish-social', inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0 });
+  return parsed;
 }
 
 // ── DALL-E 圖片生成 ──────────────────────────────────
@@ -126,6 +131,7 @@ async function generateImage(title, pillar) {
 
   if (!resp.ok) { console.log(`  ❌ DALL-E error: ${resp.status}`); return null; }
   const data = await resp.json();
+  logCost({ service: 'openai', model: 'dall-e-3', action: 'image-gen', source: 'publish-social', note: title.slice(0, 50) });
   return Buffer.from(data.data[0].b64_json, 'base64');
 }
 
