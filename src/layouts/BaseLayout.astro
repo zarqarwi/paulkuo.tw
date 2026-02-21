@@ -87,6 +87,12 @@ const hreflangs = [
         <a href="/about" id="nav-about">關於</a>
         <a href="/#contact" class="nav-cta">聯絡我</a>
       </div>
+      <div class="lang-switcher">
+        <a href="/" class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
+        <a href="/zh-cn/" class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
+        <a href="/en/" class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
+        <a href="/ja/" class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
+      </div>
       <button class="nav-hamburger" id="hamburger-btn" aria-label="選單">
         <span></span><span></span><span></span>
       </button>
