@@ -37,3 +37,5 @@ gen-lang-client-*.json
 
 # Content managed by paulkuo-content repo
 src/content/articles/
+paulkuo_backup.html
+src/content/articles

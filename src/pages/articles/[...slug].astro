@@ -21,26 +21,28 @@ const dateStr = date.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long
 
 const schemaJson = JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "Article",
+  "@type": "BlogPosting",
   "headline": title,
   "description": description,
+  "abstract": description,
   "datePublished": date.toISOString().split('T')[0],
   "dateModified": (updated || date).toISOString().split('T')[0],
   "inLanguage": "zh-Hant",
   "url": `${SITE.url}/articles/${article.id.replace(/\.md$/, '')}`,
   "author": {
     "@type": "Person",
+    "@id": `${SITE.url}/#person`,
     "name": SITE.author,
     "alternateName": SITE.authorAlt,
-    "url": SITE.url,
-    "description": SITE.description,
-    "sameAs": [
-      "https://www.linkedin.com/in/paulkuo",
-      "https://x.com/paulkuo",
-      "https://www.threads.net/@zarqarwi"
-    ]
+    "url": SITE.url
   },
-  "publisher": { "@type": "Person", "name": SITE.author, "url": SITE.url },
+  "publisher": {
+    "@type": "Person",
+    "@id": `${SITE.url}/#person`,
+    "name": SITE.author,
+    "url": SITE.url
+  },
+  "isPartOf": { "@id": `${SITE.url}/#website` },
   "mainEntityOfPage": { "@type": "WebPage", "@id": `${SITE.url}/articles/${article.id.replace(/\.md$/, '')}` },
   "keywords": tags
 });

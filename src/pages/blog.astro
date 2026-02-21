@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { PILLAR_MAP } from '../config';
+import { PILLAR_MAP, SITE } from '../config';
 
 const ARTICLES_PER_PAGE = 12;
 
@@ -9,8 +9,29 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const pillars = Object.entries(PILLAR_MAP);
+
+const blogSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Thinking Out Loud",
+  "description": "智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。",
+  "url": `${SITE.url}/blog`,
+  "isPartOf": { "@id": `${SITE.url}/#website` },
+  "author": { "@id": `${SITE.url}/#person` },
+  "numberOfItems": articles.length,
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": articles.length,
+    "itemListElement": articles.slice(0, 12).map((a, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "url": `${SITE.url}/articles/${a.id.replace(/\.md$/, '')}`,
+      "name": a.data.title
+    }))
+  }
+});
 ---
-<BaseLayout title="Thinking Out Loud — Paul Kuo" description="智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。">
+<BaseLayout title="Thinking Out Loud — Paul Kuo" description="智能、再生、文明、創造、記憶 — 在實作中思考，在思考中前進。" schemaJson={blogSchema}>
   <div class="section-container">
     <div class="blog-hero">
       <h1>Thinking Out Loud</h1>

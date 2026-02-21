@@ -14,28 +14,47 @@ const articles = allArticles.length > 0
       .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
       .slice(0, 3);
 
-const personSchema = JSON.stringify({
+const homeSchema = JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "Person",
-  "name": SITE.author,
-  "alternateName": SITE.authorAlt,
-  "url": SITE.url,
-  "description": SITE.description,
-  "sameAs": [
-    "https://www.linkedin.com/in/paulkuo",
-    "https://x.com/paulkuo",
-    "https://www.threads.net/@zarqarwi",
-    "https://www.youtube.com/@KuoPaul",
-    "https://www.facebook.com/zarqarwi",
-    "https://www.instagram.com/zarqarwi",
-    "https://bsky.app/profile/paulkuo.bsky.social",
-    "https://www.reddit.com/user/Constant-Variety1656"
-  ],
-  "jobTitle": "Business Development",
-  "knowsAbout": ["Circular Economy", "AI", "Semiconductor", "Theology", "Startup"]
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE.url}/#website`,
+      "url": SITE.url,
+      "name": "Paul Kuo",
+      "description": SITE.description,
+      "inLanguage": ["zh-Hant", "en", "ja", "zh-Hans"],
+      "publisher": { "@id": `${SITE.url}/#person` }
+    },
+    {
+      "@type": "Person",
+      "@id": `${SITE.url}/#person`,
+      "name": SITE.author,
+      "alternateName": SITE.authorAlt,
+      "url": SITE.url,
+      "description": SITE.description,
+      "jobTitle": "Commercial Integration & AI Digital Development Director",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "SDTI 佳龍科技",
+        "url": "https://www.sdti.com.tw"
+      },
+      "knowsAbout": ["Circular Economy", "AI", "Semiconductor", "Theology", "Startup", "Agentic SEO"],
+      "sameAs": [
+        "https://www.linkedin.com/in/paulkuo",
+        "https://x.com/paulkuo",
+        "https://www.threads.net/@zarqarwi",
+        "https://www.youtube.com/@KuoPaul",
+        "https://www.facebook.com/zarqarwi",
+        "https://www.instagram.com/zarqarwi",
+        "https://bsky.app/profile/paulkuo.bsky.social",
+        "https://www.reddit.com/user/Constant-Variety1656"
+      ]
+    }
+  ]
 });
 ---
-<BaseLayout title={SITE.title} schemaJson={personSchema}>
+<BaseLayout title={SITE.title} schemaJson={homeSchema}>
 
   <!-- HERO -->
   <section class="hero">
