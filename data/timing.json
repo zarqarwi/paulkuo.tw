@@ -1,29 +1,163 @@
 {
-  "updated": "2026-02-21T17:00:00+08:00",
-  "source": "timing-app-demo",
-  "note": "Demo data — replace with real Timing API data after generating API key at web.timingapp.com",
+  "updated": "2026-02-21T17:21:29+08:00",
+  "source": "timing-app-local",
+  "method": "AppleScript: Development + Web Browsing as AI proxy",
   "month_summary": {
     "period": "2026-02",
-    "total_ai_hours": 42.5,
-    "active_days": 17
+    "total_ai_hours": 16.8,
+    "active_days": 10
   },
   "daily": [
-    {"date": "2026-02-05", "ai_hours": 2.8, "breakdown": {"claude": 1.5, "perplexity": 0.3, "gpt": 0.5, "terminal": 0.5}},
-    {"date": "2026-02-06", "ai_hours": 3.1, "breakdown": {"claude": 2.0, "perplexity": 0.2, "gpt": 0.4, "terminal": 0.5}},
-    {"date": "2026-02-07", "ai_hours": 1.5, "breakdown": {"claude": 1.0, "perplexity": 0.1, "gpt": 0.2, "terminal": 0.2}},
-    {"date": "2026-02-08", "ai_hours": 4.2, "breakdown": {"claude": 2.5, "perplexity": 0.5, "gpt": 0.7, "terminal": 0.5}},
-    {"date": "2026-02-09", "ai_hours": 0.0, "breakdown": {}},
-    {"date": "2026-02-10", "ai_hours": 2.5, "breakdown": {"claude": 1.8, "perplexity": 0.2, "gpt": 0.3, "terminal": 0.2}},
-    {"date": "2026-02-11", "ai_hours": 3.5, "breakdown": {"claude": 2.2, "perplexity": 0.3, "gpt": 0.5, "terminal": 0.5}},
-    {"date": "2026-02-12", "ai_hours": 2.0, "breakdown": {"claude": 1.2, "perplexity": 0.2, "gpt": 0.3, "terminal": 0.3}},
-    {"date": "2026-02-13", "ai_hours": 1.8, "breakdown": {"claude": 1.0, "perplexity": 0.3, "gpt": 0.2, "terminal": 0.3}},
-    {"date": "2026-02-14", "ai_hours": 3.8, "breakdown": {"claude": 2.3, "perplexity": 0.4, "gpt": 0.6, "terminal": 0.5}},
-    {"date": "2026-02-15", "ai_hours": 2.2, "breakdown": {"claude": 1.5, "perplexity": 0.2, "gpt": 0.3, "terminal": 0.2}},
-    {"date": "2026-02-16", "ai_hours": 0.5, "breakdown": {"claude": 0.3, "perplexity": 0.1, "gpt": 0.1, "terminal": 0.0}},
-    {"date": "2026-02-17", "ai_hours": 3.0, "breakdown": {"claude": 1.8, "perplexity": 0.3, "gpt": 0.5, "terminal": 0.4}},
-    {"date": "2026-02-18", "ai_hours": 2.8, "breakdown": {"claude": 1.7, "perplexity": 0.3, "gpt": 0.4, "terminal": 0.4}},
-    {"date": "2026-02-19", "ai_hours": 3.5, "breakdown": {"claude": 2.0, "perplexity": 0.4, "gpt": 0.6, "terminal": 0.5}},
-    {"date": "2026-02-20", "ai_hours": 2.5, "breakdown": {"claude": 1.5, "perplexity": 0.3, "gpt": 0.4, "terminal": 0.3}},
-    {"date": "2026-02-21", "ai_hours": 2.8, "breakdown": {"claude": 1.8, "perplexity": 0.2, "gpt": 0.4, "terminal": 0.4}}
+    {
+      "date": "2026-02-01",
+      "ai_hours": 0.18,
+      "breakdown": {
+        "Web Browsing": 0.18
+      }
+    },
+    {
+      "date": "2026-02-02",
+      "ai_hours": 0.17,
+      "breakdown": {
+        "Web Browsing": 0.17
+      }
+    },
+    {
+      "date": "2026-02-03",
+      "ai_hours": 0.02,
+      "breakdown": {
+        "Web Browsing": 0.02
+      }
+    },
+    {
+      "date": "2026-02-04",
+      "ai_hours": 0.17,
+      "breakdown": {
+        "Web Browsing": 0.17
+      }
+    },
+    {
+      "date": "2026-02-05",
+      "ai_hours": 0.2,
+      "breakdown": {
+        "Web Browsing": 0.2
+      }
+    },
+    {
+      "date": "2026-02-06",
+      "ai_hours": 0.1,
+      "breakdown": {
+        "Web Browsing": 0.1
+      }
+    },
+    {
+      "date": "2026-02-07",
+      "ai_hours": 0.08,
+      "breakdown": {
+        "Web Browsing": 0.08
+      }
+    },
+    {
+      "date": "2026-02-08",
+      "ai_hours": 0.1,
+      "breakdown": {
+        "Web Browsing": 0.1
+      }
+    },
+    {
+      "date": "2026-02-09",
+      "ai_hours": 0.09,
+      "breakdown": {
+        "Web Browsing": 0.09
+      }
+    },
+    {
+      "date": "2026-02-10",
+      "ai_hours": 0.05,
+      "breakdown": {
+        "Web Browsing": 0.05
+      }
+    },
+    {
+      "date": "2026-02-11",
+      "ai_hours": 0.09,
+      "breakdown": {
+        "Web Browsing": 0.09
+      }
+    },
+    {
+      "date": "2026-02-12",
+      "ai_hours": 0.11,
+      "breakdown": {
+        "Web Browsing": 0.11
+      }
+    },
+    {
+      "date": "2026-02-13",
+      "ai_hours": 0.06,
+      "breakdown": {
+        "Web Browsing": 0.06
+      }
+    },
+    {
+      "date": "2026-02-14",
+      "ai_hours": 0.02,
+      "breakdown": {
+        "Web Browsing": 0.02
+      }
+    },
+    {
+      "date": "2026-02-15",
+      "ai_hours": 0.04,
+      "breakdown": {
+        "Web Browsing": 0.04
+      }
+    },
+    {
+      "date": "2026-02-16",
+      "ai_hours": 0.03,
+      "breakdown": {
+        "Web Browsing": 0.03
+      }
+    },
+    {
+      "date": "2026-02-17",
+      "ai_hours": 0.13,
+      "breakdown": {
+        "Web Browsing": 0.13
+      }
+    },
+    {
+      "date": "2026-02-18",
+      "ai_hours": 2.19,
+      "breakdown": {
+        "Development": 0.25,
+        "Web Browsing": 1.94
+      }
+    },
+    {
+      "date": "2026-02-19",
+      "ai_hours": 5.17,
+      "breakdown": {
+        "Development": 0.66,
+        "Web Browsing": 4.51
+      }
+    },
+    {
+      "date": "2026-02-20",
+      "ai_hours": 5.47,
+      "breakdown": {
+        "Development": 1.08,
+        "Web Browsing": 4.39
+      }
+    },
+    {
+      "date": "2026-02-21",
+      "ai_hours": 2.36,
+      "breakdown": {
+        "Development": 0.67,
+        "Web Browsing": 1.69
+      }
+    }
   ]
 }
