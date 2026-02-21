@@ -55,7 +55,7 @@ const tickerData = JSON.stringify({
 });
 ---
 
-<div class="cost-ticker" id="costTicker" data-ticker={tickerData}>
+<a href="/#feed" class="cost-ticker" id="costTicker" data-ticker={tickerData} style="text-decoration:none;color:inherit;display:block">
   {hasData ? (
     <div class="ticker-inner">
       <!-- 本月費用 + sparkline -->
@@ -99,7 +99,7 @@ const tickerData = JSON.stringify({
       <span class="ticker-value" style="opacity:0.5">待收集數據</span>
     </div>
   )}
-</div>
+</a>
 
 <script is:inline>
 (function() {
