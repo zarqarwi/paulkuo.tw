@@ -144,11 +144,12 @@ nav {
 }
 .nav-links a:hover { color: var(--brand-navy); }
 .nav-links a.active { color: var(--brand-navy); }
-.nav-widgets{display:flex;gap:12px;margin-left:16px;padding-left:16px;border-left:1px solid var(--border);align-items:center}
-.nav-widget{display:flex;align-items:center;gap:4px;cursor:default}
+.nav-widgets{display:flex;flex-direction:row;gap:0;margin-left:16px;padding-left:16px;border-left:1px solid var(--border);align-items:center;flex-shrink:0}
+.nav-widget{display:flex;align-items:center;gap:5px;cursor:default;padding:0 10px;flex-shrink:0}
+.nav-widget+.nav-widget{border-left:1px solid var(--border)}
 .nav-widget-icon{color:var(--text-muted);flex-shrink:0}
-.nav-widget-value{font-size:.75rem;font-weight:600;color:var(--brand-navy);letter-spacing:-.01em}
-.nav-widget-sub{font-size:.6rem;color:var(--text-muted)}
+.nav-widget-value{font-size:.75rem;font-weight:600;color:var(--brand-navy);letter-spacing:-.01em;white-space:nowrap}
+.nav-widget-sub{font-size:.6rem;color:var(--text-muted);white-space:nowrap}
 .nav-widget-spark{vertical-align:middle}
 .lang-switcher{display:flex;gap:4px;margin-left:12px;border-left:1px solid var(--border);padding-left:12px}
 

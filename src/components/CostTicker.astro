@@ -59,11 +59,23 @@ const last7Total = last7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
 const prev7Total = prev7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
 const changePercent = prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0;
 
-// AI collaboration time
-const monthDays = new Set<string>();
-monthRecords.forEach(r => { if (r.timestamp) monthDays.add(r.timestamp.slice(0, 10)); });
-const aiDaysMonth = monthDays.size;
-const aiHoursMonth = Math.round(aiDaysMonth * 2.5);
+// AI collaboration time (from Timing App data)
+let aiHoursMonth = 0;
+let aiDaysMonth = 0;
+const timingPath = join(process.cwd(), 'data', 'timing.json');
+if (existsSync(timingPath)) {
+  try {
+    const timing = JSON.parse(readFileSync(timingPath, 'utf-8'));
+    aiHoursMonth = Math.round(timing.month_summary?.total_ai_hours || 0);
+    aiDaysMonth = timing.month_summary?.active_days || 0;
+  } catch {}
+} else {
+  // Fallback: estimate from costs.jsonl
+  const monthDays = new Set<string>();
+  monthRecords.forEach(r => { if (r.timestamp) monthDays.add(r.timestamp.slice(0, 10)); });
+  aiDaysMonth = monthDays.size;
+  aiHoursMonth = Math.round(aiDaysMonth * 2.5);
+}
 
 const hasData = records.length > 0;
 
@@ -112,15 +124,16 @@ const tickerData = JSON.stringify({
         <span class="ticker-label">累計</span>
         <span class="ticker-value">${totalUSD.toFixed(2)}</span>
       </div>
-      <!-- 步數 + AI時間（手機版顯示，桌機版在 nav 已有） -->
-      <div class="ticker-sep ticker-mobile-only"></div>
-      <div class="ticker-item ticker-mobile-only">
-        <span class="ticker-label">歩數</span>
+      <div class="ticker-sep"></div>
+      <!-- 步數 -->
+      <div class="ticker-item">
+        <span class="ticker-label">🚶 步數</span>
         <span class="ticker-value">{fitbitSteps.toLocaleString()}</span>
       </div>
-      <div class="ticker-sep ticker-mobile-only"></div>
-      <div class="ticker-item ticker-mobile-only">
-        <span class="ticker-label">AI</span>
+      <div class="ticker-sep"></div>
+      <!-- AI 協作 -->
+      <div class="ticker-item">
+        <span class="ticker-label">⏱ AI 協作</span>
         <span class="ticker-value">{aiHoursMonth}h</span>
         <span class="ticker-sub">{aiDaysMonth}d</span>
       </div>
@@ -253,14 +266,11 @@ const tickerData = JSON.stringify({
     background: rgba(255,255,255,0.12);
     flex-shrink: 0;
   }
-  .ticker-mobile-only { display: none; }
   @media (max-width: 768px) {
     .ticker-inner {
       padding: 0 12px;
       height: 44px;
     }
     .ticker-item { padding: 0 10px; }
-    .ticker-mobile-only { display: flex; }
-    div.ticker-sep.ticker-mobile-only { display: block; }
   }
 </style>

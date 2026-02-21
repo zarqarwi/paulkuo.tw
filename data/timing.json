@@ -1,0 +1,29 @@
+{
+  "updated": "2026-02-21T17:00:00+08:00",
+  "source": "timing-app-demo",
+  "note": "Demo data — replace with real Timing API data after generating API key at web.timingapp.com",
+  "month_summary": {
+    "period": "2026-02",
+    "total_ai_hours": 42.5,
+    "active_days": 17
+  },
+  "daily": [
+    {"date": "2026-02-05", "ai_hours": 2.8, "breakdown": {"claude": 1.5, "perplexity": 0.3, "gpt": 0.5, "terminal": 0.5}},
+    {"date": "2026-02-06", "ai_hours": 3.1, "breakdown": {"claude": 2.0, "perplexity": 0.2, "gpt": 0.4, "terminal": 0.5}},
+    {"date": "2026-02-07", "ai_hours": 1.5, "breakdown": {"claude": 1.0, "perplexity": 0.1, "gpt": 0.2, "terminal": 0.2}},
+    {"date": "2026-02-08", "ai_hours": 4.2, "breakdown": {"claude": 2.5, "perplexity": 0.5, "gpt": 0.7, "terminal": 0.5}},
+    {"date": "2026-02-09", "ai_hours": 0.0, "breakdown": {}},
+    {"date": "2026-02-10", "ai_hours": 2.5, "breakdown": {"claude": 1.8, "perplexity": 0.2, "gpt": 0.3, "terminal": 0.2}},
+    {"date": "2026-02-11", "ai_hours": 3.5, "breakdown": {"claude": 2.2, "perplexity": 0.3, "gpt": 0.5, "terminal": 0.5}},
+    {"date": "2026-02-12", "ai_hours": 2.0, "breakdown": {"claude": 1.2, "perplexity": 0.2, "gpt": 0.3, "terminal": 0.3}},
+    {"date": "2026-02-13", "ai_hours": 1.8, "breakdown": {"claude": 1.0, "perplexity": 0.3, "gpt": 0.2, "terminal": 0.3}},
+    {"date": "2026-02-14", "ai_hours": 3.8, "breakdown": {"claude": 2.3, "perplexity": 0.4, "gpt": 0.6, "terminal": 0.5}},
+    {"date": "2026-02-15", "ai_hours": 2.2, "breakdown": {"claude": 1.5, "perplexity": 0.2, "gpt": 0.3, "terminal": 0.2}},
+    {"date": "2026-02-16", "ai_hours": 0.5, "breakdown": {"claude": 0.3, "perplexity": 0.1, "gpt": 0.1, "terminal": 0.0}},
+    {"date": "2026-02-17", "ai_hours": 3.0, "breakdown": {"claude": 1.8, "perplexity": 0.3, "gpt": 0.5, "terminal": 0.4}},
+    {"date": "2026-02-18", "ai_hours": 2.8, "breakdown": {"claude": 1.7, "perplexity": 0.3, "gpt": 0.4, "terminal": 0.4}},
+    {"date": "2026-02-19", "ai_hours": 3.5, "breakdown": {"claude": 2.0, "perplexity": 0.4, "gpt": 0.6, "terminal": 0.5}},
+    {"date": "2026-02-20", "ai_hours": 2.5, "breakdown": {"claude": 1.5, "perplexity": 0.3, "gpt": 0.4, "terminal": 0.3}},
+    {"date": "2026-02-21", "ai_hours": 2.8, "breakdown": {"claude": 1.8, "perplexity": 0.2, "gpt": 0.4, "terminal": 0.4}}
+  ]
+}
