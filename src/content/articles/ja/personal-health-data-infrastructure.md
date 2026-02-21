@@ -1,6 +1,6 @@
 ---
-title: 個人健康データ基盤：10年間のApple Healthから AI駆動のクロス分析へ
-description: 問題はデータがないことではなく、基盤がないことだった。この記事では、iPhoneとApple Watchから10年超・300万件の健康データを抽出し、Fitbit MCPのリアルタイム連携とClaude AIを組み合わせて、自分自身の個人健康基盤（Personal Health Infrastructure）を構築した過程を記録する。そこから見えてきたのは、単一デバイスでは決して教えてくれない真実であった。
+title: "個人健康データ基盤：10年間のApple Healthから AI駆動のクロス分析へ"
+description: "問題はデータがないことではなく、基盤がないことだった。この記事では、iPhoneとApple Watchから10年超・300万件の健康データを抽出し、Fitbit MCPのリアルタイム連携とClaude AIを組み合わせて、自分自身の個人健康基盤（Personal Health Infrastructure）を構築した過程を記録する。そこから見えてきたのは、単一デバイスでは決して教えてくれない真実であった。"
 date: 2026-02-21
 pillar: ai
 ---

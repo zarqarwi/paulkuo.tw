@@ -1,6 +1,6 @@
 ---
-title: 个人健康数据基础设施：从 10 年 Apple Health 到 AI 驱动的交叉分析
-description: 我们并不是没有资料，而是没有基础设施。这篇文章记录了我如何从 iPhone 和 Apple Watch 导出超过 10 年、300 万笔健康数据，结合 Fitbit MCP 即时串接与 Claude AI，建立自己的个人健康基础设施（Personal Health Infrastructure），并从中看见单一装置永远不会告诉你的事。
+title: "个人健康数据基础设施：从 10 年 Apple Health 到 AI 驱动的交叉分析"
+description: "我们并不是没有资料，而是没有基础设施。这篇文章记录了我如何从 iPhone 和 Apple Watch 导出超过 10 年、300 万笔健康数据，结合 Fitbit MCP 即时串接与 Claude AI，建立自己的个人健康基础设施（Personal Health Infrastructure），并从中看见单一装置永远不会告诉你的事。"
 date: 2026-02-21
 pillar: ai
 ---
