@@ -264,6 +264,48 @@ const homeSchema = JSON.stringify({
             <button type="submit" class="btn-submit" id="contact-submit">送出</button>
             <div id="form-feedback" style="margin-top:12px;text-align:center;font-size:0.88rem;display:none;"></div>
           </form>
+          <script>
+            (function() {
+              const form = document.getElementById('contact-form');
+              const btn = document.getElementById('contact-submit');
+              const feedback = document.getElementById('form-feedback');
+              if (!form || !btn || !feedback) return;
+
+              form.addEventListener('submit', function(e) {
+                const name = document.getElementById('contact-name').value.trim();
+                const email = document.getElementById('contact-email').value.trim();
+                const message = document.getElementById('contact-message').value.trim();
+
+                if (!name || !email) {
+                  e.preventDefault();
+                  feedback.style.display = 'block';
+                  feedback.style.color = '#ff6b6b';
+                  feedback.textContent = '請填寫姓名和 Email';
+                  return;
+                }
+
+                // Show loading state
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+                btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" style="animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg> 送出中...</span>';
+
+                // mailto will open mail client, show success after brief delay
+                setTimeout(function() {
+                  btn.disabled = false;
+                  btn.style.opacity = '1';
+                  btn.textContent = '送出';
+                  feedback.style.display = 'block';
+                  feedback.style.color = 'rgba(255,255,255,0.8)';
+                  feedback.textContent = '✅ 郵件用戶端已開啟，請確認送出。謝謝你的訊息！';
+                  setTimeout(function() { feedback.style.display = 'none'; }, 5000);
+                }, 1500);
+              });
+            })();
+          </script>
+          <style>
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            .btn-submit:disabled { cursor: not-allowed; }
+          </style>
         </div>
       </div>
     </div>
