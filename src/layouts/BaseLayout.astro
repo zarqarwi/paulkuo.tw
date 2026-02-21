@@ -86,6 +86,12 @@ const hreflangs = [
         <a href="/#feed" id="nav-feed">消息</a>
         <a href="/about" id="nav-about">關於</a>
         <a href="/#contact" class="nav-cta">聯絡我</a>
+        <div class="mobile-lang-switcher">
+          <a href="/" class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]}>繁</a>
+          <a href="/zh-cn/" class:list={['lang-btn', { active: currentLang === 'zh-CN' }]}>简</a>
+          <a href="/en/" class:list={['lang-btn', { active: currentLang === 'en' }]}>EN</a>
+          <a href="/ja/" class:list={['lang-btn', { active: currentLang === 'ja' }]}>日</a>
+        </div>
       </div>
       <div class="lang-switcher">
         <a href="/" class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
@@ -109,17 +115,24 @@ const hreflangs = [
 
   <script>
     document.getElementById('hamburger-btn')?.addEventListener('click', () => {
-      const switcher = document.querySelector('.lang-switcher') as HTMLElement;
-      if (switcher) switcher.classList.toggle('mobile-open');
+      const links = document.querySelector('.nav-links') as HTMLElement;
+      if (links) links.classList.toggle('mobile-open');
     });
 
-    // Close lang switcher when clicking outside
+    // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-      const switcher = document.querySelector('.lang-switcher');
+      const links = document.querySelector('.nav-links');
       const btn = document.getElementById('hamburger-btn');
-      if (switcher && btn && !switcher.contains(e.target as Node) && !btn.contains(e.target as Node)) {
-        switcher.classList.remove('mobile-open');
+      if (links && btn && !links.contains(e.target as Node) && !btn.contains(e.target as Node)) {
+        links.classList.remove('mobile-open');
       }
+    });
+
+    // Close menu after clicking a nav link
+    document.querySelectorAll('.nav-links a:not(.lang-btn)').forEach(a => {
+      a.addEventListener('click', () => {
+        document.querySelector('.nav-links')?.classList.remove('mobile-open');
+      });
     });
 
     // Highlight active nav
