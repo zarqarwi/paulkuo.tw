@@ -2,7 +2,8 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
-import feedData from '../data/feed.json';
+import feedJson from '../data/feed.json';
+const feedData = feedJson.items || [];
 
 const allArticles = (await getCollection('articles', ({ data }) => !data.draft && data.featured))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -175,7 +176,7 @@ const homeSchema = JSON.stringify({
     </div>
     <p style="color:var(--text-secondary); margin-bottom:32px;">來自 8 個平台的即時動態。</p>
     <div class="feed-grid">
-      {feedData.length > 0 ? feedData.slice(0, 6).map((item) => {
+      {feedData.length > 0 ? feedData.slice(0, 8).map((item) => {
         const dtParts = item.datetime.replace(/[-:\/]/g, ' ').split(' ');
         const isoDate = dtParts.length >= 5 
           ? `${dtParts[0]}-${dtParts[1]}-${dtParts[2]}T${dtParts[3]}:${dtParts[4]}:00+08:00`
