@@ -45,6 +45,7 @@ const blogSchema = JSON.stringify({
       ))}
     </div>
 
+    <h2 class="sr-only">文章列表</h2>
     <div class="content-grid" id="blog-grid">
       {articles.map((article, idx) => {
         const p = PILLAR_MAP[article.data.pillar];

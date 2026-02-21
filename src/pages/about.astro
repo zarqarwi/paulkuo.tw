@@ -1,7 +1,38 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config';
+
+const aboutSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "mainEntity": {
+    "@type": "Person",
+    "@id": `${SITE.url}/#person`,
+    "name": SITE.author,
+    "alternateName": SITE.authorAlt,
+    "url": SITE.url,
+    "jobTitle": "Commercial Integration & AI Digital Development Director",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "SDTI \u4f73\u9f8d\u79d1\u6280"
+    },
+    "description": "\u6211\u7684\u601d\u8003\u8d77\u9ede\u4e0d\u662f\u6280\u8853\uff0c\u800c\u662f\u79e9\u5e8f\u3002",
+    "knowsAbout": ["Circular Economy", "AI", "Semiconductor", "Theology", "Startup"],
+    "alumniOf": "\u795e\u5b78\u8a13\u7df4 15 \u5e74",
+    "sameAs": [
+      "https://www.linkedin.com/in/paulkuo",
+      "https://x.com/paulkuo",
+      "https://www.threads.net/@zarqarwi",
+      "https://www.youtube.com/@KuoPaul",
+      "https://www.facebook.com/zarqarwi",
+      "https://www.instagram.com/zarqarwi",
+      "https://bsky.app/profile/paulkuo.bsky.social",
+      "https://www.reddit.com/user/Constant-Variety1656"
+    ]
+  }
+});
 ---
-<BaseLayout title="About — Paul Kuo" description="我的思考起點不是技術，而是秩序。">
+<BaseLayout title="About — Paul Kuo" description="我的思考起點不是技術，而是秩序。" schemaJson={aboutSchema}>
   <section class="about-section">
     <div class="section-container">
       <div class="about-grid">

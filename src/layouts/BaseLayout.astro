@@ -4,7 +4,9 @@ interface Props {
   description?: string;
   ogType?: string;
   ogUrl?: string;
+  ogImage?: string;
   schemaJson?: string;
+  canonicalUrl?: string;
 }
 
 const { 
@@ -12,8 +14,12 @@ const {
   description = '在技術與文明的交匯處，重建秩序、再生系統、守護人性尊嚴。',
   ogType = 'website',
   ogUrl = 'https://paulkuo.tw',
+  ogImage = 'https://paulkuo.tw/paul-photo.png',
   schemaJson,
+  canonicalUrl,
 } = Astro.props;
+
+const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
 ---
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -27,15 +33,16 @@ const {
   <meta property="og:description" content={description}>
   <meta property="og:type" content={ogType}>
   <meta property="og:url" content={ogUrl}>
+  <meta property="og:image" content={ogImage}>
   <meta property="og:locale" content="zh_TW">
   <meta property="og:site_name" content="Paul Kuo">
-  <meta property="og:image" content="https://paulkuo.tw/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content={title}>
   <meta name="twitter:description" content={description}>
-  <meta name="twitter:image" content="https://paulkuo.tw/og-image.png">
+  <meta name="twitter:image" content={ogImage}>
   <meta name="twitter:site" content="@paulkuo">
-  <link rel="canonical" href={ogUrl}>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href={canonical}>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
