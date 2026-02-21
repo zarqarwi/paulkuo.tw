@@ -1,0 +1,81 @@
+---
+/**
+ * ArticlePage.astro — 共用文章詳情元件
+ */
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PILLAR_MAP, SITE } from '../config';
+import { LANGUAGES, type LangKey } from '../i18n';
+
+interface Props {
+  article: any;
+  lang: LangKey;
+}
+
+const { article, lang } = Astro.props;
+const L = LANGUAGES[lang];
+const basePath = L.pathPrefix || '';
+const { Content } = await render(article);
+const { title, subtitle, description, date, updated, pillar, tags, readingTime } = article.data;
+const p = PILLAR_MAP[pillar];
+const dateStr = date.toLocaleDateString(L.dateLocale, L.dateOptions);
+
+const schemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": title,
+  "description": description,
+  "datePublished": date.toISOString().split('T')[0],
+  "dateModified": (updated || date).toISOString().split('T')[0],
+  "inLanguage": L.code,
+  "url": `${SITE.url}${basePath}/articles/${article.id.replace(/\.md$/, '')}`,
+  "author": {
+    "@type": "Person",
+    "@id": `${SITE.url}/#person`,
+    "name": SITE.author,
+    "alternateName": SITE.authorAlt,
+    "url": SITE.url
+  },
+  "isPartOf": { "@id": `${SITE.url}/#website` },
+  "keywords": tags
+});
+---
+
+<BaseLayout
+  title={`${title} — Paul Kuo`}
+  description={description}
+  ogType="article"
+  schemaJson={schemaJson}>
+
+  <article class="article-page">
+    <a href={`${basePath}/blog`} class="article-back">{L.backToList}</a>
+
+    <header class="article-meta">
+      <div class="article-pillar" style={`color:${p.color}`}>
+        <span class="pillar-dot" style={`background:${p.color}`}></span>
+        {lang === 'en' ? p.labelEn : p.label}
+      </div>
+      <h1>{title}</h1>
+      {subtitle && <p class="article-subtitle">{subtitle}</p>}
+      <div class="article-info">
+        <span>{SITE.author} {SITE.authorAlt}</span>
+        <time datetime={date.toISOString().split('T')[0]}>{dateStr}</time>
+        {readingTime && <span>{L.readingTime(readingTime)}</span>}
+      </div>
+    </header>
+
+    <div class="article-body">
+      <Content />
+    </div>
+
+    {tags.length > 0 && (
+      <div class="article-tags">
+        {tags.map(tag => <span class="article-tag">{tag}</span>)}
+      </div>
+    )}
+
+    <nav class="article-nav-bottom">
+      <a href={`${basePath}/blog`}>{L.backToList}</a>
+    </nav>
+  </article>
+</BaseLayout>

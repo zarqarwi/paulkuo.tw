@@ -1,0 +1,142 @@
+---
+/**
+ * BlogPage.astro — 共用 blog 列表元件
+ * 接受語系參數，渲染對應 collection 的文章
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PILLAR_MAP, SITE } from '../config';
+import { LANGUAGES, type LangKey } from '../i18n';
+
+interface Props {
+  lang: LangKey;
+}
+
+const { lang } = Astro.props;
+const L = LANGUAGES[lang];
+const ARTICLES_PER_PAGE = 12;
+
+const articles = (await getCollection(L.collectionName, ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const pillars = Object.entries(PILLAR_MAP);
+const basePath = L.pathPrefix || '';
+
+const blogSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": L.blogTitle,
+  "description": L.blogDesc,
+  "url": `${SITE.url}${basePath}/blog`,
+  "inLanguage": L.code,
+  "isPartOf": { "@id": `${SITE.url}/#website` },
+  "author": { "@id": `${SITE.url}/#person` },
+  "numberOfItems": articles.length,
+});
+---
+
+<BaseLayout title={`${L.blogTitle} — Paul Kuo`} description={L.blogDesc} schemaJson={blogSchema}>
+  <div class="section-container">
+    <div class="blog-hero">
+      <h1>{L.blogTitle}</h1>
+      <p>{L.blogDesc}</p>
+    </div>
+
+    <div class="blog-filters">
+      <button class="filter-btn active" data-filter="all">{L.allFilter}</button>
+      {pillars.map(([key, p]) => (
+        <button class="filter-btn" data-filter={key}>
+          {lang === 'en' ? p.labelEn : p.label}
+        </button>
+      ))}
+    </div>
+
+    <h2 class="sr-only">{lang === 'en' ? 'Articles' : lang === 'ja' ? '記事一覧' : '文章列表'}</h2>
+
+    <div class="content-grid" id="blog-grid">
+      {articles.map((article, idx) => {
+        const p = PILLAR_MAP[article.data.pillar];
+        const isoDate = article.data.date.toISOString().split('T')[0];
+        const dateStr = article.data.date.toLocaleDateString(L.dateLocale, L.dateOptions);
+        return (
+          <a href={`${basePath}/articles/${article.id.replace(/\.md$/, "")}`}
+             class={`content-card ${idx >= ARTICLES_PER_PAGE ? 'hidden-card' : ''}`}
+             data-pillar={article.data.pillar}>
+            <div class="content-card-category" style={`color:${p.color}`}>
+              <span class="pillar-dot" style={`background:${p.color}`}></span>
+              {lang === 'en' ? p.labelEn : p.label}
+            </div>
+            <h3>{article.data.title}</h3>
+            <p class="card-excerpt">{article.data.description}</p>
+            <div class="content-card-footer">
+              <time datetime={isoDate}>{dateStr}</time>
+              {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+    {articles.length > ARTICLES_PER_PAGE && (
+      <div class="load-more-wrap" id="load-more-wrap">
+        <button class="load-more-btn" id="load-more-btn">
+          {L.showMore} <span id="remaining-count"></span>
+        </button>
+      </div>
+    )}
+
+    {articles.length === 0 && (
+      <div style="text-align:center; padding:80px 0; color:var(--text-muted);">
+        <p>{L.noArticles}</p>
+      </div>
+    )}
+  </div>
+
+  <script define:vars={{ ARTICLES_PER_PAGE }}>
+    let visibleCount = ARTICLES_PER_PAGE;
+    const allCards = Array.from(document.querySelectorAll('#blog-grid .content-card'));
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadMoreWrap = document.getElementById('load-more-wrap');
+    const remainingSpan = document.getElementById('remaining-count');
+
+    function getFilteredCards() {
+      const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+      return allCards.filter(c => activeFilter === 'all' || c.dataset.pillar === activeFilter);
+    }
+
+    function updateVisibility() {
+      const filtered = getFilteredCards();
+      filtered.forEach((card, i) => {
+        card.style.display = i < visibleCount ? 'block' : 'none';
+        card.classList.toggle('hidden-card', i >= visibleCount);
+      });
+      allCards.forEach(card => {
+        const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+        if (activeFilter !== 'all' && card.dataset.pillar !== activeFilter) {
+          card.style.display = 'none';
+        }
+      });
+      const remaining = filtered.length - visibleCount;
+      if (loadMoreWrap) loadMoreWrap.style.display = remaining > 0 ? 'block' : 'none';
+      if (remainingSpan) remainingSpan.textContent = remaining > 0 ? `(${remaining})` : '';
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        visibleCount = ARTICLES_PER_PAGE;
+        updateVisibility();
+      });
+    });
+
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', () => {
+        visibleCount += ARTICLES_PER_PAGE;
+        updateVisibility();
+      });
+    }
+
+    updateVisibility();
+  </script>
+</BaseLayout>

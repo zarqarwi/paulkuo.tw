@@ -21,7 +21,7 @@ const {
 
 const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
 
-// Determine current lang from URL or default
+// Determine current lang from URL
 const pathname = Astro.url.pathname;
 const langMap: Record<string, string> = {
   '/en/': 'en',
@@ -39,7 +39,16 @@ const hreflangs = [
   { lang: 'zh-CN', href: `https://paulkuo.tw/zh-cn${basePath}` },
   { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
 ];
+
+// Language switcher links — 指向當前頁面的對應語系版本
+const langSwitchLinks = {
+  'zh-Hant': basePath === '/' ? '/' : basePath,
+  'en': `/en${basePath === '/' ? '/' : basePath}`,
+  'ja': `/ja${basePath === '/' ? '/' : basePath}`,
+  'zh-CN': `/zh-cn${basePath === '/' ? '/' : basePath}`,
+};
 ---
+
 <!DOCTYPE html>
 <html lang={currentLang}>
 <head>
@@ -87,17 +96,17 @@ const hreflangs = [
         <a href="/about" id="nav-about">關於</a>
         <a href="/#contact" class="nav-cta">聯絡我</a>
         <div class="mobile-lang-switcher">
-          <a href="/" class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]}>繁</a>
-          <a href="/zh-cn/" class:list={['lang-btn', { active: currentLang === 'zh-CN' }]}>简</a>
-          <a href="/en/" class:list={['lang-btn', { active: currentLang === 'en' }]}>EN</a>
-          <a href="/ja/" class:list={['lang-btn', { active: currentLang === 'ja' }]}>日</a>
+          <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]}>繁</a>
+          <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]}>简</a>
+          <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]}>EN</a>
+          <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]}>日</a>
         </div>
       </div>
       <div class="lang-switcher">
-        <a href="/" class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
-        <a href="/zh-cn/" class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
-        <a href="/en/" class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
-        <a href="/ja/" class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
+        <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
+        <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
+        <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
+        <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
       </div>
       <button class="nav-hamburger" id="hamburger-btn" aria-label="選單">
         <span></span><span></span><span></span>
@@ -119,7 +128,6 @@ const hreflangs = [
       if (switcher) switcher.classList.toggle('mobile-open');
     });
 
-    // Close lang switcher when clicking outside
     document.addEventListener('click', (e) => {
       const switcher = document.querySelector('.lang-switcher');
       const btn = document.getElementById('hamburger-btn');
