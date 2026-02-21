@@ -133,8 +133,14 @@ async function main() {
   // Load credentials
   let credentials;
   if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-    credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+    let raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+    // Fix escaped newlines in private_key (common GitHub Secrets issue)
+    credentials = JSON.parse(raw);
+    if (credentials.private_key) {
+      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+    }
     console.log('  Using env GOOGLE_SERVICE_ACCOUNT_JSON');
+    console.log(`  Service account: ${credentials.client_email}`);
   } else {
     // Local: read from file
     const localPath = join(process.env.HOME || '', 'Desktop/02_參考資料/google-service-account.json');
@@ -172,8 +178,10 @@ async function main() {
 
 main().catch(err => {
   console.error('❌ Feed fetch failed:', err.message);
+  console.error('Stack:', err.stack);
   // Don't fail the build — write empty feed
   mkdirSync(OUTPUT_DIR, { recursive: true });
   writeFileSync(OUTPUT_FILE, JSON.stringify({ items: [], updatedAt: new Date().toISOString() }, null, 2));
   console.log('⚠️  Fallback: empty feed written');
+  process.exit(0); // Don't fail CI
 });
