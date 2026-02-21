@@ -48,6 +48,8 @@ const langSwitchLinks = {
   'zh-CN': `/zh-cn${basePath === '/' ? '/' : basePath}`,
 };
 
+// Check if this is an article page (for reading progress bar)
+const isArticlePage = pathname.includes('/articles/');
 
 ---
 
@@ -87,7 +89,10 @@ const langSwitchLinks = {
   <slot name="head" />
 </head>
 <body>
-  <nav>
+  <!-- Reading Progress Bar (article pages only) -->
+  {isArticlePage && <div class="reading-progress" id="reading-progress"></div>}
+
+  <nav id="main-nav">
     <div class="nav-inner">
       <a href="/" class="nav-logo">Paul Kuo</a>
       <div class="nav-links">
@@ -120,6 +125,7 @@ const langSwitchLinks = {
   </footer>
 
   <script>
+    // === Hamburger Menu ===
     document.getElementById('hamburger-btn')?.addEventListener('click', () => {
       const switcher = document.querySelector('.lang-switcher') as HTMLElement;
       if (switcher) switcher.classList.toggle('mobile-open');
@@ -133,7 +139,7 @@ const langSwitchLinks = {
       }
     });
 
-    // Highlight active nav
+    // === Highlight active nav ===
     const path = window.location.pathname;
     document.querySelectorAll('.nav-links a').forEach(a => {
       const href = a.getAttribute('href');
@@ -141,6 +147,91 @@ const langSwitchLinks = {
         a.classList.add('active');
       }
     });
+
+    // === Smart Header: hide on scroll down, show on scroll up ===
+    (() => {
+      const nav = document.getElementById('main-nav');
+      if (!nav) return;
+
+      let lastScrollY = window.scrollY;
+      let ticking = false;
+      const SCROLL_THRESHOLD = 8; // min px to trigger hide/show
+
+      const updateNav = () => {
+        const currentScrollY = window.scrollY;
+        const delta = currentScrollY - lastScrollY;
+
+        // Add shadow when scrolled past top
+        if (currentScrollY > 10) {
+          nav.classList.add('nav-scrolled');
+        } else {
+          nav.classList.remove('nav-scrolled');
+        }
+
+        // Hide/show based on scroll direction
+        if (Math.abs(delta) > SCROLL_THRESHOLD) {
+          if (delta > 0 && currentScrollY > 120) {
+            // Scrolling down & past hero area
+            nav.classList.add('nav-hidden');
+          } else {
+            // Scrolling up
+            nav.classList.remove('nav-hidden');
+          }
+          lastScrollY = currentScrollY;
+        }
+
+        ticking = false;
+      };
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(updateNav);
+          ticking = true;
+        }
+      }, { passive: true });
+    })();
+
+    // === Reading Progress Bar (article pages only) ===
+    (() => {
+      const progressBar = document.getElementById('reading-progress');
+      const articleBody = document.querySelector('.article-body');
+      if (!progressBar || !articleBody) return;
+
+      let ticking = false;
+
+      const updateProgress = () => {
+        const articleRect = articleBody.getBoundingClientRect();
+        const articleTop = articleRect.top + window.scrollY;
+        const articleHeight = articleBody.scrollHeight;
+        const viewportHeight = window.innerHeight;
+
+        // Calculate how much of the article has been scrolled through
+        const scrolled = window.scrollY - articleTop + viewportHeight * 0.3;
+        const total = articleHeight;
+        const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
+
+        progressBar.style.width = `${progress}%`;
+
+        // Show/hide
+        if (window.scrollY > articleTop - viewportHeight) {
+          progressBar.classList.add('visible');
+        } else {
+          progressBar.classList.remove('visible');
+        }
+
+        ticking = false;
+      };
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(updateProgress);
+          ticking = true;
+        }
+      }, { passive: true });
+
+      // Initial check
+      updateProgress();
+    })();
   </script>
 </body>
 </html>
