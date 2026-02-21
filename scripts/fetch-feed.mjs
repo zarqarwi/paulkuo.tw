@@ -155,7 +155,14 @@ async function main() {
     console.log(`  Using local credentials: ${localPath}`);
   }
 
-  const token = await getAccessToken(credentials);
+  let token;
+  try {
+    token = await getAccessToken(credentials);
+    console.log('  Token obtained successfully');
+  } catch (tokenErr) {
+    console.error('  Token error:', tokenErr.message);
+    throw tokenErr;
+  }
   const rows = await fetchSheetData(token);
   console.log(`  Raw rows: ${rows.length}`);
 

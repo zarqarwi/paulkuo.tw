@@ -40,5 +40,3 @@ src/content/articles/
 paulkuo_backup.html
 src/content/articles
 
-# Dynamic feed data (generated at build time)
-src/data/feed.json
