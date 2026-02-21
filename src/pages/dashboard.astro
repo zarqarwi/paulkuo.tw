@@ -1,0 +1,360 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Build time: 讀取 costs.jsonl
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+
+const costsPath = join(process.cwd(), 'data', 'costs.jsonl');
+let costRecords: any[] = [];
+if (existsSync(costsPath)) {
+  costRecords = readFileSync(costsPath, 'utf-8')
+    .split('\n')
+    .filter(Boolean)
+    .map(line => { try { return JSON.parse(line); } catch { return null; } })
+    .filter(Boolean);
+}
+
+const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
+---
+
+<BaseLayout title="Dashboard — Paul Kuo" description="API 費用儀表板">
+
+<div id="authGate" class="dashboard-auth">
+  <div class="auth-card">
+    <h2>🔒 Dashboard</h2>
+    <p>輸入存取密碼</p>
+    <input type="password" id="authInput" placeholder="Password" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+<div id="dashboardMain" class="dashboard-container" style="display:none">
+  <header class="dash-header">
+    <div>
+      <h1>API Cost Dashboard</h1>
+      <p class="dash-subtitle">自動化管線費用追蹤 · 資料更新：{buildTime}</p>
+    </div>
+    <div class="dash-actions">
+      <label for="fileUpload" class="dash-btn">📂 載入新資料</label>
+      <input type="file" id="fileUpload" accept=".jsonl,.json,.txt" style="display:none" />
+    </div>
+  </header>
+
+  <div id="kpiGrid" class="kpi-grid"></div>
+
+  <div class="charts-row">
+    <div class="chart-panel full-width">
+      <h3>每日費用趨勢</h3>
+      <div class="chart-wrap tall"><canvas id="dailyChart"></canvas></div>
+    </div>
+  </div>
+  <div class="charts-row">
+    <div class="chart-panel">
+      <h3>依服務商</h3>
+      <div class="chart-wrap"><canvas id="serviceChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+      <h3>依管線來源</h3>
+      <div class="chart-wrap"><canvas id="sourceChart"></canvas></div>
+    </div>
+  </div>
+  <div class="charts-row">
+    <div class="chart-panel">
+      <h3>依動作類型</h3>
+      <div class="chart-wrap"><canvas id="actionChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+      <h3>月度趨勢</h3>
+      <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="table-panel">
+    <h3>明細記錄</h3>
+    <div id="tableBody" style="overflow-x:auto"></div>
+  </div>
+</div>
+
+</BaseLayout>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
+
+<script define:vars={{ costRecords }} is:inline>
+// ── Auth ──
+const DASH_KEY = 'paulkuo2026';
+const authGate = document.getElementById('authGate');
+const dashMain = document.getElementById('dashboardMain');
+const authInput = document.getElementById('authInput');
+const authBtn = document.getElementById('authBtn');
+
+function checkAuth() {
+  const urlKey = new URLSearchParams(window.location.search).get('key');
+  const stored = sessionStorage.getItem('dash_auth');
+  if (urlKey === DASH_KEY || stored === DASH_KEY) {
+    sessionStorage.setItem('dash_auth', DASH_KEY);
+    authGate.style.display = 'none';
+    dashMain.style.display = 'block';
+    if (costRecords.length > 0) render(costRecords);
+    return;
+  }
+}
+checkAuth();
+
+authBtn.addEventListener('click', () => {
+  if (authInput.value === DASH_KEY) {
+    sessionStorage.setItem('dash_auth', DASH_KEY);
+    authGate.style.display = 'none';
+    dashMain.style.display = 'block';
+    if (costRecords.length > 0) render(costRecords);
+  } else {
+    authInput.style.borderColor = '#ef4444';
+    authInput.value = '';
+    authInput.placeholder = '密碼錯誤';
+  }
+});
+authInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
+
+// File upload
+document.getElementById('fileUpload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const records = ev.target.result.trim().split('\n').filter(Boolean)
+      .map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+    render(records);
+  };
+  reader.readAsText(file);
+});
+
+// ── Colors ──
+const SVC_CLR = { anthropic:'#6366f1', openai:'#10b981', google:'#3b82f6', xai:'#f97316', perplexity:'#8b5cf6' };
+const SRC_CLR = { 'debate-engine':'#f59e0b', 'translate-article':'#3b82f6', 'publish-social':'#ec4899', 'debate-to-article':'#06b6d4' };
+const ACT_CLR = { debate:'#f59e0b', 'translate-en':'#3b82f6', 'translate-ja':'#60a5fa', 'translate-zh-cn':'#93c5fd',
+  'social-summary':'#ec4899', 'image-gen':'#10b981', 'debate-to-article':'#06b6d4', factcheck:'#8b5cf6' };
+const ACT_LABEL = { debate:'辯論', 'translate-en':'翻譯 EN', 'translate-ja':'翻譯 JA', 'translate-zh-cn':'翻譯 簡中',
+  'social-summary':'社群摘要', 'image-gen':'DALL-E 配圖', 'debate-to-article':'辯論轉文章', factcheck:'事實查核' };
+
+let charts = {};
+
+function render(records) {
+  const totalUSD = records.reduce((s,r) => s + r.costUSD, 0);
+  const days = [...new Set(records.map(r => r.timestamp.slice(0,10)))].sort();
+  const avgPerDay = totalUSD / (days.length || 1);
+  const thisMonth = new Date().toISOString().slice(0,7);
+  const monthUSD = records.filter(r => r.timestamp.startsWith(thisMonth)).reduce((s,r) => s + r.costUSD, 0);
+  const totalTokens = records.reduce((s,r) => s + (r.inputTokens||0) + (r.outputTokens||0), 0);
+
+  // KPIs
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi"><span class="kpi-label">累計費用</span><span class="kpi-value">$${totalUSD.toFixed(2)}</span><span class="kpi-sub">NT$${(totalUSD*32.5).toFixed(0)}</span></div>
+    <div class="kpi"><span class="kpi-label">本月費用</span><span class="kpi-value kpi-green">$${monthUSD.toFixed(2)}</span><span class="kpi-sub">NT$${(monthUSD*32.5).toFixed(0)}</span></div>
+    <div class="kpi"><span class="kpi-label">日均費用</span><span class="kpi-value kpi-amber">$${avgPerDay.toFixed(3)}</span><span class="kpi-sub">NT$${(avgPerDay*32.5).toFixed(1)}/天</span></div>
+    <div class="kpi"><span class="kpi-label">API 呼叫</span><span class="kpi-value kpi-cyan">${records.length}</span><span class="kpi-sub">${days.length} 天</span></div>
+    <div class="kpi"><span class="kpi-label">Token 總量</span><span class="kpi-value kpi-purple">${(totalTokens/1000).toFixed(0)}K</span><span class="kpi-sub">input + output</span></div>
+  `;
+
+  // Destroy old charts
+  Object.values(charts).forEach(c => c.destroy()); charts = {};
+
+  const chartDefaults = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#5A5A5A', font: { family: 'DM Sans', size: 11 }, padding: 12 } } },
+  };
+
+  // Daily stacked bar
+  const sources = [...new Set(records.map(r => r.source))];
+  const dailyData = {}; days.forEach(d => { dailyData[d] = {}; sources.forEach(s => dailyData[d][s] = 0); });
+  records.forEach(r => { const d = r.timestamp.slice(0,10); if (dailyData[d]) dailyData[d][r.source] += r.costUSD; });
+  charts.daily = new Chart(document.getElementById('dailyChart'), {
+    type: 'bar',
+    data: { labels: days.map(d => d.slice(5)),
+      datasets: sources.map(s => ({ label: s, data: days.map(d => +dailyData[d][s].toFixed(4)),
+        backgroundColor: SRC_CLR[s] || '#8A8A8A', borderRadius: 3 })) },
+    options: { ...chartDefaults,
+      scales: {
+        x: { stacked:true, grid:{display:false}, ticks:{color:'#8A8A8A',font:{family:'DM Sans',size:10}} },
+        y: { stacked:true, grid:{color:'#E8E6E1'}, ticks:{color:'#8A8A8A',font:{family:'DM Sans',size:10},callback:v=>'$'+v.toFixed(2)} } },
+      plugins: { ...chartDefaults.plugins, tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: $${ctx.raw.toFixed(4)}`}} } },
+  });
+
+  // Service doughnut
+  const bySvc = {}; records.forEach(r => { bySvc[r.service] = (bySvc[r.service]||0) + r.costUSD; });
+  const svcKeys = Object.keys(bySvc).sort((a,b) => bySvc[b]-bySvc[a]);
+  charts.service = new Chart(document.getElementById('serviceChart'), {
+    type: 'doughnut',
+    data: { labels: svcKeys, datasets: [{ data: svcKeys.map(k => +bySvc[k].toFixed(4)),
+      backgroundColor: svcKeys.map(k => SVC_CLR[k]||'#8A8A8A'), borderWidth: 2, borderColor: '#FFFFFF' }] },
+    options: { ...chartDefaults, cutout:'55%',
+      plugins: { ...chartDefaults.plugins, legend:{position:'right',labels:chartDefaults.plugins.legend.labels},
+        tooltip:{callbacks:{label:ctx=>`${ctx.label}: $${ctx.raw.toFixed(4)} (${((ctx.raw/totalUSD)*100).toFixed(1)}%)`}} } },
+  });
+
+  // Source doughnut
+  const bySrc = {}; records.forEach(r => { bySrc[r.source] = (bySrc[r.source]||0) + r.costUSD; });
+  const srcKeys = Object.keys(bySrc).sort((a,b) => bySrc[b]-bySrc[a]);
+  charts.source = new Chart(document.getElementById('sourceChart'), {
+    type: 'doughnut',
+    data: { labels: srcKeys, datasets: [{ data: srcKeys.map(k => +bySrc[k].toFixed(4)),
+      backgroundColor: srcKeys.map(k => SRC_CLR[k]||'#8A8A8A'), borderWidth: 2, borderColor: '#FFFFFF' }] },
+    options: { ...chartDefaults, cutout:'55%',
+      plugins: { ...chartDefaults.plugins, legend:{position:'right',labels:chartDefaults.plugins.legend.labels},
+        tooltip:{callbacks:{label:ctx=>`${ctx.label}: $${ctx.raw.toFixed(4)} (${((ctx.raw/totalUSD)*100).toFixed(1)}%)`}} } },
+  });
+
+  // Action bar chart
+  const byAct = {}; records.forEach(r => { const a = r.action; byAct[a] = (byAct[a]||0) + r.costUSD; });
+  const actKeys = Object.keys(byAct).sort((a,b) => byAct[b]-byAct[a]);
+  charts.action = new Chart(document.getElementById('actionChart'), {
+    type: 'bar',
+    data: { labels: actKeys.map(k => ACT_LABEL[k]||k),
+      datasets: [{ data: actKeys.map(k => +byAct[k].toFixed(4)),
+        backgroundColor: actKeys.map(k => ACT_CLR[k]||'#8A8A8A'), borderRadius: 4 }] },
+    options: { ...chartDefaults, indexAxis:'y',
+      scales: { x:{grid:{color:'#E8E6E1'},ticks:{color:'#8A8A8A',callback:v=>'$'+v.toFixed(2)}}, y:{grid:{display:false},ticks:{color:'#5A5A5A',font:{family:'DM Sans',size:11}}} },
+      plugins: { ...chartDefaults.plugins, legend:{display:false} } },
+  });
+
+  // Monthly trend
+  const byMonth = {}; records.forEach(r => { const m = r.timestamp.slice(0,7); byMonth[m] = (byMonth[m]||0) + r.costUSD; });
+  const months = Object.keys(byMonth).sort();
+  charts.monthly = new Chart(document.getElementById('monthlyChart'), {
+    type: 'line',
+    data: { labels: months,
+      datasets: [{ data: months.map(m => +byMonth[m].toFixed(4)), borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,0.08)',
+        fill:true, tension:0.3, pointRadius:4, pointBackgroundColor:'#6366f1' }] },
+    options: { ...chartDefaults,
+      scales: { x:{grid:{display:false},ticks:{color:'#8A8A8A'}}, y:{grid:{color:'#E8E6E1'},ticks:{color:'#8A8A8A',callback:v=>'$'+v.toFixed(2)}} },
+      plugins: { ...chartDefaults.plugins, legend:{display:false} } },
+  });
+
+  // Table
+  const recent = [...records].sort((a,b) => b.timestamp.localeCompare(a.timestamp)).slice(0, 100);
+  document.getElementById('tableBody').innerHTML = `<table>
+    <thead><tr><th>時間</th><th>服務</th><th>動作</th><th>來源</th><th>Input</th><th>Output</th><th>費用 (USD)</th></tr></thead>
+    <tbody>${recent.map(r => `<tr>
+      <td>${r.timestamp.slice(0,16).replace('T',' ')}</td>
+      <td><span class="svc-tag svc-${r.service}">${r.service}</span></td>
+      <td>${ACT_LABEL[r.action]||r.action}</td>
+      <td>${r.source}</td>
+      <td>${r.inputTokens ? r.inputTokens.toLocaleString() : '—'}</td>
+      <td>${r.outputTokens ? r.outputTokens.toLocaleString() : '—'}</td>
+      <td class="cost-cell">$${r.costUSD.toFixed(4)}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+</script>
+
+<style is:global>
+  /* Auth Gate */
+  .dashboard-auth {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 60vh; padding: 2rem;
+  }
+  .auth-card {
+    text-align: center; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 3rem; max-width: 360px; width: 100%;
+    box-shadow: var(--shadow-md);
+  }
+  .auth-card h2 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .auth-card p { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem; }
+  .auth-card input {
+    width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 1rem; text-align: center;
+    background: var(--bg); transition: border-color 0.2s;
+  }
+  .auth-card input:focus { outline: none; border-color: var(--brand-navy); }
+  .auth-card button {
+    margin-top: 1rem; width: 100%; padding: 0.75rem;
+    background: var(--brand-navy); color: white; border: none;
+    border-radius: 8px; font-size: 0.95rem; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .auth-card button:hover { background: var(--brand-navy-light); }
+
+  /* Dashboard */
+  .dashboard-container {
+    max-width: var(--max-width); margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+  .dash-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 2rem; padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .dash-header h1 {
+    font-family: var(--font-display); font-size: 1.75rem;
+    color: var(--text-primary);
+  }
+  .dash-subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem; }
+  .dash-btn {
+    font-size: 0.8rem; padding: 0.5rem 1rem; background: var(--bg-section);
+    border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    color: var(--text-secondary); transition: all 0.2s;
+  }
+  .dash-btn:hover { border-color: var(--brand-navy); color: var(--text-primary); }
+
+  /* KPIs */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+  }
+  .kpi {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.25rem 1.5rem;
+    display: flex; flex-direction: column; box-shadow: var(--shadow-sm);
+  }
+  .kpi-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+  .kpi-value { font-size: 1.6rem; font-weight: 700; color: var(--brand-navy); margin-top: 0.15rem; font-family: 'DM Sans', sans-serif; }
+  .kpi-green { color: #059669; } .kpi-amber { color: #B45309; } .kpi-cyan { color: #0891b2; } .kpi-purple { color: #7C3AED; }
+  .kpi-sub { font-size: 0.8rem; color: var(--text-muted); }
+
+  /* Charts */
+  .charts-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;
+  }
+  .charts-row .full-width { grid-column: 1 / -1; }
+  .chart-panel {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm);
+  }
+  .chart-panel h3 { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem; font-weight: 500; }
+  .chart-wrap { position: relative; height: 260px; }
+  .chart-wrap.tall { height: 320px; }
+
+  /* Table */
+  .table-panel {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm);
+    margin-top: 1.25rem;
+  }
+  .table-panel h3 { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem; font-weight: 500; }
+  .table-panel table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .table-panel th {
+    text-align: left; padding: 0.6rem 0.75rem; color: var(--text-muted);
+    font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;
+    border-bottom: 2px solid var(--border);
+  }
+  .table-panel td {
+    padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-light);
+    font-family: 'DM Sans', sans-serif; color: var(--text-secondary);
+  }
+  .table-panel tr:hover td { background: rgba(99,102,241,0.04); }
+  .cost-cell { font-weight: 600; color: var(--text-primary); }
+
+  .svc-tag {
+    display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 600;
+  }
+  .svc-anthropic { background: rgba(99,102,241,0.1); color: #6366f1; }
+  .svc-openai { background: rgba(16,185,129,0.1); color: #059669; }
+  .svc-google { background: rgba(59,130,246,0.1); color: #3b82f6; }
+  .svc-xai { background: rgba(249,115,22,0.1); color: #f97316; }
+  .svc-perplexity { background: rgba(139,92,246,0.1); color: #8b5cf6; }
+
+  @media (max-width: 768px) {
+    .dash-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .charts-row { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
