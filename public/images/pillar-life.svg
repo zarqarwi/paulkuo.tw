@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'>
+  <rect width='1200' height='630' fill='#0a192f'/>
+  <rect x='40' y='40' width='1120' height='550' rx='20' fill='none' stroke='#8b5cf6' stroke-width='2' opacity='0.3'/>
+  <text x='600' y='280' text-anchor='middle' fill='#8b5cf6' font-size='48' font-family='system-ui' opacity='0.8'>paulkuo.tw</text>
+  <text x='600' y='360' text-anchor='middle' fill='white' font-size='28' font-family='system-ui' opacity='0.5'>Life × Reflection</text>
+</svg>

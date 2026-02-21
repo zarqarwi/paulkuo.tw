@@ -11,6 +11,10 @@ on:
         description: '文章路徑（例: src/content/articles/xxx.md）'
         required: false
 
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -35,7 +39,7 @@ jobs:
             exit 0
           fi
 
-          # 🔴 FIX: 只偵測「新增」的文章（--diff-filter=A），排除修改/刪除
+          # 只偵測「新增」的文章（--diff-filter=A），排除修改/刪除
           NEW_ARTICLES=""
           for i in $(seq 0 8); do
             DIFF=$(git diff --diff-filter=A --name-only HEAD~$((i+1)) HEAD~$i -- 'src/content/articles/*.md' 2>/dev/null | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
@@ -46,7 +50,7 @@ jobs:
             fi
           done
 
-          # 🔴 FIX: dedup — 檢查是否已經發佈過（published-slugs.json）
+          # dedup — 檢查是否已經發佈過
           if [ -n "$NEW_ARTICLES" ] && [ -f "data/published-slugs.json" ]; then
             FILTERED=""
             for f in $NEW_ARTICLES; do
@@ -80,6 +84,7 @@ jobs:
           node-version: '20'
 
       - name: Generate summaries and publish
+        id: publish
         if: steps.detect.outputs.skip == 'false'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -96,12 +101,10 @@ jobs:
         if: steps.detect.outputs.skip == 'false'
         run: |
           mkdir -p data
-          # 初始化或讀取
           if [ ! -f data/published-slugs.json ]; then
             echo '[]' > data/published-slugs.json
           fi
 
-          # 把這次發佈的 slug 加進去
           ARTICLES="${{ steps.detect.outputs.articles }}"
           for f in $ARTICLES; do
             SLUG=$(basename "$f" .md)
@@ -116,8 +119,49 @@ jobs:
           "
           done
 
-          # commit 回 repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/published-slugs.json data/social-logs/
           git diff --staged --quiet || git commit -m "chore: record published slugs" && git push || true
+
+      # 🟡 FIX: GitHub Issue 通知 — 每次發佈建一個 issue，信箱會收到
+      - name: Create notification issue
+        if: steps.detect.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ARTICLES="${{ steps.detect.outputs.articles }}"
+          for f in $ARTICLES; do
+            SLUG=$(basename "$f" .md)
+            TITLE="📢 社群已排程：$SLUG"
+
+            # 讀取 social-log 內容
+            LOG_FILE="data/social-logs/${SLUG}-$(date -u +%Y-%m-%d).json"
+            if [ -f "$LOG_FILE" ]; then
+              SUMMARIES=$(python3 -c "
+          import json
+          with open('$LOG_FILE') as f:
+              data = json.load(f)
+          print(f\"**文章：** {data['title']}\n\")
+          print(f\"**連結：** {data['url']}\n\")
+          for platform, content in data['summaries'].items():
+              print(f'### {platform}\n')
+              print(f'{content[:300]}\n')
+          ")
+            else
+              SUMMARIES="Log file not found: $LOG_FILE"
+            fi
+
+            BODY="自動社群發佈完成。以下是各平台摘要內容，如有問題請在 1 小時內到 [OneUp](https://app.oneupapp.io) 取消排程。
+
+          ⚠️ **FB、IG 需手動發佈**
+
+          ---
+
+          $SUMMARIES
+
+          ---
+          _此 issue 由 publish-social workflow 自動建立，確認無誤可直接關閉。_"
+
+            gh issue create --title "$TITLE" --body "$BODY" --label "social-publish" || true
+          done

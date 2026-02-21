@@ -8,25 +8,11 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { basename, join } from 'path';
 
+import { PLATFORM_IDS, MANUAL_PLATFORMS, CHAR_LIMITS, DEFAULT_REDDIT_SUBREDDIT } from './platform-config.mjs';
+
 // ── 設定 ────────────────────────────────────────────
 const SITE_URL = process.env.SITE_URL || 'https://paulkuo.tw';
-
-const PLATFORM_IDS = {
-  FB: '26970717712518471', X: 'zarqarwi_twitter',
-  LI: 'urn:li:person:wrlK3lGrJP', YT: 'UCm7xvpaPwk4w1dNdhnz6O5g',
-  TH: '26024801023795076', BS: 'did:plc:vag6mnwt2upj3ftlberu73la',
-  RD: 'Constant-Variety1656', IG: 'zarqarwi_insta',
-};
-
-const MANUAL_PLATFORMS = new Set(['FB', 'IG']);
-
-const CHAR_LIMITS = {
-  X: 280, TH: 500, BS: 300, LI: 3000, YT: 5000,
-  FB: 10000, RD: 40000, IG: 2200,
-};
-
 const ONEUP_API_BASE = 'https://www.oneupapp.io/api';
-const DEFAULT_SUBREDDIT = 'u_Constant-Variety1656';
 
 // ── 文章解析 ─────────────────────────────────────────
 function parseArticle(filePath) {
@@ -114,6 +100,16 @@ const PILLAR_STYLES = {
   life: 'soft violet and silver, reflective surfaces, contemplative spaces, memory fragments',
 };
 
+// 🟡 FIX: 預設圖片 — DALL-E 或圖床失敗時的 fallback
+const FALLBACK_IMAGES = {
+  ai: 'https://paulkuo.tw/images/pillar-ai.svg',
+  circular: 'https://paulkuo.tw/images/pillar-circular.svg',
+  faith: 'https://paulkuo.tw/images/pillar-faith.svg',
+  startup: 'https://paulkuo.tw/images/pillar-startup.svg',
+  life: 'https://paulkuo.tw/images/pillar-life.svg',
+  default: 'https://paulkuo.tw/images/og-default.svg',
+};
+
 async function generateImage(title, pillar) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) { console.log('  ⚠️  No OPENAI_API_KEY, skipping image'); return null; }
@@ -175,7 +171,7 @@ async function schedulePost(content, platformIds, scheduledTime, imageUrl, reddi
 
   // Reddit needs subreddit
   const hasReddit = platformIds.some(id => id === PLATFORM_IDS.RD);
-  if (hasReddit) params.append('subreddit', DEFAULT_SUBREDDIT);
+  if (hasReddit) params.append('subreddit', DEFAULT_REDDIT_SUBREDDIT);
 
   const resp = await fetch(`${ONEUP_API_BASE}/${endpoint}`, {
     method: 'POST',
@@ -240,11 +236,15 @@ async function main() {
     writeFileSync(logFile, JSON.stringify({ slug: article.slug, title: article.title, url: article.url, summaries, timestamp: new Date().toISOString() }, null, 2));
     console.log(`   💾 Summaries saved: ${logFile}`);
 
-    // 3. 生成配圖
+    // 3. 生成配圖（失敗時用預設 pillar 圖）
     const imageBuffer = await generateImage(article.title, article.pillar);
     let imageUrl = null;
     if (imageBuffer) {
       imageUrl = await uploadToImageHost(imageBuffer);
+    }
+    if (!imageUrl) {
+      imageUrl = FALLBACK_IMAGES[article.pillar] || FALLBACK_IMAGES.default;
+      console.log(`   🖼️  Using fallback image: ${imageUrl}`);
     }
 
     // 4. 排程到各平台（分批：自動平台 + 手動平台）
