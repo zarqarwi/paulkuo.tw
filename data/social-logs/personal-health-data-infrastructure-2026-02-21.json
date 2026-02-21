@@ -1,0 +1,16 @@
+{
+  "slug": "personal-health-data-infrastructure",
+  "title": "個人健康數據基礎設施：從 10 年 Apple Health 到 AI 驅動的交叉分析",
+  "url": "https://paulkuo.tw/articles/personal-health-data-infrastructure",
+  "summaries": {
+    "X": "十年前只是把手機放口袋、手錶戴手上，沒想到默默累積了 300 萬筆健康數據。最近終於把 Apple Health 完整匯出，結合 Fitbit API 和 Claude AI，建立自己的健康基礎設施。發現我們不是沒有資料，而是沒有基礎設施來看見全貌。https://paulkuo.tw/articles/personal-health-data-infrastructure #HealthTech #AI",
+    "LI": "十年前，我沒有刻意開始任何健康計畫，只是日常生活中戴著手錶、帶著手機。直到最近完整匯出 iPhone 健康 App 的資料，才發現這十年間默默累積了超過 300 萬筆紀錄——步數、心率、睡眠、HRV，一段身體與時間共同書寫的數位歷史。\n\n作為一個技術人，我意識到我們面對的不是資料稀缺問題，而是基礎設施缺失。主流穿戴裝置各自為政，Apple Health 和 Fitbit 對同一晚睡眠的深層階段判讀可以差到 21 分鐘。更重要的是，沒有工具能做跨年度的趨勢分析，看不見運動量下滑、HRV 惡化與睡眠品質之間的關聯。\n\n所以我建立了自己的個人健康基礎設施：透過 MCP 協議讓 Claude AI 直接串接 Fitbit API，用 Python 解析 1.3GB 的 Apple Health XML，建立自動化 CI/CD 管線持續更新健康儀表板。技術不是目的，看見全貌才是。當十年的數據曲線疊合起來，數字比感覺更誠實，也更能指引決策。\n\n我們正進入個人健康數據的黃金時代，但前提是要有自己的分析基礎設施。\n\nhttps://paulkuo.tw/articles/personal-health-data-infrastructure",
+    "TH": "剛把十年的 Apple Health 資料完整匯出，1.3GB 的 XML 檔案，超過 300 萬筆紀錄 😱\n\n最大的發現：我們不是沒有資料，而是沒有基礎設施。Apple 和 Fitbit 對同一晚睡眠的判讀可以差 21 分鐘，而且都看不到長期趨勢。\n\n所以自己建了一套：用 Claude AI 串 Fitbit API，Python 解析 Apple 資料，自動化部署健康儀表板。現在終於能看見運動量、HRV、睡眠品質之間的真正關聯。\n\n數字比感覺誠實多了。\n\nhttps://paulkuo.tw/articles/personal-health-data-infrastructure",
+    "BS": "花了點時間把十年的健康資料整理出來，300 萬筆紀錄攤開來看，很多事情就清楚了。\n\nApple Watch 說我昨晚深睡 1 小時，Fitbit 說 1 小時 21 分鐘。該信誰？答案是都交叉比對，看趨勢就好。\n\n重點不是買更多穿戴裝置，而是建立自己的分析基礎設施。用 Claude AI + Python 把這些數據孤島連起來，終於能看見全貌。\n\nhttps://paulkuo.tw/articles/personal-health-data-infrastructure",
+    "RD": "花了點時間建立個人健康數據基礎設施，把十年的 Apple Health 資料（300萬筆紀錄）結合 Fitbit API 和 Claude AI 做交叉分析。主要想解決穿戴裝置各自為政、無法長期趨勢分析的問題。技術細節包括 MCP 協議串接、Python XML 解析、自動化 CI/CD 等。有興趣的朋友可以看看實作過程和一些有趣的發現。\n\nhttps://paulkuo.tw/articles/personal-health-data-infrastructure",
+    "YT": "最近做了個有趣的專案：把過去十年的健康數據完整整理出來 📊\n\n從 iPhone 匯出 1.3GB 的健康資料，超過 300 萬筆紀錄，涵蓋步數、心率、睡眠、HRV 等各種指標。最大的發現是：我們不缺資料，缺的是基礎設施來分析這些資料。\n\nApple Health 和 Fitbit 各有各的演算法，對同一晚睡眠的判讀可以差到 20 多分鐘。而且現有 App 都專注於「今天」和「這週」，沒辦法做跨年度的長趨勢分析。\n\n所以我用 Python + Claude AI 建立了自己的健康分析系統，透過 API 串接即時資料，自動化更新儀表板。現在終於能看見運動量、壓力指標、睡眠品質之間的真正關聯。\n\n數字比感覺誠實，也更能指引決策。分享給對健康數據分析有興趣的朋友！",
+    "FB": "昨天終於把過去十年的健康數據整理完了，有點震撼 😅\n\n從 iPhone 匯出的資料有 1.3GB，超過 300 萬筆紀錄。裡面記錄了我從 2015 年到現在的每一步、每一次心跳、每一晚的睡眠。橫跨創業、轉型、離開舒適圈到重新開始的整段人生。\n\n最有趣的發現：Apple Watch 和 Fitbit 對睡眠的判讀差很多，但長期趨勢是一致的。重點不是數字準不準，而是能不能看到全貌。\n\n所以花了點時間用 AI 和程式把這些數據孤島連起來，建立自己的健康基礎設施。現在可以看到運動量下滑和睡眠品質惡化的關聯，比單看 App 的日報告有意思多了。\n\n我們正進入個人健康數據的黃金時代，但前提是要有工具來分析它們。\n\nhttps://paulkuo.tw/articles/personal-health-data-infrastructure",
+    "IG": "十年前只是把手機放口袋 📱 手錶戴手上 ⌚️ 沒想到默默累積了 300 萬筆健康數據 📊\n\n最近把 Apple Health 完整匯出，1.3GB 的檔案，記錄了創業到重新開始的整段人生軌跡 ✨\n\n發現我們不是沒有資料，而是沒有基礎設施 💡 Apple 和 Fitbit 各說各話，看不到長期趨勢，所以自己用 AI 建了一套分析系統 🤖\n\n現在能看見運動、睡眠、壓力之間的真正關聯，數字比感覺誠實多了 📈\n\n#HealthTech #AI #PersonalData #HealthData #Biohacking #數據分析\n\nhttps://paulkuo.tw/articles/personal-health-data-infrastructure"
+  },
+  "timestamp": "2026-02-21T16:16:41.761Z"
+}
