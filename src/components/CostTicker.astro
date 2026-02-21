@@ -87,21 +87,6 @@ const tickerData = JSON.stringify({
         <span class="ticker-value">{(totalTokens / 1000).toFixed(0)}K</span>
       </div>
       <div class="ticker-sep"></div>
-      <!-- Services mini bars -->
-      <div class="ticker-item ticker-services">
-        <span class="ticker-label">服務商</span>
-        <div class="ticker-bars" id="tickerBars">
-          {Object.entries(byService).sort((a,b) => b[1] - a[1]).slice(0, 5).map(([svc, cost]) => (
-            <div class="ticker-bar-item">
-              <span class="ticker-bar-label">{svc.slice(0,3).toUpperCase()}</span>
-              <div class="ticker-bar-track">
-                <div class="ticker-bar-fill" data-service={svc} style={`width:${totalUSD > 0 ? (cost/totalUSD*100) : 0}%`}></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div class="ticker-sep"></div>
       <!-- 累計 -->
       <div class="ticker-item">
         <span class="ticker-label">累計</span>
@@ -161,12 +146,6 @@ const tickerData = JSON.stringify({
   });
   ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
 
-  // Service bar colors
-  const svcColors = { anthropic:'#6366f1', openai:'#10b981', google:'#3b82f6', xai:'#f97316', perplexity:'#8b5cf6' };
-  document.querySelectorAll('.ticker-bar-fill').forEach(el => {
-    const svc = el.dataset.service;
-    if (svcColors[svc]) el.style.backgroundColor = svcColors[svc];
-  });
 })();
 </script>
 
@@ -242,46 +221,11 @@ const tickerData = JSON.stringify({
     background: rgba(255,255,255,0.12);
     flex-shrink: 0;
   }
-  .ticker-services {
-    gap: 8px;
-  }
-  .ticker-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 100px;
-  }
-  .ticker-bar-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .ticker-bar-label {
-    font-size: 0.55rem;
-    width: 24px;
-    color: rgba(255,255,255,0.45);
-    font-weight: 600;
-  }
-  .ticker-bar-track {
-    flex: 1;
-    height: 3px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .ticker-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.4);
-    transition: width 0.5s ease;
-  }
-
   @media (max-width: 768px) {
     .ticker-inner {
       padding: 0 12px;
       height: 44px;
     }
     .ticker-item { padding: 0 10px; }
-    .ticker-services { display: none; }
   }
 </style>
