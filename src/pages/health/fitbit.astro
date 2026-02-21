@@ -1,0 +1,308 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Fitbit Sleep Analysis — Paul Kuo" description="Fitbit 單裝置睡眠健康報告（33個月）">
+
+<div id="authGate" class="dashboard-auth">
+  <div class="auth-card">
+    <h2>🛏️ Fitbit Sleep Report</h2>
+    <p>輸入存取密碼</p>
+    <input type="password" id="authInput" placeholder="Password" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+<div id="mainContent" class="health-container" style="display:none">
+  <header class="health-header">
+    <div>
+      <h1>🛏️ Paul 睡眠健康報告</h1>
+      <p class="health-subtitle">Fitbit 單裝置 · 2023/05–2026/02 · 883 天紀錄 · 約 33 個月</p>
+    </div>
+    <a href="/health/dual" class="nav-link">→ 雙裝置整合分析</a>
+  </header>
+
+  <div class="health-tabs">
+    <button class="tab-btn active" data-tab="0">總覽</button>
+    <button class="tab-btn" data-tab="1">睡眠時長</button>
+    <button class="tab-btn" data-tab="2">效率</button>
+    <button class="tab-btn" data-tab="3">睡眠階段</button>
+    <button class="tab-btn" data-tab="4">年度對比</button>
+  </div>
+
+  <!-- Tab 0: 總覽 -->
+  <div class="tab-content active" data-tab="0">
+    <div class="kpi-grid kpi-4col">
+      <div class="kpi"><span class="kpi-label">全期平均睡眠</span><span class="kpi-value" style="color:#60a5fa" id="kpi-avg"></span><span class="kpi-sub" id="kpi-avg-sub"></span></div>
+      <div class="kpi"><span class="kpi-label">全期平均效率</span><span class="kpi-value" style="color:#f59e0b" id="kpi-eff"></span><span class="kpi-sub">85%以上為佳</span></div>
+      <div class="kpi"><span class="kpi-label">最佳月份</span><span class="kpi-value" style="color:#34d399" id="kpi-best"></span><span class="kpi-sub" id="kpi-best-sub"></span></div>
+      <div class="kpi"><span class="kpi-label">最差月份</span><span class="kpi-value" style="color:#ef4444" id="kpi-worst"></span><span class="kpi-sub" id="kpi-worst-sub"></span></div>
+    </div>
+
+    <div class="chart-panel full-width">
+      <h3>⚡ 關鍵發現</h3>
+      <div class="findings-list">
+        <div class="finding"><span class="dot red">●</span><p><strong>長期睡眠不足</strong> — 近 3 年沒有任何月份達到建議的 7 小時。每天缺少約 1 小時。</p></div>
+        <div class="finding"><span class="dot yellow">●</span><p><strong>2025 年明顯惡化</strong> — 2023/2024 平均約 6h02m，2025 降至 5h41m，少了 21 分鐘。Q2 2025 是最低谷（5h16m）。</p></div>
+        <div class="finding"><span class="dot orange">●</span><p><strong>效率下滑中</strong> — 2024 年維持 83-84%，2025 降至 78-80%，2026 初更降至 74-75%，在床上清醒時間越來越多。</p></div>
+        <div class="finding"><span class="dot blue">●</span><p><strong>深層睡眠衰退</strong> — 2023 下半年平均 65+ 分鐘，2025 上半年驟降至 33-49 分鐘。深層睡眠關乎身體修復與記憶鞏固。</p></div>
+        <div class="finding"><span class="dot purple">●</span><p><strong>資料斷層</strong> — 2024/12~2025/01 無紀錄，可能換裝置或未佩戴。</p></div>
+      </div>
+    </div>
+
+    <div class="chart-panel full-width">
+      <h3>📊 年度趨勢</h3>
+      <div class="chart-wrap"><canvas id="yearlyBarChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Tab 1: 睡眠時長 -->
+  <div class="tab-content" data-tab="1">
+    <div class="chart-panel full-width">
+      <h3>每月平均睡眠時長</h3>
+      <div class="chart-wrap tall"><canvas id="durationChart"></canvas></div>
+      <p class="chart-note">紅色虛線 = 7 小時建議值 · 紅色柱 = 不足 5 小時</p>
+    </div>
+    <div class="chart-panel full-width">
+      <h3>季度平均</h3>
+      <div class="chart-wrap"><canvas id="quarterChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Tab 2: 效率 -->
+  <div class="tab-content" data-tab="2">
+    <div class="chart-panel full-width">
+      <h3>每月睡眠效率 %</h3>
+      <div class="chart-wrap tall"><canvas id="efficiencyChart"></canvas></div>
+      <p class="chart-note">紅色虛線 = 85% 理想值 · 紅色柱 = 低於 75%</p>
+    </div>
+    <div class="chart-panel full-width">
+      <h3>效率趨勢分析</h3>
+      <div class="findings-list">
+        <div class="finding"><span class="dot yellow">●</span><p>2023-2024 年效率穩定在 <strong>81-84%</strong>，波動小。</p></div>
+        <div class="finding"><span class="dot orange">●</span><p>2025 年效率開始下滑至 <strong>78-83%</strong>，2026 初更降至 <strong>74-75%</strong>。</p></div>
+        <div class="finding"><span class="dot red">●</span><p>效率下降 + 在床時間增加 = 躺在床上睡不著的時間變多了。可能跟就寢時間不規律、壓力、或睡前習慣改變有關。</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 3: 睡眠階段 -->
+  <div class="tab-content" data-tab="3">
+    <div class="chart-panel full-width">
+      <h3>深層 vs REM 睡眠（分鐘/天）</h3>
+      <div class="chart-wrap tall"><canvas id="stagesChart"></canvas></div>
+    </div>
+    <div class="kpi-grid kpi-2col">
+      <div class="kpi"><span class="kpi-label">深層睡眠高峰</span><span class="kpi-value" style="color:#6366f1">2023/09 — 73分</span><span class="kpi-sub">目前 53 分（↓27%）</span></div>
+      <div class="kpi"><span class="kpi-label">REM 高峰</span><span class="kpi-value" style="color:#a78bfa">2024/04 — 87分</span><span class="kpi-sub">目前 65 分（↓25%）</span></div>
+    </div>
+    <div class="chart-panel full-width">
+      <h3>睡眠階段解讀</h3>
+      <div class="findings-list">
+        <div class="finding"><span class="dot purple">●</span><p><strong>深層睡眠</strong>負責身體修復、免疫強化、記憶鞏固。建議佔總睡眠 13-23%。目前約 15%，合理但偏低。</p></div>
+        <div class="finding"><span class="dot blue">●</span><p><strong>REM 睡眠</strong>負責情緒處理、創造力、學習。建議佔 20-25%。目前約 20%，剛好在邊界。</p></div>
+        <div class="finding"><span class="dot red">●</span><p>兩者衰退主因：<strong>總睡眠時間不足</strong>。深層集中在前半夜、REM 集中在後半夜，睡太少兩者都會被截斷。</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 4: 年度對比 -->
+  <div class="tab-content" data-tab="4">
+    <div class="chart-panel full-width">
+      <h3>年度比較</h3>
+      <table class="data-table">
+        <thead><tr><th>年份</th><th>平均睡眠</th><th>效率</th><th>紀錄天數</th><th>vs 前年</th></tr></thead>
+        <tbody id="yearlyTable"></tbody>
+      </table>
+    </div>
+    <div class="chart-panel full-width">
+      <h3>📋 資料品質備註</h3>
+      <div class="findings-list">
+        <div class="finding"><span class="dot blue">●</span><p>2023/05 使用 Classic 模式（舊裝置），無深層/REM 資料</p></div>
+        <div class="finding"><span class="dot blue">●</span><p>2023/06 起切換 Stages 模式，有完整睡眠階段</p></div>
+        <div class="finding"><span class="dot orange">●</span><p>2024/12 ~ 2025/01 無資料（可能未佩戴或換裝置）</p></div>
+        <div class="finding"><span class="dot blue">●</span><p>2026 資料僅到 2/19，尚不完整</p></div>
+      </div>
+    </div>
+    <div class="chart-panel full-width action-box">
+      <h3>💡 建議行動</h3>
+      <div class="findings-list">
+        <div class="finding"><span class="dot green">●</span><p><strong>設定固定就寢時間</strong> — 入睡時間波動極大，穩定作息是改善的第一步。</p></div>
+        <div class="finding"><span class="dot green">●</span><p><strong>先追求 6.5 小時</strong> — 從現在的 5h 直接跳到 7h 不切實際，先以 6.5h 為目標。</p></div>
+        <div class="finding"><span class="dot green">●</span><p><strong>留意效率持續下滑</strong> — 2026 年效率降到 74%，可能需要檢視睡前螢幕使用、咖啡因攝取時間。</p></div>
+        <div class="finding"><span class="dot green">●</span><p><strong>善用 Claude 追蹤</strong> — 每週拉數據做 weekly review，持續監控改善進度。</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script is:inline>
+const PASS = 'paulkuo2026';
+const gate = document.getElementById('authGate');
+const main = document.getElementById('mainContent');
+const inp = document.getElementById('authInput');
+const btn = document.getElementById('authBtn');
+
+if (sessionStorage.getItem('health_auth') === 'ok') { gate.style.display='none'; main.style.display='block'; initAll(); }
+btn.onclick = () => { if(inp.value===PASS){sessionStorage.setItem('health_auth','ok');gate.style.display='none';main.style.display='block';initAll();}else{inp.style.border='2px solid #ef4444';} };
+inp.onkeydown = e => { if(e.key==='Enter') btn.click(); };
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelector(`.tab-content[data-tab="${b.dataset.tab}"]`).classList.add('active');
+  };
+});
+
+const MONTHLY = [
+  {month:"2023-05",days:21,avgSleep:363,avgInBed:391,eff:93,deep:null,rem:null},
+  {month:"2023-06",days:30,avgSleep:334,avgInBed:401,eff:84,deep:54,rem:65},
+  {month:"2023-07",days:31,avgSleep:385,avgInBed:464,eff:83,deep:65,rem:72},
+  {month:"2023-08",days:31,avgSleep:368,avgInBed:457,eff:81,deep:63,rem:68},
+  {month:"2023-09",days:30,avgSleep:348,avgInBed:420,eff:83,deep:73,rem:68},
+  {month:"2023-10",days:30,avgSleep:359,avgInBed:443,eff:81,deep:68,rem:65},
+  {month:"2023-11",days:28,avgSleep:379,avgInBed:460,eff:82,deep:67,rem:72},
+  {month:"2023-12",days:31,avgSleep:367,avgInBed:455,eff:81,deep:66,rem:71},
+  {month:"2024-01",days:31,avgSleep:385,avgInBed:471,eff:82,deep:67,rem:75},
+  {month:"2024-02",days:29,avgSleep:350,avgInBed:428,eff:82,deep:56,rem:78},
+  {month:"2024-03",days:31,avgSleep:364,avgInBed:440,eff:83,deep:66,rem:84},
+  {month:"2024-04",days:29,avgSleep:372,avgInBed:455,eff:82,deep:63,rem:87},
+  {month:"2024-05",days:31,avgSleep:335,avgInBed:410,eff:82,deep:57,rem:70},
+  {month:"2024-06",days:30,avgSleep:372,avgInBed:445,eff:84,deep:54,rem:87},
+  {month:"2024-07",days:31,avgSleep:358,avgInBed:429,eff:83,deep:66,rem:69},
+  {month:"2024-08",days:29,avgSleep:359,avgInBed:430,eff:84,deep:66,rem:71},
+  {month:"2024-09",days:30,avgSleep:367,avgInBed:439,eff:84,deep:69,rem:82},
+  {month:"2024-10",days:31,avgSleep:359,avgInBed:427,eff:84,deep:58,rem:78},
+  {month:"2024-11",days:20,avgSleep:355,avgInBed:425,eff:84,deep:64,rem:70},
+  {month:"2025-02",days:7,avgSleep:305,avgInBed:369,eff:83,deep:33,rem:71},
+  {month:"2025-03",days:29,avgSleep:352,avgInBed:436,eff:81,deep:43,rem:73},
+  {month:"2025-04",days:29,avgSleep:326,avgInBed:394,eff:83,deep:46,rem:77},
+  {month:"2025-05",days:23,avgSleep:303,avgInBed:369,eff:82,deep:49,rem:69},
+  {month:"2025-06",days:17,avgSleep:316,avgInBed:384,eff:82,deep:58,rem:81},
+  {month:"2025-07",days:30,avgSleep:326,avgInBed:416,eff:79,deep:66,rem:65},
+  {month:"2025-08",days:25,avgSleep:309,avgInBed:388,eff:80,deep:64,rem:66},
+  {month:"2025-09",days:29,avgSleep:365,avgInBed:465,eff:79,deep:65,rem:82},
+  {month:"2025-10",days:31,avgSleep:364,avgInBed:467,eff:78,deep:56,rem:77},
+  {month:"2025-11",days:28,avgSleep:371,avgInBed:473,eff:79,deep:56,rem:78},
+  {month:"2025-12",days:31,avgSleep:366,avgInBed:467,eff:79,deep:59,rem:87},
+  {month:"2026-01",days:31,avgSleep:357,avgInBed:480,eff:74,deep:56,rem:76},
+  {month:"2026-02",days:19,avgSleep:299,avgInBed:400,eff:75,deep:53,rem:65},
+];
+
+const YEARLY = [
+  {year:"2023",avgSleep:363,eff:83,days:232},
+  {year:"2024",avgSleep:362,eff:83,days:322},
+  {year:"2025",avgSleep:341,eff:80,days:279},
+  {year:"2026*",avgSleep:335,eff:75,days:50},
+];
+
+const QUARTERS = [
+  {q:"2023 Q2",avg:346},{q:"2023 Q3",avg:367},{q:"2023 Q4",avg:368},
+  {q:"2024 Q1",avg:367},{q:"2024 Q2",avg:359},{q:"2024 Q3",avg:361},
+  {q:"2024 Q4",avg:357},{q:"2025 Q1",avg:343},{q:"2025 Q2",avg:316},
+  {q:"2025 Q3",avg:334},{q:"2025 Q4",avg:367},{q:"2026 Q1",avg:335},
+];
+
+function fmt(mins){ return Math.floor(mins/60)+'h'+String(Math.round(mins%60)).padStart(2,'0')+'m'; }
+
+function initAll(){
+  const totalSleep = MONTHLY.reduce((a,d)=>a+d.avgSleep*d.days,0);
+  const totalDays = MONTHLY.reduce((a,d)=>a+d.days,0);
+  const totalEff = MONTHLY.reduce((a,d)=>a+d.eff*d.days,0);
+  const avg = totalSleep/totalDays;
+  const avgEff = totalEff/totalDays;
+  const best = MONTHLY.reduce((a,d)=>d.avgSleep>a.avgSleep?d:a);
+  const worst = MONTHLY.reduce((a,d)=>d.avgSleep<a.avgSleep?d:a);
+
+  document.getElementById('kpi-avg').textContent = fmt(avg);
+  document.getElementById('kpi-avg-sub').textContent = '建議 7h+ | 短缺 '+fmt(420-avg)+'/天';
+  document.getElementById('kpi-eff').textContent = avgEff.toFixed(0)+'%';
+  document.getElementById('kpi-best').textContent = best.month;
+  document.getElementById('kpi-best-sub').textContent = fmt(best.avgSleep);
+  document.getElementById('kpi-worst').textContent = worst.month;
+  document.getElementById('kpi-worst-sub').textContent = fmt(worst.avgSleep);
+
+  const tbody = document.getElementById('yearlyTable');
+  YEARLY.forEach((y,i) => {
+    const diff = i>0 ? y.avgSleep-YEARLY[i-1].avgSleep : 0;
+    const diffColor = diff>0?'#34d399':diff<0?'#ef4444':'#9ca3af';
+    const diffText = i===0?'\u2014':(diff>0?'+':'')+diff+'\u5206';
+    tbody.innerHTML += '<tr><td>'+y.year+'</td><td>'+fmt(y.avgSleep)+'</td><td>'+y.eff+'%</td><td>'+y.days+'</td><td style="color:'+diffColor+'">'+diffText+'</td></tr>';
+  });
+
+  const chartOpts = {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#d1d5db'}},tooltip:{callbacks:{}}},scales:{x:{ticks:{color:'#9ca3af',maxRotation:45},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#9ca3af'},grid:{color:'rgba(255,255,255,0.08)'}}}};
+
+  new Chart(document.getElementById('yearlyBarChart'),{type:'bar',data:{labels:YEARLY.map(y=>y.year),datasets:[{label:'\u5e73\u5747\u7761\u7720(\u5206)',data:YEARLY.map(y=>y.avgSleep),backgroundColor:YEARLY.map(y=>y.avgSleep>=360?'#60a5fa':'#f59e0b'),borderRadius:6}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:300,max:430,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
+
+  new Chart(document.getElementById('durationChart'),{type:'bar',data:{labels:MONTHLY.map(d=>d.month.slice(2)),datasets:[{label:'\u5e73\u5747\u7761\u7720(\u5206)',data:MONTHLY.map(d=>d.avgSleep),backgroundColor:MONTHLY.map(d=>d.avgSleep<300?'#ef4444':'#60a5fa'),borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:250,max:420,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
+
+  new Chart(document.getElementById('quarterChart'),{type:'bar',data:{labels:QUARTERS.map(q=>q.q),datasets:[{label:'\u5b63\u5ea6\u5e73\u5747(\u5206)',data:QUARTERS.map(q=>q.avg),backgroundColor:QUARTERS.map(q=>q.avg>=360?'#60a5fa':q.avg>=320?'#f59e0b':'#ef4444'),borderRadius:6}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:280,max:400,ticks:{...chartOpts.scales.y.ticks,callback:v=>fmt(v)}}}}});
+
+  new Chart(document.getElementById('efficiencyChart'),{type:'bar',data:{labels:MONTHLY.map(d=>d.month.slice(2)),datasets:[{label:'\u6548\u7387%',data:MONTHLY.map(d=>d.eff),backgroundColor:MONTHLY.map(d=>d.eff<75?'#ef4444':'#f59e0b'),borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:70,max:100}}}});
+
+  const stageData = MONTHLY.filter(d=>d.deep!=null);
+  new Chart(document.getElementById('stagesChart'),{type:'bar',data:{labels:stageData.map(d=>d.month.slice(2)),datasets:[{label:'\u6df1\u5c64',data:stageData.map(d=>d.deep),backgroundColor:'#6366f1',borderRadius:4},{label:'REM',data:stageData.map(d=>d.rem),backgroundColor:'#a78bfa',borderRadius:4}]},options:{...chartOpts,scales:{...chartOpts.scales,y:{...chartOpts.scales.y,min:0,max:100}}}});
+}
+</script>
+
+<style>
+  .dashboard-auth{display:flex;align-items:center;justify-content:center;min-height:60vh}
+  .auth-card{background:#1f2937;padding:2rem;border-radius:1rem;text-align:center;border:1px solid #374151}
+  .auth-card h2{color:#fff;margin-bottom:.5rem}
+  .auth-card p{color:#9ca3af;margin-bottom:1rem;font-size:.9rem}
+  .auth-card input{background:#111827;color:#fff;border:1px solid #4b5563;padding:.6rem 1rem;border-radius:.5rem;width:200px;margin-right:.5rem}
+  .auth-card button{background:#2563eb;color:#fff;border:none;padding:.6rem 1.2rem;border-radius:.5rem;cursor:pointer}
+  .auth-card button:hover{background:#1d4ed8}
+
+  .health-container{max-width:960px;margin:0 auto;padding:1rem}
+  .health-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+  .health-header h1{color:#fff;font-size:1.5rem;margin:0}
+  .health-subtitle{color:#9ca3af;font-size:.85rem;margin-top:.25rem}
+  .nav-link{color:#60a5fa;text-decoration:none;font-size:.85rem;padding:.4rem .8rem;border:1px solid #374151;border-radius:.5rem;white-space:nowrap}
+  .nav-link:hover{background:#1f2937}
+
+  .health-tabs{display:flex;gap:.25rem;margin-bottom:1.5rem;overflow-x:auto;padding-bottom:.25rem}
+  .tab-btn{background:#1f2937;color:#9ca3af;border:none;padding:.5rem .75rem;border-radius:.5rem;cursor:pointer;font-size:.85rem;white-space:nowrap;transition:all .2s}
+  .tab-btn:hover{background:#374151}
+  .tab-btn.active{background:#2563eb;color:#fff}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+
+  .kpi-grid{display:grid;gap:.75rem;margin-bottom:1.5rem}
+  .kpi-4col{grid-template-columns:repeat(4,1fr)}
+  .kpi-2col{grid-template-columns:repeat(2,1fr)}
+  .kpi{background:#1f2937;padding:1rem;border-radius:.75rem;border:1px solid #374151}
+  .kpi-label{display:block;color:#9ca3af;font-size:.75rem;margin-bottom:.25rem}
+  .kpi-value{display:block;font-size:1.25rem;font-weight:700}
+  .kpi-sub{display:block;color:#6b7280;font-size:.7rem;margin-top:.25rem}
+
+  .chart-panel{background:#1f2937;padding:1.25rem;border-radius:.75rem;border:1px solid #374151;margin-bottom:1rem}
+  .chart-panel h3{color:#d1d5db;font-size:.9rem;margin:0 0 .75rem}
+  .chart-wrap{position:relative;height:250px}
+  .chart-wrap.tall{height:300px}
+  .chart-note{color:#6b7280;font-size:.75rem;margin-top:.5rem}
+  .full-width{width:100%}
+
+  .findings-list{display:flex;flex-direction:column;gap:.75rem}
+  .finding{display:flex;gap:.5rem;font-size:.875rem;color:#d1d5db;line-height:1.5}
+  .finding strong{font-weight:600}
+  .dot{flex-shrink:0;margin-top:.25rem}
+  .dot.red{color:#ef4444}.dot.yellow{color:#eab308}.dot.orange{color:#f97316}.dot.blue{color:#60a5fa}.dot.purple{color:#a78bfa}.dot.green{color:#34d399}
+
+  .action-box{background:linear-gradient(135deg,#1f2937,#111827);border-color:#1e40af}
+
+  .data-table{width:100%;border-collapse:collapse;font-size:.875rem}
+  .data-table th{text-align:left;color:#9ca3af;padding:.5rem;border-bottom:1px solid #374151}
+  .data-table td{padding:.5rem;color:#d1d5db;border-bottom:1px solid #1f2937}
+
+  @media(max-width:768px){
+    .kpi-4col{grid-template-columns:repeat(2,1fr)}
+    .kpi-2col{grid-template-columns:1fr}
+    .health-header{flex-direction:column}
+  }
+</style>
+
+</BaseLayout>
