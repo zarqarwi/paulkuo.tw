@@ -25,8 +25,82 @@
   --max-width: 1200px;
   --nav-height: 72px;
 }
-html[lang="zh-Hans"] { --font-cjk: 'Noto Sans SC', sans-serif; --font-body: 'DM Sans', 'Noto Sans SC', sans-serif; }
-html[lang="ja"] { --font-cjk: 'Noto Sans JP', sans-serif; --font-body: 'DM Sans', 'Noto Sans JP', sans-serif; }
+/* === CJK Language-specific Typography === */
+
+/* Traditional Chinese */
+html[lang="zh-Hant"], html[lang="zh-TW"] {
+  --font-cjk: system-ui, 'PingFang TC', 'Heiti TC', '微軟正黑體', 'Noto Sans TC', sans-serif;
+  --font-body: 'DM Sans', system-ui, 'PingFang TC', 'Heiti TC', '微軟正黑體', 'Noto Sans TC', sans-serif;
+}
+html[lang="zh-Hant"] .article-body,
+html[lang="zh-TW"] .article-body,
+html[lang="zh-Hant"] .hero-tagline,
+html[lang="zh-TW"] .hero-tagline,
+html[lang="zh-Hant"] .manifesto-body,
+html[lang="zh-TW"] .manifesto-body,
+html[lang="zh-Hant"] .about-content p,
+html[lang="zh-TW"] .about-content p {
+  letter-spacing: normal;
+  line-height: 1.55;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+html[lang="zh-Hant"] .article-body p,
+html[lang="zh-TW"] .article-body p {
+  margin-bottom: 1.1em;
+  line-height: 1.6;
+}
+
+/* Simplified Chinese */
+html[lang="zh-Hans"], html[lang="zh-CN"] {
+  --font-cjk: system-ui, 'PingFang SC', 'Heiti SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-body: 'DM Sans', system-ui, 'PingFang SC', 'Heiti SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+}
+html[lang="zh-Hans"] .article-body,
+html[lang="zh-CN"] .article-body,
+html[lang="zh-Hans"] .hero-tagline,
+html[lang="zh-CN"] .hero-tagline,
+html[lang="zh-Hans"] .manifesto-body,
+html[lang="zh-CN"] .manifesto-body,
+html[lang="zh-Hans"] .about-content p,
+html[lang="zh-CN"] .about-content p {
+  letter-spacing: normal;
+  line-height: 1.55;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+html[lang="zh-Hans"] .article-body p,
+html[lang="zh-CN"] .article-body p {
+  margin-bottom: 1.1em;
+  line-height: 1.6;
+}
+
+/* Japanese */
+html[lang="ja"] {
+  --font-cjk: system-ui, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
+  --font-body: 'DM Sans', system-ui, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
+}
+html[lang="ja"] .article-body,
+html[lang="ja"] .hero-tagline,
+html[lang="ja"] .manifesto-body,
+html[lang="ja"] .about-content p {
+  letter-spacing: 0.03em;
+  line-height: 1.7;
+  text-align: justify;
+  text-justify: inter-ideograph;
+  font-feature-settings: "palt" 1;
+}
+html[lang="ja"] .article-body p {
+  margin-bottom: 1.3em;
+  line-height: 1.75;
+}
+
+/* English (keep existing defaults, explicit for clarity) */
+html[lang="en"] .article-body p {
+  line-height: 2;
+  margin-bottom: 28px;
+  letter-spacing: normal;
+}
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; font-size: 16px; }
@@ -309,6 +383,15 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .delay-3 { animation-delay: 0.3s; }
 .delay-4 { animation-delay: 0.4s; }
 .delay-5 { animation-delay: 0.5s; }
+
+/* ===== TABLET BREAKPOINT ===== */
+@media (max-width: 1024px) {
+  .content-grid { grid-template-columns: repeat(2, 1fr); }
+  .about-pillar-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero-inner { gap: 40px; }
+  .about-grid { gap: 40px; }
+  .contact-grid { gap: 40px; }
+}
 
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {

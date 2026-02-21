@@ -20,9 +20,28 @@ const {
 } = Astro.props;
 
 const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
+
+// Determine current lang from URL or default
+const pathname = Astro.url.pathname;
+const langMap: Record<string, string> = {
+  '/en/': 'en',
+  '/ja/': 'ja',
+  '/zh-cn/': 'zh-CN',
+};
+const currentLang = Object.entries(langMap).find(([prefix]) => pathname.startsWith(prefix))?.[1] || 'zh-Hant';
+
+// Build hreflang alternates
+const basePath = pathname.replace(/^\/(en|ja|zh-cn)\//, '/');
+const hreflangs = [
+  { lang: 'zh-TW', href: `https://paulkuo.tw${basePath}` },
+  { lang: 'en', href: `https://paulkuo.tw/en${basePath}` },
+  { lang: 'ja', href: `https://paulkuo.tw/ja${basePath}` },
+  { lang: 'zh-CN', href: `https://paulkuo.tw/zh-cn${basePath}` },
+  { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
+];
 ---
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang={currentLang}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +53,7 @@ const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
   <meta property="og:type" content={ogType}>
   <meta property="og:url" content={ogUrl}>
   <meta property="og:image" content={ogImage}>
-  <meta property="og:locale" content="zh_TW">
+  <meta property="og:locale" content={currentLang === 'zh-Hant' ? 'zh_TW' : currentLang === 'zh-CN' ? 'zh_CN' : currentLang === 'ja' ? 'ja_JP' : 'en_US'} />
   <meta property="og:site_name" content="Paul Kuo">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content={title}>
@@ -43,6 +62,9 @@ const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
   <meta name="twitter:site" content="@paulkuo">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
   <link rel="canonical" href={canonical}>
+  {hreflangs.map(h => (
+    <link rel="alternate" hreflang={h.lang} href={h.href} />
+  ))}
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" href="/favicon.png" sizes="192x192">
   <link rel="apple-touch-icon" href="/favicon.png">
