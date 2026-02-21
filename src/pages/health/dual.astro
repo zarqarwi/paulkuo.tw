@@ -1,0 +1,360 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Health Dashboard — Paul Kuo" description="Fitbit + Apple Watch 雙裝置健康分析">
+
+<div id="authGate" class="dashboard-auth">
+  <div class="auth-card">
+    <h2>🏥 Health Dashboard</h2>
+    <p>輸入存取密碼</p>
+    <input type="password" id="authInput" placeholder="Password" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+<div id="healthMain" class="health-container" style="display:none">
+  <header class="health-header">
+    <div>
+      <h1>🏥 Paul 雙裝置健康分析</h1>
+      <p class="health-subtitle">Fitbit (2023/05–2026/02, 883晚) + Apple Watch (2023/09–2025/12, 537晚) · HRV / 靜止心率 / 血氧</p>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <a href="/health/fitbit" style="color:#60a5fa;text-decoration:none;font-size:.85rem;padding:.4rem .8rem;border:1px solid #374151;border-radius:.5rem">← Fitbit 單源</a>
+      <a href="/health/multi" style="color:#60a5fa;text-decoration:none;font-size:.85rem;padding:.4rem .8rem;border:1px solid #374151;border-radius:.5rem">→ 多源分析</a>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="health-tabs">
+    <button class="tab-btn active" data-tab="0">總覽</button>
+    <button class="tab-btn" data-tab="1">睡眠時長比對</button>
+    <button class="tab-btn" data-tab="2">睡眠階段</button>
+    <button class="tab-btn" data-tab="3">健康指標</button>
+    <button class="tab-btn" data-tab="4">裝置差異分析</button>
+  </div>
+
+  <!-- Tab 0: Overview -->
+  <div class="tab-content active" data-tab="0">
+    <div class="kpi-grid kpi-4col">
+      <div class="kpi"><span class="kpi-label">Fitbit 全期平均</span><span class="kpi-value" style="color:var(--c-fb)" id="kpi-fb-avg"></span><span class="kpi-sub">883 晚</span></div>
+      <div class="kpi"><span class="kpi-label">Apple Watch 全期平均</span><span class="kpi-value" style="color:var(--c-aw)" id="kpi-aw-avg"></span><span class="kpi-sub">537 晚</span></div>
+      <div class="kpi"><span class="kpi-label">平均 HRV</span><span class="kpi-value" style="color:var(--c-hrv)" id="kpi-hrv"></span><span class="kpi-sub">心率變異</span></div>
+      <div class="kpi"><span class="kpi-label">平均靜止心率</span><span class="kpi-value" style="color:var(--c-rhr)" id="kpi-rhr"></span><span class="kpi-sub">休息心率</span></div>
+    </div>
+    <div class="chart-panel full-width"><h3>睡眠時長趨勢（雙裝置）</h3><div class="chart-wrap tall"><canvas id="overviewSleepChart"></canvas></div></div>
+    <div class="chart-panel full-width" style="margin-top:1.25rem"><h3>HRV + 靜止心率趨勢</h3><div class="chart-wrap"><canvas id="overviewHrvChart"></canvas></div></div>
+    <div class="findings-grid">
+      <div class="finding-card warning"><strong>睡眠不足：33 個月未達 7 小時</strong><p>Fitbit 全期平均 5h54m，Apple Watch 5h52m。兩裝置結論一致：長期累積睡眠債。</p></div>
+      <div class="finding-card danger"><strong>自律神經惡化中</strong><p>HRV 從 42ms (2023) 降至 32ms (2025)，靜止心率從 60 升至 71 bpm。身體恢復能力正在衰退。</p></div>
+      <div class="finding-card info"><strong>裝置差異：深層睡眠判讀不同</strong><p>Fitbit 偵測深層平均比 AW 多 21 分鐘，但 AW 偵測 REM 多 15 分鐘。演算法差異造成。</p></div>
+      <div class="finding-card success"><strong>2025 Q4 短暫回升</strong><p>10-12 月兩裝置同步回升至 6h+，但 2026 又跌回。需找出那段時間的生活節奏差異。</p></div>
+    </div>
+  </div>
+
+  <!-- Tab 1: Duration Comparison -->
+  <div class="tab-content" data-tab="1">
+    <div class="chart-panel full-width"><h3>Fitbit vs Apple Watch 月均睡眠時長</h3><div class="chart-wrap tall"><canvas id="durationBarChart"></canvas></div></div>
+    <div class="chart-panel full-width" style="margin-top:1.25rem"><h3>兩裝置差異 (AW − FB)，正=AW偵測較多</h3><div class="chart-wrap"><canvas id="diffBarChart"></canvas></div>
+      <p class="chart-note" id="diffNote"></p>
+    </div>
+  </div>
+
+  <!-- Tab 2: Sleep Stages -->
+  <div class="tab-content" data-tab="2">
+    <div class="chart-panel full-width"><h3>Fitbit 睡眠階段組成（月均）</h3><div class="chart-wrap tall"><canvas id="fbStagesChart"></canvas></div></div>
+    <div class="chart-panel full-width" style="margin-top:1.25rem"><h3>Apple Watch 睡眠階段組成（月均）</h3><div class="chart-wrap tall"><canvas id="awStagesChart"></canvas></div></div>
+    <div class="chart-panel full-width" style="margin-top:1.25rem"><h3>深層睡眠比對</h3><div class="chart-wrap"><canvas id="deepCompareChart"></canvas></div>
+      <p class="chart-note">Fitbit 平均偵測深層 21min 多於 Apple Watch。兩者使用不同演算法：Fitbit 光學 PPG 判定較寬鬆，AW 的 accelerometer+PPG 較保守。</p>
+    </div>
+  </div>
+
+  <!-- Tab 3: Health Metrics -->
+  <div class="tab-content" data-tab="3">
+    <div class="chart-panel full-width"><h3>HRV 心率變異趨勢（Apple Watch 獨有）</h3><div class="chart-wrap tall"><canvas id="hrvChart"></canvas></div>
+      <p class="chart-note">HRV 從 2023 年的 42ms 持續下降到 2025 中的 31ms。低 HRV 反映自律神經壓力大、恢復能力差。年齡 54 歲的健康範圍約 25-45ms，處於偏低端。</p>
+    </div>
+    <div class="chart-panel full-width" style="margin-top:1.25rem"><h3>靜止心率趨勢</h3><div class="chart-wrap"><canvas id="rhrChart"></canvas></div>
+      <p class="chart-note">靜止心率從 60 bpm 升至 72 bpm，上升 20%。這與睡眠不足、HRV 下降趨勢完全吻合。長期睡眠債正在以心血管指標的方式反映出來。</p>
+    </div>
+    <div class="chart-panel full-width" style="margin-top:1.25rem"><h3>血氧飽和度 (SpO2)</h3><div class="chart-wrap"><canvas id="spo2Chart"></canvas></div>
+      <p class="chart-note">血氧穩定在 95-96%，偶爾低於 95%。整體在正常範圍，但配合打呼或睡眠呼吸中止篩檢會更完整。</p>
+    </div>
+  </div>
+
+  <!-- Tab 4: Device Difference -->
+  <div class="tab-content" data-tab="4">
+    <div class="device-compare">
+      <div class="device-card">
+        <h3 style="color:var(--c-fb)">⌚ Fitbit</h3>
+        <ul>
+          <li>總睡眠偵測一致性高，重疊月中差距 ±30min 內</li>
+          <li><strong>深層偵測較多</strong>（平均多 21min），可能高估</li>
+          <li>使用 PPG 光學感測器判定</li>
+          <li>睡眠分類：深層 / REM / 淺層</li>
+          <li>覆蓋率高（每月 25-31 晚）</li>
+          <li>效率計算合理（80-84%）</li>
+        </ul>
+      </div>
+      <div class="device-card">
+        <h3 style="color:var(--c-aw)">⌚ Apple Watch</h3>
+        <ul>
+          <li><strong>REM 偵測較多</strong>（平均多 15min），可能更準確</li>
+          <li>深層偵測較保守</li>
+          <li>使用加速度計 + PPG 組合</li>
+          <li>睡眠分類：深層 / REM / Core</li>
+          <li>覆蓋率較低（每月 7-27 晚不等）</li>
+          <li>獨家指標：HRV、血氧、靜止心率</li>
+        </ul>
+      </div>
+    </div>
+    <div class="chart-panel full-width" style="margin-top:1.25rem"><h3>兩裝置 REM 比對</h3><div class="chart-wrap"><canvas id="remCompareChart"></canvas></div></div>
+    <div class="strategy-card">
+      <h3>📊 最佳資料來源建議</h3>
+      <div class="strategy-items">
+        <div><span class="dot" style="background:var(--c-fb)"></span><strong>總睡眠時長</strong>：兩者差距小，取 Fitbit 為主（覆蓋率高）</div>
+        <div><span class="dot" style="background:var(--c-aw)"></span><strong>REM 睡眠</strong>：Apple Watch 較可靠（加速度計更精準偵測眼球快速運動期）</div>
+        <div><span class="dot" style="background:var(--c-fb)"></span><strong>深層睡眠</strong>：兩者都不完全準確，參考 Fitbit 趨勢但知道可能高估</div>
+        <div><span class="dot" style="background:var(--c-hrv)"></span><strong>身體恢復指標</strong>：Apple Watch 獨有（HRV、血氧、靜止心率）</div>
+        <div><span class="dot" style="background:#eab308"></span><strong>綜合評估</strong>：以 Fitbit 為日常追蹤主力，Apple Watch 為深度健康分析輔助</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="health-footer">
+    Paul × Claude 健康分析 · Fitbit + Apple Watch 雙裝置整合 · 個體基礎設施
+  </footer>
+</div>
+
+</BaseLayout>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
+
+<script is:inline>
+// ── Auth ──
+const DASH_KEY = 'paulkuo2026';
+const authGate = document.getElementById('authGate');
+const healthMain = document.getElementById('healthMain');
+const authInput = document.getElementById('authInput');
+const authBtn = document.getElementById('authBtn');
+
+function checkAuth() {
+  const urlKey = new URLSearchParams(window.location.search).get('key');
+  const stored = sessionStorage.getItem('health_auth');
+  if (urlKey === DASH_KEY || stored === DASH_KEY) {
+    sessionStorage.setItem('health_auth', DASH_KEY);
+    authGate.style.display = 'none';
+    healthMain.style.display = 'block';
+    initDashboard();
+  }
+}
+checkAuth();
+
+authBtn.addEventListener('click', () => {
+  if (authInput.value === DASH_KEY) {
+    sessionStorage.setItem('health_auth', DASH_KEY);
+    authGate.style.display = 'none';
+    healthMain.style.display = 'block';
+    initDashboard();
+  } else {
+    authInput.style.borderColor = '#ef4444';
+    authInput.value = '';
+    authInput.placeholder = '密碼錯誤';
+  }
+});
+authInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
+
+// ── Tabs ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector(`.tab-content[data-tab="${btn.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+// ── DATA ──
+const DATA = [{"month":"2023-05","fb_nights":21,"fb_avg_sleep":363.5,"fb_avg_eff":92.8},{"month":"2023-06","fb_nights":30,"fb_avg_sleep":334.9,"fb_avg_eff":83.7,"fb_avg_deep":56.0,"fb_avg_rem":65.6,"fb_avg_light":214.8},{"month":"2023-07","fb_nights":31,"fb_avg_sleep":385.5,"fb_avg_eff":82.9,"fb_avg_deep":64.6,"fb_avg_rem":72.1,"fb_avg_light":249.0},{"month":"2023-08","fb_nights":31,"fb_avg_sleep":368.2,"fb_avg_eff":80.9,"fb_avg_deep":63.0,"fb_avg_rem":68.0,"fb_avg_light":237.7},{"month":"2023-09","fb_nights":30,"fb_avg_sleep":348.7,"fb_avg_eff":83.1,"fb_avg_deep":73.4,"fb_avg_rem":68.1,"fb_avg_light":214.2,"aw_nights":6,"aw_avg_sleep":359.6,"aw_avg_deep":44.2,"aw_avg_rem":89.4,"aw_avg_core":225.9,"aw_avg_eff":46.5,"avg_hrv":37.6,"avg_rhr":59.9,"avg_spo2":96.4},{"month":"2023-10","fb_nights":30,"fb_avg_sleep":359.6,"fb_avg_eff":81.5,"fb_avg_deep":67.6,"fb_avg_rem":65.3,"fb_avg_light":245.1,"aw_nights":22,"aw_avg_sleep":329.1,"aw_avg_deep":36.2,"aw_avg_rem":74.8,"aw_avg_core":211.0,"aw_avg_eff":48.1,"avg_hrv":42.6,"avg_rhr":59.6,"avg_spo2":95.6},{"month":"2023-11","fb_nights":28,"fb_avg_sleep":379.1,"fb_avg_eff":82.5,"fb_avg_deep":67.0,"fb_avg_rem":72.2,"fb_avg_light":240.9,"aw_nights":21,"aw_avg_sleep":362.4,"aw_avg_deep":43.5,"aw_avg_rem":85.2,"aw_avg_core":225.2,"aw_avg_eff":48.2,"avg_hrv":42.2,"avg_rhr":60.4,"avg_spo2":95.7},{"month":"2023-12","fb_nights":31,"fb_avg_sleep":367.6,"fb_avg_eff":80.8,"fb_avg_deep":66.0,"fb_avg_rem":70.8,"fb_avg_light":230.7,"aw_nights":21,"aw_avg_sleep":352.0,"aw_avg_deep":43.9,"aw_avg_rem":79.2,"aw_avg_core":228.9,"aw_avg_eff":47.0,"avg_hrv":38.5,"avg_rhr":59.4,"avg_spo2":96.1},{"month":"2024-01","fb_nights":31,"fb_avg_sleep":385.5,"fb_avg_eff":81.8,"fb_avg_deep":67.3,"fb_avg_rem":74.8,"fb_avg_light":244.3,"aw_nights":21,"aw_avg_sleep":360.1,"aw_avg_deep":41.4,"aw_avg_rem":77.6,"aw_avg_core":226.6,"aw_avg_eff":46.4,"avg_hrv":39.7,"avg_rhr":60.7,"avg_spo2":95.9},{"month":"2024-02","fb_nights":29,"fb_avg_sleep":350.3,"fb_avg_eff":81.8,"fb_avg_deep":56.5,"fb_avg_rem":77.6,"fb_avg_light":227.9,"aw_nights":19,"aw_avg_sleep":387.7,"aw_avg_deep":43.4,"aw_avg_rem":92.8,"aw_avg_core":251.5,"aw_avg_eff":47.4,"avg_hrv":35.6,"avg_rhr":62.8,"avg_spo2":95.7},{"month":"2024-03","fb_nights":31,"fb_avg_sleep":364.6,"fb_avg_eff":82.8,"fb_avg_deep":66.3,"fb_avg_rem":84.0,"fb_avg_light":215.1,"aw_nights":20,"aw_avg_sleep":340.5,"aw_avg_deep":44.9,"aw_avg_rem":79.7,"aw_avg_core":215.9,"aw_avg_eff":48.4,"avg_hrv":37.4,"avg_rhr":63.0,"avg_spo2":95.5},{"month":"2024-04","fb_nights":29,"fb_avg_sleep":372.0,"fb_avg_eff":81.8,"fb_avg_deep":62.9,"fb_avg_rem":87.4,"fb_avg_light":223.1,"aw_nights":19,"aw_avg_sleep":358.8,"aw_avg_deep":43.2,"aw_avg_rem":83.3,"aw_avg_core":232.3,"aw_avg_eff":47.9,"avg_hrv":38.0,"avg_rhr":62.0,"avg_spo2":94.9},{"month":"2024-05","fb_nights":31,"fb_avg_sleep":335.5,"fb_avg_eff":81.9,"fb_avg_deep":56.9,"fb_avg_rem":69.6,"fb_avg_light":210.4,"aw_nights":22,"aw_avg_sleep":339.4,"aw_avg_deep":45.8,"aw_avg_rem":84.7,"aw_avg_core":208.9,"aw_avg_eff":47.7,"avg_hrv":35.3,"avg_rhr":64.1,"avg_spo2":95.5},{"month":"2024-06","fb_nights":30,"fb_avg_sleep":372.1,"fb_avg_eff":84.0,"fb_avg_deep":54.3,"fb_avg_rem":87.0,"fb_avg_light":239.7,"aw_nights":20,"aw_avg_sleep":395.1,"aw_avg_deep":36.1,"aw_avg_rem":100.5,"aw_avg_core":258.4,"aw_avg_eff":48.0,"avg_hrv":33.2,"avg_rhr":61.7,"avg_spo2":95.0},{"month":"2024-07","fb_nights":31,"fb_avg_sleep":358.0,"fb_avg_eff":83.4,"fb_avg_deep":65.5,"fb_avg_rem":68.9,"fb_avg_light":224.0,"aw_nights":22,"aw_avg_sleep":355.3,"aw_avg_deep":41.5,"aw_avg_rem":89.0,"aw_avg_core":224.9,"aw_avg_eff":47.8,"avg_hrv":38.2,"avg_rhr":60.6,"avg_spo2":95.4},{"month":"2024-08","fb_nights":29,"fb_avg_sleep":359.3,"fb_avg_eff":83.6,"fb_avg_deep":66.0,"fb_avg_rem":71.5,"fb_avg_light":222.1,"aw_nights":18,"aw_avg_sleep":358.9,"aw_avg_deep":43.2,"aw_avg_rem":97.2,"aw_avg_core":218.5,"aw_avg_eff":47.3,"avg_hrv":36.2,"avg_rhr":62.2,"avg_spo2":96.0},{"month":"2024-09","fb_nights":30,"fb_avg_sleep":367.5,"fb_avg_eff":83.8,"fb_avg_deep":69.4,"fb_avg_rem":82.3,"fb_avg_light":228.8,"aw_nights":22,"aw_avg_sleep":383.9,"aw_avg_deep":35.1,"aw_avg_rem":99.4,"aw_avg_core":241.8,"aw_avg_eff":48.5,"avg_hrv":37.0,"avg_rhr":62.0,"avg_spo2":95.4},{"month":"2024-10","fb_nights":31,"fb_avg_sleep":359.6,"fb_avg_eff":84.2,"fb_avg_deep":57.6,"fb_avg_rem":78.1,"fb_avg_light":224.0,"aw_nights":24,"aw_avg_sleep":383.3,"aw_avg_deep":45.4,"aw_avg_rem":90.6,"aw_avg_core":239.6,"aw_avg_eff":79.0,"avg_hrv":33.0,"avg_rhr":64.0,"avg_spo2":95.4},{"month":"2024-11","fb_nights":20,"fb_avg_sleep":355.1,"fb_avg_eff":83.6,"fb_avg_deep":63.6,"fb_avg_rem":70.2,"fb_avg_light":222.9,"aw_nights":27,"aw_avg_sleep":346.0,"aw_avg_deep":42.8,"aw_avg_rem":74.4,"aw_avg_core":210.7,"aw_avg_eff":93.1,"avg_hrv":35.4,"avg_rhr":66.1,"avg_spo2":95.8},{"month":"2024-12","aw_nights":27,"aw_avg_sleep":365.5,"aw_avg_deep":44.3,"aw_avg_rem":82.7,"aw_avg_core":214.4,"aw_avg_eff":92.2,"avg_hrv":35.3,"avg_rhr":67.3,"avg_spo2":96.0},{"month":"2025-01","aw_nights":23,"aw_avg_sleep":327.3,"aw_avg_deep":36.9,"aw_avg_rem":72.3,"aw_avg_core":196.5,"aw_avg_eff":92.7,"avg_hrv":33.9,"avg_rhr":67.6,"avg_spo2":95.9},{"month":"2025-02","fb_nights":7,"fb_avg_sleep":305.7,"fb_avg_eff":82.9,"fb_avg_deep":38.0,"fb_avg_rem":76.8,"fb_avg_light":209.5,"aw_nights":27,"aw_avg_sleep":394.5,"aw_avg_deep":45.8,"aw_avg_rem":93.0,"aw_avg_core":239.2,"aw_avg_eff":85.0,"avg_hrv":32.0,"avg_rhr":66.3,"avg_spo2":96.1},{"month":"2025-03","fb_nights":29,"fb_avg_sleep":352.7,"fb_avg_eff":81.2,"fb_avg_deep":42.8,"fb_avg_rem":73.0,"fb_avg_light":247.6,"aw_nights":27,"aw_avg_sleep":357.6,"aw_avg_deep":40.2,"aw_avg_rem":89.3,"aw_avg_core":223.4,"aw_avg_eff":86.8,"avg_hrv":30.8,"avg_rhr":67.6,"avg_spo2":96.2},{"month":"2025-04","fb_nights":29,"fb_avg_sleep":326.3,"fb_avg_eff":83.4,"fb_avg_deep":47.5,"fb_avg_rem":78.8,"fb_avg_light":219.8,"aw_nights":21,"aw_avg_sleep":342.4,"aw_avg_deep":35.4,"aw_avg_rem":77.1,"aw_avg_core":206.2,"aw_avg_eff":87.2,"avg_hrv":32.0,"avg_rhr":68.0,"avg_spo2":96.0},{"month":"2025-05","fb_nights":23,"fb_avg_sleep":303.3,"fb_avg_eff":82.2,"fb_avg_deep":48.7,"fb_avg_rem":69.3,"fb_avg_light":185.8,"aw_nights":20,"aw_avg_sleep":283.8,"aw_avg_deep":27.7,"aw_avg_rem":63.3,"aw_avg_core":138.3,"aw_avg_eff":89.1,"avg_hrv":33.1,"avg_rhr":68.2,"avg_spo2":95.7},{"month":"2025-06","fb_nights":17,"fb_avg_sleep":316.6,"fb_avg_eff":82.0,"fb_avg_deep":57.6,"fb_avg_rem":80.8,"fb_avg_light":193.7,"aw_nights":15,"aw_avg_sleep":315.0,"aw_avg_deep":27.6,"aw_avg_rem":71.6,"aw_avg_core":172.5,"aw_avg_eff":94.9,"avg_hrv":32.3,"avg_rhr":69.0,"avg_spo2":95.7},{"month":"2025-07","fb_nights":30,"fb_avg_sleep":326.1,"fb_avg_eff":79.1,"fb_avg_deep":65.6,"fb_avg_rem":64.7,"fb_avg_light":195.5,"aw_nights":10,"aw_avg_sleep":279.6,"aw_avg_deep":33.4,"aw_avg_rem":65.3,"aw_avg_core":164.6,"aw_avg_eff":87.5,"avg_hrv":33.5,"avg_rhr":68.2,"avg_spo2":95.5},{"month":"2025-08","fb_nights":25,"fb_avg_sleep":309.5,"fb_avg_eff":80.4,"fb_avg_deep":64.5,"fb_avg_rem":66.2,"fb_avg_light":187.1,"aw_nights":7,"aw_avg_sleep":291.1,"aw_avg_deep":22.9,"aw_avg_rem":68.5,"aw_avg_core":189.8,"aw_avg_eff":89.5,"avg_hrv":32.2,"avg_rhr":71.1,"avg_spo2":95.5},{"month":"2025-09","fb_nights":29,"fb_avg_sleep":365.4,"fb_avg_eff":78.8,"fb_avg_deep":65.0,"fb_avg_rem":81.8,"fb_avg_light":228.1,"aw_nights":9,"aw_avg_sleep":344.7,"aw_avg_deep":34.7,"aw_avg_rem":85.3,"aw_avg_core":217.5,"aw_avg_eff":98.2,"avg_hrv":31.5,"avg_rhr":71.0,"avg_spo2":95.9},{"month":"2025-10","fb_nights":31,"fb_avg_sleep":364.7,"fb_avg_eff":78.5,"fb_avg_deep":56.4,"fb_avg_rem":77.5,"fb_avg_light":230.4,"aw_nights":14,"aw_avg_sleep":407.0,"aw_avg_deep":38.0,"aw_avg_rem":96.9,"aw_avg_core":272.2,"aw_avg_eff":92.4,"avg_hrv":35.2,"avg_rhr":70.1,"avg_spo2":95.5},{"month":"2025-11","fb_nights":28,"fb_avg_sleep":371.5,"fb_avg_eff":79.5,"fb_avg_deep":55.5,"fb_avg_rem":78.1,"fb_avg_light":237.6,"aw_nights":15,"aw_avg_sleep":378.7,"aw_avg_deep":38.5,"aw_avg_rem":93.7,"aw_avg_core":246.5,"aw_avg_eff":94.1,"avg_hrv":32.6,"avg_rhr":66.8,"avg_spo2":96.1},{"month":"2025-12","fb_nights":31,"fb_avg_sleep":366.4,"fb_avg_eff":78.9,"fb_avg_deep":59.0,"fb_avg_rem":87.3,"fb_avg_light":228.8,"aw_nights":17,"aw_avg_sleep":373.8,"aw_avg_deep":35.3,"aw_avg_rem":95.5,"aw_avg_core":243.0,"aw_avg_eff":94.7,"avg_hrv":37.2,"avg_rhr":72.0,"avg_spo2":96.3},{"month":"2026-01","fb_nights":31,"fb_avg_sleep":357.9,"fb_avg_eff":74.5,"fb_avg_deep":56.5,"fb_avg_rem":75.8,"fb_avg_light":225.1,"avg_hrv":34.0,"avg_spo2":96.1},{"month":"2026-02","fb_nights":19,"fb_avg_sleep":299.5,"fb_avg_eff":75.2,"fb_avg_deep":52.9,"fb_avg_rem":64.8,"fb_avg_light":181.3,"aw_nights":1,"aw_avg_sleep":161.8,"aw_avg_deep":0.0,"aw_avg_rem":0.0,"aw_avg_core":0.0,"aw_avg_eff":80.1}];
+
+const charts = {};
+let initialized = false;
+
+function fmt(m) { if (!m && m !== 0) return '—'; const h = Math.floor(m/60); const mi = Math.round(m%60); return h+'h'+String(mi).padStart(2,'0')+'m'; }
+
+function initDashboard() {
+  if (initialized) return;
+  initialized = true;
+
+  const fbData = DATA.filter(d => d.fb_avg_sleep);
+  const awData = DATA.filter(d => d.aw_avg_sleep && d.aw_nights >= 5);
+  const hrvData = DATA.filter(d => d.avg_hrv);
+  const fbAvg = fbData.reduce((s,d) => s+d.fb_avg_sleep, 0) / fbData.length;
+  const awAvg = awData.reduce((s,d) => s+d.aw_avg_sleep, 0) / awData.length;
+  const avgHrv = hrvData.reduce((s,d) => s+d.avg_hrv, 0) / hrvData.length;
+  const avgRhr = hrvData.reduce((s,d) => s+(d.avg_rhr||0), 0) / hrvData.filter(d=>d.avg_rhr).length;
+
+  document.getElementById('kpi-fb-avg').textContent = fmt(fbAvg);
+  document.getElementById('kpi-aw-avg').textContent = fmt(awAvg);
+  document.getElementById('kpi-hrv').textContent = avgHrv.toFixed(1) + ' ms';
+  document.getElementById('kpi-rhr').textContent = Math.round(avgRhr) + ' bpm';
+
+  const labels = DATA.map(d => d.month.slice(2).replace('-','/'));
+  const fbHrs = DATA.map(d => d.fb_avg_sleep ? +(d.fb_avg_sleep/60).toFixed(2) : null);
+  const awHrs = DATA.map(d => d.aw_avg_sleep && d.aw_nights >= 5 ? +(d.aw_avg_sleep/60).toFixed(2) : null);
+
+  const overlapIdx = DATA.map((d,i) => (d.fb_avg_sleep && d.aw_avg_sleep && d.aw_nights >= 5) ? i : -1).filter(i => i >= 0);
+  const overlapLabels = overlapIdx.map(i => labels[i]);
+  const overlapFb = overlapIdx.map(i => fbHrs[i]);
+  const overlapAw = overlapIdx.map(i => awHrs[i]);
+  const overlapDiff = overlapIdx.map(i => +((DATA[i].aw_avg_sleep - DATA[i].fb_avg_sleep)/60).toFixed(2));
+  const hrvLabels = hrvData.map(d => d.month.slice(2).replace('-','/'));
+
+  const defaults = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#5A5A5A', font:{ family:'DM Sans', size:11 }, padding:12 } } } };
+  const gridOpts = { color:'#E8E6E1' };
+  const tickOpts = { color:'#8A8A8A', font:{ family:'DM Sans', size:10 } };
+
+  // Tab 0: Overview Sleep
+  charts.overviewSleep = new Chart(document.getElementById('overviewSleepChart'), {
+    type:'line', data:{ labels, datasets:[
+      { label:'Fitbit', data:fbHrs, borderColor:'#00B0B9', fill:false, tension:0.3, spanGaps:true, pointRadius:2, borderWidth:2.5 },
+      { label:'Apple Watch', data:awHrs, borderColor:'#FF6B6B', fill:false, tension:0.3, spanGaps:true, pointRadius:2, borderWidth:2.5 },
+    ]}, options:{ ...defaults, scales:{ x:{ grid:{display:false}, ticks:tickOpts }, y:{ min:3, max:8, grid:gridOpts, ticks:{...tickOpts, callback:v=>v+'h'} } } }
+  });
+
+  // Overview HRV + RHR
+  charts.overviewHrv = new Chart(document.getElementById('overviewHrvChart'), {
+    type:'line', data:{ labels:hrvLabels, datasets:[
+      { label:'HRV (ms)', data:hrvData.map(d=>d.avg_hrv), borderColor:'#66bb6a', backgroundColor:'rgba(102,187,106,0.1)', fill:true, tension:0.3, pointRadius:2, borderWidth:2, yAxisID:'y' },
+      { label:'靜止心率 (bpm)', data:hrvData.map(d=>d.avg_rhr), borderColor:'#ef5350', fill:false, tension:0.3, pointRadius:0, borderWidth:2, yAxisID:'y1' },
+    ]}, options:{ ...defaults, scales:{ x:{grid:{display:false},ticks:tickOpts}, y:{min:20,max:50,grid:gridOpts,ticks:{...tickOpts,callback:v=>v+'ms'},position:'left'}, y1:{min:50,max:80,grid:{display:false},ticks:{...tickOpts,color:'#ef5350',callback:v=>v+'bpm'},position:'right'} } }
+  });
+
+  // Tab 1: Duration Bar
+  charts.durationBar = new Chart(document.getElementById('durationBarChart'), {
+    type:'bar', data:{ labels:overlapLabels, datasets:[
+      { label:'Fitbit', data:overlapFb, backgroundColor:'rgba(0,176,185,0.7)', borderRadius:3 },
+      { label:'Apple Watch', data:overlapAw, backgroundColor:'rgba(255,107,107,0.7)', borderRadius:3 },
+    ]}, options:{ ...defaults, scales:{ x:{grid:{display:false},ticks:tickOpts}, y:{min:3,max:8,grid:gridOpts,ticks:{...tickOpts,callback:v=>v+'h'}} } }
+  });
+
+  const avgDiffMin = overlapIdx.reduce((s,i) => s+(DATA[i].aw_avg_sleep-DATA[i].fb_avg_sleep),0)/overlapIdx.length;
+  charts.diffBar = new Chart(document.getElementById('diffBarChart'), {
+    type:'bar', data:{ labels:overlapLabels, datasets:[{ label:'差異(小時)', data:overlapDiff, backgroundColor:overlapDiff.map(v=>v>=0?'rgba(255,107,107,0.7)':'rgba(0,176,185,0.7)'), borderRadius:3 }] },
+    options:{ ...defaults, plugins:{...defaults.plugins,legend:{display:false}}, scales:{ x:{grid:{display:false},ticks:tickOpts}, y:{grid:gridOpts,ticks:{...tickOpts,callback:v=>(v>0?'+':'')+v+'h'}} } }
+  });
+  document.getElementById('diffNote').textContent = `平均差異：${avgDiffMin>0?'+':''}${Math.round(avgDiffMin)} 分鐘（AW 略偏${avgDiffMin>0?'高':'低'}）。兩裝置在大多數月份差距在 ±30 分鐘內，具高度一致性。`;
+
+  // Tab 2: Sleep Stages
+  const fbStageData = DATA.filter(d=>d.fb_avg_deep);
+  charts.fbStages = new Chart(document.getElementById('fbStagesChart'), {
+    type:'bar', data:{ labels:fbStageData.map(d=>d.month.slice(2).replace('-','/')), datasets:[
+      { label:'深層', data:fbStageData.map(d=>d.fb_avg_deep), backgroundColor:'#1a237e', stack:'a' },
+      { label:'REM', data:fbStageData.map(d=>d.fb_avg_rem), backgroundColor:'#7c4dff', stack:'a' },
+      { label:'淺層', data:fbStageData.map(d=>d.fb_avg_light), backgroundColor:'#80cbc4', stack:'a', borderRadius:{topLeft:3,topRight:3} },
+    ]}, options:{ ...defaults, scales:{ x:{stacked:true,grid:{display:false},ticks:tickOpts}, y:{stacked:true,grid:gridOpts,ticks:{...tickOpts,callback:v=>fmt(v)}} } }
+  });
+
+  const awStageData = DATA.filter(d=>d.aw_avg_deep&&d.aw_nights>=5);
+  charts.awStages = new Chart(document.getElementById('awStagesChart'), {
+    type:'bar', data:{ labels:awStageData.map(d=>d.month.slice(2).replace('-','/')), datasets:[
+      { label:'深層', data:awStageData.map(d=>d.aw_avg_deep), backgroundColor:'#1a237e', stack:'a' },
+      { label:'REM', data:awStageData.map(d=>d.aw_avg_rem), backgroundColor:'#7c4dff', stack:'a' },
+      { label:'Core', data:awStageData.map(d=>d.aw_avg_core), backgroundColor:'#ff7043', stack:'a', borderRadius:{topLeft:3,topRight:3} },
+    ]}, options:{ ...defaults, scales:{ x:{stacked:true,grid:{display:false},ticks:tickOpts}, y:{stacked:true,grid:gridOpts,ticks:{...tickOpts,callback:v=>fmt(v)}} } }
+  });
+
+  const deepOverlap = DATA.filter(d=>d.fb_avg_deep&&d.aw_avg_deep&&d.aw_nights>=5);
+  charts.deepCompare = new Chart(document.getElementById('deepCompareChart'), {
+    type:'line', data:{ labels:deepOverlap.map(d=>d.month.slice(2).replace('-','/')), datasets:[
+      { label:'Fitbit 深層', data:deepOverlap.map(d=>d.fb_avg_deep), borderColor:'#00B0B9', borderWidth:2, tension:0.3, pointRadius:3 },
+      { label:'AW 深層', data:deepOverlap.map(d=>d.aw_avg_deep), borderColor:'#FF6B6B', borderWidth:2, tension:0.3, pointRadius:3 },
+    ]}, options:{ ...defaults, scales:{ x:{grid:{display:false},ticks:tickOpts}, y:{grid:gridOpts,ticks:{...tickOpts,callback:v=>v+'m'}} } }
+  });
+
+  // Tab 3: Health Metrics
+  charts.hrv = new Chart(document.getElementById('hrvChart'), {
+    type:'line', data:{ labels:hrvLabels, datasets:[{ label:'HRV (ms)', data:hrvData.map(d=>d.avg_hrv), borderColor:'#66bb6a', backgroundColor:'rgba(102,187,106,0.15)', fill:true, tension:0.3, pointRadius:3, borderWidth:2.5 }] },
+    options:{ ...defaults, scales:{ x:{grid:{display:false},ticks:tickOpts}, y:{min:20,max:50,grid:gridOpts,ticks:{...tickOpts,callback:v=>v+'ms'}} } }
+  });
+
+  charts.rhr = new Chart(document.getElementById('rhrChart'), {
+    type:'line', data:{ labels:hrvLabels, datasets:[{ label:'靜止心率 (bpm)', data:hrvData.map(d=>d.avg_rhr), borderColor:'#ef5350', backgroundColor:'rgba(239,83,80,0.15)', fill:true, tension:0.3, pointRadius:3, borderWidth:2.5 }] },
+    options:{ ...defaults, scales:{ x:{grid:{display:false},ticks:tickOpts}, y:{min:50,max:80,grid:gridOpts,ticks:{...tickOpts,callback:v=>v}} } }
+  });
+
+  const spo2Data = DATA.filter(d=>d.avg_spo2);
+  charts.spo2 = new Chart(document.getElementById('spo2Chart'), {
+    type:'line', data:{ labels:spo2Data.map(d=>d.month.slice(2).replace('-','/')), datasets:[{ label:'SpO2 (%)', data:spo2Data.map(d=>d.avg_spo2), borderColor:'#42a5f5', borderWidth:2.5, tension:0.3, pointRadius:0 }] },
+    options:{ ...defaults, plugins:{...defaults.plugins,legend:{display:false}}, scales:{ x:{grid:{display:false},ticks:tickOpts}, y:{min:93,max:98,grid:gridOpts,ticks:{...tickOpts,callback:v=>v+'%'}} } }
+  });
+
+  // Tab 4: REM Compare
+  const remOverlap = DATA.filter(d=>d.fb_avg_rem&&d.aw_avg_rem&&d.aw_nights>=5);
+  charts.remCompare = new Chart(document.getElementById('remCompareChart'), {
+    type:'line', data:{ labels:remOverlap.map(d=>d.month.slice(2).replace('-','/')), datasets:[
+      { label:'Fitbit REM', data:remOverlap.map(d=>d.fb_avg_rem), borderColor:'#00B0B9', borderWidth:2, tension:0.3, pointRadius:3 },
+      { label:'AW REM', data:remOverlap.map(d=>d.aw_avg_rem), borderColor:'#FF6B6B', borderWidth:2, tension:0.3, pointRadius:3 },
+    ]}, options:{ ...defaults, scales:{ x:{grid:{display:false},ticks:tickOpts}, y:{grid:gridOpts,ticks:{...tickOpts,callback:v=>v+'m'}} } }
+  });
+}
+</script>
+
+<style is:global>
+  :root { --c-fb:#00B0B9; --c-aw:#FF6B6B; --c-hrv:#66bb6a; --c-rhr:#ef5350; }
+
+  .health-container { max-width:var(--max-width); margin:0 auto; padding:2rem 1rem 4rem; }
+  .health-header { margin-bottom:1.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); }
+  .health-header h1 { font-family:var(--font-display); font-size:1.75rem; color:var(--text-primary); }
+  .health-subtitle { color:var(--text-muted); font-size:0.8rem; margin-top:0.25rem; }
+
+  .health-tabs { display:flex; gap:4px; margin-bottom:1.5rem; overflow-x:auto; padding-bottom:4px; }
+  .tab-btn { padding:8px 16px; border-radius:8px; border:none; cursor:pointer; font-size:0.8rem; font-weight:600; white-space:nowrap; background:transparent; color:var(--text-muted); transition:all 0.2s; }
+  .tab-btn.active { background:var(--brand-navy); color:#fff; }
+  .tab-btn:hover:not(.active) { background:var(--bg-section); }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  .kpi-grid { display:grid; gap:1rem; margin-bottom:1.25rem; }
+  .kpi-4col { grid-template-columns:repeat(4,1fr); }
+  .kpi { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem 1.5rem; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); }
+  .kpi-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); }
+  .kpi-value { font-size:1.5rem; font-weight:700; margin-top:0.15rem; font-family:'DM Sans',sans-serif; }
+  .kpi-sub { font-size:0.8rem; color:var(--text-muted); }
+
+  .chart-panel { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm); }
+  .chart-panel h3 { font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.75rem; font-weight:500; }
+  .chart-wrap { position:relative; height:260px; }
+  .chart-wrap.tall { height:320px; }
+  .chart-note { font-size:0.8rem; color:var(--text-muted); margin-top:0.75rem; line-height:1.6; }
+
+  .findings-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.25rem; }
+  .finding-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow-sm); }
+  .finding-card strong { display:block; margin-bottom:0.3rem; font-size:0.85rem; }
+  .finding-card p { font-size:0.8rem; color:var(--text-muted); line-height:1.6; margin:0; }
+  .finding-card.warning strong { color:#eab308; }
+  .finding-card.danger strong { color:#ef4444; }
+  .finding-card.info strong { color:#3b82f6; }
+  .finding-card.success strong { color:#22c55e; }
+
+  .device-compare { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+  .device-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm); }
+  .device-card h3 { font-size:1rem; font-weight:700; margin-bottom:0.75rem; }
+  .device-card ul { list-style:none; padding:0; margin:0; }
+  .device-card li { font-size:0.8rem; color:var(--text-muted); line-height:1.8; padding-left:1rem; position:relative; }
+  .device-card li::before { content:'•'; position:absolute; left:0; color:var(--text-secondary); }
+
+  .strategy-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-top:1.25rem; box-shadow:var(--shadow-sm); }
+  .strategy-card h3 { font-size:0.95rem; margin-bottom:1rem; }
+  .strategy-items > div { font-size:0.8rem; color:var(--text-muted); line-height:2; display:flex; align-items:center; gap:0.5rem; }
+  .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+  .health-footer { text-align:center; font-size:0.7rem; color:var(--text-muted); margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border); opacity:0.6; }
+
+  @media (max-width:768px) {
+    .kpi-4col { grid-template-columns:repeat(2,1fr); }
+    .findings-grid { grid-template-columns:1fr; }
+    .device-compare { grid-template-columns:1fr; }
+    .health-tabs { gap:2px; }
+    .tab-btn { padding:6px 10px; font-size:0.7rem; }
+  }
+</style>
