@@ -186,9 +186,13 @@ async function main() {
 main().catch(err => {
   console.error('❌ Feed fetch failed:', err.message);
   console.error('Stack:', err.stack);
-  // Don't fail the build — write empty feed
-  mkdirSync(OUTPUT_DIR, { recursive: true });
-  writeFileSync(OUTPUT_FILE, JSON.stringify({ items: [], updatedAt: new Date().toISOString() }, null, 2));
-  console.log('⚠️  Fallback: empty feed written');
+  // Don't overwrite existing feed.json — keep the committed version as fallback
+  if (existsSync(OUTPUT_FILE)) {
+    console.log('⚠️  Keeping existing feed.json as fallback');
+  } else {
+    mkdirSync(OUTPUT_DIR, { recursive: true });
+    writeFileSync(OUTPUT_FILE, JSON.stringify({ items: [], updatedAt: new Date().toISOString() }, null, 2));
+    console.log('⚠️  No existing feed.json — wrote empty fallback');
+  }
   process.exit(0); // Don't fail CI
 });
