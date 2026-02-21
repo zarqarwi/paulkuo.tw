@@ -115,24 +115,17 @@ const hreflangs = [
 
   <script>
     document.getElementById('hamburger-btn')?.addEventListener('click', () => {
-      const links = document.querySelector('.nav-links') as HTMLElement;
-      if (links) links.classList.toggle('mobile-open');
+      const switcher = document.querySelector('.lang-switcher') as HTMLElement;
+      if (switcher) switcher.classList.toggle('mobile-open');
     });
 
-    // Close menu when clicking outside
+    // Close lang switcher when clicking outside
     document.addEventListener('click', (e) => {
-      const links = document.querySelector('.nav-links');
+      const switcher = document.querySelector('.lang-switcher');
       const btn = document.getElementById('hamburger-btn');
-      if (links && btn && !links.contains(e.target as Node) && !btn.contains(e.target as Node)) {
-        links.classList.remove('mobile-open');
+      if (switcher && btn && !switcher.contains(e.target as Node) && !btn.contains(e.target as Node)) {
+        switcher.classList.remove('mobile-open');
       }
-    });
-
-    // Close menu after clicking a nav link
-    document.querySelectorAll('.nav-links a:not(.lang-btn)').forEach(a => {
-      a.addEventListener('click', () => {
-        document.querySelector('.nav-links')?.classList.remove('mobile-open');
-      });
     });
 
     // Highlight active nav
