@@ -11,8 +11,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(SCRIPT_DIR)
 OUTPUT = os.path.join(REPO_ROOT, "data", "timing.json")
 
+# Categories to count as AI collaboration
+AI_CATEGORIES = {"Development", "Web Browsing"}
+
 def fetch_day(date_str):
-    """Use AppleScript to get Timing data for YYYY-MM-DD."""
+    """Use AppleScript to get time summary for YYYY-MM-DD."""
     script = f'''
 set dayStart to date "{date_str}"
 set time of dayStart to 0
@@ -29,31 +32,34 @@ end tell
         )
         if result.returncode != 0:
             return 0.0, {}
-
         raw = result.stdout.strip()
         if not raw:
             return 0.0, {}
 
         breakdown = {}
         total = 0.0
-        # Parse "Key:1234.56, Key2:789.01" — handle scientific notation
+        # Parse "Key:1234.56, Key2:789.01, ..."
+        # Handle scientific notation like 3.21E+4
         for pair in raw.split(", "):
-            if ":" in pair:
-                key, val = pair.rsplit(":", 1)
-                key = key.strip()
-                try:
-                    secs = float(val.strip())
-                except ValueError:
-                    continue
-                if key in ("Development", "Web Browsing"):
-                    hrs = round(secs / 3600, 2)
-                    breakdown[key] = hrs
-                    total += hrs
+            idx = pair.find(":")
+            if idx == -1:
+                continue
+            key = pair[:idx].strip()
+            val_str = pair[idx+1:].strip()
+            try:
+                secs = float(val_str)
+            except ValueError:
+                continue
+            if key in AI_CATEGORIES:
+                hrs = round(secs / 3600, 2)
+                breakdown[key] = hrs
+                total += hrs
 
         return round(total, 2), breakdown
     except Exception as e:
-        print(f"  Error fetching {date_str}: {e}")
+        print(f"  Error {date_str}: {e}")
         return 0.0, {}
+
 
 def main():
     now = datetime.now()
@@ -68,16 +74,12 @@ def main():
     while current.date() <= now.date():
         ds = current.strftime("%Y-%m-%d")
         hrs, breakdown = fetch_day(ds)
-        daily.append({
-            "date": ds,
-            "ai_hours": hrs,
-            "breakdown": breakdown
-        })
+        daily.append({"date": ds, "ai_hours": hrs, "breakdown": breakdown})
         total_hours += hrs
         if hrs > 0.1:
             active_days += 1
-        if hrs > 0:
-            print(f"  {ds}: {hrs:.1f}h {breakdown}")
+        tag = " ✦" if hrs > 0 else ""
+        print(f"  {ds}: {hrs:.1f}h{tag}")
         current += timedelta(days=1)
 
     output = {
@@ -97,7 +99,8 @@ def main():
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print(f"\n✅ {OUTPUT}")
-    print(f"   {period} | {total_hours:.1f}h | {active_days} days active")
+    print(f"   {period} | {total_hours:.1f}h | {active_days} active days")
+
 
 if __name__ == "__main__":
     main()
