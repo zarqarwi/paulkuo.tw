@@ -1,0 +1,58 @@
+name: Publish to Social Media
+
+on:
+  workflow_run:
+    workflows: ["Build & Deploy"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find new articles
+        id: detect
+        run: |
+          # 找出最新 commit 新增的文章（不含翻譯檔）
+          NEW_ARTICLES=$(git diff --name-only HEAD~1 HEAD -- 'src/content/articles/*.md' | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
+          echo "articles<<EOF" >> $GITHUB_OUTPUT
+          echo "$NEW_ARTICLES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          if [ -z "$NEW_ARTICLES" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "ℹ️  No new articles to publish"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "📝 New articles found:"
+            echo "$NEW_ARTICLES"
+          fi
+
+      - name: Setup Node.js
+        if: steps.detect.outputs.skip == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        if: steps.detect.outputs.skip == 'false'
+        run: npm install sharp@0.33
+
+      - name: Generate summaries and publish
+        if: steps.detect.outputs.skip == 'false'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ONEUP_API_KEY: ${{ secrets.ONEUP_API_KEY }}
+          ONEUP_CATEGORY_ID: ${{ secrets.ONEUP_CATEGORY_ID }}
+          FREEIMAGE_API_KEY: ${{ secrets.FREEIMAGE_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SITE_URL: "https://paulkuo.tw"
+        run: |
+          node scripts/publish-social.mjs "${{ steps.detect.outputs.articles }}"
