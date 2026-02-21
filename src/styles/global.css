@@ -392,13 +392,13 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 /* ===== ARTICLE — English Typography ===== */
 html[lang="en"] .article-body p {
   font-size: 1.05rem;
-  line-height: 2;
+  line-height: 1.75;
   color: var(--text-primary);
-  margin-bottom: 28px;
+  margin-bottom: 22px;
   letter-spacing: normal;
 }
 html[lang="en"] .article-body li {
-  line-height: 2;
+  line-height: 1.75;
 }
 
 /* ===== ARTICLE — Traditional Chinese Typography ===== */
