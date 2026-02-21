@@ -1,5 +1,5 @@
 {
-  "updated": "2026-02-21T17:37:00+08:00",
+  "updated": "2026-02-21T17:42:14+08:00",
   "source": "timing-app-local",
   "method": "AppleScript: Development + Web Browsing as AI proxy",
   "month_summary": {
@@ -139,24 +139,24 @@
       "date": "2026-02-19",
       "ai_hours": 5.17,
       "breakdown": {
-        "Development": 0.66,
-        "Web Browsing": 4.51
+        "Web Browsing": 4.51,
+        "Development": 0.66
       }
     },
     {
       "date": "2026-02-20",
       "ai_hours": 5.54,
       "breakdown": {
-        "Development": 1.08,
-        "Web Browsing": 4.46
+        "Web Browsing": 4.46,
+        "Development": 1.08
       }
     },
     {
       "date": "2026-02-21",
       "ai_hours": 2.43,
       "breakdown": {
-        "Development": 0.67,
-        "Web Browsing": 1.76
+        "Web Browsing": 1.76,
+        "Development": 0.67
       }
     }
   ]
