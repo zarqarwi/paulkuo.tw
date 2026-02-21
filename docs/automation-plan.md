@@ -1,6 +1,6 @@
 # 三套工具統一管線架構
 
-**版本：v1.2 ｜ 2026-02-21**
+**版本：v1.3 ｜ 2026-02-21**
 **維護者：Paul Kuo × Claude**
 
 ---
@@ -213,8 +213,11 @@ paulkuo-astro/
 ├── scripts/
 │   ├── debate-to-article.py    # 辯論 → 文章轉換器（本機）
 │   ├── publish-social.mjs      # 社群發佈邏輯（CI 用）
-│   └── translate-article.mjs   # 翻譯邏輯（CI 用）
+│   ├── translate-article.mjs   # 翻譯邏輯（CI 用）
+│   ├── cost-tracker.mjs        # 費用追蹤共用模組
+│   └── platform-config.mjs     # 平台 ID 統一設定
 ├── data/
+│   ├── costs.jsonl             # API 費用記錄（所有腳本共寫）
 │   ├── published-slugs.json    # 已發佈文章記錄（防 dedup）
 │   └── social-logs/            # 社群摘要存檔（可追溯）
 ├── src/
@@ -227,6 +230,8 @@ paulkuo-astro/
 │       ├── en/*.md             # 英文翻譯
 │       ├── ja/*.md             # 日文翻譯
 │       └── zh-cn/*.md          # 簡體翻譯
+├── tools/
+│   └── cost-dashboard.html     # 本機獨立版 Dashboard
 └── docs/
     └── automation-plan.md      # 本文件
 ```
@@ -240,3 +245,4 @@ paulkuo-astro/
 | v1.0 | 2026-02-21 | Phase 1-3 完成，基礎管線建立 |
 | v1.1 | 2026-02-21 | 安全機制：修復舊文觸發、翻譯上限、dedup、摘要存檔 |
 | v1.2 | 2026-02-21 | 中風險修復：GitHub Issue 通知、fallback 圖片、PLATFORM_IDS 統一、.zshrc 清理 |
+| v1.3 | 2026-02-21 | 財務風控：API 費用追蹤系統 + /dashboard 儀表板整合 paulkuo.tw |
