@@ -34,8 +34,17 @@ if [ -n "$CHANGED" ]; then
     log "Push: $CHANGED"
     git add data/timing.json data/fitbit.json 2>/dev/null
     git commit -m "auto: data update $(date +%m/%d-%H:%M)" --no-verify >> "$LOG" 2>&1
-    git push origin main >> "$LOG" 2>&1
-    log "✅ Pushed"
+    if ! git push origin main >> "$LOG" 2>&1; then
+        log "WARN: push rejected, pulling rebase..."
+        git pull --rebase origin main >> "$LOG" 2>&1
+        if git push origin main >> "$LOG" 2>&1; then
+            log "✅ Pushed (after rebase)"
+        else
+            log "ERROR: push failed even after rebase"
+        fi
+    else
+        log "✅ Pushed"
+    fi
 else
     log "— No changes"
 fi
