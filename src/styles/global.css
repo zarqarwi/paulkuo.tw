@@ -35,6 +35,62 @@ body {
   color: var(--text-primary);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* ===== AMBIENT WARM GLOW ===== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border: 2px solid transparent;
+  border-image: linear-gradient(
+    var(--glow-angle, 45deg),
+    transparent 0%,
+    rgba(210, 140, 60, 0.12) 25%,
+    rgba(230, 160, 50, 0.18) 50%,
+    rgba(210, 140, 60, 0.12) 75%,
+    transparent 100%
+  ) 1;
+  animation: ambientGlow 8s ease-in-out infinite;
+}
+
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes ambientGlow {
+  0% { --glow-angle: 0deg; opacity: 0.6; }
+  25% { --glow-angle: 90deg; opacity: 1; }
+  50% { --glow-angle: 180deg; opacity: 0.6; }
+  75% { --glow-angle: 270deg; opacity: 1; }
+  100% { --glow-angle: 360deg; opacity: 0.6; }
+}
+
+/* Outer ambient corner glow */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background:
+    radial-gradient(ellipse at top left, rgba(220, 150, 50, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at top right, rgba(200, 120, 40, 0.04) 0%, transparent 40%),
+    radial-gradient(ellipse at bottom left, rgba(200, 130, 50, 0.04) 0%, transparent 40%),
+    radial-gradient(ellipse at bottom right, rgba(220, 150, 50, 0.06) 0%, transparent 40%);
+  animation: ambientCorners 12s ease-in-out infinite alternate;
+}
+
+@keyframes ambientCorners {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
 }
 
 /* ===== NAV ===== */
@@ -392,13 +448,13 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 /* ===== ARTICLE — English Typography ===== */
 html[lang="en"] .article-body p {
   font-size: 1.05rem;
-  line-height: 1.75;
+  line-height: 1.6;
   color: var(--text-primary);
-  margin-bottom: 22px;
+  margin-bottom: 20px;
   letter-spacing: normal;
 }
 html[lang="en"] .article-body li {
-  line-height: 1.75;
+  line-height: 1.6;
 }
 
 /* ===== ARTICLE — Traditional Chinese Typography ===== */
