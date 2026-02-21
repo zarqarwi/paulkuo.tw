@@ -1,6 +1,6 @@
 # 三套工具統一管線架構
 
-**版本：v1.1 ｜ 2026-02-21**
+**版本：v1.2 ｜ 2026-02-21**
 **維護者：Paul Kuo × Claude**
 
 ---
@@ -126,9 +126,9 @@ make dev                # astro dev
 
 ---
 
-## 安全機制（v1.1 新增）
+## 安全機制
 
-### 🔴 已修復
+### 🔴 已修復（v1.1）
 
 **1. 修改舊文章不再觸發社群發佈**
 - `publish-social.yml` 使用 `git diff --diff-filter=A`（只偵測新增檔案）
@@ -148,26 +148,41 @@ make dev                # astro dev
 - `data/social-logs/{slug}-{date}.json` 存每次產出的摘要
 - 萬一品質有問題可回查
 
-### 🟡 已知風險（可接受）
+### 🟡 已修復（v1.2）
 
-**5. 社群摘要品質依賴 Claude 產出**
-- 無人工審核窗口（設計決策：全自動優先）
-- 緩衝：OneUp 排程有 1 小時緩衝，看到 Slack 通知可手動取消
-- 追蹤：social-logs 存檔可事後回查
+**5. 社群發佈通知機制**
+- 每次發佈自動建 GitHub Issue，含各平台摘要內容
+- GitHub 會發 email 通知，1 小時內可到 OneUp 取消
+- Issue 標籤 `social-publish`，確認無誤後直接關閉
+- ⁉️ 另外提醒 FB、IG 需手動發佈
 
-**6. DALL-E / freeimage 失敗時降級為純文字**
-- 可接受，但 IG/FB 純文字觸及率低
-- 長期可考慮備用圖床
+**6. DALL-E / freeimage 失敗時用預設圖片**
+- 每個 pillar 有專屬 SVG fallback 圖（`public/images/pillar-*.svg`）
+- DALL-E 或圖床掛了不會變純文字，確保社群貼文都有圖
 
-**7. GitHub Actions 用量**
+**7. PLATFORM_IDS 統一管理**
+- 抽出 `scripts/platform-config.mjs` 單一來源
+- 換帳號只改一個檔案，不用同步兩份
+
+**8. .zshrc API key 清理**
+- 已移除假的 ANTHROPIC_API_KEY 行
+- ANTHROPIC_API_KEY 未存入 .zshrc（Paul 在終端機手動 export）
+
+### ℹ️ 已知限制（可接受）
+
+**GitHub Actions 用量**
 - 免費方案 2000 分鐘/月
 - 每次 push 約 5-8 分鐘（deploy + translate + social）
 - 月 push 50 次 ≈ 250-400 分鐘，尚在安全範圍
 
-**8. API 費用估算**
+**API 費用估算**
 - 每篇文章全流程：Claude 翻譯 ×3 + Claude 摘要 ×1 + DALL-E ×1
 - 約 NT$15-20 / 篇（翻譯 ~$12 + 摘要 ~$2 + 圖 ~$1.2）
 - 辯論轉文章另計 ~$3-5
+
+**Fallback 圖片是 SVG**
+- 部分社群平台可能不支援 SVG，需要時可換成真正的 PNG
+- 長期建議用 DALL-E 預生五張 pillar 圖存在圖床
 
 ---
 
@@ -224,3 +239,4 @@ paulkuo-astro/
 |------|------|------|
 | v1.0 | 2026-02-21 | Phase 1-3 完成，基礎管線建立 |
 | v1.1 | 2026-02-21 | 安全機制：修復舊文觸發、翻譯上限、dedup、摘要存檔 |
+| v1.2 | 2026-02-21 | 中風險修復：GitHub Issue 通知、fallback 圖片、PLATFORM_IDS 統一、.zshrc 清理 |
