@@ -25,82 +25,6 @@
   --max-width: 1200px;
   --nav-height: 72px;
 }
-/* === CJK Language-specific Typography === */
-
-/* Traditional Chinese */
-html[lang="zh-Hant"], html[lang="zh-TW"] {
-  --font-cjk: system-ui, 'PingFang TC', 'Heiti TC', '微軟正黑體', 'Noto Sans TC', sans-serif;
-  --font-body: 'DM Sans', system-ui, 'PingFang TC', 'Heiti TC', '微軟正黑體', 'Noto Sans TC', sans-serif;
-}
-html[lang="zh-Hant"] .article-body,
-html[lang="zh-TW"] .article-body,
-html[lang="zh-Hant"] .hero-tagline,
-html[lang="zh-TW"] .hero-tagline,
-html[lang="zh-Hant"] .manifesto-body,
-html[lang="zh-TW"] .manifesto-body,
-html[lang="zh-Hant"] .about-content p,
-html[lang="zh-TW"] .about-content p {
-  letter-spacing: normal;
-  line-height: 1.55;
-  text-align: justify;
-  text-justify: inter-ideograph;
-}
-html[lang="zh-Hant"] .article-body p,
-html[lang="zh-TW"] .article-body p {
-  margin-bottom: 1.1em;
-  line-height: 1.6;
-}
-
-/* Simplified Chinese */
-html[lang="zh-Hans"], html[lang="zh-CN"] {
-  --font-cjk: system-ui, 'PingFang SC', 'Heiti SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
-  --font-body: 'DM Sans', system-ui, 'PingFang SC', 'Heiti SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
-}
-html[lang="zh-Hans"] .article-body,
-html[lang="zh-CN"] .article-body,
-html[lang="zh-Hans"] .hero-tagline,
-html[lang="zh-CN"] .hero-tagline,
-html[lang="zh-Hans"] .manifesto-body,
-html[lang="zh-CN"] .manifesto-body,
-html[lang="zh-Hans"] .about-content p,
-html[lang="zh-CN"] .about-content p {
-  letter-spacing: normal;
-  line-height: 1.55;
-  text-align: justify;
-  text-justify: inter-ideograph;
-}
-html[lang="zh-Hans"] .article-body p,
-html[lang="zh-CN"] .article-body p {
-  margin-bottom: 1.1em;
-  line-height: 1.6;
-}
-
-/* Japanese */
-html[lang="ja"] {
-  --font-cjk: system-ui, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
-  --font-body: 'DM Sans', system-ui, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
-}
-html[lang="ja"] .article-body,
-html[lang="ja"] .hero-tagline,
-html[lang="ja"] .manifesto-body,
-html[lang="ja"] .about-content p {
-  letter-spacing: 0.03em;
-  line-height: 1.7;
-  text-align: justify;
-  text-justify: inter-ideograph;
-  font-feature-settings: "palt" 1;
-}
-html[lang="ja"] .article-body p {
-  margin-bottom: 1.3em;
-  line-height: 1.75;
-}
-
-/* English (keep existing defaults, explicit for clarity) */
-html[lang="en"] .article-body p {
-  line-height: 2;
-  margin-bottom: 28px;
-  letter-spacing: normal;
-}
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; font-size: 16px; }
@@ -111,9 +35,81 @@ body {
   color: var(--text-primary);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  min-height: 100vh;
 }
 
-/* ===== NAV ===== */
+/* ===== AMBIENT WARM GLOW ===== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border: 2px solid transparent;
+  border-image: linear-gradient(
+    var(--glow-angle, 45deg),
+    transparent 0%,
+    rgba(210, 140, 60, 0.12) 25%,
+    rgba(230, 160, 50, 0.18) 50%,
+    rgba(210, 140, 60, 0.12) 75%,
+    transparent 100%
+  ) 1;
+  animation: ambientGlow 8s ease-in-out infinite;
+}
+
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes ambientGlow {
+  0% { --glow-angle: 0deg; opacity: 0.6; }
+  25% { --glow-angle: 90deg; opacity: 1; }
+  50% { --glow-angle: 180deg; opacity: 0.6; }
+  75% { --glow-angle: 270deg; opacity: 1; }
+  100% { --glow-angle: 360deg; opacity: 0.6; }
+}
+
+/* Outer ambient corner glow */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background:
+    radial-gradient(ellipse at top left, rgba(220, 150, 50, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at top right, rgba(200, 120, 40, 0.04) 0%, transparent 40%),
+    radial-gradient(ellipse at bottom left, rgba(200, 130, 50, 0.04) 0%, transparent 40%),
+    radial-gradient(ellipse at bottom right, rgba(220, 150, 50, 0.06) 0%, transparent 40%);
+  animation: ambientCorners 12s ease-in-out infinite alternate;
+}
+
+@keyframes ambientCorners {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* ===== READING PROGRESS BAR ===== */
+.reading-progress {
+  position: fixed;
+  top: 0; left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand-navy), var(--accent-ai));
+  z-index: 10000;
+  transition: width 0.1s linear;
+  opacity: 0;
+  pointer-events: none;
+}
+.reading-progress.visible {
+  opacity: 1;
+}
+
+/* ===== SMART HEADER ===== */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
   height: var(--nav-height);
@@ -123,7 +119,16 @@ nav {
   border-bottom: 1px solid var(--border-light);
   z-index: 100;
   display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.23,1,0.32,1), background 0.3s;
 }
+nav.nav-hidden {
+  transform: translateY(-100%);
+}
+nav.nav-scrolled {
+  background: rgba(250,250,248,0.97);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
 .nav-inner {
   width: 100%; max-width: var(--max-width);
   padding: 0 40px;
@@ -144,15 +149,8 @@ nav {
 }
 .nav-links a:hover { color: var(--brand-navy); }
 .nav-links a.active { color: var(--brand-navy); }
-.nav-widgets{display:flex;flex-direction:row;gap:0;margin-left:16px;padding-left:16px;border-left:1px solid var(--border);align-items:center;flex-shrink:0}
-.nav-widget{display:flex;align-items:center;gap:5px;cursor:default;padding:0 10px;flex-shrink:0}
-.nav-widget+.nav-widget{border-left:1px solid var(--border)}
-.nav-widget-icon{color:var(--text-muted);flex-shrink:0}
-.nav-widget-value{font-size:.75rem;font-weight:600;color:var(--brand-navy);letter-spacing:-.01em;white-space:nowrap}
-.nav-widget-sub{font-size:.6rem;color:var(--text-muted);white-space:nowrap}
-.nav-widget-spark{vertical-align:middle}
-.lang-switcher{display:flex;gap:4px;margin-left:12px;border-left:1px solid var(--border);padding-left:12px}
-
+.lang-switcher{display:flex;gap:4px;margin-left:16px;border-left:1px solid var(--border);padding-left:16px}
+.mobile-lang-switcher{display:none}
 .lang-btn{font-size:.72rem;font-weight:500;padding:4px 8px;border-radius:4px;border:1px solid transparent;background:none;color:var(--text-muted);cursor:pointer;transition:all .2s;text-decoration:none}
 .lang-btn:hover{color:var(--text-primary)}
 .lang-btn.active{color:var(--brand-navy);border-color:var(--border);background:rgba(27,45,79,.04)}
@@ -413,7 +411,6 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
   .contact-grid { grid-template-columns: 1fr; gap: 40px; }
   .feed-grid { grid-template-columns: 1fr; }
   .nav-hamburger { display: block; }
-  .nav-widgets { display: none; }
   .lang-switcher { display: none; margin-left: 0; border-left: none; padding-left: 0; }
   .lang-switcher.mobile-open {
     display: flex;
@@ -435,7 +432,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
   .nav-links { display: flex; gap: 16px; flex-wrap: wrap; }
   .nav-links a { font-size: 0.78rem; }
   .nav-links .nav-cta { padding: 6px 14px; font-size: 0.75rem !important; }
-
+  .nav-links .mobile-lang-switcher { display: flex; gap: 4px; padding-top: 8px; }
   .nav-inner { padding: 0 16px; }
   .section-container { padding: 60px 24px; }
   .hero { padding: 60px 24px; }
@@ -443,7 +440,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
   .filter-btn { padding: 6px 14px; font-size: 0.8rem; }
 }
 
-/* ===== ARTICLE PAGE ===== */
+/* ===== ARTICLE PAGE — Base Structure ===== */
 .article-page { max-width: 720px; margin: 0 auto; padding: 120px 24px 80px; }
 .article-back { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; margin-bottom: 40px; transition: color 0.2s; }
 .article-back:hover { color: var(--brand-navy); }
@@ -453,14 +450,15 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .article-meta .article-subtitle { font-family: var(--font-cjk); font-size: 1.1rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 24px; }
 .article-info { display: flex; gap: 24px; align-items: center; font-size: 0.82rem; color: var(--text-muted); padding-top: 20px; border-top: 1px solid var(--border-light); }
 .article-info time { font-weight: 500; }
+
+/* Article body — shared across all languages */
 .article-body { font-family: var(--font-cjk); }
-.article-body p { font-size: 1.05rem; line-height: 2; color: var(--text-primary); margin-bottom: 28px; }
 .article-body h2 { font-family: var(--font-cjk); font-size: 1.4rem; font-weight: 700; color: var(--brand-navy); margin: 56px 0 20px; padding-top: 20px; border-top: 1px solid var(--border-light); }
 .article-body h3 { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 40px 0 16px; }
 .article-body blockquote { margin: 32px 0; padding: 20px 24px; border-left: 3px solid var(--accent-faith); background: var(--bg-section); border-radius: 0 8px 8px 0; font-style: italic; color: var(--text-secondary); }
 .article-body blockquote p { margin-bottom: 0; font-size: 1rem; }
 .article-body ul, .article-body ol { margin: 20px 0; padding-left: 24px; }
-.article-body li { font-size: 1.05rem; line-height: 2; color: var(--text-primary); margin-bottom: 8px; }
+.article-body li { font-size: 1.05rem; color: var(--text-primary); margin-bottom: 8px; }
 .article-body strong { color: var(--brand-navy); }
 .article-body a { color: var(--accent-ai); text-decoration: underline; text-underline-offset: 3px; }
 .article-body a:hover { color: var(--brand-navy); }
@@ -471,10 +469,143 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .article-nav-bottom { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
 .article-nav-bottom a { font-size: 0.88rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
 .article-nav-bottom a:hover { color: var(--brand-navy); }
+
+/* ===== ARTICLE — English Typography ===== */
+html[lang="en"] .article-body p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  letter-spacing: normal;
+}
+html[lang="en"] .article-body li {
+  line-height: 1.6;
+}
+
+/* ===== ARTICLE — Traditional Chinese Typography ===== */
+html[lang="zh-Hant"] ,
+html[lang="zh-TW"] {
+  --font-cjk: ui-sans-serif, system-ui, 'PingFang TC', 'Heiti TC', '微軟正黑體', 'Noto Sans TC', sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, system-ui, 'PingFang TC', 'Heiti TC', '微軟正黑體', 'Noto Sans TC', sans-serif;
+}
+html[lang="zh-Hant"] .article-body,
+html[lang="zh-TW"] .article-body {
+  font-family: var(--font-cjk);
+  letter-spacing: normal;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+html[lang="zh-Hant"] .article-body p,
+html[lang="zh-TW"] .article-body p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 1.1em;
+  color: var(--text-primary);
+  letter-spacing: normal;
+}
+html[lang="zh-Hant"] .article-body h2,
+html[lang="zh-TW"] .article-body h2 {
+  margin: 40px 0 16px;
+}
+html[lang="zh-Hant"] .article-body h3,
+html[lang="zh-TW"] .article-body h3 {
+  margin: 32px 0 12px;
+}
+html[lang="zh-Hant"] .article-body li,
+html[lang="zh-TW"] .article-body li {
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+html[lang="zh-Hant"] .article-body blockquote p,
+html[lang="zh-TW"] .article-body blockquote p {
+  line-height: 1.6;
+}
+html[lang="zh-Hant"] .hero-tagline,
+html[lang="zh-TW"] .hero-tagline,
+html[lang="zh-Hant"] .manifesto-body,
+html[lang="zh-TW"] .manifesto-body,
+html[lang="zh-Hant"] .about-content p,
+html[lang="zh-TW"] .about-content p {
+  letter-spacing: normal;
+  line-height: 1.55;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+
+/* ===== ARTICLE — Simplified Chinese Typography ===== */
+html[lang="zh-Hans"],
+html[lang="zh-CN"] {
+  --font-cjk: ui-sans-serif, system-ui, 'PingFang SC', 'Heiti SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, system-ui, 'PingFang SC', 'Heiti SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+}
+html[lang="zh-Hans"] .article-body,
+html[lang="zh-CN"] .article-body {
+  font-family: var(--font-cjk);
+  letter-spacing: normal;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+html[lang="zh-Hans"] .article-body p,
+html[lang="zh-CN"] .article-body p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 1.1em;
+  color: var(--text-primary);
+  letter-spacing: normal;
+}
+html[lang="zh-Hans"] .article-body li,
+html[lang="zh-CN"] .article-body li {
+  line-height: 1.6;
+}
+html[lang="zh-Hans"] .hero-tagline,
+html[lang="zh-CN"] .hero-tagline,
+html[lang="zh-Hans"] .manifesto-body,
+html[lang="zh-CN"] .manifesto-body,
+html[lang="zh-Hans"] .about-content p,
+html[lang="zh-CN"] .about-content p {
+  letter-spacing: normal;
+  line-height: 1.55;
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+
+/* ===== ARTICLE — Japanese Typography ===== */
+html[lang="ja"] {
+  --font-cjk: ui-sans-serif, system-ui, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, system-ui, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
+}
+html[lang="ja"] .article-body {
+  font-family: var(--font-cjk);
+  letter-spacing: 0.03em;
+  text-align: justify;
+  text-justify: inter-ideograph;
+  font-feature-settings: "palt" 1;
+}
+html[lang="ja"] .article-body p {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  margin-bottom: 1.3em;
+  color: var(--text-primary);
+}
+html[lang="ja"] .article-body li {
+  line-height: 1.75;
+}
+html[lang="ja"] .hero-tagline,
+html[lang="ja"] .manifesto-body,
+html[lang="ja"] .about-content p {
+  letter-spacing: 0.03em;
+  line-height: 1.7;
+  text-align: justify;
+  text-justify: inter-ideograph;
+  font-feature-settings: "palt" 1;
+}
+
+/* ===== ARTICLE — Mobile Responsive ===== */
 @media (max-width: 768px) {
   .article-page { padding: 100px 20px 60px; }
   .article-meta h1 { font-size: 1.8rem; }
   .article-body p { font-size: 1rem; }
   .article-info { flex-wrap: wrap; gap: 12px; }
 }
+
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
