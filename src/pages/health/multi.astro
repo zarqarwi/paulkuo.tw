@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Multi-Source Health — Paul Kuo" description="多數據源健康分析（規劃中）">
+
+<div id="authGate" class="dashboard-auth">
+  <div class="auth-card">
+    <h2>🔬 Multi-Source Health</h2>
+    <p>輸入存取密碼</p>
+    <input type="password" id="authInput" placeholder="Password" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+<div id="mainContent" class="health-container" style="display:none">
+  <header class="health-header">
+    <div>
+      <h1>🔬 多數據源健康分析</h1>
+      <p class="health-subtitle">整合多種健康裝置與數據來源 · 規劃中</p>
+    </div>
+    <div class="nav-links">
+      <a href="/health/fitbit" class="nav-link">← Fitbit 單源</a>
+      <a href="/health/dual" class="nav-link">← 雙裝置整合</a>
+    </div>
+  </header>
+
+  <div class="roadmap-card">
+    <h2>🗺️ 擴展藍圖</h2>
+    <p class="roadmap-desc">當健康數據不再侷限於單一裝置，個體才有可能建立自己的生理基線，而非依賴任何單一廠商的詮釋。</p>
+    
+    <div class="source-grid">
+      <div class="source-card done">
+        <div class="source-icon">✅</div>
+        <h3>Fitbit</h3>
+        <p>睡眠、步數、心率、HRV、SpO2</p>
+        <span class="source-status">已整合 · 33 個月</span>
+      </div>
+      <div class="source-card done">
+        <div class="source-icon">✅</div>
+        <h3>Apple Watch</h3>
+        <p>睡眠、HRV、靜止心率、血氧</p>
+        <span class="source-status">已整合 · 28 個月</span>
+      </div>
+      <div class="source-card planned">
+        <div class="source-icon">📋</div>
+        <h3>Oura Ring</h3>
+        <p>睡眠品質、體溫變化、活動量</p>
+        <span class="source-status">規劃中</span>
+      </div>
+      <div class="source-card planned">
+        <div class="source-icon">📋</div>
+        <h3>血壓計</h3>
+        <p>收縮壓、舒張壓、脈搏</p>
+        <span class="source-status">規劃中</span>
+      </div>
+      <div class="source-card planned">
+        <div class="source-icon">📋</div>
+        <h3>體脂計</h3>
+        <p>體重、體脂率、BMI、肌肉量</p>
+        <span class="source-status">規劃中</span>
+      </div>
+      <div class="source-card planned">
+        <div class="source-icon">📋</div>
+        <h3>CGM（連續血糖監測）</h3>
+        <p>血糖波動、餐後反應、基線</p>
+        <span class="source-status">遠期目標</span>
+      </div>
+    </div>
+
+    <div class="vision-block">
+      <h3>🎯 最終目標</h3>
+      <p>建立個人化的健康數據湖（Personal Health Data Lake），所有裝置數據匯流後進行交叉分析，找出單一裝置看不見的模式——例如睡眠品質如何影響隔日靜止心率，或體重變化與深層睡眠的相關性。</p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+const PASS = 'paulkuo2026';
+const gate = document.getElementById('authGate');
+const main = document.getElementById('mainContent');
+const inp = document.getElementById('authInput');
+const btn = document.getElementById('authBtn');
+if (sessionStorage.getItem('health_auth') === 'ok') { gate.style.display='none'; main.style.display='block'; }
+btn.onclick = () => { if(inp.value===PASS){sessionStorage.setItem('health_auth','ok');gate.style.display='none';main.style.display='block';}else{inp.style.border='2px solid #ef4444';} };
+inp.onkeydown = e => { if(e.key==='Enter') btn.click(); };
+</script>
+
+<style>
+  .dashboard-auth{display:flex;align-items:center;justify-content:center;min-height:60vh}
+  .auth-card{background:#1f2937;padding:2rem;border-radius:1rem;text-align:center;border:1px solid #374151}
+  .auth-card h2{color:#fff;margin-bottom:.5rem}
+  .auth-card p{color:#9ca3af;margin-bottom:1rem;font-size:.9rem}
+  .auth-card input{background:#111827;color:#fff;border:1px solid #4b5563;padding:.6rem 1rem;border-radius:.5rem;width:200px;margin-right:.5rem}
+  .auth-card button{background:#2563eb;color:#fff;border:none;padding:.6rem 1.2rem;border-radius:.5rem;cursor:pointer}
+  .auth-card button:hover{background:#1d4ed8}
+
+  .health-container{max-width:960px;margin:0 auto;padding:1rem}
+  .health-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+  .health-header h1{color:#fff;font-size:1.5rem;margin:0}
+  .health-subtitle{color:#9ca3af;font-size:.85rem;margin-top:.25rem}
+  .nav-links{display:flex;gap:.5rem;flex-wrap:wrap}
+  .nav-link{color:#60a5fa;text-decoration:none;font-size:.85rem;padding:.4rem .8rem;border:1px solid #374151;border-radius:.5rem;white-space:nowrap}
+  .nav-link:hover{background:#1f2937}
+
+  .roadmap-card{background:#1f2937;padding:2rem;border-radius:1rem;border:1px solid #374151}
+  .roadmap-card h2{color:#fff;font-size:1.25rem;margin:0 0 .5rem}
+  .roadmap-desc{color:#9ca3af;font-size:.9rem;margin-bottom:2rem;line-height:1.6}
+
+  .source-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+  .source-card{background:#111827;padding:1.25rem;border-radius:.75rem;border:1px solid #374151;transition:transform .2s}
+  .source-card:hover{transform:translateY(-2px)}
+  .source-card.done{border-color:#065f46}
+  .source-card.planned{border-color:#374151;opacity:.75}
+  .source-icon{font-size:1.5rem;margin-bottom:.5rem}
+  .source-card h3{color:#fff;font-size:.95rem;margin:0 0 .25rem}
+  .source-card p{color:#9ca3af;font-size:.8rem;margin:0 0 .5rem;line-height:1.4}
+  .source-status{font-size:.7rem;color:#6b7280;background:#1f2937;padding:.2rem .5rem;border-radius:.25rem}
+  .source-card.done .source-status{color:#34d399;background:#064e3b}
+
+  .vision-block{background:#111827;padding:1.5rem;border-radius:.75rem;border:1px solid #1e40af}
+  .vision-block h3{color:#60a5fa;font-size:1rem;margin:0 0 .5rem}
+  .vision-block p{color:#d1d5db;font-size:.875rem;line-height:1.6;margin:0}
+
+  @media(max-width:768px){
+    .source-grid{grid-template-columns:1fr}
+    .health-header{flex-direction:column}
+  }
+</style>
+
+</BaseLayout>
