@@ -404,8 +404,26 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
   .about-pillar-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; gap: 40px; }
   .feed-grid { grid-template-columns: 1fr; }
-  .nav-links a:not(.nav-cta) { display: none; }
+  .nav-links { display: none; }
   .nav-hamburger { display: block; }
+  .lang-switcher { display: none; margin-left: 0; border-left: none; padding-left: 0; }
+  .lang-switcher.mobile-open {
+    display: flex;
+    position: absolute;
+    top: var(--nav-height);
+    right: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    box-shadow: var(--shadow-md);
+    gap: 8px;
+    z-index: 101;
+  }
+  .lang-switcher.mobile-open .lang-btn {
+    font-size: 0.85rem;
+    padding: 8px 14px;
+  }
   .section-container { padding: 60px 24px; }
   .hero { padding: 60px 24px; }
   .blog-filters { gap: 8px; }
