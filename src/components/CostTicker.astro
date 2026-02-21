@@ -60,21 +60,18 @@ const prev7Total = prev7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
 const changePercent = prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0;
 
 // AI collaboration time (from Timing App data)
+let aiHoursToday = 0;
 let aiHoursMonth = 0;
-let aiDaysMonth = 0;
 const timingPath = join(process.cwd(), 'data', 'timing.json');
 if (existsSync(timingPath)) {
   try {
     const timing = JSON.parse(readFileSync(timingPath, 'utf-8'));
     aiHoursMonth = Math.round(timing.month_summary?.total_ai_hours || 0);
-    aiDaysMonth = timing.month_summary?.active_days || 0;
+    // Get today's hours
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayEntry = (timing.daily || []).find((d: any) => d.date === todayStr);
+    aiHoursToday = todayEntry ? Math.round(todayEntry.ai_hours * 10) / 10 : 0;
   } catch {}
-} else {
-  // Fallback: estimate from costs.jsonl
-  const monthDays = new Set<string>();
-  monthRecords.forEach(r => { if (r.timestamp) monthDays.add(r.timestamp.slice(0, 10)); });
-  aiDaysMonth = monthDays.size;
-  aiHoursMonth = Math.round(aiDaysMonth * 2.5);
 }
 
 const hasData = records.length > 0;
@@ -134,8 +131,8 @@ const tickerData = JSON.stringify({
       <!-- AI 協作 -->
       <div class="ticker-item">
         <span class="ticker-label">⏱ AI 協作</span>
-        <span class="ticker-value">{aiHoursMonth}h</span>
-        <span class="ticker-sub">{aiDaysMonth}d</span>
+        <span class="ticker-value">{aiHoursToday}h</span>
+        <span class="ticker-sub">月{aiHoursMonth}h</span>
       </div>
     </div>
   ) : (
