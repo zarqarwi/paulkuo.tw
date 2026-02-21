@@ -155,14 +155,14 @@ def call_claude(debate_content: str, debate_filename: str) -> dict:
 
 
 # ── 列出辯論檔 ────────────────────────────────────────
-def list_debates() -> list[Path]:
+def list_debates():
     files = sorted(DEBATES_DIR.glob("*.md"), key=lambda f: f.stat().st_mtime, reverse=True)
     # 排除 backup/raw 檔
     files = [f for f in files if "_raw" not in f.name and "_backup" not in f.name]
     return files
 
 
-def print_debate_list(files: list[Path]):
+def print_debate_list(files):
     print(f"\n📁 辯論紀錄（{DEBATES_DIR}）\n")
     for i, f in enumerate(files, 1):
         mtime = datetime.fromtimestamp(f.stat().st_mtime).strftime("%m/%d %H:%M")
