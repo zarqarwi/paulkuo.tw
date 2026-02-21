@@ -55,7 +55,7 @@ pillar: ai
 
 Apple 不提供個人用途的 Health API，唯一出口是從 iPhone 手動匯出。
 
-**處理流程：** 用 Python 串流解析 1.3GB 的 XML（不試圖一次載入），先建立資料類型索引，再分類萃取各指標到獨立 JSON——睡眠（`HKCategoryTypeIdentifierSleepAnalysis`）、HRV（`HeartRateVariabilitySDNN`）、靜止心率、血氧等，最後建立日度與月度彙總。
+**處理流程：** 用 Python 串流解析 1.3GB 的 XML（不試圖一次載入），先建立資料類型索引，再分類萃取各指標到獨立 JSON——睡眠、HRV、靜止心率、血氧等，最後建立日度與月度彙總。
 
 **解決痛點：** Apple 的睡眠分 Core / Deep / REM 三階段，Fitbit 分 Light / Deep / REM。Apple 的 Core 大致對應 Fitbit 的 Light，但演算法判定標準不同。處理時只對齊趨勢方向，不比較絕對數值。
 
