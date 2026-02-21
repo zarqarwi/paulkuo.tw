@@ -4,11 +4,13 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "fetch-feed": "node scripts/fetch-feed.mjs",
+    "build": "node scripts/fetch-feed.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.17.1"
+    "astro": "^5.17.1",
+    "googleapis": "^171.4.0"
   }
 }
