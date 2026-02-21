@@ -155,6 +155,10 @@ async function main() {
     console.log(`  Using local credentials: ${localPath}`);
   }
 
+  console.log(`  private_key starts with: ${credentials.private_key?.substring(0, 30)}...`);
+  console.log(`  private_key has real newlines: ${credentials.private_key?.includes('\n')}`);
+  console.log(`  private_key has literal \\n: ${credentials.private_key?.includes('\\n')}`);
+
   let token;
   try {
     token = await getAccessToken(credentials);
@@ -179,6 +183,18 @@ async function main() {
     items,
     updatedAt: new Date().toISOString(),
   };
+
+  // If fetch returned 0 items but we have existing data, keep the old data
+  if (items.length === 0 && existsSync(OUTPUT_FILE)) {
+    try {
+      const existing = JSON.parse(readFileSync(OUTPUT_FILE, 'utf-8'));
+      if (existing.items && existing.items.length > 0) {
+        console.log(`⚠️  Fetch returned 0 items but existing feed.json has ${existing.items.length} — keeping existing`);
+        return;
+      }
+    } catch (_) {}
+  }
+
   writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2));
   console.log(`✅ Written to ${OUTPUT_FILE}`);
 }
