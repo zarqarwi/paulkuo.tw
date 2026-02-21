@@ -6,6 +6,20 @@
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
+// Fitbit data
+let fitbitSteps = 0;
+let fitbitGoal = 10000;
+let fitbitWeek: number[] = [];
+const fitbitPath = join(process.cwd(), 'data', 'fitbit.json');
+if (existsSync(fitbitPath)) {
+  try {
+    const fb = JSON.parse(readFileSync(fitbitPath, 'utf-8'));
+    fitbitSteps = fb.today?.steps || 0;
+    fitbitGoal = fb.today?.goal || 10000;
+    fitbitWeek = (fb.week || []).map((d: any) => d.steps || 0);
+  } catch {}
+}
+
 const costsPath = join(process.cwd(), 'data', 'costs.jsonl');
 let records: any[] = [];
 if (existsSync(costsPath)) {
@@ -44,6 +58,12 @@ const prev7 = sortedDays.slice(-14, -7);
 const last7Total = last7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
 const prev7Total = prev7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
 const changePercent = prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0;
+
+// AI collaboration time
+const monthDays = new Set<string>();
+monthRecords.forEach(r => { if (r.timestamp) monthDays.add(r.timestamp.slice(0, 10)); });
+const aiDaysMonth = monthDays.size;
+const aiHoursMonth = Math.round(aiDaysMonth * 2.5);
 
 const hasData = records.length > 0;
 
@@ -91,6 +111,18 @@ const tickerData = JSON.stringify({
       <div class="ticker-item">
         <span class="ticker-label">累計</span>
         <span class="ticker-value">${totalUSD.toFixed(2)}</span>
+      </div>
+      <!-- 步數 + AI時間（手機版顯示，桌機版在 nav 已有） -->
+      <div class="ticker-sep ticker-mobile-only"></div>
+      <div class="ticker-item ticker-mobile-only">
+        <span class="ticker-label">歩數</span>
+        <span class="ticker-value">{fitbitSteps.toLocaleString()}</span>
+      </div>
+      <div class="ticker-sep ticker-mobile-only"></div>
+      <div class="ticker-item ticker-mobile-only">
+        <span class="ticker-label">AI</span>
+        <span class="ticker-value">{aiHoursMonth}h</span>
+        <span class="ticker-sub">{aiDaysMonth}d</span>
       </div>
     </div>
   ) : (
@@ -221,11 +253,14 @@ const tickerData = JSON.stringify({
     background: rgba(255,255,255,0.12);
     flex-shrink: 0;
   }
+  .ticker-mobile-only { display: none; }
   @media (max-width: 768px) {
     .ticker-inner {
       padding: 0 12px;
       height: 44px;
     }
     .ticker-item { padding: 0 10px; }
+    .ticker-mobile-only { display: flex; }
+    div.ticker-sep.ticker-mobile-only { display: block; }
   }
 </style>
