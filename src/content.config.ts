@@ -3,8 +3,8 @@ import { glob } from 'astro/loaders';
 
 const articles = defineCollection({
   loader: glob({
-    base: '../paulkuo-content/articles',
-    pattern: '**/*.{md,mdx}',
+    base: './src/content/articles',
+    pattern: '*.md',
   }),
   schema: z.object({
     title: z.string(),
