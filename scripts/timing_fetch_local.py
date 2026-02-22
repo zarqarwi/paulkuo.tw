@@ -17,6 +17,7 @@ OUTPUT = os.path.join(REPO_ROOT, "data", "timing.json")
 AI_CATEGORIES = {
     "Development", "Web Browsing",
     "Claude 協作", "辯論引擎", "AI 工具開發", "內容創作",
+    "Office & Business",  # 暫時加入：claude.ai 目前被 Timing 歸在此 category（Rule 優先級問題）
 }
 
 
