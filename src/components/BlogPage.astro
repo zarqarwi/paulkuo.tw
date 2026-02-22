@@ -154,6 +154,13 @@ const blogSchema = JSON.stringify({
       });
     }
 
+    // Auto-filter from URL hash (e.g. /blog#ai, /blog#circular)
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const targetBtn = document.querySelector(`.filter-btn[data-filter="${hash}"]`);
+      if (targetBtn) targetBtn.click();
+    }
+
     updateVisibility();
   </script>
 </BaseLayout>
