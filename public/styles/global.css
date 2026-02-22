@@ -255,9 +255,9 @@ main { padding-top: var(--nav-height); }
   border: 1px solid var(--border-light);
   transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
 }
-.hero-card:nth-child(1) { top: 0; left: 0; transform: rotate(-3deg); z-index: 3; }
-.hero-card:nth-child(2) { top: 40px; left: 60px; transform: rotate(2deg); z-index: 2; }
-.hero-card:nth-child(3) { top: 80px; left: 20px; transform: rotate(-1deg); z-index: 1; }
+.hero-card:nth-child(1) { top: 0; left: 10px; transform: rotate(-2deg); z-index: 3; }
+.hero-card:nth-child(2) { top: 40px; left: 50px; transform: rotate(1.5deg); z-index: 2; }
+.hero-card:nth-child(3) { top: 80px; left: 25px; transform: rotate(-1deg); z-index: 1; }
 .hero-card-stack:hover .hero-card:nth-child(1) { transform: rotate(-3deg) translateY(-8px); }
 .hero-card-stack:hover .hero-card:nth-child(2) { transform: rotate(2deg) translateX(8px); }
 .hero-card-label {
