@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import feedJson from '../data/feed.json';
-import CostTicker from '../components/CostTicker.astro';
 import CostAnalytics from '../components/CostAnalytics.astro';
 const feedData = feedJson.items || [];
 
@@ -61,11 +60,6 @@ const homeSchema = JSON.stringify({
 });
 ---
 <BaseLayout title={SITE.title} schemaJson={homeSchema}>
-
-  <!-- COST TICKER -->
-  <aside role="complementary" aria-label="即時資料">
-    <CostTicker />
-  </aside>
 
   <!-- HERO -->
   <section class="hero">

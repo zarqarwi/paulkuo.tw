@@ -174,10 +174,22 @@ nav.nav-scrolled {
   transition: all 0.3s;
 }
 
+/* ===== GLOBAL TICKER ===== */
+.global-ticker {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0; right: 0;
+  z-index: 99;
+  transition: transform 0.3s cubic-bezier(0.23,1,0.32,1);
+}
+.global-ticker.ticker-hidden {
+  transform: translateY(calc(-1 * var(--nav-height) - 48px));
+}
+
 /* ===== SECTIONS ===== */
 .page-section { display: none; }
 .page-section.active { display: block; }
-main { padding-top: var(--nav-height); }
+main { padding-top: calc(var(--nav-height) + 48px); }
 
 /* ===== HERO ===== */
 .hero {

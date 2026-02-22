@@ -1,4 +1,6 @@
 ---
+import CostTicker from '../components/CostTicker.astro';
+
 interface Props {
   title: string;
   description?: string;
@@ -119,6 +121,11 @@ const isArticlePage = pathname.includes('/articles/');
     </div>
   </nav>
 
+  <!-- GLOBAL COST TICKER (follows nav) -->
+  <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料">
+    <CostTicker />
+  </aside>
+
   <main>
     <slot />
   </main>
@@ -164,6 +171,8 @@ const isArticlePage = pathname.includes('/articles/');
       let ticking = false;
       const SCROLL_THRESHOLD = 8; // min px to trigger hide/show
 
+      const ticker = document.getElementById('globalTicker');
+
       const updateNav = () => {
         const currentScrollY = window.scrollY;
         const delta = currentScrollY - lastScrollY;
@@ -180,9 +189,11 @@ const isArticlePage = pathname.includes('/articles/');
           if (delta > 0 && currentScrollY > 120) {
             // Scrolling down & past hero area
             nav.classList.add('nav-hidden');
+            if (ticker) ticker.classList.add('ticker-hidden');
           } else {
             // Scrolling up
             nav.classList.remove('nav-hidden');
+            if (ticker) ticker.classList.remove('ticker-hidden');
           }
           lastScrollY = currentScrollY;
         }
