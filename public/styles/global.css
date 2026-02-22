@@ -246,8 +246,8 @@ main { padding-top: var(--nav-height); }
 }
 .btn-secondary:hover { border-color: var(--brand-navy); background: rgba(27,45,79,0.03); }
 
-.hero-visual { display: flex; justify-content: center; align-items: center; }
-.hero-card-stack { position: relative; width: 400px; height: 440px; }
+.hero-visual { display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.hero-card-stack { position: relative; width: 400px; height: 440px; overflow: visible; }
 .hero-card {
   position: absolute; width: 320px;
   background: var(--bg-card); border-radius: var(--radius-lg);

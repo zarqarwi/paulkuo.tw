@@ -268,7 +268,11 @@ const tickerData = JSON.stringify({
     .ticker-inner {
       padding: 0 12px;
       height: 44px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
-    .ticker-item { padding: 0 10px; }
+    .ticker-inner::-webkit-scrollbar { display: none; }
+    .ticker-item { padding: 0 10px; flex-shrink: 0; }
   }
 </style>
