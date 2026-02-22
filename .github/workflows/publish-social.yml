@@ -83,6 +83,10 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install dependencies
+        if: steps.detect.outputs.skip == 'false'
+        run: npm install sharp
+
       - name: Generate summaries and publish
         id: publish
         if: steps.detect.outputs.skip == 'false'

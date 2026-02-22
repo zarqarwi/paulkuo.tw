@@ -7,6 +7,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { basename, join } from 'path';
+import sharp from 'sharp';
 
 import { PLATFORM_IDS, MANUAL_PLATFORMS, CHAR_LIMITS, DEFAULT_REDDIT_SUBREDDIT } from './platform-config.mjs';
 import { logCost } from './cost-tracker.mjs';
@@ -132,7 +133,35 @@ async function generateImage(title, pillar) {
   if (!resp.ok) { console.log(`  ❌ DALL-E error: ${resp.status}`); return null; }
   const data = await resp.json();
   logCost({ service: 'openai', model: 'dall-e-3', action: 'image-gen', source: 'publish-social', note: title.slice(0, 50) });
-  return Buffer.from(data.data[0].b64_json, 'base64');
+  const rawBuffer = Buffer.from(data.data[0].b64_json, 'base64');
+  console.log(`  🖼️  Raw image: ${(rawBuffer.length / 1024).toFixed(0)} KB`);
+  return rawBuffer;
+}
+
+// ── 圖片壓縮（移植自 oneup_post.py 的 resize_for_platform 邏輯）──
+async function compressImage(imageBuffer, maxBytes = 950000) {
+  if (imageBuffer.length <= maxBytes) {
+    console.log(`  ✅ Image already under ${(maxBytes/1024).toFixed(0)}KB, no compression needed`);
+    return imageBuffer;
+  }
+  console.log(`  🗜️  Compressing ${(imageBuffer.length / 1024).toFixed(0)}KB image...`);
+  for (const quality of [90, 80, 70, 60, 50, 40]) {
+    const compressed = await sharp(imageBuffer)
+      .resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality, mozjpeg: true })
+      .toBuffer();
+    if (compressed.length <= maxBytes) {
+      console.log(`  🗜️  Compressed to ${(compressed.length / 1024).toFixed(0)}KB (JPEG q=${quality})`);
+      return compressed;
+    }
+  }
+  // 最後手段：縮小尺寸
+  const lastResort = await sharp(imageBuffer)
+    .resize(800, 800, { fit: 'inside' })
+    .jpeg({ quality: 40, mozjpeg: true })
+    .toBuffer();
+  console.log(`  🗜️  Final resize to 800px: ${(lastResort.length / 1024).toFixed(0)}KB`);
+  return lastResort;
 }
 
 // ── 圖床上傳 ─────────────────────────────────────────
@@ -163,7 +192,7 @@ async function uploadToImageHost(imageBuffer) {
 }
 
 // ── OneUp 排程 ───────────────────────────────────────
-async function schedulePost(content, platformIds, scheduledTime, imageUrl, redditTitle) {
+async function schedulePost(content, platformIds, scheduledTime, imageUrl, redditTitle, subreddit) {
   const endpoint = imageUrl ? 'scheduleimagepost' : 'scheduletextpost';
   const params = new URLSearchParams({
     apiKey: process.env.ONEUP_API_KEY,
@@ -173,11 +202,9 @@ async function schedulePost(content, platformIds, scheduledTime, imageUrl, reddi
     content,
   });
   if (imageUrl) params.append('image_url', imageUrl);
+  // Reddit 需要 title + subreddit，兩個都必傳
   if (redditTitle) params.append('title', redditTitle);
-
-  // Reddit needs subreddit
-  const hasReddit = platformIds.some(id => id === PLATFORM_IDS.RD);
-  if (hasReddit) params.append('subreddit', DEFAULT_REDDIT_SUBREDDIT);
+  if (subreddit) params.append('subreddit', subreddit);
 
   const resp = await fetch(`${ONEUP_API_BASE}/${endpoint}`, {
     method: 'POST',
@@ -242,11 +269,12 @@ async function main() {
     writeFileSync(logFile, JSON.stringify({ slug: article.slug, title: article.title, url: article.url, summaries, timestamp: new Date().toISOString() }, null, 2));
     console.log(`   💾 Summaries saved: ${logFile}`);
 
-    // 3. 生成配圖（失敗時用預設 pillar 圖）
-    const imageBuffer = await generateImage(article.title, article.pillar);
+    // 3. 生成配圖 → 壓縮到 <950KB → 上傳圖床
+    const rawImageBuffer = await generateImage(article.title, article.pillar);
     let imageUrl = null;
-    if (imageBuffer) {
-      imageUrl = await uploadToImageHost(imageBuffer);
+    if (rawImageBuffer) {
+      const compressedBuffer = await compressImage(rawImageBuffer);
+      imageUrl = await uploadToImageHost(compressedBuffer);
     }
     if (!imageUrl) {
       imageUrl = FALLBACK_IMAGES[article.pillar] || FALLBACK_IMAGES.default;
@@ -275,8 +303,9 @@ async function main() {
 
       try {
         const redditTitle = code === 'RD' ? article.title : undefined;
+        const redditSubreddit = code === 'RD' ? DEFAULT_REDDIT_SUBREDDIT : undefined;
         const { status, data } = await schedulePost(
-          truncated, [id], scheduledTime, imageUrl, redditTitle
+          truncated, [id], scheduledTime, imageUrl, redditTitle, redditSubreddit
         );
 
         if (status === 200) {
