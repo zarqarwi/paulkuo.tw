@@ -127,15 +127,19 @@ const isArticlePage = pathname.includes('/articles/');
   <script>
     // === Hamburger Menu ===
     document.getElementById('hamburger-btn')?.addEventListener('click', () => {
+      const navLinks = document.querySelector('.nav-links') as HTMLElement;
       const switcher = document.querySelector('.lang-switcher') as HTMLElement;
+      if (navLinks) navLinks.classList.toggle('mobile-open');
       if (switcher) switcher.classList.toggle('mobile-open');
     });
 
     document.addEventListener('click', (e) => {
+      const navLinks = document.querySelector('.nav-links');
       const switcher = document.querySelector('.lang-switcher');
       const btn = document.getElementById('hamburger-btn');
-      if (switcher && btn && !switcher.contains(e.target as Node) && !btn.contains(e.target as Node)) {
-        switcher.classList.remove('mobile-open');
+      if (btn && !btn.contains(e.target as Node)) {
+        if (navLinks && !navLinks.contains(e.target as Node)) navLinks.classList.remove('mobile-open');
+        if (switcher && !switcher.contains(e.target as Node)) switcher.classList.remove('mobile-open');
       }
     });
 
