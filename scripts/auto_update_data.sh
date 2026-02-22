@@ -35,9 +35,29 @@ fi
 log "Timing..."
 python3 scripts/timing_fetch_local.py >> "$LOG" 2>&1 || log "WARN: Timing failed"
 
-# --- 2. Fitbit ---
+# --- 2. Fitbit (pre-check: refresh if <2h remaining) ---
 FITBIT_OK=false
 if [ -f "$REPO/scripts/.fitbit_token" ]; then
+    # Proactive refresh if token expires within 2 hours
+    python3 -c "
+import json, time, subprocess, base64
+TF = '$REPO/scripts/.fitbit_token'
+with open(TF) as f: t = json.load(f)
+remaining = t.get('expires_at', 0) - time.time()
+if remaining < 7200:
+    creds = base64.b64encode(b'23V2BH:4adac11e3241afadf53cccfaa7b7e86a').decode()
+    r = subprocess.run(['curl','-s','-X','POST','https://api.fitbit.com/oauth2/token',
+        '-H',f'Authorization: Basic {creds}','-H','Content-Type: application/x-www-form-urlencoded',
+        '-d',f'grant_type=refresh_token&refresh_token={t[\"refresh_token\"]}'],
+        capture_output=True, text=True)
+    import json as j2
+    nt = j2.loads(r.stdout)
+    if 'access_token' in nt:
+        nt['expires_at'] = time.time() + nt.get('expires_in', 28800)
+        with open(TF,'w') as f: j2.dump(nt, f, indent=2)
+        print(f'🔄 Token proactive refresh OK ({nt.get(\"expires_in\",0)//3600}h)')
+" 2>/dev/null
+
     log "Fitbit..."
     FITBIT_OUTPUT=$(python3 scripts/fitbit_fetch.py 2>&1)
     FITBIT_EXIT=$?
