@@ -1,5 +1,5 @@
 /**
- * publish-social.mjs — 新文章自動發佈到 8 個社群平台
+ * publish-social.mjs — 新文章自動發佈到 7 個社群平台
  *
  * 由 GitHub Actions publish-social.yml 觸發
  * 流程：讀文章 → Claude 產摘要 → DALL-E 生圖 → freeimage 上傳 → OneUp 排程
@@ -41,7 +41,7 @@ function parseArticle(filePath) {
 
 // ── Claude API：產各平台摘要 ─────────────────────────
 async function generateSummaries(article) {
-  const prompt = `你是 Paul Kuo（郭曜郎）的社群經理。以下是他的新文章，請為 8 個社群平台產生貼文摘要。
+  const prompt = `你是 Paul Kuo（郭曜郎）的社群經理。以下是他的新文章，請為 7 個社群平台產生貼文摘要。
 
 文章標題：${article.title}
 副標題：${article.subtitle}
