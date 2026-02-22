@@ -26,7 +26,6 @@ const PLATFORM_COLORS = {
   'in LinkedIn': '#0A66C2',
   '📘 Facebook': 'var(--accent-faith)',
   '◉ Threads': 'var(--accent-life)',
-  '🔴 Reddit': '#FF4500',
   '▶ YouTube': '#FF0000',
   '🦋 Bluesky': '#0085FF',
   '📷 Instagram': '#E4405F',
