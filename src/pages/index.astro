@@ -261,7 +261,7 @@ const homeSchema = JSON.stringify({
           </div>
         </div>
         <div class="contact-form">
-          <form id="contact-form" action="mailto:paul@lasaas.com" method="post" enctype="text/plain"
+          <form id="contact-form"
                 toolname="contact_paul_kuo"
                 tooldescription="Send a direct message or inquiry to Paul Kuo regarding consulting, speaking, collaborations, or circular economy topics. Paul is based in Taiwan and speaks Chinese, English, and Japanese.">
             <div class="form-group">
@@ -287,33 +287,34 @@ const homeSchema = JSON.stringify({
               if (!form || !btn || !feedback) return;
 
               form.addEventListener('submit', function(e) {
+                e.preventDefault();
                 const name = document.getElementById('contact-name').value.trim();
                 const email = document.getElementById('contact-email').value.trim();
                 const message = document.getElementById('contact-message').value.trim();
 
                 if (!name || !email) {
-                  e.preventDefault();
                   feedback.style.display = 'block';
                   feedback.style.color = '#ff6b6b';
                   feedback.textContent = '請填寫姓名和 Email';
                   return;
                 }
 
-                // Show loading state
+                // Build mailto URL and navigate
+                var subject = encodeURIComponent('來自 paulkuo.tw 的訊息 — ' + name);
+                var body = encodeURIComponent('姓名：' + name + '\nEmail：' + email + '\n\n' + message);
+                window.location.href = 'mailto:paul@lasaas.com?subject=' + subject + '&body=' + body;
+
+                // Show success feedback
                 btn.disabled = true;
                 btn.style.opacity = '0.6';
-                btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" style="animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg> 送出中...</span>';
-
-                // mailto will open mail client, show success after brief delay
                 setTimeout(function() {
                   btn.disabled = false;
                   btn.style.opacity = '1';
-                  btn.textContent = '送出';
                   feedback.style.display = 'block';
                   feedback.style.color = 'rgba(255,255,255,0.8)';
-                  feedback.textContent = '✅ 郵件用戶端已開啟，請確認送出。謝謝你的訊息！';
+                  feedback.textContent = '✅ 郵件已開啟，請確認送出。謝謝！';
                   setTimeout(function() { feedback.style.display = 'none'; }, 5000);
-                }, 1500);
+                }, 1000);
               });
             })();
           </script>
