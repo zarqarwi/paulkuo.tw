@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { basename, join } from 'path';
 import sharp from 'sharp';
 
-import { PLATFORM_IDS, MANUAL_PLATFORMS, CHAR_LIMITS, DEFAULT_REDDIT_SUBREDDIT } from './platform-config.mjs';
+import { PLATFORM_IDS, MANUAL_PLATFORMS, CHAR_LIMITS } from './platform-config.mjs';
 import { logCost } from './cost-tracker.mjs';
 
 // ── 設定 ────────────────────────────────────────────
@@ -57,7 +57,6 @@ ${article.body.slice(0, 2000)}
   "LI": "LinkedIn 風格，500-800字，專業但有個人觀點，結尾加連結",
   "TH": "Threads 風格，300字以內，口語化，加連結",
   "BS": "Bluesky 風格，250字以內，加連結",
-  "RD": "Reddit 風格，簡短介紹 + 連結，適合 r/Taiwan 或個人 subreddit",
   "YT": "YouTube community post 風格，300-500字",
   "FB": "Facebook 風格，300-500字，比較 casual",
   "IG": "Instagram caption 風格，300字以內，多用 emoji 和 hashtag"
@@ -192,7 +191,7 @@ async function uploadToImageHost(imageBuffer) {
 }
 
 // ── OneUp 排程 ───────────────────────────────────────
-async function schedulePost(content, platformIds, scheduledTime, imageUrl, redditTitle, subreddit) {
+async function schedulePost(content, platformIds, scheduledTime, imageUrl) {
   const endpoint = imageUrl ? 'scheduleimagepost' : 'scheduletextpost';
   const params = new URLSearchParams({
     apiKey: process.env.ONEUP_API_KEY,
@@ -202,9 +201,6 @@ async function schedulePost(content, platformIds, scheduledTime, imageUrl, reddi
     content,
   });
   if (imageUrl) params.append('image_url', imageUrl);
-  // Reddit 需要 title + subreddit，兩個都必傳
-  if (redditTitle) params.append('title', redditTitle);
-  if (subreddit) params.append('subreddit', subreddit);
 
   const resp = await fetch(`${ONEUP_API_BASE}/${endpoint}`, {
     method: 'POST',
@@ -302,10 +298,8 @@ async function main() {
       const truncated = content.slice(0, CHAR_LIMITS[code] || 5000);
 
       try {
-        const redditTitle = code === 'RD' ? article.title : undefined;
-        const redditSubreddit = code === 'RD' ? DEFAULT_REDDIT_SUBREDDIT : undefined;
         const { status, data } = await schedulePost(
-          truncated, [id], scheduledTime, imageUrl, redditTitle, redditSubreddit
+          truncated, [id], scheduledTime, imageUrl
         );
 
         if (status === 200) {
