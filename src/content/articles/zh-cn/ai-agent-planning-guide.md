@@ -2,7 +2,7 @@
 title: "AI Agent 规划指引：从任务工具到能动伙伴的实战指南"
 description: "导入 AI Agent 之前，必须明确其定位与边界，否则极易沦为失控的黑箱。一个稳定运作的 Agent 建立在工具与系统的无缝整合、模组化的流程拆解，以及透明可追踪的监控机制之上。从小规模场景开始验证，是确保 Agent 落地的关键。"
 date: 2025-10-05
-pillar: 創造與實踐
+pillar: startup
 ---
 
 # AI Agent 规划指引

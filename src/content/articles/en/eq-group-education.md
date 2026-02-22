@@ -2,7 +2,7 @@
 title: "Emotions Aren't a Private Matter: Why EQ Should Be the Core of Group Education"
 description: "EQ is misunderstood as personal cultivation, but its essence is a survival skill evolved through group interaction. When education overemphasizes individual development, children lose the opportunity to practice compromise and empathy within teams."
 date: 2017-10-23
-pillar: 創造與實踐
+pillar: startup
 ---
 
 # Emotions Aren't a Private Matter

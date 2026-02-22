@@ -2,7 +2,7 @@
 title: "The Arrogance of Elites and the Way Out for Youth"
 description: "Harvard professor Michael Sandel argues that meritocracy leads winners to believe success is entirely self-made, forgetting the roles of luck and institutional support. This creates social fractures and places unfair pressure on young people. The real way forward isn't climbing harder—it's rebuilding a social framework that respects every person's contribution."
 date: 2022-12-16
-pillar: 文明與人性
+pillar: faith
 ---
 
 # The Arrogance of Elites and the Way Out for Youth

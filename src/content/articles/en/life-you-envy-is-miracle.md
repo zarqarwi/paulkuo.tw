@@ -2,7 +2,7 @@
 title: "The Life You Envy Is Already Someone Else's Miracle"
 description: "We often resent our circumstances through social comparison, forgetting that we already enjoy the 'civilization dividends' of stable electricity, healthcare, and freedom. Zoom out, and our ordinary daily lives are the miracles that billions dream of. Instead of agonizing over starting lines, we should learn humility and build our own irreplaceable path. The world isn't fair, but we can choose the angle from which we face it."
 date: 2025-05-23
-pillar: 沉思與記錄
+pillar: life
 ---
 
 # The Life You Envy

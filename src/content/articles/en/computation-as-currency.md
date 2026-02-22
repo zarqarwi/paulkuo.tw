@@ -2,7 +2,7 @@
 title: "The Computation Standard: When Knowledge, Electricity, and Currency Become Equivalent"
 description: "Digital currency reveals the interconnected relationship between electricity, computation, and money. When knowledge can be mathematized and linked to currency, we enter a new economic model where computational power becomes the standard of value."
 date: 2018-01-04
-pillar: 再生與循環
+pillar: ai
 ---
 
 # The Computation Standard

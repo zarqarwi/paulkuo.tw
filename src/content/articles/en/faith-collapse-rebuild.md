@@ -2,7 +2,7 @@
 title: "The Collapse and Rebuilding of Faith: Lessons from the 1995 Leap Month Prophecy"
 description: "Faith without reflection degenerates into instant-noodle escapism. The 1995 prophecy debacle revealed that when believers abandon thinking and act on blind obedience alone, faith and life become completely severed. True theology isn't a ticket to heaven—it's dynamic thinking refined in the real world."
 date: 2016-02-13
-pillar: 文明與人性
+pillar: faith
 ---
 
 # The Collapse and Rebuilding of Faith

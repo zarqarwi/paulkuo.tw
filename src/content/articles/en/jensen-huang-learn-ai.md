@@ -2,7 +2,7 @@
 title: "If I Were a Student, I'd Study AI: Jensen Huang on the Decisive Edge in the Future Workplace"
 description: "Nvidia CEO Jensen Huang argues that the key to future career success lies not in becoming an engineer, but in learning how to interact effectively with generative AI. Asking the right questions of AI is a new form of language competency requiring logic, structure, and clarity of purpose. Education and career preparation must pivot toward training in human-AI collaboration."
 date: 2025-05-23
-pillar: 創造與實踐
+pillar: startup
 ---
 
 # If I Were a Student, I'd Study AI

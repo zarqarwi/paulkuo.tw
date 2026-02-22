@@ -2,7 +2,7 @@
 title: "The Weight the Dharma Instrument Bore for My Mother: Six Extra Years of Grace and Farewell"
 description: "Facing my mother's terminal cancer diagnosis and eventual passing, the shattering of a dharma instrument became a sign that transcends rationality. It reminds us of life's fragility and uncontrollability, teaching humility before the mysteries of life and death. Regret comes not from having done too little, but because love is inherently finite. All we can do is transform this inexplicable protection into the strength to carry on."
 date: 2025-12-07
-pillar: 沉思與記錄
+pillar: life
 ---
 
 # The Weight the Dharma Instrument Bore for My Mother

@@ -2,7 +2,7 @@
 title: "The Weight Algorithms Cannot Replace: Why We Shouldn't Become Devotees of Scientism"
 description: "Platforms and data can reduce information asymmetry, but decisions still require the leaps of human thinking. Any platform claiming it can make decisions for you is either foolish or fraudulent."
 date: 2017-03-03
-pillar: 智能與秩序
+pillar: ai
 ---
 
 # The Weight Algorithms Cannot Replace
