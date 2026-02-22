@@ -4,6 +4,11 @@
  * 自動翻譯 paulkuo.tw 文章到 en/ja/zh-cn
  * 使用 Claude API (Anthropic)
  * 
+ * 特性：
+ *   - manifest 防重複：原文沒改過就跳過翻譯（idempotent）
+ *   - 費用追蹤：每次 API call 記錄到 costs.jsonl
+ *   - fallback 上限：非 CI 環境最多翻 5 篇
+ * 
  * 使用方式：
  *   ANTHROPIC_API_KEY=sk-... node scripts/translate-article.mjs
  * 
@@ -13,6 +18,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'fs';
 import { execSync } from 'child_process';
 import { join, basename } from 'path';
+import { createHash } from 'crypto';
 import { logCost } from './cost-tracker.mjs';
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
@@ -40,6 +46,65 @@ const LOCALES = [
 ];
 
 const ARTICLES_DIR = 'src/content/articles';
+const MANIFEST_PATH = 'data/translation-manifest.json';
+
+// ── Manifest 管理 ──────────────────────────────────────────
+
+function loadManifest() {
+  try {
+    return JSON.parse(readFileSync(MANIFEST_PATH, 'utf-8'));
+  } catch {
+    return {};
+  }
+}
+
+function saveManifest(manifest) {
+  mkdirSync('data', { recursive: true });
+  writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2), 'utf-8');
+}
+
+function fileHash(filePath) {
+  const content = readFileSync(filePath);
+  return createHash('md5').update(content).digest('hex').slice(0, 12);
+}
+
+function needsTranslation(manifest, filename, locale) {
+  const entry = manifest[filename];
+  if (!entry) return true;  // 新文章，沒記錄
+  
+  // 檢查原文是否改過
+  const sourcePath = join(ARTICLES_DIR, filename);
+  if (!existsSync(sourcePath)) return false;  // 原文不存在
+  
+  const currentHash = fileHash(sourcePath);
+  if (currentHash !== entry.sourceHash) return true;  // 原文改過，需要重翻
+  
+  // 檢查該語系翻譯是否存在
+  if (!entry.translations[locale]) return true;  // 該語系沒翻過
+  
+  // 原文沒改 + 翻譯存在 → 跳過
+  return false;
+}
+
+function updateManifest(manifest, filename, locale, translatedPath) {
+  if (!manifest[filename]) {
+    manifest[filename] = {
+      sourceHash: fileHash(join(ARTICLES_DIR, filename)),
+      translations: {}
+    };
+  }
+  
+  // 更新 source hash（可能是新文章）
+  manifest[filename].sourceHash = fileHash(join(ARTICLES_DIR, filename));
+  
+  manifest[filename].translations[locale] = {
+    hash: fileHash(translatedPath),
+    translatedAt: new Date().toISOString(),
+    model: 'claude-sonnet-4'
+  };
+}
+
+// ── Claude API ─────────────────────────────────────────────
 
 async function callClaude(content, locale) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -79,9 +144,17 @@ ${content}`
   }
 
   const data = await response.json();
+  
   // 費用追蹤
   const usage = data.usage || {};
-  logCost({ service: 'anthropic', model: 'claude-sonnet', action: `translate-${locale.code}`, source: 'translate-article', inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0 });
+  logCost({
+    service: 'anthropic',
+    model: 'claude-sonnet',
+    action: `translate-${locale.code}`,
+    source: 'translate-article',
+    inputTokens: usage.input_tokens || 0,
+    outputTokens: usage.output_tokens || 0
+  });
 
   let text = data.content[0].text;
   
@@ -93,8 +166,10 @@ ${content}`
   return text;
 }
 
+// ── Main ───────────────────────────────────────────────────
+
 async function main() {
-  // Find articles to translate
+  const manifest = loadManifest();
   let filesToTranslate = [];
 
   // Check if running in CI with git diff available
@@ -112,11 +187,10 @@ async function main() {
       );
     }
   } catch {
-    // Not in CI or git diff failed — translate all root articles
     console.log('📝 No git diff available, checking all articles...');
   }
 
-  // 🔴 FIX: Fallback 加上限，最多翻 5 篇（避免意外翻全部 60+ 篇爆 API 費用）
+  // Fallback：掃描所有文章，用 manifest 過濾
   const MAX_FALLBACK = 5;
   if (filesToTranslate.length === 0) {
     if (existsSync(ARTICLES_DIR)) {
@@ -124,49 +198,59 @@ async function main() {
         .filter(f => f.endsWith('.md'))
         .map(f => join(ARTICLES_DIR, f));
       
-      // 只翻還沒有翻譯版本的檔案
-      const untranslated = allFiles.filter(f => {
-        const slug = basename(f, '.md');
-        return !existsSync(join(ARTICLES_DIR, 'en', `${slug}.md`));
+      // 用 manifest 判斷：原文改過或翻譯缺失的才需要翻
+      const needWork = allFiles.filter(f => {
+        const slug = basename(f);
+        return LOCALES.some(l => needsTranslation(manifest, slug, l.code));
       });
 
-      if (untranslated.length > MAX_FALLBACK) {
-        console.log(`⚠️  Fallback: ${untranslated.length} untranslated articles found, limiting to ${MAX_FALLBACK}`);
-        console.log('   Run manually for bulk translation.');
-        filesToTranslate = untranslated.slice(0, MAX_FALLBACK);
+      if (needWork.length > MAX_FALLBACK) {
+        console.log(`⚠️  Fallback: ${needWork.length} articles need translation, limiting to ${MAX_FALLBACK}`);
+        console.log('   Run manually with higher limit for bulk translation.');
+        filesToTranslate = needWork.slice(0, MAX_FALLBACK);
       } else {
-        filesToTranslate = untranslated;
+        filesToTranslate = needWork;
       }
     }
   }
 
   if (filesToTranslate.length === 0) {
-    console.log('ℹ️  No articles to translate.');
+    console.log('ℹ️  No articles to translate (all up to date per manifest).');
+    saveManifest(manifest);
     return;
   }
 
   console.log(`🌐 Found ${filesToTranslate.length} article(s) to translate`);
 
+  let translated = 0;
+  let skipped = 0;
+
   for (const file of filesToTranslate) {
     const filename = basename(file);
-    const content = readFileSync(file, 'utf-8');
+    const content = readFileSync(join(ARTICLES_DIR, filename), 'utf-8');
     
-    console.log(`\n📄 Translating: ${filename}`);
+    console.log(`\n📄 ${filename}`);
 
     for (const locale of LOCALES) {
+      // Manifest 檢查：跳過不需要翻的
+      if (!needsTranslation(manifest, filename, locale.code)) {
+        console.log(`   ⏭️  ${locale.name}: up to date (skipped)`);
+        skipped++;
+        continue;
+      }
+
       const outDir = join(ARTICLES_DIR, locale.code);
       const outFile = join(outDir, filename);
-      
-      // Skip if translation already exists and source hasn't changed
-      // (In CI, git diff already filtered; locally, always retranslate)
       
       console.log(`   → ${locale.name} (${locale.code})...`);
       
       try {
         mkdirSync(outDir, { recursive: true });
-        const translated = await callClaude(content, locale);
-        writeFileSync(outFile, translated, 'utf-8');
+        const result = await callClaude(content, locale);
+        writeFileSync(outFile, result, 'utf-8');
+        updateManifest(manifest, filename, locale.code, outFile);
         console.log(`   ✅ ${locale.name}: ${outFile}`);
+        translated++;
       } catch (err) {
         console.error(`   ❌ ${locale.name} failed: ${err.message}`);
       }
@@ -176,7 +260,9 @@ async function main() {
     }
   }
 
-  console.log('\n🎉 Translation complete!');
+  // 儲存更新後的 manifest
+  saveManifest(manifest);
+  console.log(`\n🎉 Done! Translated: ${translated}, Skipped: ${skipped}`);
 }
 
 main().catch(err => {
