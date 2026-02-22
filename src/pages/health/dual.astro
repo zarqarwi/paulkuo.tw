@@ -3,7 +3,18 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="Health Dashboard — Paul Kuo" description="Fitbit + Apple Watch 雙裝置健康分析">
 
-<div id="healthMain" class="health-container" >
+<div id="authGate" class="dashboard-auth">
+  <div class="auth-card">
+    <h2>🔒 Health Data</h2>
+    <p>輸入存取密碼</p>
+    <input type="password" id="authInput" placeholder="Password" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+
+
+<div id="healthMain" style="display:none" class="health-container" >
   <header class="health-header">
     <div>
       <h1>🏥 Paul 雙裝置健康分析</h1>
@@ -115,6 +126,69 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     Paul × Claude 健康分析 · Fitbit + Apple Watch 雙裝置整合 · 個體基礎設施
   </footer>
 </div>
+
+
+<script is:inline>
+// Auth gate - same as dashboard
+const DASH_KEY = 'paulkuo2026';
+const authGate = document.getElementById('authGate');
+const mainEl = document.getElementById('mainContent') || document.getElementById('healthMain');
+const authInput = document.getElementById('authInput');
+const authBtn = document.getElementById('authBtn');
+
+function checkAuth() {
+  const urlKey = new URLSearchParams(window.location.search).get('key');
+  const stored = sessionStorage.getItem('dash_auth');
+  if (urlKey === DASH_KEY || stored === DASH_KEY) {
+    sessionStorage.setItem('dash_auth', DASH_KEY);
+    authGate.style.display = 'none';
+    mainEl.style.display = 'block';
+    return;
+  }
+}
+checkAuth();
+
+authBtn.addEventListener('click', () => {
+  if (authInput.value === DASH_KEY) {
+    sessionStorage.setItem('dash_auth', DASH_KEY);
+    authGate.style.display = 'none';
+    mainEl.style.display = 'block';
+  } else {
+    authInput.style.borderColor = '#ef4444';
+    authInput.value = '';
+    authInput.placeholder = '密碼錯誤';
+  }
+});
+authInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
+</script>
+
+
+<style is:global>
+  .dashboard-auth {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 60vh; padding: 2rem;
+  }
+  .auth-card {
+    text-align: center; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 3rem; max-width: 360px; width: 100%;
+    box-shadow: var(--shadow-md);
+  }
+  .auth-card h2 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .auth-card p { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem; }
+  .auth-card input {
+    width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 1rem; text-align: center;
+    background: var(--bg); transition: border-color 0.2s;
+  }
+  .auth-card input:focus { outline: none; border-color: var(--brand-navy); }
+  .auth-card button {
+    margin-top: 1rem; width: 100%; padding: 0.75rem;
+    background: var(--brand-navy); color: white; border: none;
+    border-radius: 8px; font-size: 0.95rem; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .auth-card button:hover { background: var(--brand-navy-light); }
+</style>
 
 </BaseLayout>
 
