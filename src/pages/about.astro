@@ -4,32 +4,87 @@ import { SITE } from '../config';
 
 const aboutSchema = JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "ProfilePage",
-  "mainEntity": {
-    "@type": "Person",
-    "@id": `${SITE.url}/#person`,
-    "name": SITE.author,
-    "alternateName": SITE.authorAlt,
-    "url": SITE.url,
-    "jobTitle": "Commercial Integration & AI Digital Development Director",
-    "worksFor": {
-      "@type": "Organization",
-      "name": "SDTI \u4f73\u9f8d\u79d1\u6280"
+  "@graph": [
+    {
+      "@type": "ProfilePage",
+      "@id": `${SITE.url}/about#page`,
+      "url": `${SITE.url}/about`,
+      "name": `About — ${SITE.author}`,
+      "description": "我的思考起點不是技術，而是秩序。",
+      "inLanguage": "zh-Hant",
+      "isPartOf": { "@id": `${SITE.url}/#website` },
+      "mainEntity": { "@id": `${SITE.url}/#person` },
+      "breadcrumb": { "@id": `${SITE.url}/about#breadcrumb` }
     },
-    "description": "\u6211\u7684\u601d\u8003\u8d77\u9ede\u4e0d\u662f\u6280\u8853\uff0c\u800c\u662f\u79e9\u5e8f\u3002",
-    "knowsAbout": ["Circular Economy", "AI", "Semiconductor", "Theology", "Startup"],
-    "alumniOf": "\u795e\u5b78\u8a13\u7df4 15 \u5e74",
-    "sameAs": [
-      "https://www.linkedin.com/in/paulkuo",
-      "https://x.com/zarqarwi",
-      "https://www.threads.net/@zarqarwi",
-      "https://www.youtube.com/@kuopaul8265",
-      "https://www.facebook.com/guo.yao.lang.2025",
-      "https://www.instagram.com/zarqarwi",
-      "https://bsky.app/profile/paulkuo.bsky.social",
-      "https://www.reddit.com/user/Constant-Variety1656"
-    ]
-  }
+    {
+      "@type": "Person",
+      "@id": `${SITE.url}/#person`,
+      "name": SITE.author,
+      "alternateName": SITE.authorAlt,
+      "url": SITE.url,
+      "image": "https://paulkuo.tw/paul-photo.png",
+      "jobTitle": "Commercial Integration & AI Digital Development Director",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "SDTI 佳龍科技",
+        "url": "https://www.sdti.com.tw"
+      },
+      "description": "我的思考起點不是技術，而是秩序。十五年的神學訓練、十年以上的 PCB 金屬回收產業經驗、從 AppWorks 到厚生市集到半畝塘的創業歷程——二十年來始終在處理同一個問題：當既有的秩序不再有效，什麼樣的結構值得被重建？",
+      "nationality": { "@type": "Country", "name": "Taiwan" },
+      "knowsAbout": [
+        "Circular Economy",
+        "AI Systems & Agentic AI",
+        "Taiwan-Japan Semiconductor Cooperation",
+        "Theology & Ethics",
+        "Startup Strategy",
+        "Urban Mining & PCB Metal Recovery",
+        "Agentic SEO & AI Optimization",
+        "Multi-Model Cognitive Collaboration",
+        "Digital Sovereignty"
+      ],
+      "alumniOf": [
+        {
+          "@type": "Organization",
+          "name": "AppWorks",
+          "url": "https://appworks.tw"
+        }
+      ],
+      "hasCredential": {
+        "@type": "EducationalOccupationalCredential",
+        "credentialCategory": "Theological Training",
+        "description": "15 years of theological training"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/paulkuo",
+        "https://x.com/zarqarwi",
+        "https://www.threads.net/@zarqarwi",
+        "https://www.youtube.com/@kuopaul8265",
+        "https://www.facebook.com/guo.yao.lang.2025",
+        "https://www.instagram.com/zarqarwi",
+        "https://bsky.app/profile/paulkuo.bsky.social",
+        "https://www.reddit.com/user/Constant-Variety1656"
+      ],
+      "mainEntityOfPage": { "@id": `${SITE.url}/about#page` }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${SITE.url}/about#breadcrumb`,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "首頁",
+          "item": SITE.url
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "About",
+          "item": `${SITE.url}/about`
+        }
+      ]
+    }
+  ]
 });
 ---
 <BaseLayout title="About — Paul Kuo" description="我的思考起點不是技術，而是秩序。" schemaJson={aboutSchema}>
