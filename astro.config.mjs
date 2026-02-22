@@ -6,6 +6,14 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://paulkuo.tw',
   output: 'static',
+  vite: {
+    ssr: {
+      external: ['sharp'],
+    },
+    optimizeDeps: {
+      exclude: ['sharp'],
+    },
+  },
   build: {
     format: 'directory',
   },

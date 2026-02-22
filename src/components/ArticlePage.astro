@@ -20,7 +20,9 @@ const { Content } = await render(article);
 const { title, subtitle, description, abstract, date, updated, pillar, tags, readingTime } = article.data;
 const p = PILLAR_MAP[pillar];
 const dateStr = date.toLocaleDateString(L.dateLocale, L.dateOptions);
-const articleUrl = `${SITE.url}${basePath}/articles/${article.id.replace(/\.md$/, '')}`;
+const slug = article.id.replace(/\.md$/, '');
+const articleUrl = `${SITE.url}${basePath}/articles/${slug}`;
+const ogImageUrl = `${SITE.url}/og/${slug}.png`;
 const pillarLabel = lang === 'en' ? p.labelEn : p.label;
 
 // Estimate word count from raw body (for schema)
@@ -61,7 +63,7 @@ const schemaJson = JSON.stringify({
       "keywords": tags,
       ...(wordCount && { "wordCount": wordCount }),
       ...(readingTime && { "timeRequired": `PT${readingTime}M` }),
-      "image": `${SITE.url}/paul-photo.png`
+      "image": ogImageUrl
     },
     {
       "@type": "BreadcrumbList",
@@ -104,6 +106,7 @@ const canonicalUrl = articleUrl;
   description={description}
   ogType="article"
   ogUrl={articleUrl}
+  ogImage={ogImageUrl}
   schemaJson={schemaJson}
   canonicalUrl={canonicalUrl}>
 
