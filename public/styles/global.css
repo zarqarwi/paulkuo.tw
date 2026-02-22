@@ -46,13 +46,13 @@ body::before {
   top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
   z-index: 9999;
-  border: 2px solid transparent;
+  border: 4px solid transparent;
   border-image: linear-gradient(
     var(--glow-angle, 45deg),
     transparent 0%,
-    rgba(210, 140, 60, 0.12) 25%,
-    rgba(230, 160, 50, 0.18) 50%,
-    rgba(210, 140, 60, 0.12) 75%,
+    rgba(200, 120, 50, 0.28) 20%,
+    rgba(220, 140, 40, 0.40) 50%,
+    rgba(200, 120, 50, 0.28) 80%,
     transparent 100%
   ) 1;
   animation: ambientGlow 8s ease-in-out infinite;
@@ -65,11 +65,11 @@ body::before {
 }
 
 @keyframes ambientGlow {
-  0% { --glow-angle: 0deg; opacity: 0.6; }
+  0% { --glow-angle: 0deg; opacity: 0.7; }
   25% { --glow-angle: 90deg; opacity: 1; }
-  50% { --glow-angle: 180deg; opacity: 0.6; }
+  50% { --glow-angle: 180deg; opacity: 0.7; }
   75% { --glow-angle: 270deg; opacity: 1; }
-  100% { --glow-angle: 360deg; opacity: 0.6; }
+  100% { --glow-angle: 360deg; opacity: 0.7; }
 }
 
 /* Outer ambient corner glow */
@@ -80,10 +80,10 @@ body::after {
   pointer-events: none;
   z-index: 9998;
   background:
-    radial-gradient(ellipse at top left, rgba(220, 150, 50, 0.06) 0%, transparent 40%),
-    radial-gradient(ellipse at top right, rgba(200, 120, 40, 0.04) 0%, transparent 40%),
-    radial-gradient(ellipse at bottom left, rgba(200, 130, 50, 0.04) 0%, transparent 40%),
-    radial-gradient(ellipse at bottom right, rgba(220, 150, 50, 0.06) 0%, transparent 40%);
+    radial-gradient(ellipse at top left, rgba(210, 140, 50, 0.10) 0%, transparent 35%),
+    radial-gradient(ellipse at top right, rgba(190, 110, 40, 0.08) 0%, transparent 35%),
+    radial-gradient(ellipse at bottom left, rgba(190, 120, 45, 0.08) 0%, transparent 35%),
+    radial-gradient(ellipse at bottom right, rgba(210, 140, 50, 0.10) 0%, transparent 35%);
   animation: ambientCorners 12s ease-in-out infinite alternate;
 }
 
