@@ -7,8 +7,8 @@ tags: ["自學教育", "教育哲學", "家長角色", "溫和對抗", "批判�
 readingTime: 5
 ---
 
-# The Truth About Homeschooling
-## A Parent's Insights and Gentle Resistance
+## The Truth About Homeschooling
+### A Parent's Insights and Gentle Resistance
 
 As a serial entrepreneur and father of children.
 Being at the forefront of industry transformation, I deeply understand that education must adapt to accommodate environmental changes.
@@ -18,7 +18,7 @@ These are my insights from several years of experience, for parents interested i
 
 ---
 
-## Stripping Away the Romantic Labels of Homeschooling
+### Stripping Away the Romantic Labels of Homeschooling
 
 1. **It's companionship, not outsourcing**: Parents need to invest substantial time. It's not about throwing money to "outsource" education to institutions or consultants.
 2. **It's not an academic shortcut**: If you still believe in exam-oriented education, staying within the system is fine—lower communication costs, higher efficiency.
@@ -31,7 +31,7 @@ Whenever I see people proudly waving devaluing diplomas, boasting about getting 
 
 ---
 
-## Gentle and Courteous Resistance
+### Gentle and Courteous Resistance
 
 The true meaning of learning in daily life is: regardless of what situation you encounter, there's always an opportunity to transform it into learning nutrients.
 Complaining is meaningless, avoiding is wasteful.
@@ -46,7 +46,7 @@ Or will you develop a habit of withdrawal, euphemistically calling it "valuing h
 
 ---
 
-## Conclusion: The Muscle of Resistance Needs Practice
+### Conclusion: The Muscle of Resistance Needs Practice
 
 Finally, the child mustered the courage to speak his true thoughts.
 Although the force of expression was less than a third of what we practiced, it was still a good beginning.

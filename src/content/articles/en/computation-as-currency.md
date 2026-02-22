@@ -5,8 +5,8 @@ date: 2018-01-04
 pillar: ai
 ---
 
-# The Computation Standard
-## When Knowledge, Electricity, and Currency Become Equivalent
+## The Computation Standard
+### When Knowledge, Electricity, and Currency Become Equivalent
 
 Looking at Bitcoin transactions through the lens of energy consumption yields a fascinating insight.
 Electrical energy, through computational power, becomes linked to the monetary system.
@@ -15,7 +15,7 @@ This turns the relationship between "electricity, computation, and currency" int
 
 ---
 
-## Brainpower Equals Algorithm
+### Brainpower Equals Algorithm
 
 With the rise of AI, knowledge has also entered the quantified logic of computation.
 
@@ -28,7 +28,7 @@ Solving problems at the highest level, creating systems through entrepreneurship
 
 ---
 
-## From the Gold Standard to the Energy Standard
+### From the Gold Standard to the Energy Standard
 
 In contrast to the traditional "gold standard" and "dollar standard," an "energy standard" may be a more fitting metric for the digital technology era.
 
@@ -38,7 +38,7 @@ Capital can purchase electricity. Capital can intervene in algorithms through el
 
 ---
 
-## Conclusion: The Alchemy of Traffic
+### Conclusion: The Alchemy of Traffic
 
 Extending this reasoning, the "influencer phenomenon" becomes easy to understand.
 

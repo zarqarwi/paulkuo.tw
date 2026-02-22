@@ -647,3 +647,32 @@ html[lang="ja"] .about-content p {
 }
 
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ===== BREADCRUMB (AIO) ===== */
+.article-breadcrumb { margin-bottom: 24px; }
+.article-breadcrumb ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.article-breadcrumb li { display: flex; align-items: center; }
+.article-breadcrumb li + li::before {
+  content: '/';
+  margin: 0 8px;
+  color: var(--text-muted, rgba(255,255,255,0.3));
+}
+.article-breadcrumb a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.article-breadcrumb a:hover { color: var(--text-primary); }
+.article-breadcrumb li[aria-current="page"] {
+  color: var(--text-primary);
+  font-weight: 500;
+}

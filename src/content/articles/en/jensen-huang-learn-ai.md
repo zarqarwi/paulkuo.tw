@@ -5,8 +5,8 @@ date: 2025-05-23
 pillar: startup
 ---
 
-# If I Were a Student, I'd Study AI
-## Jensen Huang on the Decisive Edge in the Future Workplace
+## If I Were a Student, I'd Study AI
+### Jensen Huang on the Decisive Edge in the Future Workplace
 
 Jensen Huang points out that the decisive advantage of the future lies in knowing how to interact effectively with AI—treating it as an intelligent assistant that aids thinking.
 Interacting with AI is, at its core, "learning how to ask questions." This is a new form of language competency for our era.

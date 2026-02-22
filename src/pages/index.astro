@@ -38,12 +38,15 @@ const homeSchema = JSON.stringify({
       "url": SITE.url,
       "description": SITE.description,
       "jobTitle": "Commercial Integration & AI Digital Development Director",
+      "image": "https://paulkuo.tw/paul-photo.png",
       "worksFor": {
         "@type": "Organization",
         "name": "SDTI 佳龍科技",
         "url": "https://www.sdti.com.tw"
       },
-      "knowsAbout": ["Circular Economy", "AI", "Semiconductor", "Theology", "Startup", "Agentic SEO"],
+      "knowsAbout": ["Circular Economy", "AI Systems", "Semiconductor Cooperation", "Theology", "Startup Strategy", "Urban Mining", "PCB Metal Recovery", "Agentic SEO", "Taiwan-Japan Business"],
+      "alumniOf": ["AppWorks"],
+      "nationality": { "@type": "Country", "name": "Taiwan" },
       "sameAs": [
         "https://www.linkedin.com/in/paulkuo",
         "https://x.com/zarqarwi",
@@ -61,7 +64,9 @@ const homeSchema = JSON.stringify({
 <BaseLayout title={SITE.title} schemaJson={homeSchema}>
 
   <!-- COST TICKER -->
-  <CostTicker />
+  <aside role="complementary" aria-label="即時資料">
+    <CostTicker />
+  </aside>
 
   <!-- HERO -->
   <section class="hero">
@@ -238,7 +243,7 @@ const homeSchema = JSON.stringify({
   </section>
 
   <!-- CONTACT -->
-  <section class="contact-section" id="contact" aria-label="聯絡 Paul Kuo">
+  <section class="contact-section" id="contact" aria-label="聯絡 Paul Kuo" role="complementary">
     <div class="section-container">
       <div class="contact-grid">
         <div class="contact-text">

@@ -7,8 +7,8 @@ tags: ["文明指標", "風險管理", "系統思維", "幸福定義", "永續�
 readingTime: 5
 ---
 
-# The Overlooked Indicator of Civilization
-## A Risk Philosophy of Replacing 'Goals' with 'Systems'
+## The Overlooked Indicator of Civilization
+### A Risk Philosophy of Replacing 'Goals' with 'Systems'
 
 When measuring the progress of civilization, economists have traditionally relied on GDP or per capita income. This is a "productivity-only" approach: judging value solely by economic output.
 
@@ -20,7 +20,7 @@ But as Professor Chen Zhiwu argues in *The Logic of Civilization*, this categori
 
 ---
 
-## Risk Reduction Is Also Civilization
+### Risk Reduction Is Also Civilization
 
 Civilization is not only about the growth of wealth. It also encompasses the **reduction of risk**.
 
@@ -30,7 +30,7 @@ As we've become overly dependent on fossil fuel civilization, causing climate an
 
 ---
 
-## A Personal System for Happiness
+### A Personal System for Happiness
 
 Bringing this back from macro civilization to the personal level: Measuring happiness absolutely cannot rely on the Dollar Sign alone.
 
@@ -40,7 +40,7 @@ How do you allocate your living time? Are you engaged in interesting activities,
 
 ---
 
-## Conclusion: Goals Are for Losers, Systems Are for Winners
+### Conclusion: Goals Are for Losers, Systems Are for Winners
 
 Scott Adams, creator of *Dilbert*, once said: Goals are for losers; systems are for winners.
 

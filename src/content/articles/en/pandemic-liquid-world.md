@@ -7,8 +7,8 @@ tags: ["流動性", "輕資產", "疫情衝擊", "全球化", "韌性思維"]
 readingTime: 4
 ---
 
-# The Liquid World Under the Pandemic
-## Economic Devastation from Halted Flow
+## The Liquid World Under the Pandemic
+### Economic Devastation from Halted Flow
 
 This pandemic strikes at the lifeline of all industries. Once social mobility is restricted, none can escape unscathed.
 The only exception is industries that entered the digital world early. But if everyone's pockets are empty, it's still capital carnage.

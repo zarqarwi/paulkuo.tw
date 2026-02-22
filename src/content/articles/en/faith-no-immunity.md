@@ -7,8 +7,8 @@ tags: ["religious gatherings", "theological reflection", "social rationality", "
 readingTime: 4
 ---
 
-# Faith Offers No Immunity
-## The Conflict Between Religious Reason and Social Reality
+## Faith Offers No Immunity
+### The Conflict Between Religious Reason and Social Reality
 
 South Korea's confirmed cases have surged to 433.
 Behind this lies a cluster infection at the "Shincheonji Church."
@@ -17,7 +17,7 @@ This gives us a profoundly shocking revelation.
 
 ---
 
-## Viruses Don't Care About Your Faith
+### Viruses Don't Care About Your Faith
 
 Viral transmission knows no race.
 Of course, it knows no faith either.
@@ -29,7 +29,7 @@ You ultimately cannot separate yourself from society to form your own tribe.
 
 ---
 
-## The Collision of Two Rationalities
+### The Collision of Two Rationalities
 
 The conflict between believers' "religious reason" and the public's "social reason" 
 is omnipresent.

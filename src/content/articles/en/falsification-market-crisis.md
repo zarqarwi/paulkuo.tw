@@ -7,8 +7,8 @@ tags: ["風險管理", "資訊判斷", "投資心理", "危機意識", "謙卑"]
 readingTime: 4
 ---
 
-# Reverence for the Boundaries of the Unknown
-## Facing Market Crises with Falsificationist Thinking
+## Reverence for the Boundaries of the Unknown
+### Facing Market Crises with Falsificationist Thinking
 
 Watching the confirmed cases and death toll from COVID-19 continuously climb,
 my reflexive response is to ask myself:
@@ -17,7 +17,7 @@ When will global confirmed cases break 100,000? Deaths exceed 5,000?
 
 ---
 
-## The Art of Trend Detection Through Questioning
+### The Art of Trend Detection Through Questioning
 
 During my past experience trading financial instruments, I developed a habit:
 using "questions" to probe trends.
@@ -32,7 +32,7 @@ Only by thinking ahead can we manage risk when the unexpected occurs.
 
 ---
 
-## The Reality of Blind Men and the Elephant
+### The Reality of Blind Men and the Elephant
 
 We must acknowledge:
 "Things-in-themselves are unknowable."
@@ -47,7 +47,7 @@ Every day, we are blind men feeling an elephant.
 
 ---
 
-## Conclusion: Taking Responsibility for Our Own Judgment
+### Conclusion: Taking Responsibility for Our Own Judgment
 
 Facing markets requires only caution and humility.
 Otherwise, millions in losses can disappear in a blink, and hearts cannot bear it.

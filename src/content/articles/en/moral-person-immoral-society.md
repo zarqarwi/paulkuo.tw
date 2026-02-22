@@ -8,7 +8,7 @@ platform: Medium
 readingTime: 5
 ---
 
-# Moral Man, Immoral Society
+## Moral Man, Immoral Society
 
 In 1932, Reinhold Niebuhr wrote *Moral Man and Immoral Society*. Reading it today, it remains uncomfortably sharp.
 
@@ -16,7 +16,7 @@ His core observation is simple: Individuals can have conscience, empathy, and mo
 
 ---
 
-## Why Are Groups More Selfish?
+### Why Are Groups More Selfish?
 
 When an individual faces another person, conscience speaks. You see someone hurt, and you want to help.
 
@@ -24,7 +24,7 @@ But when you make decisions on behalf of an organization, your considerations ch
 
 ---
 
-## The Corporate Example
+### The Corporate Example
 
 A company's CEO might be a wonderful person. They donate to charity and care about employee health.
 
@@ -34,7 +34,7 @@ Not because they're bad. But because the logic of the system is stronger than in
 
 ---
 
-## The First Step in Facing Reality
+### The First Step in Facing Reality
 
 Niebuhr was not a pessimist. He was simply more honest than most.
 
@@ -44,7 +44,7 @@ Because when power concentrates, even the best people will be corrupted.
 
 ---
 
-## Conclusion
+### Conclusion
 
 Understanding "the immorality of groups" is not about giving up. It's about seeing clearly.
 

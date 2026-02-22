@@ -7,8 +7,8 @@ tags: ["斜槓青年", "職涯發展", "知識系統", "紀律", "專業養成"]
 readingTime: 5
 ---
 
-# Walking Before Flying
-## Debunking the Undisciplined Myths of "Slash Careers"
+## Walking Before Flying
+### Debunking the Undisciplined Myths of "Slash Careers"
 
 When "slash careers" are mentioned,
 what comes to many people's minds is fickleness, inconsistency, or always looking for something better.
@@ -18,7 +18,7 @@ how can there be a multi-career life?
 
 ---
 
-## Slash Careers Aren't About Complaining About Work
+### Slash Careers Aren't About Complaining About Work
 
 After reading *The Slash Career*, I discovered that the author demonstrates a high degree of discipline and self-awareness.
 
@@ -33,7 +33,7 @@ They want to do everything, think they can do anything, and ultimately do nothin
 
 ---
 
-## Three Cornerstones Before Flight
+### Three Cornerstones Before Flight
 
 Slash careers aren't about arguing.
 They represent a state of "being able to fly." But before learning to fly, one must first learn to walk properly.
@@ -49,7 +49,7 @@ But you cannot lead a team well in two weeks. Teams need time to build relations
 
 ---
 
-## Conclusion
+### Conclusion
 
 Projects in slash careers are typically knowledge-oriented.
 They're not labor-intensive patchwork like driving Uber in the morning, selling coffee in the afternoon, and working night shifts at convenience stores.

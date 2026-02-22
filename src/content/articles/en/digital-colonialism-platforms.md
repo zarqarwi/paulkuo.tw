@@ -7,8 +7,8 @@ tags: ["數位殖民", "演算法調整", "平台霸權", "資源依賴", "商�
 readingTime: 4
 ---
 
-# Awakening from Digital Colonialism
-## Rebuilding Rules of Survival on Free Platforms
+## Awakening from Digital Colonialism
+### Rebuilding Rules of Survival on Free Platforms
 
 When Facebook announces yet another algorithm adjustment,
 Many people jump up in protest:
@@ -21,7 +21,7 @@ But don't you find this somewhat strange?
 
 ---
 
-## Free Chicken Legs and the Tower of Babel
+### Free Chicken Legs and the Tower of Babel
 
 We've used Facebook for ten years.
 As end users, we haven't paid the platform a single cent.
@@ -41,7 +41,7 @@ What right do we have to protest?
 
 ---
 
-## Acknowledging the Reality of Digital Colonialism
+### Acknowledging the Reality of Digital Colonialism
 
 In the past, we too hoped that domestic software could become global platforms.
 But falling behind is falling behind—this is reality.
@@ -54,7 +54,7 @@ Jump to Instagram, and it's still Facebook's; build your own website, and you're
 
 ---
 
-## Conclusion: Misfortune and Fortune Intertwined
+### Conclusion: Misfortune and Fortune Intertwined
 
 In misfortune lies hidden fortune.
 Behind every bearish development lies opportunity for certain emerging individuals or industries.

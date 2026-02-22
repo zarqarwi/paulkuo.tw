@@ -5,8 +5,8 @@ date: 2017-03-03
 pillar: ai
 ---
 
-# The Weight Algorithms Cannot Replace
-## Why We Shouldn't Become Devotees of Scientism
+## The Weight Algorithms Cannot Replace
+### Why We Shouldn't Become Devotees of Scientism
 
 There's a certain fantasy that goes like this:
 
@@ -22,7 +22,7 @@ They are devotees of scientism.
 
 ---
 
-## The Vast Chasm of Decision-Making
+### The Vast Chasm of Decision-Making
 
 From data organization to making a decision is a graduated process.
 The further along you go, the more ambiguous it becomes.
@@ -39,7 +39,7 @@ Scientism's devotees believe that algorithms can bridge the vast chasm from semi
 
 ---
 
-## The True Role of Information Platforms
+### The True Role of Information Platforms
 
 An information platform is a "decision support tool."
 It cannot and should not be a "decision dependency system."
@@ -52,7 +52,7 @@ That platform is either foolish or fraudulent.
 
 ---
 
-## The Essence of Decision-Making Is Pain
+### The Essence of Decision-Making Is Pain
 
 Information asymmetry has never been life's greatest difficulty.
 Life's real challenge is: "making decisions."
@@ -66,7 +66,7 @@ There is no universal formula for happiness.
 
 ---
 
-## Conclusion
+### Conclusion
 
 We all know AI is evolving toward handling unstructured data. But having a system make decisions on our behalf comes at a staggeringly high cost.
 

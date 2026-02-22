@@ -8,8 +8,8 @@ platform: Medium
 readingTime: 4
 ---
 
-# The Trap of Fundamentalism
-## When Faith Becomes Self-Righteousness
+## The Trap of Fundamentalism
+### When Faith Becomes Self-Righteousness
 
 The most dangerous aspect of fundamentalism is not its doctrinal content. It's the obsession with certainty.
 
@@ -19,7 +19,7 @@ Once you believe you possess all truth, you no longer need to listen. You no lon
 
 ---
 
-## The Price of Certainty
+### The Price of Certainty
 
 The Apostle Paul reminds us: "What we now know is limited."
 
@@ -29,7 +29,7 @@ This certainty makes them feel safe, but it also costs them faith's most preciou
 
 ---
 
-## From Judgment to Understanding
+### From Judgment to Understanding
 
 True faith is not an answer but a question. It continuously asks: Have I truly understood? Am I missing something? Have I mistaken my own bias for God's intention?
 
@@ -37,7 +37,7 @@ When faith becomes a process of continuous questioning, it cannot become a weapo
 
 ---
 
-## Conclusion
+### Conclusion
 
 The problem with fundamentalism is not faith itself — it's that it freezes faith.
 

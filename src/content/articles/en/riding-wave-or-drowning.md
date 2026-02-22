@@ -7,8 +7,8 @@ tags: ["疫情衝擊", "時代浪潮", "資產輕量化", "社會流動", "歷�
 readingTime: 4
 ---
 
-# Riding the Wave or Drowning?
-## The Historical Turning Point We're Living Through
+## Riding the Wave or Drowning?
+### The Historical Turning Point We're Living Through
 
 What would it feel like to view the present from the future?
 
@@ -17,7 +17,7 @@ that we are standing on the wave of a great historical epoch.
 
 ---
 
-## Unprecedented Epochal Changes
+### Unprecedented Epochal Changes
 
 Taking inventory of the "firsts" we've personally experienced:
 
@@ -34,7 +34,7 @@ This is the reality we are breathing.
 
 ---
 
-## The Liquid Survival Rule
+### The Liquid Survival Rule
 
 In such a turbulent environment, the old rules have become obsolete.
 

@@ -7,14 +7,14 @@ tags: ["熵與負熵", "中美博弈", "台灣企業", "秩序選擇", "避險�
 readingTime: 5
 ---
 
-# Approaching Negentropy
-## Taiwan Enterprises' Choice of Order in the US-China Competition
+## Approaching Negentropy
+### Taiwan Enterprises' Choice of Order in the US-China Competition
 
 When we assess situations, we're not talking about chaotic news, but structure; not emotions, but "entropy."
 
 ---
 
-## Negentropy: The Essence of Survival
+### Negentropy: The Essence of Survival
 
 In 1944, Schrödinger proposed: life exists because it absorbs "negentropy."
 Entropy represents chaos and disintegration; negentropy represents order, structure, and vitality.
@@ -24,7 +24,7 @@ Our daily decisions and strategies are essentially about "opposing entropy incre
 
 ---
 
-## The US-China Competition Through Anti-Entropy Historical Lens
+### The US-China Competition Through Anti-Entropy Historical Lens
 
 Viewing history through an "anti-entropy historical perspective": whoever creates order dominates network restructuring; whoever falls into chaos becomes the control group.
 
@@ -34,7 +34,7 @@ In semiconductor and biotech industries, the US and China are not just competing
 
 ---
 
-## Taiwan Enterprises' Choice of Order
+### Taiwan Enterprises' Choice of Order
 
 Order equals risk hedging.
 Taiwan enterprises should not choose political sides, but should "choose the side of order."
@@ -48,7 +48,7 @@ Simply put: approach the side of order, stay away from the chaotic end.
 
 ---
 
-## Conclusion: Be a Force of Anti-Entropy
+### Conclusion: Be a Force of Anti-Entropy
 
 When making decisions and choosing partners, ask yourself: is this creating order or consuming energy?
 

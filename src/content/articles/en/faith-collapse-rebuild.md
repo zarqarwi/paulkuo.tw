@@ -5,8 +5,8 @@ date: 2016-02-13
 pillar: faith
 ---
 
-# The Collapse and Rebuilding of Faith
-## Lessons from the 1995 Leap Month Prophecy
+## The Collapse and Rebuilding of Faith
+### Lessons from the 1995 Leap Month Prophecy
 
 The world is cruel.
 To continue believing in a loving God in the face of that cruelty requires enormous depth.
@@ -19,7 +19,7 @@ I call it "instant-noodle faith." Simple, fast, and utterly devoid of nourishmen
 
 ---
 
-## The Cost of the Prophecy Debacle
+### The Cost of the Prophecy Debacle
 
 In 1995, the Taiwan Strait Crisis erupted. Church circles were flooded with prophecies that "China would slaughter Taiwan."
 
@@ -31,7 +31,7 @@ A single erroneous teaching can completely sever faith from life.
 
 ---
 
-## The True Task of Theology
+### The True Task of Theology
 
 If knowledge is dead—if believers remain at the pale declaration of "believe in Jesus and gain eternal life"—then their view of life is a flat plane without history or depth.
 
@@ -41,7 +41,7 @@ Theology isn't a tool. It's the reflective practice within faith. It must evolve
 
 ---
 
-## Conclusion
+### Conclusion
 
 Using language like "homosexuality brought God's judgment" as faith propaganda in the face of natural disasters is utter nonsense.
 

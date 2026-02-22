@@ -7,8 +7,8 @@ tags: ["數據監控", "勞動權益", "評分系統", "新經濟", "社會演�
 readingTime: 4
 ---
 
-# The Cruelty of Quantified Life
-## When Algorithms Become the Ultimate Judge
+## The Cruelty of Quantified Life
+### When Algorithms Become the Ultimate Judge
 
 Taking a taxi this morning.  
 The driver mustered his courage, turned to me and said:
@@ -21,7 +21,7 @@ This is not an isolated case.
 
 ---
 
-## The Underlying Logic of the New Economy
+### The Underlying Logic of the New Economy
 
 I'm reminded of the story of a delivery worker in China.  
 Because a customer gave him a negative review, he broke down crying on the street.  
@@ -39,7 +39,7 @@ They quantify individual work productivity with precision and cold ruthlessness.
 
 ---
 
-## The Total Expansion of Data
+### The Total Expansion of Data
 
 Memes seek embodiment, and data is the new oil.
 

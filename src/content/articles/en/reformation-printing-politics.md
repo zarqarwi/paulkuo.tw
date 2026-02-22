@@ -7,8 +7,8 @@ tags: ["宗教改革", "歷史脈絡", "權力結構", "科技推力", "去神�
 readingTime: 5
 ---
 
-# The Real Context of the Reformation 
-## When Faith Meets Print and Politics
+## The Real Context of the Reformation 
+### When Faith Meets Print and Politics
 
 In 1517, Martin Luther posted his Ninety-Five Theses.
 
@@ -22,7 +22,7 @@ It was a perfect storm of technology and politics.
 
 ---
 
-## Technological Amplification and Political Protection
+### Technological Amplification and Political Protection
 
 Luther's original intention was merely to challenge the Church hierarchy, seeking academic debate on "indulgences."
 
@@ -41,7 +41,7 @@ took shape wrapped in the atmosphere of the printing revolution and power redist
 
 ---
 
-## Indulgences and Crowdfunding
+### Indulgences and Crowdfunding
 
 Strictly speaking, Luther never said indulgences were "absolutely wrong."  
 He simply believed they were insignificant compared to God's grace.
@@ -57,7 +57,7 @@ He never intended to launch a spectacular reformation, much less split the Churc
 
 ---
 
-## Conclusion
+### Conclusion
 
 Once the butterfly spreads its wings, the course of events is no longer controllable.
 

@@ -5,7 +5,7 @@ date: 2022-12-16
 pillar: faith
 ---
 
-# The Arrogance of Elites and the Way Out for Youth
+## The Arrogance of Elites and the Way Out for Youth
 
 Harvard philosopher Michael Sandel put it well:
 The greatest problem with meritocracy isn't the frustration of those who fail.
@@ -17,7 +17,7 @@ Once that logic takes hold, social fracture isn't far behind.
 
 ---
 
-## The Winner's Illusion
+### The Winner's Illusion
 
 Which country you were born in, which family you belong to, whether you had access to a good education, whether your body is healthy—none of these were your choice.
 
@@ -27,7 +27,7 @@ Sandel calls this "the winner's illusion." You think it's merit, but most of it 
 
 ---
 
-## The Unfair Burden on Youth
+### The Unfair Burden on Youth
 
 Under this system, young people bear the heaviest pressure.
 
@@ -37,7 +37,7 @@ But reality tells a different story: housing prices have risen beyond what salar
 
 ---
 
-## Where Is the Way Out?
+### Where Is the Way Out?
 
 Sandel's answer isn't to overturn the system, but to redefine "contribution."
 
@@ -47,7 +47,7 @@ The real way forward isn't making everyone compete for Harvard. It's building a 
 
 ---
 
-## Conclusion
+### Conclusion
 
 The arrogance of elites isn't a personal problem—it's a systemic one.
 When we begin to acknowledge the role of luck and respect different forms of contribution, only then can young people see a real way forward.

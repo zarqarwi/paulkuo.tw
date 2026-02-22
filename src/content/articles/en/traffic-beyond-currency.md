@@ -7,8 +7,8 @@ tags: ["流量經濟", "影響力", "信任關係", "角色定位", "社會責�
 readingTime: 4
 ---
 
-# Traffic Is More Than Currency
-## Social Role and Responsibility Behind Influence
+## Traffic Is More Than Currency
+### Social Role and Responsibility Behind Influence
 
 The world doesn't lack products—it lacks attention. But traffic has more than just monetary expression; it is influence that transmits knowledge and advances civilization.
 Traffic is the quantification of trust relationships.

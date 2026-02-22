@@ -7,8 +7,8 @@ tags: ["認知科學", "專案管理", "商業企劃", "教育實踐", "系統�
 readingTime: 4
 ---
 
-# Systems vs. Intuition
-## Cognitive Construction Behind Business Planning
+## Systems vs. Intuition
+### Cognitive Construction Behind Business Planning
 
 In leading the summer project for the entrepreneurial spirit recognition class,
 I introduced students to "dual-process theory."
@@ -21,7 +21,7 @@ I wanted them to understand that the upcoming project would be a high-tension ac
 
 ---
 
-## The Foundational Logic of Business Websites
+### The Foundational Logic of Business Websites
 
 Four days into the project,
 the websites students have created currently contain only one page with virtually empty content.
@@ -34,7 +34,7 @@ Only by establishing systematic solutions can we eliminate fragmented manual wor
 
 ---
 
-## Reverse Engineering Content from Purpose
+### Reverse Engineering Content from Purpose
 
 Every website has its core mission.
 Educational websites provide knowledge, news websites deliver reports, while our goal is commercial conversion.
@@ -49,7 +49,7 @@ Key propositions that the frontend must clearly address include:
 
 ---
 
-## Conclusion
+### Conclusion
 
 Transforming these business logics into clear pages
 is both a psychological art and a technical discipline.

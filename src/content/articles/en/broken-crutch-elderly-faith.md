@@ -7,8 +7,8 @@ tags: ["世代差異", "信仰反思", "心理寄託", "家庭關係", "謙卑"]
 readingTime: 5
 ---
 
-# Even a Rotten Crutch Provides Support
-## Humbly Facing the Faith of the Elderly Generation
+## Even a Rotten Crutch Provides Support
+### Humbly Facing the Faith of the Elderly Generation
 
 The family home on New Year's Eve is always filled with generational clashes.
 
@@ -23,7 +23,7 @@ Grandmother's expression gradually shifts from pleasant to sour, finally ending 
 
 ---
 
-## Blood Ties Beyond Reason
+### Blood Ties Beyond Reason
 
 The dialogue between generations is destined to have no logical intersection.
 But red envelopes are still given, and red envelopes are still received.
@@ -38,7 +38,7 @@ A rotten crutch, if it still works, is still good.
 
 ---
 
-## Anchors for a Life in Free Fall
+### Anchors for a Life in Free Fall
 
 Since father's departure, my always-dependent mother suddenly lost her sense of direction and purpose.
 She lost almost everything that was her life.
@@ -53,7 +53,7 @@ we young people who fight battles outside, thinking we're pushing the world forw
 
 ---
 
-## Conclusion
+### Conclusion
 
 Humility has never been an easy lesson.
 It contains elements of compromise and surrender.

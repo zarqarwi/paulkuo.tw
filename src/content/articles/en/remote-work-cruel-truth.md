@@ -7,8 +7,8 @@ tags: ["遠距工作", "專案管理", "人性考驗", "數位協作", "紀律"]
 readingTime: 5
 ---
 
-# The Harsh Reality of Remote Work
-## Online Collaboration That Tests Human Nature
+## The Harsh Reality of Remote Work
+### Online Collaboration That Tests Human Nature
 
 The COVID-19 pandemic continues to spread.
 Many companies have been forced to try online work and team operations for the first time.
@@ -18,7 +18,7 @@ But it also has extremely fatal flaws.
 
 ---
 
-## A Thousand Ways to Slack Off
+### A Thousand Ways to Slack Off
 
 Ten years ago, I participated in a publishing project completed through online collaborative work.
 The team was scattered around the world, making online work the only option.
@@ -35,7 +35,7 @@ Put simply: how to be pretentious with skill and not get caught.
 
 ---
 
-## Don't Underestimate Human Nature
+### Don't Underestimate Human Nature
 
 Some question: isn't online work supposed to emphasize flexibility and agility?
 Wouldn't managing too tightly create too much pressure?
@@ -52,7 +52,7 @@ We're not distrusting people—we simply shouldn't underestimate human nature.
 
 ---
 
-## The Four Pillars of Remote Management
+### The Four Pillars of Remote Management
 
 Because I'm too familiar with how to muddle through, the solution isn't difficult.
 

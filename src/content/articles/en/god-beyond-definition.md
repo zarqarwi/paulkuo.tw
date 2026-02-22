@@ -8,8 +8,8 @@ platform: Medium
 readingTime: 5
 ---
 
-# God Beyond Definition
-## Why Theology Needs the Courage of Negation
+## God Beyond Definition
+### Why Theology Needs the Courage of Negation
 
 Humanity has always wanted to define God. We say: God is omnipotent. God is omnibenevolent. God is eternal.
 
@@ -17,7 +17,7 @@ These statements sound solemn and certain. But can they truly capture God?
 
 ---
 
-## The Arrogance of Language
+### The Arrogance of Language
 
 Language is one of humanity's most powerful tools. But when facing Ultimate Reality, language often becomes the greatest obstacle.
 
@@ -27,7 +27,7 @@ Apophatic Theology offers a different path: Rather than saying what God is, say 
 
 ---
 
-## The Courage of Negation
+### The Courage of Negation
 
 Saying "God is not finite" is more honest than saying "God is infinite." Because the former acknowledges our language is limited, while the latter implies we already understand the infinite.
 
@@ -35,7 +35,7 @@ Apophatic theology is not skepticism. It is a deeper faith — faith deep enough
 
 ---
 
-## In an Age Awash with Certainty
+### In an Age Awash with Certainty
 
 Today's religious discourse is filled with certainty. Every denomination claims to possess truth. Every preacher claims to know God's will.
 
@@ -43,6 +43,6 @@ But apophatic theology reminds us: True reverence is silence before God. Not bec
 
 ---
 
-## Conclusion
+### Conclusion
 
 God transcends definition. This is not the end of faith. It is faith's true beginning.

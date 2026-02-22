@@ -7,8 +7,8 @@ tags: ["社群觀察", "知識焦慮", "資訊消費", "價值判斷", "人性�
 readingTime: 4
 ---
 
-# Seeing Ourselves in the Information Flood
-## The Value Spectrum of Social Media Posts
+## Seeing Ourselves in the Information Flood
+### The Value Spectrum of Social Media Posts
 
 Every day we scroll through Facebook.
 What kind of posts make you pause your finger, never getting tired of reading them?
@@ -17,7 +17,7 @@ From personal observation, there are four characteristics.
 
 ---
 
-## Digital Embodiment of Truth, Goodness, and Beauty
+### Digital Embodiment of Truth, Goodness, and Beauty
 
 First type: High knowledge content.
 After reading, you feel like your brain has been upgraded. This is the desire for truth.
@@ -36,7 +36,7 @@ Knowledge is truth, inspiration is goodness, beautiful scenes and people heal bo
 
 ---
 
-## The Noise of ME ME ME
+### The Noise of ME ME ME
 
 On the opposite extreme is another type.
 
@@ -50,7 +50,7 @@ This is each person's individual choice.
 
 ---
 
-## Conclusion
+### Conclusion
 
 Some people's articles, even when algorithms don't push them,
 we still actively click in during spare moments to "eat spiritual food," satisfying our hungry souls.

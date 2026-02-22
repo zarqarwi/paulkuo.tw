@@ -5,8 +5,8 @@ date: 2017-10-23
 pillar: startup
 ---
 
-# Emotions Aren't a Private Matter
-## Why EQ Should Be the Core of Group Education
+## Emotions Aren't a Private Matter
+### Why EQ Should Be the Core of Group Education
 
 When campus tragedies driven by emotional outbursts occur, we always ask: where do these impulsive, explosive emotional reactions come from?
 
@@ -14,7 +14,7 @@ The answer may lie in our narrow definition of education. We reduce education to
 
 ---
 
-## The Blind Spot of the Narcissistic Generation
+### The Blind Spot of the Narcissistic Generation
 
 Today's parents often overlook that making friends is a skill.
 
@@ -26,7 +26,7 @@ This may be connected to the "Me Generation" that now holds the reins of parenti
 
 ---
 
-## The Biological Nature of EQ
+### The Biological Nature of EQ
 
 EQ isn't a personal affair. Knowing how to manage your own feelings doesn't mean you have emotional intelligence.
 
@@ -36,7 +36,7 @@ EQ is a responsiveness cultivated within social groups—the ability to navigate
 
 ---
 
-## Feelings Are Relationships
+### Feelings Are Relationships
 
 If you absolutize personal feelings (ME ME ME), only two extremes remain: either you become a peerless master of taste, or you become someone whose emotions detonate at any moment.
 
@@ -46,7 +46,7 @@ If you live in a vacuum, if you habitually treat anyone less capable as worthles
 
 ---
 
-## Conclusion
+### Conclusion
 
 If we don't treat this as an education problem, we're left debating whether purchasing acid should require ID verification.
 

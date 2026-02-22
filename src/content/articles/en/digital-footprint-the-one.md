@@ -7,8 +7,8 @@ tags: ["AI應用", "數位軌跡", "數據監控", "隱私邊界", "典範轉移
 readingTime: 5
 ---
 
-# Digital Footprints and the Invisible Web
-## When Life is Quietly Taken Over by Algorithms
+## Digital Footprints and the Invisible Web
+### When Life is Quietly Taken Over by Algorithms
 
 After using MOVES and LARK for six months,
 I've discovered that what once required deliberate planning—activity tracking tools—is now being implemented in a completely natural and painless manner.
@@ -21,7 +21,7 @@ In the future, if an app could analyze where I hold meetings and with whom I int
 
 ---
 
-## Algorithms Know You Better Than You Know Yourself
+### Algorithms Know You Better Than You Know Yourself
 
 Life data is already being organized through phones and uploaded to the cloud,
 becoming part of "THE ONE" system.
@@ -37,7 +37,7 @@ we'll witness AI rapidly advancing to replace tedious HR and Team Building work.
 
 ---
 
-## Boiling Frogs in Paradigmatic Transition
+### Boiling Frogs in Paradigmatic Transition
 
 For the internet-native generation, feeding digital traces to the system and letting it understand you is a natural way of life.
 But for humans who once lived in "the age without internet," this creates enormous tension.

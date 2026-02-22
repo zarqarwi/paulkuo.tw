@@ -5,9 +5,9 @@ date: 2026-02-21
 pillar: ai
 ---
 
-# Personal Health Data Infrastructure
+## Personal Health Data Infrastructure
 
-## From 10 Years of Apple Health to AI-Driven Cross Analysis
+### From 10 Years of Apple Health to AI-Driven Cross Analysis
 
 Ten years ago, I didn't deliberately start a health program. I simply kept my phone in my pocket and wore a watch on my wrist, and the days just passed by.
 
@@ -17,7 +17,7 @@ At that moment I realized: we don't lack data—we lack infrastructure.
 
 ---
 
-## Why Build Your Own Analysis System?
+### Why Build Your Own Analysis System?
 
 Mainstream wearable devices each have closed ecosystems and proprietary algorithms, creating two fundamental problems.
 
@@ -29,7 +29,7 @@ To see the full picture requires not another wearable device, but your own analy
 
 ---
 
-## A Decade of Digital Footprints
+### A Decade of Digital Footprints
 
 Since August 2015, my iPhone has continuously recorded my activities. When Apple Watch joined in 2016, heart rate and sleep began being measured more precisely. From 2023, Fitbit became the second wearable device, providing another independent measurement baseline.
 
@@ -41,9 +41,9 @@ Numbers alone carry no emotion. But when annual distributions are laid out, many
 
 ---
 
-## Technical Architecture: Three Data Pipelines
+### Technical Architecture: Three Data Pipelines
 
-### Real-time Pipeline: Fitbit → MCP → Claude
+#### Real-time Pipeline: Fitbit → MCP → Claude
 
 Through Anthropic's MCP (Model Context Protocol), Fitbit API connects directly to Claude Desktop.
 
@@ -51,7 +51,7 @@ Through Anthropic's MCP (Model Context Protocol), Fitbit API connects directly t
 
 **Technical details:** OAuth 2.0 authentication, automatic token refresh. Runs entirely locally, data doesn't pass through third-party servers.
 
-### Deep Pipeline: Apple Health → XML → Structured Analysis
+#### Deep Pipeline: Apple Health → XML → Structured Analysis
 
 Apple doesn't provide Health API for personal use—the only export is manual from iPhone.
 
@@ -59,7 +59,7 @@ Apple doesn't provide Health API for personal use—the only export is manual fr
 
 **Pain point solved:** Apple's sleep divides into Core/Deep/REM three stages, Fitbit divides into Light/Deep/REM. Apple's Core roughly corresponds to Fitbit's Light, but algorithmic determination standards differ. Processing only aligns trend directions, not comparing absolute values.
 
-### Automation Pipeline: CI/CD Continuous Deployment
+#### Automation Pipeline: CI/CD Continuous Deployment
 
 Mac's crontab executes update scripts every 10 minutes, pulling real-time data through Fitbit OAuth API, git push triggers GitHub Actions auto-build, Cloudflare Pages deployment. The health dashboard always stays current, from data generation to website update, fully automated without human intervention.
 
@@ -67,11 +67,11 @@ This isn't showing off. I don't want to occasionally look at charts. I want it t
 
 ---
 
-## What the Data Really Says
+### What the Data Really Says
 
 When ten years of curves overlay, numbers are more honest than feelings.
 
-### Exercise Volume Fluctuations: From Daily Triathlon to Zero
+#### Exercise Volume Fluctuations: From Daily Triathlon to Zero
 
 In 2018, I began participating in triathlon events, at least one per year. Simultaneously joined "Daily Triathlon"—a self-discipline community where you choose one from swimming, cycling, running daily. I most often chose running—lowest barrier, just put on shoes and go out.
 
@@ -81,7 +81,7 @@ GPS track annual distribution recorded this journey: 93 tracks in 2021, 340 in 2
 
 In subsequent years, work transitions, increased responsibilities, structural life changes. I didn't realize I was abandoning recovery cycles. When exercise got squeezed out of the schedule, data shows the body immediately began "debt accumulation."
 
-### Sleep Debt: 33 Consecutive Months Below Target
+#### Sleep Debt: 33 Consecutive Months Below Target
 
 Combining Fitbit (2023/05-2026/02, 883 nights) and Apple Watch (2023/09-2025/12, 537 nights) records: 33 months, not a single month's average reached the recommended 7 hours. Overall average about 5 hours 50 minutes.
 
@@ -89,7 +89,7 @@ One hour less daily, over three years equals over a thousand hours of sleep debt
 
 The trend is more concerning: 2023-2024 around 6 hours, 2025 dropped to 5 hours 41 minutes, Q2 bottomed at 5 hours 16 minutes. Sleep efficiency fell from 83% to 74%. Not just sleeping less—lying longer, but actual sleep proportion increasingly lower. Body resting, nervous system still running.
 
-### HRV and Resting Heart Rate: The Most Honest Indicators
+#### HRV and Resting Heart Rate: The Most Honest Indicators
 
 HRV declined from 42ms in 2023 to 31ms in mid-2025, over 25% decrease. Meanwhile resting heart rate rose from 60 bpm to 72 bpm. Both lines point to the same thing: autonomic nervous system chronically under stress.
 
@@ -97,7 +97,7 @@ This isn't emotional judgment—it's physiological signals. And this is Apple Wa
 
 ---
 
-## Lessons Learned: Data Pipeline Fragility
+### Lessons Learned: Data Pipeline Fragility
 
 In this analysis, I discovered weight data completely discontinued after 2022. The reason was quite mundane: the smart scale broke, and I never replaced it.
 
@@ -109,7 +109,7 @@ Recognizing this fragility is the first step in building sustainable infrastruct
 
 ---
 
-## Practical Device Pairing Recommendations
+### Practical Device Pairing Recommendations
 
 26 months of dual-device overlapping data led to a set of principles: use Fitbit for total sleep duration (high coverage, 25-31 nights monthly), reference Apple Watch for REM sleep (accelerometer detects micro-movements more precisely), only watch trends not absolute values for deep sleep (indicators with greatest algorithmic differences between devices). HRV, resting heart rate, blood oxygen are Apple Watch's unique leading indicators.
 
@@ -117,7 +117,7 @@ Fitbit is the daily tracking workhorse, Apple Watch is the deep health assessmen
 
 ---
 
-## Next Steps: From Observation to Intervention
+### Next Steps: From Observation to Intervention
 
 The next phase of this system isn't adding more charts, but three things: AI anomaly detection (when HRV drops below baseline for three consecutive days, Claude proactively sends intervention recommendations), lifestyle annotation (recording before/after comparisons of intervention behaviors), and more data source integration (Oura Ring temperature, smart blood pressure monitor, body fat scale—each additional pipeline adds another layer of cross-analysis dimensions).
 
@@ -125,7 +125,7 @@ Evolving from "viewing data" to "using data to drive behavioral change"—this i
 
 ---
 
-## Conclusion
+### Conclusion
 
 Ten years of data proved two things.
 

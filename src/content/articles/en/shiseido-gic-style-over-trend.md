@@ -8,8 +8,8 @@ platform: Medium
 readingTime: 4
 ---
 
-# Shiseido GIC's Revelation
-## Style Transcends Trends
+## Shiseido GIC's Revelation
+### Style Transcends Trends
 
 Last year, I visited Shiseido's Global Innovation Center (GIC) in Yokohama.
 
@@ -19,7 +19,7 @@ Beauty isn't put on—it grows from within.
 
 ---
 
-## Inside-Out Aesthetics
+### Inside-Out Aesthetics
 
 Shiseido's R&D philosophy is distinctive.
 
@@ -32,7 +32,7 @@ First the roots, then the flowers.
 
 ---
 
-## Style vs Trends
+### Style vs Trends
 
 Trends are defined by others.
 This year's popular colors, those silhouettes.
@@ -46,7 +46,7 @@ but speaks in simple, quiet ways.
 
 ---
 
-## Insights for Personal Branding
+### Insights for Personal Branding
 
 Building a personal brand works the same way.
 
@@ -62,7 +62,7 @@ isn't trends, but style.
 
 ---
 
-## Conclusion
+### Conclusion
 
 One thing Shiseido GIC taught me:
 Don't ask "What's trending now?"

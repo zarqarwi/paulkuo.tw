@@ -7,8 +7,8 @@ tags: ["產業角色", "建構者", "媒體識讀", "消費主義", "永續生�
 readingTime: 5
 ---
 
-# Refuse to Be a Noisy Follower
-## Survival Choices Among the Five Industry Roles
+## Refuse to Be a Noisy Follower
+### Survival Choices Among the Five Industry Roles
 
 Regardless of which industry you're in, the people within it can roughly be divided into five categories.
 As you enter society, ask yourself: what kind of person do you want to be?
@@ -21,7 +21,7 @@ As you enter society, ask yourself: what kind of person do you want to be?
 
 ---
 
-## Seeing Through the Illusions of Traffic and Volatility
+### Seeing Through the Illusions of Traffic and Volatility
 
 The world is "built," not merely sustained.
 
@@ -33,7 +33,7 @@ Understanding each role's inner agenda prevents us from being easily brainwashed
 
 ---
 
-## Choose to Become a Builder
+### Choose to Become a Builder
 
 For young people, my only advice is:
 Learn to be a Builder.
@@ -44,7 +44,7 @@ If you're always watching from the sidelines, you'll ultimately only learn to "t
 
 ---
 
-## Conclusion: Define Your 21st Century
+### Conclusion: Define Your 21st Century
 
 How you create now determines how you'll live in the future.
 

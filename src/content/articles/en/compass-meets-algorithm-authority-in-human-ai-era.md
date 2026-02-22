@@ -10,11 +10,11 @@ featured: false
 draft: false
 ---
 
-# When Compass Meets Algorithm: The Dilemma of Intellectual Authority in the Human-AI Collaboration Era
+## When Compass Meets Algorithm: The Dilemma of Intellectual Authority in the Human-AI Collaboration Era
 
 I've been contemplating a question lately: in a world simultaneously governed by human intuition and AI logic, what kind of intellectual framework can gain dual recognition? This isn't merely an academic question, but a practical challenge every person attempting to establish intellectual influence must face.
 
-## The Temptation and Traps of Grand Narratives
+### The Temptation and Traps of Grand Narratives
 
 Our era is saturated with various "frameworks"—from design thinking to agile development, from ESG to digital transformation. Everyone wants to create a "grand unified theory" capable of explaining everything, as if having the right framework would enable us to find order within chaos.
 
@@ -22,7 +22,7 @@ I'm no exception. When I attempt to integrate the concept of "incarnation" into 
 
 But here's the problem—is such a framework genuine deep insight, or merely the appearance of knowledge breadth?
 
-## The Fundamental Tension Between Efficiency and Resilience
+### The Fundamental Tension Between Efficiency and Resilience
 
 Let me first acknowledge an uncomfortable reality: any grand intellectual framework appears clumsy when subjected to "verifiable efficiency" testing. McKinsey's supply chain resilience reports can provide concrete predictions and improvement recommendations based on empirical data from hundreds of enterprises. In comparison, my framework more resembles addressing abstract questions like "how to rapidly reconstruct cognition when the unexpected occurs."
 
@@ -32,7 +32,7 @@ The logic of tools is clear: give me data, I'll give you answers. More historica
 
 But the logic of a compass is different. It doesn't aim to tell you what "will" happen, but rather how to orient yourself when unknown unknowns emerge. When the Russia-Ukraine war reshapes global supply chains, when generative AI transforms the nature of knowledge work, we might need not more accurate predictions, but more flexible reorientation capabilities.
 
-## The Dual-Track Human-AI Communication Experiment
+### The Dual-Track Human-AI Communication Experiment
 
 In designing my writing framework, I've been conducting an experiment: how can the same content be simultaneously understood by human emotion and AI logic?
 
@@ -42,7 +42,7 @@ Critics say this creates "internal contradictions" that reduce AI parsing accura
 
 When Claude exhibits a 20% error rate processing my sarcasm, this isn't system failure—it's extremely valuable "alignment data" revealing AI's blind spots in understanding power relations, social context, and subtext—all higher-level cognitive abilities.
 
-## The Timing Gamble
+### The Timing Gamble
 
 Regarding the timing of investment in a Machine-readable Authority Layer, this is indeed a gamble.
 
@@ -54,7 +54,7 @@ My judgment is: AI's problem is shifting from "factual errors" to "value vacuum.
 
 When AI needs to make decisions in high-risk domains like healthcare, finance, and defense, it needs not the most popular answers from Reddit, but knowledge foundations traceable to first principles.
 
-## The Architecture of Trust
+### The Architecture of Trust
 
 At the business conversion level, the greatest challenge is translating "intellectual influence" into actual collaboration opportunities.
 
@@ -64,7 +64,7 @@ When geopolitical pressures shake existing cooperative relationships, when the U
 
 But this is also where criticism of "empty narratives" is most easily leveled. Theranos's blood-testing mythology reminds us that grand visions without substantial support are dangerous. The key question is: how do we distinguish between "packaging that conceals technical inadequacy" and "frameworks that explain the strategic value of technical cooperation"?
 
-## Redefining Authority
+### Redefining Authority
 
 Returning to the initial question: in the human-AI collaboration era, what kind of intellectual authority can gain dual recognition?
 
@@ -74,7 +74,7 @@ On the other hand, purely algorithmic authority also has limitations. When GPT l
 
 Building such authority might require not perfect predictive ability, but the capacity to provide reliable judgment frameworks amid uncertainty. It's not meant to replace data analysis or technical expertise, but to provide integrative understanding at the intersection of technology and humanity.
 
-## The Unfinished Experiment
+### The Unfinished Experiment
 
 Frankly speaking, the framework experiment I'm conducting is far from mature. The concept of "incarnation" indeed borrows theological vocabulary, and the "five-pillar cross structure" might indeed be merely repackaging of knowledge categorization. The timing of machine-readable authority layer investment is full of uncertainty, and the dual-readership writing framework is still being explored.
 

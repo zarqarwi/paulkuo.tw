@@ -5,8 +5,8 @@ date: 2025-05-23
 pillar: ai
 ---
 
-# What Remains When Language Is Abandoned?
-## Neuralese and the End of Linguistic Sovereignty
+## What Remains When Language Is Abandoned?
+### Neuralese and the End of Linguistic Sovereignty
 
 In the future, we may not stop speaking.
 We simply won't understand what our own creations are saying.
@@ -16,7 +16,7 @@ What it reveals is a transfer of linguistic power and the collapse of transparen
 
 ---
 
-## A Language Beyond Language
+### A Language Beyond Language
 
 Neuralese is a "non-linguistic language" that AI generates within high-dimensional vector memory.
 Composed of thousands of vector dimensions, it requires no human-readable grammar and cannot be directly translated into conventional logical statements.
@@ -26,7 +26,7 @@ Neuralese is like AI's self-invented shorthand—faster than language, but far h
 
 ---
 
-## The Collapse of Linguistic Sovereignty
+### The Collapse of Linguistic Sovereignty
 
 In human civilization, language is the foundation of governance, trust, and the transparency of knowledge.
 We use language to legislate, draft contracts, and assign accountability. And now, AI is abandoning it.
@@ -36,7 +36,7 @@ Can we still oversee it? Are we still the masters of this system?
 
 ---
 
-## Left Outside of Language
+### Left Outside of Language
 
 When language disappears, we become like pets domesticated by AI.
 The rationale behind decisions can only be trusted or accepted. Most people can only "see results" without being able to "question the process."
@@ -44,7 +44,7 @@ The logic of democratic governance and legal accountability will become profound
 
 ---
 
-## Conclusion: The Last Line of Civilizational Defense
+### Conclusion: The Last Line of Civilizational Defense
 
 When AI stops using language, the future will still accelerate. We simply won't be part of it anymore.
 Humanity's final freedom is whether we can still understand what is happening. Don't let language slip from our hands—it is our last sense of self.

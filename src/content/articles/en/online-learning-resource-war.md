@@ -7,8 +7,8 @@ tags: ["遠距教學", "停課不停學", "教育資源", "自主管理", "疫�
 readingTime: 5
 ---
 
-# The Harsh Trial of Continuous Learning During School Closures
-## A Resource War from Parents' Perspective
+## The Harsh Trial of Continuous Learning During School Closures
+### A Resource War from Parents' Perspective
 
 When the Ministry of Education announced the extension of winter break and launched online learning,
 some said: "Isn't it easier not having to go to school?"
@@ -17,7 +17,7 @@ This is truly the most serious misunderstanding of online learning.
 
 ---
 
-## Online Cannot Replace Offline
+### Online Cannot Replace Offline
 
 Adopting online learning for pandemic prevention is a reluctant compromise.
 It's not stumbling upon a vacation, much less discovering a superior learning method.
@@ -32,7 +32,7 @@ Those claims touting online learning as superior to physical learning are comple
 
 ---
 
-## A Naked Resource Game
+### A Naked Resource Game
 
 Online learning during the pandemic is a brutal war of resource consumption.
 
@@ -45,7 +45,7 @@ A naked competition of who has more resources and bigger fists.
 
 ---
 
-## Parents' Self-Management Strategies
+### Parents' Self-Management Strategies
 
 Facing online learning, parents cannot simply dump responsibility on schools and software.
 We must establish our own management mechanisms:
@@ -56,7 +56,7 @@ We must establish our own management mechanisms:
 
 ---
 
-## Conclusion
+### Conclusion
 
 Do not depend on the enemy not coming; depend on having the means to deal with them.
 

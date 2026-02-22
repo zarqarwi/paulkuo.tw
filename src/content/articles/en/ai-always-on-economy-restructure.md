@@ -7,8 +7,8 @@ tags: ["AI經濟", "全天候運作", "組織重構", "人機協作", "MCP"]
 readingTime: 5
 ---
 
-# The Always-On Economy in the AI Era
-## From Human Labor Sustaining to Intelligent Collaboration
+## The Always-On Economy in the AI Era
+### From Human Labor Sustaining to Intelligent Collaboration
 
 Reading a *Wall Street Journal* article exploring AI-driven always-on economy,
 a question emerged in my mind:
@@ -19,7 +19,7 @@ But that efficiency was limited, risk-laden, and couldn't truly scale.
 
 ---
 
-## AI Makes Always-On an Instinct
+### AI Makes Always-On an Instinct
 
 AI changes everything fundamentally.
 
@@ -31,7 +31,7 @@ This isn't just efficiency upgrades, but a comprehensive shift in work rhythm, d
 
 ---
 
-## Three Essential Layers of Reconstruction
+### Three Essential Layers of Reconstruction
 
 The future success of organizations won't depend on "who uses it more skillfully."
 But on who can first complete these three layers of reconstruction:
@@ -45,7 +45,7 @@ But creating an environment where AI can breathe freely.
 
 ---
 
-## Conclusion: Civilization's Boundary Has Taken Shape
+### Conclusion: Civilization's Boundary Has Taken Shape
 
 Underlying protocols like MCP (Modular Context Protocol) are making AI into infrastructure as fundamental as hardware slots.
 

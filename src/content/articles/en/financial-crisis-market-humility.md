@@ -5,8 +5,8 @@ date: 2017-10-31
 pillar: life
 ---
 
-# Awe Before the Unknown Tide
-## Market Lessons a Decade After the Financial Crisis
+## Awe Before the Unknown Tide
+### Market Lessons a Decade After the Financial Crisis
 
 A decade after the financial crisis. Taiwan's stock index hit a five-year high.
 
@@ -16,7 +16,7 @@ This wasn't unique to one market. U.S. equities across the Pacific and South Kor
 
 ---
 
-## The Twin Fuels of Capital and Outlook
+### The Twin Fuels of Capital and Outlook
 
 What drives the market upward? Future expectations and capital with nowhere else to go.
 
@@ -26,7 +26,7 @@ Central banks around the world have been printing money furiously. Excess liquid
 
 ---
 
-## Humility Before Market Shifts
+### Humility Before Market Shifts
 
 Markets change too fast. We possess too much knowledge, yet too little true understanding.
 

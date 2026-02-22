@@ -7,8 +7,8 @@ tags: ["穀倉效應", "組織僵化", "業務開發", "跨界溝通", "資訊�
 readingTime: 5
 ---
 
-# Overcoming Organizational Rigidity
-## Business Development as Silo-Breaking
+## Overcoming Organizational Rigidity
+### Business Development as Silo-Breaking
 
 We divide labor to accomplish tasks.
 Yet excessive division of labor slows organizational progress, even leading to collapse.
@@ -23,7 +23,7 @@ The less transparent information becomes, the more systems tend toward rigidity 
 
 ---
 
-## The Cost of Information Transparency
+### The Cost of Information Transparency
 
 Making information flow within and beyond organizations requires paying a price:
 
@@ -36,7 +36,7 @@ They understand different domains and blend people with different expertise toge
 
 ---
 
-## Identifying Silos: Two Scenarios
+### Identifying Silos: Two Scenarios
 
 In practical negotiations, when do you realize the other party is a "silo"?
 
@@ -54,7 +54,7 @@ When encountering these two situations, exercise extreme caution in managing neg
 
 ---
 
-## Solutions Beyond Organization
+### Solutions Beyond Organization
 
 Transcend organization to break organization.
 

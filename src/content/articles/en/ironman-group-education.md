@@ -7,8 +7,8 @@ tags: ["群育", "團隊合作", "教育反思", "鐵人三項", "組織協作"]
 readingTime: 5
 ---
 
-# The End of the Lone Wolf
-## Seeing True Teamwork Through the Lens of Triathlon
+## The End of the Lone Wolf
+### Seeing True Teamwork Through the Lens of Triathlon
 
 After participating in the Meihua Lake triathlon event,
 I deeply realized that sports are not merely individual extreme challenges, but the embodiment of team spirit.
@@ -17,7 +17,7 @@ What we call "group education" is actually education that finds true implementat
 
 ---
 
-## One Person Quits, The Whole Team Fails
+### One Person Quits, The Whole Team Fails
 
 From the rules of triathlon relay races: if one person drops out, the entire team's efforts are declared void.
 
@@ -27,7 +27,7 @@ This experience of being a community of shared destiny is crucial for children's
 
 ---
 
-## The End of the Lone Wolf Era
+### The End of the Lone Wolf Era
 
 As a graduate from Taiwan's top universities (台清交) and member of the privileged class,
 I've seen too many lone wolves who are self-righteous yet consistently do more harm than good.
@@ -46,7 +46,7 @@ Therefore, the educational significance carried by exercising together far excee
 
 ---
 
-## Practical Advice for Triathlon Rookies
+### Practical Advice for Triathlon Rookies
 
 Returning to the race itself, here are some hard-earned insights to share:
 

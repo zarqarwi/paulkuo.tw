@@ -5,8 +5,8 @@ date: 2020-03-13
 pillar: ai
 ---
 
-# Lessons from the Crash
-## Knowing What You Don't Know Is the Bottom Line of Survival
+## Lessons from the Crash
+### Knowing What You Don't Know Is the Bottom Line of Survival
 
 U.S. markets opened with a plunge. Trading was halted. The Dow Jones Industrial Average crashed by two thousand points—more violent than even the financial crisis a decade earlier.
 
@@ -14,7 +14,7 @@ It all stemmed from the global spread of COVID-19.
 
 ---
 
-## When Experience Fails
+### When Experience Fails
 
 We habitually use the known to probe the unknown—using past experience to judge future events. This is the natural operating mode of the human brain.
 
@@ -24,7 +24,7 @@ None of these had ever happened before.
 
 ---
 
-## The Wisdom of Embracing "I Don't Know"
+### The Wisdom of Embracing "I Don't Know"
 
 Philosopher Karl Popper said: "If a theory can be falsified, it is science."
 
@@ -36,7 +36,7 @@ I genuinely cannot read this situation. But precisely because I know "I don't kn
 
 ---
 
-## Conclusion
+### Conclusion
 
 Never underestimate the complexity of the world. Reality is always more treacherous than what we can detect.
 

@@ -7,8 +7,8 @@ tags: ["同婚釋憲", "神學反省", "文本詮釋", "信仰邊界", "文化�
 readingTime: 6
 ---
 
-# Closed Texts and an Open World
-## A Faith Reflection on the Same-Sex Marriage Constitutional Ruling
+## Closed Texts and an Open World
+### A Faith Reflection on the Same-Sex Marriage Constitutional Ruling
 
 When Constitutional Interpretation No. 748 on "Marriage Freedom for Same-Sex Couples" was announced,
 as a Christian who has studied theology and once intended to pursue ordained ministry, my feelings were deeply mixed.
@@ -21,7 +21,7 @@ But the root of the problem lies in how we view "truth."
 
 ---
 
-## Textual Closure and the Trap of Literalism
+### Textual Closure and the Trap of Literalism
 
 Many evangelical believers uphold biblical truth, believing that the canon is closed.
 All of life's answers—from relationships and finances to politics—can be found in these sixty-six books.
@@ -39,7 +39,7 @@ You cannot directly derive the most suitable modern marriage or political system
 
 ---
 
-## Cultural Context and Communal Imagination
+### Cultural Context and Communal Imagination
 
 Before the Scientific Revolution, the world was simple, and religious leaders provided all knowledge.
 But after the Enlightenment, we should possess the ability to analyze the social foundations of texts.
@@ -52,7 +52,7 @@ Christianity's canon is itself a cultural product filled with dialectics and con
 
 ---
 
-## Conclusion: The Leap of Faith
+### Conclusion: The Leap of Faith
 
 If we don't adjust our framework for understanding truth, how can the church dialogue with the world?
 

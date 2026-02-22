@@ -7,8 +7,8 @@ tags: ["數位協作", "API生態系", "合作競爭", "資源整合", "典範�
 readingTime: 4
 ---
 
-# Digital Collaboration Through Cycling Tracks
-## No Company Can Go It Alone
+## Digital Collaboration Through Cycling Tracks
+### No Company Can Go It Alone
 
 I went on a ride around the North Coast with friends.
 A 62-kilometer route, and I turned the exercise data into a video.
@@ -24,7 +24,7 @@ actually reveals an extremely profound business reality.
 
 ---
 
-## Cooperation Beats Competition
+### Cooperation Beats Competition
 
 The interplay and dialogue between software has become incredibly dense.
 
