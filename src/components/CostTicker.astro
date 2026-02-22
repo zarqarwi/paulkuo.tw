@@ -59,6 +59,22 @@ const last7Total = last7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
 const prev7Total = prev7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
 const changePercent = prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0;
 
+// Stock price data
+let stockName = '';
+let stockPrice = 0;
+let stockChange = 0;
+let stockCurrency = '';
+const stockPath = join(process.cwd(), 'data', 'stock.json');
+if (existsSync(stockPath)) {
+  try {
+    const stock = JSON.parse(readFileSync(stockPath, 'utf-8'));
+    stockName = stock.name || '';
+    stockPrice = stock.price || 0;
+    stockChange = stock.changePercent || 0;
+    stockCurrency = stock.currency || 'JPY';
+  } catch {}
+}
+
 // AI collaboration time (from Timing App data)
 let aiHoursToday = 0;
 let aiHoursMonth = 0;
@@ -134,6 +150,18 @@ const tickerData = JSON.stringify({
         <span class="ticker-value">{aiHoursToday}h</span>
         <span class="ticker-sub">月{aiHoursMonth}h</span>
       </div>
+      {stockPrice > 0 && (
+        <>
+          <div class="ticker-sep"></div>
+          <div class="ticker-item">
+            <span class="ticker-label">📈 {stockName}</span>
+            <span class="ticker-value">¥{stockPrice.toLocaleString()}</span>
+            <span class={`ticker-change ${stockChange >= 0 ? 'up' : 'down'}`}>
+              {stockChange >= 0 ? '▲' : '▼'} {Math.abs(stockChange).toFixed(1)}%
+            </span>
+          </div>
+        </>
+      )}
     </div>
   ) : (
     <div class="ticker-inner ticker-empty">
