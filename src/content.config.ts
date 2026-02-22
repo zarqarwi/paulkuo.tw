@@ -5,6 +5,7 @@ const articleSchema = z.object({
   title: z.string(),
   subtitle: z.string().optional(),
   description: z.string(),
+  abstract: z.string().optional(),
   date: z.coerce.date(),
   updated: z.coerce.date().optional(),
   pillar: z.enum(['ai', 'circular', 'faith', 'startup', 'life']),

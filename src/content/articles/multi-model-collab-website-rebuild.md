@@ -1,6 +1,7 @@
 ---
 title: "多模型實作：讓 Claude 與 Gemini 聯手，把網站重構成可被人讀也可被 AI 讀"
 description: "透過 Claude 與 Gemini 的多模型認知協作，重建個人網站的排版秩序、語意結構與機器可讀性。導入 WebMCP 標準，讓網站從被動展示進化為可被 AI Agent 調用的知識節點。"
+abstract: "本文記錄以 Claude 與 Gemini 雙模型認知協作框架重建個人網站 paulkuo.tw 的完整實踐。核心方法是讓 Claude 負責產出與架構、Gemini 負責質疑與驗證，作者定義需求與秩序標準，形成半人馬模式工作流程。具體成果包括：語意化 HTML 結構（article/section/aside）、JSON-LD @graph 結構化資料、llms.txt AI 站點說明書、四語系自動翻譯 pipeline、以及符合 WebMCP 標準的機器可讀知識節點。這不只是技術重構，更是對『個人網站在 AI 時代應該扮演什麼角色』的回答——從被動展示轉向可被 AI Agent 調用的結構化知識基礎設施。"
 date: 2026-02-22
 pillar: ai
 tags: ["多模型協作", "WebMCP", "人機協作", "Claude", "Gemini", "語意化HTML", "知識管理"]

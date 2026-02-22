@@ -17,7 +17,7 @@ const { article, lang } = Astro.props;
 const L = LANGUAGES[lang];
 const basePath = L.pathPrefix || '';
 const { Content } = await render(article);
-const { title, subtitle, description, date, updated, pillar, tags, readingTime } = article.data;
+const { title, subtitle, description, abstract, date, updated, pillar, tags, readingTime } = article.data;
 const p = PILLAR_MAP[pillar];
 const dateStr = date.toLocaleDateString(L.dateLocale, L.dateOptions);
 const articleUrl = `${SITE.url}${basePath}/articles/${article.id.replace(/\.md$/, '')}`;
@@ -39,7 +39,7 @@ const schemaJson = JSON.stringify({
       "@id": `${articleUrl}#article`,
       "headline": title,
       "description": description,
-      "abstract": description,
+      "abstract": abstract || description,
       "datePublished": date.toISOString().split('T')[0],
       "dateModified": (updated || date).toISOString().split('T')[0],
       "inLanguage": L.code,

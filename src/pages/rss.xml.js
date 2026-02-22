@@ -17,7 +17,7 @@ export async function GET(context) {
       return {
         title: article.data.title,
         pubDate: article.data.date,
-        description: article.data.description,
+        description: article.data.abstract || article.data.description,
         link: `/articles/${slug}/`,
         categories: [pillar.label, ...(article.data.tags || [])],
         // Include full content for RAG systems
