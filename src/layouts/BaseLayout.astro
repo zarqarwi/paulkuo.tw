@@ -240,5 +240,115 @@ const isArticlePage = pathname.includes('/articles/');
       updateProgress();
     })();
   </script>
+  <!-- WebMCP Imperative API: Register tools for AI agents -->
+  <script>
+    (function() {
+      if (!('modelContext' in navigator)) return;
+
+      // Tool 1: Search articles by keyword
+      navigator.modelContext.registerTool(
+        'search_paul_articles',
+        'Search Paul Kuo\'s blog articles by keyword or topic. Returns matching articles with title, description, pillar category, and direct URL. Paul writes about AI & Order, Circular Economy, Civilization & Human Nature, Creation & Enterprise, and Reflections & Memory.',
+        {
+          keyword: { type: 'string', description: 'The topic or keyword to search for (supports Chinese and English)' }
+        },
+        async function(args) {
+          try {
+            const res = await fetch('/api/search-index.json');
+            const articles = await res.json();
+            const q = (args.keyword || '').toLowerCase();
+            const matches = articles.filter(a =>
+              a.title.toLowerCase().includes(q) ||
+              a.description.toLowerCase().includes(q) ||
+              a.tags.some(t => t.toLowerCase().includes(q)) ||
+              a.pillarLabel.includes(args.keyword)
+            ).slice(0, 10);
+
+            if (matches.length === 0) {
+              return {
+                content: [{ type: 'text', text: `No articles found for "${args.keyword}". Paul\'s main topics: AI, circular economy, semiconductor, theology, startup.` }]
+              };
+            }
+
+            const list = matches.map(a =>
+              `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.pillarLabel}, ${a.date})`
+            ).join('\n');
+
+            return {
+              content: [{ type: 'text', text: `Found ${matches.length} article(s) about "${args.keyword}":\n${list}` }]
+            };
+          } catch (e) {
+            return { content: [{ type: 'text', text: 'Search temporarily unavailable.' }] };
+          }
+        }
+      );
+
+      // Tool 2: Get Paul's profile summary
+      navigator.modelContext.registerTool(
+        'get_paul_profile',
+        'Get Paul Kuo\'s professional profile, background, and expertise areas. Returns a structured summary suitable for introductions or context.',
+        {},
+        async function() {
+          return {
+            content: [{ type: 'text', text: JSON.stringify({
+              name: 'Paul Kuo 郭曜郎',
+              title: 'Commercial Integration & AI Digital Development Director',
+              organization: 'SDTI 佳龍科技',
+              location: 'Taiwan',
+              languages: ['Chinese (Native)', 'English', 'Japanese'],
+              expertise: [
+                'Circular Economy & Urban Mining (20+ years)',
+                'AI Systems & Agentic Architecture',
+                'Taiwan-Japan Semiconductor Cooperation',
+                'PCB Metal Recovery',
+                'Theology & Human Nature'
+              ],
+              background: 'Theological training (15 years) + serial entrepreneurship (AppWorks, 厚生市集, 半畝塘). Operates as a "super individual" using AI tools to accomplish team-scale tasks.',
+              website: 'https://paulkuo.tw',
+              contact: 'paul@lasaas.com',
+              social: {
+                linkedin: 'https://linkedin.com/in/paulkuo',
+                x: 'https://x.com/zarqarwi',
+                threads: 'https://threads.net/@zarqarwi'
+              }
+            }, null, 2) }]
+          };
+        }
+      );
+
+      // Tool 3: Browse articles by pillar
+      navigator.modelContext.registerTool(
+        'browse_by_pillar',
+        'Browse Paul Kuo\'s articles filtered by content pillar: ai (智能與秩序), circular (循環再利用), faith (文明與人性), startup (創造與建構), life (沉思與記憶).',
+        {
+          pillar: { type: 'string', description: 'Pillar key: ai, circular, faith, startup, or life' }
+        },
+        async function(args) {
+          try {
+            const res = await fetch('/api/search-index.json');
+            const articles = await res.json();
+            const matches = articles.filter(a => a.pillar === args.pillar).slice(0, 10);
+
+            if (matches.length === 0) {
+              return {
+                content: [{ type: 'text', text: `No articles found for pillar "${args.pillar}". Valid pillars: ai, circular, faith, startup, life.` }]
+              };
+            }
+
+            const label = matches[0].pillarLabel;
+            const list = matches.map(a =>
+              `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.date})`
+            ).join('\n');
+
+            return {
+              content: [{ type: 'text', text: `${label} — ${matches.length} article(s):\n${list}` }]
+            };
+          } catch (e) {
+            return { content: [{ type: 'text', text: 'Browse temporarily unavailable.' }] };
+          }
+        }
+      );
+    })();
+  </script>
 </body>
 </html>
