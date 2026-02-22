@@ -21,6 +21,14 @@ log() { echo "[$TS] $1" >> "$LOG"; }
 log "=== Start ==="
 cd "$REPO" || { log "ERROR: cd failed"; exit 1; }
 
+# Always sync with remote first to avoid push conflicts
+git pull --rebase origin main >> "$LOG" 2>&1 || {
+    log "WARN: git pull --rebase failed, resetting to origin/main"
+    git rebase --abort >> "$LOG" 2>&1
+    git fetch origin >> "$LOG" 2>&1
+    git reset --hard origin/main >> "$LOG" 2>&1
+}
+
 # --- Snapshot before (for significant change detection) ---
 OLD_STEPS=""
 OLD_AI=""
