@@ -65,3 +65,5 @@
 {"timestamp":"2026-02-21T17:13:33.972Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":4141,"outputTokens":3682,"costUSD":0.067653,"costTWD":2.2,"note":""}
 {"timestamp":"2026-02-22T05:58:57.143Z","service":"anthropic","model":"claude-sonnet","action":"social-summary","source":"publish-social","inputTokens":1411,"outputTokens":1795,"costUSD":0.031158,"costTWD":1.01,"note":""}
 {"timestamp":"2026-02-22T05:59:13.916Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"publish-social","inputTokens":0,"outputTokens":0,"costUSD":0.04,"costTWD":1.3,"note":"AI Agent 規劃指引：從任務工具到能動夥伴的實戰指南"}
+{"timestamp":"2026-02-22T06:35:38.044Z","service":"anthropic","model":"claude-sonnet","action":"social-summary","source":"publish-social","inputTokens":1293,"outputTokens":2185,"costUSD":0.036654,"costTWD":1.19,"note":""}
+{"timestamp":"2026-02-22T06:35:56.018Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"publish-social","inputTokens":0,"outputTokens":0,"costUSD":0.04,"costTWD":1.3,"note":"AI 2027：當超級智慧不再是遠方科幻，而是地緣秩序的催化劑"}
