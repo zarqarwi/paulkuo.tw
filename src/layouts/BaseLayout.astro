@@ -171,31 +171,14 @@ const isArticlePage = pathname.includes('/articles/');
       let ticking = false;
       const SCROLL_THRESHOLD = 8; // min px to trigger hide/show
 
-      const ticker = document.getElementById('globalTicker');
-
       const updateNav = () => {
         const currentScrollY = window.scrollY;
-        const delta = currentScrollY - lastScrollY;
 
         // Add shadow when scrolled past top
         if (currentScrollY > 10) {
           nav.classList.add('nav-scrolled');
         } else {
           nav.classList.remove('nav-scrolled');
-        }
-
-        // Hide/show based on scroll direction
-        if (Math.abs(delta) > SCROLL_THRESHOLD) {
-          if (delta > 0 && currentScrollY > 120) {
-            // Scrolling down & past hero area
-            nav.classList.add('nav-hidden');
-            if (ticker) ticker.classList.add('ticker-hidden');
-          } else {
-            // Scrolling up
-            nav.classList.remove('nav-hidden');
-            if (ticker) ticker.classList.remove('ticker-hidden');
-          }
-          lastScrollY = currentScrollY;
         }
 
         ticking = false;
