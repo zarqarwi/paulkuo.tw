@@ -88,6 +88,8 @@ const isArticlePage = pathname.includes('/articles/');
   <link rel="stylesheet" href="/styles/global.css">
   {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
   <slot name="head" />
+  <!-- WebMCP: AI agent tool registration (progressive enhancement) -->
+  <script src="/webmcp.js" defer></script>
 </head>
 <body>
   <!-- Reading Progress Bar (article pages only) -->
