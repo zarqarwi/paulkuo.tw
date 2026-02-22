@@ -24,14 +24,31 @@ const basePath = L.pathPrefix || '';
 
 const blogSchema = JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": L.blogTitle,
-  "description": L.blogDesc,
-  "url": `${SITE.url}${basePath}/blog`,
-  "inLanguage": L.code,
-  "isPartOf": { "@id": `${SITE.url}/#website` },
-  "author": { "@id": `${SITE.url}/#person` },
-  "numberOfItems": articles.length,
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${SITE.url}${basePath}/blog#page`,
+      "name": L.blogTitle,
+      "description": L.blogDesc,
+      "url": `${SITE.url}${basePath}/blog`,
+      "inLanguage": L.code,
+      "isPartOf": { "@id": `${SITE.url}/#website` },
+      "author": { "@id": `${SITE.url}/#person` },
+      "mainEntity": { "@id": `${SITE.url}${basePath}/blog#list` }
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${SITE.url}${basePath}/blog#list`,
+      "name": L.blogTitle,
+      "numberOfItems": articles.length,
+      "itemListElement": articles.slice(0, 30).map((article, idx) => ({
+        "@type": "ListItem",
+        "position": idx + 1,
+        "url": `${SITE.url}${basePath}/articles/${article.id.replace(/\.md$/, '')}`,
+        "name": article.data.title
+      }))
+    }
+  ]
 });
 ---
 

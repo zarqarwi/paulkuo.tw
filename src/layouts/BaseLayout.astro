@@ -78,6 +78,7 @@ const isArticlePage = pathname.includes('/articles/');
   {hreflangs.map(h => (
     <link rel="alternate" hreflang={h.lang} href={h.href} />
   ))}
+  <link rel="alternate" type="application/rss+xml" title="Paul Kuo RSS Feed" href="/rss.xml">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" href="/favicon.png" sizes="192x192">
   <link rel="apple-touch-icon" href="/favicon.png">
