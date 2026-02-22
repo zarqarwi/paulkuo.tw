@@ -7,6 +7,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import { LANGUAGES, type LangKey } from '../i18n';
+import { getArticleEntities } from '../utils/entities';
 
 interface Props {
   article: any;
@@ -32,6 +33,9 @@ const wordCount = rawBody.length > 0
     ? rawBody.split(/\s+/).length
     : Math.ceil(rawBody.replace(/\s+/g, '').length / 1.5))  // CJK approximation
   : undefined;
+
+// Entity linking: auto-detect mentioned entities from tags + body
+const articleEntities = getArticleEntities(tags || [], rawBody, pillar);
 
 const schemaJson = JSON.stringify({
   "@context": "https://schema.org",
@@ -63,7 +67,16 @@ const schemaJson = JSON.stringify({
       "keywords": tags,
       ...(wordCount && { "wordCount": wordCount }),
       ...(readingTime && { "timeRequired": `PT${readingTime}M` }),
-      "image": ogImageUrl
+      "image": ogImageUrl,
+      ...(articleEntities.length > 0 && {
+        "mentions": articleEntities.map(e => ({
+          "@type": e['@type'],
+          "name": e.name,
+          ...(e.url && { "url": e.url }),
+          ...(e.sameAs && { "sameAs": e.sameAs }),
+          ...(e.description && { "description": e.description }),
+        }))
+      })
     },
     {
       "@type": "BreadcrumbList",
