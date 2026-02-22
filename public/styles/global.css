@@ -247,17 +247,17 @@ main { padding-top: var(--nav-height); }
 .btn-secondary:hover { border-color: var(--brand-navy); background: rgba(27,45,79,0.03); }
 
 .hero-visual { display: flex; justify-content: center; align-items: center; }
-.hero-card-stack { position: relative; width: 420px; height: 460px; }
+.hero-card-stack { position: relative; width: 380px; height: 440px; }
 .hero-card {
-  position: absolute; width: 320px;
+  position: absolute; width: 280px;
   background: var(--bg-card); border-radius: var(--radius-lg);
   padding: 28px; box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-light);
   transition: transform 0.4s cubic-bezier(0.23,1,0.32,1);
 }
-.hero-card:nth-child(1) { top: 0; left: 10px; transform: rotate(-2deg); z-index: 3; }
-.hero-card:nth-child(2) { top: 40px; left: 50px; transform: rotate(1.5deg); z-index: 2; }
-.hero-card:nth-child(3) { top: 80px; left: 25px; transform: rotate(-1deg); z-index: 1; }
+.hero-card:nth-child(1) { top: 0; left: 20px; transform: rotate(-2deg); z-index: 3; }
+.hero-card:nth-child(2) { top: 40px; left: 60px; transform: rotate(1.5deg); z-index: 2; }
+.hero-card:nth-child(3) { top: 80px; left: 35px; transform: rotate(-1deg); z-index: 1; }
 .hero-card-stack:hover .hero-card:nth-child(1) { transform: rotate(-3deg) translateY(-8px); }
 .hero-card-stack:hover .hero-card:nth-child(2) { transform: rotate(2deg) translateX(8px); }
 .hero-card-label {
@@ -267,6 +267,11 @@ main { padding-top: var(--nav-height); }
 }
 .hero-card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; font-family: var(--font-cjk); }
 .hero-card-meta { margin-top: 14px; font-size: 0.75rem; color: var(--text-muted); }
+
+/* Hide duplicate title/subtitle in article body (already shown in header) */
+.article-body > h1:first-child { display: none; }
+.article-body > h1:first-child + h2 { display: none; }
+.article-body > h1:first-child + h2 + hr { display: none; }
 
 /* ===== MANIFESTO ===== */
 .manifesto { background: var(--brand-navy); color: #fff; position: relative; overflow: hidden; }
