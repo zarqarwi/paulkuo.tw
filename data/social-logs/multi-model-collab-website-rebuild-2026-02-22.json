@@ -1,0 +1,16 @@
+{
+  "slug": "multi-model-collab-website-rebuild",
+  "title": "多模型實作：讓 Claude 與 Gemini 聯手，把網站重構成可被人讀也可被 AI 讀",
+  "url": "https://paulkuo.tw/articles/multi-model-collab-website-rebuild",
+  "summaries": {
+    "X": "終於完成個人網站！不是用一鍵生成工具，而是讓 Claude 與 Gemini 協作重構。重點不只是視覺，而是建立真正的秩序：中文排版的重量感、機器可讀的語意結構、導入 WebMCP 讓 AI 能精準理解內容。從「人類閱讀」走向「人機共讀」的時代已來臨 🤖 #AI協作 #WebMCP https://paulkuo.tw/articles/multi-model-collab-website-rebuild",
+    "LI": "剛完成一個有趣的實驗：用 Claude 與 Gemini 多模型協作重建個人網站。\n\n這不是技術炫技，而是對一個根本問題的回應：當 AI 內容即將淹沒網路時，我們如何確保真正有價值的內容能被準確理解？\n\n我發現「一鍵生成」工具雖然高效，但常常帶來失序：英式排版硬套中文、語意結構混亂、缺乏機器可讀性。所以這次我採用多模型認知協作框架：Claude 負責產出與架構，Gemini 負責質疑與驗證，我負責定義需求與秩序標準。\n\n重點成果包括：1) 重新定義繁體中文專屬排版規則，讓文字回到紙本專欄的沉靜感；2) 建立嚴謹的語意化 HTML 與 JSON-LD 結構，讓 AI Agent 能精準解析；3) 導入 WebMCP 標準，讓網站從被動展示進化為可被調用的知識節點。\n\n我們正走向「人機共讀」的時代。拒絕 AI 沒用，盲從單一 AI 也無效。關鍵是掌握「定義秩序」的主導權，利用多重智慧互相校對，確保技術為真正的價值服務。\n\nhttps://paulkuo.tw/articles/multi-model-collab-website-rebuild",
+    "TH": "花了過年假期用 Claude + Gemini 重做網站 🤝\n\n重點不是炫技，而是思考一個問題：當 AI 即將重新定義內容經濟時，我們的思想載體該長什麼樣？\n\n我讓兩個 AI 互相協作校對，重建三層秩序：中文排版的凝聚力（不再輕飄飄）、機器可讀的語意結構、還有導入 WebMCP 讓 AI Agent 能精準理解內容。\n\n從「人類閱讀」走向「人機共讀」，這是典範轉移正在發生 ✨\n\nhttps://paulkuo.tw/articles/multi-model-collab-website-rebuild",
+    "BS": "終於搞定個人網站！用 Claude 跟 Gemini 雙打，不是因為想炫技，而是想解決一個問題：怎麼讓網站既能被人舒服閱讀，也能被 AI 精準理解？\n\n重新定義中文排版規則、建立語意化結構、導入 WebMCP 標準。關鍵是多模型協作：讓不同 AI 互相質疑校對，我負責把關價值與方向。\n\n技術可以加速，但秩序決定能走多遠 🎯\n\nhttps://paulkuo.tw/articles/multi-model-collab-website-rebuild",
+    "RD": "分享一個多模型協作的實驗：用 Claude 與 Gemini 聯手重構個人網站\n\n不只是技術練習，而是探索在 AI 時代如何建立真正有秩序的知識載體。從中文排版的重量感、到機器可讀的語意結構、再到導入 WebMCP 讓 AI Agent 能精準調用內容。\n\n重點是「人機共讀」的典範轉移正在發生。\n\nhttps://paulkuo.tw/articles/multi-model-collab-website-rebuild",
+    "YT": "剛完成一個有趣的實驗！🤖\n\n用 Claude 跟 Gemini 雙打重做個人網站，不是為了炫技，而是想回答一個問題：當 AI 即將重新定義內容經濟時，我們的思想載體該長什麼樣？\n\n我發現那些「一鍵生成」的工具雖然高效，但常常帶來失序：英式排版硬套中文、語意結構亂套、AI 讀起來像亂碼。所以這次採用多模型認知協作：Claude 負責產出，Gemini 負責質疑，我負責定義秩序標準。\n\n重建三層秩序：中文排版的凝聚力、機器可讀的語意結構、還有導入 WebMCP 讓 AI Agent 能精準調用內容。我們正從「人類閱讀」走向「人機共讀」的時代！\n\nhttps://paulkuo.tw/articles/multi-model-collab-website-rebuild",
+    "FB": "過年期間做了一個有趣的實驗：讓 Claude 跟 Gemini 聯手幫我重做個人網站 🤝\n\n不是為了炫技，而是想解決一個根本問題：在 AI 時代，怎麼讓內容既能被人舒服閱讀，也能被機器精準理解？\n\n我發現很多「一鍵生成」工具雖然高效，但失去了細膩度：英式排版硬套中文會讓文字變得輕飄飄，語意結構混亂讓 AI 讀起來像亂碼。所以這次用多模型協作：兩個 AI 互相校對質疑，我負責把關價值與方向。\n\n重點成果：重新定義中文排版規則、建立機器可讀的語意結構、導入 WebMCP 標準讓網站變成可被 AI 調用的知識節點。\n\n我們正走向「人機共讀」的時代，關鍵是掌握「定義秩序」的主導權 ✨\n\nhttps://paulkuo.tw/articles/multi-model-collab-website-rebuild",
+    "IG": "終於搞定個人網站！🎉 用 Claude + Gemini 雙打重構 💪\n\n重點不是炫技，而是思考：AI 時代的內容該長什麼樣？ 🤔\n\n✨ 重新定義中文排版規則（不再輕飄飄）\n✨ 建立機器可讀的語意結構\n✨ 導入 WebMCP 讓 AI 能精準理解\n\n從「人類閱讀」走向「人機共讀」的時代已來臨 🚀\n\n多模型協作 = AI 互相校對 + 人類把關方向 🎯\n\n#AI協作 #網站設計 #多模型 #WebMCP #人機共讀 #Claude #Gemini\n\nhttps://paulkuo.tw/articles/multi-model-collab-website-rebuild"
+  },
+  "timestamp": "2026-02-22T07:37:03.015Z"
+}
