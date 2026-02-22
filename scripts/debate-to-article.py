@@ -25,7 +25,7 @@ from datetime import datetime
 
 # ── 路徑設定 ──────────────────────────────────────────
 DEBATES_DIR = Path.home() / "Desktop" / "02_參考資料" / "debates"
-ARTICLES_DIR = Path.home() / "Desktop" / "01_專案進行中" / "paulkuo-astro" / "src" / "content" / "articles"
+ARTICLES_DIR = Path.home() / "Desktop" / "01_專案進行中" / "paulkuo.tw" / "src" / "content" / "articles"
 
 # ── 從 .zshrc 載入環境變數 ────────────────────────────
 def load_env():
@@ -312,7 +312,7 @@ draft: false
 
     out_path.write_text(article_md, encoding="utf-8")
     print(f"\n✅ 文章已產生: {out_path}")
-    print(f"   下一步: cd ~/Desktop/01_專案進行中/paulkuo-astro && git add -A && git commit -m 'feat: {slug}' && git push")
+    print(f"   下一步: cd ~/Desktop/01_專案進行中/paulkuo.tw && git add -A && git commit -m 'feat: {slug}' && git push")
 
 
 if __name__ == "__main__":
