@@ -157,10 +157,11 @@ nav.nav-scrolled {
 .project-strategic{font-size:.85rem;color:var(--text-secondary);line-height:1.8;padding:16px;background:var(--bg-section);border-radius:8px;margin:16px 0;border-left:2px solid var(--border)}
 .project-strategic strong{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px}
 .nav-cta {
-  background: var(--brand-navy) !important;
-  color: #fff !important; padding: 8px 20px;
+  background: transparent !important;
+  color: var(--text-primary) !important; padding: 8px 20px;
   border-radius: 8px; font-size: 0.85rem !important;
-  transition: background 0.2s !important;
+  border: 1px solid var(--border, #d1d5db) !important;
+  transition: all 0.2s !important;
 }
 .nav-cta:hover { background: var(--bg-hover, #f3f4f6) !important; border-color: var(--text-secondary, #6b7280) !important; }
 
