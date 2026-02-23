@@ -137,6 +137,7 @@ const homeSchema = JSON.stringify({
             <p>{article.data.description}</p>
             <div class="content-card-footer">
               <span>{dateStr}</span>
+              {article.data.readingTime && <span class="reading-time">· 約 {article.data.readingTime} 分鐘</span>}
               {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
             </div>
           </a>

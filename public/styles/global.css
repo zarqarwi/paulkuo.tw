@@ -1077,6 +1077,12 @@ body.focus-mode .article-page {
   margin: 0 auto;
 }
 
+/* === Reading Time === */
+.reading-time {
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.82rem;
+}
+
 /* === Year Filter Pills === */
 .blog-year-filters {
   display: flex;
