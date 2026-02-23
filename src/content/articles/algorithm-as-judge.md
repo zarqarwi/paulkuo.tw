@@ -4,6 +4,7 @@ description: "從計程車司機的五星懇求到外送員的負評恐懼，演
 date: 2018-01-15
 pillar: ai
 tags: ["數據監控", "勞動權益", "評分系統", "新經濟", "社會演化"]
+cover: "/images/covers/algorithm-as-judge.jpg"
 readingTime: 1
 ---
 

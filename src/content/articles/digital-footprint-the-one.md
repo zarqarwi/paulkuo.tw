@@ -4,6 +4,7 @@ description: "當 App 比我們自己更清楚我們的產值與睡眠，人類�
 date: 2017-01-22
 pillar: ai
 tags: ["AI應用", "數位軌跡", "數據監控", "隱私邊界", "典範轉移"]
+cover: "/images/covers/digital-footprint-the-one.jpg"
 readingTime: 1
 ---
 

@@ -4,6 +4,8 @@ description: "信仰若缺乏反省，就會淪為逃避現實的方便麵。199
 date: 2016-02-13
 pillar: faith
 tags: ["信仰反思", "神學", "集體焦慮", "宗教批判", "歷史智慧"]
+cover: "/images/covers/faith-collapse-rebuild.jpg"
+cover: "/images/covers/faith-collapse-rebuild.jpg"
 readingTime: 1
 ---
 

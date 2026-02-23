@@ -4,6 +4,7 @@ description: "疫情不只改變了生活方式，更揭露了我們早已進入
 date: 2021-06-09
 pillar: life
 tags: ["液態現代性", "鮑曼", "疫情", "新常態", "社會觀察"]
+cover: "/images/covers/pandemic-liquid-world.jpg"
 readingTime: 1
 ---
 

@@ -5,6 +5,7 @@ date: 2023-02-17
 pillar: life
 tags: ["資生堂", "品牌美學", "風格", "創新", "個人品牌"]
 platform: Medium
+cover: "/images/covers/shiseido-gic-style-over-trend.jpg"
 readingTime: 1
 ---
 

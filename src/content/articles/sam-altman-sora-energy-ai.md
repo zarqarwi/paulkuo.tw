@@ -5,6 +5,7 @@ date: 2025-11-01
 pillar: ai
 tags: ["Sam Altman", "Sora", "能源", "AI基礎設施", "AGI"]
 draft: false
+cover: "/images/covers/sam-altman-sora-energy-ai.jpg"
 readingTime: 1
 ---
 

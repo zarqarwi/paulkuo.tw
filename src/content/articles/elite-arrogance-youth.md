@@ -5,6 +5,7 @@ date: 2022-12-16
 pillar: faith
 tags: ["菁英主義", "社會正義", "桑德爾", "青年", "公平"]
 platform: Medium
+cover: "/images/covers/elite-arrogance-youth.jpg"
 readingTime: 1
 ---
 

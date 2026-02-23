@@ -5,6 +5,7 @@ date: 2025-05-24
 pillar: ai
 tags: ["主權AI", "數位主權", "技術自主", "AI治理", "地緣政治"]
 draft: false
+cover: "/images/covers/sovereign-ai-digital-autonomy.jpg"
 readingTime: 1
 ---
 

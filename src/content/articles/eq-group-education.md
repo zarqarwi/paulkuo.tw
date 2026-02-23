@@ -4,6 +4,7 @@ description: "EQ 被誤解為個人修養，但其本質是群體互動中演化
 date: 2017-10-23
 pillar: startup
 tags: ["情緒教育", "世代觀察", "社會化", "同理心", "結構批判"]
+cover: "/images/covers/eq-group-education.jpg"
 readingTime: 1
 ---
 

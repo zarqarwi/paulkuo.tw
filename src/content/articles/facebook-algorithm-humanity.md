@@ -4,6 +4,7 @@ description: "臉書調整演算法，將互動重心從商業粉絲頁拉回人
 date: 2018-01-13
 pillar: ai
 tags: ["社群演算法", "數位行銷", "品牌價值", "科技反思", "商業轉型"]
+cover: "/images/covers/facebook-algorithm-humanity.jpg"
 readingTime: 2
 ---
 

@@ -4,6 +4,7 @@ description: "疫情迫使許多團隊初嘗線上工作的滋味，但多數人
 date: 2020-02-14
 pillar: startup
 tags: ["遠距工作", "專案管理", "人性考驗", "數位協作", "紀律"]
+cover: "/images/covers/remote-work-cruel-truth.jpg"
 readingTime: 1
 ---
 

@@ -4,6 +4,7 @@ description: "一支簡單的騎車紀錄影片，背後是無數跨國企業的
 date: 2017-10-30
 pillar: startup
 tags: ["數位協作", "API生態系", "合作競爭", "資源整合", "典範轉移"]
+cover: "/images/covers/cycling-digital-collaboration.jpg"
 readingTime: 1
 ---
 

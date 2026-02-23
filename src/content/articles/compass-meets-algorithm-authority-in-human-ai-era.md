@@ -8,6 +8,8 @@ tags: ["人工智慧", "思想框架", "權威建構", "人機協作", "認知�
 platform: "Debate Engine"
 featured: false
 draft: false
+cover: "/images/covers/compass-meets-algorithm-authority-in-human-ai-era.jpg"
+cover: "/images/covers/compass-meets-algorithm-authority-in-human-ai-era.jpg"
 readingTime: 5
 ---
 

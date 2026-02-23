@@ -4,6 +4,7 @@ description: "熵代表混亂與崩解，負熵則是秩序與生命力。企業
 date: 2025-04-29
 pillar: ai
 tags: ["熵與負熵", "中美博弈", "台灣企業", "秩序選擇", "避險策略"]
+cover: "/images/covers/negentropy-taiwan-enterprise.jpg"
 readingTime: 1
 ---
 
