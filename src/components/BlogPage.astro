@@ -139,18 +139,26 @@ const blogSchema = JSON.stringify({
     }
 
     function updateVisibility() {
-      const filtered = getFilteredCards();
-      filtered.forEach((card, i) => {
-        card.style.display = i < visibleCount ? 'block' : 'none';
-        card.classList.toggle('hidden-card', i >= visibleCount);
-      });
+      const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+      const activeYear = document.querySelector('.year-btn.active')?.dataset.year || 'all';
+      let shown = 0;
       allCards.forEach(card => {
-        const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
-        if (activeFilter !== 'all' && card.dataset.pillar !== activeFilter) {
+        const pillarMatch = activeFilter === 'all' || card.dataset.pillar === activeFilter;
+        const yearMatch = activeYear === 'all' || card.dataset.year === activeYear;
+        if (pillarMatch && yearMatch) {
+          card.style.display = shown < visibleCount ? 'block' : 'none';
+          card.classList.toggle('hidden-card', shown >= visibleCount);
+          shown++;
+        } else {
           card.style.display = 'none';
         }
       });
-      const remaining = filtered.length - visibleCount;
+      const totalFiltered = allCards.filter(c => {
+        const pM = activeFilter === 'all' || c.dataset.pillar === activeFilter;
+        const yM = activeYear === 'all' || c.dataset.year === activeYear;
+        return pM && yM;
+      }).length;
+      const remaining = totalFiltered - visibleCount;
       if (loadMoreWrap) loadMoreWrap.style.display = remaining > 0 ? 'block' : 'none';
       if (remainingSpan) remainingSpan.textContent = remaining > 0 ? `(${remaining})` : '';
     }
@@ -178,7 +186,7 @@ const blogSchema = JSON.stringify({
         document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         visibleCount = ARTICLES_PER_PAGE;
-        renderCards();
+        updateVisibility();
       });
     });
 

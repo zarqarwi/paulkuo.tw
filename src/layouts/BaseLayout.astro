@@ -54,6 +54,8 @@ const langSwitchLinks = {
 
 // Check if this is an article page (for reading progress bar)
 const isArticlePage = pathname.includes('/articles/');
+// Lang prefix for nav links
+const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' : currentLang === 'zh-CN' ? '/zh-cn' : '';
 
 ---
 
@@ -103,11 +105,11 @@ const isArticlePage = pathname.includes('/articles/');
     <div class="nav-inner">
       <a href="/" class="nav-logo">Paul Kuo</a>
       <div class="nav-links">
-        <a href="/" id="nav-home">首頁</a>
-        <a href="/blog" id="nav-blog">思想</a>
-        <a href="/projects" id="nav-projects">專案</a>
-        <a href="/#feed" id="nav-feed">動態情報</a>
-        <a href="/about" id="nav-about">關於</a>
+        <a href={langPrefix + '/'} id="nav-home">首頁</a>
+        <a href={langPrefix + '/blog'} id="nav-blog">思想</a>
+        <a href={langPrefix + '/projects'} id="nav-projects">專案</a>
+        <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-feed">動態情報</a>
+        <a href={langPrefix + '/about'} id="nav-about">關於</a>
         <a href="/search" id="nav-search" title="搜尋" aria-label="搜尋" style="font-size:1.1rem;line-height:1">🔍</a>
         <a href="/#contact" class="nav-cta">聯絡我</a>
         <div class="mobile-lang-divider"></div>
@@ -413,6 +415,13 @@ const isArticlePage = pathname.includes('/articles/');
   (function() {
     var params = new URLSearchParams(window.location.search);
     var lang = params.get('lang');
+    // Also detect lang from path-based routing (/en/, /ja/, /zh-cn/)
+    if (!lang) {
+      var p = window.location.pathname;
+      if (p.startsWith('/en/') || p === '/en') lang = 'en';
+      else if (p.startsWith('/ja/') || p === '/ja') lang = 'ja';
+      else if (p.startsWith('/zh-cn/') || p === '/zh-cn') lang = 'zh-CN';
+    }
     if (!lang || lang === 'zh-Hant') return;
     
     fetch('/data/i18n-home.json')
