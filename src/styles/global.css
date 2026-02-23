@@ -162,7 +162,7 @@ nav.nav-scrolled {
   border-radius: 8px; font-size: 0.85rem !important;
   transition: background 0.2s !important;
 }
-.nav-cta:hover { background: var(--brand-navy-light) !important; }
+.nav-cta:hover { background: var(--bg-hover, #f3f4f6) !important; border-color: var(--text-secondary, #6b7280) !important; }
 
 .nav-hamburger {
   display: none; background: none; border: none;
