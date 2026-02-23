@@ -1,45 +1,45 @@
 ---
-title: "Faith Offers No Immunity: The Conflict Between Religious Reason and Social Reality"
-description: "Viral transmission knows no race or creed. Any religious group claiming to shield real-world risks through 'sanctity' tramples upon social rationality. The cluster infection at South Korea's Shincheonji Church reveals that when believers isolate themselves from society, elevating private religious language above public safety, faith becomes a dangerous blind spot threatening society. Theological reflection must engage with lived reality, not merely point fingers at others as heretics."
+title: "Faith Cannot Provide Immunity: The Conflict Between Religious Rationality and Social Reality"
+description: "Viral transmission knows no race or faith. Any religious group claiming to use 'sanctity' to isolate themselves from real-world risks tramples upon social rationality. The cluster infection incident at South Korea's Shincheonji Church reveals that when believers isolate themselves from society and place private religious language above public safety, faith becomes a blind spot that endangers society. Theological reflection must engage with lived reality, rather than merely pointing arrogantly at others as heretics."
 date: 2020-02-23
 pillar: faith
-tags: ["religious gatherings", "theological reflection", "social rationality", "boundaries of faith", "pandemic revelations"]
-readingTime: 4
+tags: ["宗教群聚", "神學反思", "社會理性", "信仰邊界", "疫情啟示"]
+readingTime: 1
 ---
 
-## Faith Offers No Immunity
-### The Conflict Between Religious Reason and Social Reality
+## Faith Cannot Provide Immunity
+### The Conflict Between Religious Rationality and Social Reality
 
-South Korea's confirmed cases have surged to 433.
-Behind this lies a cluster infection at the "Shincheonji Church."
+South Korea's confirmed cases have soared to 433.
+Behind this lies the cluster infection at "Shincheonji Church."
 
-This gives us a profoundly shocking revelation.
+This gives us an extraordinarily shocking revelation.
 
 ---
 
-### Viruses Don't Care About Your Faith
+### The Virus Doesn't Care About Your Faith
 
 Viral transmission knows no race.
-Of course, it knows no faith either.
+Of course, it also knows no faith.
 
-No matter how intimate the religious language you profess.
-No matter how filled with sanctity you feel during worship gatherings.
+No matter how private the religious language you embrace.
+No matter how filled with sanctity you feel during gatherings.
 
-You ultimately cannot separate yourself from society to form your own tribe.
+You ultimately cannot separate yourself from society and become a tribe unto yourself.
 
 ---
 
 ### The Collision of Two Rationalities
 
-The conflict between believers' "religious reason" and the public's "social reason" 
-is omnipresent.
+The conflict between believers' "religious rationality" and the public's "social rationality"
+is actually omnipresent.
 
 When religious groups believe "God will protect us" while ignoring epidemic prevention protocols,
 this is not faith.
 This is a threat to society.
 
 If this incident can make theological reflection in various religious organizations more thorough and closer to lived reality,
-that would be progress bought with painful lessons.
+then it would be progress gained through painful lessons.
 
-Rather than simply pointing fingers at others as heretics,
-we should use our minds more to examine whether our own faith has become disconnected from reality.
+Rather than simply pointing at others as heretics,
+it would be better to use our minds more, examining whether our own faith has become disconnected from reality.

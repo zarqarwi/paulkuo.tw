@@ -1,13 +1,13 @@
 ---
-title: "The Harsh Reality of Remote Work: Online Collaboration That Tests Human Nature"
-description: "The pandemic has forced many teams to taste remote work for the first time, but most people mistake 'flexibility' for an excuse for 'indiscipline.' Online collaboration not only fails to eliminate the necessity of management—it more nakedly tests the laziness inherent in human nature. Remote work without clear progress milestones, project breakdown, and task assignments will ultimately devolve into a game of 'pretending to work hard' that spins its wheels. Don't underestimate human nature—only extremely rigorous management can support the seemingly free operation of online work."
+title: "The Brutal Truth About Remote Work: Online Collaboration That Tests Human Nature"
+description: "The pandemic has forced many teams to taste remote work for the first time, but most people mistake 'flexibility' for an excuse for 'lack of discipline.' Online collaboration not only fails to eliminate the need for management—it more nakedly exposes the laziness of human nature. Remote work without clear milestones, project segmentation, and task assignment will ultimately devolve into a game of 'pretending to be productive.' Don't underestimate human nature—only extremely rigorous management can support what appears to be free online operations."
 date: 2020-02-14
 pillar: startup
 tags: ["遠距工作", "專案管理", "人性考驗", "數位協作", "紀律"]
-readingTime: 5
+readingTime: 1
 ---
 
-## The Harsh Reality of Remote Work
+## The Brutal Truth About Remote Work
 ### Online Collaboration That Tests Human Nature
 
 The COVID-19 pandemic continues to spread.
@@ -20,28 +20,28 @@ But it also has extremely fatal flaws.
 
 ### A Thousand Ways to Slack Off
 
-Ten years ago, I participated in a publishing project completed through online collaborative work.
-The team was scattered around the world, making online work the only option.
+Ten years ago, I participated in a publishing project completed through online collaboration.
+The team was scattered around the world—online was the only option.
 
 After three years of real combat experience, I gained a profound insight:
 I had completely mastered a thousand ways to slack off in online work.
 
-- How to look very serious while actually slacking off?
-- How to speak earnestly and say nonsense while producing nothing?
+- How to look very serious while actually slacking?
+- How to speak earnestly but produce nothing?
 - How to skillfully blame problems on "unstable connection"?
 - How to take the company's money while maximizing your personal time?
 
-Put simply: how to be pretentious with skill and not get caught.
+In short, it's about being pretentious with skill, without getting caught.
 
 ---
 
 ### Don't Underestimate Human Nature
 
-Some question: isn't online work supposed to emphasize flexibility and agility?
-Wouldn't managing too tightly create too much pressure?
+Some question: isn't remote work supposed to emphasize flexibility and adaptability?
+Wouldn't managing too tightly be too high-pressure?
 
 That's not wrong.
-But out of a hundred people, fewer than one percent truly have discipline and self-discipline.
+But out of a hundred people, fewer than one percent truly have discipline and self-demand.
 
 Being proactive is human nature.
 But wanting to coast through life is an even stronger human nature.
@@ -54,12 +54,12 @@ We're not distrusting people—we simply shouldn't underestimate human nature.
 
 ### The Four Pillars of Remote Management
 
-Because I'm too familiar with how to muddle through, the solution isn't difficult.
+Because I'm so familiar with how to muddle through, the solution isn't difficult.
 
-1. **Work Documentation:** Daily work content must be recorded. Only what's recorded can be managed.
+1. **Work Records:** Daily work content must be documented—only what's recorded can be managed.
 2. **Clear Progress:** Define resources and pace based on objectives, establish checkpoints.
-3. **Project Minimization:** The smaller the project, the smaller the ambiguous space. Clearly communicate what needs to be completed during this period.
-4. **Flexible Assignment:** Managers must wisely divide work, with clear deadlines and task assignments after every meeting.
+3. **Project Minimization:** The smaller the project, the less ambiguous space. Clearly communicate what needs to be completed in this timeframe.
+4. **Flexible Assignment:** Managers must wisely divide work—every meeting must result in clear deadlines and task assignments.
 
 Everything has a cost.
 Freedom and ease must be accompanied by the price of extreme self-discipline.

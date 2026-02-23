@@ -1,49 +1,61 @@
 ---
-title: "The Computation Standard: When Knowledge, Electricity, and Currency Become Equivalent"
-description: "Digital currency reveals the interconnected relationship between electricity, computation, and money. When knowledge can be mathematized and linked to currency, we enter a new economic model where computational power becomes the standard of value."
+title: "The Algorithmic Standard Era: When Knowledge, Electricity, and Currency Converge"
+description: "Digital currency reveals the interconnected relationship between electricity, computation, and money. When knowledge can be mathematicized and pegged to currency, we enter a new economic model with computational power as the standard of value."
 date: 2018-01-04
 pillar: ai
+tags: ["演算力", "知識經濟", "數位貨幣", "網紅現象", "價值轉換"]
+readingTime: 1
 ---
 
-## The Computation Standard
-### When Knowledge, Electricity, and Currency Become Equivalent
+## The Algorithmic Standard Era
+### When Knowledge, Electricity, and Currency Converge
 
-Looking at Bitcoin transactions through the lens of energy consumption yields a fascinating insight.
-Electrical energy, through computational power, becomes linked to the monetary system.
+Viewing Bitcoin transactions through the lens of energy consumption yields fascinating insights.
+Electric power, through computational capacity, becomes linked to monetary systems.
 
-This turns the relationship between "electricity, computation, and currency" into something resembling a system of simultaneous equations.
-
----
-
-### Brainpower Equals Algorithm
-
-With the rise of AI, knowledge has also entered the quantified logic of computation.
-
-Following this reasoning: knowledge, too, is a form of algorithm.
-
-Since it's an algorithm, knowledge can potentially be mathematized and quantified.
-What we call the "knowledge economy" can now be more clearly linked to currency.
-
-Solving problems at the highest level, creating systems through entrepreneurship—these are valuable because the "computational power" required behind them is extraordinarily strong.
+This transforms the relationship between "electricity, computation, and currency"
+into a set of linear equations with defined rules.
 
 ---
 
-### From the Gold Standard to the Energy Standard
+### Brainpower Equals Algorithms
 
-In contrast to the traditional "gold standard" and "dollar standard," an "energy standard" may be a more fitting metric for the digital technology era.
+With the rise of AI, knowledge has entered the realm of quantified algorithmic logic.
 
-In other words: "computational power" is a new standard of value and price.
+From this we can deduce:
+Knowledge, too, is a form of algorithm.
 
-Capital can purchase electricity. Capital can intervene in algorithms through electricity to acquire core knowledge. Conversely, individuals who possess critical knowledge can reverse-engineer the potential for generating returns.
+Since it is algorithmic, knowledge has the potential to be mathematicized and quantified.
+The "knowledge economy" we speak of will be able to link more clearly with currency.
+
+The heights of problem-solving, the entrepreneurship of system creation—
+these have value because the "computational power" required behind them is extraordinarily strong.
+
+---
+
+### From Gold Standard to Energy Standard
+
+Compared to the traditional "gold standard" and "dollar standard,"
+an "energy standard" may be a more fitting measure of value for digital technology.
+
+In other words:
+"Computational power" is a new standard of value and pricing.
+
+Capital can purchase electricity.
+Capital intervenes in algorithms through electricity to acquire core knowledge.
+Conversely, individuals possessing critical knowledge can work backward to create revenue possibilities.
 
 ---
 
 ### Conclusion: The Alchemy of Traffic
 
-Extending this reasoning, the "influencer phenomenon" becomes easy to understand.
+Following this line of reasoning, the "influencer phenomenon" becomes readily comprehensible.
 
-An influencer's talent, channeled through the internet's algorithmic platforms, aggregates traffic.
-Through the intrinsic relationship between traffic and computational power, this is converted into currency under the "energy standard," then funneled into the familiar dollar-based system.
+An influencer's talent, channeled through internet algorithmic platforms, aggregates traffic.
+Through the intrinsic relationship between traffic and computational power, this converts into "energy standard" currency, then transfers into the familiar dollar-standard system.
 
-The point has never been scale.
-It's always been about the efficiency of conversion and computational power.
+Commerce seeks to reach everywhere.
+Commerce seeks more efficient conversion.
+
+The key was never scale.
+But rather the efficiency of conversion with computational power.

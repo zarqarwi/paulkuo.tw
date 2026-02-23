@@ -1,37 +1,37 @@
 ---
-title: "Overcoming Organizational Rigidity: Business Development as Silo-Breaking"
-description: "Organizational rigidity stems from information opacity caused by excessive division of labor. True business development goes beyond sales—it serves as a boundary-spanning translator that must coordinate discrepancies from a higher-dimensional perspective."
-date: 2026-02-20
+title: "Overcoming Organizational Rigidity: Business Development as Silo Breaking"
+description: "Organizational rigidity stems from information opacity caused by excessive division of labor. True business development is not just sales, but a translator crossing boundaries who must coordinate gaps between parties from a higher dimension."
+date: 2018-01-26
 pillar: startup
 tags: ["穀倉效應", "組織僵化", "業務開發", "跨界溝通", "資訊通透"]
-readingTime: 5
+readingTime: 1
 ---
 
-## Overcoming Organizational Rigidity
-### Business Development as Silo-Breaking
+## Overcoming Organizational Rigidity 
+### Business Development as Silo Breaking
 
-We divide labor to accomplish tasks.
+Division of labor exists to accomplish tasks.  
 Yet excessive division of labor slows organizational progress, even leading to collapse.
 
-This is the *Silo Effect*.
+This is the "Silo Effect."
 
-Simply put, it's departmentalism.
-But the crux of the problem isn't division of labor itself.
-Rather, it's "insufficient information flow."
+Simply put, this is departmentalism.  
+But the root of the problem isn't division of labor itself.  
+It's "insufficient information flow."
 
-The less transparent information becomes, the more systems tend toward rigidity and ossification.
+The less transparent information becomes, the more easily systems become rigid and stuck.
 
 ---
 
 ### The Cost of Information Transparency
 
-Making information flow within and beyond organizations requires paying a price:
+Making information flow within and outside organizations requires paying a price:
 
-1. Investing in management costs (someone must take responsibility).
-2. Innovating management mindset (treating communication seriously).
-3. Leadership vision that evolves with the times (wrong direction renders effort futile).
+1. Investing in management costs (someone must take responsibility).  
+2. Innovative management thinking (treating communication seriously).  
+3. Leadership vision that keeps pace with the times (when direction is wrong, effort is wasted).
 
-Any large organization needs people who serve as "translators."
+Any large organization needs people to serve as "translators."  
 They understand different domains and blend people with different expertise together, moving toward the same direction.
 
 ---
@@ -40,31 +40,31 @@ They understand different domains and blend people with different expertise toge
 
 In practical negotiations, when do you realize the other party is a "silo"?
 
-Scenario One:
-Meetings with a dozen people sitting in rows, representatives from every department.
-Each meeting replaces one-third of attendees, but the contact person remains the same.
-After three months, aside from consuming dozens of business cards, there's no progress.
+Scenario One:  
+Meetings with a dozen people sitting in rows, representatives from every department present.  
+Each meeting replaces one-third of the attendees, but the point person remains the same.  
+After three months, aside from collecting dozens of business cards, there's no progress.
 
-Scenario Two:
-Different contact persons at every meeting.
-Planning belongs to planning, procurement to procurement, contracts to contracts.
-They're discussing the same project, but they can't even coordinate internally.
+Scenario Two:  
+Every meeting has a different point person.  
+Planning is planning, procurement is procurement, contracts are contracts.  
+They're discussing the same project, but they can't even sort things out internally.
 
-When encountering these two situations, exercise extreme caution in managing negotiation costs.
+When encountering these two situations, please exercise extreme caution in managing negotiation costs.
 
 ---
 
 ### Solutions Beyond Organization
 
-Transcend organization to break organization.
+Transcending organization is key to breaking through organization.
 
-The core mission of business development (BD)
-is understanding the focal concerns of each department in the negotiating party.
+The core mission of business development (BD)  
+is understanding the focal points of each department in the negotiating party.
 
-Try standing at the height they need, coordinating discrepancies.
-Become an effective information provider.
-You must reverse-"lead" your partner's team, guiding them forward.
+Try to stand at the height they need and coordinate gaps.  
+Become an effective information provider.  
+You must "lead" your partner's team in reverse, guiding them forward.
 
-Or alternatively,
-immediately end the meeting without wasting time on futile consumption.
-Prepare for the next more promising opportunity.
+Or,  
+End the meeting immediately without wasting time on futile efforts.  
+Prepare for the next, more promising opportunity.

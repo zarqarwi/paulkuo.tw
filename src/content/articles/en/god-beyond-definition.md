@@ -1,48 +1,76 @@
 ---
-title: "God Beyond Definition: Why Theology Needs the Courage of Negation"
-description: "We're accustomed to using language to define God, but true theological wisdom lies in acknowledging language's limitations. Apophatic theology reminds us: saying what God 'is not' gets closer to truth than proclaiming what God 'is.' In an age awash with certainty, this courage of negation is paradoxically a deeper form of faith."
+title: "God Beyond Definition: Why Theology Needs the Courage to Negate"
+description: "We habitually use language to define God, but true theological wisdom lies in acknowledging the limitations of language. Apophatic theology reminds us: saying what God 'is not' comes closer to truth than claiming what God 'is.' In an age flooded with certainty, this courage to negate is actually a deeper form of faith."
 date: 2024-04-12
 pillar: faith
 tags: ["否定神學", "上帝", "語言的局限", "信仰", "神學反思"]
 platform: Medium
-readingTime: 5
+readingTime: 1
 ---
 
 ## God Beyond Definition
-### Why Theology Needs the Courage of Negation
+### Why Theology Needs the Courage to Negate
 
-Humanity has always wanted to define God. We say: God is omnipotent. God is omnibenevolent. God is eternal.
+Humanity has always sought to define God.
 
-These statements sound solemn and certain. But can they truly capture God?
+We say: God is omnipotent.
+We say: God is all-good.
+We say: God is eternal.
+
+These statements sound solemn, certain.
+But do they truly capture God?
 
 ---
 
 ### The Arrogance of Language
 
-Language is one of humanity's most powerful tools. But when facing Ultimate Reality, language often becomes the greatest obstacle.
+Language is one of humanity's most powerful tools.
+But when facing Ultimate Reality,
+language often becomes the greatest obstacle.
 
-When we say "God is omnipotent," we're actually using our human understanding of "power" to frame God. But is God's "omnipotence" really the same as what we imagine?
+When we say "God is omnipotent,"
+we are actually framing God with our human understanding of "power."
 
-Apophatic Theology offers a different path: Rather than saying what God is, say what God is not.
+But is God's "omnipotence"
+really what we imagine it to be?
+
+Apophatic Theology offers a different path:
+Rather than saying what God is, say what God is not.
 
 ---
 
-### The Courage of Negation
+### The Courage to Negate
 
-Saying "God is not finite" is more honest than saying "God is infinite." Because the former acknowledges our language is limited, while the latter implies we already understand the infinite.
+To say "God is not finite"
+is more honest than saying "God is infinite."
 
-Apophatic theology is not skepticism. It is a deeper faith — faith deep enough to admit what we don't know.
+Because the former acknowledges our linguistic limitations,
+while the latter implies we have already understood the infinite.
+
+Apophatic theology is not skepticism.
+It is a deeper faith—
+faith deep enough to admit we don't know.
 
 ---
 
-### In an Age Awash with Certainty
+### In an Age Flooded with Certainty
 
-Today's religious discourse is filled with certainty. Every denomination claims to possess truth. Every preacher claims to know God's will.
+Contemporary religious discourse is full of certainty.
 
-But apophatic theology reminds us: True reverence is silence before God. Not because there is nothing to say, but because we know — some things, once spoken, are already distorted.
+Every denomination claims to possess the truth.
+Every preacher claims to know God's will.
+
+But apophatic theology reminds us:
+True reverence is to be silent before God.
+
+Not because we have nothing to say,
+but because we know—
+some things, once spoken, are already askew.
 
 ---
 
 ### Conclusion
 
-God transcends definition. This is not the end of faith. It is faith's true beginning.
+God transcends definition.
+This is not faith's endpoint.
+This is faith's true beginning.

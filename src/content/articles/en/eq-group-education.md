@@ -1,53 +1,82 @@
 ---
-title: "Emotions Aren't a Private Matter: Why EQ Should Be the Core of Group Education"
-description: "EQ is misunderstood as personal cultivation, but its essence is a survival skill evolved through group interaction. When education overemphasizes individual development, children lose the opportunity to practice compromise and empathy within teams."
+title: "Emotions Are Not Personal: Why Should EQ Be the Core of Group Education?"
+description: "EQ has been misunderstood as personal cultivation, but its essence is a survival ability that evolved through group interactions. When education overemphasizes individual development, children lose opportunities to compromise and empathize within teams."
 date: 2017-10-23
 pillar: startup
+tags: ["情緒教育", "世代觀察", "社會化", "同理心", "結構批判"]
+readingTime: 1
 ---
 
-## Emotions Aren't a Private Matter
-### Why EQ Should Be the Core of Group Education
+## Emotions Are Not Personal
+### Why Should EQ Be the Core of Group Education?
 
-When campus tragedies driven by emotional outbursts occur, we always ask: where do these impulsive, explosive emotional reactions come from?
+Facing tragic incidents of emotional hurt on campus,
+we always ask: How are such impulsive and explosive emotional reactions formed?
 
-The answer may lie in our narrow definition of education. We reduce education to academics. We treat it as purely "individual career development." Yet we forget that humans live in groups.
+The answer may lie hidden in our narrow definition of education.
+
+We confine education to intellectual development.
+We view education as merely "individual career development."
+
+Yet we forget that humans live in groups.
 
 ---
 
-### The Blind Spot of the Narcissistic Generation
+### The Educational Blind Spot of the Narcissistic Generation
 
-Today's parents often overlook that making friends is a skill.
+Today's parents often overlook that "making friends" is a skill.
 
-If joining a choir interferes with tutoring, the parent will pull the child out. They don't believe that learning to cooperate with others—or even subordinate oneself—is a form of education.
+If joining a choir would interfere with tutoring, parents choose to withdraw.
+They don't recognize that teaching children to coordinate with others, or even compromise themselves, is a form of learning.
 
-Not being accustomed to having others in your life is an implicit message: "Other people don't matter. Your feelings come first."
+Not being accustomed to having others in one's life—
+this indirectly tells children: "Others don't matter, your feelings are paramount."
 
-This may be connected to the "Me Generation" that now holds the reins of parenting discourse. The private domain is paramount. They are the greatest obstacle to group education.
+This may be related to the "Me Generation" that currently dominates parenting discourse.
+The private sphere reigns supreme.
+They are perhaps the greatest obstacle to promoting group education.
 
 ---
 
 ### The Biological Nature of EQ
 
-EQ isn't a personal affair. Knowing how to manage your own feelings doesn't mean you have emotional intelligence.
+EQ (Emotional Intelligence) is not a personal matter.
+It's not about knowing how to settle your own feelings.
 
-Humans are social animals. Our DNA dictates: we must interact cooperatively with others to increase our survival odds.
+Humans are social animals.
+Our DNA is encoded with this: we must interact amicably with others to increase our survival probability.
 
-EQ is a responsiveness cultivated within social groups—the ability to navigate oneself within a community. It is not a personality trait honed through solitary meditation.
+EQ is a responsiveness cultivated within communities.
+It's the ability to conduct oneself within groups.
+Not a personality trait developed through solitary meditation.
 
 ---
 
 ### Feelings Are Relationships
 
-If you absolutize personal feelings (ME ME ME), only two extremes remain: either you become a peerless master of taste, or you become someone whose emotions detonate at any moment.
+If we absolutize personal feelings (ME ME ME, I'm the greatest),
+there are only two extremes:
 
-Because feelings are just another word for "relationships." How you feel about yourself is tied to your relationship with the world.
+Either become a leader with exceptional taste in your field,
+or become a recluse whose emotions explode at any moment, wanting to bash heads on the street.
 
-If you live in a vacuum, if you habitually treat anyone less capable as worthless—one day, that contempt will consume your life.
+Because feelings are "another way of describing relationships."
+Your feelings about yourself involve your relationship with the world.
+
+If you live in a vacuum jar,
+if you're accustomed to treating those beneath you as worthless—
+
+One day, this emotion of looking down on others will devour your life.
 
 ---
 
 ### Conclusion
 
-If we don't treat this as an education problem, we're left debating whether purchasing acid should require ID verification.
+If we don't treat this as an educational issue,
+then we can only discuss legal preventive measures like "whether buying sulfuric acid should require real-name registration."
 
-But if we agree this is education's responsibility: we must teach children to invest themselves in the learning process. Because when your classmates succeed, you succeed too. Because you simply cannot live in your own world alone.
+But if we agree that this is a responsibility education should bear:
+
+We must teach children to invest themselves in the learning process.
+Because when your classmates succeed, you succeed together.
+Because you cannot live only in your own world.

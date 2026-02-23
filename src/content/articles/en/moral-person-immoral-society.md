@@ -1,51 +1,70 @@
 ---
-title: "Moral Man, Immoral Society"
-description: "Reinhold Niebuhr made a sharp observation: individuals can be moral, but groups are almost invariably immoral. Corporations, nations, organizations — when people gather into collectives, the logic of self-interest overwhelms the voice of conscience. Understanding this is the first step toward facing social reality."
+title: "Moral Individuals, Immoral Society"
+description: "Niebuhr offered a sharp observation: individuals can be moral, but groups tend to be immoral. Corporations, nations, organizations—when people gather in groups, the logic of self-interest overwhelms the voice of conscience. Understanding this is the first step in facing social reality."
 date: 2022-10-27
 pillar: faith
 tags: ["尼布爾", "社會倫理", "群體心理", "道德", "組織行為"]
 platform: Medium
-readingTime: 5
+readingTime: 1
 ---
 
-## Moral Man, Immoral Society
+## Moral Individuals, Immoral Society
 
-In 1932, Reinhold Niebuhr wrote *Moral Man and Immoral Society*. Reading it today, it remains uncomfortably sharp.
+Reinhold Niebuhr wrote "Moral Man and Immoral Society" in 1932.
+Reading it today, it remains unsettlingly sharp.
 
-His core observation is simple: Individuals can have conscience, empathy, and morality. But when people form groups — nations, corporations, political parties — the group's behavior is almost inevitably selfish.
+His core insight is simple:
+Individuals can have conscience, empathy, and morality.
+But when people form groups—nations, corporations, political parties—
+group behavior is almost inevitably selfish.
 
 ---
 
 ### Why Are Groups More Selfish?
 
-When an individual faces another person, conscience speaks. You see someone hurt, and you want to help.
+When an individual faces another person,
+conscience speaks.
+You see someone injured, you want to help.
 
-But when you make decisions on behalf of an organization, your considerations change. You must think about: shareholder interests, votes, market share. Individual moral sense gets diluted by the group's logic of interest.
+But when you make decisions representing an organization,
+your considerations change.
+
+You have to think about: shareholder interests, votes, market share.
+Personal moral sensibilities get diluted by the logic of group interests.
 
 ---
 
-### The Corporate Example
+### A Corporate Example
 
-A company's CEO might be a wonderful person. They donate to charity and care about employee health.
+A company's CEO might be a good person.
+He donates to charity, cares about employee health.
 
-But when the company faces cost pressures, they will still lay off workers, squeeze supplier prices, and externalize pollution.
+But when the company faces cost pressures,
+he will still lay off workers, squeeze supplier prices, externalize pollution.
 
-Not because they're bad. But because the logic of the system is stronger than individual conscience.
+Not because he's bad.
+But because institutional logic is more powerful than personal conscience.
 
 ---
 
 ### The First Step in Facing Reality
 
-Niebuhr was not a pessimist. He was simply more honest than most.
+Niebuhr wasn't a pessimist.
+He was just more honest than most.
 
-He tells us: Don't naively assume that good people can build a good society. You need good institutions, good checks and balances, good laws.
+He tells us:
+Don't naively think good people automatically create good society.
+You need good institutions, good checks and balances, good laws.
 
-Because when power concentrates, even the best people will be corrupted.
+Because when power concentrates,
+even good people get corrupted.
 
 ---
 
 ### Conclusion
 
-Understanding "the immorality of groups" is not about giving up. It's about seeing clearly.
+Understanding "group immorality" isn't about giving up.
+It's about staying clear-eyed.
 
-Only by seeing reality clearly can we make meaningful change within it.
+Only by seeing reality clearly
+can we make meaningful change within that reality.

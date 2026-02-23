@@ -1,10 +1,10 @@
 {
   "ai-2027-civilization-reflection.md": {
-    "sourceHash": "c4430e2a3b04",
+    "sourceHash": "5800bdf24cbb",
     "translations": {
       "en": {
-        "hash": "3ec486e19013",
-        "translatedAt": "2026-02-22T08:40:29.733056",
+        "hash": "58077d12c1c7",
+        "translatedAt": "2026-02-23T09:37:08.800Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -20,11 +20,11 @@
     }
   },
   "ai-agent-planning-guide.md": {
-    "sourceHash": "23e757ef32ec",
+    "sourceHash": "c794458958b4",
     "translations": {
       "en": {
-        "hash": "0f2bb9f1b002",
-        "translatedAt": "2026-02-22T11:55:40.528Z",
+        "hash": "2afcefeba5ff",
+        "translatedAt": "2026-02-23T09:37:22.346Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -40,11 +40,11 @@
     }
   },
   "ai-agents-vs-agentic-ai.md": {
-    "sourceHash": "d680076a7ba9",
+    "sourceHash": "7ba18eb14bed",
     "translations": {
       "en": {
-        "hash": "301e45352b9d",
-        "translatedAt": "2026-02-22T08:40:29.734449",
+        "hash": "1574fdfcd313",
+        "translatedAt": "2026-02-23T09:37:32.441Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -60,11 +60,11 @@
     }
   },
   "ai-always-on-economy-restructure.md": {
-    "sourceHash": "6f9305429adc",
+    "sourceHash": "d040b0069599",
     "translations": {
       "en": {
-        "hash": "37a98fbb3442",
-        "translatedAt": "2026-02-22T08:40:29.735372",
+        "hash": "1b6bdbf07ae3",
+        "translatedAt": "2026-02-23T09:37:45.302Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -80,11 +80,11 @@
     }
   },
   "ai-always-on-economy.md": {
-    "sourceHash": "f778dd807039",
+    "sourceHash": "0281eabdab73",
     "translations": {
       "en": {
-        "hash": "7c23a2bb33f4",
-        "translatedAt": "2026-02-22T08:40:29.736054",
+        "hash": "07fc84694995",
+        "translatedAt": "2026-02-23T09:38:04.313Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -100,11 +100,11 @@
     }
   },
   "ai-social-intelligence-psychologist.md": {
-    "sourceHash": "3f15af33d6b3",
+    "sourceHash": "abd1966a2cff",
     "translations": {
       "en": {
-        "hash": "b27b350ce9ad",
-        "translatedAt": "2026-02-22T08:40:29.736605",
+        "hash": "210f92225578",
+        "translatedAt": "2026-02-23T09:38:20.616Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -120,11 +120,11 @@
     }
   },
   "algorithm-as-judge.md": {
-    "sourceHash": "7d9afaac4918",
+    "sourceHash": "9a20f4195855",
     "translations": {
       "en": {
-        "hash": "afdfa0f7af90",
-        "translatedAt": "2026-02-22T08:40:29.737091",
+        "hash": "aa699559a530",
+        "translatedAt": "2026-02-23T09:38:30.284Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -140,11 +140,11 @@
     }
   },
   "algorithm-cannot-replace-decisions.md": {
-    "sourceHash": "e1112fc80676",
+    "sourceHash": "02e0e24278d8",
     "translations": {
       "en": {
-        "hash": "a3ae22e8879e",
-        "translatedAt": "2026-02-22T08:40:29.737841",
+        "hash": "48c729264d7c",
+        "translatedAt": "2026-02-23T09:38:42.880Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -160,11 +160,11 @@
     }
   },
   "breaking-silo-effect.md": {
-    "sourceHash": "6d5800bb5a2d",
+    "sourceHash": "f3b6558d2297",
     "translations": {
       "en": {
-        "hash": "e1161293d133",
-        "translatedAt": "2026-02-22T08:40:29.738606",
+        "hash": "b2f731282854",
+        "translatedAt": "2026-02-23T09:38:56.300Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -180,11 +180,11 @@
     }
   },
   "broken-crutch-elderly-faith.md": {
-    "sourceHash": "2d3f35c7dd81",
+    "sourceHash": "99c1cb6c62e3",
     "translations": {
       "en": {
-        "hash": "fba3c7306532",
-        "translatedAt": "2026-02-22T08:40:29.739024",
+        "hash": "e1c9eb6284f4",
+        "translatedAt": "2026-02-23T09:39:12.156Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -200,11 +200,11 @@
     }
   },
   "burnout-society-self-exploitation.md": {
-    "sourceHash": "97c96a2a6ec3",
+    "sourceHash": "d843398385b1",
     "translations": {
       "en": {
-        "hash": "a192c418417e",
-        "translatedAt": "2026-02-22T08:40:29.739457",
+        "hash": "861a547a5b59",
+        "translatedAt": "2026-02-23T09:39:24.755Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -220,11 +220,11 @@
     }
   },
   "cioran-on-suffering-and-clarity.md": {
-    "sourceHash": "d7fc062ebe94",
+    "sourceHash": "4c0bc07f66ca",
     "translations": {
       "en": {
-        "hash": "1fdc92a13788",
-        "translatedAt": "2026-02-22T08:40:29.739925",
+        "hash": "8be7be9ce332",
+        "translatedAt": "2026-02-23T09:39:39.099Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -240,11 +240,11 @@
     }
   },
   "civilization-metric-system-over-goal.md": {
-    "sourceHash": "fee8b96c2a5c",
+    "sourceHash": "ea3d00a6be80",
     "translations": {
       "en": {
-        "hash": "56323f2213e4",
-        "translatedAt": "2026-02-22T08:40:29.740325",
+        "hash": "740ce41d3465",
+        "translatedAt": "2026-02-23T09:39:49.876Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -260,11 +260,11 @@
     }
   },
   "compass-meets-algorithm-authority-in-human-ai-era.md": {
-    "sourceHash": "05b30e90abc8",
+    "sourceHash": "743a39e88420",
     "translations": {
       "en": {
-        "hash": "9e2b4dd39652",
-        "translatedAt": "2026-02-21T14:46:34.212918",
+        "hash": "aeb78b66920f",
+        "translatedAt": "2026-02-23T09:40:19.108Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -280,11 +280,11 @@
     }
   },
   "computation-as-currency.md": {
-    "sourceHash": "1e86759afc50",
+    "sourceHash": "c7be060aec2c",
     "translations": {
       "en": {
-        "hash": "016917b7124e",
-        "translatedAt": "2026-02-22T08:40:29.740820",
+        "hash": "7b7951904c54",
+        "translatedAt": "2026-02-23T09:40:29.849Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -300,11 +300,11 @@
     }
   },
   "cycling-digital-collaboration.md": {
-    "sourceHash": "692ba5bba8e0",
+    "sourceHash": "f08da4579354",
     "translations": {
       "en": {
-        "hash": "42a4e75f0403",
-        "translatedAt": "2026-02-22T08:40:29.741204",
+        "hash": "44f115f612b3",
+        "translatedAt": "2026-02-23T09:40:38.202Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -320,11 +320,11 @@
     }
   },
   "dharma-instrument-mother-grace.md": {
-    "sourceHash": "55c010dbd3fa",
+    "sourceHash": "abc4bd24beaf",
     "translations": {
       "en": {
-        "hash": "c06b851a930a",
-        "translatedAt": "2026-02-22T08:40:29.741694",
+        "hash": "c571b2903f23",
+        "translatedAt": "2026-02-23T09:40:49.852Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -340,11 +340,11 @@
     }
   },
   "digital-colonialism-platforms.md": {
-    "sourceHash": "ea6d1d7b59b0",
+    "sourceHash": "d1397be6a73e",
     "translations": {
       "en": {
-        "hash": "65225208ba19",
-        "translatedAt": "2026-02-22T08:40:29.742394",
+        "hash": "4380d28ca3ba",
+        "translatedAt": "2026-02-23T09:41:01.561Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -360,11 +360,11 @@
     }
   },
   "digital-footprint-the-one.md": {
-    "sourceHash": "5c1671bf8baf",
+    "sourceHash": "c9363d6886cb",
     "translations": {
       "en": {
-        "hash": "b9894e0a9651",
-        "translatedAt": "2026-02-22T08:40:29.742798",
+        "hash": "f37bc2823f6c",
+        "translatedAt": "2026-02-23T09:41:12.696Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -380,11 +380,11 @@
     }
   },
   "digital-transformation-pain.md": {
-    "sourceHash": "d53bbb9ec7e0",
+    "sourceHash": "4b9f855731c6",
     "translations": {
       "en": {
-        "hash": "a71f44a86e52",
-        "translatedAt": "2026-02-22T08:40:29.743208",
+        "hash": "13c1f648d1bd",
+        "translatedAt": "2026-02-23T09:41:28.246Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -400,11 +400,11 @@
     }
   },
   "elite-arrogance-youth.md": {
-    "sourceHash": "712b6ab8187f",
+    "sourceHash": "57ae3eb8e4a7",
     "translations": {
       "en": {
-        "hash": "7a0c58cc5719",
-        "translatedAt": "2026-02-22T08:40:29.743739",
+        "hash": "cf58fb28affe",
+        "translatedAt": "2026-02-23T09:41:40.331Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -420,11 +420,11 @@
     }
   },
   "eq-group-education.md": {
-    "sourceHash": "c01be22b7ff8",
+    "sourceHash": "48ce9b0f34fa",
     "translations": {
       "en": {
-        "hash": "3067e20e2a99",
-        "translatedAt": "2026-02-22T08:40:29.744256",
+        "hash": "7f202ed52f25",
+        "translatedAt": "2026-02-23T09:41:52.893Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -440,11 +440,11 @@
     }
   },
   "facebook-algorithm-humanity.md": {
-    "sourceHash": "8fe1611ef6e4",
+    "sourceHash": "d0c464f5952d",
     "translations": {
       "en": {
-        "hash": "2dd69672c08c",
-        "translatedAt": "2026-02-22T08:40:29.744695",
+        "hash": "b2ec27c1d845",
+        "translatedAt": "2026-02-23T09:42:07.540Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -460,11 +460,11 @@
     }
   },
   "faith-collapse-rebuild.md": {
-    "sourceHash": "eb215516b7a9",
+    "sourceHash": "ed37b081db11",
     "translations": {
       "en": {
-        "hash": "fbdb0ae9e352",
-        "translatedAt": "2026-02-22T08:40:29.745203",
+        "hash": "64eb93e24fba",
+        "translatedAt": "2026-02-23T09:42:20.357Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -480,11 +480,11 @@
     }
   },
   "faith-no-immunity.md": {
-    "sourceHash": "9e4c7f837378",
+    "sourceHash": "988f6a328e8a",
     "translations": {
       "en": {
-        "hash": "7a20e4070269",
-        "translatedAt": "2026-02-22T08:40:29.745577",
+        "hash": "370dea0d7e59",
+        "translatedAt": "2026-02-23T09:42:30.047Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -500,11 +500,11 @@
     }
   },
   "falsification-market-crisis.md": {
-    "sourceHash": "9c7c75a1dcab",
+    "sourceHash": "689045bf2b64",
     "translations": {
       "en": {
-        "hash": "b3e28a54368e",
-        "translatedAt": "2026-02-22T08:40:29.746010",
+        "hash": "62f49256d28a",
+        "translatedAt": "2026-02-23T09:42:43.735Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -520,11 +520,11 @@
     }
   },
   "financial-crisis-market-humility.md": {
-    "sourceHash": "235c64bc087e",
+    "sourceHash": "810064577c87",
     "translations": {
       "en": {
-        "hash": "b8861945c07a",
-        "translatedAt": "2026-02-22T08:40:29.746549",
+        "hash": "93146c09f95d",
+        "translatedAt": "2026-02-23T09:42:53.625Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -540,11 +540,11 @@
     }
   },
   "fundamentalist-faith-arrogance.md": {
-    "sourceHash": "4de25537de51",
+    "sourceHash": "36854128daff",
     "translations": {
       "en": {
-        "hash": "615ed0cae13d",
-        "translatedAt": "2026-02-22T08:40:29.746995",
+        "hash": "9f9d01dd277f",
+        "translatedAt": "2026-02-23T09:43:01.034Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -560,11 +560,11 @@
     }
   },
   "god-beyond-definition.md": {
-    "sourceHash": "842ca04b0d36",
+    "sourceHash": "d788bc53c592",
     "translations": {
       "en": {
-        "hash": "7e057c22997b",
-        "translatedAt": "2026-02-22T08:40:29.747424",
+        "hash": "b0efa21ee5cc",
+        "translatedAt": "2026-02-23T09:43:11.794Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -580,11 +580,11 @@
     }
   },
   "homeschool-gentle-resistance.md": {
-    "sourceHash": "238f3a35e31e",
+    "sourceHash": "1773f964784c",
     "translations": {
       "en": {
-        "hash": "02d461e560ef",
-        "translatedAt": "2026-02-22T08:40:29.747840",
+        "hash": "868f9ef04813",
+        "translatedAt": "2026-02-23T09:43:28.046Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -600,11 +600,11 @@
     }
   },
   "incarnation-ai-embodiment.md": {
-    "sourceHash": "78c42c736dc3",
+    "sourceHash": "82f1fa55cf6d",
     "translations": {
       "en": {
-        "hash": "669f9013a9e7",
-        "translatedAt": "2026-02-22T08:40:29.748491",
+        "hash": "81829a61db9b",
+        "translatedAt": "2026-02-23T09:43:57.398Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -620,11 +620,11 @@
     }
   },
   "ironman-group-education.md": {
-    "sourceHash": "8c026967fc42",
+    "sourceHash": "c59ff1ecf45c",
     "translations": {
       "en": {
-        "hash": "82d46b3d9104",
-        "translatedAt": "2026-02-22T08:40:29.749008",
+        "hash": "bf697358741f",
+        "translatedAt": "2026-02-23T09:44:13.961Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -640,11 +640,11 @@
     }
   },
   "jensen-huang-ai-mirror.md": {
-    "sourceHash": "6afd71705737",
+    "sourceHash": "26b66a1ffb1e",
     "translations": {
       "en": {
-        "hash": "a0879a985d98",
-        "translatedAt": "2026-02-22T08:40:29.749405",
+        "hash": "91d824997ca1",
+        "translatedAt": "2026-02-23T09:44:25.520Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -660,11 +660,11 @@
     }
   },
   "jensen-huang-learn-ai.md": {
-    "sourceHash": "a1d72e62013f",
+    "sourceHash": "6e29a6a92f81",
     "translations": {
       "en": {
-        "hash": "17434669f76f",
-        "translatedAt": "2026-02-22T08:40:29.749910",
+        "hash": "ff406aca03cc",
+        "translatedAt": "2026-02-23T09:44:31.228Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -680,11 +680,11 @@
     }
   },
   "language-truth-gemini-dialogue.md": {
-    "sourceHash": "cb978de37289",
+    "sourceHash": "ca3c329e8e1f",
     "translations": {
       "en": {
-        "hash": "c23c2cf5889f",
-        "translatedAt": "2026-02-22T08:40:29.750298",
+        "hash": "02cc28ed11d1",
+        "translatedAt": "2026-02-23T09:44:43.282Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -700,11 +700,11 @@
     }
   },
   "life-you-envy-is-miracle.md": {
-    "sourceHash": "2f230c29c4c4",
+    "sourceHash": "7fb925cfca35",
     "translations": {
       "en": {
-        "hash": "fe53a5795b87",
-        "translatedAt": "2026-02-22T08:40:29.750789",
+        "hash": "37c5e9a24642",
+        "translatedAt": "2026-02-23T09:44:52.127Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -720,11 +720,11 @@
     }
   },
   "market-crash-humility.md": {
-    "sourceHash": "fa5d4abbacf7",
+    "sourceHash": "23f55a5432b1",
     "translations": {
       "en": {
-        "hash": "d0527bc5da3c",
-        "translatedAt": "2026-02-22T08:40:29.751291",
+        "hash": "7116ba3152b9",
+        "translatedAt": "2026-02-23T09:45:07.169Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -740,11 +740,11 @@
     }
   },
   "moral-person-immoral-society.md": {
-    "sourceHash": "fa4c2e5a763f",
+    "sourceHash": "c770de370818",
     "translations": {
       "en": {
-        "hash": "7dab1721a6fc",
-        "translatedAt": "2026-02-22T08:40:29.751762",
+        "hash": "fa43705538ee",
+        "translatedAt": "2026-02-23T09:45:18.444Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -760,11 +760,11 @@
     }
   },
   "negentropy-taiwan-enterprise.md": {
-    "sourceHash": "3c29a1c95ee7",
+    "sourceHash": "c42435eb3030",
     "translations": {
       "en": {
-        "hash": "575b457d82f1",
-        "translatedAt": "2026-02-22T08:40:29.752323",
+        "hash": "3511e8be1a9c",
+        "translatedAt": "2026-02-23T09:46:00.460Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -780,11 +780,11 @@
     }
   },
   "neuralese-language-sovereignty.md": {
-    "sourceHash": "7eee276954b6",
+    "sourceHash": "0bd8257b29d4",
     "translations": {
       "en": {
-        "hash": "fa4d7011ab66",
-        "translatedAt": "2026-02-22T08:40:29.753103",
+        "hash": "e9c4e6995b0e",
+        "translatedAt": "2026-02-23T09:46:10.528Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -800,11 +800,11 @@
     }
   },
   "nudity-as-language-algorithm.md": {
-    "sourceHash": "0d0863a43c67",
+    "sourceHash": "8e356fe8879d",
     "translations": {
       "en": {
-        "hash": "de8b65d349bd",
-        "translatedAt": "2026-02-22T08:40:29.753730",
+        "hash": "ae5427c3881d",
+        "translatedAt": "2026-02-23T09:46:22.810Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -820,11 +820,11 @@
     }
   },
   "online-learning-resource-war.md": {
-    "sourceHash": "b3d6d7f1fc30",
+    "sourceHash": "309a90661b0b",
     "translations": {
       "en": {
-        "hash": "b787c062428b",
-        "translatedAt": "2026-02-22T08:40:29.754760",
+        "hash": "968792501429",
+        "translatedAt": "2026-02-23T09:46:37.484Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -840,11 +840,11 @@
     }
   },
   "pandemic-liquid-world.md": {
-    "sourceHash": "c2ea35be3efa",
+    "sourceHash": "7f4704943091",
     "translations": {
       "en": {
-        "hash": "97ac0301c27c",
-        "translatedAt": "2026-02-22T08:40:29.755202",
+        "hash": "acb36f1fd2ba",
+        "translatedAt": "2026-02-23T09:46:45.299Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -860,11 +860,11 @@
     }
   },
   "personal-health-data-infrastructure.md": {
-    "sourceHash": "13815aa8820a",
+    "sourceHash": "ccb003e75143",
     "translations": {
       "en": {
-        "hash": "b6983aaaffff",
-        "translatedAt": "2026-02-22T01:42:42.726435",
+        "hash": "6f265b954856",
+        "translatedAt": "2026-02-23T09:47:25.629Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -880,11 +880,11 @@
     }
   },
   "personal-strategy-in-ai-storm.md": {
-    "sourceHash": "67a0760f0391",
+    "sourceHash": "b137672b3463",
     "translations": {
       "en": {
-        "hash": "2efef2987430",
-        "translatedAt": "2026-02-22T08:40:29.755618",
+        "hash": "f3a83dc8a26f",
+        "translatedAt": "2026-02-23T09:47:38.339Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -900,11 +900,11 @@
     }
   },
   "post-code-era-taste.md": {
-    "sourceHash": "07a136936f80",
+    "sourceHash": "0695a94d5a5a",
     "translations": {
       "en": {
-        "hash": "71da7fe63afb",
-        "translatedAt": "2026-02-22T08:40:29.756034",
+        "hash": "4986234aa8d6",
+        "translatedAt": "2026-02-23T09:47:49.469Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -920,11 +920,11 @@
     }
   },
   "quiet-edge-thirteen-notes.md": {
-    "sourceHash": "96c52b556229",
+    "sourceHash": "0f41c11c8a46",
     "translations": {
       "en": {
-        "hash": "49dfb1c24578",
-        "translatedAt": "2026-02-22T08:40:29.756413",
+        "hash": "9f474d03b696",
+        "translatedAt": "2026-02-23T09:48:04.962Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -940,11 +940,11 @@
     }
   },
   "reformation-printing-politics.md": {
-    "sourceHash": "fe750faea788",
+    "sourceHash": "f1dc1c25bbf7",
     "translations": {
       "en": {
-        "hash": "e5623df0d725",
-        "translatedAt": "2026-02-22T08:40:29.756934",
+        "hash": "4f4cd7ba12fe",
+        "translatedAt": "2026-02-23T09:48:16.719Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -960,11 +960,11 @@
     }
   },
   "refuse-follower-be-builder.md": {
-    "sourceHash": "d675f56ef0d1",
+    "sourceHash": "5353b8b7fb1b",
     "translations": {
       "en": {
-        "hash": "17d73eef4030",
-        "translatedAt": "2026-02-22T08:40:29.757355",
+        "hash": "6783e4140024",
+        "translatedAt": "2026-02-23T09:48:36.605Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -980,11 +980,11 @@
     }
   },
   "remote-work-cruel-truth.md": {
-    "sourceHash": "a77afc52b28d",
+    "sourceHash": "58a4c6ba2bcb",
     "translations": {
       "en": {
-        "hash": "87ad1c178144",
-        "translatedAt": "2026-02-22T08:40:29.757786",
+        "hash": "e0c06ceaed7d",
+        "translatedAt": "2026-02-23T09:48:49.865Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1000,11 +1000,11 @@
     }
   },
   "riding-wave-or-drowning.md": {
-    "sourceHash": "3bfd4c6e72c1",
+    "sourceHash": "0d561f315a76",
     "translations": {
       "en": {
-        "hash": "365140c05b63",
-        "translatedAt": "2026-02-22T08:40:29.758243",
+        "hash": "b6c2aba2fc35",
+        "translatedAt": "2026-02-23T09:49:00.470Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1020,11 +1020,11 @@
     }
   },
   "safer-4-ai-governance.md": {
-    "sourceHash": "a16555b1df64",
+    "sourceHash": "8cee5ecea70f",
     "translations": {
       "en": {
-        "hash": "52eba3eabcee",
-        "translatedAt": "2026-02-22T08:40:29.758652",
+        "hash": "584699afe374",
+        "translatedAt": "2026-02-23T09:49:12.648Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1040,11 +1040,11 @@
     }
   },
   "sam-altman-sora-energy-ai.md": {
-    "sourceHash": "12c32b70c9ee",
+    "sourceHash": "8b01a482eb66",
     "translations": {
       "en": {
-        "hash": "5ef9492ff608",
-        "translatedAt": "2026-02-22T08:40:29.759136",
+        "hash": "12975929bd1b",
+        "translatedAt": "2026-02-23T09:49:24.806Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1060,11 +1060,11 @@
     }
   },
   "same-sex-marriage-theology.md": {
-    "sourceHash": "6fcd5e51861d",
+    "sourceHash": "18fc3becbf25",
     "translations": {
       "en": {
-        "hash": "1bfc800166ec",
-        "translatedAt": "2026-02-22T08:40:29.759603",
+        "hash": "088fc8768592",
+        "translatedAt": "2026-02-23T09:49:37.957Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1080,11 +1080,11 @@
     }
   },
   "shiseido-gic-style-over-trend.md": {
-    "sourceHash": "9e282bcc02e7",
+    "sourceHash": "bf0afd6ff8b3",
     "translations": {
       "en": {
-        "hash": "f09b5bc74800",
-        "translatedAt": "2026-02-22T08:40:29.760286",
+        "hash": "db083663f88b",
+        "translatedAt": "2026-02-23T09:49:46.020Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1100,11 +1100,11 @@
     }
   },
   "slash-career-discipline.md": {
-    "sourceHash": "eda59b95cd1c",
+    "sourceHash": "0a52d2ad2166",
     "translations": {
       "en": {
-        "hash": "ec481a45ad73",
-        "translatedAt": "2026-02-22T08:40:29.760736",
+        "hash": "80d4102c780c",
+        "translatedAt": "2026-02-23T09:49:59.865Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1120,11 +1120,11 @@
     }
   },
   "social-media-value-spectrum.md": {
-    "sourceHash": "9ba753025bd4",
+    "sourceHash": "afce016e2a30",
     "translations": {
       "en": {
-        "hash": "1d860425ef67",
-        "translatedAt": "2026-02-22T08:40:29.761286",
+        "hash": "4da6eca981c7",
+        "translatedAt": "2026-02-23T09:50:10.549Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1140,11 +1140,11 @@
     }
   },
   "sovereign-ai-digital-autonomy.md": {
-    "sourceHash": "7b5ed3ce770b",
+    "sourceHash": "1822a979884d",
     "translations": {
       "en": {
-        "hash": "f933112a30e9",
-        "translatedAt": "2026-02-22T08:40:29.761686",
+        "hash": "35819da9078b",
+        "translatedAt": "2026-02-23T09:50:20.827Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1160,11 +1160,11 @@
     }
   },
   "system-vs-intuition-planning.md": {
-    "sourceHash": "f5e6fda5e409",
+    "sourceHash": "ab820acc42f8",
     "translations": {
       "en": {
-        "hash": "fe48fa9cb315",
-        "translatedAt": "2026-02-22T08:40:29.762080",
+        "hash": "d58da749d5c6",
+        "translatedAt": "2026-02-23T09:50:33.139Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1180,11 +1180,11 @@
     }
   },
   "taiwan-semiconductor-tenfold-leap.md": {
-    "sourceHash": "6f39afaf3bf1",
+    "sourceHash": "524c3c1841ba",
     "translations": {
       "en": {
-        "hash": "b7769fb897e4",
-        "translatedAt": "2026-02-22T08:40:29.762781",
+        "hash": "97c44442b8a9",
+        "translatedAt": "2026-02-23T09:50:47.919Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1200,11 +1200,11 @@
     }
   },
   "traffic-beyond-currency.md": {
-    "sourceHash": "6440dba39566",
+    "sourceHash": "b285f4923327",
     "translations": {
       "en": {
-        "hash": "76e01c81994e",
-        "translatedAt": "2026-02-22T08:40:29.763304",
+        "hash": "1e709ae5c2cc",
+        "translatedAt": "2026-02-23T09:51:01.336Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1220,11 +1220,11 @@
     }
   },
   "world-outlook-2030.md": {
-    "sourceHash": "dfae5dd1f8d6",
+    "sourceHash": "0a01c56a0e46",
     "translations": {
       "en": {
-        "hash": "522fa0a0dafa",
-        "translatedAt": "2026-02-22T08:40:29.764009",
+        "hash": "012c10240bfc",
+        "translatedAt": "2026-02-23T09:51:17.157Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1240,11 +1240,11 @@
     }
   },
   "multi-model-collab-website-rebuild.md": {
-    "sourceHash": "01c539e7b135",
+    "sourceHash": "74a628842634",
     "translations": {
       "en": {
-        "hash": "f3478d1f0705",
-        "translatedAt": "2026-02-22T11:56:09.452Z",
+        "hash": "13d2887087a4",
+        "translatedAt": "2026-02-23T09:45:47.196Z",
         "model": "claude-sonnet-4"
       },
       "ja": {

@@ -1,15 +1,16 @@
 ---
-title: "If I Were a Student, I'd Study AI: Jensen Huang on the Decisive Edge in the Future Workplace"
-description: "Nvidia CEO Jensen Huang argues that the key to future career success lies not in becoming an engineer, but in learning how to interact effectively with generative AI. Asking the right questions of AI is a new form of language competency requiring logic, structure, and clarity of purpose. Education and career preparation must pivot toward training in human-AI collaboration."
+title: If I Were a Student, I Would Learn AI: Jensen Huang on the Decisive Factor for the Future Workplace
+description: Nvidia CEO Jensen Huang points out that the decisive factor for the future workplace is not becoming an engineer, but learning how to interact with generative AI. Asking questions of AI is a new form of linguistic ability that requires logic, structure, and clear goal-setting. Future education and career preparation must shift toward "human-AI collaboration" training.
 date: 2025-05-23
 pillar: startup
+readingTime: 1
 ---
 
-## If I Were a Student, I'd Study AI
-### Jensen Huang on the Decisive Edge in the Future Workplace
+## If I Were a Student, I Would Learn AI
+### Jensen Huang on the Decisive Factor for the Future Workplace
 
-Jensen Huang points out that the decisive advantage of the future lies in knowing how to interact effectively with AI—treating it as an intelligent assistant that aids thinking.
-Interacting with AI is, at its core, "learning how to ask questions." This is a new form of language competency for our era.
+Jensen Huang points out that the decisive factor for the future is understanding how to interact effectively with AI, treating it as an intelligent assistant for thinking.
+Interacting with AI is fundamentally about "learning to ask questions." This is a new form of linguistic ability for our era.
 
-The future will no longer judge people by memorized knowledge, but by how they structure problems and collaborate with AI to complete tasks.
-Education must shift toward cultivating interaction skills, and career preparation must incorporate the ability to work alongside AI. AI is the collaborator and execution partner of the future.
+The future will no longer focus solely on knowledge retention, but on how you construct problems and collaborate with AI to complete tasks.
+Education must shift toward cultivating interactive capabilities, and career preparation must also incorporate AI collaboration skills. AI is the future collaborator and executive assistant.

@@ -1,23 +1,24 @@
 ---
-title: "The Life You Envy Is Already Someone Else's Miracle"
-description: "We often resent our circumstances through social comparison, forgetting that we already enjoy the 'civilization dividends' of stable electricity, healthcare, and freedom. Zoom out, and our ordinary daily lives are the miracles that billions dream of. Instead of agonizing over starting lines, we should learn humility and build our own irreplaceable path. The world isn't fair, but we can choose the angle from which we face it."
+title: The Life You Envy Is Already Someone Else's Miracle
+description: We often develop resentment toward our current situation through social media comparisons, forgetting that we already enjoy the "dividends of civilization" such as stable electricity, healthcare, and freedom. When we broaden our perspective, the ordinary daily life we possess is actually a miracle that billions of people on Earth dream of. Rather than being anxious about losing at the starting line, we should learn humility and build our own unique path. The world is not fair, but we can decide from what angle to face it.
 date: 2025-05-23
 pillar: life
+readingTime: 1
 ---
 
 ## The Life You Envy
 ### Is Already Someone Else's Miracle
 
-We spend our time envying other people's lives, forgetting that the life we live is already a miracle in someone else's eyes.
+We're always envying others' lives, yet we forget that the days we're living are already miracles in someone else's eyes.
 
 #### The Luxury of Civilization's Dividends
-Today, you can safely browse the internet, enjoy stable electricity and healthcare—already far beyond the daily reality of most people on this planet.
-We feel devastated about "not being able to afford our dream home." That frustration itself is a luxury granted by civilization.
+Today, your ability to safely browse the internet and enjoy stable electricity and healthcare already far exceeds the daily reality of most people on Earth.
+When we feel frustrated about "not being able to afford our ideal house," this frustration itself is a luxury afforded by civilization.
 
-#### Becoming the Only Path
-Kevin Kelly once said: "Don't try to be the best. Be the only."
-Instead of agonizing over losing at the starting line, build the path that only you can walk. What truly matters is whether you know who you are and how you choose to live.
+#### The Path to Becoming Unique
+Kevin Kelly once said: "Don't try to be the best, try to be the only one."
+Rather than being anxious about losing at the starting line, focus on building that path that only you can walk. What truly matters is whether you clearly know who you are and how you choose to live.
 
 #### Conclusion
-The world isn't fair, but our circumstances are already far better than the vast majority of people throughout history.
-Your life didn't start from zero. You're already standing on a road that was paved long ago. For many people, that road itself is the miracle.
+The world is not fair, but our circumstances are already far better than those of the vast majority of people throughout history.
+Your life doesn't start from zero—you're standing on a road that has already been paved. For many people, that road itself is the miracle.

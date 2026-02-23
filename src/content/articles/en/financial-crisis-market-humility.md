@@ -1,35 +1,49 @@
 ---
-title: "Awe Before the Unknown Tide: Market Lessons a Decade After the Financial Crisis"
-description: "Market movements often surpass individual linear predictions. Amid a global capital frenzy and complex economic systems, the only stance we can maintain is humility before the unknown."
+title: "Reverence for Unknown Tides: Market Lessons Ten Years After the Financial Crisis"
+description: "Market movements often transcend individual linear predictions. Facing capital surges and complex economic systems, the only thing we can maintain is humility toward the unknown."
 date: 2017-10-31
 pillar: life
+tags: ["金融海嘯", "市場觀察", "投資心理", "總體經濟", "謙卑"]
+readingTime: 1
 ---
 
-## Awe Before the Unknown Tide
-### Market Lessons a Decade After the Financial Crisis
+## Reverence for Unknown Tides
+### Market Lessons Ten Years After the Financial Crisis
 
-A decade after the financial crisis. Taiwan's stock index hit a five-year high.
+Ten years have passed since the financial crisis.
+Taiwan's stock index has reached a five-year high.
 
-Investors who followed the bearish sentiment and shorted the market had already been burned more times than they could count.
+If investors had followed the pessimistic market sentiment and chosen to short,
+they would have been carried out countless times by now.
 
-This wasn't unique to one market. U.S. equities across the Pacific and South Korean stocks to the north were similarly at five-year relative highs.
-
----
-
-### The Twin Fuels of Capital and Outlook
-
-What drives the market upward? Future expectations and capital with nowhere else to go.
-
-Expectations are the spark that ignites the market. Capital is the endless fuel.
-
-Central banks around the world have been printing money furiously. Excess liquidity desperately seeks a harbor. Sometimes it's hard to tell whether the situation is genuinely promising or simply drowning in surplus funds.
+This is not a phenomenon isolated to a single market.
+The U.S. stock market across the Pacific and South Korea's stock market to the north are similarly at relative five-year highs.
 
 ---
 
-### Humility Before Market Shifts
+### The Dual Fuel of Capital and Outlook
 
-Markets change too fast. We possess too much knowledge, yet too little true understanding.
+What is the driving force behind market rises?
+It is future outlook and capital with nowhere else to go.
 
-Whether the market rises or falls has nothing to do with which party holds power. It is a current that transcends geography and politics.
+Outlook is the spark that ignites markets.
+Capital is the inexhaustible fuel.
 
-Facing an unfathomable future and the tangled web of global capital, it is difficult not to feel humbled.
+The world is printing money frantically.
+Excess capital urgently needs to find an outlet for itself.
+This sometimes makes it hard to tell whether conditions are genuinely favorable or if it's simply too much hot money.
+
+---
+
+### Humbly Facing Market Upheavals
+
+Markets change too rapidly.
+We possess too much knowledge, but too little genuine understanding.
+
+Rises and falls have nothing to do with which political party governs.
+They are currents that transcend geography and politics.
+
+Facing an unfathomable future.
+Facing the intricate complexities of global capital dynamics.
+
+It's hard not to be humble.

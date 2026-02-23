@@ -1,50 +1,50 @@
 ---
-title: "Systems vs. Intuition: Cognitive Construction Behind Business Planning"
-description: "Human cognition operates through intuitive 'System 1' and rational 'System 2.' When guiding students to construct business websites, the greatest challenge is leading them beyond effortless intuition into the highly demanding rational system analysis. A business website is never merely a stack of empty pages—it must begin with commercial purpose, systematizing fragmented daily work through technological tools. This is not only a demonstration of technical capability, but also the psychological artistry of clarifying 'who we are' and 'what we provide.'"
+title: "The Duel Between System and Intuition: Cognitive Construction Behind Business Planning"
+description: "Human cognition operates through intuitive 'System 1' and rational 'System 2.' In guiding students to construct business websites, the greatest challenge is leading them to break free from effortless intuition and enter the highly demanding realm of rational systematic analysis. The birth of a business website is never merely stacking empty pages—it must begin with business purpose, systematizing fragmented daily operations through technological tools. This is not just a display of technical prowess, but a psychological art of clarifying 'who we are' and 'what we provide.'"
 date: 2018-08-09
 pillar: startup
 tags: ["認知科學", "專案管理", "商業企劃", "教育實踐", "系統思考"]
-readingTime: 4
+readingTime: 1
 ---
 
-## Systems vs. Intuition
+## The Duel Between System and Intuition
 ### Cognitive Construction Behind Business Planning
 
-In leading the summer project for the entrepreneurial spirit recognition class,
+In leading the summer project for the Entrepreneurial Spirit class,
 I introduced students to "dual-process theory."
 
-This explains two modes of human cognitive operation:
+This explains the two modes of human cognitive processing:
 - System 1: Intuitive, fast, effortless.
 - System 2: Rational, slow, highly demanding.
 
-I wanted them to understand that the upcoming project would be a high-tension activity requiring System 2 activation.
+I wanted them to understand that the upcoming project would be a high-intensity activity requiring System 2 activation.
 
 ---
 
-### The Foundational Logic of Business Websites
+### The Underlying Logic of Business Websites
 
 Four days into the project,
 the websites students have created currently contain only one page with virtually empty content.
 
-I must once again clarify the project's objective:
-We are not creating a school report, but rather building a "commercially viable website."
+I must clarify the project's objectives once again:
+We are not creating school reports, but rather "operationally viable business websites."
 
 This must be based on past sales experience, product copy, and customer interactions, systematically presenting information through technological tools.
 Only by establishing systematic solutions can we eliminate fragmented manual work.
 
 ---
 
-### Reverse Engineering Content from Purpose
+### Reverse Engineering from Purpose to Content
 
 Every website has its core mission.
-Educational websites provide knowledge, news websites deliver reports, while our goal is commercial conversion.
+Educational websites provide knowledge, news websites deliver reports, and our goal is business conversion.
 
 Therefore, when considering website content, we must first begin with "purpose," then reverse engineer the needs of operators and users.
 
-Key propositions that the frontend must clearly address include:
+The key propositions that the frontend must clearly address include:
 - Who are we?
 - What products or services do we provide?
-- What do our products look like? What is their appeal?
+- What does the product look like? What makes it attractive?
 - How do we plan to sell? How should consumers make purchases?
 
 ---
@@ -54,5 +54,5 @@ Key propositions that the frontend must clearly address include:
 Transforming these business logics into clear pages
 is both a psychological art and a technical discipline.
 
-It requires both profound editorial capability and solid technological support.
-This is why teams must collaborate through division of labor, collectively activating the demanding System 2, to transform ethereal ideas into concrete commercial power.
+It requires profound editorial capability as well as solid technological foundation.
+This is why teams must collaborate through division of labor, collectively activating the demanding System 2, to transform intangible ideas into concrete business force.
