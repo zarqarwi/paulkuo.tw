@@ -137,3 +137,4 @@
 {"timestamp":"2026-02-23T09:51:01.335Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":1205,"outputTokens":643,"costUSD":0.01326,"costTWD":0.43,"note":""}
 {"timestamp":"2026-02-23T09:51:17.156Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":1589,"outputTokens":909,"costUSD":0.018402,"costTWD":0.6,"note":""}
 {"timestamp":"2026-02-23T14:05:53.224Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":1318,"outputTokens":759,"costUSD":0.015339,"costTWD":0.5,"note":""}
+{"timestamp":"2026-02-23T13:59:37.000Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"cover-image","inputTokens":0,"outputTokens":0,"costUSD":0.080,"costTWD":2.60,"note":"refuse-follower-be-builder cover"}
