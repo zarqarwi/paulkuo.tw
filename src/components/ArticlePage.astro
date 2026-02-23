@@ -2,8 +2,9 @@
 /**
  * ArticlePage.astro — 共用文章詳情元件
  * AIO-optimized: Enhanced JSON-LD, semantic HTML, breadcrumbs
+ * v2: Added prev/next nav, related articles, author card, share buttons
  */
-import { render } from 'astro:content';
+import { render, getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import { LANGUAGES, type LangKey } from '../i18n';
@@ -25,6 +26,22 @@ const slug = article.id.replace(/\.md$/, '');
 const articleUrl = `${SITE.url}${basePath}/articles/${slug}`;
 const ogImageUrl = `${SITE.url}/og/${slug}.png`;
 const pillarLabel = lang === 'en' ? p.labelEn : p.label;
+
+// === Related articles & prev/next navigation ===
+const allArticles = (await getCollection(L.collectionName, ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const currentSlug = article.id.replace(/\.md$/, '');
+const currentIndex = allArticles.findIndex(a => a.id === article.id);
+
+// Prev = older (next index), Next = newer (prev index)
+const prevArticle = currentIndex < allArticles.length - 1 ? allArticles[currentIndex + 1] : null;
+const nextArticle = currentIndex > 0 ? allArticles[currentIndex - 1] : null;
+
+// Same-pillar related articles (exclude self), max 3
+const relatedArticles = allArticles
+  .filter(a => a.data.pillar === pillar && a.id.replace(/\.md$/, '') !== currentSlug)
+  .slice(0, 3);
 
 // Estimate word count from raw body (for schema)
 const rawBody = article.body || '';
@@ -112,6 +129,20 @@ const schemaJson = JSON.stringify({
 
 // Canonical URL for this specific language version
 const canonicalUrl = articleUrl;
+
+// i18n labels
+const i = {
+  prev: lang === 'en' ? 'Previous' : lang === 'ja' ? '前の記事' : '上一篇',
+  next: lang === 'en' ? 'Next' : lang === 'ja' ? '次の記事' : '下一篇',
+  related: lang === 'en' ? 'Related Articles' : lang === 'ja' ? '関連記事' : '延伸閱讀',
+  share: lang === 'en' ? 'Share' : lang === 'ja' ? 'シェア' : '分享',
+  backToAll: lang === 'en' ? 'All articles' : lang === 'ja' ? '記事一覧へ' : '所有文章',
+  authorBio: lang === 'en'
+    ? 'Rebuilding order at the intersection of technology and civilization.'
+    : lang === 'ja'
+    ? '技術と文明の交差点で秩序を再構築する。'
+    : '在技術與文明的交匯處，重建秩序。',
+};
 ---
 
 <BaseLayout
@@ -159,5 +190,68 @@ const canonicalUrl = articleUrl;
         {tags.map(tag => <span class="article-tag" itemprop="keywords">{tag}</span>)}
       </footer>
     )}
+
+    {/* === Author Card === */}
+    <div class="author-card">
+      <img src="/paul-photo.png" alt="Paul Kuo" class="author-avatar" width="64" height="64" loading="lazy" />
+      <div class="author-info">
+        <strong>Paul Kuo 郭曜郎</strong>
+        <p>{i.authorBio}</p>
+      </div>
+    </div>
+
+    {/* === Share Buttons === */}
+    <div class="share-buttons">
+      <span class="share-label">{i.share}</span>
+      <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(title)}`}
+         target="_blank" rel="noopener" class="share-btn" aria-label="Share on X">𝕏</a>
+      <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`}
+         target="_blank" rel="noopener" class="share-btn" aria-label="Share on LinkedIn">in</a>
+      <a href={`https://www.threads.net/intent/post?text=${encodeURIComponent(title + ' ' + articleUrl)}`}
+         target="_blank" rel="noopener" class="share-btn" aria-label="Share on Threads">◉</a>
+    </div>
+
+    {/* === Prev / Next Navigation === */}
+    <nav class="article-nav" aria-label={lang === 'en' ? 'Article navigation' : '文章導航'}>
+      {prevArticle ? (
+        <a href={`${basePath}/articles/${prevArticle.id.replace(/\.md$/, '')}`} class="article-nav-link prev">
+          <span class="nav-label">← {i.prev}</span>
+          <span class="nav-title">{prevArticle.data.title}</span>
+        </a>
+      ) : <div />}
+      {nextArticle ? (
+        <a href={`${basePath}/articles/${nextArticle.id.replace(/\.md$/, '')}`} class="article-nav-link next">
+          <span class="nav-label">{i.next} →</span>
+          <span class="nav-title">{nextArticle.data.title}</span>
+        </a>
+      ) : <div />}
+    </nav>
+
+    {/* === Related Articles === */}
+    {relatedArticles.length > 0 && (
+      <section class="related-articles" aria-label={i.related}>
+        <h2>{i.related}</h2>
+        <div class="related-grid">
+          {relatedArticles.map(ra => {
+            const rp = PILLAR_MAP[ra.data.pillar];
+            return (
+              <a href={`${basePath}/articles/${ra.id.replace(/\.md$/, '')}`} class="related-card">
+                <span class="related-pillar" style={`color:${rp.color}`}>
+                  <span class="pillar-dot" style={`background:${rp.color}`}></span>
+                  {lang === 'en' ? rp.labelEn : rp.label}
+                </span>
+                <h3>{ra.data.title}</h3>
+                <time>{ra.data.date.toLocaleDateString(L.dateLocale, L.dateOptions)}</time>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    {/* === Back to Blog CTA === */}
+    <div class="article-back">
+      <a href={`${basePath}/blog`} class="back-to-blog">← {i.backToAll}</a>
+    </div>
   </article>
 </BaseLayout>

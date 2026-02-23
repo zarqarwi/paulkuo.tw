@@ -621,3 +621,176 @@ html[lang="ja"] .about-content p {
 }
 
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ============================================
+   Article Page Enhancements (v2)
+   ============================================ */
+
+/* Author Card */
+.author-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  margin: 2.5rem 0 1.5rem;
+  background: var(--bg-card, #f8f7f4);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle, #e5e2db);
+}
+.author-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.author-info strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+.author-info p {
+  font-size: 0.9rem;
+  color: var(--text-muted, #8a8578);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Share Buttons */
+.share-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0 2rem;
+}
+.share-label {
+  font-size: 0.9rem;
+  color: var(--text-muted, #8a8578);
+}
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-subtle, #e5e2db);
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a574f);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.share-btn:hover {
+  border-color: var(--accent-ai, #2563eb);
+  color: var(--accent-ai, #2563eb);
+  background: rgba(37,99,235,0.05);
+}
+
+/* Article Prev/Next Navigation */
+.article-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 3rem 0 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-subtle, #e5e2db);
+}
+.article-nav-link {
+  padding: 1.25rem;
+  border: 1px solid var(--border-subtle, #e5e2db);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.article-nav-link:hover {
+  border-color: var(--accent-ai, #2563eb);
+  background: var(--bg-card, #f8f7f4);
+}
+.article-nav-link.next { text-align: right; }
+.article-nav .nav-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted, #8a8578);
+  margin-bottom: 0.4rem;
+}
+.article-nav .nav-title {
+  display: block;
+  font-weight: 500;
+  color: var(--text-primary, #2c2a25);
+  line-height: 1.4;
+  font-size: 0.95rem;
+}
+
+/* Related Articles */
+.related-articles {
+  margin: 2.5rem 0;
+}
+.related-articles h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1.25rem;
+  font-weight: 600;
+}
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+.related-card {
+  padding: 1.25rem;
+  border: 1px solid var(--border-subtle, #e5e2db);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.related-card:hover {
+  border-color: var(--accent-ai, #2563eb);
+  transform: translateY(-2px);
+}
+.related-card h3 {
+  font-size: 1rem;
+  color: var(--text-primary, #2c2a25);
+  margin: 0.6rem 0 0.4rem;
+  line-height: 1.4;
+}
+.related-card time {
+  font-size: 0.85rem;
+  color: var(--text-muted, #8a8578);
+}
+.related-pillar { font-size: 0.8rem; }
+
+/* Back to Blog CTA */
+.article-back {
+  text-align: center;
+  margin: 2rem 0 3rem;
+}
+.back-to-blog {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border: 1px solid var(--border-subtle, #e5e2db);
+  border-radius: 24px;
+  color: var(--text-secondary, #5a574f);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.back-to-blog:hover {
+  border-color: var(--accent-ai, #2563eb);
+  color: var(--text-primary, #2c2a25);
+  background: var(--bg-card, #f8f7f4);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .article-nav {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .article-nav-link.next { text-align: left; }
+  .related-grid {
+    grid-template-columns: 1fr;
+  }
+  .author-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
