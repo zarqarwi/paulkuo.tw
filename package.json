@@ -1,7 +1,7 @@
 {
   "name": "paulkuo-astro",
   "type": "module",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "scripts": {
     "dev": "astro dev",
     "fetch-feed": "node scripts/fetch-feed.mjs",
