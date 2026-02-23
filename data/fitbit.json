@@ -1,17 +1,13 @@
 {
-  "updated": "2026-02-22T21:13:22+08:00",
+  "updated": "2026-02-23T08:18:34+08:00",
   "today": {
-    "steps": 5676,
+    "steps": 263,
     "goal": 10000,
-    "distance_km": 3.87,
-    "calories": 860,
+    "distance_km": 0.18,
+    "calories": 67,
     "resting_hr": 68
   },
   "week": [
-    {
-      "date": "2026-02-15",
-      "steps": 6951
-    },
     {
       "date": "2026-02-16",
       "steps": 11606
@@ -38,9 +34,11 @@
     },
     {
       "date": "2026-02-22",
-      "steps": 5676
+      "steps": 5876
+    },
+    {
+      "date": "2026-02-23",
+      "steps": 263
     }
-  ],
-  "token_status": "expired",
-  "token_error": "2026-02-23T08:11:10+08:00"
+  ]
 }
