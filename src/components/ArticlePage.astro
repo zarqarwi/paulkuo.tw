@@ -155,6 +155,7 @@ const i = {
   canonicalUrl={canonicalUrl}>
 
   <article class="article-page" itemscope itemtype="https://schema.org/BlogPosting">
+    <!-- ⚠️ 不要用 <nav> tag — 會和 BaseLayout 的 main-nav 衝突導致定位異常。用 div + role="navigation" 代替 -->
     <div class="article-breadcrumb" role="navigation" aria-label="breadcrumb">
       <ol>
         <li><a href={`${basePath}/`}>{lang === 'en' ? 'Home' : '首頁'}</a></li>
