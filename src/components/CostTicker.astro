@@ -104,7 +104,7 @@ const tickerData = JSON.stringify({
   {hasData ? (
     <div class="ticker-inner">
       <!-- 本月費用 + sparkline -->
-      <div class="ticker-item ticker-primary">
+      <div class="ticker-item ticker-primary" title="本月 AI API 費用（Anthropic + OpenAI + xAI + Google + Perplexity），折線為近 14 日趨勢，百分比為近 7 日較前 7 日變化">
         <span class="ticker-label">本月 API</span>
         <span class="ticker-value">${monthUSD.toFixed(2)}</span>
         <span class="ticker-sub">NT${(monthUSD * 32.5).toFixed(0)}</span>
@@ -115,37 +115,37 @@ const tickerData = JSON.stringify({
       </div>
       <div class="ticker-sep"></div>
       <!-- 日均 -->
-      <div class="ticker-item">
+      <div class="ticker-item" title="每日平均 API 費用（全期間）">
         <span class="ticker-label">日均</span>
         <span class="ticker-value">${avgPerDay.toFixed(3)}</span>
       </div>
       <div class="ticker-sep"></div>
       <!-- API calls -->
-      <div class="ticker-item">
+      <div class="ticker-item" title="API 呼叫總次數（全期間累計）">
         <span class="ticker-label">API 呼叫</span>
         <span class="ticker-value">{records.length.toLocaleString()}</span>
       </div>
       <div class="ticker-sep"></div>
       <!-- Token -->
-      <div class="ticker-item">
+      <div class="ticker-item" title="輸入 + 輸出 Token 總量（K = 千）">
         <span class="ticker-label">Token</span>
         <span class="ticker-value">{(totalTokens / 1000).toFixed(0)}K</span>
       </div>
       <div class="ticker-sep"></div>
       <!-- 累計 -->
-      <div class="ticker-item">
+      <div class="ticker-item" title="全期間 API 費用累計">
         <span class="ticker-label">累計</span>
         <span class="ticker-value">${totalUSD.toFixed(2)}</span>
       </div>
       <div class="ticker-sep"></div>
       <!-- 步數 -->
-      <div class="ticker-item">
+      <div class="ticker-item" title="今日 Fitbit 步數（即時更新）">
         <span class="ticker-label">🚶 步數</span>
         <span class="ticker-value">{fitbitSteps.toLocaleString()}</span>
       </div>
       <div class="ticker-sep"></div>
       <!-- AI 協作 -->
-      <div class="ticker-item">
+      <div class="ticker-item" title="今日 AI 協作時間 / 本月累計（Timing App 追蹤）">
         <span class="ticker-label">⏱ AI 協作</span>
         <span class="ticker-value">{aiHoursToday}h</span>
         <span class="ticker-sub">月{aiHoursMonth}h</span>
@@ -153,7 +153,7 @@ const tickerData = JSON.stringify({
       {stockPrice > 0 && (
         <>
           <div class="ticker-sep"></div>
-          <div class="ticker-item">
+          <div class="ticker-item" title="CyberSolutions (436A.T) 東京證交所即時股價">
             <span class="ticker-label">📈 {stockName}</span>
             <span class="ticker-value">¥{stockPrice.toLocaleString()}</span>
             <span class={`ticker-change ${stockChange >= 0 ? 'up' : 'down'}`}>
