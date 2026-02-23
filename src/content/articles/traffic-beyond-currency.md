@@ -4,7 +4,7 @@ description: "當今社會盲目追逐「流量變現」，將人類的影響力
 date: 2022-06-22
 pillar: ai
 tags: ["流量變現", "信任經濟", "社會影響力", "品牌定調", "網路生態"]
-readingTime: 5
+readingTime: 1
 ---
 
 ## 流量不只是貨幣

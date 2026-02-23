@@ -4,7 +4,7 @@ description: "面對道瓊指數狂瀉兩千點與前所未見的全球封城，
 date: 2020-03-13
 pillar: ai
 tags: ["股市崩盤", "知識邊界", "否證論", "黑天鵝", "敬畏市場"]
-readingTime: 4
+readingTime: 1
 ---
 
 ## 崩盤的啟示

@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import feedJson from '../data/feed.json';
 import CostAnalytics from '../components/CostAnalytics.astro';
+import { calcReadingTime } from '../utils/readingTime';
 const feedData = feedJson.items || [];
 
 const allArticles = (await getCollection('articles', ({ data }) => !data.draft && data.featured))
@@ -137,7 +138,7 @@ const homeSchema = JSON.stringify({
             <p>{article.data.description}</p>
             <div class="content-card-footer">
               <span>{dateStr}</span>
-              {article.data.readingTime && <span class="reading-time">· 約 {article.data.readingTime} 分鐘</span>}
+              {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· 約 {rt} 分鐘</span> : null; })()}
               {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
             </div>
           </a>

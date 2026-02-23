@@ -4,7 +4,7 @@ description: "過去的社會深信好學歷是成功的保證，造就了許多
 date: 2018-09-24
 pillar: startup
 tags: ["群育", "團隊合作", "教育反思", "鐵人三項", "組織協作"]
-readingTime: 5
+readingTime: 1
 ---
 
 ## 獨行者的終結

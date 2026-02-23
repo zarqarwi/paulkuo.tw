@@ -5,7 +5,7 @@ date: 2025-05-25
 pillar: life
 tags: ["自我修煉", "人際關係", "自律", "識人", "生活哲學"]
 draft: false
-readingTime: 5
+readingTime: 1
 ---
 
 生活是一場修煉，而語言與態度是我們外顯的鋒芒。以下十三則觀察，是關於自持與識人的提醒。

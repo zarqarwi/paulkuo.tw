@@ -5,7 +5,7 @@ date: 2023-02-17
 pillar: life
 tags: ["資生堂", "品牌美學", "風格", "創新", "個人品牌"]
 platform: Medium
-readingTime: 4
+readingTime: 1
 ---
 
 ## 資生堂 GIC 的啟示

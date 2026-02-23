@@ -5,7 +5,7 @@ date: 2025-05-24
 pillar: faith
 tags: ["裸露語言", "演算法", "注意力經濟", "身體主權", "媒體素養"]
 draft: false
-readingTime: 6
+readingTime: 1
 ---
 
 在注意力經濟主導的時代。

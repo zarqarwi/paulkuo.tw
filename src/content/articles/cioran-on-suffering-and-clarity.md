@@ -9,7 +9,7 @@ tags: ["閱讀筆記", "存在主義", "苦難", "自我反思", "文明內在",
 platform: "Medium"
 featured: true
 draft: false
-readingTime: 7
+readingTime: 2
 ---
 
 有些書不是用來學習的，而是用來對抗麻木。

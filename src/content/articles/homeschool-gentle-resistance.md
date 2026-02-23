@@ -4,7 +4,7 @@ description: "選擇自學教育不是尋找升學捷徑，而是對工業文明
 date: 2023-05-27
 pillar: startup
 tags: ["自學教育", "教育哲學", "家長角色", "溫和對抗", "批判思維"]
-readingTime: 5
+readingTime: 2
 ---
 
 ## 自學教育的真相

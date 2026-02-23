@@ -5,7 +5,7 @@ date: 2025-05-23
 pillar: startup
 tags: ["黃仁勳", "AI教育", "人機協作", "職場轉型", "思維訓練"]
 draft: false
-readingTime: 5
+readingTime: 1
 ---
 
 如果你今天是學生，你該學什麼？

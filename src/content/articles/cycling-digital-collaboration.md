@@ -4,7 +4,7 @@ description: "一支簡單的騎車紀錄影片，背後是無數跨國企業的
 date: 2017-10-30
 pillar: startup
 tags: ["數位協作", "API生態系", "合作競爭", "資源整合", "典範轉移"]
-readingTime: 4
+readingTime: 1
 ---
 
 ## 從騎車軌跡看數位協作 

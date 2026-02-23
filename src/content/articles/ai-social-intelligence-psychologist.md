@@ -5,7 +5,7 @@ date: 2025-10-05
 pillar: ai
 tags: ["社會智能", "ChatGPT", "心理學", "人機協作", "AI倫理"]
 draft: false
-readingTime: 5
+readingTime: 2
 ---
 
 想像一下，當你向朋友或諮商師傾訴煩惱時，你最渴望的是什麼？無非是「被理解」。

@@ -4,7 +4,7 @@ description: "平台與數據能降低資訊不對稱，但決策仍需仰賴人
 date: 2017-03-03
 pillar: ai
 tags: ["AI 決策", "演算法崇拜", "資訊不對稱", "人性判斷", "科技批判"]
-readingTime: 5
+readingTime: 2
 ---
 
 ## 演算法無法取代的重量 

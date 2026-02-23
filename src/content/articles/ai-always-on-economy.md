@@ -9,7 +9,7 @@ tags: ["AI", "組織轉型", "經濟結構", "文明轉折", "Agent", "全天候
 platform: "Medium"
 featured: true
 draft: false
-readingTime: 10
+readingTime: 3
 ---
 
 > AI 的真正衝擊，不在於效率提升，而在於秩序重寫。

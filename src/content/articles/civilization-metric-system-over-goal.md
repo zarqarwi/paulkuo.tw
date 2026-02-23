@@ -4,7 +4,7 @@ description: "文明的進步不能僅以經濟成長或生產率來衡量，「
 date: 2022-06-26
 pillar: life
 tags: ["文明指標", "風險管理", "系統思維", "幸福定義", "永續生活"]
-readingTime: 5
+readingTime: 1
 ---
 
 ## 被忽略的文明指標

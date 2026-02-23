@@ -5,7 +5,7 @@ date: 2025-05-25
 pillar: life
 tags: ["2030展望", "AGI", "量子計算", "氣候韌性", "未來預測"]
 draft: false
-readingTime: 6
+readingTime: 2
 ---
 
 2030 年的世界藍圖，正由快速迭代的科技、變化的社會結構與全球挑戰共同繪製。

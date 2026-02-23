@@ -7,6 +7,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import { LANGUAGES, type LangKey } from '../i18n';
+import { calcReadingTime } from '../utils/readingTime';
 
 interface Props {
   lang: LangKey;
@@ -98,7 +99,7 @@ const blogSchema = JSON.stringify({
             <p class="card-excerpt">{article.data.description}</p>
             <div class="content-card-footer">
               <time datetime={isoDate}>{dateStr}</time>
-              {article.data.readingTime && <span class="reading-time">· {lang === 'en' ? `${article.data.readingTime} min` : lang === 'ja' ? `約${article.data.readingTime}分` : `約 ${article.data.readingTime} 分鐘`}</span>}
+              {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· {lang === 'en' ? `${rt} min` : lang === 'ja' ? `約${rt}分` : `約 ${rt} 分鐘`}</span> : null; })()}
               {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
             </div>
           </a>

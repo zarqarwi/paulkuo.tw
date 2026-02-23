@@ -4,7 +4,7 @@ description: "我們長年享受免費的網路基礎建設，本質上已成為
 date: 2018-01-14
 pillar: faith
 tags: ["數位殖民", "演算法調整", "平台霸權", "資源依賴", "商業反思"]
-readingTime: 4
+readingTime: 1
 ---
 
 ## 數位殖民的清醒 

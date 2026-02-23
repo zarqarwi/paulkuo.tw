@@ -4,7 +4,7 @@ description: "數位貨幣揭示了電力、演算與貨幣的連動關係。當
 date: 2018-01-04
 pillar: ai
 tags: ["演算力", "知識經濟", "數位貨幣", "網紅現象", "價值轉換"]
-readingTime: 5
+readingTime: 1
 ---
 
 ## 演算本位時代 

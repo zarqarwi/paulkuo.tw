@@ -8,6 +8,7 @@ import { render, getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import { LANGUAGES, type LangKey } from '../i18n';
+import { calcReadingTime } from '../utils/readingTime';
 import { getArticleEntities } from '../utils/entities';
 
 interface Props {
@@ -19,7 +20,8 @@ const { article, lang } = Astro.props;
 const L = LANGUAGES[lang];
 const basePath = L.pathPrefix || '';
 const { Content } = await render(article);
-const { title, subtitle, description, abstract, date, updated, pillar, tags, readingTime } = article.data;
+const { title, subtitle, description, abstract, date, updated, pillar, tags } = article.data;
+const readingTime = calcReadingTime(article.body || '');
 const p = PILLAR_MAP[pillar];
 const dateStr = date.toLocaleDateString(L.dateLocale, L.dateOptions);
 const slug = article.id.replace(/\.md$/, '');
@@ -156,12 +158,7 @@ const i = {
 
   <article class="article-page" itemscope itemtype="https://schema.org/BlogPosting">
     <!-- ⚠️ 不要用 <nav> tag — 會和 BaseLayout 的 main-nav 衝突導致定位異常。用 div + role="navigation" 代替 -->
-    <div class="article-breadcrumb" role="navigation" aria-label="breadcrumb">
-      <ol>
-        <li><a href={`${basePath}/`}>{lang === 'en' ? 'Home' : '首頁'}</a></li>
-        <li><a href={`${basePath}/blog`}>{lang === 'en' ? 'Articles' : '思想'}</a></li>
-      </ol>
-    </div>
+    <!-- Breadcrumb: visual hidden, schema JSON preserved for SEO -->
 
     <header class="article-meta">
       <div class="article-pillar" style={`color:${p.color}`}>

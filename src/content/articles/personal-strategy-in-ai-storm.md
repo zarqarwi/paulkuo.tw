@@ -9,7 +9,7 @@ tags: ["AI轉型", "個人戰略", "角色定位", "工作流設計", "判斷力
 platform: "Medium"
 featured: true
 draft: false
-readingTime: 8
+readingTime: 2
 ---
 
 當生成式 AI 爆發，很多人第一個反應是焦慮。寫作被取代、程式被生成、報告被自動完成。彷彿所有過去花時間練習的技能，一夕之間失去稀缺性。

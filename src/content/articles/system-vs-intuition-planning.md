@@ -4,7 +4,7 @@ description: "人類的認知運作分為直觀的「系統一」與理性的「
 date: 2018-08-09
 pillar: startup
 tags: ["認知科學", "專案管理", "商業企劃", "教育實踐", "系統思考"]
-readingTime: 4
+readingTime: 1
 ---
 
 ## 系統與直覺的對決

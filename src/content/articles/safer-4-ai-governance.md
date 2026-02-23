@@ -5,7 +5,7 @@ date: 2025-05-23
 pillar: ai
 tags: ["AI治理", "Safer-4", "技術主權", "民主決策", "公民慢審"]
 draft: false
-readingTime: 6
+readingTime: 1
 ---
 
 真正深層次的失控，並不是技術的速度超越人類。

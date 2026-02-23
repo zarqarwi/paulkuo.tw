@@ -6,7 +6,7 @@ date: 2026-02-22
 pillar: ai
 tags: ["多模型協作", "WebMCP", "人機協作", "Claude", "Gemini", "語意化HTML", "知識管理"]
 draft: false
-readingTime: 6
+readingTime: 4
 ---
 
 最近，我終於做好我的個人網站。Domain name 買了多年，但是一直晾著。拜 AI 快速發展之賜，我沒有徒手刻每一行程式碼，也沒有把期待交給那些「一鍵生成」的工具，因為生成得快，bug 越多。看起來漂亮，也不代表資訊有秩序。

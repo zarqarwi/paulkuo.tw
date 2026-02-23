@@ -3,6 +3,7 @@ title: 個人健康數據基礎設施：從 10 年 Apple Health 到 AI 驅動的
 description: 我們並不是沒有資料，而是沒有基礎設施。這篇文章記錄了我如何從 iPhone 和 Apple Watch 匯出超過 10 年、300 萬筆健康數據，結合 Fitbit MCP 即時串接與 Claude AI，建立自己的個人健康基礎設施（Personal Health Infrastructure），並從中看見單一裝置永遠不會告訴你的事。
 date: 2026-02-21
 pillar: ai
+readingTime: 6
 ---
 
 ## 個人健康數據基礎設施

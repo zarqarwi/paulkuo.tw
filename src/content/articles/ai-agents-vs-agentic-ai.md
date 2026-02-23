@@ -5,7 +5,7 @@ date: 2025-05-23
 pillar: ai
 tags: ["AI Agents", "Agentic AI", "多代理系統", "能動智能體", "AI架構"]
 draft: false
-readingTime: 5
+readingTime: 1
 ---
 
 隨著生成式 AI 與多代理系統的快速發展。

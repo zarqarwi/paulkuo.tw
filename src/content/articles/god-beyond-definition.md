@@ -5,7 +5,7 @@ date: 2024-04-12
 pillar: faith
 tags: ["否定神學", "上帝", "語言的局限", "信仰", "神學反思"]
 platform: Medium
-readingTime: 5
+readingTime: 1
 ---
 
 ## 超越定義的上帝

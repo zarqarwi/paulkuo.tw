@@ -4,7 +4,7 @@ description: "社會對「斜槓」往往抱持著逃避體制、心猿意馬或
 date: 2018-02-11
 pillar: startup
 tags: ["斜槓青年", "職涯發展", "知識系統", "紀律", "專業養成"]
-readingTime: 5
+readingTime: 1
 ---
 
 ## 飛翔前的步行

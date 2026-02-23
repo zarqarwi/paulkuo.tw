@@ -5,7 +5,7 @@ date: 2022-10-27
 pillar: faith
 tags: ["尼布爾", "社會倫理", "群體心理", "道德", "組織行為"]
 platform: Medium
-readingTime: 5
+readingTime: 1
 ---
 
 ## 道德的人，不道德的社會

@@ -5,7 +5,7 @@ date: 2024-06-19
 pillar: faith
 tags: ["基要主義", "信仰反思", "神學", "自以為義", "宗教批判"]
 platform: Medium
-readingTime: 4
+readingTime: 1
 ---
 
 ## 基要主義的陷阱

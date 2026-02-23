@@ -5,7 +5,7 @@ date: 2025-05-24
 pillar: startup
 tags: ["後程式碼時代", "品味", "Vibe Coding", "人文素養", "AI協作"]
 draft: false
-readingTime: 5
+readingTime: 1
 ---
 
 當 AI 能寫出比我更乾淨、效率更高的程式碼時，我還能提供什麼？

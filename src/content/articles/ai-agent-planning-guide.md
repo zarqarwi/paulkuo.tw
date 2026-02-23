@@ -6,7 +6,7 @@ date: 2025-10-05
 pillar: startup
 tags: ["AI Agent", "自動化", "流程設計", "風險管理", "模組化"]
 draft: false
-readingTime: 5
+readingTime: 1
 ---
 
 這份指引是為了幫助我們在規劃、部署 AI Agent 時，能夠少踩雷。並且讓每一個 Agent 的落地，都帶來實際價值。

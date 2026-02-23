@@ -4,7 +4,7 @@ description: "組織的僵化源於過度分工帶來的資訊不透明。真正
 date: 2018-01-26
 pillar: startup
 tags: ["穀倉效應", "組織僵化", "業務開發", "跨界溝通", "資訊通透"]
-readingTime: 5
+readingTime: 1
 ---
 
 ## 跨越組織的僵化 

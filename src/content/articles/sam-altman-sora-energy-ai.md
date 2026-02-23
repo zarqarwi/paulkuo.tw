@@ -5,7 +5,7 @@ date: 2025-11-01
 pillar: ai
 tags: ["Sam Altman", "Sora", "能源", "AI基礎設施", "AGI"]
 draft: false
-readingTime: 5
+readingTime: 1
 ---
 
 Sam Altman 在 A16Z 這場訪談中，談的不是單一模型。而是支撐整個 AI 革命的系統性要素：能源、基礎設施、社會調適，以及如何真正建立一個可持續的 AI 生態系。

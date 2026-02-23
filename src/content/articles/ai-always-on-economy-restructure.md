@@ -4,7 +4,7 @@ description: "AI 不僅是工具，更是倒逼組織重構底層邏輯的系統
 date: 2025-04-21
 pillar: ai
 tags: ["AI經濟", "全天候運作", "組織重構", "人機協作", "MCP"]
-readingTime: 5
+readingTime: 1
 ---
 
 ## AI 時代的全天候經濟

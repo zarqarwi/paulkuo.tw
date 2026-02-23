@@ -5,7 +5,7 @@ date: 2025-11-08
 pillar: faith
 tags: ["語言哲學", "Gemini", "AI幻覺", "批判思維", "人機對話"]
 draft: false
-readingTime: 5
+readingTime: 1
 ---
 
 我與 Gemini Pro 2.5 進行了一場關於「語言與 AI 本質」的深刻對話。人類的語言本質上是不透明且模糊的。而 AI，正是建立在這種模糊性與不確定性之上的產物。

@@ -4,7 +4,7 @@ description: "社群動態牆是人類心理需求的投射器。我們選擇發
 date: 2017-10-27
 pillar: life
 tags: ["社群觀察", "知識焦慮", "資訊消費", "價值判斷", "人性反射"]
-readingTime: 4
+readingTime: 1
 ---
 
 ## 在資訊洪流中看見自己 

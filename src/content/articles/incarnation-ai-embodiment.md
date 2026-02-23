@@ -8,7 +8,7 @@ pillar: faith
 tags: ["道成肉身", "AI", "具身認知", "Embodied AI", "對齊問題", "神學", "人工智慧哲學"]
 platform: "論文"
 featured: true
-readingTime: 15
+readingTime: 5
 ---
 
 > 道成了肉身，住在我們中間，充充滿滿地有恩典，有真理。我們也見過他的榮光，正是父獨生子的榮光。——約翰福音 1:14

@@ -4,7 +4,7 @@ description: "數位轉型是一場宛如臨盆般「開五指」的痛苦過程
 date: 2019-12-30
 pillar: startup
 tags: ["數位轉型", "組織變革", "創新阻力", "權力結構", "企業管理"]
-readingTime: 5
+readingTime: 2
 ---
 
 ## 開五指的陣痛

@@ -5,7 +5,7 @@ date: 2025-05-24
 pillar: ai
 tags: ["主權AI", "數位主權", "技術自主", "AI治理", "地緣政治"]
 draft: false
-readingTime: 5
+readingTime: 1
 ---
 
 主權 AI（Sovereign AI）是一個迅速崛起且深具戰略意涵的概念。它代表一個國家或地區，在人工智慧技術發展上的獨立自主能力。
