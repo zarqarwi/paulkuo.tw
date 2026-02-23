@@ -212,7 +212,7 @@ const i = {
     </div>
 
     {/* === Prev / Next Navigation === */}
-    <nav class="article-nav" aria-label={lang === 'en' ? 'Article navigation' : '文章導航'}>
+    <div class="article-nav" aria-label={lang === 'en' ? 'Article navigation' : '文章導航'}>
       {prevArticle ? (
         <a href={`${basePath}/articles/${prevArticle.id.replace(/\.md$/, '')}`} class="article-nav-link prev">
           <span class="nav-label">← {i.prev}</span>
@@ -225,7 +225,7 @@ const i = {
           <span class="nav-title">{nextArticle.data.title}</span>
         </a>
       ) : <div />}
-    </nav>
+    </div>
 
     {/* === Related Articles === */}
     {relatedArticles.length > 0 && (

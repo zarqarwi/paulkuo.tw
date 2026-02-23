@@ -690,6 +690,7 @@ html[lang="ja"] .about-content p {
 
 /* Article Prev/Next Navigation */
 .article-nav {
+  position: static;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
