@@ -1077,6 +1077,53 @@ body.focus-mode .article-page {
   margin: 0 auto;
 }
 
+/* === Career Timeline === */
+.career-timeline {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+.career-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--brand-navy, #1b2d4f);
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--brand-navy, #1b2d4f);
+}
+.career-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+}
+.career-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.career-header strong {
+  font-size: 0.95rem;
+}
+.career-role {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 2px;
+}
+.career-period {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6b7280);
+  white-space: nowrap;
+}
+.career-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
 /* === Tags Link === */
 .tags-link {
   display: inline-block;
