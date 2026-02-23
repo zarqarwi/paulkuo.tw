@@ -802,3 +802,128 @@ html[lang="ja"] .about-content p {
     text-align: center;
   }
 }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--brand-navy);
+  color: rgba(255,255,255,0.8);
+  padding: 48px 24px 24px;
+  margin-top: 64px;
+}
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: start;
+}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+}
+.footer-tagline {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+  margin: 4px 0 0;
+}
+.footer-social-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+  display: block;
+  margin-bottom: 8px;
+}
+.footer-social-links {
+  display: flex;
+  gap: 8px;
+}
+.footer-social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.footer-social-links a:hover {
+  border-color: rgba(255,255,255,0.6);
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+}
+.footer-bottom {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+}
+.footer-rss {
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+.footer-rss:hover {
+  border-color: rgba(255,255,255,0.5);
+  color: #fff;
+}
+@media (max-width: 640px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ===== FONT SIZE TOGGLE ===== */
+.font-size-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 50;
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.font-size-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.font-size-btn:hover {
+  background: var(--bg-hover, rgba(0,0,0,0.05));
+  color: var(--text-primary);
+}
+.font-size-btn.active {
+  background: var(--brand-navy);
+  color: #fff;
+}
