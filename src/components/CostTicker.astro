@@ -3,6 +3,7 @@
  * CostTicker.astro — 首頁 API 費用 ticker bar
  * Apple Stocks widget 風格：迷你折線圖 + 數字
  */
+import { version } from '../../package.json';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
@@ -103,6 +104,12 @@ const tickerData = JSON.stringify({
 <a href="/#feed" class="cost-ticker" id="costTicker" data-ticker={tickerData} style="text-decoration:none;color:inherit;display:block">
   {hasData ? (
     <div class="ticker-inner">
+      <!-- 網站版本 -->
+      <div class="ticker-item ticker-version" title="paulkuo.tw 網站版本">
+        <span class="ticker-label">VER</span>
+        <span class="ticker-value">{version}</span>
+      </div>
+      <div class="ticker-sep"></div>
       <!-- 本月費用 + sparkline -->
       <div class="ticker-item ticker-primary" title="本月 AI API 費用（Anthropic + OpenAI + xAI + Google + Perplexity），折線為近 14 日趨勢，百分比為近 7 日較前 7 日變化">
         <span class="ticker-label">本月 API</span>
