@@ -1,0 +1,163 @@
+---
+/**
+ * ArticlePage.astro — 共用文章詳情元件
+ * AIO-optimized: Enhanced JSON-LD, semantic HTML, breadcrumbs
+ */
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PILLAR_MAP, SITE } from '../config';
+import { LANGUAGES, type LangKey } from '../i18n';
+import { getArticleEntities } from '../utils/entities';
+
+interface Props {
+  article: any;
+  lang: LangKey;
+}
+
+const { article, lang } = Astro.props;
+const L = LANGUAGES[lang];
+const basePath = L.pathPrefix || '';
+const { Content } = await render(article);
+const { title, subtitle, description, abstract, date, updated, pillar, tags, readingTime } = article.data;
+const p = PILLAR_MAP[pillar];
+const dateStr = date.toLocaleDateString(L.dateLocale, L.dateOptions);
+const slug = article.id.replace(/\.md$/, '');
+const articleUrl = `${SITE.url}${basePath}/articles/${slug}`;
+const ogImageUrl = `${SITE.url}/og/${slug}.png`;
+const pillarLabel = lang === 'en' ? p.labelEn : p.label;
+
+// Estimate word count from raw body (for schema)
+const rawBody = article.body || '';
+const wordCount = rawBody.length > 0
+  ? (lang === 'en'
+    ? rawBody.split(/\s+/).length
+    : Math.ceil(rawBody.replace(/\s+/g, '').length / 1.5))  // CJK approximation
+  : undefined;
+
+// Entity linking: auto-detect mentioned entities from tags + body
+const articleEntities = getArticleEntities(tags || [], rawBody, pillar);
+
+const schemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": `${articleUrl}#article`,
+      "headline": title,
+      "description": description,
+      "abstract": abstract || description,
+      "datePublished": date.toISOString().split('T')[0],
+      "dateModified": (updated || date).toISOString().split('T')[0],
+      "inLanguage": L.code,
+      "url": articleUrl,
+      "mainEntityOfPage": { "@id": articleUrl },
+      "author": { "@id": `${SITE.url}/#person` },
+      "publisher": { "@id": `${SITE.url}/#person` },
+      "isPartOf": { "@id": `${SITE.url}/#website` },
+      "articleSection": pillarLabel,
+      "about": {
+        "@type": "DefinedTerm",
+        "name": pillarLabel,
+        "inDefinedTermSet": {
+          "@type": "DefinedTermSet",
+          "name": "Paul Kuo Content Pillars",
+          "url": `${SITE.url}/blog`
+        }
+      },
+      "keywords": tags,
+      ...(wordCount && { "wordCount": wordCount }),
+      ...(readingTime && { "timeRequired": `PT${readingTime}M` }),
+      "image": ogImageUrl,
+      ...(articleEntities.length > 0 && {
+        "mentions": articleEntities.map(e => ({
+          "@type": e['@type'],
+          "name": e.name,
+          ...(e.url && { "url": e.url }),
+          ...(e.sameAs && { "sameAs": e.sameAs }),
+          ...(e.description && { "description": e.description }),
+        }))
+      })
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${articleUrl}#breadcrumb`,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": lang === 'en' ? "Home" : "首頁",
+          "item": `${SITE.url}${basePath}/`
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": lang === 'en' ? "Articles" : "思想",
+          "item": `${SITE.url}${basePath}/blog`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": pillarLabel,
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": title,
+          "item": articleUrl
+        }
+      ]
+    }
+  ]
+});
+
+// Canonical URL for this specific language version
+const canonicalUrl = articleUrl;
+---
+
+<BaseLayout
+  title={`${title} — Paul Kuo`}
+  description={description}
+  ogType="article"
+  ogUrl={articleUrl}
+  ogImage={ogImageUrl}
+  schemaJson={schemaJson}
+  canonicalUrl={canonicalUrl}>
+
+  <article class="article-page" itemscope itemtype="https://schema.org/BlogPosting">
+    <nav class="article-breadcrumb" aria-label="breadcrumb">
+      <ol>
+        <li><a href={`${basePath}/`}>{lang === 'en' ? 'Home' : '首頁'}</a></li>
+        <li><a href={`${basePath}/blog`}>{lang === 'en' ? 'Articles' : '思想'}</a></li>
+        <li aria-current="page">{title}</li>
+      </ol>
+    </nav>
+
+    <header class="article-meta">
+      <div class="article-pillar" style={`color:${p.color}`}>
+        <span class="pillar-dot" style={`background:${p.color}`}></span>
+        <span itemprop="articleSection">{pillarLabel}</span>
+      </div>
+      <h1 itemprop="headline">{title}</h1>
+      {subtitle && <p class="article-subtitle" itemprop="alternativeHeadline">{subtitle}</p>}
+      <div class="article-info">
+        <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <span itemprop="name">{SITE.author}</span> <span itemprop="alternateName">{SITE.authorAlt}</span>
+        </span>
+        <time datetime={date.toISOString().split('T')[0]} itemprop="datePublished">{dateStr}</time>
+        {updated && <meta itemprop="dateModified" content={(updated).toISOString().split('T')[0]} />}
+        {readingTime && <span>{L.readingTime(readingTime)}</span>}
+      </div>
+      <meta itemprop="description" content={description} />
+    </header>
+
+    <section class="article-body" itemprop="articleBody" aria-label={lang === 'en' ? 'Article content' : '文章內容'}>
+      <Content />
+    </section>
+
+    {tags.length > 0 && (
+      <footer class="article-tags" aria-label={lang === 'en' ? 'Tags' : '標籤'}>
+        {tags.map(tag => <span class="article-tag" itemprop="keywords">{tag}</span>)}
+      </footer>
+    )}
+  </article>
+</BaseLayout>
