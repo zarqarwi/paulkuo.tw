@@ -604,10 +604,10 @@ const isArticlePage = pathname.includes('/articles/');
         window.addEventListener('scroll', function() {
           clearTimeout(saveTimer);
           saveTimer = setTimeout(function() {
-            var rect = articleBody.getBoundingClientRect();
-            var bodyTop = window.scrollY + rect.top;
-            var bodyHeight = rect.height;
-            var scrolled = window.scrollY - bodyTop + window.innerHeight;
+            var bodyTop = articleBody.offsetTop;
+            var bodyHeight = articleBody.scrollHeight || articleBody.offsetHeight;
+            var scrollPos = window.scrollY || document.documentElement.scrollTop;
+            var scrolled = scrollPos - bodyTop + window.innerHeight;
             var pct = Math.min(100, Math.max(0, Math.round((scrolled / bodyHeight) * 100)));
             
             var data = getReadingData();
@@ -631,7 +631,7 @@ const isArticlePage = pathname.includes('/articles/');
     // On non-article pages: show "continue reading" popup
     var data = getReadingData();
     if (!data.lastArticle) return;
-    if (data.lastArticle.progress >= 100) return; // Already finished
+    if (data.lastArticle.progress <= 5 || data.lastArticle.progress >= 100) return; // Not started or already finished
     if (Date.now() - data.lastArticle.ts > 7 * 24 * 60 * 60 * 1000) return; // Older than 7 days
     
     var tracker = document.getElementById('readingTracker');
