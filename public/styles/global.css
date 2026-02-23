@@ -136,7 +136,7 @@ nav.nav-scrolled {
 }
 .nav-logo {
   font-family: var(--font-display);
-  font-size: 1.35rem; font-weight: 700;
+  font-size: 1.55rem; font-weight: 700;
   color: var(--brand-navy);
   text-decoration: none; letter-spacing: -0.02em;
 }
