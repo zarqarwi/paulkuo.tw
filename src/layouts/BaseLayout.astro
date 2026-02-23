@@ -668,5 +668,12 @@ const isArticlePage = pathname.includes('/articles/');
     });
   })();
   </script>
+
+  <script is:inline>
+  // Fix footer gap on pages with contact section
+  if (document.querySelector('.contact-section')) {
+    document.body.classList.add('has-contact-section');
+  }
+  </script>
 </body>
 </html>

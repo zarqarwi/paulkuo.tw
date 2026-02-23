@@ -823,7 +823,8 @@ footer {
   margin-top: 64px;
 }
 /* Remove gap when footer follows dark contact section */
-.contact-section + footer {
+.contact-section + footer,
+.has-contact-section footer {
   margin-top: 0;
 }
 .footer-inner {
