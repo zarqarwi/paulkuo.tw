@@ -1,6 +1,6 @@
 ---
-title: AI 2027: When Superintelligence Is No Longer Distant Science Fiction, but a Catalyst for Geopolitical Order
-description: The "AI 2027" report simulates the global impact of AGI's rise: when AI begins researching AI, civilization will enter a state of self-accelerating evolution, and traditional technological competition will escalate into a superintelligence arms race. From research assistants to self-evolution, geopolitical order is being reconstructed by computational power. Facing this acceleration race that no one wants to fall behind in, Taiwan must find strategic survival options through technological governance, trusted frameworks, and international cooperation.
+title: "AI 2027: When Superintelligence Is No Longer Distant Science Fiction, but a Catalyst for Geopolitical Order"
+description: "The 'AI 2027' report simulates the global impact of AGI's rise: when AI begins researching AI, civilization will enter a state of self-accelerating evolution, and traditional technological competition will escalate into a superintelligence arms race. From research assistants to self-evolution, geopolitical order is being reconstructed by computational power. Facing this acceleration race that no one wants to fall behind in, Taiwan must find strategic survival options through technological governance, trusted frameworks, and international cooperation."
 date: 2025-05-23
 pillar: ai
 readingTime: 1
