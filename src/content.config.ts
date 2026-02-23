@@ -15,6 +15,7 @@ const articleSchema = z.object({
   draft: z.boolean().default(false),
   readingTime: z.number().optional(),
   medium_url: z.string().optional(),
+  cover: z.string().optional(),
 });
 
 // 繁體中文（主語系）
