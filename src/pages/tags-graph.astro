@@ -1,797 +1,695 @@
 ---
 /**
- * /tags-graph — 知識圖譜：五根柱子 × 標籤 × 文章的 3D 互動視覺化
- * Inspired by mashbean.net/tags-graph (CC BY-NC 4.0)
- * Adapted for paulkuo.tw pillar architecture
+ * /tags-graph — 知識圖譜：視覺化 pillar × tag × article 關聯
+ * Inspired by mashbean.net/tags-graph/ (CC BY-NC 4.0)
+ * Adapted for paulkuo.tw five-pillar architecture
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP } from '../config';
 
 const articles = (await getCollection('articles', ({ data }) => !data.draft))
-  .filter(a => !a.id.startsWith('en/') && !a.id.startsWith('ja/') && !a.id.startsWith('zh-cn/'))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 120);
 
-const pillars = Object.entries(PILLAR_MAP);
-
-// Build tag frequency
-const tagFreq: Record<string, number> = {};
-articles.forEach(a => {
-  a.data.tags?.forEach(tag => {
-    tagFreq[tag] = (tagFreq[tag] || 0) + 1;
-  });
-});
-
-const topTags = Object.entries(tagFreq)
+// Build tag frequency for top-N selection
+const tagCounter = new Map<string, number>();
+for (const a of articles) {
+  for (const tag of a.data.tags || []) {
+    tagCounter.set(tag, (tagCounter.get(tag) || 0) + 1);
+  }
+}
+// Keep tags that appear 2+ times, take top 50
+const topTags = Array.from(tagCounter.entries())
   .filter(([, count]) => count >= 2)
   .sort((a, b) => b[1] - a[1])
-  .slice(0, 40)
+  .slice(0, 50)
   .map(([tag]) => tag);
-
-const topTagSet = new Set(topTags);
+const tagSet = new Set(topTags);
 
 // Build graph
 type GraphNode = {
   id: string;
-  type: 'topic' | 'keyword' | 'post';
+  type: 'pillar' | 'tag' | 'post';
   label: string;
   url?: string;
-  topic?: string;
+  pillar?: string;
   color?: string;
 };
 type GraphLink = {
   source: string;
   target: string;
-  kind: 'topic' | 'keyword';
+  kind: 'pillar' | 'tag';
+  weight: number;
 };
 
 const nodes: GraphNode[] = [];
 const links: GraphLink[] = [];
 
-// Topic nodes (pillars)
-for (const [key, p] of pillars) {
-  nodes.push({
-    id: `topic:${key}`,
-    type: 'topic',
-    label: p.label,
-    topic: key,
-    color: p.color,
-  });
+// Pillar nodes
+for (const [key, val] of Object.entries(PILLAR_MAP)) {
+  nodes.push({ id: `pillar:${key}`, type: 'pillar', label: val.label, pillar: key, color: val.color });
 }
 
-// Keyword nodes (tags)
+// Tag nodes
 for (const tag of topTags) {
-  nodes.push({
-    id: `keyword:${tag}`,
-    type: 'keyword',
-    label: tag,
-  });
+  nodes.push({ id: `tag:${tag}`, type: 'tag', label: tag });
 }
 
-// Post nodes + links
-for (const article of articles) {
-  const slug = article.id.replace(/\.md$/, '');
-  const pillarKey = article.data.pillar;
+// Article nodes + links
+for (const a of articles) {
+  const slug = a.id.replace(/\.md$/, '');
+  const pillarKey = a.data.pillar;
   nodes.push({
     id: `post:${slug}`,
     type: 'post',
-    label: article.data.title,
+    label: a.data.title,
     url: `/articles/${slug}/`,
-    topic: pillarKey,
+    pillar: pillarKey,
   });
-
-  // article → pillar link
-  links.push({
-    source: `post:${slug}`,
-    target: `topic:${pillarKey}`,
-    kind: 'topic',
-  });
-
-  // article → tag links
-  for (const tag of article.data.tags || []) {
-    if (topTagSet.has(tag)) {
-      links.push({
-        source: `post:${slug}`,
-        target: `keyword:${tag}`,
-        kind: 'keyword',
-      });
+  // Link to pillar
+  links.push({ source: `post:${slug}`, target: `pillar:${pillarKey}`, kind: 'pillar', weight: 1 });
+  // Link to tags
+  for (const tag of a.data.tags || []) {
+    if (tagSet.has(tag)) {
+      links.push({ source: `post:${slug}`, target: `tag:${tag}`, kind: 'tag', weight: 0.7 });
     }
   }
 }
 
 const graph = { nodes, links };
-
-// Pillar colors for JS usage
-const pillarColors: Record<string, string> = {};
-for (const [key] of pillars) {
-  // Map CSS var to actual hex for canvas
-  const colorMap: Record<string, string> = {
-    ai: '#2563eb',
-    circular: '#059669',
-    faith: '#b45309',
-    startup: '#dc2626',
-    life: '#7c3aed',
-  };
-  pillarColors[key] = colorMap[key] || '#64748b';
-}
+const pillars = Object.entries(PILLAR_MAP);
 ---
 
-<BaseLayout title="知識圖譜 — Paul Kuo" description="五根柱子 × 標籤 × 文章的互動式 3D 知識圖譜，探索 Paul 的跨域思考脈絡。">
-  <div class="section-container graph-page">
+<BaseLayout title="知識圖譜 — Paul Kuo" description="視覺化呈現所有文章、標籤、五大支柱的關聯網絡">
+  <section class="graph-page">
     <h1 class="graph-page-title">知識圖譜</h1>
     <p class="graph-intro">拖曳旋轉、滾輪縮放。點擊節點查看資訊，再點一次開啟文章。</p>
 
-    <section class="graph-panel">
-      <div class="graph-toolbar">
-        <label>
-          篩選柱子
-          <select id="graph-topic-filter">
-            <option value="all">全部</option>
-            {pillars.map(([key, p]) => (
-              <option value={key}>{p.label}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          搜尋
-          <input id="graph-search" type="search" placeholder="文章或標籤…" />
-        </label>
-        <button id="graph-reset" type="button">重置</button>
-        <a href="/tags" class="graph-toolbar-link">回標籤頁</a>
-      </div>
+    <div class="graph-toolbar">
+      <label>
+        篩選支柱
+        <select id="graph-pillar-filter">
+          <option value="all">全部</option>
+          {pillars.map(([key, val]) => <option value={key}>{val.label}</option>)}
+        </select>
+      </label>
+      <label>
+        搜尋
+        <input id="graph-search" type="search" placeholder="文章或標籤..." />
+      </label>
+      <button id="graph-reset" type="button">重置</button>
+      <a href="/tags" class="graph-toolbar-link">標籤列表</a>
+    </div>
 
-      <div class="graph-guide">
-        <p id="graph-search-status" class="graph-search-status">
-          全部節點
-        </p>
-        <div class="graph-type-toggle" role="group" aria-label="節點類型">
-          <label>
-            <input type="checkbox" data-node-type="topic" checked />
-            <span class="legend-dot legend-dot-topic"></span>
-            柱子
-          </label>
-          <label>
-            <input type="checkbox" data-node-type="keyword" checked />
-            <span class="legend-dot legend-dot-keyword"></span>
-            標籤
-          </label>
-          <label>
-            <input type="checkbox" data-node-type="post" checked />
-            <span class="legend-dot legend-dot-post"></span>
-            文章
-          </label>
+    <div class="graph-controls">
+      <p id="graph-status" class="graph-status">全部節點</p>
+      <div class="graph-type-toggle" role="group" aria-label="節點類型">
+        <label><input type="checkbox" data-node-type="pillar" checked /><span class="dot dot-pillar"></span>支柱</label>
+        <label><input type="checkbox" data-node-type="tag" checked /><span class="dot dot-tag"></span>標籤</label>
+        <label><input type="checkbox" data-node-type="post" checked /><span class="dot dot-post"></span>文章</label>
+      </div>
+    </div>
+
+    <div class="graph-main">
+      <div id="graph-stage" class="graph-stage" role="application" aria-label="互動圖譜" tabindex="0"></div>
+      <aside id="graph-inspector" class="graph-inspector" aria-live="polite">
+        <div class="graph-inspector-head">
+          <h2>節點資訊</h2>
+          <button id="graph-inspector-close" type="button" aria-label="關閉">✕</button>
         </div>
-      </div>
-
-      <div class="graph-main">
-        <div id="graph-stage" class="graph-stage" role="application" aria-label="互動圖譜" tabindex="0"></div>
-        <aside id="graph-inspector" class="graph-inspector" aria-live="polite">
-          <div class="graph-inspector-head">
-            <h2>節點資訊</h2>
-            <button id="graph-inspector-close" type="button" class="graph-inspector-close">✕</button>
-          </div>
-          <div id="graph-inspector-content" class="graph-inspector-content">
-            <p>點擊任一節點查看詳細資訊。</p>
-          </div>
-        </aside>
-      </div>
-    </section>
-  </div>
+        <div id="graph-inspector-content" class="graph-inspector-content">
+          <p>點擊任一節點查看資訊。</p>
+        </div>
+      </aside>
+    </div>
+  </section>
 </BaseLayout>
 
-<script is:inline define:vars={{ graph, pillarColors }}>
-  var stage = document.getElementById('graph-stage');
-  var inspector = document.getElementById('graph-inspector');
-  var inspectorContent = document.getElementById('graph-inspector-content');
-  var inspectorClose = document.getElementById('graph-inspector-close');
-  var topicFilter = document.getElementById('graph-topic-filter');
-  var searchInput = document.getElementById('graph-search');
-  var searchStatus = document.getElementById('graph-search-status');
-  var resetButton = document.getElementById('graph-reset');
-  var typeCheckboxes = Array.from(document.querySelectorAll('.graph-type-toggle input[data-node-type]'));
+<script is:inline define:vars={{ graph }}>
+// === 3D Force-Directed Graph (adapted from mashbean/blog, CC BY-NC 4.0) ===
+const stage = document.getElementById('graph-stage');
+const inspector = document.getElementById('graph-inspector');
+const inspectorContent = document.getElementById('graph-inspector-content');
+const inspectorClose = document.getElementById('graph-inspector-close');
+const pillarFilter = document.getElementById('graph-pillar-filter');
+const searchInput = document.getElementById('graph-search');
+const statusEl = document.getElementById('graph-status');
+const resetBtn = document.getElementById('graph-reset');
+const typeCheckboxes = Array.from(document.querySelectorAll('.graph-type-toggle input[data-node-type]'));
 
-  if (!stage) throw new Error('graph stage missing');
+if (!stage) throw new Error('graph stage missing');
 
-  var nodes = graph.nodes.map(function(n, idx) {
-    return Object.assign({}, n, {
-      i: idx,
-      x: (Math.random() - 0.5) * 580,
-      y: (Math.random() - 0.5) * 380,
-      z: (Math.random() - 0.5) * 300,
-      vx: 0, vy: 0, vz: 0
+// Pillar colors from CSS custom properties → fallback hex
+const PILLAR_COLORS = {
+  ai: '#2563eb',
+  circular: '#059669',
+  faith: '#b45309',
+  startup: '#dc2626',
+  life: '#7c3aed',
+};
+
+const nodes = graph.nodes.map((n, idx) => ({
+  ...n, i: idx,
+  x: (Math.random() - 0.5) * 600,
+  y: (Math.random() - 0.5) * 400,
+  z: (Math.random() - 0.5) * 320,
+  vx: 0, vy: 0, vz: 0,
+}));
+
+const byId = new Map(nodes.map(n => [n.id, n]));
+const links = graph.links.map(l => ({ ...l, s: byId.get(l.source), t: byId.get(l.target) })).filter(l => l.s && l.t);
+
+// Build adjacency maps
+const pillarToPosts = new Map();
+const tagToPosts = new Map();
+const postToPillars = new Map();
+const postToTags = new Map();
+const adjacency = new Map();
+
+function pushSet(map, key, val) {
+  if (!map.has(key)) map.set(key, new Set());
+  map.get(key).add(val);
+}
+function pushAdj(a, b) {
+  pushSet(adjacency, a, b);
+  pushSet(adjacency, b, a);
+}
+
+for (const link of links) {
+  pushAdj(link.s.id, link.t.id);
+  if (link.kind === 'pillar' && link.s.type === 'post') {
+    pushSet(pillarToPosts, link.t.id, link.s);
+    pushSet(postToPillars, link.s.id, link.t.id);
+  }
+  if (link.kind === 'tag' && link.s.type === 'post') {
+    pushSet(tagToPosts, link.t.id, link.s);
+    pushSet(postToTags, link.s.id, link.t.id);
+  }
+}
+
+// === Render layers ===
+const svgNS = 'http://www.w3.org/2000/svg';
+const svg = document.createElementNS(svgNS, 'svg');
+svg.classList.add('graph-links');
+stage.appendChild(svg);
+
+const nodesLayer = document.createElement('div');
+nodesLayer.className = 'graph-nodes';
+stage.appendChild(nodesLayer);
+
+const linkEls = links.map(link => {
+  const el = document.createElementNS(svgNS, 'line');
+  el.setAttribute('class', 'graph-link graph-link-' + link.kind);
+  const w = Number(link.weight || 1);
+  el.style.strokeWidth = link.kind === 'tag' ? String(0.8 + w * 0.6) : '1.5';
+  svg.appendChild(el);
+  return el;
+});
+
+const nodeEls = nodes.map(node => {
+  const el = document.createElement('button');
+  el.type = 'button';
+  el.className = 'graph-node graph-node-' + node.type;
+  el.textContent = node.type === 'post' ? '' : node.label;
+  el.title = node.label;
+  if (node.type === 'pillar' && node.pillar) {
+    el.style.borderColor = PILLAR_COLORS[node.pillar] || '#2563eb';
+    el.style.color = PILLAR_COLORS[node.pillar] || '#2563eb';
+  }
+  if (node.type === 'post' && node.pillar) {
+    el.style.background = PILLAR_COLORS[node.pillar] || '#2563eb';
+    el.style.borderColor = PILLAR_COLORS[node.pillar] || '#2563eb';
+  }
+  nodesLayer.appendChild(el);
+  return el;
+});
+
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// === Selection & Inspector ===
+let selectedNodeId = '';
+let lastSelectedId = '';
+let lastSelectedAt = 0;
+let focusNodeIds = new Set();
+const visibleTypes = new Set(['pillar', 'tag', 'post']);
+let visibleNodeIds = new Set(nodes.map(n => n.id));
+let visibleLinkFlags = links.map(() => true);
+const defaultInspectorHtml = '<p>點擊任一節點查看資訊。</p>';
+
+function setSelected(id) {
+  selectedNodeId = id;
+  nodeEls.forEach((el, i) => {
+    el.classList.toggle('graph-node-selected', nodes[i].id === id);
+  });
+  inspector?.classList.toggle('graph-inspector-open', Boolean(id));
+}
+
+function renderInspector(node) {
+  if (!inspectorContent) return;
+  if (node.type === 'pillar') {
+    const posts = Array.from(pillarToPosts.get(node.id) || []).sort((a,b) => a.label.localeCompare(b.label, 'zh-Hant'));
+    inspectorContent.innerHTML = '<div class="info-card"><div class="info-head"><h3>' + esc(node.label) + '</h3><span class="info-badge">支柱</span></div><p class="info-count">關聯文章 ' + posts.length + ' 篇</p>' + (posts.length ? '<ul class="info-list">' + posts.slice(0,40).map(p => '<li><a href="' + p.url + '">' + esc(p.label) + '</a></li>').join('') + '</ul>' : '<p class="info-empty">無文章</p>') + '</div>';
+  } else if (node.type === 'post') {
+    const pillarLabels = Array.from(postToPillars.get(node.id) || []).map(pid => byId.get(pid)).filter(Boolean).map(n => n.label);
+    const tagLabels = Array.from(postToTags.get(node.id) || []).map(tid => byId.get(tid)).filter(Boolean).map(n => n.label);
+    inspectorContent.innerHTML = '<div class="info-card"><span class="info-badge">文章</span><a class="info-title" href="' + node.url + '">' + esc(node.label) + '</a><dl class="info-meta"><div><dt>支柱</dt><dd>' + esc(pillarLabels.join('、') || '未分類') + '</dd></div><div><dt>標籤</dt><dd>' + (tagLabels.length ? tagLabels.map(t => '<span class="info-chip">' + esc(t) + '</span>').join(' ') : '無標籤') + '</dd></div></dl></div>';
+  } else {
+    const posts = Array.from(tagToPosts.get(node.id) || []).sort((a,b) => a.label.localeCompare(b.label, 'zh-Hant'));
+    inspectorContent.innerHTML = '<div class="info-card"><div class="info-head"><h3>' + esc(node.label) + '</h3><span class="info-badge">標籤</span></div><p class="info-count">關聯文章 ' + posts.length + ' 篇</p>' + (posts.length ? '<ul class="info-list">' + posts.slice(0,40).map(p => '<li><a href="' + p.url + '">' + esc(p.label) + '</a></li>').join('') + '</ul>' : '<p class="info-empty">無文章</p>') + '</div>';
+  }
+}
+
+function clearSelection() {
+  setSelected('');
+  focusNodeIds = new Set();
+  if (inspectorContent) inspectorContent.innerHTML = defaultInspectorHtml;
+}
+
+function applyFilters() {
+  const pv = pillarFilter ? pillarFilter.value : 'all';
+  const pid = pv !== 'all' ? 'pillar:' + pv : 'all';
+  const q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+  const terms = q.split(/\s+/).filter(Boolean);
+
+  const visPosts = new Set();
+  const visTags = new Set();
+  const visPillars = new Set();
+
+  if (pid === 'all') {
+    nodes.forEach(n => {
+      if (n.type === 'post') visPosts.add(n.id);
+      if (n.type === 'tag') visTags.add(n.id);
+      if (n.type === 'pillar') visPillars.add(n.id);
     });
-  });
-
-  var byId = new Map(nodes.map(function(n) { return [n.id, n]; }));
-  var links = graph.links
-    .map(function(link) { return Object.assign({}, link, { s: byId.get(link.source), t: byId.get(link.target) }); })
-    .filter(function(link) { return link.s && link.t; });
-
-  // Index maps
-  var topicToPosts = new Map();
-  var keywordToPosts = new Map();
-  var postToTopics = new Map();
-  var postToKeywords = new Map();
-  var adjacency = new Map();
-
-  function pushMapSet(map, key, value) {
-    var set = map.get(key);
-    if (set) { set.add(value); } else { map.set(key, new Set([value])); }
-  }
-  function pushAdj(a, b) {
-    if (!adjacency.has(a)) adjacency.set(a, new Set());
-    if (!adjacency.has(b)) adjacency.set(b, new Set());
-    adjacency.get(a).add(b);
-    adjacency.get(b).add(a);
+  } else {
+    visPillars.add(pid);
+    for (const p of (pillarToPosts.get(pid) || [])) {
+      visPosts.add(p.id);
+      for (const tid of (postToTags.get(p.id) || [])) visTags.add(tid);
+    }
   }
 
-  links.forEach(function(link) {
-    pushAdj(link.s.id, link.t.id);
-    if (link.kind === 'topic' && link.s.type === 'post') {
-      pushMapSet(topicToPosts, link.t.id, link.s);
-      pushMapSet(postToTopics, link.s.id, link.t.id);
-    }
-    if (link.kind === 'keyword' && link.s.type === 'post') {
-      pushMapSet(keywordToPosts, link.t.id, link.s);
-      pushMapSet(postToKeywords, link.s.id, link.t.id);
-    }
-  });
+  visibleNodeIds = new Set();
+  focusNodeIds = selectedNodeId ? new Set([selectedNodeId, ...(adjacency.get(selectedNodeId) || [])]) : new Set();
+  let matchCount = 0;
 
-  // SVG for links
-  var svgNS = 'http://www.w3.org/2000/svg';
-  var svg = document.createElementNS(svgNS, 'svg');
-  svg.classList.add('graph-links');
-  stage.appendChild(svg);
-
-  // Nodes layer
-  var nodesLayer = document.createElement('div');
-  nodesLayer.className = 'graph-nodes';
-  stage.appendChild(nodesLayer);
-
-  // Create link elements
-  var linkEls = links.map(function(link) {
-    var el = document.createElementNS(svgNS, 'line');
-    el.setAttribute('class', 'graph-link graph-link-' + link.kind);
-    svg.appendChild(el);
-    return el;
-  });
-
-  // Create node elements
-  var nodeEls = nodes.map(function(node) {
-    var el = document.createElement('button');
-    el.type = 'button';
-    el.className = 'graph-node graph-node-' + node.type;
-    el.textContent = node.type === 'post' ? '' : node.label;
-    el.title = node.label;
-
-    // Color post dots by their pillar
-    if (node.type === 'post' && node.topic && pillarColors[node.topic]) {
-      el.style.background = pillarColors[node.topic];
-      el.style.borderColor = pillarColors[node.topic];
-    }
-    if (node.type === 'topic' && node.topic && pillarColors[node.topic]) {
-      el.style.borderColor = pillarColors[node.topic];
-      el.style.color = pillarColors[node.topic];
-    }
-
-    nodesLayer.appendChild(el);
-    return el;
-  });
-
-  function esc(text) {
-    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  var selectedNodeId = '';
-  var lastSelectedId = '';
-  var lastSelectedAt = 0;
-  var visibleTypes = new Set(['topic','keyword','post']);
-  var visibleNodeIds = new Set(nodes.map(function(n){return n.id;}));
-  var visibleLinkFlags = links.map(function(){return true;});
-  var focusNodeIds = new Set();
-  var defaultInspectorHtml = '<p>點擊任一節點查看詳細資訊。</p>';
-
-  function setSelected(nodeId) {
-    selectedNodeId = nodeId;
-    nodeEls.forEach(function(el, i) {
-      var sel = nodes[i].id === nodeId;
-      el.classList.toggle('graph-node-selected', sel);
-    });
-    inspector.classList.toggle('graph-inspector-open', Boolean(nodeId));
-  }
-
-  function renderInspector(node) {
-    if (node.type === 'topic') {
-      var posts = Array.from(topicToPosts.get(node.id) || []);
-      var listHtml = posts.length > 0
-        ? '<ul class="inspector-list">' + posts.slice(0,60).map(function(p){return '<li><a href="'+p.url+'">'+esc(p.label)+'</a></li>';}).join('') + '</ul>'
-        : '<p class="inspector-empty">尚無文章</p>';
-      inspectorContent.innerHTML =
-        '<div class="inspector-card"><h3>'+esc(node.label)+'</h3><span class="inspector-badge">柱子</span><p class="inspector-count">'+posts.length+' 篇文章</p>'+listHtml+'</div>';
+  nodeEls.forEach((el, i) => {
+    const n = nodes[i];
+    let topicVis = pid === 'all' || (n.type === 'pillar' ? visPillars.has(n.id) : n.type === 'post' ? visPosts.has(n.id) : visTags.has(n.id));
+    const typeVis = visibleTypes.has(n.type);
+    if (!topicVis || !typeVis) {
+      el.style.opacity = '0';
+      el.style.pointerEvents = 'none';
+      el.classList.remove('graph-node-match', 'graph-node-focus');
       return;
     }
-    if (node.type === 'keyword') {
-      var posts = Array.from(keywordToPosts.get(node.id) || []);
-      var listHtml = posts.length > 0
-        ? '<ul class="inspector-list">' + posts.slice(0,60).map(function(p){return '<li><a href="'+p.url+'">'+esc(p.label)+'</a></li>';}).join('') + '</ul>'
-        : '<p class="inspector-empty">尚無文章</p>';
-      inspectorContent.innerHTML =
-        '<div class="inspector-card"><h3>'+esc(node.label)+'</h3><span class="inspector-badge">標籤</span><p class="inspector-count">'+posts.length+' 篇文章</p>'+listHtml+'</div>';
-      return;
+    visibleNodeIds.add(n.id);
+    const matched = !q || terms.every(t => n.label.toLowerCase().includes(t));
+    el.classList.toggle('graph-node-match', Boolean(q) && matched);
+    const inFocus = focusNodeIds.size > 0 && focusNodeIds.has(n.id);
+    el.classList.toggle('graph-node-focus', inFocus);
+    if (matched) matchCount++;
+    let op = q && !matched ? 0.15 : 1;
+    if (focusNodeIds.size > 0 && !inFocus) op = Math.min(op, 0.1);
+    el.style.opacity = String(op);
+    el.style.pointerEvents = 'auto';
+  });
+
+  visibleLinkFlags = links.map(() => true);
+  linkEls.forEach((el, i) => {
+    const link = links[i];
+    let vis = true;
+    if (pid !== 'all') {
+      vis = link.kind === 'pillar'
+        ? (link.t.id === pid && visPosts.has(link.s.id))
+        : (visPosts.has(link.s.id) && visTags.has(link.t.id));
     }
-    // post
-    var topicLabels = Array.from(postToTopics.get(node.id) || [])
-      .map(function(tid){ var n=byId.get(tid); return n?n.label:''; }).filter(Boolean);
-    var kwLabels = Array.from(postToKeywords.get(node.id) || [])
-      .map(function(kid){ var n=byId.get(kid); return n?'<span class="inspector-chip">'+esc(n.label)+'</span>':''; }).filter(Boolean);
-    inspectorContent.innerHTML =
-      '<div class="inspector-card"><span class="inspector-badge">文章</span>'+
-      '<a class="inspector-post-link" href="'+node.url+'">'+esc(node.label)+'</a>'+
-      '<p class="inspector-meta">柱子：'+esc(topicLabels.join('、') || '未分類')+'</p>'+
-      (kwLabels.length ? '<div class="inspector-chips">'+kwLabels.join('')+'</div>' : '')+
-      '</div>';
+    if (!visibleTypes.has(link.s.type) || !visibleTypes.has(link.t.type)) vis = false;
+    if (!vis) { visibleLinkFlags[i] = false; el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    const inFocusLink = focusNodeIds.size === 0 || (focusNodeIds.has(link.s.id) && focusNodeIds.has(link.t.id));
+    el.style.strokeOpacity = String(inFocusLink ? 0.5 : 0.06);
+  });
+
+  if (statusEl) {
+    statusEl.textContent = q ? matchCount + ' / ' + visibleNodeIds.size + ' 符合' : '共 ' + visibleNodeIds.size + ' 個節點';
   }
+}
 
-  function clearSelection() {
-    setSelected('');
-    focusNodeIds = new Set();
-    inspectorContent.innerHTML = defaultInspectorHtml;
-  }
+// === Node click ===
+let suppressUntil = 0;
+nodeEls.forEach((el, i) => {
+  const node = nodes[i];
+  let moved = false, sx = 0, sy = 0;
+  el.addEventListener('pointerdown', e => { moved = false; sx = e.clientX; sy = e.clientY; });
+  el.addEventListener('pointermove', e => { if (!moved && Math.hypot(e.clientX - sx, e.clientY - sy) >= 5) moved = true; });
+  el.addEventListener('pointerup', () => { if (moved) suppressUntil = performance.now() + 260; });
+  el.addEventListener('click', () => {
+    if (performance.now() < suppressUntil) return;
+    const wasSelected = selectedNodeId === node.id;
+    const rapidTap = wasSelected && lastSelectedId === node.id && performance.now() - lastSelectedAt < 900;
+    setSelected(node.id);
+    renderInspector(node);
+    applyFilters();
+    lastSelectedId = node.id;
+    lastSelectedAt = performance.now();
+    if (node.url && rapidTap) window.location.href = node.url;
+  });
+});
 
-  function applyFilters() {
-    var selTopic = topicFilter.value;
-    var selTopicId = selTopic !== 'all' ? 'topic:' + selTopic : 'all';
-    var q = (searchInput.value || '').trim().toLowerCase();
-    var terms = q ? q.split(/\s+/) : [];
+inspectorClose?.addEventListener('click', () => { clearSelection(); applyFilters(); stage.focus(); });
+stage.addEventListener('click', e => {
+  if (e.target instanceof HTMLElement && e.target.closest('.graph-node')) return;
+  clearSelection(); applyFilters();
+});
+pillarFilter?.addEventListener('change', applyFilters);
+searchInput?.addEventListener('input', applyFilters);
+typeCheckboxes.forEach(input => {
+  input.addEventListener('change', () => {
+    const checked = typeCheckboxes.filter(c => c.checked).map(c => c.getAttribute('data-node-type')).filter(Boolean);
+    if (checked.length === 0) { input.checked = true; return; }
+    visibleTypes.clear();
+    checked.forEach(t => visibleTypes.add(t));
+    if (!visibleTypes.has('post')) clearSelection();
+    applyFilters();
+  });
+});
+resetBtn?.addEventListener('click', () => {
+  yaw = 0; pitch = 0; zoom = 1;
+  if (pillarFilter) pillarFilter.value = 'all';
+  if (searchInput) searchInput.value = '';
+  typeCheckboxes.forEach(c => { c.checked = true; });
+  visibleTypes.clear(); visibleTypes.add('pillar'); visibleTypes.add('tag'); visibleTypes.add('post');
+  clearSelection(); applyFilters();
+});
 
-    var visPostIds = new Set();
-    var visKwIds = new Set();
-    var visTopicIds = new Set();
+// === 3D Camera ===
+let yaw = 0, pitch = 0, zoom = 1;
+let dragging = false, ptrMoved = false, dragPtrId = -1, lx = 0, ly = 0;
 
-    if (selTopicId === 'all') {
-      nodes.forEach(function(n) {
-        if (n.type==='post') visPostIds.add(n.id);
-        if (n.type==='keyword') visKwIds.add(n.id);
-        if (n.type==='topic') visTopicIds.add(n.id);
-      });
-    } else {
-      visTopicIds.add(selTopicId);
-      (topicToPosts.get(selTopicId) || new Set()).forEach(function(pn) {
-        visPostIds.add(pn.id);
-        (postToKeywords.get(pn.id) || new Set()).forEach(function(kid){ visKwIds.add(kid); });
-      });
+function project(n, w, h) {
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const x1 = n.x * cy - n.z * sy;
+  const z1 = n.x * sy + n.z * cy;
+  const y1 = n.y * cp - z1 * sp;
+  const z2 = n.y * sp + z1 * cp;
+  const p = (760 / (760 + z2)) * zoom;
+  return { x: w / 2 + x1 * p, y: h / 2 + y1 * p, s: Math.max(0.3, p), z: z2 };
+}
+
+function step() {
+  for (const n of nodes) { n.vx *= 0.88; n.vy *= 0.88; n.vz *= 0.88; }
+  // Repulsion
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j];
+      const dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+      const d2 = dx*dx + dy*dy + dz*dz + 0.1;
+      const f = 2200 / d2;
+      const inv = 1 / Math.sqrt(d2);
+      a.vx += dx*inv*f; a.vy += dy*inv*f; a.vz += dz*inv*f;
+      b.vx -= dx*inv*f; b.vy -= dy*inv*f; b.vz -= dz*inv*f;
     }
-
-    visibleNodeIds = new Set();
-    focusNodeIds = selectedNodeId
-      ? new Set([selectedNodeId].concat(Array.from(adjacency.get(selectedNodeId) || [])))
-      : new Set();
-    var matchCount = 0;
-
-    nodeEls.forEach(function(el, i) {
-      var n = nodes[i];
-      var topicVis = true;
-      if (selTopicId !== 'all') {
-        if (n.type==='topic') topicVis = visTopicIds.has(n.id);
-        if (n.type==='post') topicVis = visPostIds.has(n.id);
-        if (n.type==='keyword') topicVis = visKwIds.has(n.id);
-      }
-      var typeVis = visibleTypes.has(n.type);
-
-      if (!topicVis || !typeVis) {
-        el.style.opacity = '0';
-        el.style.pointerEvents = 'none';
-        el.classList.remove('graph-node-match','graph-node-focus');
-        return;
-      }
-      visibleNodeIds.add(n.id);
-      var lbl = n.label.toLowerCase();
-      var matched = !q || terms.every(function(t){ return lbl.indexOf(t) >= 0; });
-      el.classList.toggle('graph-node-match', Boolean(q) && matched);
-      var inFocus = focusNodeIds.size > 0 && focusNodeIds.has(n.id);
-      el.classList.toggle('graph-node-focus', inFocus);
-      if (matched) matchCount++;
-      var opacity = q && !matched ? 0.18 : 1;
-      if (focusNodeIds.size > 0 && !inFocus) opacity = Math.min(opacity, 0.1);
-      el.style.opacity = String(opacity);
-      el.style.pointerEvents = 'auto';
-    });
-
-    visibleLinkFlags = links.map(function(){return true;});
-    linkEls.forEach(function(el, i) {
-      var link = links[i];
-      var tv = true;
-      if (selTopicId !== 'all') {
-        if (link.kind==='topic') tv = link.t.id===selTopicId && visPostIds.has(link.s.id);
-        else tv = visPostIds.has(link.s.id) && visKwIds.has(link.t.id);
-      }
-      if (!tv || !visibleTypes.has(link.s.type) || !visibleTypes.has(link.t.type)) {
-        visibleLinkFlags[i] = false;
-        el.style.display = 'none';
-        return;
-      }
-      el.style.display = 'block';
-      var baseOp = link.kind==='topic' ? 0.5 : 0.35;
-      var inF = focusNodeIds.size===0 || (focusNodeIds.has(link.s.id) && focusNodeIds.has(link.t.id));
-      el.style.strokeOpacity = String(inF ? baseOp : 0.06);
-    });
-
-    if (selectedNodeId && !visibleNodeIds.has(selectedNodeId)) {
-      clearSelection();
-      applyFilters();
-      return;
-    }
-    searchStatus.textContent = q
-      ? '搜尋：' + matchCount + ' / ' + visibleNodeIds.size
-      : '全部節點（' + visibleNodeIds.size + '）';
   }
-
-  // Node click
-  var suppressClickUntil = 0;
-  nodeEls.forEach(function(el, i) {
-    var node = nodes[i];
-    var moved = false, sx = 0, sy = 0;
-    el.addEventListener('pointerdown', function(e) { moved=false; sx=e.clientX; sy=e.clientY; });
-    el.addEventListener('pointermove', function(e) { if(!moved && Math.hypot(e.clientX-sx,e.clientY-sy)>=5) moved=true; });
-    el.addEventListener('pointerup', function() { if(moved) suppressClickUntil=performance.now()+260; });
-    el.addEventListener('click', function() {
-      if (performance.now() < suppressClickUntil) return;
-      var wasSelected = selectedNodeId === node.id;
-      var rapid = wasSelected && lastSelectedId===node.id && performance.now()-lastSelectedAt<900;
-      setSelected(node.id);
-      renderInspector(node);
-      applyFilters();
-      lastSelectedId = node.id;
-      lastSelectedAt = performance.now();
-      if (node.url && rapid) window.location.href = node.url;
-    });
-  });
-
-  inspectorClose.addEventListener('click', function() { clearSelection(); applyFilters(); stage.focus(); });
-
-  // 3D camera
-  var yaw = 0, pitch = 0, zoom = 1;
-  var dragging = false, ptrMoved = false, dragPtrId = -1, lx = 0, ly = 0;
-
-  function project(n, w, h) {
-    var cy=Math.cos(yaw), sy=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
-    var x1 = n.x*cy - n.z*sy;
-    var z1 = n.x*sy + n.z*cy;
-    var y1 = n.y*cp - z1*sp;
-    var z2 = n.y*sp + z1*cp;
-    var p = (720/(720+z2))*zoom;
-    return { x: w/2+x1*p, y: h/2+y1*p, s: Math.max(0.3,p), z: z2 };
+  // Attraction
+  for (const link of links) {
+    const a = link.s, b = link.t;
+    const dx = b.x-a.x, dy = b.y-a.y, dz = b.z-a.z;
+    const d = Math.sqrt(dx*dx+dy*dy+dz*dz) || 1;
+    const w = Number(link.weight || 1);
+    const target = link.kind === 'pillar' ? 130 : Math.max(120, 220 - w * 50);
+    const k = link.kind === 'pillar' ? 0.03 : 0.012 + w * 0.012;
+    const f = (d - target) * k;
+    a.vx += dx/d*f; a.vy += dy/d*f; a.vz += dz/d*f;
+    b.vx -= dx/d*f; b.vy -= dy/d*f; b.vz -= dz/d*f;
   }
+  for (const n of nodes) { n.x += n.vx; n.y += n.vy; n.z += n.vz; }
+}
 
-  function step() {
-    var i, j, a, b, dx, dy, dz, d2, f, inv, fx, fy, fz, d, target, k;
-    for (i=0; i<nodes.length; i++) { nodes[i].vx*=0.87; nodes[i].vy*=0.87; nodes[i].vz*=0.87; }
-    // Repulsion
-    for (i=0; i<nodes.length; i++) {
-      for (j=i+1; j<nodes.length; j++) {
-        a=nodes[i]; b=nodes[j];
-        dx=a.x-b.x; dy=a.y-b.y; dz=a.z-b.z;
-        d2=dx*dx+dy*dy+dz*dz+0.1;
-        f=2000/d2;
-        inv=1/Math.sqrt(d2);
-        fx=dx*inv*f; fy=dy*inv*f; fz=dz*inv*f;
-        a.vx+=fx; a.vy+=fy; a.vz+=fz;
-        b.vx-=fx; b.vy-=fy; b.vz-=fz;
-      }
-    }
-    // Spring
-    for (i=0; i<links.length; i++) {
-      a=links[i].s; b=links[i].t;
-      dx=b.x-a.x; dy=b.y-a.y; dz=b.z-a.z;
-      d=Math.sqrt(dx*dx+dy*dy+dz*dz)||1;
-      target = links[i].kind==='topic' ? 130 : 180;
-      k = links[i].kind==='topic' ? 0.03 : 0.012;
-      f=(d-target)*k;
-      fx=(dx/d)*f; fy=(dy/d)*f; fz=(dz/d)*f;
-      a.vx+=fx; a.vy+=fy; a.vz+=fz;
-      b.vx-=fx; b.vy-=fy; b.vz-=fz;
-    }
-    for (i=0; i<nodes.length; i++) { nodes[i].x+=nodes[i].vx; nodes[i].y+=nodes[i].vy; nodes[i].z+=nodes[i].vz; }
-  }
+function draw() {
+  const rect = stage.getBoundingClientRect();
+  svg.setAttribute('viewBox', '0 0 ' + rect.width + ' ' + rect.height);
+  const p = nodes.map(n => project(n, rect.width, rect.height));
+  links.forEach((link, i) => {
+    if (!visibleLinkFlags[i]) return;
+    const a = p[link.s.i], b = p[link.t.i];
+    linkEls[i].setAttribute('x1', String(a.x));
+    linkEls[i].setAttribute('y1', String(a.y));
+    linkEls[i].setAttribute('x2', String(b.x));
+    linkEls[i].setAttribute('y2', String(b.y));
+  });
+  nodes.forEach((_, i) => {
+    const el = nodeEls[i], pp = p[i];
+    el.style.left = pp.x + 'px';
+    el.style.top = pp.y + 'px';
+    el.style.transform = 'translate(-50%,-50%) scale(' + pp.s + ')';
+    el.style.zIndex = String(Math.round(pp.z + 1000));
+  });
+}
 
-  function draw() {
-    var rect = stage.getBoundingClientRect();
-    svg.setAttribute('viewBox', '0 0 '+rect.width+' '+rect.height);
-    var p = nodes.map(function(n){return project(n,rect.width,rect.height);});
-    links.forEach(function(link,i) {
-      if (!visibleLinkFlags[i]) return;
-      var a=p[link.s.i], b=p[link.t.i];
-      linkEls[i].setAttribute('x1',String(a.x)); linkEls[i].setAttribute('y1',String(a.y));
-      linkEls[i].setAttribute('x2',String(b.x)); linkEls[i].setAttribute('y2',String(b.y));
-    });
-    nodes.forEach(function(_,i) {
-      var el=nodeEls[i], pp=p[i];
-      el.style.left = pp.x+'px';
-      el.style.top = pp.y+'px';
-      el.style.transform = 'translate(-50%,-50%) scale('+pp.s+')';
-      el.style.zIndex = String(Math.round(pp.z+1000));
-    });
-  }
+function frame() {
+  const stride = nodes.length > 160 ? 3 : 2;
+  frame._c = (frame._c || 0) + 1;
+  if (frame._c % stride === 0) step();
+  draw();
+  requestAnimationFrame(frame);
+}
 
-  var frameCount = 0;
-  function frame() {
-    frameCount++;
-    var stride = nodes.length > 150 ? 3 : 2;
-    if (frameCount % stride === 0) step();
-    draw();
-    requestAnimationFrame(frame);
-  }
+// Pointer drag
+stage.addEventListener('pointerdown', e => {
+  if (e.target instanceof HTMLElement && e.target.closest('.graph-node')) return;
+  dragging = true; ptrMoved = false; dragPtrId = e.pointerId; lx = e.clientX; ly = e.clientY;
+  stage.setPointerCapture(e.pointerId);
+});
+stage.addEventListener('pointermove', e => {
+  if (!dragging || e.pointerId !== dragPtrId) return;
+  const dx = e.clientX - lx, dy = e.clientY - ly;
+  if (!ptrMoved && Math.hypot(dx, dy) >= 6) ptrMoved = true;
+  if (!ptrMoved) return;
+  yaw += dx * 0.004; pitch += dy * 0.003; lx = e.clientX; ly = e.clientY;
+});
+stage.addEventListener('pointerup', e => {
+  if (e.pointerId !== dragPtrId) return;
+  if (ptrMoved) suppressUntil = performance.now() + 200;
+  dragging = false; ptrMoved = false; dragPtrId = -1;
+  stage.releasePointerCapture(e.pointerId);
+});
+stage.addEventListener('pointercancel', e => {
+  if (e.pointerId !== dragPtrId) return;
+  dragging = false; ptrMoved = false; dragPtrId = -1;
+});
+stage.addEventListener('wheel', e => {
+  e.preventDefault();
+  zoom = Math.min(2.2, Math.max(0.5, zoom + (e.deltaY < 0 ? 0.08 : -0.08)));
+}, { passive: false });
 
-  // Drag to rotate
-  stage.addEventListener('pointerdown', function(e) {
-    if (e.target.closest && e.target.closest('.graph-node')) return;
-    dragging=true; ptrMoved=false; dragPtrId=e.pointerId;
-    lx=e.clientX; ly=e.clientY;
-    stage.setPointerCapture(e.pointerId);
-  });
-  stage.addEventListener('pointermove', function(e) {
-    if (!dragging || e.pointerId!==dragPtrId) return;
-    var dx=e.clientX-lx, dy=e.clientY-ly;
-    if (!ptrMoved && Math.hypot(dx,dy)>=6) ptrMoved=true;
-    if (!ptrMoved) return;
-    yaw+=dx*0.004; pitch+=dy*0.003;
-    lx=e.clientX; ly=e.clientY;
-  });
-  stage.addEventListener('pointerup', function(e) {
-    if (e.pointerId!==dragPtrId) return;
-    if (ptrMoved) suppressClickUntil=performance.now()+200;
-    dragging=false; ptrMoved=false; dragPtrId=-1;
-    stage.releasePointerCapture(e.pointerId);
-  });
-  stage.addEventListener('wheel', function(e) {
-    e.preventDefault();
-    zoom = Math.min(2.2, Math.max(0.5, zoom + (e.deltaY<0 ? 0.08 : -0.08)));
-  }, {passive:false});
-  stage.addEventListener('click', function(e) {
-    if (e.target.closest && e.target.closest('.graph-node')) return;
-    clearSelection(); applyFilters();
-  });
-  stage.addEventListener('keydown', function(e) {
-    if (e.key==='Escape') { clearSelection(); applyFilters(); }
-    if (e.key==='+' || e.key==='=') { e.preventDefault(); zoom=Math.min(2.2,zoom+0.08); }
-    if (e.key==='-' || e.key==='_') { e.preventDefault(); zoom=Math.max(0.5,zoom-0.08); }
-  });
+// Keyboard
+stage.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { clearSelection(); applyFilters(); }
+  if (e.key === '+' || e.key === '=') { e.preventDefault(); zoom = Math.min(2.2, zoom + 0.08); }
+  if (e.key === '-' || e.key === '_') { e.preventDefault(); zoom = Math.max(0.5, zoom - 0.08); }
+});
 
-  // Toolbar
-  topicFilter.addEventListener('change', applyFilters);
-  searchInput.addEventListener('input', applyFilters);
-  typeCheckboxes.forEach(function(input) {
-    input.addEventListener('change', function() {
-      var checked = typeCheckboxes.filter(function(cb){return cb.checked;}).map(function(cb){return cb.getAttribute('data-node-type');}).filter(Boolean);
-      if (checked.length===0) { input.checked=true; return; }
-      visibleTypes.clear();
-      checked.forEach(function(t){visibleTypes.add(t);});
-      if (!visibleTypes.has('post')) clearSelection();
-      applyFilters();
-    });
-  });
-  resetButton.addEventListener('click', function() {
-    yaw=0; pitch=0; zoom=1;
-    topicFilter.value='all';
-    searchInput.value='';
-    typeCheckboxes.forEach(function(cb){cb.checked=true;});
-    visibleTypes.clear(); visibleTypes.add('topic'); visibleTypes.add('keyword'); visibleTypes.add('post');
-    clearSelection(); applyFilters();
-  });
-
-  applyFilters();
-  frame();
+applyFilters();
+frame();
 </script>
 
 <style>
-  .graph-page { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
-  .graph-page-title { font-size: 1.8rem; margin-bottom: 8px; }
-  .graph-intro { color: var(--text-secondary, #94a3b8); font-size: 0.9rem; margin-bottom: 20px; }
-
-  .graph-panel {
-    border: 1px solid var(--border, rgba(255,255,255,0.08));
-    border-radius: 12px;
-    background: var(--bg-card, rgba(15,23,42,0.6));
-    padding: 16px;
+  .graph-page {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.2rem;
+  }
+  .graph-page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+    margin: 0 0 0.5rem;
+  }
+  .graph-intro {
+    color: var(--text-secondary, #64748b);
+    font-size: 0.92rem;
+    margin: 0 0 1.2rem;
   }
   .graph-toolbar {
-    display: flex; flex-wrap: wrap; align-items: end; gap: 10px;
-    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
   }
   .graph-toolbar label {
-    display: grid; gap: 4px; font-size: 0.82rem;
-    color: var(--text-secondary, #94a3b8);
+    display: grid;
+    gap: 0.2rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #64748b);
   }
   .graph-toolbar input,
   .graph-toolbar select,
   .graph-toolbar button {
-    border: 1px solid var(--border, rgba(255,255,255,0.15));
-    border-radius: 8px;
-    background: var(--bg-secondary, rgba(30,41,59,0.8));
-    color: var(--text-primary, #e2e8f0);
-    min-height: 2rem; padding: 4px 10px; font-size: 0.85rem;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.5rem;
+    background: var(--bg-card, #fff);
+    color: var(--text-primary, #0f172a);
+    min-height: 2rem;
+    padding: 0.24rem 0.5rem;
+    font-size: 0.86rem;
   }
   .graph-toolbar-link {
-    display: inline-flex; align-items: center;
-    border: 1px solid var(--border, rgba(255,255,255,0.15));
-    border-radius: 8px; background: transparent;
-    color: var(--text-secondary, #94a3b8);
-    min-height: 2rem; padding: 4px 10px; font-size: 0.82rem;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.5rem;
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #64748b);
+    min-height: 2rem;
+    padding: 0.24rem 0.5rem;
+    font-size: 0.84rem;
     text-decoration: none;
   }
-  .graph-toolbar-link:hover { color: var(--brand-gold, #fbbf24); border-color: var(--brand-gold); }
-
-  .graph-guide {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
-    margin-bottom: 12px; padding: 8px 12px;
-    border-radius: 8px;
-    background: rgba(30,41,59,0.5);
-    border: 1px solid rgba(255,255,255,0.06);
+  .graph-toolbar-link:hover { color: var(--accent-ai, #2563eb); border-color: var(--accent-ai, #2563eb); }
+  .graph-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.8rem;
+    padding: 0.5rem 0.6rem;
+    background: var(--bg-subtle, #f8fafc);
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.6rem;
   }
-  .graph-search-status {
-    margin: 0; font-size: 0.82rem; font-weight: 600;
-    color: var(--brand-gold, #fbbf24);
-  }
+  .graph-status { margin: 0; font-size: 0.82rem; font-weight: 600; color: var(--text-primary, #0f172a); }
   .graph-type-toggle {
-    display: flex; gap: 12px; font-size: 0.8rem;
-    color: var(--text-secondary, #94a3b8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary, #64748b);
   }
   .graph-type-toggle label {
-    display: inline-flex; align-items: center; gap: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.12rem 0.35rem;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 999px;
+    background: #fff;
   }
-  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-  .legend-dot-topic { background: #fbbf24; }
-  .legend-dot-keyword { background: #94a3b8; }
-  .legend-dot-post { background: #2563eb; }
-
+  .dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; }
+  .dot-pillar { background: #2563eb; }
+  .dot-tag { background: #94a3b8; border: 1px solid #cbd5e1; }
+  .dot-post { background: #475569; }
   .graph-main { position: relative; }
   .graph-stage {
     position: relative;
-    height: min(72vh, 700px);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 10px;
-    background: radial-gradient(ellipse at 30% 20%, rgba(37,99,235,0.06), transparent 60%),
-                radial-gradient(ellipse at 70% 80%, rgba(124,58,237,0.04), transparent 60%),
-                var(--bg-primary, #0f172a);
+    height: min(70vh, 680px);
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.75rem;
+    background: radial-gradient(circle at 18% 12%, #f0f4ff, #ffffff 60%);
     overflow: hidden;
     touch-action: none;
   }
-
-  :global(.graph-links) {
-    position: absolute; inset: 0; width: 100%; height: 100%;
-  }
-  :global(.graph-link) {
-    stroke: rgba(148,163,184,0.3); stroke-width: 1;
-  }
-  :global(.graph-link-topic) {
-    stroke: rgba(251,191,36,0.4); stroke-width: 1.4;
-  }
-  :global(.graph-nodes) {
-    position: absolute; inset: 0;
-  }
+  :global(.graph-links) { position: absolute; inset: 0; width: 100%; height: 100%; }
+  :global(.graph-link) { stroke: #cbd5e1; stroke-opacity: 0.5; stroke-width: 1; }
+  :global(.graph-link-pillar) { stroke: #93c5fd; }
+  :global(.graph-link-tag) { stroke: #d1d5db; }
+  :global(.graph-nodes) { position: absolute; inset: 0; }
   :global(.graph-node) {
     position: absolute;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid #d1d5db;
     border-radius: 999px;
-    background: rgba(30,41,59,0.9);
-    color: #e2e8f0;
-    padding: 2px 8px;
+    background: #fff;
+    color: #1e293b;
+    padding: 0.14rem 0.4rem;
     font-size: 0.72rem;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    transition: box-shadow 0.15s;
-  }
-  :global(.graph-node:hover) {
-    box-shadow: 0 0 12px rgba(251,191,36,0.3);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: opacity 0.15s;
   }
   :global(.graph-node-post) {
-    width: 7px; height: 7px; min-width: 0; min-height: 0;
+    width: 0.5rem; height: 0.5rem;
+    min-width: 0; min-height: 0;
     padding: 0; text-indent: -9999px;
-    border-radius: 50%;
-    background: #2563eb; border-color: rgba(37,99,235,0.6);
+    border-radius: 999px;
   }
-  :global(.graph-node-topic) {
-    font-weight: 700; font-size: 0.82rem;
-    background: rgba(251,191,36,0.15);
-    border-color: rgba(251,191,36,0.5);
-    color: #fbbf24;
-    padding: 4px 12px;
+  :global(.graph-node-pillar) {
+    background: #eff6ff;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.22rem 0.6rem;
   }
-  :global(.graph-node-keyword) {
-    background: rgba(148,163,184,0.1);
-    border-color: rgba(148,163,184,0.25);
-    color: #cbd5e1;
-    font-size: 0.7rem;
+  :global(.graph-node-tag) {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
   }
-  :global(.graph-node-match) { outline: 2px solid #fbbf24; outline-offset: 2px; }
-  :global(.graph-node-selected) { outline: 2px solid #fbbf24; outline-offset: 2px; }
-  :global(.graph-node-focus) { outline: 2px solid rgba(251,191,36,0.5); outline-offset: 1px; }
-
+  :global(.graph-node-selected) { outline: 2px solid #2563eb; outline-offset: 2px; }
+  :global(.graph-node-match) { outline: 2px solid #f59e0b; outline-offset: 1px; }
+  :global(.graph-node-focus) { outline: 2px solid #f59e0b; outline-offset: 1px; }
   .graph-inspector {
-    position: absolute; top: 12px; right: 12px;
-    width: min(20rem, calc(100% - 24px));
-    max-height: calc(100% - 24px);
+    position: absolute;
+    top: 0.75rem; right: 0.75rem;
+    width: min(20rem, calc(100% - 1.5rem));
+    max-height: calc(100% - 1.5rem);
     overflow: auto;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    background: rgba(15,23,42,0.95);
-    backdrop-filter: blur(12px);
-    padding: 12px;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.75rem;
+    background: var(--bg-card, #fff);
+    padding: 0.6rem 0.7rem;
     z-index: 20;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    opacity: 0; pointer-events: none;
-    transform: translateX(8px);
-    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
   }
-  .graph-inspector.graph-inspector-open {
-    opacity: 1; pointer-events: auto; transform: translateX(0);
-  }
-  .graph-inspector-head {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 8px;
-  }
-  .graph-inspector h2 { margin: 0; font-size: 0.9rem; color: #e2e8f0; }
+  .graph-inspector.graph-inspector-open { opacity: 1; pointer-events: auto; }
+  .graph-inspector-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0 0 0.4rem; }
+  .graph-inspector h2 { margin: 0; font-size: 0.92rem; }
   .graph-inspector-close {
-    border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
-    background: transparent; color: #94a3b8;
-    font-size: 0.8rem; padding: 2px 8px; cursor: pointer;
-    line-height: 1.4;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.82rem;
+    min-height: 1.6rem;
+    padding: 0.15rem 0.4rem;
+    cursor: pointer;
   }
-  .graph-inspector-content { min-height: 0; }
-  .graph-inspector-content p { margin: 4px 0; color: #94a3b8; font-size: 0.84rem; }
-
-  :global(.inspector-card) {
-    border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
-    background: rgba(30,41,59,0.6); padding: 10px 12px;
+  :global(.info-card) { border: 1px solid var(--border, #d1d5db); border-radius: 0.6rem; background: #fff; padding: 0.5rem 0.6rem; }
+  :global(.info-head) { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; }
+  :global(.info-head h3) { margin: 0; font-size: 0.9rem; color: #0f172a; }
+  :global(.info-badge) {
+    display: inline-flex; border: 1px solid #d1d5db; border-radius: 999px;
+    background: #f1f5f9; color: #475569; font-size: 0.7rem; padding: 0.12rem 0.38rem;
   }
-  :global(.inspector-card h3) { margin: 0 0 4px; font-size: 0.92rem; color: #f1f5f9; }
-  :global(.inspector-badge) {
-    display: inline-block; font-size: 0.68rem;
-    padding: 2px 8px; border-radius: 999px;
-    background: rgba(251,191,36,0.15); color: #fbbf24;
-    border: 1px solid rgba(251,191,36,0.3);
-    margin-bottom: 6px;
+  :global(.info-count) { margin: 0.3rem 0 0; color: #64748b; font-size: 0.78rem; }
+  :global(.info-empty) { margin: 0.3rem 0 0; color: #94a3b8; font-size: 0.78rem; }
+  :global(.info-list) { margin: 0.4rem 0 0; padding-left: 1rem; max-height: min(38vh, 16rem); overflow: auto; }
+  :global(.info-list li) { margin: 0.3rem 0; }
+  :global(.info-list a) { color: #2563eb; text-decoration: underline; line-height: 1.5; font-size: 0.84rem; }
+  :global(.info-title) { display: block; color: #0f172a; font-weight: 600; font-size: 0.9rem; text-decoration: none; margin: 0.3rem 0; }
+  :global(.info-title:hover) { color: #2563eb; }
+  :global(.info-meta) { margin: 0.35rem 0 0; display: grid; gap: 0.3rem; }
+  :global(.info-meta div) { margin: 0; }
+  :global(.info-meta dt) { margin: 0; color: #64748b; font-size: 0.72rem; }
+  :global(.info-meta dd) { margin: 0.1rem 0 0; color: #1e293b; font-size: 0.8rem; }
+  :global(.info-chip) {
+    display: inline-block; border: 1px solid #d1d5db; border-radius: 999px;
+    background: #f8fafc; color: #475569; font-size: 0.72rem; padding: 0.1rem 0.35rem; margin: 0.1rem 0.15rem;
   }
-  :global(.inspector-count) { font-size: 0.78rem; color: #94a3b8; margin: 4px 0; }
-  :global(.inspector-empty) { font-size: 0.8rem; color: #64748b; }
-  :global(.inspector-list) {
-    margin: 8px 0 0; padding-left: 16px;
-    max-height: min(40vh, 16rem); overflow: auto;
-  }
-  :global(.inspector-list li) { margin: 4px 0; }
-  :global(.inspector-list a) {
-    color: #93c5fd; text-decoration: underline; font-size: 0.82rem; line-height: 1.5;
-  }
-  :global(.inspector-list a:hover) { color: #fbbf24; }
-  :global(.inspector-post-link) {
-    display: block; color: #f1f5f9; text-decoration: none;
-    font-size: 0.92rem; font-weight: 600; margin: 4px 0;
-    line-height: 1.4;
-  }
-  :global(.inspector-post-link:hover) { color: #fbbf24; }
-  :global(.inspector-meta) { font-size: 0.78rem; color: #94a3b8; margin: 4px 0; }
-  :global(.inspector-chips) {
-    display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;
-  }
-  :global(.inspector-chip) {
-    display: inline-block; font-size: 0.7rem;
-    padding: 2px 8px; border-radius: 999px;
-    background: rgba(148,163,184,0.1); color: #cbd5e1;
-    border: 1px solid rgba(148,163,184,0.2);
-  }
-
-  @media (max-width: 768px) {
-    .graph-stage { height: min(60vh, 500px); }
+  @media (max-width: 760px) {
+    .graph-stage { height: min(60vh, 480px); }
     .graph-inspector {
-      position: fixed; left: 8px; right: 8px; top: auto; bottom: 8px;
-      width: auto; max-height: min(45vh, 20rem);
+      position: fixed; left: 0.5rem; right: 0.5rem; top: auto; bottom: 0.5rem;
+      width: auto; max-height: 44vh; border-radius: 0.8rem;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.2);
       transform: translateY(calc(100% + 1rem));
-      z-index: 50;
+      z-index: 45; transition: transform 0.2s, opacity 0.2s;
     }
-    .graph-inspector.graph-inspector-open {
-      transform: translateY(0);
-    }
+    .graph-inspector.graph-inspector-open { transform: translateY(0); }
   }
 </style>
