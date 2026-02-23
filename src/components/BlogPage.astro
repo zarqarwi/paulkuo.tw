@@ -89,8 +89,13 @@ const blogSchema = JSON.stringify({
         const dateStr = article.data.date.toLocaleDateString(L.dateLocale, L.dateOptions);
         return (
           <a href={`${basePath}/articles/${article.id.replace(/\.md$/, "")}`}
-             class={`content-card ${idx >= ARTICLES_PER_PAGE ? 'hidden-card' : ''}`}
+             class={`content-card ${article.data.cover ? 'has-cover' : ''} ${idx >= ARTICLES_PER_PAGE ? 'hidden-card' : ''}`}
              data-pillar={article.data.pillar} data-year={article.data.date.getFullYear().toString()}>
+            {article.data.cover && (
+              <div class="card-cover">
+                <img src={article.data.cover} alt={article.data.title} loading="lazy" />
+              </div>
+            )}
             <div class="content-card-category" style={`color:${p.color}`}>
               <span class="pillar-dot" style={`background:${p.color}`}></span>
               {lang === 'en' ? p.labelEn : p.label}

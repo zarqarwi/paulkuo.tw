@@ -130,7 +130,12 @@ const homeSchema = JSON.stringify({
         const p = PILLAR_MAP[article.data.pillar];
         const dateStr = article.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit' });
         return (
-          <a href={`/articles/${article.id.replace(/\.md$/, "")}`} class="content-card">
+          <a href={`/articles/${article.id.replace(/\.md$/, "")}`} class={`content-card ${article.data.cover ? 'has-cover' : ''}`}>
+            {article.data.cover && (
+              <div class="card-cover">
+                <img src={article.data.cover} alt={article.data.title} loading="lazy" />
+              </div>
+            )}
             <div class="content-card-category" style={`color:${p.color}`}>
               <span class="pillar-dot" style={`background:${p.color}`}></span> {p.label}
             </div>

@@ -160,6 +160,12 @@ const i = {
     <!-- ⚠️ 不要用 <nav> tag — 會和 BaseLayout 的 main-nav 衝突導致定位異常。用 div + role="navigation" 代替 -->
     <!-- Breadcrumb: visual hidden, schema JSON preserved for SEO -->
 
+    {article.data.cover && (
+      <div class="article-cover">
+        <img src={article.data.cover} alt={title} width="1792" height="1024" />
+      </div>
+    )}
+
     <header class="article-meta">
       <div class="article-pillar" style={`color:${p.color}`}>
         <span class="pillar-dot" style={`background:${p.color}`}></span>

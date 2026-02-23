@@ -4,6 +4,7 @@ description: "產業生態由建構者、交易員、投資人、評論員與跟
 date: 2022-06-26
 pillar: startup
 tags: ["產業角色", "建構者", "媒體識讀", "消費主義", "永續生活"]
+cover: "/images/covers/refuse-follower-be-builder.jpg"
 readingTime: 1
 ---
 
