@@ -32,6 +32,35 @@ jobs:
         env:
           GOOGLE_SERVICE_ACCOUNT_B64: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_B64 }}
 
+      - name: Fix YAML frontmatter quoting
+        run: |
+          python3 -c "
+import os, glob
+base = 'src/content/articles'
+fixed = 0
+for p in glob.glob(os.path.join(base, '**', '*.md'), recursive=True):
+    with open(p, 'r') as f: c = f.read()
+    if not c.startswith('---'): continue
+    try: end = c.index('---', 3)
+    except: continue
+    fm, body, changed, lines = c[3:end], c[end:], False, []
+    for line in fm.split(chr(10)):
+        for fld in ['title: ', 'description: ']:
+            if line.startswith(fld):
+                val = line[len(fld):]
+                if not (val.startswith('\"') or val.startswith(chr(39))):
+                    if ':' in val:
+                        val = val.replace('\"', chr(39))
+                        line = fld + '\"' + val + '\"'
+                        changed = True
+                break
+        lines.append(line)
+    if changed:
+        with open(p, 'w') as f: f.write('---' + chr(10).join(lines) + body)
+        fixed += 1
+print(f'Fixed {fixed} YAML frontmatter files')
+"
+
       - name: Build
         run: npm run build
 

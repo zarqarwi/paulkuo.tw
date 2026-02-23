@@ -1,5 +1,5 @@
 ---
-title: Personal Health Data Infrastructure: From 10 Years of Apple Health to AI-Driven Cross-Analysis
+title: "Personal Health Data Infrastructure: From 10 Years of Apple Health to AI-Driven Cross-Analysis"
 description: We don't lack data—we lack infrastructure. This article documents how I exported over 10 years and 3 million health data points from iPhone and Apple Watch, combined with real-time Fitbit MCP integration and Claude AI, to build my own Personal Health Infrastructure and discover what no single device will ever tell you.
 date: 2026-02-21
 pillar: ai

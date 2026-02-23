@@ -1,5 +1,5 @@
 ---
-title: If I Were a Student, I Would Learn AI: Jensen Huang on the Decisive Factor for the Future Workplace
+title: "If I Were a Student, I Would Learn AI: Jensen Huang on the Decisive Factor for the Future Workplace"
 description: Nvidia CEO Jensen Huang points out that the decisive factor for the future workplace is not becoming an engineer, but learning how to interact with generative AI. Asking questions of AI is a new form of linguistic ability that requires logic, structure, and clear goal-setting. Future education and career preparation must shift toward "human-AI collaboration" training.
 date: 2025-05-23
 pillar: startup
