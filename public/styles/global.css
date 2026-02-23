@@ -443,27 +443,17 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
     padding: 8px 14px;
   }
   .nav-links {
-    display: none;
-    position: absolute;
-    top: var(--nav-height, 72px);
-    left: 0; right: 0;
-    background: var(--bg-primary, #fff);
-    border-bottom: 1px solid var(--border, #e5e7eb);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    flex-direction: column;
-    padding: 16px 24px;
-    gap: 8px;
-    z-index: 100;
-  }
-  .nav-links.mobile-open {
     display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    align-items: center;
   }
-  .nav-links a {
-    padding: 8px 0;
-    font-size: 0.95rem;
-    border-bottom: 1px solid var(--border-subtle, #f0f0f0);
-  }
-  .nav-links a:last-child { border-bottom: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a { font-size: 0.78rem; flex-shrink: 0; white-space: nowrap; }
+  .nav-links .nav-cta { padding: 6px 14px; font-size: 0.75rem !important; }
   .nav-links a { font-size: 0.78rem; }
   .nav-links .nav-cta { padding: 6px 14px; font-size: 0.75rem !important; }
   .nav-links .mobile-lang-switcher { display: flex; gap: 4px; padding-top: 8px; }
