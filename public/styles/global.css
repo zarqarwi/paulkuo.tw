@@ -1077,6 +1077,18 @@ body.focus-mode .article-page {
   margin: 0 auto;
 }
 
+/* === Tags Link === */
+.tags-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--brand-navy, #1b2d4f);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.tags-link:hover { border-bottom-color: var(--brand-navy, #1b2d4f); }
+
 /* === Reading Time === */
 .reading-time {
   color: var(--text-secondary, #6b7280);
