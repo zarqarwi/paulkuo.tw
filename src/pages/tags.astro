@@ -1,0 +1,205 @@
+---
+/**
+ * /tags — 標籤總覽頁
+ * 顯示所有標籤，點擊可篩選文章
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PILLAR_MAP } from '../config';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// Build tag → count map
+const tagCount: Record<string, number> = {};
+articles.forEach(a => {
+  a.data.tags?.forEach(tag => {
+    tagCount[tag] = (tagCount[tag] || 0) + 1;
+  });
+});
+const sortedTags = Object.entries(tagCount).sort((a, b) => b[1] - a[1]);
+
+// Years
+const years = [...new Set(articles.map(a => a.data.date.getFullYear()))].sort((a, b) => b - a);
+
+// Pillars
+const pillars = Object.entries(PILLAR_MAP);
+---
+
+<BaseLayout title="標籤 — Paul Kuo" description="所有文章標籤一覽">
+  <div class="section-container">
+    <div class="tags-hero">
+      <h1>標籤</h1>
+    </div>
+
+    <!-- Pillar filter -->
+    <div class="blog-filters">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      {pillars.map(([key, p]) => (
+        <button class="filter-btn" data-filter={key}>
+          {p.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Tag cloud -->
+    <div class="tag-cloud" id="tagCloud">
+      <button class="tag-pill active" data-tag="all">全部標籤</button>
+      {sortedTags.map(([tag, count]) => (
+        <button class="tag-pill" data-tag={tag}>
+          {tag} <span class="tag-count">{count}</span>
+        </button>
+      ))}
+    </div>
+
+    <!-- Year filter -->
+    <div class="blog-year-filters">
+      <button class="year-btn active" data-year="all">所有年份</button>
+      {years.map(y => (
+        <button class="year-btn" data-year={y.toString()}>{y}</button>
+      ))}
+    </div>
+
+    <!-- Count -->
+    <p class="tags-result-count" id="tagsCount">
+      目前顯示 全部主題、全部標籤、全部年份（{articles.length} 篇）
+    </p>
+
+    <!-- Article list -->
+    <div class="tags-article-list" id="tagsList">
+      {articles.map(article => {
+        const p = PILLAR_MAP[article.data.pillar];
+        const dateStr = article.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const tags = article.data.tags || [];
+        return (
+          <a href={`/articles/${article.id.replace(/\.md$/, '')}`}
+            class="tags-article-item"
+            data-pillar={article.data.pillar}
+            data-year={article.data.date.getFullYear().toString()}
+            data-tags={tags.join(',')}>
+            <div class="tags-article-date">{dateStr}</div>
+            <div class="tags-article-body">
+              <strong>{article.data.title}</strong>
+              <div class="tags-article-meta">
+                主題：{p?.label || article.data.pillar}
+                {article.data.readingTime && <span> · 約 {article.data.readingTime} 分鐘</span>}
+              </div>
+              <div class="tags-article-tags">
+                {tags.map(t => <span class="mini-tag">{t}</span>)}
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+
+  <script is:inline>
+  (function() {
+    var items = Array.from(document.querySelectorAll('.tags-article-item'));
+    var countEl = document.getElementById('tagsCount');
+    var activePillar = 'all';
+    var activeTag = 'all';
+    var activeYear = 'all';
+
+    function render() {
+      var count = 0;
+      items.forEach(function(item) {
+        var pillarOk = activePillar === 'all' || item.dataset.pillar === activePillar;
+        var yearOk = activeYear === 'all' || item.dataset.year === activeYear;
+        var tagOk = activeTag === 'all' || (item.dataset.tags || '').split(',').indexOf(activeTag) >= 0;
+        if (pillarOk && yearOk && tagOk) {
+          item.style.display = '';
+          count++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      if (countEl) countEl.textContent = '找到 ' + count + ' 篇文章';
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activePillar = btn.dataset.filter;
+        render();
+      });
+    });
+
+    document.querySelectorAll('.tag-pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tag-pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeTag = btn.dataset.tag;
+        render();
+      });
+    });
+
+    document.querySelectorAll('.year-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.year-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeYear = btn.dataset.year;
+        render();
+      });
+    });
+
+    // URL hash support: /tags#AI
+    var hash = window.location.hash.replace('#', '');
+    if (hash) {
+      var tagBtn = document.querySelector('.tag-pill[data-tag="' + decodeURIComponent(hash) + '"]');
+      if (tagBtn) { tagBtn.click(); }
+    }
+  })();
+  </script>
+</BaseLayout>
+
+<style>
+  .tags-hero { text-align: center; padding: 40px 0 24px; }
+  .tags-hero h1 { font-size: 2rem; }
+
+  .tag-cloud {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 16px; padding: 16px 0;
+    border-bottom: 1px solid var(--border, #e5e7eb);
+  }
+  .tag-pill {
+    padding: 5px 12px; border-radius: 16px;
+    border: 1px solid var(--border, #d1d5db);
+    background: transparent; color: var(--text-secondary, #6b7280);
+    font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+  }
+  .tag-pill:hover { border-color: var(--brand-navy, #1b2d4f); color: var(--brand-navy); }
+  .tag-pill.active { background: var(--brand-navy, #1b2d4f); color: #fff; border-color: var(--brand-navy); }
+  .tag-count { opacity: 0.6; font-size: 0.75rem; }
+
+  .tags-result-count {
+    font-size: 0.85rem; color: var(--text-secondary);
+    margin: 16px 0;
+  }
+
+  .tags-article-list { display: flex; flex-direction: column; gap: 2px; }
+  .tags-article-item {
+    display: flex; gap: 16px; padding: 14px 16px;
+    border-radius: 8px; text-decoration: none; color: inherit;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border, #f0f0f0);
+  }
+  .tags-article-item:hover { background: var(--bg-hover, #f9fafb); }
+  .tags-article-date {
+    flex-shrink: 0; width: 90px;
+    font-size: 0.82rem; color: var(--text-secondary);
+    padding-top: 2px;
+  }
+  .tags-article-body strong { font-size: 0.95rem; line-height: 1.4; }
+  .tags-article-meta {
+    font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;
+  }
+  .tags-article-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .mini-tag {
+    font-size: 0.7rem; padding: 2px 8px;
+    background: var(--bg-hover, #f3f4f6);
+    border-radius: 10px; color: var(--text-secondary);
+  }
+</style>
