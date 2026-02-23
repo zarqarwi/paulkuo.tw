@@ -1071,3 +1071,30 @@ body.focus-mode .article-page {
   max-width: 720px;
   margin: 0 auto;
 }
+
+/* === Year Filter Pills === */
+.blog-year-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.year-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.year-btn:hover {
+  border-color: var(--brand-navy, #1b2d4f);
+  color: var(--brand-navy, #1b2d4f);
+}
+.year-btn.active {
+  background: var(--brand-navy, #1b2d4f);
+  color: #fff;
+  border-color: var(--brand-navy, #1b2d4f);
+}

@@ -20,6 +20,9 @@ const articles = (await getCollection(L.collectionName, ({ data }) => !data.draf
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const pillars = Object.entries(PILLAR_MAP);
+
+// Extract unique years from articles, sorted descending
+const years = [...new Set(articles.map(a => a.data.date.getFullYear()))].sort((a, b) => b - a);
 const basePath = L.pathPrefix || '';
 
 const blogSchema = JSON.stringify({
@@ -68,6 +71,13 @@ const blogSchema = JSON.stringify({
       ))}
     </div>
 
+    <div class="blog-year-filters">
+      <button class="year-btn active" data-year="all">{lang === 'en' ? 'All Years' : lang === 'ja' ? '\u5168\u5e74' : '\u6240\u6709\u5e74\u4efd'}</button>
+      {years.map(y => (
+        <button class="year-btn" data-year={y.toString()}>{y}</button>
+      ))}
+    </div>
+
     <h2 class="sr-only">{lang === 'en' ? 'Articles' : lang === 'ja' ? '記事一覧' : '文章列表'}</h2>
 
     <div class="content-grid" id="blog-grid">
@@ -78,7 +88,7 @@ const blogSchema = JSON.stringify({
         return (
           <a href={`${basePath}/articles/${article.id.replace(/\.md$/, "")}`}
              class={`content-card ${idx >= ARTICLES_PER_PAGE ? 'hidden-card' : ''}`}
-             data-pillar={article.data.pillar}>
+             data-pillar={article.data.pillar} data-year={article.data.date.getFullYear().toString()}>
             <div class="content-card-category" style={`color:${p.color}`}>
               <span class="pillar-dot" style={`background:${p.color}`}></span>
               {lang === 'en' ? p.labelEn : p.label}
@@ -118,7 +128,12 @@ const blogSchema = JSON.stringify({
 
     function getFilteredCards() {
       const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
-      return allCards.filter(c => activeFilter === 'all' || c.dataset.pillar === activeFilter);
+      const activeYear = document.querySelector('.year-btn.active')?.dataset.year || 'all';
+      return allCards.filter(c => {
+        const pillarMatch = activeFilter === 'all' || c.dataset.pillar === activeFilter;
+        const yearMatch = activeYear === 'all' || c.dataset.year === activeYear;
+        return pillarMatch && yearMatch;
+      });
     }
 
     function updateVisibility() {
@@ -153,6 +168,17 @@ const blogSchema = JSON.stringify({
         updateVisibility();
       });
     }
+
+    
+    // Year filter buttons
+    document.querySelectorAll('.year-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        visibleCount = ARTICLES_PER_PAGE;
+        renderCards();
+      });
+    });
 
     // Auto-filter from URL hash (e.g. /blog#ai, /blog#circular)
     const hash = window.location.hash.replace('#', '');
