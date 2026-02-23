@@ -21,13 +21,36 @@ log() { echo "[$TS] $1" >> "$LOG"; }
 log "=== Start ==="
 cd "$REPO" || { log "ERROR: cd failed"; exit 1; }
 
-# Always sync with remote first to avoid push conflicts
+# --- Guard: skip if manual git operation in progress ---
+if [ -f ".git/index.lock" ]; then
+    log "⏸️ Skip: .git/index.lock exists (manual git op in progress)"
+    exit 0
+fi
+
+# --- Guard: clean corrupted refs automatically ---
+find .git/logs -name 'main *' -delete 2>/dev/null
+find .git/logs -name 'HEAD *' -delete 2>/dev/null
+find .git/refs -name 'main *' -delete 2>/dev/null
+
+# --- Guard: stash any dirty working tree before sync ---
+DIRTY=$(git status --porcelain 2>/dev/null)
+if [ -n "$DIRTY" ]; then
+    log "WARN: dirty working tree, stashing..."
+    git stash --include-untracked >> "$LOG" 2>&1
+fi
+
+# Sync with remote
+git fetch origin >> "$LOG" 2>&1
 git pull --rebase origin main >> "$LOG" 2>&1 || {
-    log "WARN: git pull --rebase failed, resetting to origin/main"
+    log "WARN: git pull --rebase failed, hard reset to origin/main"
     git rebase --abort >> "$LOG" 2>&1
-    git fetch origin >> "$LOG" 2>&1
     git reset --hard origin/main >> "$LOG" 2>&1
 }
+
+# Restore stash if we stashed
+if [ -n "$DIRTY" ]; then
+    git stash pop >> "$LOG" 2>&1 || log "WARN: stash pop conflict, dropped"
+fi
 
 # --- Snapshot before (for significant change detection) ---
 OLD_STEPS=""
