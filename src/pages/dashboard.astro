@@ -88,6 +88,8 @@ const dashMain = document.getElementById('dashboardMain');
 const authInput = document.getElementById('authInput');
 const authBtn = document.getElementById('authBtn');
 
+var charts = {};
+
 function checkAuth() {
   const urlKey = new URLSearchParams(window.location.search).get('key');
   const stored = sessionStorage.getItem('dash_auth');
@@ -136,7 +138,7 @@ const ACT_CLR = { debate:'#f59e0b', 'translate-en':'#3b82f6', 'translate-ja':'#6
 const ACT_LABEL = { debate:'辯論', 'translate-en':'翻譯 EN', 'translate-ja':'翻譯 JA', 'translate-zh-cn':'翻譯 簡中',
   'social-summary':'社群摘要', 'image-gen':'DALL-E 配圖', 'debate-to-article':'辯論轉文章', factcheck:'事實查核' };
 
-let charts = {};
+
 
 function render(records) {
   const totalUSD = records.reduce((s,r) => s + r.costUSD, 0);
