@@ -43,11 +43,13 @@ const hreflangs = [
 ];
 
 // Language switcher links — 指向當前頁面的對應語系版本
+// Smart lang switching: homepage uses ?lang=, other pages use path-based routing
+const isHome = basePath === '/' || basePath === '';
 const langSwitchLinks = {
-  'zh-Hant': basePath === '/' ? '/?lang=zh-Hant' : `${basePath}?lang=zh-Hant`,
-  'en': basePath === '/' ? '/?lang=en' : `${basePath}?lang=en`,
-  'ja': basePath === '/' ? '/?lang=ja' : `${basePath}?lang=ja`,
-  'zh-CN': basePath === '/' ? '/?lang=zh-CN' : `${basePath}?lang=zh-CN`,
+  'zh-Hant': isHome ? '/' : basePath,
+  'en': isHome ? '/?lang=en' : `/en${basePath}`,
+  'ja': isHome ? '/?lang=ja' : `/ja${basePath}`,
+  'zh-CN': isHome ? '/?lang=zh-CN' : `/zh-cn${basePath}`,
 };
 
 // Check if this is an article page (for reading progress bar)
