@@ -998,3 +998,32 @@ footer {
   font-size: 0.95rem;
   padding: 32px 0;
 }
+/* Mobile lang group inside hamburger menu */
+.mobile-lang-divider { display: none; }
+.mobile-lang-group { display: none; }
+@media (max-width: 768px) {
+  .mobile-lang-divider {
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+    margin: 8px 0 4px;
+  }
+  .mobile-lang-group {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+  }
+  .mobile-lang-group .lang-btn {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+  }
+  .mobile-lang-group .lang-btn.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+}

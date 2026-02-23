@@ -108,6 +108,13 @@ const isArticlePage = pathname.includes('/articles/');
         <a href="/about" id="nav-about">關於</a>
         <a href="/search" id="nav-search" title="搜尋" aria-label="搜尋" style="font-size:1.1rem;line-height:1">🔍</a>
         <a href="/#contact" class="nav-cta">聯絡我</a>
+        <div class="mobile-lang-divider"></div>
+        <div class="mobile-lang-group">
+          <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]}>繁</a>
+          <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]}>简</a>
+          <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]}>EN</a>
+          <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]}>日</a>
+        </div>
       </div>
 
       <div class="lang-switcher">
