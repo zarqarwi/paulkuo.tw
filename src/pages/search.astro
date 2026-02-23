@@ -1,0 +1,69 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const articles = (await getCollection("articles", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const searchData = articles.map(a => ({
+  title: a.data.title,
+  pillar: a.data.pillar || "",
+  tags: (a.data.tags || []).join(" "),
+  date: a.data.date.toISOString().slice(0, 10),
+  slug: a.id.replace(/\.md$/, ""),
+  excerpt: a.data.description || "",
+}));
+---
+
+<BaseLayout title="搜尋 | Paul Kuo" description="搜尋 Paul Kuo 的所有文章">
+  <div class="search-page">
+    <h1>搜尋</h1>
+    <p class="search-hint">輸入關鍵字搜尋所有文章。</p>
+    <div class="search-box">
+      <input type="search" id="searchInput" placeholder="輸入關鍵字搜尋文章..." autocomplete="off" autofocus />
+    </div>
+    <div id="searchResults" class="search-results"></div>
+    <p id="searchEmpty" class="search-empty" style="display:none">找不到符合的文章。試試其他關鍵字？</p>
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ searchData }}>
+(function() {
+  const input = document.getElementById("searchInput");
+  const results = document.getElementById("searchResults");
+  const empty = document.getElementById("searchEmpty");
+  if (!input || !results) return;
+
+  const data = searchData;
+
+  input.addEventListener("input", function() {
+    const q = this.value.trim().toLowerCase();
+    results.innerHTML = "";
+    empty.style.display = "none";
+
+    if (q.length < 2) return;
+
+    const matched = data.filter(a =>
+      a.title.toLowerCase().includes(q) ||
+      a.pillar.toLowerCase().includes(q) ||
+      a.tags.toLowerCase().includes(q) ||
+      a.excerpt.toLowerCase().includes(q)
+    );
+
+    if (matched.length === 0) {
+      empty.style.display = "block";
+      return;
+    }
+
+    matched.forEach(a => {
+      const card = document.createElement("a");
+      card.href = "/articles/" + a.slug;
+      card.className = "search-result-card";
+      card.innerHTML = "<span class=\"search-date\">" + a.date + "</span>" +
+        "<h3>" + a.title + "</h3>" +
+        (a.excerpt ? "<p>" + a.excerpt.slice(0, 100) + "...</p>" : "");
+      results.appendChild(card);
+    });
+  });
+})();
+</script>
