@@ -960,11 +960,11 @@
     }
   },
   "refuse-follower-be-builder.md": {
-    "sourceHash": "5353b8b7fb1b",
+    "sourceHash": "74b4383b79da",
     "translations": {
       "en": {
-        "hash": "6783e4140024",
-        "translatedAt": "2026-02-23T09:48:36.605Z",
+        "hash": "585b699afb4c",
+        "translatedAt": "2026-02-23T14:05:53.224Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
