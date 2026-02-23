@@ -44,10 +44,10 @@ const hreflangs = [
 
 // Language switcher links — 指向當前頁面的對應語系版本
 const langSwitchLinks = {
-  'zh-Hant': basePath === '/' ? '/' : basePath,
-  'en': `/en${basePath === '/' ? '/' : basePath}`,
-  'ja': `/ja${basePath === '/' ? '/' : basePath}`,
-  'zh-CN': `/zh-cn${basePath === '/' ? '/' : basePath}`,
+  'zh-Hant': basePath === '/' ? '/?lang=zh-Hant' : `${basePath}?lang=zh-Hant`,
+  'en': basePath === '/' ? '/?lang=en' : `${basePath}?lang=en`,
+  'ja': basePath === '/' ? '/?lang=ja' : `${basePath}?lang=ja`,
+  'zh-CN': basePath === '/' ? '/?lang=zh-CN' : `${basePath}?lang=zh-CN`,
 };
 
 // Check if this is an article page (for reading progress bar)
@@ -400,5 +400,95 @@ const isArticlePage = pathname.includes('/articles/');
     <button class="font-size-btn active" data-size="normal" aria-label="標準" title="標準字級">A</button>
     <button class="font-size-btn" data-size="large" aria-label="大字" title="放大字級">A+</button>
   </div>
+
+  <script is:inline>
+  // === Client-side i18n for homepage ===
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const lang = params.get('lang');
+    if (!lang || lang === 'zh-Hant') return; // Default language, no translation needed
+    
+    fetch('/data/i18n-home.json')
+      .then(r => r.json())
+      .then(t => {
+        const T = t[lang];
+        if (!T) return;
+        
+        // Hero taglines
+        const taglines = document.querySelectorAll('.hero-tagline');
+        if (taglines[0]) taglines[0].textContent = T.hero_tagline1;
+        if (taglines[1]) taglines[1].textContent = T.hero_tagline2;
+        
+        // Buttons
+        const btnRead = document.querySelector('.btn-primary');
+        const btnAbout = document.querySelector('.btn-secondary');
+        if (btnRead) btnRead.textContent = T.btn_read;
+        if (btnAbout) btnAbout.textContent = T.btn_about;
+        
+        // Hero cards
+        const heroCards = document.querySelectorAll('.hero-card p');
+        if (heroCards[0]) heroCards[0].textContent = T.card1_text;
+        if (heroCards[1]) heroCards[1].textContent = T.card2_text;
+        if (heroCards[2]) heroCards[2].textContent = T.card3_text;
+        const heroMeta = document.querySelectorAll('.hero-card-meta');
+        if (heroMeta[0]) heroMeta[0].textContent = T.card1_meta;
+        
+        // Section titles
+        document.querySelectorAll('.section-title').forEach(function(el) {
+          var text = el.textContent.trim();
+          if (text === '最新思考') el.textContent = T.section_latest;
+          if (text === '動態情報') el.textContent = T.section_feed;
+          if (text === '專案') el.textContent = T.section_projects;
+        });
+        
+        // View all links
+        document.querySelectorAll('.section-link').forEach(function(el) {
+          if (el.textContent.includes('查看全部')) el.textContent = T.section_viewall;
+        });
+        
+        // Manifesto
+        var kicker = document.querySelector('.manifesto-kicker');
+        if (kicker) kicker.textContent = T.manifesto_kicker;
+        var mBody = document.querySelector('.manifesto-body');
+        if (mBody) mBody.textContent = T.manifesto_body;
+        var mCta = document.querySelector('.manifesto-cta');
+        if (mCta) mCta.textContent = T.manifesto_cta;
+        
+        // Contact section
+        var contactH2 = document.querySelector('.contact-section h2');
+        if (contactH2) contactH2.innerHTML = T.contact_title;
+        
+        // Form
+        var nameLabel = document.querySelector('label[for="contact-name"]');
+        if (nameLabel) nameLabel.textContent = T.form_name;
+        var nameInput = document.getElementById('contact-name');
+        if (nameInput) nameInput.placeholder = T.form_name_ph;
+        var msgLabel = document.querySelector('label[for="contact-message"]');
+        if (msgLabel) msgLabel.textContent = T.form_message;
+        var msgInput = document.getElementById('contact-message');
+        if (msgInput) msgInput.placeholder = T.form_message_ph;
+        var submitBtn = document.getElementById('contact-submit');
+        if (submitBtn) submitBtn.textContent = T.form_submit;
+        
+        // Feed description
+        var feedDesc = document.querySelector('#feed p');
+        if (feedDesc && feedDesc.textContent.includes('7 個平台')) feedDesc.textContent = T.feed_desc;
+        
+        // Update active lang button
+        document.querySelectorAll('.lang-btn').forEach(function(btn) {
+          btn.classList.remove('active');
+        });
+        // Highlight the active lang
+        document.querySelectorAll('.lang-btn').forEach(function(btn) {
+          var href = btn.getAttribute('href') || '';
+          if (href.includes('lang=' + lang)) btn.classList.add('active');
+        });
+        
+        // Update html lang attribute
+        document.documentElement.lang = lang === 'zh-CN' ? 'zh-Hans' : lang;
+      })
+      .catch(function() {});
+  })();
+  </script>
 </body>
 </html>
