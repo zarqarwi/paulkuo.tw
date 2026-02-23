@@ -108,7 +108,13 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         <a href={langPrefix + '/'} id="nav-home">首頁</a>
         <a href={langPrefix + '/blog'} id="nav-blog">思想</a>
         <a href={langPrefix + '/projects'} id="nav-projects">專案</a>
-        <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-feed">動態情報</a>
+        <div class="nav-dropdown">
+          <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-feed" class="nav-dropdown-trigger">動態情報</a>
+          <div class="nav-dropdown-menu">
+            <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-dd-feed">動態牆</a>
+            <a href={langPrefix + '/tags-graph'} id="nav-dd-graph">知識圖譜</a>
+          </div>
+        </div>
         <a href={langPrefix + '/about'} id="nav-about">關於</a>
         <a href="/search" id="nav-search" title="搜尋" aria-label="搜尋" style="font-size:1.1rem;line-height:1">🔍</a>
         <a href="/#contact" class="nav-cta">聯絡我</a>
@@ -436,7 +442,9 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
           'nav-blog': T.nav_blog,
           'nav-projects': T.nav_projects,
           'nav-feed': T.nav_feed,
-          'nav-about': T.nav_about
+          'nav-about': T.nav_about,
+          'nav-dd-feed': T.nav_dd_feed,
+          'nav-dd-graph': T.nav_dd_graph
         };
         Object.keys(navMap).forEach(function(id) {
           var el = document.getElementById(id);
