@@ -89,7 +89,7 @@ const isArticlePage = pathname.includes('/articles/');
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles/global.css?v=2.9">
+  <link rel="stylesheet" href="/styles/global.css?v=3.0">
   {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
   <slot name="head" />
   <!-- WebMCP: AI agent tool registration (progressive enhancement) -->
@@ -396,6 +396,11 @@ const isArticlePage = pathname.includes('/articles/');
 
   </script>
 
+  <!-- Focus Mode Toggle (article pages only) -->
+  <button class="focus-mode-btn" id="focusModeBtn" title="專注閱讀" aria-label="Focus Mode" style="display:none">
+    <span class="focus-icon">👁</span>
+  </button>
+
   <!-- Font Size Toggle -->
   <div class="font-size-toggle" id="fontToggle" aria-label="字級切換">
     <button class="font-size-btn" data-size="small" aria-label="小字" title="縮小字級">A-</button>
@@ -511,6 +516,53 @@ const isArticlePage = pathname.includes('/articles/');
         document.documentElement.lang = lang === 'zh-CN' ? 'zh-Hans' : lang;
       })
       .catch(function() {});
+  })();
+  </script>
+
+  <script is:inline>
+  // === Focus Mode ===
+  (function() {
+    var btn = document.getElementById('focusModeBtn');
+    if (!btn) return;
+    // Only show on article pages
+    var isArticle = !!document.querySelector('.article-page, .article-content');
+    if (!isArticle) return;
+    btn.style.display = 'flex';
+    
+    var active = false;
+    btn.addEventListener('click', function() {
+      active = !active;
+      var nav = document.getElementById('main-nav');
+      var ticker = document.querySelector('.cost-ticker');
+      var footer = document.querySelector('footer');
+      var fontToggle = document.getElementById('fontToggle');
+      
+      if (active) {
+        document.body.classList.add('focus-mode');
+        if (nav) nav.style.transform = 'translateY(-100%)';
+        if (ticker) ticker.style.transform = 'translateY(-100%)';
+        if (ticker) ticker.style.opacity = '0';
+        if (footer) footer.style.display = 'none';
+        btn.querySelector('.focus-icon').textContent = '✕';
+        btn.title = '結束專注';
+        // Adjust body padding
+        document.body.style.paddingTop = '0';
+        // Smooth scroll to article content
+        var content = document.querySelector('.article-content, .article-page');
+        if (content) content.style.paddingTop = '40px';
+      } else {
+        document.body.classList.remove('focus-mode');
+        if (nav) nav.style.transform = '';
+        if (ticker) ticker.style.transform = '';
+        if (ticker) ticker.style.opacity = '';
+        if (footer) footer.style.display = '';
+        btn.querySelector('.focus-icon').textContent = '👁';
+        btn.title = '專注閱讀';
+        document.body.style.paddingTop = '';
+        var content = document.querySelector('.article-content, .article-page');
+        if (content) content.style.paddingTop = '';
+      }
+    });
   })();
   </script>
 </body>
