@@ -155,13 +155,13 @@ const i = {
   canonicalUrl={canonicalUrl}>
 
   <article class="article-page" itemscope itemtype="https://schema.org/BlogPosting">
-    <nav class="article-breadcrumb" aria-label="breadcrumb">
+    <div class="article-breadcrumb" role="navigation" aria-label="breadcrumb">
       <ol>
         <li><a href={`${basePath}/`}>{lang === 'en' ? 'Home' : '首頁'}</a></li>
         <li><a href={`${basePath}/blog`}>{lang === 'en' ? 'Articles' : '思想'}</a></li>
         <li aria-current="page">{title}</li>
       </ol>
-    </nav>
+    </div>
 
     <header class="article-meta">
       <div class="article-pillar" style={`color:${p.color}`}>
