@@ -1,10 +1,10 @@
 {
   "ai-2027-civilization-reflection.md": {
-    "sourceHash": "ac38be4f0074",
+    "sourceHash": "657a7ef693dc",
     "translations": {
       "en": {
-        "hash": "eac3ddc4bd1b",
-        "translatedAt": "2026-02-23T17:56:03.376Z",
+        "hash": "a3615f92782d",
+        "translatedAt": "2026-02-24T00:18:32.944Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -20,11 +20,11 @@
     }
   },
   "ai-agent-planning-guide.md": {
-    "sourceHash": "bdfd3c588ba7",
+    "sourceHash": "81955547c60a",
     "translations": {
       "en": {
-        "hash": "4ef882c7cfc4",
-        "translatedAt": "2026-02-23T17:56:16.960Z",
+        "hash": "ce4ba9c57f41",
+        "translatedAt": "2026-02-24T00:18:46.157Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -140,11 +140,11 @@
     }
   },
   "algorithm-cannot-replace-decisions.md": {
-    "sourceHash": "bd07ab689395",
+    "sourceHash": "93c27324c840",
     "translations": {
       "en": {
-        "hash": "42f19b8e5667",
-        "translatedAt": "2026-02-23T17:57:38.218Z",
+        "hash": "706cb38c17cf",
+        "translatedAt": "2026-02-24T00:18:59.847Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -160,11 +160,11 @@
     }
   },
   "breaking-silo-effect.md": {
-    "sourceHash": "c587024ea4be",
+    "sourceHash": "2988beb84da0",
     "translations": {
       "en": {
-        "hash": "b25a5c9f6361",
-        "translatedAt": "2026-02-23T17:57:51.285Z",
+        "hash": "e723e910e0e6",
+        "translatedAt": "2026-02-24T00:19:11.962Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -260,11 +260,11 @@
     }
   },
   "compass-meets-algorithm-authority-in-human-ai-era.md": {
-    "sourceHash": "ed226fbfad67",
+    "sourceHash": "f69c2af55795",
     "translations": {
       "en": {
-        "hash": "c779c4655b84",
-        "translatedAt": "2026-02-23T17:59:14.247Z",
+        "hash": "cb4ca72a3f0f",
+        "translatedAt": "2026-02-24T00:19:40.132Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -460,11 +460,11 @@
     }
   },
   "faith-collapse-rebuild.md": {
-    "sourceHash": "588dd243a205",
+    "sourceHash": "693813089df9",
     "translations": {
       "en": {
-        "hash": "d22559f50bd5",
-        "translatedAt": "2026-02-23T18:01:50.948Z",
+        "hash": "297aa320f02b",
+        "translatedAt": "2026-02-24T00:19:53.708Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
