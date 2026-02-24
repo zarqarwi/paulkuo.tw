@@ -9,7 +9,6 @@ platform: "Debate Engine"
 featured: false
 draft: false
 cover: "/images/covers/compass-meets-algorithm-authority-in-human-ai-era.jpg"
-cover: "/images/covers/compass-meets-algorithm-authority-in-human-ai-era.jpg"
 readingTime: 5
 ---
 

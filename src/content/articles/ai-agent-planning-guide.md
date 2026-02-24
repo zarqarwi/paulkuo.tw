@@ -7,7 +7,6 @@ pillar: startup
 tags: ["AI Agent", "自動化", "流程設計", "風險管理", "模組化"]
 draft: false
 cover: "/images/covers/ai-agent-planning-guide.jpg"
-cover: "/images/covers/ai-agent-planning-guide.jpg"
 readingTime: 1
 ---
 

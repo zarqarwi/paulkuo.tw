@@ -1,0 +1,12 @@
+---
+/**
+ * /en/ homepage
+ * Renders the same layout as root index, with lang="en" passed to BaseLayout
+ * Client-side i18n script in BaseLayout handles translation
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Paul Kuo — Rebuilding Order in an Age of Intelligence" lang="en">
+  <script is:inline>window.__LANG__ = 'en';</script>
+  <meta http-equiv="refresh" content="0;url=/?lang=en" />
+</BaseLayout>

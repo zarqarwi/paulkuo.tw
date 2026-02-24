@@ -1,65 +1,64 @@
 ---
-title: "Closed Texts and Open Worlds: A Faith Reflection on the Same-Sex Marriage Constitutional Ruling"
-description: "When religious texts refuse to dialogue with the times, faith becomes an isolated island severed from reality. When faith communities treat their interpretations as the only truth, they ultimately only marginalize themselves."
+title: "Closed Texts and the Open World: A Faith Reflection on the Same-Sex Marriage Constitutional Interpretation"
+description: "When religious texts refuse to engage in dialogue with the times, faith degenerates into an island severed from reality. When faith communities treat their own interpretations as the sole truth, they ultimately only marginalize themselves."
 date: 2017-05-29
 pillar: faith
 tags: ["同婚釋憲", "神學反省", "文本詮釋", "信仰邊界", "文化相對論"]
-cover: "/images/covers/same-sex-marriage-theology.jpg"
 readingTime: 1
 ---
 
-## Closed Texts and Open Worlds
-### A Faith Reflection on the Same-Sex Marriage Constitutional Ruling
+## Closed Texts and the Open World
+### A Faith Reflection on the Same-Sex Marriage Constitutional Interpretation
 
-When Constitutional Interpretation No. 748 on "Same-Sex Marriage Freedom" was announced,
-as a Christian who once studied theology and intended to enter ministry, my feelings were deeply conflicted.
+When Constitutional Interpretation No. 748 on "The Freedom of Marriage for Same-Sex Couples" was announced,
+as a Christian who has studied theology and intended to enter the priesthood, my feelings were deeply mixed.
 
-I can fully understand
-how friends who cannot accept this interpretation feel as though they've been violated by society.
-When reasoned discourse fails, moral judgment inevitably follows.
+I can completely understand
+that friends who cannot accept this interpretation feel as if they've been violated by society.
+When reasoning fails, moral judgment inevitably follows.
 
 But the root of the problem lies in how we view "truth."
 
 ---
 
-### The Closure of Texts and the Trap of Literalism
+### The Closure of Texts and the Trap of Literal Meaning
 
 Many evangelical believers uphold biblical truth, believing that the canon is closed.
 All of life's answers—from relationships and finances to politics—are contained within these sixty-six books.
 
 They employ literal interpretation.
-Opening Leviticus or Romans, they see in black and white: "If a man lies with a male as with a woman, both of them have committed an abomination; they shall surely be put to death."
+Opening Leviticus or Romans, they find it written in black and white: "If a man lies with a man as one lies with a woman, both of them shall be put to death."
 
-From a literal reading, there indeed seems no room for compromise.
+From a literal perspective, there is indeed no room for compromise.
 
 But they overlook the fact that:
-The Apostle Paul never opposed slavery.
-King David never opposed having thousands of concubines.
+The apostle Paul never opposed slavery.
+King David never opposed having three thousand concubines.
 
-You cannot directly derive modern optimal marriage or political systems from this ancient text.
+You cannot directly derive the most suitable modern marriage or political systems from this ancient text.
 
 ---
 
-### Cultural Context and Communal Imagination
+### Cultural Context and Collective Imagination
 
 Before the Scientific Revolution, the world was simple, and religious leaders provided all knowledge.
 But after the Enlightenment, we should possess the ability to analyze the social foundations of texts.
 
-- The Pentateuch is filled with editorial traces from later hands.
-- The 27 books of the New Testament weren't confirmed until 419 CE.
+- The Five Books of Moses are filled with traces of later editorial work.
+- The 27 books of the New Testament were only confirmed in 419 CE.
 
 No religious text can be completely closed, requiring no dialogue with the world.
-Christianity's canon is itself a cultural product filled with dialectic and conflict.
+The Christian canon is itself a cultural product filled with dialectics and conflicts.
 
 ---
 
 ### Conclusion: The Leap of Faith
 
-If we don't adjust our framework for understanding truth, how can the church dialogue with the world?
+If the framework for understanding truth isn't adjusted, how can the church engage in dialogue with the world?
 
 Every interpretive conflict presents an opportunity for a leap of faith.
 We need theological reflection,
-not self-imposed isolation that merely shouts "the world lies under the power of darkness."
+not just the self-imposed isolation of shouting "the world lies under the power of darkness."
 
-Only by choosing such a theological stance can I teach my children,
+By choosing this theological stance, I can teach my children
 and maintain consistency in my character from Monday through Sunday.

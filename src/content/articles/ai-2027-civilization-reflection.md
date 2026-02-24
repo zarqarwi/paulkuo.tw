@@ -4,7 +4,6 @@ description: 《AI 2027》報告模擬了 AGI 崛起對全球的衝擊：當 AI 
 date: 2025-05-23
 pillar: ai
 cover: "/images/covers/ai-2027-civilization-reflection.jpg"
-cover: "/images/covers/ai-2027-civilization-reflection.jpg"
 readingTime: 1
 ---
 
