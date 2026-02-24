@@ -26,7 +26,7 @@ const p = PILLAR_MAP[pillar];
 const dateStr = date.toLocaleDateString(L.dateLocale, L.dateOptions);
 const slug = article.id.replace(/\.md$/, '');
 const articleUrl = `${SITE.url}${basePath}/articles/${slug}`;
-const ogImageUrl = `${SITE.url}/og/${slug}.png`;
+const ogImageUrl = article.data.cover ? `${SITE.url}${article.data.cover}` : `${SITE.url}/og/${slug}.png`;
 const pillarLabel = lang === 'en' ? p.labelEn : p.label;
 
 // === Related articles & prev/next navigation ===
@@ -155,6 +155,14 @@ const i = {
   ogImage={ogImageUrl}
   schemaJson={schemaJson}
   canonicalUrl={canonicalUrl}>
+
+  <Fragment slot="head">
+    <meta property="article:published_time" content={date.toISOString()} />
+    {updated && <meta property="article:modified_time" content={updated.toISOString()} />}
+    <meta property="article:author" content={SITE.url} />
+    <meta property="article:section" content={pillarLabel} />
+    {tags.map(tag => <meta property="article:tag" content={tag} />)}
+  </Fragment>
 
   <article class="article-page" itemscope itemtype="https://schema.org/BlogPosting">
     <!-- ⚠️ 不要用 <nav> tag — 會和 BaseLayout 的 main-nav 衝突導致定位異常。用 div + role="navigation" 代替 -->
