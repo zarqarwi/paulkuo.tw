@@ -8,6 +8,7 @@ tags: ["人工智慧", "思想框架", "權威建構", "人機協作", "認知�
 platform: "Debate Engine"
 featured: false
 draft: false
+cover: "/images/covers/compass-meets-algorithm-authority-in-human-ai-era.jpg"
 ---
 
 ## 羅盤とアルゴリズムの邂逅：人機協働時代における思想的権威の困窮

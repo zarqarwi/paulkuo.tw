@@ -4,6 +4,7 @@ description: "病毒的传播不分人种与信仰，任何宣称能以「神圣
 date: 2020-02-23
 pillar: faith
 tags: ["宗教群聚", "神学反思", "社会理性", "信仰边界", "疫情启示"]
+cover: "/images/covers/faith-no-immunity.jpg"
 readingTime: 4
 ---
 

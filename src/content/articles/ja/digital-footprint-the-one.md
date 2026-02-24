@@ -4,6 +4,7 @@ description: "アプリが我々自身よりも我々の生産性と睡眠を熟
 date: 2017-01-22
 pillar: ai
 tags: ["AI応用", "デジタル痕跡", "データ監視", "プライバシー境界", "パラダイム転換"]
+cover: "/images/covers/digital-footprint-the-one.jpg"
 readingTime: 5
 ---
 

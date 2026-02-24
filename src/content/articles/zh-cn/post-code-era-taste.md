@@ -5,6 +5,7 @@ date: 2025-05-24
 pillar: startup
 tags: ["后代码时代", "品味", "Vibe Coding", "人文素养", "AI协作"]
 draft: false
+cover: "/images/covers/post-code-era-taste.jpg"
 readingTime: 5
 ---
 

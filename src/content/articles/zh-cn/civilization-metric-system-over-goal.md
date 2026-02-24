@@ -4,6 +4,7 @@ description: "文明的进步不能仅以经济增长或生产率来衡量，「
 date: 2022-06-26
 pillar: life
 tags: ["文明指标", "风险管理", "系统思维", "幸福定义", "永续生活"]
+cover: "/images/covers/civilization-metric-system-over-goal.jpg"
 readingTime: 5
 ---
 

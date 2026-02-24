@@ -4,6 +4,7 @@ description: "Viral transmission knows no race or faith. Any religious group cla
 date: 2020-02-23
 pillar: faith
 tags: ["宗教群聚", "神學反思", "社會理性", "信仰邊界", "疫情啟示"]
+cover: "/images/covers/faith-no-immunity.jpg"
 readingTime: 1
 ---
 

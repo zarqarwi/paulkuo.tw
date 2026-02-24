@@ -9,6 +9,7 @@ tags: ["AI转型", "个人战略", "角色定位", "工作流设计", "判断力
 platform: "Medium"
 featured: true
 draft: false
+cover: "/images/covers/personal-strategy-in-ai-storm.jpg"
 readingTime: 8
 ---
 

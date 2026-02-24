@@ -4,6 +4,7 @@ description: "脸书调整算法，将互动重心从商业粉丝页拉回人际
 date: 2018-01-13
 pillar: ai
 tags: ["社群算法", "数位营销", "品牌价值", "科技反思", "商业转型"]
+cover: "/images/covers/facebook-algorithm-humanity.jpg"
 readingTime: 4
 ---
 

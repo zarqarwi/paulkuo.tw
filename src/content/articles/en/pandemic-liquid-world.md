@@ -4,6 +4,7 @@ description: "The pandemic didn't just change our lifestyles—it revealed that 
 date: 2021-06-09
 pillar: life
 tags: ["液態現代性", "鮑曼", "疫情", "新常態", "社會觀察"]
+cover: "/images/covers/pandemic-liquid-world.jpg"
 readingTime: 1
 ---
 

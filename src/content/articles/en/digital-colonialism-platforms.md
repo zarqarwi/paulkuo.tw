@@ -4,6 +4,7 @@ description: "We have long enjoyed free internet infrastructure and have essenti
 date: 2018-01-14
 pillar: faith
 tags: ["數位殖民", "演算法調整", "平台霸權", "資源依賴", "商業反思"]
+cover: "/images/covers/digital-colonialism-platforms.jpg"
 readingTime: 1
 ---
 

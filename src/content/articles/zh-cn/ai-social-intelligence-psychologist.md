@@ -5,6 +5,7 @@ date: 2025-10-05
 pillar: ai
 tags: ["社会智能", "ChatGPT", "心理学", "人机协作", "AI伦理"]
 draft: false
+cover: "/images/covers/ai-social-intelligence-psychologist.jpg"
 readingTime: 5
 ---
 

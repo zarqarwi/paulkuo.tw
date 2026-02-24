@@ -9,6 +9,7 @@ tags: ["閱讀筆記", "存在主義", "苦難", "自我反思", "文明內在",
 platform: "Medium"
 featured: true
 draft: false
+cover: "/images/covers/cioran-on-suffering-and-clarity.jpg"
 readingTime: 2
 ---
 

@@ -3,6 +3,7 @@ title: "精英的傲慢，青年的出路"
 description: "哈佛教授桑德尔指出，精英主义让赢家以为成功全靠自己，忘了运气与制度的支撑。这不仅制造社会裂痕，也让年轻人背负不公平的压力。真正的出路不是更努力地攀爬，而是重建一个尊重每个人贡献的社会框架。"
 date: 2022-12-16
 pillar: faith
+cover: "/images/covers/elite-arrogance-youth.jpg"
 ---
 
 ## 精英的傲慢，青年的出路

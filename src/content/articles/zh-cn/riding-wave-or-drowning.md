@@ -4,6 +4,7 @@ description: "从网络革命到气候变迁，再到席卷全球的疫情封城
 date: 2020-02-20
 pillar: life
 tags: ["疫情冲击", "时代浪潮", "资产轻量化", "社会流动", "历史转折"]
+cover: "/images/covers/riding-wave-or-drowning.jpg"
 readingTime: 4
 ---
 

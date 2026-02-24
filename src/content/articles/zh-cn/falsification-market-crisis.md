@@ -4,6 +4,7 @@ description: "面对充满黑天鹅的世界，盲目的自信是致命的。我
 date: 2020-02-23
 pillar: ai
 tags: ["风险管理", "信息判断", "投资心理", "危机意识", "谦卑"]
+cover: "/images/covers/falsification-market-crisis.jpg"
 readingTime: 4
 ---
 

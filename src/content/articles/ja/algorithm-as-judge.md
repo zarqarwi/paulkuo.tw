@@ -4,6 +4,7 @@ description: "タクシー運転手の五つ星懇願からフードデリバリ
 date: 2026-02-20
 pillar: ai
 tags: ["数据监控", "劳动权益", "评分系统", "新经济", "社会演化"]
+cover: "/images/covers/algorithm-as-judge.jpg"
 readingTime: 4
 ---
 

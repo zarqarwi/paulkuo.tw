@@ -4,6 +4,7 @@ description: "Facing the Dow's plunge of 2,000 points and unprecedented global l
 date: 2020-03-13
 pillar: ai
 tags: ["股市崩盤", "知識邊界", "否證論", "黑天鵝", "敬畏市場"]
+cover: "/images/covers/market-crash-humility.jpg"
 readingTime: 1
 ---
 

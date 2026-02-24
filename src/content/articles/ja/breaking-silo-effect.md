@@ -4,6 +4,7 @@ description: "組織の硬直化は過度な分業がもたらす情報不透明
 date: 2026-02-20
 pillar: startup
 tags: ["サイロ効果", "組織硬直化", "事業開発", "分野横断コミュニケーション", "情報透明性"]
+cover: "/images/covers/breaking-silo-effect.jpg"
 readingTime: 5
 ---
 

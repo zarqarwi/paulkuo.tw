@@ -4,6 +4,7 @@ description: "社會盲目追逐「流量變現」，卻忽略流量本質是「
 date: 2022-06-22
 pillar: ai
 tags: ["流量經濟", "影響力", "信任關係", "角色定位", "社會責任"]
+cover: "/images/covers/traffic-beyond-currency.jpg"
 readingTime: 4
 ---
 

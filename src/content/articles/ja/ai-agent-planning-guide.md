@@ -3,6 +3,7 @@ title: "AI Agent 導入ガイド：タスクツールから能動的パートナ
 description: "AI Agentを導入する前に、その位置づけと境界を明確にしなければ、制御不能なブラックボックスに陥りやすい。安定したAgentの運用は、ツールとシステムのシームレスな統合、モジュール化されたプロセス分解、そして透明で追跡可能な監視メカニズムの上に成り立つ。小規模なシナリオから検証を始めることが、Agent定着の鍵である。"
 date: 2025-10-05
 pillar: startup
+cover: "/images/covers/ai-agent-planning-guide.jpg"
 ---
 
 ## AI Agent 導入ガイド

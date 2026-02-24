@@ -5,6 +5,7 @@ date: 2025-05-25
 pillar: life
 tags: ["自我修煉", "人際關係", "自律", "識人", "生活哲学"]
 draft: false
+cover: "/images/covers/quiet-edge-thirteen-notes.jpg"
 readingTime: 5
 ---
 

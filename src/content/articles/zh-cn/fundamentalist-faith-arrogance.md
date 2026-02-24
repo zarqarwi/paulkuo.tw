@@ -4,6 +4,7 @@ description: "台湾主流的基督教基本教义派，往往将信仰锁死在
 date: 2022-06-26
 pillar: faith
 tags: ["基本教义派", "神学反省", "宗教批判", "二元对立", "思考怠惰"]
+cover: "/images/covers/fundamentalist-faith-arrogance.jpg"
 readingTime: 5
 ---
 

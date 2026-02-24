@@ -9,6 +9,7 @@ tags: ["AI轉型", "個人戰略", "角色定位", "工作流設計", "判斷力
 platform: "Medium"
 featured: true
 draft: false
+cover: "/images/covers/personal-strategy-in-ai-storm.jpg"
 readingTime: 2
 ---
 

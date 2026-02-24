@@ -4,6 +4,7 @@ description: "我々は長年無料のインターネットインフラを享受
 date: 2026-02-20
 pillar: faith
 tags: ["デジタル植民地化", "アルゴリズム調整", "プラットフォーム覇権", "資源依存", "商業的省察"]
+cover: "/images/covers/digital-colonialism-platforms.jpg"
 readingTime: 4
 ---
 

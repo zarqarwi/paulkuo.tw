@@ -4,6 +4,7 @@ description: "产业生态由建构者、交易员、投资人、评论员与跟
 date: 2022-06-26
 pillar: startup
 tags: ["产业角色", "建构者", "媒体识读", "消费主义", "永续生活"]
+cover: "/images/covers/refuse-follower-be-builder.jpg"
 readingTime: 5
 ---
 

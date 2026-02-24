@@ -4,6 +4,7 @@ description: "年長者が熱中する「善行経済学」と宗教的功徳論
 date: 2018-02-19
 pillar: faith
 tags: ["世代差異", "信仰反思", "心理寄託", "家庭關係", "謙卑"]
+cover: "/images/covers/broken-crutch-elderly-faith.jpg"
 readingTime: 5
 ---
 

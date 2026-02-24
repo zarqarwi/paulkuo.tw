@@ -9,6 +9,7 @@ tags: ["半导体", "台日合作", "循环经济", "产业聚落", "资源再�
 platform: "Medium"
 featured: true
 draft: false
+cover: "/images/covers/taiwan-semiconductor-tenfold-leap.jpg"
 readingTime: 9
 ---
 

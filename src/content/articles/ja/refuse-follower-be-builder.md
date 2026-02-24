@@ -4,6 +4,7 @@ description: "産業エコシステムは建設者、トレーダー、投資家
 date: 2022-06-26
 pillar: startup
 tags: ["産業役割", "建設者", "メディアリテラシー", "消費主義", "持続可能な生活"]
+cover: "/images/covers/refuse-follower-be-builder.jpg"
 readingTime: 5
 ---
 

@@ -4,6 +4,7 @@ description: "エントロピーは混乱と崩壊を表し、負エントロピ
 date: 2025-04-29
 pillar: ai
 tags: ["熵與負熵", "中美博弈", "台灣企業", "秩序選擇", "避險策略"]
+cover: "/images/covers/negentropy-taiwan-enterprise.jpg"
 readingTime: 5
 ---
 

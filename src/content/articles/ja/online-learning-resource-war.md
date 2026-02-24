@@ -4,6 +4,7 @@ description: "「休校しても学習は継続」は決して長期休暇のボ
 date: 2020-03-08
 pillar: startup
 tags: ["遠距教學", "停課不停學", "教育資源", "自主管理", "疫情反思"]
+cover: "/images/covers/online-learning-resource-war.jpg"
 readingTime: 5
 ---
 

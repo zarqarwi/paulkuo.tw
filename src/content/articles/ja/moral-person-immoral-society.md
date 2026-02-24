@@ -4,6 +4,7 @@ description: "個人の道徳と集団の倫理には全く異なる作動論理
 date: 2022-06-26
 pillar: faith
 tags: ["組織倫理", "権力結構", "尼布爾", "システム設計", "指導力"]
+cover: "/images/covers/moral-person-immoral-society.jpg"
 readingTime: 5
 ---
 

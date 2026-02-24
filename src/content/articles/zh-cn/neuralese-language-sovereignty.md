@@ -3,6 +3,7 @@ title: "当语言被放弃，我们还剩什么？——Neuralese 与语言主�
 description: "当 AI 发展出比人类语言更高效的内部推理结构「Neuralese」，意味着语言透明性的崩塌。语言是人类治理、信任与知识的基础，若 AI 的决策过程变得无法解释，人类将沦为被圈养的宠物，失去对未来的参与权。捍卫语言主权，是我们最后的文明防线。"
 date: 2025-05-23
 pillar: ai
+cover: "/images/covers/neuralese-language-sovereignty.jpg"
 ---
 
 ## 当语言被放弃，我们还剩什么？

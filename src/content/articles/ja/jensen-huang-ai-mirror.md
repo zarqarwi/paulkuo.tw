@@ -5,6 +5,7 @@ date: 2025-05-23
 pillar: startup
 tags: ["ジェンスン・ファン", "AI教育", "人機協働", "職場変革", "思考トレーニング"]
 draft: false
+cover: "/images/covers/jensen-huang-ai-mirror.jpg"
 readingTime: 5
 ---
 

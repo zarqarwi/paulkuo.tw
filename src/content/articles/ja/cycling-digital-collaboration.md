@@ -4,6 +4,7 @@ description: "単純なサイクリング記録動画の背後には、無数の
 date: 2017-10-30
 pillar: startup
 tags: ["数位協作", "API生態系", "合作競爭", "資源整合", "典範転移"]
+cover: "/images/covers/cycling-digital-collaboration.jpg"
 readingTime: 4
 ---
 

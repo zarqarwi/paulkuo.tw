@@ -5,6 +5,7 @@ date: 2025-05-24
 pillar: faith
 tags: ["裸露语言", "算法", "注意力经济", "身体主权", "媒体素养"]
 draft: false
+cover: "/images/covers/nudity-as-language-algorithm.jpg"
 readingTime: 6
 ---
 

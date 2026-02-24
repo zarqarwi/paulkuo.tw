@@ -5,6 +5,7 @@ date: 2025-05-23
 pillar: startup
 tags: ["黃仁勳", "AI教育", "人機協作", "職場轉型", "思維訓練"]
 draft: false
+cover: "/images/covers/jensen-huang-ai-mirror.jpg"
 readingTime: 1
 ---
 

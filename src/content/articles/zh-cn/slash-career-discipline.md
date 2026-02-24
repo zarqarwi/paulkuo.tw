@@ -4,6 +4,7 @@ description: "社会对「斜杠」往往抱持着逃避体制、心猿意马或
 date: 2018-02-11
 pillar: startup
 tags: ["斜杠青年", "职涯发展", "知识系统", "纪律", "专业养成"]
+cover: "/images/covers/slash-career-discipline.jpg"
 readingTime: 5
 ---
 

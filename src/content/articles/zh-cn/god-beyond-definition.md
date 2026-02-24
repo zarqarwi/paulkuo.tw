@@ -4,6 +4,7 @@ description: "人类习惯透过名字与框架来建立群体认同并排斥异
 date: 2022-06-26
 pillar: faith
 tags: ["信仰边界", "神学反思", "排他主义", "宗教批判", "群体盲思"]
+cover: "/images/covers/god-beyond-definition.jpg"
 readingTime: 5
 ---
 

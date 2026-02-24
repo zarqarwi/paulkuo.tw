@@ -5,6 +5,7 @@ date: 2025-05-23
 pillar: ai
 tags: ["AIガバナンス", "Safer-4", "技術主権", "民主的意思決定", "市民スロー審査"]
 draft: false
+cover: "/images/covers/safer-4-ai-governance.jpg"
 readingTime: 6
 ---
 

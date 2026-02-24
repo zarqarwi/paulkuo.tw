@@ -4,6 +4,7 @@ description: "疫病は現代社会運営の基石である「流動性」を破
 date: 2020-03-13
 pillar: life
 tags: ["流動性", "輕資產", "疫情衝擊", "全球化", "韌性思維"]
+cover: "/images/covers/pandemic-liquid-world.jpg"
 readingTime: 4
 ---
 

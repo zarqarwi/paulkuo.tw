@@ -5,6 +5,7 @@ date: 2025-05-25
 pillar: life
 tags: ["2030展望", "AGI", "量子計算", "気候韌性", "未来予測"]
 draft: false
+cover: "/images/covers/world-outlook-2030.jpg"
 readingTime: 6
 ---
 

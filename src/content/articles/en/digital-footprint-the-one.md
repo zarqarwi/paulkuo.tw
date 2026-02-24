@@ -4,6 +4,7 @@ description: "When apps know more about our productivity and sleep than we do ou
 date: 2017-01-22
 pillar: ai
 tags: ["AI應用", "數位軌跡", "數據監控", "隱私邊界", "典範轉移"]
+cover: "/images/covers/digital-footprint-the-one.jpg"
 readingTime: 1
 ---
 

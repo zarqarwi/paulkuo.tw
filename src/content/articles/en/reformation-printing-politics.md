@@ -4,6 +4,7 @@ description: "Historical events never emerge from the triumph of a single idea a
 date: 2017-02-05
 pillar: faith
 tags: ["宗教改革", "歷史脈絡", "權力結構", "科技推力", "去神話化"]
+cover: "/images/covers/reformation-printing-politics.jpg"
 readingTime: 1
 ---
 

@@ -4,6 +4,7 @@ description: "我们长年享受免费的网路基础建设，本质上已成为
 date: 2026-02-20
 pillar: faith
 tags: ["数字殖民", "算法调整", "平台霸权", "资源依赖", "商业反思"]
+cover: "/images/covers/digital-colonialism-platforms.jpg"
 readingTime: 4
 ---
 

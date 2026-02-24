@@ -4,6 +4,7 @@ description: "Social media feeds are projectors of human psychological needs. Wh
 date: 2017-10-27
 pillar: life
 tags: ["社群觀察", "知識焦慮", "資訊消費", "價值判斷", "人性反射"]
+cover: "/images/covers/social-media-value-spectrum.jpg"
 readingTime: 1
 ---
 

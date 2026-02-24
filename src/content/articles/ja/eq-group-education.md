@@ -3,6 +3,7 @@ title: "感情は個人の問題ではない：なぜEQは群育の核心であ�
 description: "EQは個人の修養と誤解されがちだが、その本質は集団の相互作用の中で進化した生存能力である。教育が個人の発展を過度に強調すると、子どもたちはチームの中で妥協し共感する機会を失う。"
 date: 2017-10-23
 pillar: startup
+cover: "/images/covers/eq-group-education.jpg"
 ---
 
 ## 感情は個人の問題ではない

@@ -3,6 +3,7 @@ title: "信仰の崩壊と再建：1995年閏八月の予言から見る宗教�
 description: "信仰に内省が欠ければ、現実逃避のインスタント食品に堕する。1995年の予言騒動は、信徒が思考を放棄したとき、信仰と生活が完全に乖離することを暴露した。"
 date: 2016-02-13
 pillar: faith
+cover: "/images/covers/faith-collapse-rebuild.jpg"
 ---
 
 ## 信仰の崩壊と再建

@@ -4,6 +4,7 @@ description: "台湾主流のキリスト教原理主義は、しばしば信仰
 date: 2022-06-26
 pillar: faith
 tags: ["基本教義派", "神学反省", "宗教批判", "二元対立", "思考怠惰"]
+cover: "/images/covers/fundamentalist-faith-arrogance.jpg"
 readingTime: 5
 ---
 

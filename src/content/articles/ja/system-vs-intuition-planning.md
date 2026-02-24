@@ -4,6 +4,7 @@ description: "人間の認知活動は直観的な「システム１」と理性
 date: 2018-08-09
 pillar: startup
 tags: ["認知科学", "専案管理", "ビジネス企画", "教育実践", "システム思考"]
+cover: "/images/covers/system-vs-intuition-planning.jpg"
 readingTime: 4
 ---
 

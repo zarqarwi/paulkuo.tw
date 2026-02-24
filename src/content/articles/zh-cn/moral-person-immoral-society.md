@@ -4,6 +4,7 @@ description: "个人的道德与团体的伦理有着截然不同的运作逻辑
 date: 2022-06-26
 pillar: faith
 tags: ["组织伦理", "权力结构", "尼布尔", "系统设计", "领导力"]
+cover: "/images/covers/moral-person-immoral-society.jpg"
 readingTime: 5
 ---
 

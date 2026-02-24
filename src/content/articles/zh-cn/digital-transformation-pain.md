@@ -4,6 +4,7 @@ description: "数字转型是一场宛如临盆般「开五指」的痛苦过程
 date: 2019-12-30
 pillar: startup
 tags: ["数字转型", "组织变革", "创新阻力", "权力结构", "企业管理"]
+cover: "/images/covers/digital-transformation-pain.jpg"
 readingTime: 5
 ---
 

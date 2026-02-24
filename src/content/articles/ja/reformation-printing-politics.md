@@ -4,6 +4,7 @@ description: "歴史的事件の勃発は決して単一の理念の勝利では
 date: 2017-02-05
 pillar: faith
 tags: ["宗教改革", "歴史脈絡", "権力結構", "科技推力", "去神話化"]
+cover: "/images/covers/reformation-printing-politics.jpg"
 readingTime: 5
 ---
 

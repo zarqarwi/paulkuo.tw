@@ -4,6 +4,7 @@ description: "疫情摧毁了现代社会运作的基石：「流动性」。当
 date: 2020-03-13
 pillar: life
 tags: ["流动性", "轻资产", "疫情冲击", "全球化", "韧性思维"]
+cover: "/images/covers/pandemic-liquid-world.jpg"
 readingTime: 4
 ---
 

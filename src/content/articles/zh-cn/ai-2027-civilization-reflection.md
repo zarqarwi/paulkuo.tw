@@ -9,6 +9,7 @@ tags: ["AI 2027", "文明转折", "价值对齐", "人类定位", "AGI", "Alignm
 platform: "Medium"
 featured: true
 draft: false
+cover: "/images/covers/ai-2027-civilization-reflection.jpg"
 readingTime: 8
 ---
 

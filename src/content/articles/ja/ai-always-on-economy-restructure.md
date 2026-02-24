@@ -4,6 +4,7 @@ description: "AIは単なるツールではなく、組織の底層ロジック�
 date: 2025-04-21
 pillar: ai
 tags: ["AI経済", "24時間稼働", "組織再構築", "人機協働", "MCP"]
+cover: "/images/covers/ai-always-on-economy-restructure.jpg"
 readingTime: 5
 ---
 

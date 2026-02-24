@@ -3,6 +3,7 @@ title: "算法无法取代的重量：为何我们不该成为科学教信徒？
 description: "平台与数据能降低信息不对称，但决策仍需仰赖人脑的跳跃性思考。任何宣称能代劳决策的平台，不是笨蛋就是骗子。"
 date: 2017-03-03
 pillar: ai
+cover: "/images/covers/algorithm-cannot-replace-decisions.jpg"
 ---
 
 ## 算法无法取代的重量

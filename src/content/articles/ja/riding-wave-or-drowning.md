@@ -4,6 +4,7 @@ description: "インターネット革命から気候変動、そして世界を
 date: 2020-02-20
 pillar: life
 tags: ["疫情衝擊", "時代浪潮", "資産輕量化", "社會流動", "歴史轉折"]
+cover: "/images/covers/riding-wave-or-drowning.jpg"
 readingTime: 4
 ---
 

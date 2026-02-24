@@ -4,6 +4,7 @@ description: "Digital currency reveals the interconnected relationship between e
 date: 2018-01-04
 pillar: ai
 tags: ["演算力", "知識經濟", "數位貨幣", "網紅現象", "價值轉換"]
+cover: "/images/covers/computation-as-currency.jpg"
 readingTime: 1
 ---
 

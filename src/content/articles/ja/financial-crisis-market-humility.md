@@ -3,6 +3,7 @@ title: "未知の狂瀾に畏敬を：金融危機から十年の市場啓示"
 description: "市場の動向は個人の線形予測をしばしば超える。グローバルな資本の狂潮と複雑な経済システムの前で、私たちが取れる唯一の姿勢は、未知への謙虚さだけである。"
 date: 2017-10-31
 pillar: life
+cover: "/images/covers/financial-crisis-market-humility.jpg"
 ---
 
 ## 未知の狂瀾に畏敬を

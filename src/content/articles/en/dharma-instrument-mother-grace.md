@@ -3,6 +3,7 @@ title: "The Weight the Ritual Instrument Bore for My Mother: Those Extra Six Yea
 description: Facing my mother's cancer diagnosis and passing, the shattering of a ritual instrument became a life sign that transcends reason. It reminds us of life's fragility and uncontrollability, teaching us to remain humble before the mysteries of life and death and impermanence. Regret exists not because we didn't do enough, but because love is inherently limited; what we can do is transform this protection beyond understanding into the strength to continue forward for the rest of our lives.
 date: 2025-12-07
 pillar: life
+cover: "/images/covers/dharma-instrument-mother-grace.jpg"
 readingTime: 1
 ---
 

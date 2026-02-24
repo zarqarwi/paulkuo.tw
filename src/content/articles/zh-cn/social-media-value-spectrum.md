@@ -4,6 +4,7 @@ description: "社群动态墙是人类心理需求的投射器。我们选择发
 date: 2017-10-27
 pillar: life
 tags: ["社群观察", "知识焦虑", "信息消费", "价值判断", "人性反射"]
+cover: "/images/covers/social-media-value-spectrum.jpg"
 readingTime: 4
 ---
 

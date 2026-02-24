@@ -4,6 +4,7 @@ description: "Choosing alternative education isn't about finding shortcuts to co
 date: 2023-05-27
 pillar: startup
 tags: ["自學教育", "教育哲學", "家長角色", "溫和對抗", "批判思維"]
+cover: "/images/covers/homeschool-gentle-resistance.jpg"
 readingTime: 2
 ---
 

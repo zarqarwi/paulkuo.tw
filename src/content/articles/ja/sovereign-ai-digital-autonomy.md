@@ -5,6 +5,7 @@ date: 2025-05-24
 pillar: ai
 tags: ["主権AI", "デジタル主権", "技術自主", "AIガバナンス", "地政学"]
 draft: false
+cover: "/images/covers/sovereign-ai-digital-autonomy.jpg"
 readingTime: 5
 ---
 

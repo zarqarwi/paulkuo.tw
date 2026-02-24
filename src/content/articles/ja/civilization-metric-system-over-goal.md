@@ -4,6 +4,7 @@ description: "文明の進歩は経済成長や生産性だけでは測れない
 date: 2022-06-26
 pillar: life
 tags: ["文明指標", "風險管理", "系統思維", "幸福定義", "永續生活"]
+cover: "/images/covers/civilization-metric-system-over-goal.jpg"
 readingTime: 5
 ---
 

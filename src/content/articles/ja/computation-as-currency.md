@@ -3,6 +3,7 @@ title: "演算本位時代：知識・電力・貨幣が等号で結ばれると
 description: "デジタル通貨は、電力・演算・貨幣の連動関係を明らかにした。知識が数理化され貨幣と連結できるとき、演算力を価値基準とする新たな経済モデルが到来する。"
 date: 2018-01-04
 pillar: ai
+cover: "/images/covers/computation-as-currency.jpg"
 ---
 
 ## 演算本位時代

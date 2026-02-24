@@ -4,6 +4,7 @@ description: "组织的僵化源于过度分工带来的信息不透明。真正
 date: 2026-02-20
 pillar: startup
 tags: ["谷仓效应", "组织僵化", "业务开发", "跨界沟通", "信息通透"]
+cover: "/images/covers/breaking-silo-effect.jpg"
 readingTime: 5
 ---
 

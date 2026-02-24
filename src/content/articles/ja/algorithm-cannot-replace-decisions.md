@@ -3,6 +3,7 @@ title: "アルゴリズムでは代替できない重さ：なぜ科学教の信
 description: "プラットフォームとデータは情報の非対称性を軽減できるが、意思決定には依然として人間の跳躍的思考が必要だ。意思決定を代行すると謳うプラットフォームは、愚か者か詐欺師のどちらかである。"
 date: 2017-03-03
 pillar: ai
+cover: "/images/covers/algorithm-cannot-replace-decisions.jpg"
 ---
 
 ## アルゴリズムでは代替できない重さ

@@ -4,6 +4,7 @@ description: "Market movements often transcend individual linear predictions. Fa
 date: 2017-10-31
 pillar: life
 tags: ["金融海嘯", "市場觀察", "投資心理", "總體經濟", "謙卑"]
+cover: "/images/covers/financial-crisis-market-humility.jpg"
 readingTime: 1
 ---
 

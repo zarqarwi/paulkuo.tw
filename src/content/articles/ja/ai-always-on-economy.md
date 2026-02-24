@@ -9,6 +9,7 @@ tags: ["AI", "組織轉型", "經濟結構", "文明轉折", "Agent", "全天候
 platform: "Medium"
 featured: true
 draft: false
+cover: "/images/covers/ai-always-on-economy.jpg"
 readingTime: 10
 ---
 

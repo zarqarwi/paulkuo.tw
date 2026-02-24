@@ -4,6 +4,7 @@ description: "宗教文本若拒绝与时代对话，信仰便会沦为与现实
 date: 2017-05-29
 pillar: faith
 tags: ["同婚释宪", "神学反省", "文本诠释", "信仰边界", "文化相对论"]
+cover: "/images/covers/same-sex-marriage-theology.jpg"
 readingTime: 6
 ---
 

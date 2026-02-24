@@ -4,6 +4,7 @@ description: "人間は名前と枠組みを通じて集団アイデンティテ
 date: 2022-06-26
 pillar: faith
 tags: ["信仰邊界", "神學反思", "排他主義", "宗教批判", "群體盲思"]
+cover: "/images/covers/god-beyond-definition.jpg"
 readingTime: 5
 ---
 

@@ -3,6 +3,7 @@ title: When Language is Abandoned, What Do We Have Left? — Neuralese and the E
 description: When AI develops an internal reasoning structure called "Neuralese" that is more efficient than human language, it signals the collapse of linguistic transparency. Language is the foundation of human governance, trust, and knowledge. If AI's decision-making processes become inexplicable, humans will be reduced to pampered pets, losing their right to participate in the future. Defending linguistic sovereignty is our civilization's last line of defense.
 date: 2025-05-23
 pillar: ai
+cover: "/images/covers/neuralese-language-sovereignty.jpg"
 readingTime: 1
 ---
 

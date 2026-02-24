@@ -4,6 +4,7 @@ description: "一支简单的骑车记录影片，背后是无数跨国企业的
 date: 2017-10-30
 pillar: startup
 tags: ["数字协作", "API生态系", "合作竞争", "资源整合", "典范转移"]
+cover: "/images/covers/cycling-digital-collaboration.jpg"
 readingTime: 4
 ---
 

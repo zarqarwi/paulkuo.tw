@@ -5,6 +5,7 @@ date: 2025-11-08
 pillar: faith
 tags: ["語言哲學", "Gemini", "AI幻覺", "批判思維", "人機對話"]
 draft: false
+cover: "/images/covers/language-truth-gemini-dialogue.jpg"
 readingTime: 1
 ---
 

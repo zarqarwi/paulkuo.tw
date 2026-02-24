@@ -8,6 +8,7 @@ tags: ["人工智能", "思想框架", "权威建构", "人机协作", "认知�
 platform: "Debate Engine"
 featured: false
 draft: false
+cover: "/images/covers/compass-meets-algorithm-authority-in-human-ai-era.jpg"
 ---
 
 ## 当罗盘遇见算法：思想权威在人机协作时代的困境

@@ -4,6 +4,7 @@ description: "デジタル変革は、まるで出産時の「開五指」のよ
 date: 2019-12-30
 pillar: startup
 tags: ["數位轉型", "組織變革", "創新阻力", "權力結構", "企業管理"]
+cover: "/images/covers/digital-transformation-pain.jpg"
 readingTime: 5
 ---
 

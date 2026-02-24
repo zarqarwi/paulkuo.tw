@@ -4,6 +4,7 @@ description: "过去的社会深信好学历是成功的保证，造就了许多
 date: 2018-09-24
 pillar: startup
 tags: ["群育", "团队合作", "教育反思", "铁人三项", "组织协作"]
+cover: "/images/covers/ironman-group-education.jpg"
 readingTime: 5
 ---
 

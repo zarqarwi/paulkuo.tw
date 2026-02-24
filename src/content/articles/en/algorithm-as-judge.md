@@ -4,6 +4,7 @@ description: "From taxi drivers pleading for five stars to delivery workers' fea
 date: 2018-01-15
 pillar: ai
 tags: ["數據監控", "勞動權益", "評分系統", "新經濟", "社會演化"]
+cover: "/images/covers/algorithm-as-judge.jpg"
 readingTime: 1
 ---
 

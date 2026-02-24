@@ -4,6 +4,7 @@ description: "Today's society blindly pursues 'traffic monetization,' reducing h
 date: 2022-06-22
 pillar: ai
 tags: ["流量變現", "信任經濟", "社會影響力", "品牌定調", "網路生態"]
+cover: "/images/covers/traffic-beyond-currency.jpg"
 readingTime: 1
 ---
 

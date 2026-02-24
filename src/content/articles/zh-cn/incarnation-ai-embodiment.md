@@ -8,6 +8,7 @@ pillar: faith
 tags: ["道成肉身", "AI", "具身认知", "Embodied AI", "对齐问题", "神学", "人工智能哲学"]
 platform: "论文"
 featured: true
+cover: "/images/covers/incarnation-ai-embodiment.jpg"
 readingTime: 15
 ---
 

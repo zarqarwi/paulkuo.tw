@@ -3,6 +3,7 @@ title: "情绪不是个人的事：为何 EQ 应该是群育的核心？"
 description: "EQ 被误解为个人修养，但其本质是群体互动中演化出的生存能力。当教育过度强调个人发展，孩子便失去了在团队中妥协与同理的机会。"
 date: 2017-10-23
 pillar: startup
+cover: "/images/covers/eq-group-education.jpg"
 ---
 
 ## 情绪不是个人的事

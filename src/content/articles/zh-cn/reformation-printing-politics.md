@@ -4,6 +4,7 @@ description: "历史事件的爆发从来不是单一理念的胜利，而是科
 date: 2017-02-05
 pillar: faith
 tags: ["宗教改革", "历史脉络", "权力结构", "科技推力", "去神话化"]
+cover: "/images/covers/reformation-printing-politics.jpg"
 readingTime: 5
 ---
 

@@ -4,6 +4,7 @@ description: "社会は「スラッシュワーカー」に対して、体制逃
 date: 2018-02-11
 pillar: startup
 tags: ["斜槓青年", "職涯發展", "知識系統", "紀律", "專業養成"]
+cover: "/images/covers/slash-career-discipline.jpg"
 readingTime: 5
 ---
 

@@ -3,6 +3,7 @@ title: "信仰的崩塌与重建：从 1995 闰八月预言看宗教的本质"
 description: "信仰若缺乏反省，就会沦为逃避现实的方便面。1995 年的闰八月预言闹剧，揭露了当信徒放弃思考时，信仰与生活将全然割裂。"
 date: 2016-02-13
 pillar: faith
+cover: "/images/covers/faith-collapse-rebuild.jpg"
 ---
 
 ## 信仰的崩塌与重建

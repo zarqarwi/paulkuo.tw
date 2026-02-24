@@ -5,6 +5,7 @@ date: 2025-05-23
 pillar: ai
 tags: ["AI Agents", "Agentic AI", "多代理系统", "能动智能体", "AI架构"]
 draft: false
+cover: "/images/covers/ai-agents-vs-agentic-ai.jpg"
 readingTime: 5
 ---
 

@@ -4,6 +4,7 @@ description: "ブラックスワンに満ちた世界において、盲目的な
 date: 2020-02-23
 pillar: ai
 tags: ["風険管理", "情報判断", "投資心理", "危機意識", "謙卑"]
+cover: "/images/covers/falsification-market-crisis.jpg"
 readingTime: 4
 ---
 

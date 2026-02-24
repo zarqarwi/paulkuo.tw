@@ -3,6 +3,7 @@ title: "敬畏未知的狂潮：金融海啸十年的市场启示"
 description: "市场走向往往超越个人的线性预测。面对资本狂潮与复杂的经济系统，我们唯一能抱持的只有对未知的谦卑。"
 date: 2017-10-31
 pillar: life
+cover: "/images/covers/financial-crisis-market-humility.jpg"
 ---
 
 ## 敬畏未知的狂潮

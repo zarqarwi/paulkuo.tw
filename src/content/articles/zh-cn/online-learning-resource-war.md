@@ -4,6 +4,7 @@ description: "「停课不停学」绝非赚到一个漫长的假期，而是一
 date: 2020-03-08
 pillar: startup
 tags: ["遠距教學", "停課不停學", "教育資源", "自主管理", "疫情反思"]
+cover: "/images/covers/online-learning-resource-war.jpg"
 readingTime: 5
 ---
 

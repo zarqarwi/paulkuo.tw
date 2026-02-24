@@ -4,6 +4,7 @@ description: "从出租车司机的五星恳求到外卖员的负评恐惧，算
 date: 2026-02-20
 pillar: ai
 tags: ["数据监控", "劳动权益", "评分系统", "新经济", "社会演化"]
+cover: "/images/covers/algorithm-as-judge.jpg"
 readingTime: 4
 ---
 

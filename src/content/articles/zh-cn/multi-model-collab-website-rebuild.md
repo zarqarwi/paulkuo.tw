@@ -6,6 +6,7 @@ date: 2026-02-22
 pillar: ai
 tags: ["多模型协作", "WebMCP", "人机协作", "Claude", "Gemini", "语义化HTML", "知识管理"]
 draft: false
+cover: "/images/covers/multi-model-collab-website-rebuild.jpg"
 readingTime: 6
 ---
 

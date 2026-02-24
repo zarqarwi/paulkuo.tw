@@ -4,6 +4,7 @@ description: "人类的认知运作分为直观的「系统一」与理性的「
 date: 2018-08-09
 pillar: startup
 tags: ["认知科学", "专案管理", "商业企划", "教育实践", "系统思考"]
+cover: "/images/covers/system-vs-intuition-planning.jpg"
 readingTime: 4
 ---
 

@@ -5,6 +5,7 @@ date: 2025-05-24
 pillar: faith
 tags: ["裸体言語", "アルゴリズム", "アテンションエコノミー", "身体主権", "メディアリテラシー"]
 draft: false
+cover: "/images/covers/nudity-as-language-algorithm.jpg"
 readingTime: 6
 ---
 

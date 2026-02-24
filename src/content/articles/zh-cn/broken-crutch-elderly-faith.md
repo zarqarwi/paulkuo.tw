@@ -4,6 +4,7 @@ description: "面对长辈热衷的「善行经济学」与宗教功德论，年
 date: 2018-02-19
 pillar: faith
 tags: ["世代差异", "信仰反思", "心理寄托", "家庭关系", "谦卑"]
+cover: "/images/covers/broken-crutch-elderly-faith.jpg"
 readingTime: 5
 ---
 

@@ -4,6 +4,7 @@ description: "かつての社会は良い学歴が成功の保証だと深く信
 date: 2018-09-24
 pillar: startup
 tags: ["群育", "團隊合作", "教育反思", "鐵人三項", "組織協作"]
+cover: "/images/covers/ironman-group-education.jpg"
 readingTime: 5
 ---
 

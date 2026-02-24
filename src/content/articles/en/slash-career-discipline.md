@@ -4,6 +4,7 @@ description: "Society often holds stereotypical views of 'slash careers' as esca
 date: 2018-02-11
 pillar: startup
 tags: ["斜槓青年", "職涯發展", "知識系統", "紀律", "專業養成"]
+cover: "/images/covers/slash-career-discipline.jpg"
 readingTime: 1
 ---
 

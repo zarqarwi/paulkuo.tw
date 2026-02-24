@@ -3,6 +3,7 @@ title: The Life You Envy Is Already Someone Else's Miracle
 description: We often develop resentment toward our current situation through social media comparisons, forgetting that we already enjoy the "dividends of civilization" such as stable electricity, healthcare, and freedom. When we broaden our perspective, the ordinary daily life we possess is actually a miracle that billions of people on Earth dream of. Rather than being anxious about losing at the starting line, we should learn humility and build our own unique path. The world is not fair, but we can decide from what angle to face it.
 date: 2025-05-23
 pillar: life
+cover: "/images/covers/life-you-envy-is-miracle.jpg"
 readingTime: 1
 ---
 

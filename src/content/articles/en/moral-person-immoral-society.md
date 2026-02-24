@@ -5,6 +5,7 @@ date: 2022-10-27
 pillar: faith
 tags: ["尼布爾", "社會倫理", "群體心理", "道德", "組織行為"]
 platform: Medium
+cover: "/images/covers/moral-person-immoral-society.jpg"
 readingTime: 1
 ---
 

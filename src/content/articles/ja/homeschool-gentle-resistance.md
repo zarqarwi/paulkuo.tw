@@ -4,6 +4,7 @@ description: "选择自学教育不是寻找升学捷径，而是对工业文明
 date: 2023-05-27
 pillar: startup
 tags: ["自學教育", "教育哲學", "家長角色", "溫和對抗", "批判思維"]
+cover: "/images/covers/homeschool-gentle-resistance.jpg"
 readingTime: 5
 ---
 

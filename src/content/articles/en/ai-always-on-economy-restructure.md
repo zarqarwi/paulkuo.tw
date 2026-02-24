@@ -4,6 +4,7 @@ description: "AI is not merely a tool, but a systemic force compelling organizat
 date: 2025-04-21
 pillar: ai
 tags: ["AI經濟", "全天候運作", "組織重構", "人機協作", "MCP"]
+cover: "/images/covers/ai-always-on-economy-restructure.jpg"
 readingTime: 1
 ---
 
