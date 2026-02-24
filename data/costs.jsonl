@@ -287,3 +287,6 @@
 {"timestamp":"2026-02-24T15:40:31.280Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":3518,"outputTokens":3130,"costUSD":0.057504,"costTWD":1.87,"note":""}
 {"timestamp":"2026-02-24T15:50:32.954Z","service":"anthropic","model":"claude-sonnet","action":"social-summary","source":"publish-social","inputTokens":2713,"outputTokens":1926,"costUSD":0.037029,"costTWD":1.2,"note":""}
 {"timestamp":"2026-02-24T15:50:53.752Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"publish-social","inputTokens":0,"outputTokens":0,"costUSD":0.04,"costTWD":1.3,"note":"煤礦裡的金絲雀：AI 就業衝擊的預警系統"}
+{"timestamp":"2026-02-24T16:51:57.249Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":3591,"outputTokens":2264,"costUSD":0.044733,"costTWD":1.45,"note":""}
+{"timestamp":"2026-02-24T16:53:02.275Z","service":"anthropic","model":"claude-sonnet","action":"translate-ja","source":"translate-article","inputTokens":3646,"outputTokens":3681,"costUSD":0.066153,"costTWD":2.15,"note":""}
+{"timestamp":"2026-02-24T16:53:29.918Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":3627,"outputTokens":3224,"costUSD":0.059241,"costTWD":1.93,"note":""}

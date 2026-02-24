@@ -1278,5 +1278,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "agi-becoming-complete-human.md": {
+    "sourceHash": "636654d9b505",
+    "translations": {
+      "en": {
+        "hash": "a0281bbb7275",
+        "translatedAt": "2026-02-24T16:51:57.251Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "279b99505a31",
+        "translatedAt": "2026-02-24T16:53:02.275Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "16bff933cc2b",
+        "translatedAt": "2026-02-24T16:53:29.919Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
