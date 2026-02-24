@@ -64,8 +64,19 @@ function saveManifest(manifest) {
 }
 
 function fileHash(filePath) {
-  const content = readFileSync(filePath);
-  return createHash('md5').update(content).digest('hex').slice(0, 12);
+  const content = readFileSync(filePath, 'utf-8');
+  // 只 hash 文章本文（frontmatter 之後的部分）
+  // 這樣改 cover/readingTime 等 metadata 不會觸發重翻
+  const bodyOnly = extractBody(content);
+  return createHash('md5').update(bodyOnly).digest('hex').slice(0, 12);
+}
+
+function extractBody(content) {
+  // 找第二個 --- 分隔符之後的內容
+  if (!content.startsWith('---')) return content;
+  const secondDash = content.indexOf('---', 3);
+  if (secondDash === -1) return content;
+  return content.slice(secondDash + 3).trim();
 }
 
 function needsTranslation(manifest, filename, locale) {
