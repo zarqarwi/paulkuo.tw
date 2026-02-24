@@ -103,7 +103,7 @@ const homeSchema = JSON.stringify({
           <a href={`/articles/${article.id.replace(/\.md$/, "")}`} class={`content-card ${article.data.cover ? 'has-cover' : ''}`}>
             {article.data.cover && (
               <div class="card-cover">
-                <img src={article.data.cover} alt={article.data.title} loading="lazy" />
+                <img src={article.data.cover} alt={article.data.title} width="1792" height="1024" loading="lazy" />
               </div>
             )}
             <div class="content-card-category" style={`color:${p.color}`}>
