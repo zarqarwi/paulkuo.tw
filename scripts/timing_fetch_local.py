@@ -34,7 +34,7 @@ end tell'''
     try:
         result = subprocess.run(
             ["osascript", "-e", script],
-            capture_output=True, text=True, timeout=15
+            capture_output=True, text=True, timeout=60
         )
         if result.returncode != 0:
             return 0.0, {}
