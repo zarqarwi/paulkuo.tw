@@ -9,6 +9,7 @@ interface Props {
   ogImage?: string;
   schemaJson?: string;
   canonicalUrl?: string;
+  showTicker?: boolean;
 }
 
 const { 
@@ -19,6 +20,7 @@ const {
   ogImage = 'https://paulkuo.tw/paul-photo.png',
   schemaJson,
   canonicalUrl,
+  showTicker = false,
 } = Astro.props;
 
 const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
@@ -139,10 +141,12 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
     </div>
   </nav>
 
-  <!-- GLOBAL COST TICKER (follows nav) -->
-  <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料">
-    <CostTicker />
-  </aside>
+  <!-- GLOBAL COST TICKER (only shown on pages that opt in) -->
+  {showTicker && (
+    <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料">
+      <CostTicker />
+    </aside>
+  )}
 
   <main>
     <slot />
