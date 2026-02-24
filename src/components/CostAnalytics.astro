@@ -2,6 +2,7 @@
 /**
  * CostAnalytics.astro — 消息頁上方的費用分析區塊
  * 完整圖表：每日趨勢、服務商分佈、來源分佈、動作類型
+ * v2: Chart.js lazy-loaded via IntersectionObserver for better LCP
  */
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -47,80 +48,110 @@ const analyticsData = JSON.stringify(records);
 </div>
 )}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
 <script define:vars={{ analyticsData, hasData }} is:inline>
 (function() {
   if (!hasData) return;
-  const records = JSON.parse(analyticsData);
+
+  var el = document.getElementById('costAnalytics');
+  if (!el) return;
+
+  // Render KPIs immediately (no Chart.js needed)
+  var records = JSON.parse(analyticsData);
   if (!records.length) return;
 
-  const SVC_CLR = { anthropic:'#6366f1', openai:'#10b981', google:'#3b82f6', xai:'#f97316', perplexity:'#8b5cf6' };
-  const SRC_CLR = { 'debate-engine':'#f59e0b', 'translate-article':'#3b82f6', 'publish-social':'#ec4899', 'debate-to-article':'#06b6d4' };
-  const ACT_CLR = { debate:'#f59e0b', 'translate-en':'#3b82f6', 'translate-ja':'#60a5fa', 'translate-zh-cn':'#93c5fd',
-    'social-summary':'#ec4899', 'image-gen':'#10b981', 'debate-to-article':'#06b6d4', factcheck:'#8b5cf6' };
-  const ACT_LABEL = { debate:'辯論', 'translate-en':'EN', 'translate-ja':'JA', 'translate-zh-cn':'簡中',
-    'social-summary':'摘要', 'image-gen':'配圖', 'debate-to-article':'轉文章', factcheck:'查核' };
+  var totalUSD = records.reduce(function(s,r) { return s + r.costUSD; }, 0);
+  var thisMonth = new Date().toISOString().slice(0,7);
+  var monthUSD = records.filter(function(r) { return r.timestamp.startsWith(thisMonth); }).reduce(function(s,r) { return s + r.costUSD; }, 0);
+  var days = []; records.forEach(function(r) { var d = r.timestamp.slice(0,10); if (days.indexOf(d) === -1) days.push(d); }); days.sort();
+  var avgPerDay = totalUSD / (days.length || 1);
+  var totalTokens = records.reduce(function(s,r) { return s + (r.inputTokens||0) + (r.outputTokens||0); }, 0);
 
-  const totalUSD = records.reduce((s,r) => s + r.costUSD, 0);
-  const thisMonth = new Date().toISOString().slice(0,7);
-  const monthUSD = records.filter(r => r.timestamp.startsWith(thisMonth)).reduce((s,r) => s + r.costUSD, 0);
-  const days = [...new Set(records.map(r => r.timestamp.slice(0,10)))].sort();
-  const avgPerDay = totalUSD / (days.length || 1);
-  const totalTokens = records.reduce((s,r) => s + (r.inputTokens||0) + (r.outputTokens||0), 0);
+  document.getElementById('analyticsKpis').innerHTML =
+    '<div class="ak"><span class="ak-v" style="color:var(--brand-navy)">$' + monthUSD.toFixed(2) + '</span><span class="ak-l">本月費用</span></div>' +
+    '<div class="ak"><span class="ak-v" style="color:var(--accent-circular)">$' + avgPerDay.toFixed(3) + '</span><span class="ak-l">日均</span></div>' +
+    '<div class="ak"><span class="ak-v" style="color:var(--accent-ai)">' + records.length + '</span><span class="ak-l">API 呼叫</span></div>' +
+    '<div class="ak"><span class="ak-v" style="color:var(--accent-life)">' + (totalTokens/1000).toFixed(0) + 'K</span><span class="ak-l">Token</span></div>';
 
-  // KPIs
-  document.getElementById('analyticsKpis').innerHTML = `
-    <div class="ak"><span class="ak-v" style="color:var(--brand-navy)">$${monthUSD.toFixed(2)}</span><span class="ak-l">本月費用</span></div>
-    <div class="ak"><span class="ak-v" style="color:var(--accent-circular)">$${avgPerDay.toFixed(3)}</span><span class="ak-l">日均</span></div>
-    <div class="ak"><span class="ak-v" style="color:var(--accent-ai)">${records.length}</span><span class="ak-l">API 呼叫</span></div>
-    <div class="ak"><span class="ak-v" style="color:var(--accent-life)">${(totalTokens/1000).toFixed(0)}K</span><span class="ak-l">Token</span></div>
-  `;
+  // Lazy load Chart.js only when section scrolls into view
+  var chartsRendered = false;
+  function renderCharts() {
+    if (chartsRendered) return;
+    chartsRendered = true;
 
-  const chartFont = { family: "'DM Sans', sans-serif" };
-  const gridColor = '#E8E6E1';
+    var script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+    script.onload = function() {
+      var SVC_CLR = { anthropic:'#6366f1', openai:'#10b981', google:'#3b82f6', xai:'#f97316', perplexity:'#8b5cf6' };
+      var SRC_CLR = { 'debate-engine':'#f59e0b', 'translate-article':'#3b82f6', 'publish-social':'#ec4899', 'debate-to-article':'#06b6d4' };
+      var ACT_CLR = { debate:'#f59e0b', 'translate-en':'#3b82f6', 'translate-ja':'#60a5fa', 'translate-zh-cn':'#93c5fd',
+        'social-summary':'#ec4899', 'image-gen':'#10b981', 'debate-to-article':'#06b6d4', factcheck:'#8b5cf6' };
+      var ACT_LABEL = { debate:'辯論', 'translate-en':'EN', 'translate-ja':'JA', 'translate-zh-cn':'簡中',
+        'social-summary':'摘要', 'image-gen':'配圖', 'debate-to-article':'轉文章', factcheck:'查核' };
 
-  // Daily stacked bar (last 30 days)
-  const last30 = days.slice(-30);
-  const sources = [...new Set(records.map(r => r.source))];
-  const dailyData = {}; last30.forEach(d => { dailyData[d] = {}; sources.forEach(s => dailyData[d][s] = 0); });
-  records.forEach(r => { const d = r.timestamp.slice(0,10); if (dailyData[d]) dailyData[d][r.source] += r.costUSD; });
-  new Chart(document.getElementById('analyticsDailyChart'), {
-    type: 'bar',
-    data: { labels: last30.map(d => d.slice(5)),
-      datasets: sources.map(s => ({ label: s, data: last30.map(d => +(dailyData[d][s]||0).toFixed(4)),
-        backgroundColor: SRC_CLR[s] || '#8A8A8A', borderRadius: 2 })) },
-    options: { responsive:true, maintainAspectRatio:false,
-      scales: { x:{stacked:true,grid:{display:false},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},maxRotation:0,autoSkip:true,maxTicksLimit:10}},
-        y:{stacked:true,grid:{color:gridColor},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},callback:v=>'$'+v.toFixed(2)}} },
-      plugins: { legend:{position:'bottom',labels:{color:'#5A5A5A',font:{...chartFont,size:10},padding:8,boxWidth:10}},
-        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: $${ctx.raw.toFixed(4)}`}} } },
-  });
+      var chartFont = { family: "'DM Sans', sans-serif" };
+      var gridColor = '#E8E6E1';
 
-  // Service doughnut
-  const bySvc = {}; records.forEach(r => { bySvc[r.service] = (bySvc[r.service]||0) + r.costUSD; });
-  const sk = Object.keys(bySvc).sort((a,b) => bySvc[b]-bySvc[a]);
-  new Chart(document.getElementById('analyticsServiceChart'), {
-    type: 'doughnut',
-    data: { labels: sk, datasets: [{ data: sk.map(k => +bySvc[k].toFixed(4)),
-      backgroundColor: sk.map(k => SVC_CLR[k]||'#8A8A8A'), borderWidth: 2, borderColor: '#FFFFFF' }] },
-    options: { responsive:true, maintainAspectRatio:false, cutout:'55%',
-      plugins: { legend:{position:'bottom',labels:{color:'#5A5A5A',font:{...chartFont,size:10},padding:6,boxWidth:10}},
-        tooltip:{callbacks:{label:ctx=>`${ctx.label}: $${ctx.raw.toFixed(4)}`}} } },
-  });
+      // Daily stacked bar (last 30 days)
+      var last30 = days.slice(-30);
+      var sources = []; records.forEach(function(r) { if (sources.indexOf(r.source) === -1) sources.push(r.source); });
+      var dailyData = {}; last30.forEach(function(d) { dailyData[d] = {}; sources.forEach(function(s) { dailyData[d][s] = 0; }); });
+      records.forEach(function(r) { var d = r.timestamp.slice(0,10); if (dailyData[d]) dailyData[d][r.source] += r.costUSD; });
+      new Chart(document.getElementById('analyticsDailyChart'), {
+        type: 'bar',
+        data: { labels: last30.map(function(d) { return d.slice(5); }),
+          datasets: sources.map(function(s) { return { label: s, data: last30.map(function(d) { return +(dailyData[d][s]||0).toFixed(4); }),
+            backgroundColor: SRC_CLR[s] || '#8A8A8A', borderRadius: 2 }; }) },
+        options: { responsive:true, maintainAspectRatio:false,
+          scales: { x:{stacked:true,grid:{display:false},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},maxRotation:0,autoSkip:true,maxTicksLimit:10}},
+            y:{stacked:true,grid:{color:gridColor},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},callback:function(v){return '$'+v.toFixed(2);}}} },
+          plugins: { legend:{position:'bottom',labels:{color:'#5A5A5A',font:{...chartFont,size:10},padding:8,boxWidth:10}},
+            tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': $'+ctx.raw.toFixed(4);}}} } },
+      });
 
-  // Action horizontal bar
-  const byAct = {}; records.forEach(r => { byAct[r.action] = (byAct[r.action]||0) + r.costUSD; });
-  const ak = Object.keys(byAct).sort((a,b) => byAct[b]-byAct[a]).slice(0, 6);
-  new Chart(document.getElementById('analyticsActionChart'), {
-    type: 'bar',
-    data: { labels: ak.map(k => ACT_LABEL[k]||k),
-      datasets: [{ data: ak.map(k => +byAct[k].toFixed(4)),
-        backgroundColor: ak.map(k => ACT_CLR[k]||'#8A8A8A'), borderRadius: 3 }] },
-    options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
-      scales: { x:{grid:{color:gridColor},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},callback:v=>'$'+v.toFixed(2)}},
-        y:{grid:{display:false},ticks:{color:'#5A5A5A',font:{...chartFont,size:10}}} },
-      plugins: { legend:{display:false} } },
-  });
+      // Service doughnut
+      var bySvc = {}; records.forEach(function(r) { bySvc[r.service] = (bySvc[r.service]||0) + r.costUSD; });
+      var sk = Object.keys(bySvc).sort(function(a,b) { return bySvc[b]-bySvc[a]; });
+      new Chart(document.getElementById('analyticsServiceChart'), {
+        type: 'doughnut',
+        data: { labels: sk, datasets: [{ data: sk.map(function(k) { return +bySvc[k].toFixed(4); }),
+          backgroundColor: sk.map(function(k) { return SVC_CLR[k]||'#8A8A8A'; }), borderWidth: 2, borderColor: '#FFFFFF' }] },
+        options: { responsive:true, maintainAspectRatio:false, cutout:'55%',
+          plugins: { legend:{position:'bottom',labels:{color:'#5A5A5A',font:{...chartFont,size:10},padding:6,boxWidth:10}},
+            tooltip:{callbacks:{label:function(ctx){return ctx.label+': $'+ctx.raw.toFixed(4);}}} } },
+      });
+
+      // Action horizontal bar
+      var byAct = {}; records.forEach(function(r) { byAct[r.action] = (byAct[r.action]||0) + r.costUSD; });
+      var ak = Object.keys(byAct).sort(function(a,b) { return byAct[b]-byAct[a]; }).slice(0, 6);
+      new Chart(document.getElementById('analyticsActionChart'), {
+        type: 'bar',
+        data: { labels: ak.map(function(k) { return ACT_LABEL[k]||k; }),
+          datasets: [{ data: ak.map(function(k) { return +byAct[k].toFixed(4); }),
+            backgroundColor: ak.map(function(k) { return ACT_CLR[k]||'#8A8A8A'; }), borderRadius: 3 }] },
+        options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
+          scales: { x:{grid:{color:gridColor},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},callback:function(v){return '$'+v.toFixed(2);}}},
+            y:{grid:{display:false},ticks:{color:'#5A5A5A',font:{...chartFont,size:10}}} },
+          plugins: { legend:{display:false} } },
+      });
+    };
+    document.head.appendChild(script);
+  }
+
+  // Use IntersectionObserver to lazy-load charts
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          renderCharts();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' }); // Start loading 200px before visible
+    observer.observe(el);
+  } else {
+    // Fallback for old browsers
+    renderCharts();
+  }
 })();
 </script>
 
