@@ -32,13 +32,25 @@ jobs:
         run: python3 scripts/fitbit_cloud_refresh.py
 
       - name: Commit & push
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/fitbit.json scripts/.fitbit_token.enc
           if git diff --cached --quiet; then
             echo "No changes to commit"
+            echo "changed=false" >> $GITHUB_OUTPUT
           else
             git commit -m "auto: fitbit data + token refresh [skip-translate]"
             git push
+            echo "changed=true" >> $GITHUB_OUTPUT
           fi
+
+      - name: Trigger deploy
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/zarqarwi/paulkuo.tw/actions/workflows/deploy.yml/dispatches \
+            -d '{"ref":"main"}'
