@@ -290,3 +290,6 @@
 {"timestamp":"2026-02-24T16:51:57.249Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":3591,"outputTokens":2264,"costUSD":0.044733,"costTWD":1.45,"note":""}
 {"timestamp":"2026-02-24T16:53:02.275Z","service":"anthropic","model":"claude-sonnet","action":"translate-ja","source":"translate-article","inputTokens":3646,"outputTokens":3681,"costUSD":0.066153,"costTWD":2.15,"note":""}
 {"timestamp":"2026-02-24T16:53:29.918Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":3627,"outputTokens":3224,"costUSD":0.059241,"costTWD":1.93,"note":""}
+{"timestamp":"2026-02-25T01:01:28.917Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":3397,"outputTokens":2239,"costUSD":0.043776,"costTWD":1.42,"note":""}
+{"timestamp":"2026-02-25T01:02:27.028Z","service":"anthropic","model":"claude-sonnet","action":"translate-ja","source":"translate-article","inputTokens":3452,"outputTokens":3596,"costUSD":0.064296,"costTWD":2.09,"note":""}
+{"timestamp":"2026-02-25T01:02:53.248Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":3433,"outputTokens":3051,"costUSD":0.056064,"costTWD":1.82,"note":""}

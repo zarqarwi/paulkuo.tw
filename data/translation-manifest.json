@@ -1298,5 +1298,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "super-individual-12-days.md": {
+    "sourceHash": "b3d18b0b0251",
+    "translations": {
+      "en": {
+        "hash": "414f5498e7c6",
+        "translatedAt": "2026-02-25T01:01:28.919Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "b8adbf919409",
+        "translatedAt": "2026-02-25T01:02:27.029Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "a3a193e44d97",
+        "translatedAt": "2026-02-25T01:02:53.249Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
