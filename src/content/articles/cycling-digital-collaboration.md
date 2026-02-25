@@ -6,6 +6,7 @@ pillar: startup
 tags: ["數位協作", "API生態系", "合作競爭", "資源整合", "典範轉移"]
 cover: "/images/covers/cycling-digital-collaboration.jpg"
 readingTime: 1
+draft: true
 ---
 
 ## 從騎車軌跡看數位協作 
