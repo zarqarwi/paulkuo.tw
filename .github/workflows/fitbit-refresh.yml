@@ -9,6 +9,9 @@ on:
     - cron: '0 18,0,6,12 * * *'
   workflow_dispatch:  # 手動觸發
 
+permissions:
+  contents: write
+
 jobs:
   refresh-fitbit:
     runs-on: ubuntu-latest
