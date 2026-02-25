@@ -1,12 +1,12 @@
 {
-  "updated": "2026-02-25T20:45:13+08:00",
+  "updated": "2026-02-25T21:00:39+08:00",
   "source": "github-actions",
   "token_status": "active",
   "today": {
-    "steps": 4516,
+    "steps": 4532,
     "goal": 10000,
-    "distance_km": 3.12,
-    "calories": 707,
+    "distance_km": 3.13,
+    "calories": 713,
     "resting_hr": 67
   },
   "week": [
@@ -40,7 +40,7 @@
     },
     {
       "date": "2026-02-25",
-      "steps": 4516
+      "steps": 4532
     }
   ]
 }
