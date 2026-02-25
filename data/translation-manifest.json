@@ -840,11 +840,11 @@
     }
   },
   "pandemic-liquid-world.md": {
-    "sourceHash": "3bf8fb9231b8",
+    "sourceHash": "86053509fbe4",
     "translations": {
       "en": {
-        "hash": "19398e28bd09",
-        "translatedAt": "2026-02-23T18:06:15.361Z",
+        "hash": "59f181a57d4f",
+        "translatedAt": "2026-02-25T03:12:31.714Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1060,11 +1060,11 @@
     }
   },
   "same-sex-marriage-theology.md": {
-    "sourceHash": "1840f86269e3",
+    "sourceHash": "2708a23e947c",
     "translations": {
       "en": {
-        "hash": "862aabc749e7",
-        "translatedAt": "2026-02-23T18:08:52.086Z",
+        "hash": "674bb6e24c41",
+        "translatedAt": "2026-02-25T03:12:39.134Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1080,11 +1080,11 @@
     }
   },
   "shiseido-gic-style-over-trend.md": {
-    "sourceHash": "02eb2834654a",
+    "sourceHash": "99593c0934c5",
     "translations": {
       "en": {
-        "hash": "d09823698a6e",
-        "translatedAt": "2026-02-23T18:09:01.190Z",
+        "hash": "91da176a4405",
+        "translatedAt": "2026-02-25T03:12:45.383Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1100,11 +1100,11 @@
     }
   },
   "slash-career-discipline.md": {
-    "sourceHash": "a0294bd062a8",
+    "sourceHash": "134401202a94",
     "translations": {
       "en": {
-        "hash": "0d7196090de7",
-        "translatedAt": "2026-02-23T18:09:15.538Z",
+        "hash": "a2c8837b0bbc",
+        "translatedAt": "2026-02-25T03:12:52.342Z",
         "model": "claude-sonnet-4"
       },
       "ja": {

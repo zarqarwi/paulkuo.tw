@@ -1,63 +1,49 @@
 ---
-title: "Walking Before Flying: Debunking the Undisciplined Myth of 'Slash Careers'"
-description: "Society often holds stereotypical views of 'slash careers' as escaping systems, being unfocused, or lacking professional dedication. However, true multi-career living is built upon extremely rigorous self-discipline and self-reflection. Before pursuing flexible project work, one must first establish three foundational elements: building knowledge depth, training professional capabilities, and planning schedules. Slash careers are never the opposite of loyalty and professionalism—they represent an advanced state of project execution. Before learning to fly, we must first learn to walk properly."
-date: 2018-02-11
+title: "The Discipline of Slash Careers: The Other Side of Freedom is Stricter Self-Management"
+description: "Slash careers appear free, but actually require stricter discipline than traditional employment. When no organization manages your time, you must construct order yourself. The real barrier to slash careers isn't skill, but self-discipline."
+date: 2018-09-02
 pillar: startup
-tags: ["斜槓青年", "職涯發展", "知識系統", "紀律", "專業養成"]
+tags: ["斜槓", "自我管理", "紀律", "創業心態", "時間管理"]
 cover: "/images/covers/slash-career-discipline.jpg"
-readingTime: 1
+readingTime: 2
+draft: true
 ---
 
-## Walking Before Flying
-### Debunking the Undisciplined Myth of "Slash Careers"
+## The Discipline of Slash Careers
+### The Other Side of Freedom is Stricter Self-Management
 
-When "slash careers" are mentioned,
-many people conjure images of restlessness, fickleness, or always looking for greener pastures.
-
-If one cannot meet the most basic workplace requirement—"doing one thing well"—
-where does the multi-career life come from?
-
----
-
-### Slash Careers Aren't About Complaining About Work
-
-After reading the book "Slash Careers," I discovered the author demonstrated a high degree of discipline and self-awareness.
-
-The book doesn't discuss how to job-hop or moonlight, nor does it carry the bitter taste of "complaining about office life."
-What it truly teaches is how to:
-- Build knowledge depth.
-- Master systematic thinking methods.
-- Practice self-discipline and effectively plan time.
-
-The less disciplined people are, the less they understand their own limitations.
-They want to do everything, think they can do anything, and ultimately do nothing well.
+Slash careers are trendy.
+But most people only see the appearance of freedom, not the discipline within.
 
 ---
 
-### Three Cornerstones Before Flying
+### Freedom is a Luxury
 
-Slash careers aren't about idle chatter.
-They represent a state of "being able to fly." But before learning to fly, one must first learn to walk properly.
+Employees have bosses watching, time clocks, and KPIs.
+These "shackles" are actually supplies of external order.
 
-Before embracing flexible work and life, three abilities must be etched in one's heart:
+When you choose a slash career, all this external order disappears.
+You must construct every discipline yourself.
 
-1. **Building Knowledge Depth:** This is explicit knowledge—Statement knowledge accumulated through reading and learning.
-2. **Training Professional Capabilities:** This is implicit knowledge—Practical knowledge accumulated through experience and hands-on practice.
-3. **Planning Work Schedules:** Understanding the subtle differences between knowledge and expertise enables precise evaluation of resources and time needed for projects.
+What time do you get up? What do you do today? What are this month's goals?
+No one will ask you. Only you.
 
-You can cram through a book in two weeks.
-But you cannot lead a team well in two weeks. Teams need time to build relationships, assign tasks, and continuously advance to higher levels.
+---
+
+### Three Levels of Self-Discipline
+
+First level: Time management. Can you start work at a fixed time every day?
+Second level: Energy management. Knowing when to sprint and when to rest.
+Third level: Attention management. In the flood of information, can you focus on what truly matters?
+
+Most people can't even achieve the first level.
 
 ---
 
 ### Conclusion
 
-Projects operated through slash careers are typically knowledge-oriented.
-They aren't about driving Uber in the morning, selling coffee in the afternoon, and working night shifts at convenience stores—a labor-intensive patchwork.
+The barrier to slash careers isn't skill, it's self-discipline.
+If you cannot maintain rhythm without external constraints,
+then slash careers for you aren't freedom, they're chaos.
 
-Don't mistake slash careers for idle chatter, dabbling here and there without any deep accumulation.
-
-Remember:
-- Slash careers are not the opposite of loyalty.
-- Slash careers are not the opposite of professionalism.
-- Slash careers are not the opposite of discipline.
+Freedom is always the fruit of discipline.

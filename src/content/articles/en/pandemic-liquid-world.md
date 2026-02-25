@@ -1,63 +1,23 @@
 ---
-title: "The Liquid World Revealed by the Pandemic"
-description: "The pandemic didn't just change our lifestyles—it revealed that we had already entered what Bauman called 'liquid modernity.' All that is solid—work, relationships, institutions—is accelerating into flux. This isn't a temporary crisis, but a permanent new normal."
-date: 2021-06-09
+title: "Pandemic Revelation: We Live in a Liquid World"
+description: "The pandemic has revealed the 'liquid' nature of modern society—seemingly solid structures that are actually fragile and brittle. Bauman's theory of liquid modernity has been thoroughly validated in the pandemic."
+date: 2020-05-15
 pillar: life
-tags: ["液態現代性", "鮑曼", "疫情", "新常態", "社會觀察"]
+tags: ["疫情反思", "液態現代性", "包曼", "社會觀察"]
 cover: "/images/covers/pandemic-liquid-world.jpg"
 readingTime: 1
+draft: true
 ---
 
-## The Liquid World Revealed by the Pandemic
+## Pandemic Revelation
+### We Live in a Liquid World
 
-The pandemic is not an interruption.
-It is a mirror.
+The pandemic has shown us that everything we once took for granted—borders, flights, going to work, gatherings—is actually fragile.
 
-It shows us that
-the world we thought was solid
-has long been liquid.
+Sociologist Zygmunt Bauman warned us long ago: the essence of modern society is "liquid."
+Nothing is fixed. Work, relationships, identity—all are in flux.
 
----
+The pandemic has simply made this truth impossible to ignore.
 
-### Bauman's Prophecy
-
-Sociologist Zygmunt Bauman proposed the concept of "liquid modernity" twenty years ago.
-
-He said:
-In modern society, all solid things—institutions, relationships, work—
-are rapidly melting, flowing.
-
-The pandemic has only accelerated this process.
-
----
-
-### The Liquefaction of Work
-
-Your office can be at home, in a coffee shop, anywhere.
-Your colleagues might be in different time zones.
-Your company might restructure tomorrow.
-
-The concept of "stable employment"
-no longer exists in the liquid world.
-
----
-
-### The Liquefaction of Relationships
-
-Social media makes interpersonal relationships easier to establish,
-and easier to break.
-
-We have hundreds of "friends,"
-but when we need help,
-fewer and fewer people we can actually call.
-
----
-
-### Conclusion
-
-The liquid world isn't a question of good or bad.
-It's reality.
-
-The question is:
-In a world where everything is in flux,
-what will you anchor yourself to?
+When the world reopens, we shouldn't rush back to the old order.
+Instead, with this newfound clarity, we should reconsider: what is truly worth holding onto?
