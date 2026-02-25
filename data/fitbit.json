@@ -40,5 +40,7 @@
       "date": "2026-02-24",
       "steps": 8154
     }
-  ]
+  ],
+  "token_status": "expired",
+  "token_error": "2026-02-25T12:52:50+08:00"
 }
