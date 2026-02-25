@@ -15,7 +15,7 @@ tags:
   - 數位基礎設施
   - 自動化
   - 效率革命
-cover: "/images/covers/super-individual-12-days.jpg"
+cover: "/images/covers/super-individual-case-study.jpg"
 featured: true
 draft: false
 readingTime: 8
