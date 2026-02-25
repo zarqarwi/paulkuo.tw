@@ -1,0 +1,41 @@
+name: Fitbit Token Refresh & Data Update
+
+# 每 6 小時自動 refresh Fitbit token + 抓步數資料
+# 解決 Mac 睡眠導致 token 過期 chain 斷裂的問題
+
+on:
+  schedule:
+    # 每 6 小時：台灣 02:00, 08:00, 14:00, 20:00
+    - cron: '0 18,0,6,12 * * *'
+  workflow_dispatch:  # 手動觸發
+
+jobs:
+  refresh-fitbit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Refresh token & fetch data
+        env:
+          FITBIT_ENCRYPT_KEY: ${{ secrets.FITBIT_ENCRYPT_KEY }}
+        run: python3 scripts/fitbit_cloud_refresh.py
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/fitbit.json scripts/.fitbit_token.enc
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "auto: fitbit data + token refresh [skip-translate]"
+            git push
+          fi
