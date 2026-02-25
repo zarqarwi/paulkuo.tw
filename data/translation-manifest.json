@@ -1318,5 +1318,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "super-individual-case-study.md": {
+    "sourceHash": "7fc8624c2f7a",
+    "translations": {
+      "en": {
+        "hash": "a0a2efcda6b6",
+        "translatedAt": "2026-02-25T01:07:12.934Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "2f832a04a652",
+        "translatedAt": "2026-02-25T01:08:06.973Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "5292bfa76e56",
+        "translatedAt": "2026-02-25T01:08:30.070Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
