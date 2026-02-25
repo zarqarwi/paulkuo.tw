@@ -5,6 +5,7 @@ date: 2025-05-23
 pillar: startup
 cover: "/images/covers/jensen-huang-learn-ai.jpg"
 readingTime: 1
+draft: true
 ---
 
 ## 如果我是學生，我會學 AI

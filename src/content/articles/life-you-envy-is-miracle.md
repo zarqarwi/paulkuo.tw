@@ -5,6 +5,7 @@ date: 2025-05-23
 pillar: life
 cover: "/images/covers/life-you-envy-is-miracle.jpg"
 readingTime: 1
+draft: true
 ---
 
 ## 你羨慕的生活

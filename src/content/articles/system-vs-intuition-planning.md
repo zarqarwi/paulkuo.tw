@@ -6,6 +6,7 @@ pillar: startup
 tags: ["認知科學", "專案管理", "商業企劃", "教育實踐", "系統思考"]
 cover: "/images/covers/system-vs-intuition-planning.jpg"
 readingTime: 1
+draft: true
 ---
 
 ## 系統與直覺的對決
