@@ -16,6 +16,23 @@ import { logCost } from './cost-tracker.mjs';
 const SITE_URL = process.env.SITE_URL || 'https://paulkuo.tw';
 const ONEUP_API_BASE = 'https://www.oneupapp.io/api';
 
+// ── Retry helper ────────────────────────────────────
+async function fetchWithRetry(url, options, { maxRetries = 3, baseDelay = 2000, label = 'API' } = {}) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    const resp = await fetch(url, options);
+    if (resp.ok) return resp;
+
+    const isRetryable = [429, 500, 502, 503, 529].includes(resp.status);
+    if (!isRetryable || attempt === maxRetries) {
+      throw new Error(`${label} error: ${resp.status} (after ${attempt} attempt${attempt > 1 ? 's' : ''})`);
+    }
+
+    const delay = baseDelay * Math.pow(2, attempt - 1);
+    console.log(`  ⏳ ${label} returned ${resp.status}, retrying in ${delay / 1000}s (attempt ${attempt}/${maxRetries})...`);
+    await new Promise(r => setTimeout(r, delay));
+  }
+}
+
 // ── 文章解析 ─────────────────────────────────────────
 function parseArticle(filePath) {
   const content = readFileSync(filePath, 'utf-8');
@@ -69,7 +86,7 @@ ${article.body.slice(0, 2000)}
 - X 的字數一定要在 280 字以內（含連結）
 - 只輸出 JSON，不要其他文字`;
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+  const resp = await fetchWithRetry('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -81,9 +98,8 @@ ${article.body.slice(0, 2000)}
       max_tokens: 4096,
       messages: [{ role: 'user', content: prompt }],
     }),
-  });
+  }, { maxRetries: 3, baseDelay: 3000, label: 'Claude API' });
 
-  if (!resp.ok) throw new Error(`Claude API error: ${resp.status}`);
   const data = await resp.json();
   let text = data.content[0].text;
   if (text.startsWith('```')) {
@@ -123,18 +139,22 @@ async function generateImage(title, pillar) {
   const prompt = `Create a clean, modern digital illustration, 1024x1024 pixels. Deep navy blue (#0a192f) background with white highlights. Style: abstract and conceptual, professional, minimalist. No text, no letters, no words, no numbers anywhere in the image. Theme: ${title.slice(0, 100)}. Visual elements: ${style}. Mood: professional, forward-thinking, grounded.`;
 
   console.log('  🎨 Generating image with DALL-E...');
-  const resp = await fetch('https://api.openai.com/v1/images/generations', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body: JSON.stringify({ model: 'dall-e-3', prompt, n: 1, size: '1024x1024', response_format: 'b64_json' }),
-  });
+  try {
+    const resp = await fetchWithRetry('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: 'dall-e-3', prompt, n: 1, size: '1024x1024', response_format: 'b64_json' }),
+    }, { maxRetries: 2, baseDelay: 5000, label: 'DALL-E' });
 
-  if (!resp.ok) { console.log(`  ❌ DALL-E error: ${resp.status}`); return null; }
-  const data = await resp.json();
-  logCost({ service: 'openai', model: 'dall-e-3', action: 'image-gen', source: 'publish-social', note: title.slice(0, 50) });
-  const rawBuffer = Buffer.from(data.data[0].b64_json, 'base64');
-  console.log(`  🖼️  Raw image: ${(rawBuffer.length / 1024).toFixed(0)} KB`);
-  return rawBuffer;
+    const data = await resp.json();
+    logCost({ service: 'openai', model: 'dall-e-3', action: 'image-gen', source: 'publish-social', note: title.slice(0, 50) });
+    const rawBuffer = Buffer.from(data.data[0].b64_json, 'base64');
+    console.log(`  🖼️  Raw image: ${(rawBuffer.length / 1024).toFixed(0)} KB`);
+    return rawBuffer;
+  } catch (e) {
+    console.log(`  ❌ DALL-E failed: ${e.message}`);
+    return null;
+  }
 }
 
 // ── 圖片壓縮（移植自 oneup_post.py 的 resize_for_platform 邏輯）──
@@ -174,20 +194,24 @@ async function uploadToImageHost(imageBuffer) {
   formData.append('source', imageBuffer.toString('base64'));
   formData.append('format', 'json');
 
-  const resp = await fetch('https://freeimage.host/api/1/upload', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: formData.toString(),
-  });
+  try {
+    const resp = await fetchWithRetry('https://freeimage.host/api/1/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString(),
+    }, { maxRetries: 2, baseDelay: 3000, label: 'FreeImage' });
 
-  if (!resp.ok) { console.log(`  ❌ Image upload error: ${resp.status}`); return null; }
-  const data = await resp.json();
-  if (data.status_code === 200) {
-    console.log(`  🖼️  Image uploaded: ${data.image.url}`);
-    return data.image.url;
+    const data = await resp.json();
+    if (data.status_code === 200) {
+      console.log(`  🖼️  Image uploaded: ${data.image.url}`);
+      return data.image.url;
+    }
+    console.log(`  ❌ Upload failed: ${JSON.stringify(data)}`);
+    return null;
+  } catch (e) {
+    console.log(`  ❌ Image upload error: ${e.message}`);
+    return null;
   }
-  console.log(`  ❌ Upload failed: ${JSON.stringify(data)}`);
-  return null;
 }
 
 // ── OneUp 排程 ───────────────────────────────────────
