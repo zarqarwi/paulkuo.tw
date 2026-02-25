@@ -1300,11 +1300,11 @@
     }
   },
   "super-individual-12-days.md": {
-    "sourceHash": "b3d18b0b0251",
+    "sourceHash": "b331593c4e39",
     "translations": {
       "en": {
-        "hash": "414f5498e7c6",
-        "translatedAt": "2026-02-25T01:01:28.919Z",
+        "hash": "c854b8bda0f8",
+        "translatedAt": "2026-02-25T02:34:51.133Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
