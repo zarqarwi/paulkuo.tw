@@ -5,8 +5,6 @@
 # 2. cover 圖片是否存在
 # 3. cover 圖片是否超過 500KB
 
-set -e
-
 ROOT="$(git rev-parse --show-toplevel)"
 ARTICLES_DIR="$ROOT/src/content/articles"
 PUBLIC_DIR="$ROOT/public"
@@ -56,10 +54,9 @@ done
 
 # --- 檢查 3：圖片大小 ---
 if [ -d "$COVERS_DIR" ]; then
-  for img in "$COVERS_DIR"/*.{jpg,jpeg,png,webp} 2>/dev/null; do
-    [ -f "$img" ] || continue
+  find "$COVERS_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) | while read -r img; do
     # 跳過 backup 資料夾
-    [[ "$img" == *"_backup"* ]] && continue
+    case "$img" in *_backup*) continue ;; esac
     size_kb=$(( $(wc -c < "$img") / 1024 ))
     if [ "$size_kb" -gt "$MAX_SIZE_KB" ]; then
       echo "❌ [$(basename "$img")] 圖片過大: ${size_kb}KB (上限 ${MAX_SIZE_KB}KB)"
