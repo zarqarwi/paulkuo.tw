@@ -1338,5 +1338,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "overcome-fear-start-ugly.md": {
+    "sourceHash": "93b27495e178",
+    "translations": {
+      "en": {
+        "hash": "0cff47a4ef39",
+        "translatedAt": "2026-02-26T01:50:00.558Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "b406fa022024",
+        "translatedAt": "2026-02-26T01:50:33.662Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "9ab806ba0307",
+        "translatedAt": "2026-02-26T01:50:46.259Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
