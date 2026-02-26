@@ -1,0 +1,9 @@
+#!/bin/bash
+# Git pre-commit hook for paulkuo.tw
+# 自動在每次 commit 前驗證文章品質
+#
+# 安裝方式（二選一）：
+#   1. npm install（自動，透過 package.json prepare script）
+#   2. git config core.hooksPath .githooks（手動）
+
+bash scripts/validate-articles.sh
