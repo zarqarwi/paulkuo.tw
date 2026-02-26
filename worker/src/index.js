@@ -1,11 +1,12 @@
 /**
  * paulkuo-ticker Worker
  * 
- * 即時資料 API：Fitbit 步數 + 健康數據
+ * 即時資料 API：Fitbit 步數 + CyberSolutions 股價
  * 取代原本的 cron → git commit → build 架構
  * 
  * Endpoints:
  *   GET /fitbit  — 回傳即時 Fitbit 資料（5 分鐘快取）
+ *   GET /stock   — 回傳 CyberSolutions (436A.T) 即時股價（交易時段 10 分鐘 / 非交易 1 小時快取）
  *   GET /health  — 健康檢查
  * 
  * Cron Trigger:
@@ -14,11 +15,16 @@
  * KV keys:
  *   fitbit_token — { access_token, refresh_token, expires_at }
  *   fitbit_cache — { data, cached_at }
+ *   stock_cache  — { data, cached_at }
  */
 
 const FITBIT_CLIENT_ID = '23V2BH';
 const FITBIT_CLIENT_SECRET = '4adac11e3241afadf53cccfaa7b7e86a';
-const CACHE_TTL_SEC = 300; // 5 分鐘快取
+const CACHE_TTL_SEC = 300; // 5 分鐘快取（Fitbit）
+const STOCK_SYMBOL = '436A.T';
+const STOCK_NAME = 'CyberSolutions';
+const STOCK_CACHE_TRADING = 600;  // 交易時段 10 分鐘
+const STOCK_CACHE_CLOSED = 3600;  // 非交易時段 1 小時
 const ALLOWED_ORIGINS = [
   'https://paulkuo.tw',
   'http://localhost:4321', // Astro dev
@@ -175,6 +181,84 @@ async function fetchFitbitData(kv) {
   return data;
 }
 
+// === Stock: TSE Trading Hours Check ===
+function isTseTradingHours() {
+  // JST = UTC+9, TSE 09:00-15:30 JST
+  const now = new Date();
+  const jstHour = (now.getUTCHours() + 9) % 24;
+  const jstDay = now.getUTCDay();
+  // Adjust day if UTC+9 crosses midnight
+  const jstDate = new Date(now.getTime() + 9 * 3600 * 1000);
+  const dayOfWeek = jstDate.getDay();
+  if (dayOfWeek === 0 || dayOfWeek === 6) return false; // Weekend
+  const jstMin = jstDate.getHours() * 60 + jstDate.getMinutes();
+  return jstMin >= 540 && jstMin <= 930; // 09:00-15:30
+}
+
+// === Fetch Stock Data ===
+async function fetchStockData(kv) {
+  const trading = isTseTradingHours();
+  const cacheTtl = trading ? STOCK_CACHE_TRADING : STOCK_CACHE_CLOSED;
+
+  // Check cache
+  const cacheJson = await kv.get('stock_cache');
+  if (cacheJson) {
+    const cache = JSON.parse(cacheJson);
+    const age = Date.now() - cache.cached_at;
+    if (age < cacheTtl * 1000) {
+      return { ...cache.data, _cached: true, _age_sec: Math.round(age / 1000) };
+    }
+  }
+
+  // Fetch from Yahoo Finance
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${STOCK_SYMBOL}?range=5d&interval=1d`;
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0' },
+  });
+
+  if (!res.ok) {
+    // Return stale cache if available
+    if (cacheJson) {
+      const cache = JSON.parse(cacheJson);
+      return { ...cache.data, _stale: true, _error: `Yahoo returned ${res.status}` };
+    }
+    throw new Error(`Yahoo Finance API error: ${res.status}`);
+  }
+
+  const json = await res.json();
+  const result = json.chart?.result?.[0];
+  if (!result) throw new Error('No chart data from Yahoo');
+
+  const meta = result.meta || {};
+  const price = meta.regularMarketPrice || 0;
+  const prevClose = meta.chartPreviousClose || meta.previousClose || price;
+  const changePercent = prevClose ? ((price - prevClose) / prevClose * 100) : 0;
+
+  // 5-day history for sparkline
+  const timestamps = result.timestamp || [];
+  const closes = result.indicators?.quote?.[0]?.close || [];
+  const history = timestamps.map((ts, i) => ({
+    date: new Date(ts * 1000).toISOString().slice(0, 10),
+    close: closes[i] != null ? Math.round(closes[i]) : null,
+  })).filter(d => d.close != null);
+
+  const data = {
+    updated: new Date().toISOString(),
+    source: 'cloudflare-worker',
+    symbol: STOCK_SYMBOL,
+    name: STOCK_NAME,
+    price: Math.round(price),
+    previousClose: Math.round(prevClose),
+    changePercent: Math.round(changePercent * 100) / 100,
+    currency: meta.currency || 'JPY',
+    trading,
+    history,
+  };
+
+  await kv.put('stock_cache', JSON.stringify({ data, cached_at: Date.now() }));
+  return data;
+}
+
 // === Request Handler ===
 async function handleRequest(request, env) {
   const url = new URL(request.url);
@@ -194,9 +278,14 @@ async function handleRequest(request, env) {
       const t = JSON.parse(tokenJson);
       tokenOk = t.expires_at > Date.now();
     }
+    const stockCache = await env.TICKER_KV.get('stock_cache');
+    const stockAge = stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null;
+
     return jsonResponse({
       status: 'ok',
       fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing',
+      stock_cache_age_sec: stockAge,
+      tse_trading: isTseTradingHours(),
       timestamp: new Date().toISOString(),
     }, 200, request);
   }
@@ -216,8 +305,18 @@ async function handleRequest(request, env) {
     }
   }
 
+  // Stock data
+  if (path === '/stock') {
+    try {
+      const data = await fetchStockData(env.TICKER_KV);
+      return jsonResponse(data, 200, request);
+    } catch (e) {
+      return jsonResponse({ error: e.message }, 500, request);
+    }
+  }
+
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===

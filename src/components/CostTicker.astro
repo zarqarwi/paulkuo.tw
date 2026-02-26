@@ -162,8 +162,8 @@ const tickerData = JSON.stringify({
           <div class="ticker-sep"></div>
           <div class="ticker-item" title="CyberSolutions (436A.T) 東京證交所即時股價">
             <span class="ticker-label">📈 {stockName}</span>
-            <span class="ticker-value">¥{stockPrice.toLocaleString()}</span>
-            <span class={`ticker-change ${stockChange >= 0 ? 'up' : 'down'}`}>
+            <span class="ticker-value" id="liveStockPrice">¥{stockPrice.toLocaleString()}</span>
+            <span class={`ticker-change ${stockChange >= 0 ? 'up' : 'down'}`} id="liveStockChange">
               {stockChange >= 0 ? '▲' : '▼'} {Math.abs(stockChange).toFixed(1)}%
             </span>
           </div>
@@ -237,6 +237,25 @@ const tickerData = JSON.stringify({
       }
     })
     .catch(function() {}); // silent fail — keep build-time fallback
+})();
+// Live Stock from Cloudflare Worker
+(function() {
+  var priceEl = document.getElementById("liveStockPrice");
+  var changeEl = document.getElementById("liveStockChange");
+  if (!priceEl) return;
+  fetch("https://paulkuo-ticker.paul-4bf.workers.dev/stock")
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.price) {
+        priceEl.textContent = "¥" + d.price.toLocaleString();
+        if (changeEl && typeof d.changePercent === "number") {
+          var up = d.changePercent >= 0;
+          changeEl.textContent = (up ? "▲ " : "▼ ") + Math.abs(d.changePercent).toFixed(1) + "%";
+          changeEl.className = "ticker-change " + (up ? "up" : "down");
+        }
+      }
+    })
+    .catch(function() {});
 })();
 </script>
 
