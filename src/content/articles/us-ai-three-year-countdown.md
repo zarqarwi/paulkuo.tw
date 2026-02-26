@@ -2,15 +2,17 @@
 title: "美國 AI 產業的三年倒數：一場正在兌現的預言"
 description: "2025 年 Altman 畫了一張三年路線圖，如今我們已經走到第二年。從 L3 Agent 到中東佈局，哪些預言正在成真、哪些正在變形？"
 date: 2026-02-26
-category: ai
+pillar: ai
 tags:
   - AI趨勢
   - OpenAI
   - 地緣政治
   - AGI
   - 產業分析
-lang: zh-TW
-medium_original: true
+cover: "/images/covers/us-ai-three-year-countdown.jpg"
+featured: false
+draft: false
+readingTime: 6
 ---
 
 去年五月，Sam Altman 在紅杉資本的 AI 峰會上，丟出一份三年倒數時間表：2025 是助理元年，2026 進入科研，2027 踏入實體世界。
