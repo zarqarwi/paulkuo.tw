@@ -116,14 +116,27 @@ jobs:
 
       - name: Commit social logs
         if: steps.detect.outputs.skip == 'false'
+        continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/social-logs/ data/costs.jsonl
+          git add data/social-logs/
           if ! git diff --staged --quiet; then
             git commit -m "chore: prepare social content [skip-translate]"
-            git pull --rebase origin main
-            git push
+
+            # 帶重試的 push（處理 translate.yml 的併發 commit）
+            for attempt in 1 2 3; do
+              if git push origin main 2>/dev/null; then
+                echo "✅ Push succeeded (attempt $attempt)"
+                break
+              fi
+              echo "⚠️  Push failed (attempt $attempt), pulling and retrying..."
+              git pull --rebase origin main || {
+                echo "⚠️  Rebase conflict, using merge instead..."
+                git rebase --abort 2>/dev/null || true
+                git pull --no-rebase origin main
+              }
+            done
           fi
 
       - name: Create review Issue
