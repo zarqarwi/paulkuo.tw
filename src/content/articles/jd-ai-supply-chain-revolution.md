@@ -2,15 +2,17 @@
 title: "京東的 AI 供應鏈：當預測變成基礎建設，台灣企業該看到什麼？"
 description: "京東用 AI 重建了整條供應鏈——從需求預測到無人配送，從可解釋模型到自動倉儲。史丹佛的論文把它寫成教案，但對台灣企業來說，真正的訊號不是技術，而是供應鏈能力正在變成可輸出的平台。"
 date: 2026-02-26
-category: ai
+pillar: ai
 tags:
   - AI趨勢
   - 供應鏈
   - 京東
   - 產業分析
   - 台灣企業
-lang: zh-TW
-medium_original: true
+cover: "/images/covers/jd-ai-supply-chain-revolution.jpg"
+featured: false
+draft: false
+readingTime: 7
 ---
 
 去年六月，我整理了一篇京東在史丹佛大學分享的 AI 供應鏈案例。當時的感覺是：這是一份很紮實的企業內部改造紀錄，值得學習但離我們有點遠。
