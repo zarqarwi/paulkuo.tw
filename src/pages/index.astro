@@ -7,16 +7,10 @@ import CostAnalytics from '../components/CostAnalytics.astro';
 import { calcReadingTime } from '../utils/readingTime';
 const feedData = feedJson.items || [];
 
-const allArticles = (await getCollection('articles', ({ data }) => !data.draft && data.featured))
+// Always show latest 3 articles (no featured filter)
+const articles = (await getCollection('articles', ({ data, id }) => !data.draft && !id.startsWith('en/') && !id.startsWith('ja/') && !id.startsWith('zh-cn/')))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
-
-// If no featured articles yet, get latest 3
-const articles = allArticles.length > 0 
-  ? allArticles 
-  : (await getCollection('articles', ({ data }) => !data.draft))
-      .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-      .slice(0, 3);
 
 const homeSchema = JSON.stringify({
   "@context": "https://schema.org",
