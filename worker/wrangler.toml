@@ -1,0 +1,12 @@
+name = "paulkuo-ticker"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+# Cron: 每 6 小時 refresh Fitbit token (UTC 0,6,12,18 = 台灣 8,14,20,2)
+[triggers]
+crons = ["0 0,6,12,18 * * *"]
+
+# KV binding — namespace ID 在 wrangler kv 建立後填入
+[[kv_namespaces]]
+binding = "TICKER_KV"
+id = "c066a2fd7942494c8ead37cc518b191b"

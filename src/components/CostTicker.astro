@@ -148,7 +148,7 @@ const tickerData = JSON.stringify({
       <!-- 步數 -->
       <div class="ticker-item" title="今日 Fitbit 步數（即時更新）">
         <span class="ticker-label">🚶 步數</span>
-        <span class="ticker-value">{fitbitSteps.toLocaleString()}</span>
+        <span class="ticker-value" id="liveSteps">{fitbitSteps.toLocaleString()}</span>
       </div>
       <div class="ticker-sep"></div>
       <!-- AI 協作 -->
@@ -223,6 +223,20 @@ const tickerData = JSON.stringify({
   });
   ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
 
+})();
+
+// Live Fitbit from Cloudflare Worker (replaces build-time static data)
+(function() {
+  var el = document.getElementById('liveSteps');
+  if (!el) return;
+  fetch('https://paulkuo-ticker.paul-4bf.workers.dev/fitbit')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.today && typeof d.today.steps === 'number') {
+        el.textContent = d.today.steps.toLocaleString();
+      }
+    })
+    .catch(function() {}); // silent fail — keep build-time fallback
 })();
 </script>
 
