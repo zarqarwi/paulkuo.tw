@@ -9,15 +9,14 @@ on:
       - '!src/content/articles/zh-cn/**'
 
 jobs:
-  translate:
+  translate-and-cover:
     runs-on: ubuntu-latest
-    # 跳過條件：commit message 包含 [skip-translate] 或 [skip ci]
     if: >-
       !contains(github.event.head_commit.message, '[skip-translate]') &&
       !contains(github.event.head_commit.message, '[skip ci]')
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,15 +49,22 @@ jobs:
         run: |
           node scripts/translate-article.mjs
 
-      - name: Commit translations
+      - name: Generate cover image
+        if: steps.changed.outputs.skip == 'false'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          node scripts/generate-cover.mjs
+
+      - name: Commit translations and cover
         if: steps.changed.outputs.skip == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/content/articles/en/ src/content/articles/ja/ src/content/articles/zh-cn/ data/costs.jsonl data/translation-manifest.json
+          git add src/content/articles/en/ src/content/articles/ja/ src/content/articles/zh-cn/ public/images/covers/ data/costs.jsonl data/translation-manifest.json
           if git diff --cached --quiet; then
-            echo "No translations to commit"
+            echo "No changes to commit"
           else
-            git commit -m "🌐 Auto-translate articles to en/ja/zh-cn"
+            git commit -m "Auto-translate and generate cover [skip-translate]"
             git push
           fi
