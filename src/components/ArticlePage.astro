@@ -3,6 +3,7 @@
  * ArticlePage.astro — 共用文章詳情元件
  * AIO-optimized: Enhanced JSON-LD, semantic HTML, breadcrumbs
  * v2: Added prev/next nav, related articles, author card, share buttons
+ * v2.1: Fixed Japanese pillar label support (labelJa)
  */
 import { render, getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -27,7 +28,9 @@ const dateStr = date.toLocaleDateString(L.dateLocale, L.dateOptions);
 const slug = article.id.replace(/\.md$/, '');
 const articleUrl = `${SITE.url}${basePath}/articles/${slug}`;
 const ogImageUrl = article.data.cover ? `${SITE.url}${article.data.cover}` : `${SITE.url}/og/${slug}.png`;
-const pillarLabel = lang === 'en' ? p.labelEn : p.label;
+
+// Fixed: proper language-based pillar label selection
+const pillarLabel = lang === 'en' ? p.labelEn : lang === 'ja' ? p.labelJa : p.label;
 
 // === Related articles & prev/next navigation ===
 const allArticles = (await getCollection(L.collectionName, ({ data }) => !data.draft))
@@ -104,13 +107,13 @@ const schemaJson = JSON.stringify({
         {
           "@type": "ListItem",
           "position": 1,
-          "name": lang === 'en' ? "Home" : "首頁",
+          "name": lang === 'en' ? "Home" : lang === 'ja' ? "ホーム" : "首頁",
           "item": `${SITE.url}${basePath}/`
         },
         {
           "@type": "ListItem",
           "position": 2,
-          "name": lang === 'en' ? "Articles" : "思想",
+          "name": lang === 'en' ? "Articles" : lang === 'ja' ? "記事" : "思想",
           "item": `${SITE.url}${basePath}/blog`
         },
         {
@@ -165,7 +168,6 @@ const i = {
   </Fragment>
 
   <article class="article-page" itemscope itemtype="https://schema.org/BlogPosting">
-    <!-- ⚠️ 不要用 <nav> tag — 會和 BaseLayout 的 main-nav 衝突導致定位異常。用 div + role="navigation" 代替 -->
     <!-- Breadcrumb: visual hidden, schema JSON preserved for SEO -->
 
     {article.data.cover && (
@@ -192,12 +194,12 @@ const i = {
       <meta itemprop="description" content={description} />
     </header>
 
-    <section class="article-body" itemprop="articleBody" aria-label={lang === 'en' ? 'Article content' : '文章內容'}>
+    <section class="article-body" itemprop="articleBody" aria-label={lang === 'en' ? 'Article content' : lang === 'ja' ? '記事内容' : '文章內容'}>
       <Content />
     </section>
 
     {tags.length > 0 && (
-      <footer class="article-tags" aria-label={lang === 'en' ? 'Tags' : '標籤'}>
+      <footer class="article-tags" aria-label={lang === 'en' ? 'Tags' : lang === 'ja' ? 'タグ' : '標籤'}>
         {tags.map(tag => <span class="article-tag" itemprop="keywords">{tag}</span>)}
       </footer>
     )}
@@ -223,7 +225,7 @@ const i = {
     </div>
 
     {/* === Prev / Next Navigation === */}
-    <div class="article-nav" aria-label={lang === 'en' ? 'Article navigation' : '文章導航'}>
+    <div class="article-nav" aria-label={lang === 'en' ? 'Article navigation' : lang === 'ja' ? '記事ナビゲーション' : '文章導航'}>
       {prevArticle ? (
         <a href={`${basePath}/articles/${prevArticle.id.replace(/\.md$/, '')}`} class="article-nav-link prev">
           <span class="nav-label">← {i.prev}</span>
@@ -245,11 +247,12 @@ const i = {
         <div class="related-grid">
           {relatedArticles.map(ra => {
             const rp = PILLAR_MAP[ra.data.pillar];
+            const rpLabel = lang === 'en' ? rp.labelEn : lang === 'ja' ? rp.labelJa : rp.label;
             return (
               <a href={`${basePath}/articles/${ra.id.replace(/\.md$/, '')}`} class="related-card">
                 <span class="related-pillar" style={`color:${rp.color}`}>
                   <span class="pillar-dot" style={`background:${rp.color}`}></span>
-                  {lang === 'en' ? rp.labelEn : rp.label}
+                  {rpLabel}
                 </span>
                 <h3>{ra.data.title}</h3>
                 <time>{ra.data.date.toLocaleDateString(L.dateLocale, L.dateOptions)}</time>

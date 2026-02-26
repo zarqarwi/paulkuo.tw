@@ -1,12 +1,150 @@
 ---
 /**
- * /en/ homepage
- * Renders the same layout as root index, with lang="en" passed to BaseLayout
- * Client-side i18n script in BaseLayout handles translation
+ * /en/ homepage — SSR English content (no meta refresh)
+ * Renders actual English content for search engines to index
  */
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PILLAR_MAP, SITE } from '../../config';
+import { calcReadingTime } from '../../utils/readingTime';
+
+const articles = (await getCollection('articles_en', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const homeSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${SITE.url}/en/#webpage`,
+      "url": `${SITE.url}/en/`,
+      "name": "Paul Kuo — Rebuilding Order in an Age of Intelligence",
+      "description": "At the intersection of technology and civilization, rebuilding order, recycling resources, and safeguarding human dignity.",
+      "inLanguage": "en",
+      "isPartOf": { "@id": `${SITE.url}/#website` },
+      "about": { "@id": `${SITE.url}/#person` }
+    }
+  ]
+});
 ---
-<BaseLayout title="Paul Kuo — Rebuilding Order in an Age of Intelligence" lang="en">
-  <script is:inline>window.__LANG__ = 'en';</script>
-  <meta http-equiv="refresh" content="0;url=/?lang=en" />
+<BaseLayout title="Paul Kuo — Rebuilding Order in an Age of Intelligence" lang="en" schemaJson={homeSchema}>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="animate-in">Rebuilding <em>Order</em><br>in an Age of<br>Intelligence</h1>
+        <p class="hero-identity animate-in delay-1">郭曜郎 Paul Kuo</p>
+        <p class="hero-domain animate-in delay-1">Industrial restructuring｜Circular Economy × AI × Taiwan-Japan Bridge</p>
+        <p class="hero-tagline animate-in delay-2">I focus on one thing: designing the next working system in an era where the old order is loosening.</p>
+        <p class="hero-bio animate-in delay-2">Spanning theological inquiry, startup ecosystems, and circular economy practice, I have long been involved in enterprise transformation and cross-border cooperation projects, integrating technology, capital, and industrial resources to drive sustainable and actionable structures.</p>
+        <div class="hero-pillars animate-in delay-3">
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-ai)"></span><span>Intelligence & Order</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-circular)"></span><span>Recycle & Reuse</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-faith)"></span><span>Civilization & Human Nature</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-startup)"></span><span>Creation & Enterprise</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-life)"></span><span>Reflections & Memory</span></span>
+        </div>
+        <div class="hero-actions animate-in delay-4">
+          <a href="/en/blog" class="btn-primary">Read Articles</a>
+          <a href="/about" class="btn-secondary">About Paul</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto">
+    <div class="manifesto-inner">
+      <div class="manifesto-kicker">Philosophy</div>
+      <p class="manifesto-quote">"The Word must become flesh; order must enter the field."</p>
+      <p class="manifesto-body">Order that remains conceptual is merely discourse. Only when it enters real industries and human relationships can order be rebuilt. Technology must be grounded, intelligence must engage with the world — this is the most pragmatic understanding of "incarnation" from an entrepreneur trained in theology.</p>
+      <a href="/about" class="manifesto-cta">Full Story →</a>
+    </div>
+  </section>
+
+  <!-- LATEST THINKING -->
+  <section class="section-container">
+    <div class="section-header">
+      <h2 class="section-title">Latest Thinking</h2>
+      <a href="/en/blog" class="section-link">View All →</a>
+    </div>
+    <div class="content-grid">
+      {articles.length > 0 ? articles.map((article) => {
+        const p = PILLAR_MAP[article.data.pillar];
+        const dateStr = article.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+        return (
+          <a href={`/en/articles/${article.id.replace(/\.md$/, "")}`} class={`content-card ${article.data.cover ? 'has-cover' : ''}`}>
+            {article.data.cover && (
+              <div class="card-cover">
+                <img src={article.data.cover} alt={article.data.title} width="1792" height="1024" loading="lazy" />
+              </div>
+            )}
+            <div class="content-card-category" style={`color:${p.color}`}>
+              <span class="pillar-dot" style={`background:${p.color}`}></span> {p.labelEn}
+            </div>
+            <h3>{article.data.title}</h3>
+            <p>{article.data.description}</p>
+            <div class="content-card-footer">
+              <span>{dateStr}</span>
+              {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· {rt} min read</span> : null; })()}
+            </div>
+          </a>
+        );
+      }) : (
+        <p style="color:var(--text-secondary)">Articles coming soon.</p>
+      )}
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section style="background:var(--bg-section)">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Projects</h2>
+      </div>
+      <div class="projects-grid">
+        <a href="/projects" class="project-card circleflow" style="text-decoration:none;color:inherit">
+          <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
+          <h3>CircleFlow</h3>
+          <p>Data infrastructure for the circular economy — making resource flows, value, and ownership visible, traceable, and governable.</p>
+          <div class="project-tags">
+            <span class="project-tag">Circular Economy</span>
+            <span class="project-tag">AI</span>
+            <span class="project-tag">Platform</span>
+          </div>
+          <span class="project-cta">Learn More →</span>
+        </a>
+        <a href="/projects" class="project-card debate" style="text-decoration:none;color:inherit">
+          <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
+          <h3>Multi-Model Cognitive Collaboration</h3>
+          <p>When individuals must make judgments amid information overload, what cognitive structures can provide more reliable support for thinking.</p>
+          <div class="project-tags">
+            <span class="project-tag">Multi-Agent</span>
+            <span class="project-tag">Cognitive Infrastructure</span>
+          </div>
+          <span class="project-cta">Learn More →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact" aria-label="Contact Paul Kuo" role="complementary">
+    <div class="section-container">
+      <div class="contact-grid">
+        <div class="contact-text">
+          <h2>Let's Build<br>Something Meaningful</h2>
+          <p>Whether you're thinking about how technology can return to practical settings of humanity and order, deepening circular regeneration services and architecture, or exploring possibilities for Taiwan-Japan cross-border cooperation — let's talk.</p>
+          <div class="social-links">
+            <a href="https://x.com/zarqarwi" class="social-link" target="_blank" rel="noopener">𝕏 Twitter</a>
+            <a href="https://www.linkedin.com/in/paulkuo" class="social-link" target="_blank" rel="noopener">in LinkedIn</a>
+            <a href="https://www.threads.net/@zarqarwi" class="social-link" target="_blank" rel="noopener">◉ Threads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </BaseLayout>

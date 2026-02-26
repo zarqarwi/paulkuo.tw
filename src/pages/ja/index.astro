@@ -1,0 +1,150 @@
+---
+/**
+ * /ja/ homepage — SSR Japanese content
+ * Renders actual Japanese content for search engines to index
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PILLAR_MAP, SITE } from '../../config';
+import { calcReadingTime } from '../../utils/readingTime';
+
+const articles = (await getCollection('articles_ja', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const homeSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${SITE.url}/ja/#webpage`,
+      "url": `${SITE.url}/ja/`,
+      "name": "Paul Kuo — 知性の時代に秩序を再構築する",
+      "description": "技術と文明の交差点で、秩序の再構築、資源の循環利用、人間の尊厳の守護に取り組む。",
+      "inLanguage": "ja",
+      "isPartOf": { "@id": `${SITE.url}/#website` },
+      "about": { "@id": `${SITE.url}/#person` }
+    }
+  ]
+});
+---
+<BaseLayout title="Paul Kuo — 知性の時代に秩序を再構築する" lang="ja" schemaJson={homeSchema}>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="animate-in">知性の時代に<br><em>秩序</em>を<br>再構築する</h1>
+        <p class="hero-identity animate-in delay-1">郭曜郎 Paul Kuo</p>
+        <p class="hero-domain animate-in delay-1">産業構造の再編｜循環経済 × AI × 台日ブリッジ</p>
+        <p class="hero-tagline animate-in delay-2">私が注力していること：旧秩序が揺らぐ時代に、次に機能するシステムを設計すること。</p>
+        <p class="hero-bio animate-in delay-2">神学的思考、スタートアップエコシステム、循環経済の実務を横断し、企業変革と国境を越えた協力プロジェクトに長年携わり、技術・資本・産業資源を統合して持続可能で実行可能な構造を推進しています。</p>
+        <div class="hero-pillars animate-in delay-3">
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-ai)"></span><span>知性と秩序</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-circular)"></span><span>循環と再利用</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-faith)"></span><span>文明と人間性</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-startup)"></span><span>創造と構築</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-life)"></span><span>省察と記憶</span></span>
+        </div>
+        <div class="hero-actions animate-in delay-4">
+          <a href="/ja/blog" class="btn-primary">記事を読む</a>
+          <a href="/about" class="btn-secondary">Paulについて</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto">
+    <div class="manifesto-inner">
+      <div class="manifesto-kicker">哲学宣言</div>
+      <p class="manifesto-quote">「道は肉体とならねばならず、秩序は現場に入らねばならない。」</p>
+      <p class="manifesto-body">概念に留まる秩序は言説に過ぎない。実際の産業と人間関係に入って初めて、秩序は再構築できる。技術は実践に落とし込まれ、知性は世に関与しなければならない——これは神学の訓練を受けた起業家による「受肉」の最も実践的な理解である。</p>
+      <a href="/about" class="manifesto-cta">全てのストーリー →</a>
+    </div>
+  </section>
+
+  <!-- LATEST THINKING -->
+  <section class="section-container">
+    <div class="section-header">
+      <h2 class="section-title">最新の思考</h2>
+      <a href="/ja/blog" class="section-link">すべて見る →</a>
+    </div>
+    <div class="content-grid">
+      {articles.length > 0 ? articles.map((article) => {
+        const p = PILLAR_MAP[article.data.pillar];
+        const dateStr = article.data.date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
+        return (
+          <a href={`/ja/articles/${article.id.replace(/\.md$/, "")}`} class={`content-card ${article.data.cover ? 'has-cover' : ''}`}>
+            {article.data.cover && (
+              <div class="card-cover">
+                <img src={article.data.cover} alt={article.data.title} width="1792" height="1024" loading="lazy" />
+              </div>
+            )}
+            <div class="content-card-category" style={`color:${p.color}`}>
+              <span class="pillar-dot" style={`background:${p.color}`}></span> {p.labelJa}
+            </div>
+            <h3>{article.data.title}</h3>
+            <p>{article.data.description}</p>
+            <div class="content-card-footer">
+              <span>{dateStr}</span>
+              {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· 約{rt}分で読了</span> : null; })()}
+            </div>
+          </a>
+        );
+      }) : (
+        <p style="color:var(--text-secondary)">記事は準備中です。</p>
+      )}
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section style="background:var(--bg-section)">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">プロジェクト</h2>
+      </div>
+      <div class="projects-grid">
+        <a href="/projects" class="project-card circleflow" style="text-decoration:none;color:inherit">
+          <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
+          <h3>CircleFlow</h3>
+          <p>循環経済のデータインフラ——資源の流れ、価値、帰属を可視化・追跡可能・ガバナンス可能にする。</p>
+          <div class="project-tags">
+            <span class="project-tag">循環経済</span>
+            <span class="project-tag">AI</span>
+            <span class="project-tag">プラットフォーム</span>
+          </div>
+          <span class="project-cta">詳しく見る →</span>
+        </a>
+        <a href="/projects" class="project-card debate" style="text-decoration:none;color:inherit">
+          <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
+          <h3>マルチモデル認知協働フレームワーク</h3>
+          <p>個人が情報過多の中で判断を下さなければならないとき、どのような認知構造がより信頼性の高い思考の支えとなるか。</p>
+          <div class="project-tags">
+            <span class="project-tag">マルチエージェント</span>
+            <span class="project-tag">認知インフラ</span>
+          </div>
+          <span class="project-cta">詳しく見る →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact" aria-label="Paul Kuoへのお問い合わせ" role="complementary">
+    <div class="section-container">
+      <div class="contact-grid">
+        <div class="contact-text">
+          <h2>意味あることを<br>一緒に作りましょう</h2>
+          <p>技術を人間性と秩序の実践現場に戻す方法、循環再生サービスとアーキテクチャの深化、台日クロスボーダー協力の可能性——お気軽にお話しください。</p>
+          <div class="social-links">
+            <a href="https://x.com/zarqarwi" class="social-link" target="_blank" rel="noopener">𝕏 Twitter</a>
+            <a href="https://www.linkedin.com/in/paulkuo" class="social-link" target="_blank" rel="noopener">in LinkedIn</a>
+            <a href="https://www.threads.net/@zarqarwi" class="social-link" target="_blank" rel="noopener">◉ Threads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
