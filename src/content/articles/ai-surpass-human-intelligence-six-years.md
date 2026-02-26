@@ -2,15 +2,17 @@
 title: "六年倒數，走了一年：Schmidt 的超級智慧預言正在兌現嗎？"
 description: "2025 年 Eric Schmidt 說六年內 AI 將超越人類整體智慧。九個月後，AI 已經在寫自己的程式碼、debug 自己的訓練流程。預言走到哪了？哪些超速、哪些卡關？"
 date: 2026-02-26
-category: ai
+pillar: ai
 tags:
   - AI趨勢
   - AGI
   - 遞迴自我優化
   - Eric Schmidt
   - 產業分析
-lang: zh-TW
-medium_original: true
+cover: "/images/covers/ai-surpass-human-intelligence-six-years.jpg"
+featured: false
+draft: false
+readingTime: 7
 ---
 
 去年五月，前 Google 執行長 Eric Schmidt 在一場公開對談中丟出一個讓全場安靜的預測：六年內，AI 的智慧總量將超越全人類的總和。
