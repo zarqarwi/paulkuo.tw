@@ -66,5 +66,6 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Auto-translate and generate cover [skip-translate]"
+            git pull --rebase origin main
             git push
           fi

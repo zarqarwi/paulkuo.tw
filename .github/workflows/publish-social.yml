@@ -120,7 +120,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/social-logs/ data/costs.jsonl
-          git diff --staged --quiet || git commit -m "chore: prepare social content [skip-translate]" && git push || true
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: prepare social content [skip-translate]"
+            git pull --rebase origin main
+            git push
+          fi
 
       - name: Create review Issue
         if: steps.detect.outputs.skip == 'false'
@@ -199,4 +203,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/social-logs/ data/published-slugs.json
-          git diff --staged --quiet || git commit -m "chore: dispatched social posts for ${{ github.event.inputs.slug }} [skip-translate]" && git push || true
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: dispatched social posts for ${{ github.event.inputs.slug }} [skip-translate]"
+            git pull --rebase origin main
+            git push
+          fi
