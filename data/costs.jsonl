@@ -308,3 +308,5 @@
 {"timestamp":"2026-02-26T01:50:00.557Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":1621,"outputTokens":995,"costUSD":0.019788,"costTWD":0.64,"note":""}
 {"timestamp":"2026-02-26T01:50:33.662Z","service":"anthropic","model":"claude-sonnet","action":"translate-ja","source":"translate-article","inputTokens":1676,"outputTokens":1674,"costUSD":0.030138,"costTWD":0.98,"note":""}
 {"timestamp":"2026-02-26T01:50:46.259Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":1657,"outputTokens":1330,"costUSD":0.024921,"costTWD":0.81,"note":""}
+{"timestamp":"2026-02-26T01:54:28.396Z","service":"anthropic","model":"claude-sonnet","action":"social-summary","source":"publish-social","inputTokens":1703,"outputTokens":2023,"costUSD":0.035454,"costTWD":1.15,"note":""}
+{"timestamp":"2026-02-26T01:54:45.098Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"publish-social","inputTokens":0,"outputTokens":0,"costUSD":0.04,"costTWD":1.3,"note":"你不是輸在認知，是輸在尚未開始就先嚇死自己"}
