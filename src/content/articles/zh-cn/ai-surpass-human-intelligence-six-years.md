@@ -2,7 +2,7 @@
 title: "六年倒数，走了一年：Schmidt 的超级智慧预言正在兑现吗？"
 description: "2025 年 Eric Schmidt 说六年内 AI 将超越人类整体智慧。九个月后，AI 已经在写自己的程序代码、debug 自己的训练流程。预言走到哪了？哪些超速、哪些卡关？"
 date: 2026-02-26
-category: ai
+pillar: ai
 tags:
   - AI趋势
   - AGI
