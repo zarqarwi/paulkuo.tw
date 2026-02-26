@@ -3,6 +3,7 @@ title: "Six Years Countdown, One Year Down: Is Schmidt's Superintelligence Proph
 description: "In 2025, Eric Schmidt predicted AI would surpass total human intelligence within six years. Nine months later, AI is writing its own code and debugging its own training pipelines. How far has the prophecy progressed? What's accelerating and what's stalling?"
 date: 2026-02-26
 pillar: ai
+cover: "/images/covers/ai-surpass-human-intelligence-six-years.jpg"
 tags:
   - AI趨勢
   - AGI

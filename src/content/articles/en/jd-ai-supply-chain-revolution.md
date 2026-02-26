@@ -3,6 +3,7 @@ title: "JD.com's AI Supply Chain: When Prediction Becomes Infrastructure, What S
 description: "JD.com has used AI to rebuild its entire supply chain—from demand forecasting to unmanned delivery, from explainable models to automated warehousing. Stanford wrote it up as a case study, but for Taiwanese enterprises, the real signal isn't the technology—it's that supply chain capabilities are becoming exportable platforms."
 date: 2026-02-26
 pillar: ai
+cover: "/images/covers/jd-ai-supply-chain-revolution.jpg"
 tags:
   - AI趨勢
   - 供應鏈

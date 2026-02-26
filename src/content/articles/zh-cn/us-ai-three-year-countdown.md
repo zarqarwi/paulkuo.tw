@@ -3,6 +3,7 @@ title: "美国 AI 产业的三年倒数：一场正在兑现的预言"
 description: "2025 年 Altman 画了一张三年路线图，如今我们已经走到第二年。从 L3 Agent 到中东布局，哪些预言正在成真、哪些正在变形？"
 date: 2026-02-26
 pillar: ai
+cover: "/images/covers/us-ai-three-year-countdown.jpg"
 tags:
   - AI趋势
   - OpenAI

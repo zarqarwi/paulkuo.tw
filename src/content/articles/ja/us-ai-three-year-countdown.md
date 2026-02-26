@@ -3,6 +3,7 @@ title: "米国AI産業の三年カウントダウン：実現しつつある予�
 description: "2025年、Altmanは三年のロードマップを描いた。今、我々は二年目に差し掛かっている。L3エージェントから中東戦略まで、どの予言が実現し、どれが変化しているのか？"
 date: 2026-02-26
 pillar: ai
+cover: "/images/covers/us-ai-three-year-countdown.jpg"
 tags:
   - AIトレンド
   - OpenAI

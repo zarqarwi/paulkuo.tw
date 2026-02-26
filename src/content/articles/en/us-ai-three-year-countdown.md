@@ -3,6 +3,7 @@ title: "The Three-Year Countdown for America's AI Industry: A Prophecy Coming Tr
 description: "In 2025, Altman drew a three-year roadmap, and we've now reached year two. From L3 Agents to Middle Eastern deployments, which prophecies are coming true and which are evolving?"
 date: 2026-02-26
 pillar: ai
+cover: "/images/covers/us-ai-three-year-countdown.jpg"
 tags:
   - AI趨勢
   - OpenAI

@@ -3,6 +3,7 @@ title: "六年倒數，走了一年：Schmidtの超級智慧預言は実現し�
 description: "2025年、Eric Schmidtは6年以内にAIが人類全体の智慧を超越すると述べた。9ヶ月後、AIは既に自身のプログラムコードを書き、自らの訓練プロセスをデバッグしている。預言はどこまで進んでいるのか？何が加速し、何が行き詰まっているのか？"
 date: 2026-02-26
 pillar: ai
+cover: "/images/covers/ai-surpass-human-intelligence-six-years.jpg"
 tags:
   - AI趨勢
   - AGI
