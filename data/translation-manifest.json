@@ -1458,5 +1458,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "jd-ai-supply-chain-revolution.md": {
+    "sourceHash": "b4399f718e74",
+    "translations": {
+      "en": {
+        "hash": "5e82643a5e70",
+        "translatedAt": "2026-02-26T13:04:37.286Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "742b85760870",
+        "translatedAt": "2026-02-26T13:05:34.744Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "e86db5ed5bd4",
+        "translatedAt": "2026-02-26T13:05:58.330Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
