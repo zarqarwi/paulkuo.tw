@@ -312,3 +312,7 @@
 {"timestamp":"2026-02-26T01:54:45.098Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"publish-social","inputTokens":0,"outputTokens":0,"costUSD":0.04,"costTWD":1.3,"note":"你不是輸在認知，是輸在尚未開始就先嚇死自己"}
 {"timestamp":"2026-02-26T03:45:06.919Z","service":"anthropic","model":"claude-sonnet","action":"social-summary","source":"prepare-social","inputTokens":2544,"outputTokens":1750,"costUSD":0.033882,"costTWD":1.1,"note":""}
 {"timestamp":"2026-02-26T03:45:24.857Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"prepare-social","inputTokens":0,"outputTokens":0,"costUSD":0.04,"costTWD":1.3,"note":"微軟說台灣 AI 準備度全球領先——但你的老闆知道嗎？"}
+{"timestamp":"2026-02-26T04:15:12.477Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":2985,"outputTokens":1852,"costUSD":0.036735,"costTWD":1.19,"note":""}
+{"timestamp":"2026-02-26T04:16:08.728Z","service":"anthropic","model":"claude-sonnet","action":"translate-ja","source":"translate-article","inputTokens":3040,"outputTokens":3354,"costUSD":0.05943,"costTWD":1.93,"note":""}
+{"timestamp":"2026-02-26T04:16:31.562Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":3021,"outputTokens":2645,"costUSD":0.048738,"costTWD":1.58,"note":""}
+{"timestamp":"2026-02-26T04:16:53.668Z","service":"openai","model":"dall-e-3","action":"cover-image","source":"generate-cover","inputTokens":0,"outputTokens":0,"costUSD":0.08,"costTWD":2.6,"note":"work-trend-index-2025-taiwan"}

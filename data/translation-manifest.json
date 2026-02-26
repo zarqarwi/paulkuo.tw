@@ -1358,5 +1358,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "work-trend-index-2025-taiwan.md": {
+    "sourceHash": "800fc407c51c",
+    "translations": {
+      "en": {
+        "hash": "e3654f899186",
+        "translatedAt": "2026-02-26T04:15:12.479Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "a8a02ddb1a5e",
+        "translatedAt": "2026-02-26T04:16:08.728Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "e04edddc3fdf",
+        "translatedAt": "2026-02-26T04:16:31.562Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
