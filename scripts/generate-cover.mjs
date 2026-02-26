@@ -8,10 +8,11 @@
  * Usage: OPENAI_API_KEY=sk-... node scripts/generate-cover.mjs
  */
 
-import { readFileSync, appendFileSync, createWriteStream, mkdirSync, existsSync } from 'fs';
+import { readFileSync, mkdirSync, existsSync, createWriteStream } from 'fs';
 import { execSync } from 'child_process';
 import { join, basename } from 'path';
 import https from 'https';
+import { logCost } from './cost-tracker.mjs';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 if (!OPENAI_API_KEY) {
@@ -21,8 +22,6 @@ if (!OPENAI_API_KEY) {
 
 const ARTICLES_DIR = 'src/content/articles';
 const COVERS_DIR = 'public/images/covers';
-const COSTS_FILE = 'data/costs.jsonl';
-const COST_PER_IMAGE = 0.080;
 
 const PILLAR_THEMES = {
   ai: {
@@ -115,14 +114,6 @@ function downloadFile(url, dest) {
   });
 }
 
-function logCost(slug, cost) {
-  mkdirSync('data', { recursive: true });
-  appendFileSync(COSTS_FILE, JSON.stringify({
-    ts: new Date().toISOString(), service: 'dall-e-3',
-    action: 'cover-image', slug, cost_usd: cost
-  }) + '\n');
-}
-
 async function main() {
   let changedFiles;
   try {
@@ -163,7 +154,14 @@ async function main() {
     try {
       const imageUrl = await callDallE(buildPrompt(fm.title, fm.description || '', fm.pillar || 'ai'));
       await downloadFile(imageUrl, coverPath);
-      logCost(slug, COST_PER_IMAGE);
+      logCost({
+        service: 'openai',
+        model: 'dall-e-3',
+        action: 'cover-image',
+        source: 'generate-cover',
+        costUSD: 0.080,
+        note: slug,
+      });
       console.log(`✅ Cover saved: ${coverPath}`);
     } catch (err) {
       console.error(`❌ Failed for ${slug}: ${err.message}`);
