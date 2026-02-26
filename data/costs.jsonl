@@ -303,3 +303,5 @@
 {"timestamp":"2026-02-25T03:12:39.134Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":744,"outputTokens":381,"costUSD":0.007947,"costTWD":0.26,"note":""}
 {"timestamp":"2026-02-25T03:12:45.383Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":616,"outputTokens":294,"costUSD":0.006258,"costTWD":0.2,"note":""}
 {"timestamp":"2026-02-25T03:12:52.342Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":843,"outputTokens":431,"costUSD":0.008994,"costTWD":0.29,"note":""}
+{"timestamp":"2026-02-26T01:24:01.446Z","service":"anthropic","model":"claude-sonnet","action":"social-summary","source":"publish-social","inputTokens":2642,"outputTokens":2291,"costUSD":0.042291,"costTWD":1.37,"note":""}
+{"timestamp":"2026-02-26T01:24:20.107Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"publish-social","inputTokens":0,"outputTokens":0,"costUSD":0.04,"costTWD":1.3,"note":"中國正在輸出語法，而台灣還在輸出感動"}
