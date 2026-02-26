@@ -1378,5 +1378,45 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "china-cultural-discourse-power.md": {
+    "sourceHash": "d407cc8bd66c",
+    "translations": {
+      "en": {
+        "hash": "17d90dd4a6d0",
+        "translatedAt": "2026-02-26T04:53:34.887Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "22dbb3533a74",
+        "translatedAt": "2026-02-26T04:54:35.030Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "d032090ba700",
+        "translatedAt": "2026-02-26T04:54:59.163Z",
+        "model": "claude-sonnet-4"
+      }
+    }
+  },
+  "negentropy-humanistic-practice.md": {
+    "sourceHash": "12df7fee287d",
+    "translations": {
+      "en": {
+        "hash": "716c8271d12d",
+        "translatedAt": "2026-02-26T04:55:22.960Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "9d28889d233d",
+        "translatedAt": "2026-02-26T04:56:15.909Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "b024907e504d",
+        "translatedAt": "2026-02-26T04:56:35.917Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
