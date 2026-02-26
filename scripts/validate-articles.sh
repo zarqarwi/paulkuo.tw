@@ -54,15 +54,15 @@ done
 
 # --- 檢查 3：圖片大小 ---
 if [ -d "$COVERS_DIR" ]; then
-  find "$COVERS_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) | while read -r img; do
-    # 跳過 backup 資料夾
-    case "$img" in *_backup*) continue ;; esac
-    size_kb=$(( $(wc -c < "$img") / 1024 ))
-    if [ "$size_kb" -gt "$MAX_SIZE_KB" ]; then
+  OVERSIZED=$(find "$COVERS_DIR" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.webp" \) -size +${MAX_SIZE_KB}k)
+  if [ -n "$OVERSIZED" ]; then
+    echo "$OVERSIZED" | while read -r img; do
+      size_kb=$(( $(wc -c < "$img") / 1024 ))
       echo "❌ [$(basename "$img")] 圖片過大: ${size_kb}KB (上限 ${MAX_SIZE_KB}KB)"
-      ERRORS=$((ERRORS + 1))
-    fi
-  done
+    done
+    OVERCOUNT=$(echo "$OVERSIZED" | wc -l | tr -d ' ')
+    ERRORS=$((ERRORS + OVERCOUNT))
+  fi
 fi
 
 echo ""
