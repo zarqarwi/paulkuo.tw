@@ -1,27 +1,39 @@
 name: Publish to Social Media
 
 on:
+  # 自動觸發：deploy 完成後，產摘要 + 配圖 → 建 Issue 等審核
   workflow_run:
     workflows: ["Build & Deploy"]
     types: [completed]
     branches: [main]
+  # 手動觸發：審核通過後，送 OneUp 排程
   workflow_dispatch:
     inputs:
-      article_path:
-        description: '文章路徑（例: src/content/articles/xxx.md）'
-        required: false
+      slug:
+        description: '文章 slug（例: overcome-fear-start-ugly）'
+        required: true
+      action:
+        description: '動作'
+        required: true
+        default: 'dispatch'
+        type: choice
+        options:
+          - dispatch
+          - prepare
 
 permissions:
   contents: write
   issues: write
 
 jobs:
-  publish:
+  # ═══════════════════════════════════════════════════
+  # Job 1: 自動產摘要 + 配圖（不排程）
+  # ═══════════════════════════════════════════════════
+  prepare:
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'prepare')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,26 +43,33 @@ jobs:
       - name: Find new articles
         id: detect
         run: |
-          # 手動觸發時用指定的文章路徑
-          if [ -n "${{ github.event.inputs.article_path }}" ]; then
-            echo "articles=${{ github.event.inputs.article_path }}" >> $GITHUB_OUTPUT
-            echo "skip=false" >> $GITHUB_OUTPUT
-            echo "📝 Manual trigger: ${{ github.event.inputs.article_path }}"
+          # 手動指定 slug 時
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SLUG="${{ github.event.inputs.slug }}"
+            FILE="src/content/articles/${SLUG}.md"
+            if [ -f "$FILE" ]; then
+              echo "articles=$FILE" >> $GITHUB_OUTPUT
+              echo "skip=false" >> $GITHUB_OUTPUT
+              echo "📝 Manual prepare: $FILE"
+            else
+              echo "skip=true" >> $GITHUB_OUTPUT
+              echo "❌ File not found: $FILE"
+            fi
             exit 0
           fi
 
-          # 只偵測「新增」的文章（--diff-filter=A），排除修改/刪除
+          # 自動偵測新增文章
           NEW_ARTICLES=""
           for i in $(seq 0 8); do
             DIFF=$(git diff --diff-filter=A --name-only HEAD~$((i+1)) HEAD~$i -- 'src/content/articles/*.md' 2>/dev/null | grep -v '/en/' | grep -v '/ja/' | grep -v '/zh-cn/' || true)
             if [ -n "$DIFF" ]; then
               NEW_ARTICLES="$DIFF"
-              echo "📝 Found NEW article (added) in HEAD~$((i+1))..HEAD~$i"
+              echo "📝 Found NEW article in HEAD~$((i+1))..HEAD~$i"
               break
             fi
           done
 
-          # dedup — 檢查是否已經發佈過
+          # 檢查是否已發佈過
           if [ -n "$NEW_ARTICLES" ] && [ -f "data/published-slugs.json" ]; then
             FILTERED=""
             for f in $NEW_ARTICLES; do
@@ -70,11 +89,9 @@ jobs:
 
           if [ -z "$NEW_ARTICLES" ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
-            echo "ℹ️  No new articles to publish"
+            echo "ℹ️  No new articles"
           else
             echo "skip=false" >> $GITHUB_OUTPUT
-            echo "📝 New articles to publish:"
-            echo "$NEW_ARTICLES"
           fi
 
       - name: Setup Node.js
@@ -87,49 +104,25 @@ jobs:
         if: steps.detect.outputs.skip == 'false'
         run: npm install sharp
 
-      - name: Generate summaries and publish
-        id: publish
+      - name: Prepare social content
         if: steps.detect.outputs.skip == 'false'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ONEUP_API_KEY: ${{ secrets.ONEUP_API_KEY }}
-          ONEUP_CATEGORY_ID: ${{ secrets.ONEUP_CATEGORY_ID }}
           FREEIMAGE_API_KEY: ${{ secrets.FREEIMAGE_API_KEY }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SITE_URL: "https://paulkuo.tw"
         run: |
-          node scripts/publish-social.mjs "${{ steps.detect.outputs.articles }}"
+          node scripts/prepare-social.mjs "${{ steps.detect.outputs.articles }}"
 
-      - name: Record published slugs
+      - name: Commit social logs
         if: steps.detect.outputs.skip == 'false'
         run: |
-          mkdir -p data
-          if [ ! -f data/published-slugs.json ]; then
-            echo '[]' > data/published-slugs.json
-          fi
-
-          ARTICLES="${{ steps.detect.outputs.articles }}"
-          for f in $ARTICLES; do
-            SLUG=$(basename "$f" .md)
-            python3 -c "
-          import json
-          with open('data/published-slugs.json') as f:
-              slugs = json.load(f)
-          if '$SLUG' not in slugs:
-              slugs.append('$SLUG')
-          with open('data/published-slugs.json','w') as f:
-              json.dump(slugs, f, indent=2)
-          "
-          done
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/published-slugs.json data/social-logs/ data/costs.jsonl
-          git diff --staged --quiet || git commit -m "chore: record published slugs" && git push || true
+          git add data/social-logs/ data/costs.jsonl
+          git diff --staged --quiet || git commit -m "chore: prepare social content [skip-translate]" && git push || true
 
-      # 🟡 FIX: GitHub Issue 通知 — 每次發佈建一個 issue，信箱會收到
-      - name: Create notification issue
+      - name: Create review Issue
         if: steps.detect.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -137,10 +130,10 @@ jobs:
           ARTICLES="${{ steps.detect.outputs.articles }}"
           for f in $ARTICLES; do
             SLUG=$(basename "$f" .md)
-            TITLE="📢 社群已排程：$SLUG"
+            TITLE="📋 社群摘要待審核：$SLUG"
+            TODAY=$(date -u +%Y-%m-%d)
+            LOG_FILE="data/social-logs/${SLUG}-${TODAY}.json"
 
-            # 讀取 social-log 內容
-            LOG_FILE="data/social-logs/${SLUG}-$(date -u +%Y-%m-%d).json"
             if [ -f "$LOG_FILE" ]; then
               SUMMARIES=$(python3 -c "
           import json
@@ -148,24 +141,62 @@ jobs:
               data = json.load(f)
           print(f\"**文章：** {data['title']}\n\")
           print(f\"**連結：** {data['url']}\n\")
+          if data.get('imageUrl'):
+              print(f\"**配圖：** ![]({data['imageUrl']})\n\")
           for platform, content in data['summaries'].items():
               print(f'### {platform}\n')
-              print(f'{content[:300]}\n')
+              print(f'{content[:500]}\n')
           ")
             else
-              SUMMARIES="Log file not found: $LOG_FILE"
+              SUMMARIES="⚠️ Log file not found: $LOG_FILE"
             fi
 
-            BODY="自動社群發佈完成。以下是各平台摘要內容，如有問題請在 1 小時內到 [OneUp](https://app.oneupapp.io) 取消排程。
+            BODY="自動產生的社群摘要，**請審核後手動觸發發佈**。
 
-          ⚠️ **FB、IG 需手動發佈**
+          ## 審核步驟
+          1. 檢查以下各平台摘要內容
+          2. 確認 OK → 到 [Actions](https://github.com/zarqarwi/paulkuo.tw/actions/workflows/publish-social.yml) 手動觸發 dispatch
+             - slug: \`$SLUG\`
+             - action: \`dispatch\`
+          3. 或在此 Issue 留言修改需求
 
           ---
 
           $SUMMARIES
 
           ---
-          _此 issue 由 publish-social workflow 自動建立，確認無誤可直接關閉。_"
+          _此 issue 由 prepare-social workflow 自動建立。審核通過後請手動 dispatch。_"
 
-            gh issue create --title "$TITLE" --body "$BODY" --label "social-publish" || true
+            gh issue create --title "$TITLE" --body "$BODY" --label "social-review" || true
           done
+
+  # ═══════════════════════════════════════════════════
+  # Job 2: 手動觸發 — 送 OneUp 排程
+  # ═══════════════════════════════════════════════════
+  dispatch:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.action == 'dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Dispatch to OneUp
+        env:
+          ONEUP_API_KEY: ${{ secrets.ONEUP_API_KEY }}
+          ONEUP_CATEGORY_ID: ${{ secrets.ONEUP_CATEGORY_ID }}
+        run: |
+          node scripts/dispatch-social.mjs "${{ github.event.inputs.slug }}"
+
+      - name: Commit dispatch status
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/social-logs/ data/published-slugs.json
+          git diff --staged --quiet || git commit -m "chore: dispatched social posts for ${{ github.event.inputs.slug }} [skip-translate]" && git push || true
