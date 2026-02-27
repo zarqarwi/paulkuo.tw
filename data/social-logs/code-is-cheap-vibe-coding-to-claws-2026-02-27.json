@@ -1,0 +1,18 @@
+{
+  "slug": "code-is-cheap-vibe-coding-to-claws",
+  "title": "代碼已死，對話永生：從 Vibe Coding 到 Claws 的程式革命",
+  "url": "https://paulkuo.tw/articles/code-is-cheap-vibe-coding-to-claws",
+  "pillar": "ai",
+  "summaries": {
+    "X": "九個月前，Karpathy 隨手丟出「Vibe Coding」一詞，九個月後成為年度詞彙。2026 年，當 Django 創辦人說出「Code is cheap」，翻轉了 Linus 25 年前的名言。真正稀缺的不再是程式碼，而是知道該寫什麼的判斷力。程式設計的革命已經開始。#VibeCoding #AIRevolution https://paulkuo.tw/articles/code-is-cheap-vibe-coding-to-claws",
+    "LI": "九個月前，AI 教父 Andrej Karpathy 在 X 上隨手丟出一個詞：Vibe Coding。沒有論文，沒有框架，就是兩個英文字。九個月後，它成為柯林斯詞典年度詞彙。\n\n這個傳播速度本身就是訊號——它不是在描述新技術，而是在替一個已經發生的集體經驗命名。程式設計師不再逐行審視程式碼，而是跟 AI 對話、迭代、感覺對了就往前走。\n\n更震撼的是 Django 創辦人 Simon Willison 在 2026 年說的話：「Writing code is cheap now.」這句話翻轉了 Linus Torvalds 25 年前的名言「Talk is cheap. Show me the code.」從「空談廉價，給我看程式碼」變成「程式碼廉價，讓我看你的判斷」。\n\n當一年的工作量壓縮到一小時，這不是效率提升，而是成本結構的相變。真正的革命在於讓「原本不值得做」的事情變得值得做。每個團隊都有一份隱形清單——那些投入產出比不划算而永遠排不上優先序的功能，當寫程式的邊際成本趨近於零，這整份清單突然活了過來。\n\n對台灣的知識工作者來說，這個邏輯不只適用於程式設計。當任何知識工作的初稿成本都變便宜，真正稀缺的是判斷力——知道什麼值得做，知道好壞的差別。\n\nhttps://paulkuo.tw/articles/code-is-cheap-vibe-coding-to-claws",
+    "TH": "Karpathy 九個月前隨手丟出「Vibe Coding」，現在已經是年度詞彙了。想想看，雲端運算從提出到普及花了好幾年，這個詞九個月就爆紅，說明什麼？\n\n說明大家都在經歷同樣的事：寫程式不再是逐行思考，而是跟 AI 對話、憑感覺走。Django 創辦人直接說「Code is cheap」，翻轉了 Linus 的經典名言。\n\n當程式碼變便宜，稀缺的是什麼？是知道該寫什麼的判斷力。那些原本「不值得做」的功能，突然都值得嘗試了。\n\nhttps://paulkuo.tw/articles/code-is-cheap-vibe-coding-to-claws",
+    "BS": "九個月前 Karpathy 丟出「Vibe Coding」，九個月後成為年度詞彙。這個傳播速度說明了什麼？說明它不是在描述新技術，而是在替已經發生的集體經驗命名。\n\nDjango 創辦人說「Code is cheap」，翻轉了 Linus 25 年前的「Talk is cheap」。當寫程式的成本趨近於零，真正稀缺的是判斷力——知道什麼值得做，知道好壞的差別。\n\nhttps://paulkuo.tw/articles/code-is-cheap-vibe-coding-to-claws",
+    "YT": "想跟大家分享一個正在發生的程式設計革命。\n\n九個月前，AI 教父 Karpathy 隨手在 X 上丟出「Vibe Coding」一詞，描述那種完全沉浸在氛圍裡、順著感覺寫程式的狀態。九個月後，它成為柯林斯詞典年度詞彙。\n\n這個傳播速度本身就很說明問題——它觸碰到了某種等待被說出口的真實。程式設計師不再逐行審視每段程式碼，而是跟 AI 對話、迭代，感覺對了就往前走。\n\n更震撼的是 Django 創辦人說的「Writing code is cheap now」，直接翻轉了 Linus 25 年前的經典名言。從「Talk is cheap. Show me the code」變成「Code is cheap. Show me the talk」。\n\n當一年的工作量壓縮到一小時，這不是效率提升，而是整個成本結構的改變。真正的機會在於那些原本「不值得做」的事情，突然都值得嘗試了。\n\n對所有知識工作者來說，當初稿變便宜，稀缺的是判斷力。",
+    "FB": "分享一個正在改變程式設計界的故事。\n\n九個月前，AI 教父 Andrej Karpathy 在推特上隨手丟出「Vibe Coding」一詞，描述那種完全憑感覺、沉浸式寫程式的狀態。沒想到九個月後，它竟然成為柯林斯詞典的年度詞彙！\n\n這個傳播速度本身就很驚人，說明它不是在描述什麼新技術，而是在替一個已經發生的集體經驗命名。現在的程式設計師不再逐行檢視每段程式碼，而是跟 AI 對話、迭代，感覺對了就繼續往前。\n\n更有趣的是，Django 框架創辦人直接說「Writing code is cheap now」，完全翻轉了 Linux 之父 25 年前那句經典的「Talk is cheap. Show me the code」。\n\n當寫程式的成本趨近於零，真正稀缺的不再是程式碼本身，而是知道該寫什麼的判斷力。那些原本因為「投入產出比不划算」而永遠做不了的功能，突然都值得嘗試了。\n\n這個邏輯其實適用於所有知識工作——當初稿變便宜，價值在判斷上。\n\nhttps://paulkuo.tw/articles/code-is-cheap-vibe-coding-to-claws",
+    "IG": "九個月前，AI 教父 Karpathy 隨手丟出「Vibe Coding」💭\n九個月後，年度詞彙 🏆\n\n這個傳播速度說明什麼？\n它在替一個已經發生的集體經驗命名 ✨\n\n程式設計師不再逐行審視程式碼\n而是跟 AI 對話、憑感覺走 🤖💬\n\nDjango 創辦人說「Code is cheap」\n翻轉了 Linus 25 年前的經典名言 🔄\n\n從「Talk is cheap. Show me the code」\n變成「Code is cheap. Show me the talk」\n\n當寫程式成本趨近於零 📉\n真正稀缺的是判斷力 🧠\n知道什麼值得做，知道好壞的差別\n\n#VibeCoding #AI革命 #程式設計 #未來工作 #科技趨勢\n\nhttps://paulkuo.tw/articles/code-is-cheap-vibe-coding-to-claws"
+  },
+  "imageUrl": "https://iili.io/qfenIhN.jpg",
+  "status": "pending_review",
+  "timestamp": "2026-02-27T06:56:47.778Z"
+}
