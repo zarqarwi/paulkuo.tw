@@ -1618,5 +1618,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "code-is-cheap-vibe-coding-to-claws.md": {
+    "sourceHash": "af675ddd77bc",
+    "translations": {
+      "en": {
+        "hash": "622d4638e194",
+        "translatedAt": "2026-02-27T06:55:16.858Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "d09838d18f8b",
+        "translatedAt": "2026-02-27T06:56:17.248Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "1aa2670b331e",
+        "translatedAt": "2026-02-27T06:56:42.743Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
