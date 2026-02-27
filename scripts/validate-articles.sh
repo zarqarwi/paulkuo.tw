@@ -13,6 +13,9 @@ MAX_SIZE_KB=500
 ERRORS=0
 VALID_PILLARS="ai|circular|faith|startup|life"
 
+# 取得本次 commit 新增的文章（CI 會自動產封面，跳過 cover 存在性檢查）
+NEW_FILES=$(git diff --cached --name-only --diff-filter=A -- "$ARTICLES_DIR"/*.md 2>/dev/null || echo "")
+
 echo "🔍 驗證文章 frontmatter 與圖片..."
 echo ""
 
@@ -35,13 +38,18 @@ for f in "$ARTICLES_DIR"/*.md; do
     ERRORS=$((ERRORS + 1))
   fi
 
-  # 檢查 cover 圖片存在性
+  # 檢查 cover 圖片存在性（新增文章跳過，CI 會自動產封面）
   cover=$(echo "$frontmatter" | grep -E '^cover:' | head -1 | sed 's/cover:[[:space:]]*//' | tr -d '"' | tr -d "'")
+  is_new=$(echo "$NEW_FILES" | grep -c "$filename" || true)
   if [ -n "$cover" ]; then
     cover_path="$PUBLIC_DIR$cover"
     if [ ! -f "$cover_path" ]; then
-      echo "❌ [$slug] cover 圖片不存在: $cover"
-      ERRORS=$((ERRORS + 1))
+      if [ "$is_new" -gt 0 ]; then
+        echo "⏭️  [$slug] 新文章，封面由 CI 自動產生"
+      else
+        echo "❌ [$slug] cover 圖片不存在: $cover"
+        ERRORS=$((ERRORS + 1))
+      fi
     fi
   fi
 
