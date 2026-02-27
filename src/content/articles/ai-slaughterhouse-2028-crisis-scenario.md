@@ -8,7 +8,7 @@ tags:
   - 白領失業
   - 敘事經濟學
   - Citrini Research
-publishDate: 2026-02-27
+date: 2026-02-27
 cover: /images/covers/ai-slaughterhouse-2028-crisis-scenario.jpg
 abstract: |
   Citrini Research 的《2028全球智能危機》報告用五環連鎖推演了一條路徑：AI 創造幽靈 GDP、摧毀中介商業模式、引爆白領失業潮、觸發私募信貸違約、最終形成無自然制動機制的負反饋循環。這不是預測，是一場思想實驗——但 2026 年 2 月 23 日的市場反應證明，故事本身就是武器。
