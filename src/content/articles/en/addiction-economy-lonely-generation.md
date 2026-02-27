@@ -1,9 +1,9 @@
 ---
 title: "The Addiction Economy and the Lonely Generation: Starting with Pornography"
 subtitle: "This Isn't a Moral Problem, It's a System Design Problem"
-description: "Pornography website traffic exceeds that of Netflix, Amazon, and Twitter combined. This isn't a moral issue, but a structural analysis of the algorithmic economy. From porn to short videos, how the addiction economy systematically absorbs human energy, creating an entire lonely generation."
+description: "Pornography websites receive more traffic than Netflix, Amazon, and Twitter combined. This isn't a moral issue, but a structural analysis of the algorithmic economy. From pornography to short videos, how the addiction economy systematically absorbs human energy, creating an entire lonely generation."
 abstract: |
-  When an industry's traffic exceeds that of the world's largest streaming platforms combined, the question we should ask isn't "why do so many people watch" but "how is the system designed to create this outcome." The addiction economy's formula is terrifyingly simple: instant stimulation × zero friction × unlimited supply. Pornography is just the tip of the iceberg—short videos, social media, and games all operate on the same logic. Scott Galloway compares porn to "sexual McDonald's," and what I see from my theological training is structural sin: not individual moral failure, but an entire system extracting humanity's most precious energy.
+  When an industry's traffic exceeds the sum of the world's largest streaming platforms, the question we should ask isn't "why do so many people watch," but "how is the system designed to produce this result?" The addiction economy's formula is terrifyingly simple: instant stimulation × zero friction × infinite supply. Pornography is just the tip of the iceberg—short videos, social media, and games all follow the same logic. Scott Galloway compares pornography to "McDonald's for sex," and what I see from my theological training is structural sin: not individual corruption, but an entire system extracting humanity's most precious energy.
 date: 2025-10-05
 pillar: life
 tags:
@@ -36,38 +36,38 @@ reading_context: |
   關心下一代成長環境的父母與教育者。
 ---
 
-I saw a number and stopped in my tracks.
+I saw a number that stopped me in my tracks.
 
-The global annual traffic of pornography websites exceeds that of Netflix, Amazon, and Twitter combined. A single-function industry with traffic that crushes the world's three largest media platforms.
+The global annual traffic to pornography websites exceeds Netflix plus Amazon plus Twitter combined. A single-function industry outperforms the world's three largest media platforms in traffic.
 
 This isn't a story about morality. This is a story about design.
 
-Scott Galloway calls pornography "sexual McDonald's"—fast, convenient, omnipresent, but without nutrition. This metaphor is precise to the point of discomfort. Fast food fills the stomach but empties the body; pornography fills the senses but empties the capacity for connection. What they share in common is zero friction. You don't need to negotiate, communicate, or take any social risks. Click, complete, leave.
+Scott Galloway calls pornography "McDonald's for sex"—fast, convenient, ubiquitous, but without nutrition. This metaphor is uncomfortably precise. Fast food fills your stomach but empties your body; pornography fills your senses but empties your capacity for connection. What they share in common is zero friction. You don't need to negotiate, communicate, or take any social risk. Click, consume, exit.
 
 But pornography is just the tip of the iceberg.
 
-Short videos, social media, mobile games—they all use the same formula: instant stimulation multiplied by zero friction multiplied by unlimited supply. TikTok's algorithm will endlessly push the next video to you. Instagram continuously refreshes your feed. Every like is a precision hit of dopamine.
+Short videos, social media, mobile games—they all use the same formula: instant stimulation multiplied by zero friction multiplied by infinite supply. TikTok's algorithm will endlessly feed you the next video. Instagram continuously refreshes your feed. Every like is a precisely targeted hit of dopamine.
 
 These systems aren't designed for you to watch one video. They're designed so you never stop.
 
-Galloway proposes a term: "Homo solo." The lonely human. Living alone, economically fragile, socially isolated, with shorter lifespans. These people exist in large numbers in modern cities. Many struggle to build genuine intimate relationships—the cost is too high. Rejection is too painful. The risk is too great. So they turn to zero-friction substitutes.
+Galloway introduces a term: "Homo solo." The lonely human. Living alone, economically fragile, socially isolated, with shorter lifespans. These people exist in large numbers in modern cities. Many struggle to build real intimate relationships—the cost is too high. Rejection hurts too much. The risk is too great. So they turn to zero-friction substitutes.
 
 And platforms know this. Platforms optimize for this.
 
-Design teams sit in offices discussing how to make users stay longer, click more, return more frequently. Every notification, every autoplay, every recommendation algorithm serves the same purpose. This isn't a conspiracy. This is a business model. Attention is the commodity, desire is continuously optimized by algorithms, and human energy is diverted without our awareness.
+Design teams sit in offices discussing how to make users stay longer, click more, return more frequently. Every notification, every autoplay, every recommendation algorithm serves the same purpose. This isn't conspiracy. This is business model. Attention is the commodity, desire is continuously optimized by algorithms, human energy is diverted without awareness.
 
-I spent fifteen years in seminary. That time didn't teach me to judge anyone; it taught me to see structural sin—not a matter of individual choices, but what entire systems intentionally or unintentionally create. The addiction economy is structural sin. It's not someone's moral corruption, but an entire commercial ecosystem systematically extracting humanity's most precious resource.
+I spent fifteen years in seminary. That time didn't teach me to judge anyone; it taught me to see structural sin—not a problem of individual choices, but what entire systems intentionally or unintentionally create. The addiction economy is structural sin. It's not someone's moral degradation; it's an entire business ecosystem systematically extracting humanity's most precious resource.
 
-This is also why "prohibition" doesn't work. Galloway puts it clearly: the point isn't to extinguish desire, but to preserve a flame. That flame is the energy that makes you willing to go outside, willing to bear the risk of rejection, willing to build real relationships with real people. If that flame dies out, all technology becomes just a more sophisticated prison.
+This is also why "prohibition" doesn't work. Galloway makes it clear: the point isn't to extinguish desire, but to preserve a flame. That flame is the energy that makes you willing to go outside, willing to risk rejection, willing to build real relationships with real people. If this flame dies, all technology becomes merely more sophisticated cages.
 
-I use the concept of "energy sovereignty" to understand this. Each person's daily time and attention are limited. If we allow the easiest stimulations to steal our energy, we gradually lose the power to pursue long-term value. Pornography is just one example. More common is the endless scrolling of short videos, meaningless refreshing of social feeds, information overload bombardment. These things seem free but actually consume our most precious cognitive capital.
+I use the concept of "energy sovereignty" to understand this. Each person's daily time and attention are finite. If we allow the easiest stimulations to capture our energy, we gradually lose the power to pursue long-term value. Pornography is just one example. More pervasive is the endless scrolling of short videos, meaningless social media refreshing, information overload bombardment. These things appear free but actually consume our most precious cognitive capital.
 
-To restore energy sovereignty isn't about prohibiting all stimulation, but relearning how to choose. Choosing to spend time on worthwhile things, choosing to invest energy in real relationships, careers, and creation.
+To restore energy sovereignty isn't about forbidding all stimulation, but relearning how to choose. Choosing to spend time on worthwhile things, choosing to invest energy in real relationships, careers, and creation.
 
-In another article on this site, "When Nudity Becomes Language," I discussed how nudity became the algorithm's "traffic insurance"—the body transformed from a medium of self-expression into a data node feeding platforms. That piece addressed alienation at the language level; this one addresses plunder at the energy level. Both are different facets of the same system.
+In another article on this site, "[When Nudity Becomes Language](/articles/nudity-as-language-algorithm)," I discussed how nudity becomes "traffic insurance" for algorithms—the body transforms from a medium for self-expression into a data node feeding platforms. That piece addressed linguistic alienation; this one addresses energy extraction. Both are different facets of the same system.
 
-Civilization's choices often hide in the smallest daily moments. Choosing to open short videos or go out for a meal with friends. Choosing to indulge in virtual pleasure or face real risks. These tiny choices determine whether we become Homo solo or energy-full beings connected to others.
+Civilizational choices often hide in the most minute daily moments. Choosing to open short videos or going out to have dinner with friends. Choosing to indulge in virtual pleasure or face real risks. These small choices determine whether we become Homo solo or remain energy-rich beings connected to others.
 
-Loneliness isn't a personal problem. Loneliness is systemic output—a byproduct of an economic system optimized to absorb energy.
+Loneliness isn't a personal problem. Loneliness is systemic output—a byproduct of an economic system optimized for energy absorption.
 
-But energy sovereignty can be reclaimed. You just have to start noticing that it's being taken away.
+But energy sovereignty can be reclaimed. As long as you start noticing it's being taken away.

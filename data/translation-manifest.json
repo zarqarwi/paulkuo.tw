@@ -680,11 +680,11 @@
     }
   },
   "language-truth-gemini-dialogue.md": {
-    "sourceHash": "d366929e3d94",
+    "sourceHash": "9fa7f2a6004f",
     "translations": {
       "en": {
-        "hash": "657e0291216f",
-        "translatedAt": "2026-02-23T18:04:16.063Z",
+        "hash": "e01be66efe70",
+        "translatedAt": "2026-02-27T02:56:15.153Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -800,11 +800,11 @@
     }
   },
   "nudity-as-language-algorithm.md": {
-    "sourceHash": "88f138f7337f",
+    "sourceHash": "f9bcadcca3bb",
     "translations": {
       "en": {
-        "hash": "b7fce8a5e898",
-        "translatedAt": "2026-02-23T18:05:52.890Z",
+        "hash": "061139154ea7",
+        "translatedAt": "2026-02-27T02:56:27.562Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1480,11 +1480,11 @@
     }
   },
   "addiction-economy-lonely-generation.md": {
-    "sourceHash": "613edf3d5ea6",
+    "sourceHash": "1e2829809998",
     "translations": {
       "en": {
-        "hash": "d63ca272f809",
-        "translatedAt": "2026-02-26T23:47:28.149Z",
+        "hash": "38bf3d55aee1",
+        "translatedAt": "2026-02-27T02:55:38.477Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1520,11 +1520,11 @@
     }
   },
   "language-truth-chatgpt5-dialogue.md": {
-    "sourceHash": "b14c6228968c",
+    "sourceHash": "ab5a211b8912",
     "translations": {
       "en": {
-        "hash": "5c7429c49a1a",
-        "translatedAt": "2026-02-26T23:53:17.019Z",
+        "hash": "22990529a0e3",
+        "translatedAt": "2026-02-27T02:56:02.222Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
