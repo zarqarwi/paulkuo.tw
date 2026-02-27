@@ -67,9 +67,30 @@ function parseFrontmatter(filepath) {
   return fm;
 }
 
+// DALL-E content policy 會擋掉某些敏感詞（屠宰場、崩潰、暴力等），sanitize 後再送
+const SENSITIVE_PATTERNS = [
+  /屠宰場?/g, /殺戮/g, /暴力/g, /血腥/g, /死亡/g, /戰爭/g, /武器/g,
+  /slaughter/gi, /kill/gi, /violen(t|ce)/gi, /blood/gi, /death/gi, /weapon/gi, /war\b/gi, /crash/gi,
+  /崩[潰壞]/g, /毀滅/g, /災難/g, /恐[懼慌]/g, /失眠/g,
+];
+
+function sanitizeForDallE(text) {
+  let s = text;
+  for (const pat of SENSITIVE_PATTERNS) s = s.replace(pat, '');
+  return s.replace(/\s{2,}/g, ' ').trim();
+}
+
 function buildPrompt(title, description, pillar) {
   const theme = PILLAR_THEMES[pillar] || PILLAR_THEMES.ai;
-  return `Abstract editorial illustration for a blog article titled "${title}". The article is about: ${description}. Visual style: deep navy blue background (#0A1628), accent color ${theme.accentName} (${theme.accent}) for highlights and glow effects. Visual metaphors: ${theme.metaphors}. Clean, minimal, professional style. No text, no words, no letters, no characters anywhere in the image. Dark moody atmosphere with subtle grid lines. Wide format.`;
+  const safeTitle = sanitizeForDallE(title);
+  const safeDesc = sanitizeForDallE(description || '');
+  return `Abstract editorial illustration for a blog article titled "${safeTitle}". The article is about: ${safeDesc}. Visual style: deep navy blue background (#0A1628), accent color ${theme.accentName} (${theme.accent}) for highlights and glow effects. Visual metaphors: ${theme.metaphors}. Clean, minimal, professional style. No text, no words, no letters, no characters anywhere in the image. Dark moody atmosphere with subtle grid lines. Wide format.`;
+}
+
+// 如果 sanitize 後還是被擋，用純 pillar 主題 fallback
+function buildFallbackPrompt(pillar) {
+  const theme = PILLAR_THEMES[pillar] || PILLAR_THEMES.ai;
+  return `Abstract editorial illustration. Visual style: deep navy blue background (#0A1628), accent color ${theme.accentName} (${theme.accent}) for highlights and glow effects. Visual metaphors: ${theme.metaphors}. Clean, minimal, professional style. No text, no words, no letters, no characters anywhere in the image. Dark moody atmosphere with subtle grid lines. Wide format.`;
 }
 
 function callDallE(prompt) {
@@ -185,7 +206,17 @@ async function main() {
 
     console.log(`🎨 Generating cover: ${slug}`);
     try {
-      const imageUrl = await callDallE(buildPrompt(fm.title, fm.description || '', fm.pillar || 'ai'));
+      let imageUrl;
+      try {
+        imageUrl = await callDallE(buildPrompt(fm.title, fm.description || '', fm.pillar || 'ai'));
+      } catch (err) {
+        if (err.message.includes('content_policy')) {
+          console.log(`⚠️  Content policy hit, retrying with fallback prompt...`);
+          imageUrl = await callDallE(buildFallbackPrompt(fm.pillar || 'ai'));
+        } else {
+          throw err;
+        }
+      }
       const tmpPath = coverPath + '.tmp';
       await downloadFile(imageUrl, tmpPath);
       await compressImage(tmpPath, coverPath);
