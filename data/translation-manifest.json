@@ -1598,5 +1598,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "ai-slaughterhouse-2028-crisis-scenario.md": {
+    "sourceHash": "fa9cc77772c7",
+    "translations": {
+      "en": {
+        "hash": "e2e28af388e0",
+        "translatedAt": "2026-02-27T03:54:57.986Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "8d0894fad324",
+        "translatedAt": "2026-02-27T03:55:52.666Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "cef23544c590",
+        "translatedAt": "2026-02-27T03:56:14.696Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
