@@ -1,10 +1,10 @@
 {
-  "updated": "2026-02-27T15:00:06+08:00",
+  "updated": "2026-02-27T15:10:08+08:00",
   "source": "timing-app-local",
   "method": "AppleScript: Development + Web Browsing + AI categories as AI proxy",
   "month_summary": {
     "period": "2026-02",
-    "total_ai_hours": 42.9,
+    "total_ai_hours": 43.0,
     "active_days": 15
   },
   "daily": [
@@ -201,12 +201,12 @@
     },
     {
       "date": "2026-02-27",
-      "ai_hours": 5.13,
+      "ai_hours": 5.21,
       "breakdown": {
-        "AI 工具開發": 0.02,
-        "Web Browsing": 0.68,
-        "Office & Business": 4.29,
-        "Development": 0.14
+        "Office & Business": 4.35,
+        "Development": 0.14,
+        "Web Browsing": 0.7,
+        "AI 工具開發": 0.02
       }
     }
   ]
