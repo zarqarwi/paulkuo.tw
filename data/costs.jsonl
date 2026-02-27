@@ -365,3 +365,4 @@
 {"timestamp":"2026-02-27T03:54:57.984Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":2825,"outputTokens":1715,"costUSD":0.0342,"costTWD":1.11,"note":""}
 {"timestamp":"2026-02-27T03:55:52.666Z","service":"anthropic","model":"claude-sonnet","action":"translate-ja","source":"translate-article","inputTokens":2880,"outputTokens":3148,"costUSD":0.05586,"costTWD":1.82,"note":""}
 {"timestamp":"2026-02-27T03:56:14.695Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":2861,"outputTokens":2494,"costUSD":0.045993,"costTWD":1.49,"note":""}
+{"timestamp":"2026-02-27T06:14:47.139Z","service":"openai","model":"dall-e-3","action":"cover-image","source":"generate-cover","inputTokens":0,"outputTokens":0,"costUSD":0.08,"costTWD":2.6,"note":"ai-slaughterhouse-2028-crisis-scenario"}
