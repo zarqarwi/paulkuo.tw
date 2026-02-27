@@ -80,7 +80,8 @@ const blogSchema = JSON.stringify({
       ))}
     </div>
 
-    <h2 class="sr-only">{lang === 'en' ? 'Articles' : lang === 'ja' ? '記事一覧' : '文章列表'}</h2>
+    <section aria-labelledby="blog-list-title">
+    <h2 id="blog-list-title" class="sr-only">{lang === 'en' ? 'Articles' : lang === 'ja' ? '記事一覧' : '文章列表'}</h2>
 
     <div class="content-grid" id="blog-grid">
       {articles.map((article, idx) => {
@@ -88,6 +89,7 @@ const blogSchema = JSON.stringify({
         const isoDate = article.data.date.toISOString().split('T')[0];
         const dateStr = article.data.date.toLocaleDateString(L.dateLocale, L.dateOptions);
         return (
+          <article>
           <a href={`${basePath}/articles/${article.id.replace(/\.md$/, "")}`}
              class={`content-card ${article.data.cover ? 'has-cover' : ''} ${idx >= ARTICLES_PER_PAGE ? 'hidden-card' : ''}`}
              data-pillar={article.data.pillar} data-year={article.data.date.getFullYear().toString()}>
@@ -108,6 +110,7 @@ const blogSchema = JSON.stringify({
               {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
             </div>
           </a>
+          </article>
         );
       })}
     </div>
@@ -125,6 +128,7 @@ const blogSchema = JSON.stringify({
         <p>{L.noArticles}</p>
       </div>
     )}
+    </section>
   </div>
 
   <script define:vars={{ ARTICLES_PER_PAGE }}>
