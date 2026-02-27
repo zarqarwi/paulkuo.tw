@@ -28,6 +28,18 @@ for f in "$ARTICLES_DIR"/*.md; do
   # 提取 frontmatter (第一個 --- 到第二個 --- 之間)
   frontmatter=$(sed -n '/^---$/,/^---$/p' "$f" | sed '1d;$d')
 
+  # 檢查 date 欄位（常見錯誤：誤用 publishDate）
+  has_publish_date=$(echo "$frontmatter" | grep -cE '^publishDate:' || true)
+  if [ "$has_publish_date" -gt 0 ]; then
+    echo "❌ [$slug] 使用了 publishDate，應改為 date"
+    ERRORS=$((ERRORS + 1))
+  fi
+  date_val=$(echo "$frontmatter" | grep -E '^date:' | head -1 | sed 's/date:[[:space:]]*//')
+  if [ -z "$date_val" ]; then
+    echo "❌ [$slug] 缺少 date 欄位"
+    ERRORS=$((ERRORS + 1))
+  fi
+
   # 檢查 pillar 欄位
   pillar=$(echo "$frontmatter" | grep -E '^pillar:' | head -1 | sed 's/pillar:[[:space:]]*//')
   if [ -z "$pillar" ]; then
