@@ -19,9 +19,11 @@ const searchData = articles.map(a => ({
   <div class="search-page">
     <h1>搜尋</h1>
     <p class="search-hint">輸入關鍵字搜尋所有文章。</p>
-    <div class="search-box">
-      <input type="search" id="searchInput" placeholder="輸入關鍵字搜尋文章..." autocomplete="off" autofocus />
-    </div>
+    <form class="search-box" role="search" aria-label="站內文章搜尋"
+          toolname="search_paul_articles"
+          tooldescription="Search Paul Kuo's blog articles by keyword. Supports Chinese, English, and Japanese queries across titles, descriptions, tags, and content pillars (AI, circular economy, theology, startup, life).">
+      <input type="search" id="searchInput" name="keyword" placeholder="輸入關鍵字搜尋文章..." autocomplete="off" autofocus />
+    </form>
     <div id="searchResults" class="search-results"></div>
     <p id="searchEmpty" class="search-empty" style="display:none">找不到符合的文章。試試其他關鍵字？</p>
   </div>
@@ -35,6 +37,9 @@ const searchData = articles.map(a => ({
   if (!input || !results) return;
 
   const data = searchData;
+
+  // Prevent form submission (search is instant)
+  input.closest('form')?.addEventListener('submit', function(e) { e.preventDefault(); });
 
   input.addEventListener("input", function() {
     const q = this.value.trim().toLowerCase();
