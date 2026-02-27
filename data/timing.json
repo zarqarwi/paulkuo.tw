@@ -1,11 +1,11 @@
 {
-  "updated": "2026-02-28T00:00:07+08:00",
+  "updated": "2026-02-28T00:30:06+08:00",
   "source": "timing-app-local",
   "method": "AppleScript: Development + Web Browsing + AI categories as AI proxy",
   "month_summary": {
     "period": "2026-02",
-    "total_ai_hours": 44.3,
-    "active_days": 15
+    "total_ai_hours": 44.4,
+    "active_days": 16
   },
   "daily": [
     {
@@ -211,8 +211,10 @@
     },
     {
       "date": "2026-02-28",
-      "ai_hours": 0.0,
-      "breakdown": {}
+      "ai_hours": 0.11,
+      "breakdown": {
+        "Office & Business": 0.11
+      }
     }
   ]
 }
