@@ -8,11 +8,15 @@
  * Usage: OPENAI_API_KEY=sk-... node scripts/generate-cover.mjs
  */
 
-import { readFileSync, mkdirSync, existsSync, createWriteStream } from 'fs';
+import { readFileSync, mkdirSync, existsSync, createWriteStream, unlinkSync, statSync } from 'fs';
 import { execSync } from 'child_process';
 import { join, basename } from 'path';
 import https from 'https';
+import sharp from 'sharp';
 import { logCost } from './cost-tracker.mjs';
+
+const MAX_SIZE_KB = 450; // 壓縮目標（validate-articles.sh 門檻 500KB，留 buffer）
+const JPG_QUALITY = 80;
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 if (!OPENAI_API_KEY) {
@@ -114,6 +118,35 @@ function downloadFile(url, dest) {
   });
 }
 
+async function compressImage(srcPath, destPath) {
+  const rawSize = statSync(srcPath).size;
+  const rawKB = Math.round(rawSize / 1024);
+
+  // 第一輪：轉 JPG + 指定 quality
+  await sharp(srcPath)
+    .jpeg({ quality: JPG_QUALITY, mozjpeg: true })
+    .toFile(destPath);
+
+  let finalSize = statSync(destPath).size;
+  let finalKB = Math.round(finalSize / 1024);
+
+  // 如果還是超標，逐步降 quality
+  if (finalKB > MAX_SIZE_KB) {
+    for (const q of [65, 50, 40]) {
+      await sharp(srcPath)
+        .jpeg({ quality: q, mozjpeg: true })
+        .toFile(destPath);
+      finalSize = statSync(destPath).size;
+      finalKB = Math.round(finalSize / 1024);
+      if (finalKB <= MAX_SIZE_KB) break;
+    }
+  }
+
+  // 清除暫存檔
+  unlinkSync(srcPath);
+  console.log(`   📐 ${rawKB}KB → ${finalKB}KB (quality: ${finalKB <= MAX_SIZE_KB ? '✅' : '⚠️ still over'})`);
+}
+
 async function main() {
   let changedFiles;
   try {
@@ -153,7 +186,9 @@ async function main() {
     console.log(`🎨 Generating cover: ${slug}`);
     try {
       const imageUrl = await callDallE(buildPrompt(fm.title, fm.description || '', fm.pillar || 'ai'));
-      await downloadFile(imageUrl, coverPath);
+      const tmpPath = coverPath + '.tmp';
+      await downloadFile(imageUrl, tmpPath);
+      await compressImage(tmpPath, coverPath);
       logCost({
         service: 'openai',
         model: 'dall-e-3',
