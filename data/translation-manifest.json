@@ -1478,5 +1478,125 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "addiction-economy-lonely-generation.md": {
+    "sourceHash": "613edf3d5ea6",
+    "translations": {
+      "en": {
+        "hash": "d63ca272f809",
+        "translatedAt": "2026-02-26T23:47:28.149Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "bac800f1228a",
+        "translatedAt": "2026-02-26T23:48:10.018Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "02fc843a3ccd",
+        "translatedAt": "2026-02-26T23:48:28.463Z",
+        "model": "claude-sonnet-4"
+      }
+    }
+  },
+  "kevin-kelly-mirror-world-third-information-revolution.md": {
+    "sourceHash": "b609839e2ae8",
+    "translations": {
+      "en": {
+        "hash": "2537d275f2b0",
+        "translatedAt": "2026-02-26T23:49:21.691Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "73dec2449df9",
+        "translatedAt": "2026-02-26T23:51:18.893Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "7ee50469d2ef",
+        "translatedAt": "2026-02-26T23:52:53.160Z",
+        "model": "claude-sonnet-4"
+      }
+    }
+  },
+  "language-truth-chatgpt5-dialogue.md": {
+    "sourceHash": "b14c6228968c",
+    "translations": {
+      "en": {
+        "hash": "5c7429c49a1a",
+        "translatedAt": "2026-02-26T23:53:17.019Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "369c5f9cf6dc",
+        "translatedAt": "2026-02-26T23:54:04.030Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "a02a3cd527ec",
+        "translatedAt": "2026-02-26T23:54:24.198Z",
+        "model": "claude-sonnet-4"
+      }
+    }
+  },
+  "rethinking-ai-consciousness-collective-subjectivity.md": {
+    "sourceHash": "d8f449f88c59",
+    "translations": {
+      "en": {
+        "hash": "f74fed4d9ce9",
+        "translatedAt": "2026-02-26T23:55:03.582Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "1f4f5a0691ca",
+        "translatedAt": "2026-02-26T23:56:51.470Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "7fc6d6b6ea4e",
+        "translatedAt": "2026-02-26T23:57:25.998Z",
+        "model": "claude-sonnet-4"
+      }
+    }
+  },
+  "web-crawling-ai-training-legal-comparison.md": {
+    "sourceHash": "e61a2e427959",
+    "translations": {
+      "en": {
+        "hash": "9ce0ab87e671",
+        "translatedAt": "2026-02-26T23:57:51.204Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "6d13b1ddb5f4",
+        "translatedAt": "2026-02-26T23:58:35.346Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "9f05ec8f52dd",
+        "translatedAt": "2026-02-26T23:58:56.357Z",
+        "model": "claude-sonnet-4"
+      }
+    }
+  },
+  "why-greatness-cannot-be-planned.md": {
+    "sourceHash": "1e99513e5344",
+    "translations": {
+      "en": {
+        "hash": "cce13e608f6e",
+        "translatedAt": "2026-02-26T23:59:37.251Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "8b51f6dfa0ec",
+        "translatedAt": "2026-02-27T00:01:22.392Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "e1b6f01fee43",
+        "translatedAt": "2026-02-27T00:01:56.520Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
