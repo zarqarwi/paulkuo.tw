@@ -1620,11 +1620,11 @@
     }
   },
   "code-is-cheap-vibe-coding-to-claws.md": {
-    "sourceHash": "af675ddd77bc",
+    "sourceHash": "92fb3c94dc42",
     "translations": {
       "en": {
-        "hash": "622d4638e194",
-        "translatedAt": "2026-02-27T06:55:16.858Z",
+        "hash": "7186bbd6f833",
+        "translatedAt": "2026-02-27T13:31:11.892Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
