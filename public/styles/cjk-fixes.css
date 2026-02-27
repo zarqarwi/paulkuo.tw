@@ -1,46 +1,41 @@
-/**
- * CJK Typography Fixes & Semantic Grid Overrides
- * Loaded after global.css to override specific rules
- * Added: 2025-02-27 (Gemini UI/UX audit)
- */
+/* ==========================================================================
+   CJK Typography Fixes — Override global.css defaults
+   Gemini UI/UX audit: paragraph spacing & text-justify improvements
+   ========================================================================== */
 
-/* === CJK Paragraph Spacing ===
- * Increase paragraph spacing for better readability in CJK languages.
- * Original values: zh-Hant/zh-Hans 0.5em, ja 0.7em → all unified to 1em
- */
-html[lang="zh-Hant"] .article-body p {
-  margin-bottom: 1em;
-}
-
-html[lang="zh-Hans"] .article-body p {
-  margin-bottom: 1em;
-}
-
+/* --- 1. CJK Paragraph Spacing ---
+   Increase paragraph spacing for Chinese/Japanese content.
+   Original: zh-Hant/zh-Hans 0.5em, ja 0.7em → All unified to 1em
+   Better visual breathing room for CJK text blocks.
+   -------------------------------------------------------- */
+html[lang="zh-Hant"] .article-body p,
+html[lang="zh-Hans"] .article-body p,
 html[lang="ja"] .article-body p {
   margin-bottom: 1em;
 }
 
-/* === CJK Text Justification ===
- * Apply inter-ideograph justification for card excerpts and feed items
- * to improve CJK text alignment in grid/list layouts.
- */
-html[lang="zh-Hant"] .card-excerpt,
+/* --- 2. Text Justify for Card Excerpts & Feed ---
+   Apply inter-ideograph justification to CJK content
+   in card excerpts and social feed items.
+   .article-body already has text-justify in global.css.
+   -------------------------------------------------------- */
 html[lang="zh-Hant"] .content-card p,
+html[lang="zh-Hant"] .card-excerpt,
 html[lang="zh-Hant"] .feed-item p,
-html[lang="zh-Hans"] .card-excerpt,
 html[lang="zh-Hans"] .content-card p,
+html[lang="zh-Hans"] .card-excerpt,
 html[lang="zh-Hans"] .feed-item p,
-html[lang="ja"] .card-excerpt,
 html[lang="ja"] .content-card p,
+html[lang="ja"] .card-excerpt,
 html[lang="ja"] .feed-item p {
   text-align: justify;
   text-justify: inter-ideograph;
 }
 
-/* === Semantic Article Wrapper in Grid ===
- * <article> wrappers inside CSS Grid need display:contents
- * to avoid breaking the grid layout while preserving semantics.
- */
+/* --- 3. Article Wrapper Grid Fix ---
+   Preserve CSS Grid layout when <article> wraps card links.
+   display:contents makes the wrapper invisible to grid.
+   -------------------------------------------------------- */
 .content-grid > article {
   display: contents;
 }
