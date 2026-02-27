@@ -47,7 +47,7 @@ For context: "cloud computing," introduced in 2006, took several years to enter 
 
 Karpathy isn't just an AI researcher; he's the most precise terminology forger of our era. Ten years, four words, each hitting inflection points in human-machine relationships.
 
-In 2015, he introduced Hallucination, using an everyday word to capture AI's core reliability problem—generated content that looks right but might be completely fabricated. This term remains an unavoidable anchor when discussing AI trust issues.
+In 2015, Karpathy used the word “hallucination” in his essay *The Unreasonable Effectiveness of Recurrent Neural Networks* to describe how language models generate URLs and content that look perfectly plausible yet are entirely fabricated—effectively coining an intuitive, precise name for the phenomenon of “AI making things up.”
 
 2017 brought Software 2.0. Traditional software: humans write rules for machines to execute. Software 2.0: humans feed data for machines to learn their own rules. This wasn't just a technical route switch, but a fundamental redefinition of "who writes the code."
 
@@ -97,7 +97,7 @@ For Taiwan, we have the world's densest concentration of tech talent, but also m
 
 When someone questioned Karpathy's Claws concept, his response was one sentence:
 
-"Grandma shouldn't have to understand that applications exist, because her AI assistant should know about them."
+"Grandma shouldn't have to understand technical issues like how applications are deployed, because her AI assistant should know about them."
 
 This sentence is an endgame prophecy. The future isn't teaching everyone to code, but making AI the intermediary between humans and systems. Users only need to express intent—"help me book tomorrow's train ticket to Tainan"—and AI automatically decides whether to call existing apps or instantly generate a customized solution. The concept of "applications" might disappear from user cognition.
 
