@@ -24,28 +24,67 @@ def save_token(data):
     with open(TOKEN_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
-def refresh_token(token_data):
-    """Refresh expired OAuth2 token using curl."""
+def refresh_token(token_data, max_retries=3):
+    """Refresh expired OAuth2 token using curl, with retry for network failures."""
     import base64
     creds = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
-    result = subprocess.run([
-        "curl", "-s", "-X", "POST", "https://api.fitbit.com/oauth2/token",
-        "-H", f"Authorization: Basic {creds}",
-        "-H", "Content-Type: application/x-www-form-urlencoded",
-        "-d", f"grant_type=refresh_token&refresh_token={token_data['refresh_token']}"
-    ], capture_output=True, text=True)
-    try:
-        new_token = json.loads(result.stdout)
+
+    for attempt in range(1, max_retries + 1):
+        result = subprocess.run([
+            "curl", "-s", "--connect-timeout", "10", "--max-time", "20",
+            "-X", "POST", "https://api.fitbit.com/oauth2/token",
+            "-H", f"Authorization: Basic {creds}",
+            "-H", "Content-Type: application/x-www-form-urlencoded",
+            "-d", f"grant_type=refresh_token&refresh_token={token_data['refresh_token']}"
+        ], capture_output=True, text=True)
+
+        # Network-level failure (curl returned nothing)
+        if not result.stdout.strip():
+            wait = attempt * 5  # 5s, 10s, 15s
+            print(f"⚠️ Refresh attempt {attempt}/{max_retries}: no response (network?), retry in {wait}s...")
+            time.sleep(wait)
+            continue
+
+        try:
+            new_token = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            wait = attempt * 5
+            print(f"⚠️ Refresh attempt {attempt}/{max_retries}: parse error, retry in {wait}s...")
+            time.sleep(wait)
+            continue
+
+        # Success
         if "access_token" in new_token:
             new_token["expires_at"] = time.time() + new_token.get("expires_in", 28800)
             save_token(new_token)
+            if attempt > 1:
+                print(f"🔄 Refresh succeeded on attempt {attempt}")
             return new_token
-        else:
-            print(f"Refresh failed: {result.stdout[:200]}")
+
+        # Token truly invalid (invalid_grant) — no point retrying
+        errors = new_token.get("errors", [])
+        if any(e.get("errorType") == "invalid_grant" for e in errors):
+            print(f"❌ Refresh token invalid (revoked or already used). Run fitbit_auth.py to re-authorize.")
+            # Send macOS notification
+            subprocess.run([
+                "osascript", "-e",
+                'display notification "Refresh token 已失效，需要重新授權 (fitbit_auth.py)" '
+                'with title "⚠️ Fitbit 授權失效" sound name "Sosumi"'
+            ])
             return None
-    except json.JSONDecodeError:
-        print(f"Refresh parse error: {result.stdout[:200]}")
-        return None
+
+        # Other API error — might be transient, retry
+        wait = attempt * 5
+        print(f"⚠️ Refresh attempt {attempt}/{max_retries}: {result.stdout[:150]}")
+        time.sleep(wait)
+
+    print(f"❌ Refresh failed after {max_retries} attempts.")
+    subprocess.run([
+        "osascript", "-e",
+        'display notification "Token refresh 連續失敗，請檢查網路或重新授權" '
+        'with title "⚠️ Fitbit 資料中斷" sound name "Sosumi"'
+    ])
+    return None
 
 def api_get(path, token_data):
     """GET request to Fitbit API using curl."""
