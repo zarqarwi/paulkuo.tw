@@ -74,43 +74,45 @@ const blogSchema = JSON.stringify({
     </div>
 
     <div class="blog-year-filters">
-      <button class="year-btn active" data-year="all">{lang === 'en' ? 'All Years' : lang === 'ja' ? '\u5168\u5e74' : '\u6240\u6709\u5e74\u4efd'}</button>
+      <button class="year-btn active" data-year="all">{lang === 'en' ? 'All Years' : lang === 'ja' ? '全年' : '所有年份'}</button>
       {years.map(y => (
         <button class="year-btn" data-year={y.toString()}>{y}</button>
       ))}
     </div>
 
-    <h2 class="sr-only">{lang === 'en' ? 'Articles' : lang === 'ja' ? '記事一覧' : '文章列表'}</h2>
+    <h2 class="sr-only" id="blog-list-heading">{lang === 'en' ? 'Articles' : lang === 'ja' ? '記事一覧' : '文章列表'}</h2>
 
-    <div class="content-grid" id="blog-grid">
+    <section class="content-grid" id="blog-grid" aria-labelledby="blog-list-heading">
       {articles.map((article, idx) => {
         const p = PILLAR_MAP[article.data.pillar];
         const isoDate = article.data.date.toISOString().split('T')[0];
         const dateStr = article.data.date.toLocaleDateString(L.dateLocale, L.dateOptions);
         return (
-          <a href={`${basePath}/articles/${article.id.replace(/\.md$/, "")}`}
-             class={`content-card ${article.data.cover ? 'has-cover' : ''} ${idx >= ARTICLES_PER_PAGE ? 'hidden-card' : ''}`}
-             data-pillar={article.data.pillar} data-year={article.data.date.getFullYear().toString()}>
-            {article.data.cover && (
-              <div class="card-cover">
-                <img src={article.data.cover} alt={article.data.title} loading="lazy" />
+          <article>
+            <a href={`${basePath}/articles/${article.id.replace(/\.md$/, "")}`}
+               class={`content-card ${article.data.cover ? 'has-cover' : ''} ${idx >= ARTICLES_PER_PAGE ? 'hidden-card' : ''}`}
+               data-pillar={article.data.pillar} data-year={article.data.date.getFullYear().toString()}>
+              {article.data.cover && (
+                <div class="card-cover">
+                  <img src={article.data.cover} alt={article.data.title} loading="lazy" />
+                </div>
+              )}
+              <div class="content-card-category" style={`color:${p.color}`}>
+                <span class="pillar-dot" style={`background:${p.color}`}></span>
+                {lang === 'en' ? p.labelEn : p.label}
               </div>
-            )}
-            <div class="content-card-category" style={`color:${p.color}`}>
-              <span class="pillar-dot" style={`background:${p.color}`}></span>
-              {lang === 'en' ? p.labelEn : p.label}
-            </div>
-            <h3>{article.data.title}</h3>
-            <p class="card-excerpt">{article.data.description}</p>
-            <div class="content-card-footer">
-              <time datetime={isoDate}>{dateStr}</time>
-              {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· {lang === 'en' ? `${rt} min` : lang === 'ja' ? `約${rt}分` : `約 ${rt} 分鐘`}</span> : null; })()}
-              {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
-            </div>
-          </a>
+              <h3>{article.data.title}</h3>
+              <p class="card-excerpt">{article.data.description}</p>
+              <div class="content-card-footer">
+                <time datetime={isoDate}>{dateStr}</time>
+                {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· {lang === 'en' ? `${rt} min` : lang === 'ja' ? `約${rt}分` : `約 ${rt} 分鐘`}</span> : null; })()}
+                {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
+              </div>
+            </a>
+          </article>
         );
       })}
-    </div>
+    </section>
 
     {articles.length > ARTICLES_PER_PAGE && (
       <div class="load-more-wrap" id="load-more-wrap">
@@ -151,11 +153,14 @@ const blogSchema = JSON.stringify({
       allCards.forEach(card => {
         const pillarMatch = activeFilter === 'all' || card.dataset.pillar === activeFilter;
         const yearMatch = activeYear === 'all' || card.dataset.year === activeYear;
+        const wrapper = card.closest('article');
         if (pillarMatch && yearMatch) {
+          if (wrapper) wrapper.style.display = shown < visibleCount ? '' : 'none';
           card.style.display = shown < visibleCount ? 'block' : 'none';
           card.classList.toggle('hidden-card', shown >= visibleCount);
           shown++;
         } else {
+          if (wrapper) wrapper.style.display = 'none';
           card.style.display = 'none';
         }
       });

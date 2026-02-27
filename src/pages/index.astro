@@ -86,9 +86,9 @@ const homeSchema = JSON.stringify({
   </section>
 
   <!-- LATEST THINKING -->
-  <section class="section-container">
+  <section class="section-container" aria-labelledby="section-latest-heading">
     <div class="section-header">
-      <h2 class="section-title">最新思考</h2>
+      <h2 class="section-title" id="section-latest-heading">最新思考</h2>
       <a href="/blog" class="section-link">查看全部 →</a>
     </div>
     <div class="content-grid">
@@ -96,23 +96,25 @@ const homeSchema = JSON.stringify({
         const p = PILLAR_MAP[article.data.pillar];
         const dateStr = article.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit' });
         return (
-          <a href={`/articles/${article.id.replace(/\.md$/, "")}`} class={`content-card ${article.data.cover ? 'has-cover' : ''}`}>
-            {article.data.cover && (
-              <div class="card-cover">
-                <img src={article.data.cover} alt={article.data.title} width="1792" height="1024" loading="lazy" />
+          <article>
+            <a href={`/articles/${article.id.replace(/\.md$/, "")}`} class={`content-card ${article.data.cover ? 'has-cover' : ''}`}>
+              {article.data.cover && (
+                <div class="card-cover">
+                  <img src={article.data.cover} alt={article.data.title} width="1792" height="1024" loading="lazy" />
+                </div>
+              )}
+              <div class="content-card-category" style={`color:${p.color}`}>
+                <span class="pillar-dot" style={`background:${p.color}`}></span> {p.label}
               </div>
-            )}
-            <div class="content-card-category" style={`color:${p.color}`}>
-              <span class="pillar-dot" style={`background:${p.color}`}></span> {p.label}
-            </div>
-            <h3>{article.data.title}</h3>
-            <p>{article.data.description}</p>
-            <div class="content-card-footer">
-              <span>{dateStr}</span>
-              {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· 約 {rt} 分鐘</span> : null; })()}
-              {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
-            </div>
-          </a>
+              <h3>{article.data.title}</h3>
+              <p>{article.data.description}</p>
+              <div class="content-card-footer">
+                <span>{dateStr}</span>
+                {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· 約 {rt} 分鐘</span> : null; })()}
+                {article.data.platform && <span class="platform-badge">{article.data.platform}</span>}
+              </div>
+            </a>
+          </article>
         );
       }) : (
         <>
@@ -146,10 +148,10 @@ const homeSchema = JSON.stringify({
   </section>
 
   <!-- PROJECTS -->
-  <section style="background:var(--bg-section)">
+  <section style="background:var(--bg-section)" aria-labelledby="section-projects-heading">
     <div class="section-container">
       <div class="section-header">
-        <h2 class="section-title">專案</h2>
+        <h2 class="section-title" id="section-projects-heading">專案</h2>
         <a href="/projects" class="section-link">查看全部 →</a>
       </div>
       <div class="projects-grid">
@@ -179,9 +181,9 @@ const homeSchema = JSON.stringify({
   </section>
 
   <!-- SOCIAL FEED -->
-  <section class="section-container" id="feed">
+  <section class="section-container" id="feed" aria-labelledby="section-feed-heading">
     <div class="section-header">
-      <h2 class="section-title">動態情報</h2>
+      <h2 class="section-title" id="section-feed-heading">動態情報</h2>
     </div>
     <!-- COST ANALYTICS -->
     <CostAnalytics />
