@@ -22,12 +22,15 @@ html[lang="ja"] .article-body p {
 html[lang="zh-Hant"] .content-card p,
 html[lang="zh-Hant"] .card-excerpt,
 html[lang="zh-Hant"] .feed-item p,
+html[lang="zh-Hant"] .feed-excerpt p,
 html[lang="zh-Hans"] .content-card p,
 html[lang="zh-Hans"] .card-excerpt,
 html[lang="zh-Hans"] .feed-item p,
+html[lang="zh-Hans"] .feed-excerpt p,
 html[lang="ja"] .content-card p,
 html[lang="ja"] .card-excerpt,
-html[lang="ja"] .feed-item p {
+html[lang="ja"] .feed-item p,
+html[lang="ja"] .feed-excerpt p {
   text-align: justify;
   text-justify: inter-ideograph;
 }
@@ -38,4 +41,15 @@ html[lang="ja"] .feed-item p {
    -------------------------------------------------------- */
 .content-grid > article {
   display: contents;
+}
+
+/* --- 4. Japanese Proportional Alternate Widths ---
+   Enable "palt" for more natural Japanese typesetting.
+   Adjusts kana/punctuation to proportional width instead of
+   fixed full-width, improving readability in mixed content.
+   -------------------------------------------------------- */
+html[lang="ja"] .article-body,
+html[lang="ja"] .content-card,
+html[lang="ja"] .feed-excerpt {
+  font-feature-settings: "palt";
 }

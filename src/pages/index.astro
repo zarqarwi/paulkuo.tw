@@ -202,7 +202,7 @@ const homeSchema = JSON.stringify({
               <span class="feed-platform" style={`color:${item.color}`}>{item.platform}</span>
               <time class="feed-date" datetime={isoDate}>{displayDate}</time>
             </header>
-            <div class="prose"><p>{excerpt}</p></div>
+            <div class="feed-excerpt"><p>{excerpt}</p></div>
           </article>
         );
       }) : (
