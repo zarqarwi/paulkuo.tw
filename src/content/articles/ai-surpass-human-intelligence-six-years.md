@@ -13,6 +13,10 @@ cover: "/images/covers/ai-surpass-human-intelligence-six-years.jpg"
 featured: false
 draft: false
 readingTime: 7
+thesis: "Schmidt 的超級智慧預言在程式設計面超速兌現，但在 AGI 定義與文明適應層面被高估——能力可以堆疊，智慧涉及判斷與意義，這不是規模問題。"
+abstract: "重新檢視 Eric Schmidt 2025 年的六年倒數預言：AI 程式設計已從預測變為現實（100% AI-written code），遞迴自我優化從哲學進入實驗室，但超越全人類智慧混淆了能力與智慧的本質差異。台灣作為硬體供應商的角色在技術典範轉移中暗藏風險。"
+domain_bridge: "從 Schmidt 預言出發，串聯 AI 程式設計現況、遞迴自我優化工程進展、AGI 定義分歧，落地到台灣在 AI 價值鏈的結構性位置。"
+content_type: analysis
 ---
 
 去年五月，前 Google 執行長 Eric Schmidt 在一場公開對談中丟出一個讓全場安靜的預測：六年內，AI 的智慧總量將超越全人類的總和。

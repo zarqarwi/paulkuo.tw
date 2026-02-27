@@ -10,6 +10,10 @@ featured: false
 draft: false
 cover: "/images/covers/compass-meets-algorithm-authority-in-human-ai-era.jpg"
 readingTime: 5
+thesis: "在人機協作時代，思想權威的建構需要同時通過機器的邏輯檢驗與人類的直覺認同——真正的權威不來自預測能力，而來自在不確定性中提供可靠判斷框架的能力。"
+abstract: "當 AI 邏輯與人類直覺共同主導世界，什麼樣的思想框架能獲得雙重認可？本文從宏大敘事的誘惑、效率與韌性的張力、人機雙軌溝通實驗、機器可讀權威層的時機賭注，到信任建構學，探討典範轉移前夜的智識權威重新定義。"
+domain_bridge: "從個人框架建構經驗出發，串聯 Schema.org 結構化資料策略、台日半導體合作信任建構、AI 對齊的認知盲區，回到思想權威在人機時代的重新定義。"
+content_type: essay
 ---
 
 ## 當羅盤遇見演算法：思想權威在人機協作時代的困境

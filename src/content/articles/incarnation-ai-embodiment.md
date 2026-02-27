@@ -10,6 +10,10 @@ platform: "論文"
 featured: true
 cover: "/images/covers/incarnation-ai-embodiment.jpg"
 readingTime: 5
+thesis: "AI 的核心缺陷不是技術性的，而是存有論層次的——具身性不是 AI 發展的可選項，而是通往真正智能的必要條件，正如神學中道必須成為肉身才能完成救贖。"
+abstract: "從基督教道成肉身的神學框架出發，論證 AI 具身化的必要性。RLHF 等外部校正機制本質上是阿波里拿里主義的翻版——假設行為正確就不需要內在理解。認知科學的具身認知研究支持同一結論：沒有身體，就沒有真正的知識；沒有受限，就沒有真正的智慧。"
+domain_bridge: "以迦克墩公會議的基督論爭議為起點，串聯 Nagel 的蝙蝠問題、Polanyi 的默會知識、Brooks 的無表徵智能、Lakoff 的概念隱喻，重構 AI 對齊問題為存有論議題。"
+content_type: essay
 ---
 
 > 道成了肉身，住在我們中間，充充滿滿地有恩典，有真理。我們也見過他的榮光，正是父獨生子的榮光。——約翰福音 1:14

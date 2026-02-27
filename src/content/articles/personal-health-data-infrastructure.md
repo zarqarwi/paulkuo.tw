@@ -5,6 +5,10 @@ date: 2026-02-21
 pillar: ai
 cover: "/images/covers/personal-health-data-infrastructure.jpg"
 readingTime: 6
+thesis: "我們不是沒有健康資料，而是沒有基礎設施——單一穿戴裝置的封閉生態無法揭示跨維度的身體趨勢，自建分析管線才能讓分散的訊號匯聚成無法忽視的警告。"
+abstract: "十年、300 萬筆 Apple Health 紀錄加上 Fitbit MCP 即時串接，建構三條資料管線（即時/深度/自動化）的個人健康基礎設施。跨裝置交叉分析揭示單一 App 看不見的趨勢：運動量從日日三鐵到歸零、連續 33 個月睡眠未達標、HRV 下降 25% 與靜止心率上升同步指向自律神經長期壓力。"
+domain_bridge: "從個人穿戴裝置數據出發，串聯 Fitbit MCP/Apple Health XML 技術架構、雙裝置演算法差異的實測比較、CI/CD 自動部署，落地到從觀察到行為介入的健康基礎設施願景。"
+content_type: case-study
 ---
 
 ## 個人健康數據基礎設施

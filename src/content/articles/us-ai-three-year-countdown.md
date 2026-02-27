@@ -13,6 +13,10 @@ cover: "/images/covers/us-ai-three-year-countdown.jpg"
 featured: false
 draft: false
 readingTime: 6
+thesis: "Altman 的三年倒數走到第二年，技術面超速但信任面落後——AI 正在變成優秀的研究助理，但距離研究者還有本質差距，而實體世界的容錯空間接近零。"
+abstract: "追蹤 Sam Altman 2025 年三年路線圖的兌現進度：L3 Agent 能力已到但可靠性未到、AGI 敘事從神奇瞬間轉向漸進式覺醒、星際之門從簡報變成數千億美元合約、中東資源換技術重塑地緣秩序。台灣握著先進製程命脈，但在 AI 應用端和能源端都不是主角。"
+domain_bridge: "從 OpenAI 五級模型的進展追蹤出發，串聯 GPT-5 系列迭代、基礎建設軍備競賽、中東地緣佈局，落地到台灣在 AI 價值鏈的結構性落差。"
+content_type: analysis
 ---
 
 去年五月，Sam Altman 在紅杉資本的 AI 峰會上，丟出一份三年倒數時間表：2025 是助理元年，2026 進入科研，2027 踏入實體世界。
