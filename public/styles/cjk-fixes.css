@@ -1,0 +1,46 @@
+/**
+ * CJK Typography Fixes & Semantic Grid Overrides
+ * Loaded after global.css to override specific rules
+ * Added: 2025-02-27 (Gemini UI/UX audit)
+ */
+
+/* === CJK Paragraph Spacing ===
+ * Increase paragraph spacing for better readability in CJK languages.
+ * Original values: zh-Hant/zh-Hans 0.5em, ja 0.7em → all unified to 1em
+ */
+html[lang="zh-Hant"] .article-body p {
+  margin-bottom: 1em;
+}
+
+html[lang="zh-Hans"] .article-body p {
+  margin-bottom: 1em;
+}
+
+html[lang="ja"] .article-body p {
+  margin-bottom: 1em;
+}
+
+/* === CJK Text Justification ===
+ * Apply inter-ideograph justification for card excerpts and feed items
+ * to improve CJK text alignment in grid/list layouts.
+ */
+html[lang="zh-Hant"] .card-excerpt,
+html[lang="zh-Hant"] .content-card p,
+html[lang="zh-Hant"] .feed-item p,
+html[lang="zh-Hans"] .card-excerpt,
+html[lang="zh-Hans"] .content-card p,
+html[lang="zh-Hans"] .feed-item p,
+html[lang="ja"] .card-excerpt,
+html[lang="ja"] .content-card p,
+html[lang="ja"] .feed-item p {
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+
+/* === Semantic Article Wrapper in Grid ===
+ * <article> wrappers inside CSS Grid need display:contents
+ * to avoid breaking the grid layout while preserving semantics.
+ */
+.content-grid > article {
+  display: contents;
+}
