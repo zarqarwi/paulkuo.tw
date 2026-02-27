@@ -39,18 +39,6 @@ jobs:
         run: npm run build
 
 
-      - name: DEBUG - Check inline links in build output
-        run: |
-          echo '=== grep for <a href in chatgpt5 article ==='
-          grep -c '<a href' dist/articles/language-truth-chatgpt5-dialogue/index.html || echo 'ZERO <a href> found!'
-          echo '=== Context around Gemini text ==='
-          grep -oP '.{0,80}Gemini.{0,80}' dist/articles/language-truth-chatgpt5-dialogue/index.html | head -5 || echo 'Gemini not found'
-          echo '=== Check md source has link syntax ==='
-          grep -n '\[.*\](/' src/content/articles/language-truth-chatgpt5-dialogue.md || echo 'No links in md source'
-          echo '=== Astro + Node versions ==='
-          node --version
-          npx astro --version
-
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
