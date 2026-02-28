@@ -1180,11 +1180,11 @@
     }
   },
   "taiwan-semiconductor-tenfold-leap.md": {
-    "sourceHash": "0b291138ec04",
+    "sourceHash": "409e0f8e3ac8",
     "translations": {
       "en": {
-        "hash": "e42677825c89",
-        "translatedAt": "2026-02-23T18:10:03.369Z",
+        "hash": "9d85c623e254",
+        "translatedAt": "2026-02-28T05:19:54.641Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
