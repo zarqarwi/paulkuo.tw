@@ -1540,11 +1540,11 @@
     }
   },
   "rethinking-ai-consciousness-collective-subjectivity.md": {
-    "sourceHash": "d8f449f88c59",
+    "sourceHash": "2397c63f6e99",
     "translations": {
       "en": {
-        "hash": "f74fed4d9ce9",
-        "translatedAt": "2026-02-26T23:55:03.582Z",
+        "hash": "41263cbb9819",
+        "translatedAt": "2026-02-28T06:52:53.704Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1580,11 +1580,11 @@
     }
   },
   "why-greatness-cannot-be-planned.md": {
-    "sourceHash": "1e99513e5344",
+    "sourceHash": "e85e27fd7d5d",
     "translations": {
       "en": {
-        "hash": "cce13e608f6e",
-        "translatedAt": "2026-02-26T23:59:37.251Z",
+        "hash": "fa40febb36d0",
+        "translatedAt": "2026-02-28T06:53:34.569Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
