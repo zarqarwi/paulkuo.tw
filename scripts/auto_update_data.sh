@@ -1,14 +1,18 @@
 #!/bin/bash
-# auto_update_data.sh v3 — 每 10 分鐘抓資料，但限制 push 頻率
+# auto_update_data.sh v4 — 每 10 分鐘抓資料，但限制 push 頻率
+#
+# v4 改動（vs v3）：
+#   - 移除 CHAIN_STATUS 短路邏輯：不再因 token 過期 >8h 就放棄 refresh
+#   - 一律讓 fitbit_fetch.py 自行處理 token refresh（它有完整 retry 邏輯）
+#   - 只在 fitbit_fetch.py 實際失敗時才發通知
+#   - 原因：Fitbit refresh token 壽命遠超 access token，Mac 睡眠後醒來 refresh 通常仍有效
 #
 # v3 改動（vs v2）：
-#   - 新增長時間睡眠偵測：token 過期超過 8 小時 = chain 斷裂，發緊急通知
-#   - Fitbit token refresh 由本機獨佔（GitHub Actions 排程已停用）
+#   - 新增長時間睡眠偵測（已被 v4 簡化）
 #
 # v2 改動（vs v1）：
 #   - push 最小間隔 30 分鐘（避免一天上百個 auto commit）
 #   - 資料「顯著變化」才 push（步數差 >300 或 AI 時間差 >0.05h）
-#   - Fitbit token 中斷偵測 + macOS 通知
 #   - timing_fetch_local.py v2 只查今天，不遍歷整月
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
@@ -74,77 +78,39 @@ python3 scripts/timing_fetch_local.py >> "$LOG" 2>&1 || log "WARN: Timing failed
 log "Stock..."
 python3 scripts/stock_fetch.py >> "$LOG" 2>&1 || log "WARN: Stock fetch failed"
 
-# --- 3. Fitbit (本機獨佔 refresh，GitHub Actions 排程已停用) ---
+# --- 3. Fitbit (讓 fitbit_fetch.py 全權處理 token refresh) ---
 FITBIT_OK=false
 if [ -f "$REPO/scripts/.fitbit_token" ]; then
-    # === v3 新增：長時間睡眠偵測 ===
-    CHAIN_STATUS=$(python3 -c "
-import json, time
-with open('$REPO/scripts/.fitbit_token') as f:
-    t = json.load(f)
-expired_sec = time.time() - t.get('expires_at', 0)
-if expired_sec > 28800:  # 過期超過 8 小時 = chain 可能斷裂
-    print('BROKEN')
-elif expired_sec > 0:
-    print('EXPIRED')
-else:
-    print('OK')
-" 2>/dev/null)
+    log "Fitbit..."
+    FITBIT_OUTPUT=$(python3 scripts/fitbit_fetch.py 2>&1)
+    FITBIT_EXIT=$?
+    echo "$FITBIT_OUTPUT" >> "$LOG"
 
-    if [ "$CHAIN_STATUS" = "BROKEN" ]; then
-        log "🚨 Fitbit token chain BROKEN (expired >8h, likely Mac long sleep)"
-        osascript -e 'display notification "Token 過期超過 8 小時，refresh chain 可能已斷裂。請重新授權：打開瀏覽器完成 OAuth 流程" with title "🚨 Fitbit 需要重新授權" sound name "Sosumi"' 2>/dev/null
-        # 標記狀態但不嘗試 refresh（會失敗）
+    if [ $FITBIT_EXIT -ne 0 ]; then
+        log "❌ Fitbit fetch failed (exit $FITBIT_EXIT)"
+        # fitbit_fetch.py 已經會在 refresh 失敗時發 macOS 通知
+        # 這裡只在 json 裡標記狀態供網站顯示
         python3 -c "
 import json, os
 f = '$REPO/data/fitbit.json'
 if os.path.exists(f):
     d = json.load(open(f))
-    d['token_status'] = 'chain_broken'
+    d['token_status'] = 'error'
     d['token_error'] = '$(date +%Y-%m-%dT%H:%M:%S)+08:00'
     json.dump(d, open(f,'w'), indent=2, ensure_ascii=False)
 " 2>/dev/null
     else
-        # Proactive refresh if token expires within 2 hours
+        FITBIT_OK=true
+        # 清除之前可能殘留的錯誤狀態
         python3 -c "
-import json, time, subprocess, base64
-TF = '$REPO/scripts/.fitbit_token'
-with open(TF) as f: t = json.load(f)
-remaining = t.get('expires_at', 0) - time.time()
-if remaining < 7200:
-    creds = base64.b64encode(b'23V2BH:4adac11e3241afadf53cccfaa7b7e86a').decode()
-    r = subprocess.run(['curl','-s','-X','POST','https://api.fitbit.com/oauth2/token',
-        '-H',f'Authorization: Basic {creds}','-H','Content-Type: application/x-www-form-urlencoded',
-        '-d',f'grant_type=refresh_token&refresh_token={t[\"refresh_token\"]}'],
-        capture_output=True, text=True)
-    import json as j2
-    nt = j2.loads(r.stdout)
-    if 'access_token' in nt:
-        nt['expires_at'] = time.time() + nt.get('expires_in', 28800)
-        with open(TF,'w') as f: j2.dump(nt, f, indent=2)
-        print(f'🔄 Token proactive refresh OK ({nt.get(\"expires_in\",0)//3600}h)')
-" 2>/dev/null
-
-        log "Fitbit..."
-        FITBIT_OUTPUT=$(python3 scripts/fitbit_fetch.py 2>&1)
-        FITBIT_EXIT=$?
-        echo "$FITBIT_OUTPUT" >> "$LOG"
-
-        if [ $FITBIT_EXIT -ne 0 ] || echo "$FITBIT_OUTPUT" | grep -qi "error\|failed\|no.*token"; then
-            log "❌ Fitbit token 可能中斷"
-            osascript -e 'display notification "Fitbit token 可能已過期，需要重新授權" with title "⚠️ Fitbit 資料中斷" sound name "Basso"' 2>/dev/null
-            python3 -c "
 import json, os
 f = '$REPO/data/fitbit.json'
 if os.path.exists(f):
     d = json.load(open(f))
-    d['token_status'] = 'expired'
-    d['token_error'] = '$(date +%Y-%m-%dT%H:%M:%S)+08:00'
+    d.pop('token_status', None)
+    d.pop('token_error', None)
     json.dump(d, open(f,'w'), indent=2, ensure_ascii=False)
 " 2>/dev/null
-        else
-            FITBIT_OK=true
-        fi
     fi
 else
     log "SKIP: Fitbit (no token file)"
