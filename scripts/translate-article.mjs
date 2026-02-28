@@ -117,7 +117,7 @@ function updateManifest(manifest, filename, locale, translatedPath) {
 
 // ── Claude API ─────────────────────────────────────────────
 
-async function callClaude(content, locale) {
+async function callClaude(content, locale, slug = '') {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -164,7 +164,8 @@ ${content}`
     action: `translate-${locale.code}`,
     source: 'translate-article',
     inputTokens: usage.input_tokens || 0,
-    outputTokens: usage.output_tokens || 0
+    outputTokens: usage.output_tokens || 0,
+    note: slug,
   });
 
   let text = data.content[0].text;
@@ -257,7 +258,8 @@ async function main() {
       
       try {
         mkdirSync(outDir, { recursive: true });
-        const result = await callClaude(content, locale);
+        const slug = basename(filename, '.md');
+        const result = await callClaude(content, locale, slug);
         writeFileSync(outFile, result, 'utf-8');
         updateManifest(manifest, filename, locale.code, outFile);
         console.log(`   ✅ ${locale.name}: ${outFile}`);
