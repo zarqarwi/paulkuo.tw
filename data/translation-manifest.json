@@ -1220,11 +1220,11 @@
     }
   },
   "world-outlook-2030.md": {
-    "sourceHash": "1b1f5e88ac37",
+    "sourceHash": "aaf3344232d1",
     "translations": {
       "en": {
-        "hash": "f150d4134c02",
-        "translatedAt": "2026-02-23T18:10:31.586Z",
+        "hash": "aca11c289442",
+        "translatedAt": "2026-02-28T05:41:49.285Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
