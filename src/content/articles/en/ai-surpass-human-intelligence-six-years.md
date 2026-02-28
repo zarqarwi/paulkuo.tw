@@ -1,93 +1,98 @@
 ---
-title: "Six Years Countdown, One Year Down: Is Schmidt's Superintelligence Prophecy Coming True?"
-description: "In 2025, Eric Schmidt predicted AI would surpass total human intelligence within six years. Nine months later, AI is writing its own code and debugging its own training pipelines. How far has the prophecy progressed? What's accelerating and what's stalling?"
+title: "Six-Year Countdown, One Year Gone: Is Schmidt's Superintelligence Prophecy Coming True?"
+description: "In 2025, Eric Schmidt predicted AI would surpass human collective intelligence within six years. Nine months later, AI is already writing its own code and debugging its own training processes. How far has the prophecy progressed? What's accelerating, and what's stalling?"
 date: 2026-02-26
 pillar: ai
-cover: "/images/covers/ai-surpass-human-intelligence-six-years.jpg"
 tags:
-  - AI趨勢
+  - AI Trends
   - AGI
-  - 遞迴自我優化
+  - Recursive Self-Improvement
   - Eric Schmidt
-  - 產業分析
-lang: zh-TW
-medium_original: true
+  - Industry Analysis
+cover: "/images/covers/ai-surpass-human-intelligence-six-years.jpg"
+featured: false
+draft: false
+readingTime: 7
+thesis: "Schmidt's superintelligence prophecy is materializing ahead of schedule in programming, but overestimates progress in AGI definition and civilizational adaptation—capabilities can be stacked, but intelligence involves judgment and meaning, which isn't a scaling problem."
+abstract: "Revisiting Eric Schmidt's six-year countdown prophecy from 2025: AI programming has shifted from prediction to reality (100% AI-written code), recursive self-improvement has moved from philosophy to laboratory, but surpassing all human intelligence conflates the essential difference between capability and intelligence. Taiwan's role as hardware supplier harbors hidden risks amid technological paradigm shift."
+domain_bridge: "Starting from Schmidt's prophecy, connecting current AI programming status, recursive self-improvement engineering progress, AGI definitional divergences, and grounding in Taiwan's structural position in the AI value chain."
+content_type: analysis
 ---
 
-Last May, former Google CEO Eric Schmidt dropped a prediction in a public conversation that left the entire room silent: within six years, AI's total intelligence would surpass the sum of all humanity.
+Last May, former Google CEO Eric Schmidt dropped a prediction in a public conversation that silenced the room: within six years, AI's total intelligence would surpass that of all humanity combined.
 
-At the time, I compiled it into an article, feeling it was a historical moment worth recording—whether you believed it or not, at least someone who had once commanded the world's largest tech platform was staking his reputation on this bet.
+At the time, I summarized it in an article, thinking it was a historical moment worth recording—whether you believed it or not, at least someone who once controlled the world's largest tech platform was staking his credibility on this bet.
 
-Nine months have passed. One year down from the countdown—now it's "five years." I want to revisit this prophecy: which parts have already begun to materialize, which are transforming, and which might never come to pass?
+Nine months have passed. The countdown is now one year shorter—it's "five years." I want to revisit this prophecy: which parts are already materializing, which are transforming, and which might never come to pass?
 
-## AI Programmers: Not Prophecy, But Present Reality
+## AI Programmers: Not Prophecy, Present Tense
 
-Schmidt said then, "Within the next year, the vast majority of human programmers and advanced mathematics researchers will be replaced by AI." This statement sounded radical in May 2025. By February 2026, it's no longer radical—it's become Silicon Valley routine.
+Schmidt said back then, "Within the next year, the vast majority of human programmers and advanced mathematics researchers will be replaced by AI." This sounded radical in May 2025. By February 2026, it's no longer radical—it's become Silicon Valley's daily routine.
 
-After Anthropic's Claude Code updated on November 24, 2025, developers testing it during the Christmas holidays were so shocked they gave it a nickname: "Claude Christmas." Not because it wrote faster than humans, but because it could independently complete projects that previously took weeks. Engineers at Anthropic and OpenAI publicly stated that AI now writes 100% of their code. Microsoft says 30%, Google says over 25%. Meta's Zuckerberg declared his intention to have AI write most of their code by mid-year.
+Anthropic's Claude Code, powered by the Opus 4.5 model released on November 24, 2025, shocked developers during Christmas break trials so much they nicknamed it "Claude Christmas." Not because it wrote faster than humans, but because it could independently complete projects that previously took weeks. Engineers at Anthropic and OpenAI publicly stated that AI now writes 100% of their code. Microsoft says 30%, Google says over 25%. Meta's Zuckerberg announced plans for AI to write most code by mid-year.
 
-MIT Technology Review listed "Generative Programming" among its 2026 breakthrough technologies. SWE-bench (a standard test measuring AI's bug-fixing capabilities) soared from 33% accuracy in August 2024 to over 70% a year later. UC Berkeley computer science professor James O'Brien made an uncomfortable statement: "In another year, I expect AI will program better than any human."
+MIT Technology Review included "Generative Programming" in its 2026 breakthrough technologies list. SWE-bench (a standard test measuring AI's bug-fixing ability) jumped from 33% accuracy in August 2024 to over 70% a year later. UC Berkeley computer science professor James O'Brien made an uncomfortable statement: "In another year, I expect AI will program better than any human."
 
-San Francisco engineers have begun using "permanent underclass" to describe their future. The emergence of this term is itself a form of validation—Schmidt's prophecy is no longer a distant hypothesis, but present-tense anxiety.
+San Francisco engineers have started using "permanent underclass" to describe their future. The emergence of this term is itself a validation—Schmidt's prophecy is no longer a distant hypothesis, but present-tense anxiety.
 
-## Recursive Self-Improvement: From Theoretical Boundaries Into the Lab
+## Recursive Self-Improvement: From Theoretical Boundaries to Laboratory
 
-Schmidt mentioned a deeper trend at the time: AI had already begun participating in its own upgrades. The data he cited was "10% to 20% of research code generated by AI itself." This number sounds modest, but the direction it points to is anything but modest—that is, Recursive Self-Improvement (RSI).
+Schmidt mentioned a deeper trend: AI had already begun participating in its own upgrades. His cited data was "10% to 20% of research code generated by AI itself." This number sounds modest, but the direction it points toward is anything but—namely, Recursive Self-Improvement (RSI).
 
-In February 2026, OpenAI released GPT-5.3-Codex. In the technical documentation was an inconspicuous line: "GPT-5.3-Codex was used to debug its own training pipeline, manage deployment infrastructure, and diagnose errors during testing processes." This is explicit documentation of AI participating in improving itself—though still under human supervision, the direction has been established.
+In February 2026, OpenAI released GPT-5.3-Codex. The technical documentation contained an unremarkable sentence: "GPT-5.3-Codex was used to debug its own training pipeline, manage deployment infrastructure, and diagnose errors during testing." This is explicit documentation of AI participating in self-improvement—though still under human supervision, the direction is established.
 
-Academia is also formalizing this field. ICLR 2026 (International Conference on Learning Representations) established its first RSI specialized workshop, officially elevating it from "philosophical thought experiment" to "mainstream scientific agenda." Google DeepMind's Demis Hassabis publicly discussed at the 2026 World Economic Forum: "Can self-optimization loops close without human intervention?" He admitted that crucial capabilities are still missing, but the question itself indicates the direction.
+Academia is also formalizing this field. ICLR 2026 (International Conference on Learning Representations) established its first RSI workshop, officially elevating it from "philosophical thought experiment" to "mainstream scientific agenda." Google DeepMind's Demis Hassabis publicly discussed at the 2026 World Economic Forum: "Can self-optimization loops close without human intervention?" He acknowledged key capabilities are still missing, but asking the question itself reveals the direction.
 
-Dean W. Ball wrote in a widely circulated analysis: leading AI labs are automating vast amounts of research and engineering operations, and this pace will continue accelerating in 2026. Each lab's effective "workforce" will expand from thousands to tens of thousands, even hundreds of thousands—and these "employees" don't need sleep, food, or bathroom breaks. Their sole objective is to make themselves smarter.
+Dean W. Ball wrote in a widely circulated analysis: frontier AI labs are automating vast amounts of research and engineering operations, and this pace will continue accelerating in 2026. Each lab's effective "workforce" will expand from thousands to tens of thousands, even hundreds of thousands—and these "employees" don't need sleep, food, or bathroom breaks. Their sole objective is making themselves smarter.
 
-This isn't science fiction. This is an engineering reality happening now.
+This isn't science fiction. This is ongoing engineering reality.
 
-## AGI Timeline: Consensus Exists, Definitions Don't
+## AGI Timeline: Consensus Exists, Definition Doesn't
 
-Schmidt's "San Francisco consensus" at the time—that AGI would be achieved within three to five years—by 2026, this consensus still exists and is even stronger. Hassabis says three to five years, Amodei's Anthropic has already set similar internal milestones, and OpenAI's Pachocki gave a more specific timeframe: creating "research intern" level AI by September 2026.
+Schmidt's "San Francisco consensus"—that AGI would arrive within three to five years—by 2026, this consensus not only persists but has strengthened. Hassabis says three to five years, Amodei's Anthropic has internally set similar milestones, and OpenAI's Pachocki gave a more specific timeline: creating "research intern" level AI by September 2026.
 
 But here's the problem: when everyone says "AGI," are they talking about the same thing?
 
-Schmidt's definition is "comprehensive thinking and creation like the finest artists, writers, and statesmen." OpenAI's operational definition leans toward "capable of replacing knowledge workers." Hassabis cares about "the ability to invent new hypotheses"—like Einstein proposing relativity, not just proving existing conjectures, but proposing entirely new ones.
+Schmidt's definition is "synthetic thinking and creation like the best artists, writers, politicians." OpenAI's operational definition leans toward "can replace knowledge workers." Hassabis cares about "the ability to invent new hypotheses"—like Einstein proposing relativity, not just proving existing conjectures but proposing entirely new ones.
 
-The distance between these definitions might be greater than the distance between us and AGI. What AI can currently do is: execute efficiently within established frameworks, find patterns in vast datasets, complete complex tasks under clear instructions. What it cannot do is: discover questions worth asking without human prompting.
+The distance between these definitions might be greater than AGI's distance from us. What current AI can do: efficiently execute within established frameworks, find patterns in massive data, complete complex tasks under clear instructions. What it cannot do: discover questions worth asking without human prompting.
 
-This gap cannot be bridged by scaling alone. It involves not just computational power, but "understanding" itself—which we don't fully comprehend yet.
+This gap can't be crossed through scaling alone. It involves not just computational power, but "understanding" itself—which we don't fully comprehend.
 
-## Superintelligence: Six Years to Five Years, Has the Distance Shortened?
+## Superintelligence: Six Years to Five, Has Distance Shortened?
 
-Schmidt's boldest prophecy was ASI—Artificial Superintelligence—appearing within six years. Now, a year has passed, counting down to five years.
+Schmidt's boldest prophecy was ASI—Artificial Superintelligence—appearing within six years. Now, one year later, the countdown is five years.
 
-From the hardware perspective, speed exceeds expectations. Blackwell generation chips are beginning deployment, with every lab expanding GW-level data centers. The Rubin generation is also about to enter combat. Computing power supply is expanding exponentially.
+From hardware perspective, speed exceeds expectations. Blackwell generation chips are beginning deployment, every lab is expanding GW-scale data centers. The Rubin generation is also entering combat readiness. Computing power supply is expanding exponentially.
 
-From the software perspective, early signs of RSI have indeed appeared. AI is beginning to participate in its own training, debugging, even architectural design. From late 2025 to early 2026, OpenAI's model iteration intervals shortened from six months to less than two months—this acceleration itself is indirect evidence of RSI effects.
+From software perspective, early signs of RSI are indeed appearing. AI is beginning to participate in its own training, debugging, even architectural design. From late 2025 to early 2026, OpenAI model iteration intervals shortened from six months to under two months—this acceleration itself is indirect evidence of RSI effects.
 
-But "surpassing the sum of all human intelligence"? This requires not just speed, but qualitative leaps. Current AI—no matter how fast or accurate—is essentially still optimizing within objective functions set by humans. It has no curiosity of its own, no problem consciousness of its own, no intuition born from failure.
+But "surpassing the sum of all human intelligence"? This requires not just speed, but qualitative leaps. Current AI—no matter how fast or accurate—essentially still optimizes within human-set objective functions. It has no curiosity of its own, no problem consciousness of its own, no intuition born from failure.
 
-My assessment: within five years, we'll see AI systems that surpass all humans in specific domains. But the claim of "surpassing total human intelligence" confuses "capability" with "intelligence." Capabilities can be stacked; intelligence involves judgment, ethics, meaning—these are not matters of scale.
+My judgment: within five years, we'll see AI systems that surpass all humans in specific domains. But the claim of "surpassing all human collective intelligence" confuses "capability" with "intelligence." Capabilities can be stacked; intelligence involves judgment, ethics, meaning—these aren't scaling problems.
 
-## Where Does Taiwan Stand
+## Where Taiwan Stands
 
-Every time I discuss these global-scale technological trends, I ask one question: what is Taiwan's position in this game?
+Every time I discuss global-scale technological trends, I ask: what is Taiwan's position in this game?
 
-The answer is contradictory. Taiwan holds the world's most crucial hardware—TSMC's advanced processes are the lifeline of all AI chips. But across the four dimensions of AI applications, AI research, AI talent, and AI energy, Taiwan is not a protagonist.
+The answer is contradictory. Taiwan holds the world's most critical hardware—TSMC's advanced processes are the lifeline for all AI chips. But across four dimensions—AI applications, AI research, AI talent, AI energy—Taiwan isn't the protagonist.
 
-We are "arms dealers," not "combatants." This role is profitable in peacetime, but during technological paradigm shifts, being only a supplier is dangerous—because your value depends on others' needs, not your own capabilities.
+We're the "weapons supplier," not the "combatant." This role is profitable in peacetime, but during technological paradigm shifts, being only a supplier is dangerous—because your value depends on others' needs, not your own capabilities.
 
-The world Schmidt predicts—where AI self-optimizes and needs no human interfaces—if it truly arrives, the greatest impact on Taiwan won't be disappearing chip demand, but our position in the AI value chain being fixed at the lowest level of hardware manufacturing.
+The world Schmidt predicts—AI self-optimization, no human interface needed—if it truly arrives, the biggest impact on Taiwan wouldn't be disappearing chip demand, but our position in the AI value chain being fixed at the lowest level of hardware manufacturing.
 
-## Sober Notes from the Five-Year Countdown
+## Five-Year Countdown Sober Notes
 
-Back to Schmidt's prophecy. Nine months ago I recorded his words with the mindset of "this is worth noting down." Looking back now, my mindset has changed—to "he may have underestimated some aspects while overestimating others."
+Back to Schmidt's prophecy. Nine months ago I recorded his words with the mindset of "this is worth noting down." Now, rereading, my mindset has changed—to "he may have underestimated some aspects while overestimating others."
 
-What he underestimated was AI's progress speed in programming. The reality of Claude Code Christmas and 100% AI-written code came faster than most people expected.
+Underestimated: AI's progress speed in programming. The reality of Claude Code Christmas and 100% AI-written code came faster than most expected.
 
-What he overestimated was the "no humans needed" narrative. AI is indeed increasingly capable of autonomous task completion, but the more capable it becomes, the higher human demands for "reliability" and "controllability" become. The paradox lies here: AI capability advancement exceeds the pace of human trust-building.
+Overestimated: the "no humans needed" narrative. While AI increasingly can autonomously complete tasks, the more capable it becomes, the higher human demands for "reliability" and "controllability." The paradox: AI capability advancement speed exceeds human trust-building speed.
 
-Six years countdown, one year down. Technically, speed exceeds expectations. But civilizationally—law, ethics, education, governance—Schmidt's observation that "we don't even have language to describe this change" still holds true today.
+Six-year countdown, one year gone. Technically, speed exceeds expectations. But civilizationally—law, ethics, education, governance—Schmidt's observation that "we don't even have language to describe this change" remains true today.
 
 This isn't just a technology problem. This is a civilizational proposition our generation must answer: when machines begin improving themselves, what is humanity's role?
 
-Not questions like "will we be replaced." But something more fundamental: in a world where intelligence can be mass-replicated, what is the definition of "human"?
+Not questions like "will we be replaced." But more fundamentally: in a world where intelligence can be mass-replicated, what is the definition of "human"?
 
-This question cannot be answered by any AI for us.
+No AI can help us answer this question.

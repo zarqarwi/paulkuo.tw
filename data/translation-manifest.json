@@ -1440,11 +1440,11 @@
     }
   },
   "ai-surpass-human-intelligence-six-years.md": {
-    "sourceHash": "f57637ad2f56",
+    "sourceHash": "a83903b2c9d0",
     "translations": {
       "en": {
-        "hash": "a1383843eebb",
-        "translatedAt": "2026-02-26T12:59:18.000Z",
+        "hash": "9a88bbf4159c",
+        "translatedAt": "2026-02-28T01:29:34.939Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
