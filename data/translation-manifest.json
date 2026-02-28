@@ -1460,11 +1460,11 @@
     }
   },
   "jd-ai-supply-chain-revolution.md": {
-    "sourceHash": "99397ed211f8",
+    "sourceHash": "4d29de94c7b5",
     "translations": {
       "en": {
-        "hash": "31a5b96c5363",
-        "translatedAt": "2026-02-28T11:11:30.482Z",
+        "hash": "81bfbda0abf8",
+        "translatedAt": "2026-02-28T12:42:31.587Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
