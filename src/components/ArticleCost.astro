@@ -1,0 +1,219 @@
+---
+/**
+ * ArticleCost.astro — 文章製作成本表
+ * Build time 從 costs.jsonl 讀取，按 slug 匹配
+ * 顯示翻譯 + 封面圖的 API 費用明細
+ */
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+import type { LangKey } from '../i18n';
+
+interface Props {
+  slug: string;
+  lang: LangKey;
+}
+
+const { slug, lang } = Astro.props;
+
+const costsPath = join(process.cwd(), 'data', 'costs.jsonl');
+let costs: any[] = [];
+
+if (existsSync(costsPath)) {
+  costs = readFileSync(costsPath, 'utf-8')
+    .split('\n').filter(Boolean)
+    .map(line => { try { return JSON.parse(line); } catch { return null; } })
+    .filter(Boolean)
+    .filter(r => r.note === slug);
+}
+
+// Aggregate by action
+interface CostItem {
+  label: string;
+  costUSD: number;
+  costTWD: number;
+}
+
+const actionLabels: Record<string, Record<LangKey, string>> = {
+  'translate-en': { 'zh-tw': 'EN 翻譯', en: 'EN Translation', ja: 'EN 翻訳', 'zh-cn': 'EN 翻译' },
+  'translate-ja': { 'zh-tw': 'JA 翻譯', en: 'JA Translation', ja: 'JA 翻訳', 'zh-cn': 'JA 翻译' },
+  'translate-zh-cn': { 'zh-tw': 'ZH-CN 翻譯', en: 'ZH-CN Translation', ja: 'ZH-CN 翻訳', 'zh-cn': 'ZH-CN 翻译' },
+  'cover-image': { 'zh-tw': 'DALL-E 封面圖', en: 'DALL-E Cover Image', ja: 'DALL-E カバー画像', 'zh-cn': 'DALL-E 封面图' },
+  'image-gen': { 'zh-tw': 'DALL-E 封面圖', en: 'DALL-E Cover Image', ja: 'DALL-E カバー画像', 'zh-cn': 'DALL-E 封面图' },
+};
+
+const items: CostItem[] = [];
+const seenActions = new Set<string>();
+
+for (const r of costs) {
+  // Deduplicate: cover-image and image-gen are the same thing
+  const normalizedAction = r.action === 'image-gen' ? 'cover-image' : r.action;
+  if (seenActions.has(normalizedAction)) continue;
+  seenActions.add(normalizedAction);
+
+  const labels = actionLabels[r.action] || actionLabels[normalizedAction];
+  items.push({
+    label: labels ? labels[lang] || labels['zh-tw'] : r.action,
+    costUSD: r.costUSD || 0,
+    costTWD: r.costTWD || 0,
+  });
+}
+
+// Sort: translations first, then cover image
+const order = ['translate-en', 'translate-ja', 'translate-zh-cn', 'cover-image'];
+items.sort((a, b) => {
+  const ai = order.findIndex(o => a.label.toLowerCase().includes(o.split('-').pop()!));
+  const bi = order.findIndex(o => b.label.toLowerCase().includes(o.split('-').pop()!));
+  return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+});
+
+const totalUSD = items.reduce((s, i) => s + i.costUSD, 0);
+const totalTWD = items.reduce((s, i) => s + i.costTWD, 0);
+
+const hasCosts = items.length > 0;
+
+const i18n = {
+  title: lang === 'en' ? 'Production Cost' : lang === 'ja' ? '制作コスト' : lang === 'zh-cn' ? '制作成本' : '製作成本',
+  item: lang === 'en' ? 'Item' : lang === 'ja' ? '項目' : '項目',
+  usd: lang === 'en' ? 'Cost (USD)' : lang === 'ja' ? '費用 (USD)' : lang === 'zh-cn' ? '费用 (USD)' : '費用 (USD)',
+  twd: lang === 'en' ? 'Cost (TWD)' : lang === 'ja' ? '費用 (TWD)' : lang === 'zh-cn' ? '费用 (TWD)' : '費用 (TWD)',
+  total: lang === 'en' ? 'Total' : lang === 'ja' ? '合計' : '合計',
+  note: lang === 'en'
+    ? 'This article was produced with AI-assisted translation and image generation. Full cost data is tracked transparently.'
+    : lang === 'ja'
+    ? 'この記事はAI翻訳と画像生成を活用して制作されました。費用データは透明に追跡されています。'
+    : lang === 'zh-cn'
+    ? '本文使用 AI 辅助翻译与图片生成。所有费用数据透明追踪。'
+    : '本文使用 AI 輔助翻譯與圖片生成。所有費用資料透明追蹤。',
+};
+---
+
+{hasCosts && (
+  <aside class="article-cost" aria-label={i18n.title}>
+    <h3 class="cost-title">{i18n.title}</h3>
+    <table class="cost-table">
+      <thead>
+        <tr>
+          <th class="cost-th-item">{i18n.item}</th>
+          <th class="cost-th-num">{i18n.usd}</th>
+          <th class="cost-th-num">{i18n.twd}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map(item => (
+          <tr>
+            <td>{item.label}</td>
+            <td class="cost-num">${item.costUSD.toFixed(3)}</td>
+            <td class="cost-num">${item.costTWD.toFixed(2)}</td>
+          </tr>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr class="cost-total">
+          <td>{i18n.total}</td>
+          <td class="cost-num"><strong>${totalUSD.toFixed(3)}</strong></td>
+          <td class="cost-num"><strong>${totalTWD.toFixed(2)}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+    <p class="cost-note">{i18n.note}</p>
+  </aside>
+)}
+
+<style>
+  .article-cost {
+    margin: 2.5rem 0;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .cost-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 1rem 0;
+  }
+
+  .cost-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .cost-table th {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 0 0 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .cost-th-item {
+    text-align: left;
+  }
+
+  .cost-th-num {
+    text-align: right;
+  }
+
+  .cost-table td {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .cost-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.85rem;
+  }
+
+  .cost-total td {
+    border-bottom: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 0.75rem;
+    color: #fff;
+  }
+
+  .cost-note {
+    margin: 1rem 0 0 0;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    line-height: 1.5;
+  }
+
+  /* Light theme support */
+  :global([data-theme="light"]) .article-cost {
+    border-color: rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  :global([data-theme="light"]) .cost-title {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  :global([data-theme="light"]) .cost-table th {
+    color: rgba(0, 0, 0, 0.4);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .cost-table td {
+    color: rgba(0, 0, 0, 0.7);
+    border-bottom-color: rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .cost-total td {
+    border-top-color: rgba(0, 0, 0, 0.12);
+    color: #000;
+  }
+
+  :global([data-theme="light"]) .cost-note {
+    color: rgba(0, 0, 0, 0.3);
+  }
+</style>

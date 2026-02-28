@@ -11,6 +11,7 @@ import { PILLAR_MAP, SITE } from '../config';
 import { LANGUAGES, type LangKey } from '../i18n';
 import { calcReadingTime } from '../utils/readingTime';
 import { getArticleEntities } from '../utils/entities';
+import ArticleCost from '../components/ArticleCost.astro';
 
 interface Props {
   article: any;
@@ -203,6 +204,9 @@ const i = {
         {tags.map(tag => <span class="article-tag" itemprop="keywords">{tag}</span>)}
       </footer>
     )}
+
+    {/* === Production Cost === */}
+    <ArticleCost slug={currentSlug} lang={lang} />
 
     {/* === Author Card === */}
     <div class="author-card">
