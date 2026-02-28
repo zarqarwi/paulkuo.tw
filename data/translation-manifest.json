@@ -1600,11 +1600,11 @@
     }
   },
   "ai-slaughterhouse-2028-crisis-scenario.md": {
-    "sourceHash": "09fc9edd3246",
+    "sourceHash": "f3753f9b2f9b",
     "translations": {
       "en": {
-        "hash": "c23be7ced908",
-        "translatedAt": "2026-02-27T15:57:38.469Z",
+        "hash": "4b8f6c10914b",
+        "translatedAt": "2026-02-28T22:08:25.297Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
