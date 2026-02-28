@@ -1260,11 +1260,11 @@
     }
   },
   "canary-in-coal-mine-ai-employment.md": {
-    "sourceHash": "1e5a13217959",
+    "sourceHash": "0528fd972d53",
     "translations": {
       "en": {
-        "hash": "c89041d917a2",
-        "translatedAt": "2026-02-24T15:38:52.158Z",
+        "hash": "14d820464bbe",
+        "translatedAt": "2026-02-28T03:43:28.779Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
