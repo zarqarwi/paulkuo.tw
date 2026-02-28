@@ -3,7 +3,7 @@ title: "Canaries in the Coal Mine: An Early Warning System for AI's Employment I
 subtitle: "Young people aren't the weakest, yet they're the first to fall—this contradiction itself is the warning signal"
 description: "Stanford research reveals three counterintuitive phenomena about AI's employment impact: young workers are more vulnerable than senior employees, job postings disappear but wages don't fall, and human-AI collaboration determines the future. This isn't just a labor market issue—it's a fundamental challenge to how civilization defines 'useful knowledge.'"
 abstract: |
-  A 2025 study from Stanford's Digital Economy Lab reveals that generative AI's employment impact isn't uniformly distributed: employment rates for 22-25 year-olds in high AI exposure occupations dropped 13%, while those for 35-49 year-old senior workers actually rose 9%. This counterintuitive finding points to a deeper problem—our education system has long trained people to become "carriers of standardized knowledge," precisely the capability AI excels at replacing. The real warning isn't "machines replacing humans," but that our definition of "what constitutes valuable knowledge" is being fundamentally overturned.
+  A 2025 study from Stanford's Digital Economy Lab reveals that generative AI's employment impact isn't uniformly distributed: employment rates for 22-25 year-olds in high AI exposure occupations dropped 13%, while those for workers aged 30 and above actually rose 6-13%. This counterintuitive finding points to a deeper problem—our education system has long trained people to become "carriers of standardized knowledge," precisely the capability AI excels at replacing. The real warning isn't "machines replacing humans," but that our definition of "what constitutes valuable knowledge" is being fundamentally overturned.
 date: 2025-10-05
 updated: 2026-02-24
 pillar: ai
@@ -54,7 +54,7 @@ Brynjolfsson, Chandar, and Chen did something very straightforward: they tracked
 
 The results overturned most people's intuitions.
 
-Young people aged 22 to 25 saw employment rates drop by 13%. Meanwhile, middle-aged workers aged 35 to 49 actually saw employment rates rise by 9%. In software development, the decline for young workers was even steeper at 20%.
+Young people aged 22 to 25 saw employment rates drop by 13%. Meanwhile, senior workers aged 30 and above actually saw employment rates rise by 6-13%.
 
 This completely contradicts the narrative we usually hear. Media often says "AI will replace repetitive, entry-level work," implying that senior workers are more vulnerable to displacement because they're older and learn slower. But the data tells a different story.
 
