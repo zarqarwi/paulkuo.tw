@@ -1340,11 +1340,11 @@
     }
   },
   "overcome-fear-start-ugly.md": {
-    "sourceHash": "93b27495e178",
+    "sourceHash": "79fc2aed9ee3",
     "translations": {
       "en": {
-        "hash": "0cff47a4ef39",
-        "translatedAt": "2026-02-26T01:50:00.558Z",
+        "hash": "cbf447f2f9cd",
+        "translatedAt": "2026-02-28T05:27:25.016Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
