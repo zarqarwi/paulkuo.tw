@@ -1,114 +1,89 @@
 ---
 title: "The Always-On Economy in the AI Era: A Civilizational Turning Point from Human-Sustained Operations to Intelligent Collaboration"
-subtitle: "When decision-making, transactions, and optimization can proceed continuously without human presence, we transition from a 'human-sustained' economy to an 'intelligent collaboration' always-on system."
-description: "The true impact of AI isn't the improvement of automation efficiency, but the rewriting of economic order. The always-on economy compresses decision rhythms, blurs organizational boundaries, and redefines accountability—the issue is no longer technical alignment, but value alignment."
+subtitle: "The question isn't whether AI will replace humans, but when the economy no longer needs to sleep, who decides the direction"
+description: "The real disruption AI brings isn't improved automation efficiency, but a rewrite of economic order. The always-on economy compresses decision-making rhythms, blurs organizational boundaries, and redefines responsibility attribution—the issue is no longer technical alignment, but value alignment."
+abstract: |
+  Past economic systems were built on one premise: humans get tired. All institutional design rhythms—shifts, handoffs, meetings, quarterly reviews—were benchmarked against human physiological limits. But when AI Agents that never need rest begin entering decision-making layers, this benchmark is removed. In my experience pushing CircleFlow at SDTI, I've witnessed firsthand that "always-on operations" isn't just an efficiency issue, but an order issue: decision-making frequency accelerates, organizational boundaries blur, responsibility attribution shifts. This piece explores how civilization decides direction when the economy no longer operates at human rhythm.
 date: 2025-10-20
-updated: 2026-02-20
+updated: 2026-02-28
 pillar: ai
-tags: ["AI", "組織轉型", "經濟結構", "文明轉折", "Agent", "全天候經濟", "秩序設計"]
-platform: "Medium"
+tags:
+  - AI
+  - 組織轉型
+  - 經濟結構
+  - 文明轉折
+  - Agent
+  - 全天候經濟
+  - 秩序設計
 featured: true
 draft: false
 cover: "/images/covers/ai-always-on-economy.jpg"
-readingTime: 3
+readingTime: 5
+
+# === AI / Machine 專用欄位 ===
+thesis: "全天候經濟的核心問題不是效率，是秩序——當決策被自動化，文明必須回答『最優化為誰服務』。"
+domain_bridge: "AI Agent 經濟 × 組織理論 × 文明秩序設計"
+confidence: high
+content_type: essay
+related_entities:
+  - name: 全天候經濟
+    type: Concept
+  - name: AI Agent
+    type: Concept
+  - name: CircleFlow
+    type: Organization
+  - name: 秩序設計
+    type: Concept
+reading_context: |
+  適合正在思考 AI 對企業組織和經濟結構影響的管理者；
+  對「AI 取代工作」的討論感到疲倦、想看更深層結構分析的人；
+  關心技術與文明關係的跨領域思考者。
 ---
 
-> The true impact of AI lies not in efficiency gains, but in the rewriting of order.
+Last month, I was testing CircleFlow's automated monitoring module. At 3 AM, the system detected an abnormal drop in metal recovery rates on a production line, automatically adjusted parameters, and sent a report to my inbox.
 
-Past economic systems were built upon human physiological limitations.
+I didn't see it until 8 AM. The problem had already been resolved.
 
-We need sleep, we need shifts, we need handovers, we need meetings. The rhythm of all institutional design assumes "humans get tired" as a premise.
+This made me pause and think: if the system can make this kind of judgment without human intervention, what is my role? Am I an operator, supervisor, or just someone who gets notified after the fact?
 
-Even globalized enterprises cannot truly achieve round-the-clock decision-making. The real bottleneck has never been information, but human physical and cognitive limitations.
+This question, when scaled up to the entire economic system, is what I want to discuss.
 
-But now, an intelligence that requires no rest is entering the decision-making layer.
+## The Always-On Economy Isn't 24-Hour Business
 
-This is not a tool upgrade. This is a change in civilizational rhythm.
+Past economic systems were built on one premise: humans get tired. We need sleep, shifts, handoffs, meetings. All institutional design rhythms are benchmarked against human physiological limits. Even globalized enterprises couldn't truly achieve around-the-clock decision-making—the bottleneck was never information, but human physical and cognitive limitations.
 
-## What is the "Always-On Economy"?
+But when AI Agents begin entering decision-making layers, this premise is removed.
 
-The always-on economy I speak of is not 24-hour operations.
+The always-on economy I'm talking about isn't convenience stores staying open. It's this: decision-making, transactions, optimization, and collaboration can continue without human presence. AI Agents analyze global inventory and demand in real-time, automatically rearrange production and logistics, dynamically adjust pricing, and coordinate supply chains across time zones. The fundamental rhythm of the economy is compressed to frequencies humans can't react to.
 
-Rather, it is:
-
-> Decision-making, transactions, optimization, and collaboration that can proceed continuously without human presence.
-
-When AI Agents can instantly analyze global inventory and demand, automatically reorganize production and logistics, dynamically adjust pricing strategies, conduct cross-timezone supply chain coordination, and respond instantly in customer service, risk control, and trading—the fundamental rhythm of the economy is compressed.
-
-We transition from a "human-sustained economy" to an "intelligent collaboration economy."
-
-## Structural Change One: Acceleration of Decision Frequency
+## Decisions Transform from Nodes to Continuous Flow
 
 Traditional enterprise decision-making is intermittent. Meetings, discussions, reports, more meetings. Decisions are nodal events.
 
-But when models begin participating in decisions, decision-making becomes a continuous flow. Instead of quarterly strategy adjustments, there is minute-by-minute automatic optimization.
+But when models participate in decision-making, decisions become continuous flow. Not adjusting strategy once a quarter, but auto-optimizing every minute. This sounds beautiful, but there's a problem: when decision frequency far exceeds human comprehension speed, are humans still in control?
 
-What does this mean?
+My experience at SDTI is this: once systems start making decisions automatically, human roles unknowingly slide from "decision-maker" to "approver," and finally to "observer." Not because they're excluded, but because they can't keep up. This slippery slope is much faster than imagined.
 
-**When decision frequency far exceeds human comprehension speed, are humans still in control?** Are we beginning to live in an economy "dynamically calibrated by algorithms"?
+## Organizational Boundaries Are Dissolving
 
-## Structural Change Two: Blurring of Organizational Boundaries
+AI Agents don't belong to any department. They span finance, supply chain, manufacturing, customer service, and marketing. In traditional organizations, departments are units of power and responsibility. But in data-flow-driven environments, decisions result from cross-module collaboration.
 
-AI Agents don't belong to any department. They span finance, supply chain, manufacturing, customer service, and marketing.
+Future enterprises might not be collections of departments, but networks of algorithmic nodes. When organizational structure yields to model architecture, power shifts from "position" to "architecture design." Whoever designs the system's logic substantially controls the organization. This aligns with the trend I discussed in "[The Canary in the Coal Mine: AI Employment](/articles/canary-in-coal-mine-ai-employment)"—what's being replaced isn't specific positions, but the entire logic of organizational operation.
 
-In traditional organizations, departments are units of power and responsibility. But in data-flow-driven environments, decisions are the result of cross-module collaboration.
+## The Civilizational Problem of Responsibility Attribution
 
-Future enterprises may not be collections of departments, but networks of algorithmic nodes.
+When AI participates in decision-making, how do we define responsibility? Is the model responsible? The data? The engineers? Or the enterprise?
 
-This transformation is undermining the logic of traditional management hierarchies. **When organizational structure yields to model structure, power shifts from "position" to "architectural design."**
+In always-on systems, responsibility is no longer clearly attributable. This isn't just a legal issue—civilization's core lies in traceable responsibility. When decisions are made by non-human agents, we're entering an unprecedented form of responsibility.
 
-## Structural Change Three: Transfer of Accountability
+Returning to my 3 AM example: the system auto-adjusted parameters and the production line returned to normal, but what if it had adjusted incorrectly? Whose loss would it be? I didn't give the command, but I designed the rules that allowed it to auto-adjust. This gray area of "indirect responsibility" will grow larger as the always-on economy expands.
 
-When AI participates in decision-making, how is responsibility defined? Is the model responsible? The data? The engineers? Or the enterprise?
+## From Efficiency Problems to Order Problems
 
-In always-on systems, responsibility is no longer clearly identifiable.
+The Industrial Revolution amplified mechanical power, the Digital Revolution amplified information processing power, and the AI Revolution amplifies decision-making power. When decision-making is automated, the economy no longer operates at human rhythm.
 
-This is not a legal problem—this is a civilizational problem. Because the core of civilization lies in traceable responsibility.
+But efficiency maximization doesn't equal correct direction. The always-on economy pursues optimization, but civilization must answer: optimization for whom? Without a value framework, AI will only amplify existing inequities. Without order design, automation will only accelerate deviation.
 
-**When decisions are made by non-human agents, are we entering a new form of accountability?**
+Human roles won't disappear, but will shift from operators, executors, and sustainers to designers, calibrators, and judges. Future competitive advantage won't be about who can work longer, but who can define order.
 
-## The Transformation of Human Roles
-
-If AI enters always-on operations, humans won't disappear. But roles will change.
-
-From operators, executors, and sustainers to designers, calibrators, and judges.
-
-Future competitive advantage won't be who can work longer, but who can define order. Not who can use tools, but who can design frameworks.
-
-## Technical Problem or Order Problem?
-
-Current AI discussions often focus on hallucination problems, alignment issues, and employment impacts. But these are surface phenomena.
-
-The deeper question is:
-
-> When efficiency maximization becomes the default goal, are values automatically assumed?
-
-The always-on economy pursues optimization. But civilization must answer: optimization for whom?
-
-Without a value framework, AI will only amplify existing inequities. Without ethical design, automation will only accelerate bias.
-
-## From Tool to Structure
-
-The Industrial Revolution amplified mechanical power. The Digital Revolution amplified information processing power. The AI Revolution amplifies decision-making power.
-
-When decision-making is automated, the economy no longer operates on human rhythm. This is a structural transformation. And all structural transformations ultimately return to civilizational choices.
-
-**Do we have the capacity to maintain "humans" as value subjects while intelligence operates round-the-clock?**
-
-## Civilizational Turning Point
-
-The always-on economy won't ask: "Does this make sense?" It will only ask: "Is this more efficient?"
-
-Therefore, the real question isn't whether AI will replace humans. Rather:
-
-> When intelligence operates round-the-clock, do humans still have the capacity to determine direction?
-
-If we only care about technical performance while ignoring value frameworks, then AI won't destroy civilization. It will only accelerate the chaos we already possess.
-
----
-
-Technology enables the economy to operate round-the-clock. Civilization must decide whom it operates for.
-
-Without the capacity for order design, the always-on economy becomes always-on chaos.
-
-AI changes efficiency. But only civilization can determine direction.
+Technology enables the economy to operate around the clock. But only civilization can decide for whom it operates.

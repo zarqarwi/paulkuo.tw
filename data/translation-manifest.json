@@ -80,11 +80,11 @@
     }
   },
   "ai-always-on-economy.md": {
-    "sourceHash": "2c0a8848374a",
+    "sourceHash": "0409ad09bf58",
     "translations": {
       "en": {
-        "hash": "3e9c67356c8e",
-        "translatedAt": "2026-02-23T17:56:58.284Z",
+        "hash": "58e245507573",
+        "translatedAt": "2026-02-28T05:11:57.324Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
