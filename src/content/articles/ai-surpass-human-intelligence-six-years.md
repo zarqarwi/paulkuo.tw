@@ -29,7 +29,7 @@ content_type: analysis
 
 Schmidt 當時說，「未來一年內，絕大多數人類程式設計師與高階數學研究人員將被 AI 取代。」這個說法在 2025 年五月聽起來很激進。到了 2026 年二月，它不再激進——它變成了矽谷的日常。
 
-Anthropic 的 Claude Code 在 2025 年 11 月 24 日更新後，開發者在聖誕假期試用，震驚到給它取了個名字叫「Claude Christmas」。不是因為它寫得比人快，而是因為它能獨立完成原本需要好幾週的專案。Anthropic 和 OpenAI 的工程師公開說，AI 現在寫了他們 100% 的程式碼。微軟說 30%，Google 說超過 25%。Meta 的 Zuckerberg 放話年中前要讓 AI 寫大部分的程式碼。
+Anthropic 的 Claude Code 搭載 2025 年 11 月 24 日發布的 Opus 4.5 模型後，開發者在聖誕假期試用，震驚到給它取了個名字叫「Claude Christmas」。不是因為它寫得比人快，而是因為它能獨立完成原本需要好幾週的專案。Anthropic 和 OpenAI 的工程師公開說，AI 現在寫了他們 100% 的程式碼。微軟說 30%，Google 說超過 25%。Meta 的 Zuckerberg 放話年中前要讓 AI 寫大部分的程式碼。
 
 MIT Technology Review 把「生成式程式設計」列入 2026 年十大突破技術。SWE-bench（一個測試 AI 修 bug 能力的標準測試）從 2024 年八月的 33% 正確率，一年後飆到超過 70%。UC Berkeley 的電腦科學教授 James O'Brien 說了一句讓人不舒服的話：「再過一年，我預期 AI 寫程式會比任何人類都好。」
 
