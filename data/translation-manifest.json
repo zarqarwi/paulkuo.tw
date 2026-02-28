@@ -100,11 +100,11 @@
     }
   },
   "ai-social-intelligence-psychologist.md": {
-    "sourceHash": "c2136515315e",
+    "sourceHash": "80f4ff373c2f",
     "translations": {
       "en": {
-        "hash": "cb0e524c7832",
-        "translatedAt": "2026-02-23T17:57:14.902Z",
+        "hash": "0f43bb64bc93",
+        "translatedAt": "2026-02-28T05:32:24.133Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
