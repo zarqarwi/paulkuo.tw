@@ -205,9 +205,6 @@ const i = {
       </footer>
     )}
 
-    {/* === Production Cost === */}
-    <ArticleCost slug={currentSlug} lang={lang} />
-
     {/* === Author Card === */}
     <div class="author-card">
       <img src="/paul-photo.png" alt="Paul Kuo" class="author-avatar" width="64" height="64" loading="lazy" />
@@ -271,5 +268,8 @@ const i = {
     <div class="article-back">
       <a href={`${basePath}/blog`} class="back-to-blog">← {i.backToAll}</a>
     </div>
+
+    {/* === Production Cost (bottom of article) === */}
+    <ArticleCost slug={currentSlug} lang={lang} />
   </article>
 </BaseLayout>

@@ -78,17 +78,18 @@ const i18n = {
   twd: lang === 'en' ? 'Cost (TWD)' : lang === 'ja' ? '費用 (TWD)' : lang === 'zh-cn' ? '费用 (TWD)' : '費用 (TWD)',
   total: lang === 'en' ? 'Total' : lang === 'ja' ? '合計' : '合計',
   note: lang === 'en'
-    ? 'This article was produced with AI-assisted translation and image generation. Full cost data is tracked transparently.'
+    ? 'Written by the author. AI assisted with multilingual translation and cover image generation. All costs tracked transparently.'
     : lang === 'ja'
-    ? 'この記事はAI翻訳と画像生成を活用して制作されました。費用データは透明に追跡されています。'
+    ? '本記事は著者が執筆し、AIが多言語翻訳とカバー画像生成を担当しました。費用は透明に追跡されています。'
     : lang === 'zh-cn'
-    ? '本文使用 AI 辅助翻译与图片生成。所有费用数据透明追踪。'
-    : '本文使用 AI 輔助翻譯與圖片生成。所有費用資料透明追蹤。',
+    ? '本文由作者撰写，AI 辅助完成多语翻译与封面图生成。所有费用数据透明追踪。'
+    : '本文由作者撰寫，AI 輔助完成多語翻譯與封面圖生成。所有費用資料透明追蹤。',
 };
 ---
 
 {hasCosts && (
   <aside class="article-cost" aria-label={i18n.title}>
+    <hr class="cost-divider" />
     <h3 class="cost-title">{i18n.title}</h3>
     <table class="cost-table">
       <thead>
@@ -121,11 +122,17 @@ const i18n = {
 
 <style>
   .article-cost {
-    margin: 2.5rem 0;
-    padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.02);
+    margin: 2.5rem 0 0 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .cost-divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 0 0 1.5rem 0;
   }
 
   .cost-title {
@@ -190,8 +197,12 @@ const i18n = {
 
   /* Light theme support */
   :global([data-theme="light"]) .article-cost {
-    border-color: rgba(0, 0, 0, 0.08);
-    background: rgba(0, 0, 0, 0.02);
+    border-color: transparent;
+    background: transparent;
+  }
+
+  :global([data-theme="light"]) .cost-divider {
+    border-top-color: rgba(0, 0, 0, 0.1);
   }
 
   :global([data-theme="light"]) .cost-title {
