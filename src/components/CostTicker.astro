@@ -7,6 +7,11 @@ import { version } from '../../package.json';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
+// Taiwan timezone helper (Cloudflare Pages builds in UTC)
+const _tw = new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Taipei' });
+const todayTW = _tw.slice(0, 10); // YYYY-MM-DD
+const thisMonthTW = _tw.slice(0, 7); // YYYY-MM
+
 // Fitbit data
 let fitbitSteps = 0;
 let fitbitGoal = 10000;
@@ -32,7 +37,7 @@ if (existsSync(costsPath)) {
 
 // Aggregate data at build time
 const totalUSD = records.reduce((s, r) => s + (r.costUSD || 0), 0);
-const thisMonth = new Date().toISOString().slice(0, 7);
+const thisMonth = thisMonthTW;
 const monthRecords = records.filter(r => r.timestamp?.startsWith(thisMonth));
 const monthUSD = monthRecords.reduce((s, r) => s + (r.costUSD || 0), 0);
 
@@ -84,9 +89,8 @@ if (existsSync(timingPath)) {
   try {
     const timing = JSON.parse(readFileSync(timingPath, 'utf-8'));
     aiHoursMonth = Math.round(timing.month_summary?.total_ai_hours || 0);
-    // Get today's hours
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const todayEntry = (timing.daily || []).find((d: any) => d.date === todayStr);
+    // Get today's hours (using Taiwan timezone)
+    const todayEntry = (timing.daily || []).find((d: any) => d.date === todayTW);
     aiHoursToday = todayEntry ? Math.round(todayEntry.ai_hours * 10) / 10 : 0;
   } catch {}
 }
