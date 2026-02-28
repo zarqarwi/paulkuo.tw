@@ -557,13 +557,13 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 /* ===== ARTICLE — English Typography ===== */
 html[lang="en"] .article-body p {
   font-size: 1.05rem;
-  line-height: 1.45;
+  line-height: 1.35;
   color: var(--text-primary);
   margin-bottom: 10px;
   letter-spacing: normal;
 }
 html[lang="en"] .article-body li {
-  line-height: 1.45;
+  line-height: 1.35;
 }
 
 /* ===== ARTICLE — Traditional Chinese Typography ===== */
@@ -582,7 +582,7 @@ html[lang="zh-TW"] .article-body {
 html[lang="zh-Hant"] .article-body p,
 html[lang="zh-TW"] .article-body p {
   font-size: 1.05rem;
-  line-height: 1.4;
+  line-height: 1.25;
   margin-bottom: 0.5em;
   color: var(--text-primary);
   letter-spacing: normal;
@@ -597,12 +597,12 @@ html[lang="zh-TW"] .article-body h3 {
 }
 html[lang="zh-Hant"] .article-body li,
 html[lang="zh-TW"] .article-body li {
-  line-height: 1.4;
+  line-height: 1.25;
   margin-bottom: 6px;
 }
 html[lang="zh-Hant"] .article-body blockquote p,
 html[lang="zh-TW"] .article-body blockquote p {
-  line-height: 1.4;
+  line-height: 1.25;
 }
 html[lang="zh-Hant"] .hero-tagline,
 html[lang="zh-TW"] .hero-tagline,
@@ -611,7 +611,7 @@ html[lang="zh-TW"] .manifesto-body,
 html[lang="zh-Hant"] .about-content p,
 html[lang="zh-TW"] .about-content p {
   letter-spacing: normal;
-  line-height: 1.4;
+  line-height: 1.25;
   text-align: justify;
   text-justify: inter-ideograph;
 }
@@ -632,14 +632,14 @@ html[lang="zh-CN"] .article-body {
 html[lang="zh-Hans"] .article-body p,
 html[lang="zh-CN"] .article-body p {
   font-size: 1.05rem;
-  line-height: 1.4;
+  line-height: 1.25;
   margin-bottom: 0.5em;
   color: var(--text-primary);
   letter-spacing: normal;
 }
 html[lang="zh-Hans"] .article-body li,
 html[lang="zh-CN"] .article-body li {
-  line-height: 1.4;
+  line-height: 1.25;
 }
 html[lang="zh-Hans"] .hero-tagline,
 html[lang="zh-CN"] .hero-tagline,
@@ -648,7 +648,7 @@ html[lang="zh-CN"] .manifesto-body,
 html[lang="zh-Hans"] .about-content p,
 html[lang="zh-CN"] .about-content p {
   letter-spacing: normal;
-  line-height: 1.4;
+  line-height: 1.25;
   text-align: justify;
   text-justify: inter-ideograph;
 }
@@ -667,18 +667,18 @@ html[lang="ja"] .article-body {
 }
 html[lang="ja"] .article-body p {
   font-size: 1.05rem;
-  line-height: 1.55;
+  line-height: 1.35;
   margin-bottom: 0.7em;
   color: var(--text-primary);
 }
 html[lang="ja"] .article-body li {
-  line-height: 1.55;
+  line-height: 1.35;
 }
 html[lang="ja"] .hero-tagline,
 html[lang="ja"] .manifesto-body,
 html[lang="ja"] .about-content p {
   letter-spacing: 0.03em;
-  line-height: 1.55;
+  line-height: 1.35;
   text-align: justify;
   text-justify: inter-ideograph;
   font-feature-settings: "palt" 1;
