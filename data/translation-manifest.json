@@ -1638,5 +1638,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "super-learner-ai-era.md": {
+    "sourceHash": "5df651f7b928",
+    "translations": {
+      "en": {
+        "hash": "3ff6e657d447",
+        "translatedAt": "2026-02-28T13:34:34.597Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "dc8246c74082",
+        "translatedAt": "2026-02-28T13:35:44.679Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "a9a2356da898",
+        "translatedAt": "2026-02-28T13:36:13.249Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
