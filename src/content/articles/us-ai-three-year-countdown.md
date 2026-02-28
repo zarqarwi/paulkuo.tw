@@ -1,7 +1,11 @@
 ---
 title: "美國 AI 產業的三年倒數：一場正在兌現的預言"
+subtitle: "技術面超速，信任面落後——這才是真正的峽谷"
 description: "2025 年 Altman 畫了一張三年路線圖，如今我們已經走到第二年。從 L3 Agent 到中東佈局，哪些預言正在成真、哪些正在變形？"
+abstract: |
+  Sam Altman 的三年倒數走到第二年，我重新檢視這份時間表的兌現進度。L3 Agent 能力已到但可靠性未到、AGI 敘事從神奇瞬間轉向漸進式覺醒、星際之門從簡報變成數千億美元合約、中東資源換技術正在重塑地緣秩序。作為每天用 AI 處理工作的人，我想搞清楚的不是 Altman 是不是先知，而是我們到底走到哪了——以及台灣在這個棋盤上的位置。
 date: 2026-02-26
+updated: 2026-02-28
 pillar: ai
 tags:
   - AI趨勢
@@ -13,10 +17,26 @@ cover: "/images/covers/us-ai-three-year-countdown.jpg"
 featured: false
 draft: false
 readingTime: 6
+
+# === AI / Machine 專用欄位 ===
 thesis: "Altman 的三年倒數走到第二年，技術面超速但信任面落後——AI 正在變成優秀的研究助理，但距離研究者還有本質差距，而實體世界的容錯空間接近零。"
-abstract: "追蹤 Sam Altman 2025 年三年路線圖的兌現進度：L3 Agent 能力已到但可靠性未到、AGI 敘事從神奇瞬間轉向漸進式覺醒、星際之門從簡報變成數千億美元合約、中東資源換技術重塑地緣秩序。台灣握著先進製程命脈，但在 AI 應用端和能源端都不是主角。"
-domain_bridge: "從 OpenAI 五級模型的進展追蹤出發，串聯 GPT-5 系列迭代、基礎建設軍備競賽、中東地緣佈局，落地到台灣在 AI 價值鏈的結構性落差。"
+domain_bridge: "OpenAI 技術路線圖 × 地緣政治資源重組 × 台灣半導體戰略定位"
+confidence: high
 content_type: analysis
+related_entities:
+  - name: Sam Altman
+    type: Person
+  - name: OpenAI
+    type: Organization
+  - name: 星際之門計畫
+    type: Concept
+  - name: AGI
+    type: Concept
+  - name: Jakub Pachocki
+    type: Person
+reading_context: |
+  適合關注 AI 產業走向的策略工作者；想理解美國 AI 路線圖對台灣意味著什麼的人；
+  對 AGI 時間表感到好奇但希望看到務實分析而非炒作的讀者。
 ---
 
 去年五月，Sam Altman 在紅杉資本的 AI 峰會上，丟出一份三年倒數時間表：2025 是助理元年，2026 進入科研，2027 踏入實體世界。
@@ -55,7 +75,7 @@ Altman 的最新說法是：「AGI 不是某個神奇的瞬間，更像一個過
 
 本質上，這是一筆交易：美國出技術和晶片，中東出錢和能源。AI 訓練吃電吃得兇，而中東有全世界最便宜的能源。這個組合如果成立，它改變的不只是 AI 產業的供應鏈，而是全球權力的重心。
 
-台灣在這個棋盤上的位置呢？我們握著先進製程的命脈，但在 AI 應用端和能源端都不是主角。這個落差，才是真正該焦慮的。
+台灣在這個棋盤上的位置呢？我們握著先進製程的命脈，但在 AI 應用端和能源端都不是主角。我在〈[台灣半導體的十倍躍遷](/articles/taiwan-semiconductor-tenfold-leap)〉裡談過，製程優勢是護城河也是天花板——如果我們只守著代工，當 AI 價值鏈往應用端和能源端傾斜時，護城河會變成孤島。這個落差，才是真正該焦慮的。
 
 ## 倒數第二年的清醒觀察
 
