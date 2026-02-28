@@ -20,11 +20,11 @@
     }
   },
   "ai-agent-planning-guide.md": {
-    "sourceHash": "02cab28488e8",
+    "sourceHash": "4f22810e8831",
     "translations": {
       "en": {
-        "hash": "ce4ba9c57f41",
-        "translatedAt": "2026-02-24T00:18:46.157Z",
+        "hash": "514a582caa1d",
+        "translatedAt": "2026-02-28T05:43:26.059Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
