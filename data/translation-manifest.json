@@ -1360,11 +1360,11 @@
     }
   },
   "work-trend-index-2025-taiwan.md": {
-    "sourceHash": "800fc407c51c",
+    "sourceHash": "1f94ce799776",
     "translations": {
       "en": {
-        "hash": "e3654f899186",
-        "translatedAt": "2026-02-26T04:15:12.479Z",
+        "hash": "71401f175c8c",
+        "translatedAt": "2026-02-28T12:19:37.500Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
