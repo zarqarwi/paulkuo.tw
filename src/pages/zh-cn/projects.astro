@@ -1,0 +1,89 @@
+---
+/**
+ * /zh-cn/projects — SSR Simplified Chinese Projects page
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="项目 — Paul Kuo" lang="zh-CN" description="在结构性问题中工作。">
+  <div class="section-container">
+    <div class="blog-hero">
+      <h1>项目</h1>
+      <p>在结构性问题中工作。</p>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card circleflow">
+        <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
+        <h2>CircleFlow</h2>
+        <p>AI 驱动的循环经济数据基础设施。连接废弃物产生者与资源化业者，用数据重建产业物质流的可见性与可信度。</p>
+        <div class="project-tags">
+          <span class="project-tag">循环经济</span>
+          <span class="project-tag">AI</span>
+          <span class="project-tag">平台</span>
+          <span class="project-tag">ESG</span>
+        </div>
+        <div class="project-strategic">
+          <strong>结构意义</strong>
+          <span>工业文明的线性模型正在耗尽它的物质基础。CircleFlow 处理的不只是废弃物媒合，而是重建「物质秩序」——让资源的流向、价值与归属重新变得可追踪、可信任、可治理。</span>
+        </div>
+      </div>
+      <div class="project-card sdti">
+        <div class="project-icon" style="background:rgba(180,83,9,0.1)">🤝</div>
+        <h2>台日产业与技术整合</h2>
+        <p>在制造、生医技术、循环再利用与跨境贸易等领域推动台日合作。关注的不只是产业媒合，而是如何在不同制度与文化之间建立长期信任，让技术与价值在更大的秩序中流动。</p>
+        <div class="project-tags">
+          <span class="project-tag">制造</span>
+          <span class="project-tag">生医</span>
+          <span class="project-tag">循环再利用</span>
+          <span class="project-tag">跨境贸易</span>
+          <span class="project-tag">信任结构</span>
+        </div>
+        <div class="project-strategic">
+          <strong>结构意义</strong>
+          <span>产业合作跨越国界时，障碍往往不在技术，而在制度、文化与风险认知的差异。这项工作处理的是信任秩序——如何在不同文明语境中建立可持续的合作结构，让技术与价值的流动成为长期制度，而非短期机会。</span>
+        </div>
+      </div>
+      <div class="project-card debate">
+        <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
+        <h2>多模型认知协作框架</h2>
+        <p>让多个语言模型对同一议题进行结构化辩论与交叉验证，建立比单一模型更可靠的认知基础。</p>
+        <div class="project-tags">
+          <span class="project-tag">多代理</span>
+          <span class="project-tag">认知基础设施</span>
+        </div>
+        <div class="project-strategic">
+          <strong>结构意义</strong>
+          <span>单一模型的输出是观点，多模型的碰撞才接近判断。这个框架处理的是认知秩序——当信息的生产速度远超人类的处理能力，个体如何维持独立思考与可靠决策的结构条件。</span>
+        </div>
+      </div>
+      <div class="project-card brand">
+        <div class="project-icon" style="background:rgba(220,38,38,0.1)">📡</div>
+        <h2>跨平台内容基础设施</h2>
+        <p>当话语权被算法垄断，个体的独立表达需要自己的基础设施。</p>
+        <div class="project-tags">
+          <span class="project-tag">个体基础设施</span>
+          <span class="project-tag">独立发声</span>
+        </div>
+        <div class="project-strategic">
+          <strong>结构意义</strong>
+          <span>话语秩序正在被平台与算法重新分配。这个基础设施处理的问题是：一个人如何在不依赖任何单一平台的前提下，维持思想输出的独立性与持续性。</span>
+        </div>
+        <div class="project-sublinks">
+          <a href="/dashboard" class="project-sublink">📊 API 成本仪表板</a>
+          <a href="/health/fitbit" class="project-sublink">🛏️ Fitbit 单源分析</a>
+          <a href="/health/dual" class="project-sublink">🏥 双装置整合分析</a>
+          <a href="/health/multi" class="project-sublink">🔬 多源分析（规划中）</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collaboration CTA -->
+    <section class="projects-cta" style="margin-top:60px;padding:48px 32px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;text-align:center;">
+      <h2 style="font-size:1.6rem;margin-bottom:12px;">想一起做点有结构意义的事？</h2>
+      <p style="color:var(--text-secondary);max-width:560px;margin:0 auto 24px;line-height:1.7;">如果你在循环经济、AI 应用、台日产业合作等领域有想法或需求，欢迎直接联系。</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="/zh-cn/#contact" class="btn-primary" style="text-decoration:none;">联系 Paul</a>
+        <a href="/zh-cn/about" class="btn-secondary" style="text-decoration:none;">了解背景</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
