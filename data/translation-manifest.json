@@ -320,11 +320,11 @@
     }
   },
   "dharma-instrument-mother-grace.md": {
-    "sourceHash": "36e8f4828ea6",
+    "sourceHash": "5ef0dea19d00",
     "translations": {
       "en": {
-        "hash": "81b18c38a38f",
-        "translatedAt": "2026-02-23T17:59:47.417Z",
+        "hash": "83d51d0b0d30",
+        "translatedAt": "2026-03-01T16:53:31.032Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -520,11 +520,11 @@
     }
   },
   "financial-crisis-market-humility.md": {
-    "sourceHash": "7522c698225f",
+    "sourceHash": "e6fb92d02ecf",
     "translations": {
       "en": {
-        "hash": "6ad30b22debf",
-        "translatedAt": "2026-02-23T18:02:25.182Z",
+        "hash": "67febaa58306",
+        "translatedAt": "2026-03-01T16:54:05.473Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -700,11 +700,11 @@
     }
   },
   "life-you-envy-is-miracle.md": {
-    "sourceHash": "e74dff2e8df5",
+    "sourceHash": "159aca11fc84",
     "translations": {
       "en": {
-        "hash": "6bc8347fb622",
-        "translatedAt": "2026-02-23T18:04:25.494Z",
+        "hash": "5ef46249b050",
+        "translatedAt": "2026-03-01T16:54:37.218Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1000,11 +1000,11 @@
     }
   },
   "riding-wave-or-drowning.md": {
-    "sourceHash": "5670a755b586",
+    "sourceHash": "3a4f7cf3dfd0",
     "translations": {
       "en": {
-        "hash": "757173566f31",
-        "translatedAt": "2026-02-23T18:08:16.008Z",
+        "hash": "bc569bd42c77",
+        "translatedAt": "2026-03-01T16:55:11.762Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
