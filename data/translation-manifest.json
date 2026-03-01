@@ -1280,11 +1280,11 @@
     }
   },
   "agi-becoming-complete-human.md": {
-    "sourceHash": "636654d9b505",
+    "sourceHash": "e80115c707c0",
     "translations": {
       "en": {
-        "hash": "a0281bbb7275",
-        "translatedAt": "2026-02-24T16:51:57.251Z",
+        "hash": "0149645db3f9",
+        "translatedAt": "2026-03-01T12:17:44.956Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -1620,11 +1620,11 @@
     }
   },
   "code-is-cheap-vibe-coding-to-claws.md": {
-    "sourceHash": "92fb3c94dc42",
+    "sourceHash": "c9d80d2adc03",
     "translations": {
       "en": {
-        "hash": "7186bbd6f833",
-        "translatedAt": "2026-02-27T13:31:11.892Z",
+        "hash": "195052070660",
+        "translatedAt": "2026-03-01T12:18:19.532Z",
         "model": "claude-sonnet-4"
       },
       "ja": {

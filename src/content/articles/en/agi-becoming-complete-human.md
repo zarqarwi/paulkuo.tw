@@ -1,9 +1,9 @@
 ---
 title: "AGI is Coming: Becoming a More Complete Human is the Best Preparation"
-subtitle: "When machines handle all the 'work,' you will be liberated to pursue your 'calling'"
-description: "Google DeepMind CEO Hassabis and Pichai have given a rare 2030 AGI timeline. Facing this prediction, the most rational preparation is not panic, not resistance, but to do your utmost to become a more complete, deeper, more uniquely human being. From co-evolutionary symbiosis, questioning abilities, embodied intelligence to meaning construction—this is an AGI preparation guide written for everyone."
+subtitle: "When machines take on all the 'work,' you will be freed to pursue your 'calling'"
+description: "Google DeepMind CEO Hassabis and Pichai have given a rare 2030 AGI timeline. Facing this prediction, the most reasonable preparation is not panic, not resistance, but doing everything you can to become a more complete, profound, and uniquely human being. From co-evolution to questioning ability, from embodied intelligence to meaning-making—this is an AGI preparation guide for everyone."
 abstract: |
-  In mid-2025, Google DeepMind CEO Hassabis and Google CEO Pichai gave a rare, explicit AGI timeline: before 2030. This prediction isn't surprising, yet it sounds like a starting gun, forcing everyone to face a fundamental question—when machines surpass humans in almost all cognitive tasks, what exactly is the value of "being human"? The answer lies not in resistance or panic, but in rediscovering uniquely human capabilities: asking questions that have never been asked, constructing subjective meaning, and drawing on that uncodifiable wisdom born of bodies, memories, and lived experience. AGI is not an endpoint—it's a mirror reflecting our eternal and unique human core.
+  In mid-2025, Google DeepMind CEO Hassabis and Google CEO Pichai made a rare explicit AGI timeline: before 2030. This prediction isn't surprising, yet it's like a starting pistol, forcing everyone to face a fundamental question—when machines surpass humans in almost all cognitive tasks, where exactly lies the value of "being human"? The answer isn't in resistance or panic, but in rediscovering uniquely human capabilities: asking questions that haven't been asked, constructing subjective meaning, and those non-codifiable wisdoms that come from our bodies, memories, and life experiences. AGI isn't the endpoint—it's a mirror, reflecting our eternal and unique human core.
 date: 2025-06-09
 updated: 2026-02-25
 pillar: ai
@@ -45,67 +45,67 @@ reading_context: |
   不是給你技術路線圖，而是給你一個重新理解自己的框架。
 ---
 
-In June 2025, Hassabis and Pichai said virtually the same thing: AGI will arrive before 2030.
+In June 2025, Hassabis and Pichai said almost the same thing at nearly the same time: AGI will arrive before 2030.
 
-These two men aren't selling dreams. One leads DeepMind, holding the technological pathway closest to general intelligence; the other is Google's CEO. When they rarely give explicit timelines, this isn't prediction—it's more like confirming internal progress. For those who've been tracking AI development, this timeline isn't surprising. The real question worth asking isn't "Will AGI come?" but rather—when it arrives, what do you plan to do with yourself?
+These two aren't selling dreams. One leads DeepMind, holding the technical path closest to general intelligence; the other is Google's CEO. When they rarely provide explicit timelines, this isn't prediction—it's more like confirmation of internal progress. For those who've been tracking AI development, this timeline isn't surprising. The question worth asking isn't "Will AGI come?" but rather—when it does, what do you plan to do with yourself?
 
-## We Were Never Standing Opposite the Machines
+## We Never Stood Opposite Machines
 
-I deeply appreciate Kevin Kelly's worldview. Using his framework, the answer is actually quite clear: humans have never stood in opposition to tools. From stone implements, writing, printing presses to the internet, with each technological leap, we've co-evolved with our tools. We shaped tools, and tools shaped us in return. AGI isn't the end of this story—it's a new chapter. However, many people remain stuck in the binary opposition of "humans vs. AI." This contest ended the moment GPT appeared—we cannot possibly win against machines in dimensions of memory, computation, and knowledge retrieval. But this was never the battle we should have been fighting.
+I deeply appreciate Kevin Kelly's worldview. If we use his framework to examine this, the answer is actually clear: humans have never stood opposite their tools. From stone implements, writing, printing presses to the internet, with each technological leap, we evolved alongside our tools. We shaped them, and they shaped us in return. AGI isn't the end of this story—it's a new chapter. Yet many people remain stuck in the "humans vs. AI" binary opposition. This contest ended the moment GPT appeared—we cannot possibly win against machines on dimensions like memory, computation, and knowledge retrieval. But this was never the battle we should have been fighting.
 
-What we should do is learn to dance with this new species. Treat AI like an all-knowing intern who needs explicit instructions. Hand over repetitive, knowledge-based work to it, then spend your time on higher-order concerns.
+What we should do is learn to dance with this new species. Treat AI as an omniscient intern who needs clear instructions. Hand over repetitive, knowledge-based work to it, then spend your time on higher-level pursuits.
 
-My own experience has been that since treating Claude as a daily collaborator, the time I've saved hasn't made life easier—instead, it's forced me to confront a more fundamental question: if machines can do all these things, where exactly should I be spending my energy?
+My own experience has been that since making Claude my daily collaborator, the time I've saved hasn't made me more relaxed—it's forced me to confront a more fundamental question: if machines can do all these things, where exactly should I focus my energy?
 
-This question is more worthy of serious consideration than any technological trend.
+This question deserves more serious attention than any technological trend.
 
-## When All Answers Are at Your Fingertips, Value Lies in Asking Questions
+## When All Answers Are Within Reach, Value Lies in Asking Questions
 
-Pichai used a precise metaphor: "Jagged Intelligence." AI currently performs extraordinarily at the peaks of facts and logic, yet stumbles through the valleys of common sense and understanding. But these jagged edges will gradually be smoothed away.
+Karpathy introduced a precise metaphor in 2024: "Jagged Intelligence," which Pichai later referenced. AI currently performs extraordinarily at the peaks of facts and logic, yet stumbles in the valleys of common sense and understanding. But these jagged edges will gradually be smoothed out.
 
-When AI can answer almost any question (which really isn't far off)—where does human value lie?
+When AI can answer almost any question (which isn't far off)—where is human value?
 
 > In asking the question that hasn't yet been asked.
 
-A good question springs from curiosity, empathy, personal experience, and unique values. AGI can synthesize the contents of ten thousand books, but it lacks your childhood memories of watching fireflies in the countryside, your heartbreak, your complex love for this imperfect world.
+A good question springs from curiosity, empathy, personal experience, and unique values. AGI can synthesize the content of ten thousand books, but it lacks your childhood memories of watching fireflies in the countryside, your heartbreak, your complex love for this imperfect world.
 
 These are the wellsprings of great questions.
 
-While everyone asks "What will AI do?", we should be asking "What do I want to do with AI?" This difference seems small but represents the vast gulf between agency and passivity. Being an AI user versus being a bystander pushed along by AI—the choice has always been in your hands.
+While everyone asks "What will AI do?" the better question is "What do I want to do with AI?" This difference seems minor, yet it's the vast gulf between active and passive. Being an AI user versus being a bystander pushed along by AI—the choice has always been in your hands.
 
 ## Invest in Capabilities That Cannot Be Quantified
 
-AI's learning foundation is data. Everything that can be digitized, recorded, and quantified will eventually be mastered by AI. So what can't it learn?
+AI's learning foundation is data. Everything that can be digitized, recorded, and quantified will eventually be learned by AI. So what can't it learn?
 
-**1. Embodied wisdom.** Pottery, woodworking, gardening, cooking—these skills requiring touch, intuition, and bodily memory are AI's weak points. These aren't just for pleasure; they train the non-linguistic, non-analytical parts of the brain. Zen's concept of "body-mind unity" paradoxically becomes the most cutting-edge survival strategy in the AGI era.
+1. **Embodied wisdom.** Pottery, woodworking, gardening, cooking—skills requiring touch, intuition, and bodily memory are AI's weak spots. These aren't just for pleasure; they train the non-linguistic, non-analytical parts of the brain. Zen's teaching of "mind-body unity" becomes the most cutting-edge survival strategy in the AGI era.
 
-**2. Genuine human connection.** In a world surrounded by screens and virtual avatars, the ability to provide others with warmth, trust, and belonging becomes invaluably precious. Leadership, empathy, face-to-face communication—these aren't soft skills, they're the hardest currency in the AI age.
+2. **Genuine human connection.** In a world surrounded by screens and virtual avatars, the ability to provide others with warmth, trust, and belonging becomes immensely precious. Leadership, empathy, face-to-face communication—these aren't soft skills, they're the hardest currency in the AI age.
 
-**3. Cross-disciplinary creativity.** For example, combining art with engineering, philosophy with business. AGI might generate a Van Gogh-style painting, but it cannot possess Van Gogh's life experiences or pioneer an entirely new artistic movement. True innovation comes from your unique life experiences and perspectives.
+3. **Cross-disciplinary creativity.** For instance, combining art with engineering, or philosophy with business. AGI might generate a Van Gogh-style painting, but it cannot possess Van Gogh's life experience, nor pioneer an entirely new artistic movement. True innovation comes from your unique life experiences and perspectives.
 
-The value of these capabilities doesn't lie in being "irreplaceable by AI"—such defensive thinking is too passive. Their value lies in making us more "human." When efficiency is no longer the sole pursuit, when productivity is dramatically enhanced by AI, human meaning will return to experience, feeling, and creating beauty—to our essence.
+The value of these capabilities isn't that they "cannot be replaced by AI"—such defensive thinking is too negative. Their value lies in making us more "human." When efficiency is no longer the sole pursuit, when productivity is vastly enhanced by AI, human meaning will return to experience, feeling, and creating beauty—these essentials.
 
-## The Only Skill That Never Becomes Obsolete
+## The Only Skill That Won't Become Obsolete
 
-AGI's arrival means the half-life of knowledge will drastically shorten. The professional skills you learn today may become irrelevant in five years. The only skill that never becomes obsolete is learning how to learn.
+AGI's arrival means the half-life of knowledge will rapidly shrink. Professional skills you learn today might become irrelevant in five years. The only skill that won't become obsolete is learning how to learn.
 
-Get comfortable with being in a state of "knowing nothing," and feel excited rather than anxious about it. AGI will be our best learning partner—it can create customized learning paths and explain complex concepts. But the key to starting the learning engine—curiosity and humility—must remain in our hands.
+Become comfortable with being in a state of "knowing nothing," and feel excited rather than anxious about it. AGI will be our best learning partner—it can create customized learning paths and explain complex concepts. But the key to starting the learning engine—curiosity and humility—must be grasped by ourselves.
 
-Zen's concept of "beginner's mind" is particularly applicable here: maintaining the freshness and openness of first encounter each time we face something new. In the AGI era, this mindset is no longer philosophical cultivation—it's a survival necessity.
+Zen's concept of "beginner's mind" is particularly relevant here: maintaining the freshness and openness of first contact every time you face something new. In the AGI era, this mindset is no longer philosophical cultivation but a survival necessity.
 
 ## AGI is a Mirror
 
-When AI handles most information processing and decision-making, humans' most distinctive ability is "meaning-making." The same data, the same events, different people will interpret and feel differently. AI can analyze a song's chord progressions and rhythmic patterns, but only you can explain why this song reminds you of a particular summer with someone special. AI can calculate the most efficient city planning, but only residents can define what "livable" means. Subjective meaning construction is the very foundation of human civilization.
+When AI handles most information processing and decision-making, humanity's most unique capability is "meaning-making." The same data, the same events will have different interpretations and emotional resonance for different people. AI can analyze a song's chord progressions and rhythmic patterns, but only you can say why this song reminds you of a particular summer with someone special. AI can calculate the most efficient urban planning, but only residents can define what "livable" means. Subjective meaning construction is the very foundation of human civilization.
 
-Hassabis speaks of using AI to help humans colonize the galaxy. This isn't science fiction—it's an expansion of our thinking framework. AGI's arrival brings its most powerful effect: forcing us to consider what we, as humans, actually want to do.
+Hassabis speaks of using AI to help humans colonize the galaxy. This isn't science fiction—it's an expansion of our thinking framework. AGI's arrival has the most powerful effect of forcing us to consider: as humans, what do we actually want to do?
 
-When machines handle almost all "work," we will be liberated to pursue our "calling."
+When machines take on almost all "work," we will be liberated to pursue our "calling."
 
-So don't worry about whether your job will be replaced. Worry about this: if you had the world's smartest partner, but didn't know where to take it or what questions to ask it.
+So don't worry about whether your job will be replaced. Worry instead about this—if you have the world's smartest partner, but you don't know where to take it or what questions to ask it.
 
 ---
 
-AGI is a mirror that reflects not our obsolescence, but our eternal and unique core value as humans. Technological progress has never been about making humans redundant—it's about making humans more human. Start polishing that mirror now. Let it reflect a deeper, more complete you when 2030 arrives.
+AGI is a mirror that reflects not our obsolescence, but our eternal and unique core value as humans. Technological progress was never meant to make humans redundant, but to make humans more human. Start polishing that mirror now. Let it reflect a deeper, more complete you when 2030 arrives.
 
 ---
 
