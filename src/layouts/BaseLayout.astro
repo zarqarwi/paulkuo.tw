@@ -96,6 +96,44 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   <link rel="stylesheet" href={`/styles/global.css?v=${Date.now().toString(36)}`}>
   <link rel="stylesheet" href={`/styles/cjk-fixes.css?v=${Date.now().toString(36)}`}>
   {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
+  <!-- Site-level Person & WebSite schema (resolves @id references from article JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://paulkuo.tw/#person",
+        "name": "Paul Kuo",
+        "alternateName": "郭曜郎",
+        "url": "https://paulkuo.tw",
+        "image": "https://paulkuo.tw/paul-photo.png",
+        "jobTitle": "Commercial Integration & AI Digital Development Director",
+        "worksFor": {
+          "@type": "Organization",
+          "name": "SDTI 佳龍科技",
+          "url": "https://www.sdti.com.tw"
+        },
+        "knowsAbout": ["Circular Economy", "AI Systems", "Semiconductor", "Theology"],
+        "sameAs": [
+          "https://x.com/zarqarwi",
+          "https://www.linkedin.com/in/paulkuo",
+          "https://www.threads.net/@zarqarwi",
+          "https://bsky.app/profile/paulkuo.bsky.social"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://paulkuo.tw/#website",
+        "name": "Paul Kuo",
+        "url": "https://paulkuo.tw",
+        "description": "在技術與文明的交匯處，重建秩序、循環再利用、守護人性尊嚴。",
+        "publisher": { "@id": "https://paulkuo.tw/#person" },
+        "inLanguage": ["zh-Hant", "en", "ja", "zh-Hans"]
+      }
+    ]
+  }
+  </script>
   <slot name="head" />
   <!-- WebMCP: AI agent tool registration (progressive enhancement) -->
   <script src="/webmcp.js" defer></script>
@@ -144,7 +182,7 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
 
   <!-- GLOBAL COST TICKER (only shown on pages that opt in) -->
   {showTicker && (
-    <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料">
+    <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料" data-nosnippet>
       <CostTicker />
     </aside>
   )}
