@@ -25,5 +25,12 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
+User-agent: Bytespider
+Allow: /
+
+# LLM-friendly content files
+# llms.txt — concise site index for AI models
+# llms-full.txt — full article content for deep ingestion
+
 # Sitemap
 Sitemap: https://paulkuo.tw/sitemap-index.xml
