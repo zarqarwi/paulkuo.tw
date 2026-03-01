@@ -1580,11 +1580,11 @@
     }
   },
   "why-greatness-cannot-be-planned.md": {
-    "sourceHash": "e85e27fd7d5d",
+    "sourceHash": "758155283c0f",
     "translations": {
       "en": {
-        "hash": "fa40febb36d0",
-        "translatedAt": "2026-02-28T06:53:34.569Z",
+        "hash": "d802858b067e",
+        "translatedAt": "2026-03-01T11:24:47.174Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
