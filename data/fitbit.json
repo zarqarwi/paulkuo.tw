@@ -40,5 +40,7 @@
       "date": "2026-03-02",
       "steps": 0
     }
-  ]
+  ],
+  "token_status": "error",
+  "token_error": "2026-03-02T06:50:11+08:00"
 }
