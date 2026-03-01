@@ -1,0 +1,160 @@
+---
+/**
+ * /zh-cn/about — SSR Simplified Chinese About page
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../config';
+
+const aboutSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfilePage",
+      "@id": `${SITE.url}/zh-cn/about#profilepage`,
+      "url": `${SITE.url}/zh-cn/about`,
+      "name": "关于 Paul Kuo",
+      "inLanguage": "zh-CN",
+      "mainEntity": { "@id": `${SITE.url}/#person` }
+    }
+  ]
+});
+---
+<BaseLayout title="关于 — Paul Kuo" lang="zh-CN" description="在技术与文明的交汇处，重建秩序、循环再利用、守护人性尊严。" schemaJson={aboutSchema}>
+  <div class="section-container">
+    <div class="blog-hero">
+      <h1>关于</h1>
+      <p>郭曜郎 Paul Kuo</p>
+    </div>
+
+    <!-- Bio -->
+    <section class="about-bio" style="max-width:720px;margin:0 auto 48px;line-height:1.8;color:var(--text-primary);">
+      <p>横跨神学训练、创业实战与产业整合，我在过去二十年持续处理同一个问题：<strong>当旧秩序松动，下一个能运作的系统该长什么样？</strong></p>
+      <p style="margin-top:16px;">从半亩塘的环境整合到厚生市集的食农平台，从 AppWorks 创业加速器到佳龙科技的金属回收技术——每一段经历都让我更理解：真正的秩序不是设计出来的，是在技术、制度与人性的交汇处「长出来」的。</p>
+      <p style="margin-top:16px;">现在，我在佳龙科技担任商务整合暨 AI 数位发展总监，专注台日半导体合作、AI 平台开发与资源循环。同时经营 CircleFlow——一个 AI 驱动的循环经济服务平台。</p>
+      <p style="margin-top:16px;">这个网站是我的思考工作台，也是「超级个体」模式的实验场：一个人用 AI 工具完成一整个团队的工作。</p>
+    </section>
+
+    <!-- Timeline -->
+    <section class="about-timeline" style="max-width:720px;margin:0 auto 48px;">
+      <h2 style="font-size:1.4rem;margin-bottom:24px;">关键里程碑</h2>
+      <div class="timeline">
+        <div class="timeline-item"><span class="timeline-year">15年</span><span class="timeline-desc">神学训练——信仰与秩序的知识根基</span></div>
+        <div class="timeline-item"><span class="timeline-year">2003</span><span class="timeline-desc">进入产业——从环境整合到食农系统</span></div>
+        <div class="timeline-item"><span class="timeline-year">2015</span><span class="timeline-desc">加入 AppWorks 创业加速器</span></div>
+        <div class="timeline-item"><span class="timeline-year">2019</span><span class="timeline-desc">进入贵金属回收与循环经济</span></div>
+        <div class="timeline-item"><span class="timeline-year">2024</span><span class="timeline-desc">启动 CircleFlow 与多模型认知框架</span></div>
+        <div class="timeline-item"><span class="timeline-year">2026</span><span class="timeline-desc">聚焦台日半导体合作与 AI 数位发展</span></div>
+      </div>
+    </section>
+
+    <!-- Career -->
+    <section class="about-career" style="max-width:720px;margin:0 auto 48px;">
+      <h2 style="font-size:1.4rem;margin-bottom:24px;">职业历程</h2>
+      <div class="career-list">
+        <div class="career-item">
+          <div class="career-role">商务整合暨 AI 数位发展总监</div>
+          <div class="career-org">佳龙科技 SDTI</div>
+          <div class="career-period">2019 – 现在</div>
+          <div class="career-desc">台日半导体合作、AI 平台开发、PCB 制造金属回收的资源循环</div>
+        </div>
+        <div class="career-item">
+          <div class="career-role">创始人</div>
+          <div class="career-org">法日一有限公司</div>
+          <div class="career-period">2018 – 现在</div>
+          <div class="career-desc">AI 驱动循环经济服务平台 CircleFlow 的开发与运营</div>
+        </div>
+        <div class="career-item">
+          <div class="career-role">副总经理</div>
+          <div class="career-org">半亩塘环境整合</div>
+          <div class="career-period">2003 – 2012</div>
+          <div class="career-desc">环境规划与建筑整合的管理层经历</div>
+        </div>
+        <div class="career-item">
+          <div class="career-role">创始人</div>
+          <div class="career-org">壹菜园（厚生市集前身）</div>
+          <div class="career-period">2012 – 2015</div>
+          <div class="career-desc">食农电商平台的创建与运营</div>
+        </div>
+        <div class="career-item">
+          <div class="career-role">投资组合经理</div>
+          <div class="career-org">云链股份有限公司</div>
+          <div class="career-period">2015 – 2018</div>
+          <div class="career-desc">创投组合管理与新创加速</div>
+        </div>
+        <div class="career-item">
+          <div class="career-role">投资组合经理</div>
+          <div class="career-org">香港商安慧投资</div>
+          <div class="career-period">2016 – 2018</div>
+          <div class="career-desc">跨境投资组合管理</div>
+        </div>
+        <div class="career-item">
+          <div class="career-role">AI × 文明秩序观察者</div>
+          <div class="career-org">独立研究与写作</div>
+          <div class="career-period">2024 – 现在</div>
+          <div class="career-desc">技术与文明交汇处的秩序重建研究与跨平台内容输出</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education -->
+    <section class="about-education" style="max-width:720px;margin:0 auto 48px;">
+      <h2 style="font-size:1.4rem;margin-bottom:24px;">教育背景</h2>
+      <div class="career-list">
+        <div class="career-item">
+          <div class="career-role">15年神学训练</div>
+          <div class="career-org">信仰与秩序的知识根基</div>
+        </div>
+        <div class="career-item">
+          <div class="career-role">AppWorks 创业加速器</div>
+          <div class="career-org">创业生态系统实战培训</div>
+        </div>
+        <div class="career-item">
+          <div class="career-role">持续自学者</div>
+          <div class="career-org">AI、循环经济、半导体产业与跨境合作</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Five Pillars -->
+    <section class="about-pillars" style="max-width:720px;margin:0 auto 48px;">
+      <h2 style="font-size:1.4rem;margin-bottom:24px;">五大支柱</h2>
+      <div class="pillars-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+        <a href="/zh-cn/blog" class="pillar-card" style="text-decoration:none;padding:20px;border:1px solid var(--border);border-radius:12px;">
+          <span class="pillar-dot" style="background:var(--accent-ai)"></span>
+          <strong style="color:var(--text-primary)">智能与秩序</strong>
+          <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:4px;">当 AI 重塑认知，个人如何维持独立判断</p>
+        </a>
+        <a href="/zh-cn/blog" class="pillar-card" style="text-decoration:none;padding:20px;border:1px solid var(--border);border-radius:12px;">
+          <span class="pillar-dot" style="background:var(--accent-circular)"></span>
+          <strong style="color:var(--text-primary)">循环再利用</strong>
+          <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:4px;">从废弃物管理到物质秩序的重建</p>
+        </a>
+        <a href="/zh-cn/blog" class="pillar-card" style="text-decoration:none;padding:20px;border:1px solid var(--border);border-radius:12px;">
+          <span class="pillar-dot" style="background:var(--accent-faith)"></span>
+          <strong style="color:var(--text-primary)">文明与人性</strong>
+          <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:4px;">技术时代中人性尊严的守护</p>
+        </a>
+        <a href="/zh-cn/blog" class="pillar-card" style="text-decoration:none;padding:20px;border:1px solid var(--border);border-radius:12px;">
+          <span class="pillar-dot" style="background:var(--accent-startup)"></span>
+          <strong style="color:var(--text-primary)">创造与建构</strong>
+          <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:4px;">从零到一的创业实战与系统设计</p>
+        </a>
+        <a href="/zh-cn/blog" class="pillar-card" style="text-decoration:none;padding:20px;border:1px solid var(--border);border-radius:12px;">
+          <span class="pillar-dot" style="background:var(--accent-life)"></span>
+          <strong style="color:var(--text-primary)">沉思与记忆</strong>
+          <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:4px;">在行动中保持反思的空间</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="projects-cta" style="margin-top:60px;padding:48px 32px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;text-align:center;">
+      <h2 style="font-size:1.6rem;margin-bottom:12px;">想一起做点有结构意义的事？</h2>
+      <p style="color:var(--text-secondary);max-width:560px;margin:0 auto 24px;line-height:1.7;">如果你在循环经济、AI 应用、台日产业合作等领域有想法或需求，欢迎直接联系。</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="/zh-cn/#contact" class="btn-primary" style="text-decoration:none;">联系 Paul</a>
+        <a href="/zh-cn/projects" class="btn-secondary" style="text-decoration:none;">查看项目</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
