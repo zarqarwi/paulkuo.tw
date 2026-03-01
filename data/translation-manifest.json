@@ -1480,11 +1480,11 @@
     }
   },
   "addiction-economy-lonely-generation.md": {
-    "sourceHash": "1e2829809998",
+    "sourceHash": "d57c04a4b7b2",
     "translations": {
       "en": {
-        "hash": "38bf3d55aee1",
-        "translatedAt": "2026-02-27T02:55:38.477Z",
+        "hash": "0f3c5372e9cc",
+        "translatedAt": "2026-03-01T13:18:55.975Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
