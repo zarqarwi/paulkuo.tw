@@ -1,0 +1,89 @@
+---
+/**
+ * /ja/projects — SSR Japanese Projects page
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="プロジェクト — Paul Kuo" lang="ja" description="構造的な問題に取り組む。">
+  <div class="section-container">
+    <div class="blog-hero">
+      <h1>プロジェクト</h1>
+      <p>構造的な問題に取り組む。</p>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card circleflow">
+        <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
+        <h2>CircleFlow</h2>
+        <p>AI駆動の循環経済データインフラストラクチャ。廃棄物発生者と資源化事業者を接続し、データで産業物質フローの可視性と信頼性を再構築する。</p>
+        <div class="project-tags">
+          <span class="project-tag">循環経済</span>
+          <span class="project-tag">AI</span>
+          <span class="project-tag">プラットフォーム</span>
+          <span class="project-tag">ESG</span>
+        </div>
+        <div class="project-strategic">
+          <strong>構造的意義</strong>
+          <span>工業文明の線形モデルはその物質的基盤を消耗しつつある。CircleFlowが取り組むのは廃棄物のマッチングだけではなく、「物質の秩序」の再建——資源の流れ、価値、帰属を再び追跡可能、信頼可能、ガバナンス可能にすることである。</span>
+        </div>
+      </div>
+      <div class="project-card sdti">
+        <div class="project-icon" style="background:rgba(180,83,9,0.1)">🤝</div>
+        <h2>台日産業・技術統合</h2>
+        <p>製造、バイオメディカル技術、循環再利用、越境貿易の各分野で台日協力を推進。産業マッチングだけでなく、異なる制度・文化の間でいかに長期的信頼を構築し、技術と価値をより大きな秩序の中で流動させるかに注力。</p>
+        <div class="project-tags">
+          <span class="project-tag">製造</span>
+          <span class="project-tag">バイオメディカル</span>
+          <span class="project-tag">循環再利用</span>
+          <span class="project-tag">越境貿易</span>
+          <span class="project-tag">信頼アーキテクチャ</span>
+        </div>
+        <div class="project-strategic">
+          <strong>構造的意義</strong>
+          <span>産業協力が国境を越えるとき、障壁は技術にあることは稀で、制度設計・文化・リスク認知の違いにある。この仕事が取り組むのは信頼の秩序——異なる文明の文脈の中で持続可能な協力構造を構築し、技術と価値の流動を短期的機会ではなく長期的制度にすることである。</span>
+        </div>
+      </div>
+      <div class="project-card debate">
+        <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
+        <h2>マルチモデル認知協働フレームワーク</h2>
+        <p>複数の言語モデルに同一の議題について構造化された討論と交差検証を行わせ、単一モデルよりも信頼性の高い認知基盤を構築する。</p>
+        <div class="project-tags">
+          <span class="project-tag">マルチエージェント</span>
+          <span class="project-tag">認知インフラ</span>
+        </div>
+        <div class="project-strategic">
+          <strong>構造的意義</strong>
+          <span>単一モデルの出力は意見であり、複数モデルの衝突が判断に近づく。このフレームワークが取り組むのは認知の秩序——情報の生産速度が人間の処理能力をはるかに超えるとき、個人がいかに独立した思考と信頼できる意思決定の構造的条件を維持するかである。</span>
+        </div>
+      </div>
+      <div class="project-card brand">
+        <div class="project-icon" style="background:rgba(220,38,38,0.1)">📡</div>
+        <h2>クロスプラットフォーム・コンテンツインフラ</h2>
+        <p>言説がアルゴリズムに独占されるとき、個人の独立した表現には独自のインフラが必要である。</p>
+        <div class="project-tags">
+          <span class="project-tag">個人インフラ</span>
+          <span class="project-tag">独立した声</span>
+        </div>
+        <div class="project-strategic">
+          <strong>構造的意義</strong>
+          <span>言説の秩序はプラットフォームとアルゴリズムによって再分配されつつある。このインフラが取り組む問題は：一個人がいかにして単一のプラットフォームに依存せず、思想の出力の独立性と持続性を維持できるかである。</span>
+        </div>
+        <div class="project-sublinks">
+          <a href="/dashboard" class="project-sublink">📊 APIコストダッシュボード</a>
+          <a href="/health/fitbit" class="project-sublink">🛏️ Fitbit単一ソース分析</a>
+          <a href="/health/dual" class="project-sublink">🏥 デュアルデバイス統合分析</a>
+          <a href="/health/multi" class="project-sublink">🔬 マルチソース分析（計画中）</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collaboration CTA -->
+    <section class="projects-cta" style="margin-top:60px;padding:48px 32px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;text-align:center;">
+      <h2 style="font-size:1.6rem;margin-bottom:12px;">構造的に意味のあることを一緒に作りませんか？</h2>
+      <p style="color:var(--text-secondary);max-width:560px;margin:0 auto 24px;line-height:1.7;">循環経済、AI活用、台日産業協力などの分野でアイデアやニーズがありましたら、お気軽にご連絡ください。</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="/ja/#contact" class="btn-primary" style="text-decoration:none;">お問い合わせ</a>
+        <a href="/ja/about" class="btn-secondary" style="text-decoration:none;">プロフィールを見る</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

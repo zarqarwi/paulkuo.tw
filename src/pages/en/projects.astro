@@ -1,0 +1,89 @@
+---
+/**
+ * /en/projects — SSR English Projects page
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Projects — Paul Kuo" lang="en" description="Working on structural problems.">
+  <div class="section-container">
+    <div class="blog-hero">
+      <h1>Projects</h1>
+      <p>Working on structural problems.</p>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card circleflow">
+        <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
+        <h2>CircleFlow</h2>
+        <p>AI-driven data infrastructure for the circular economy. Connecting waste generators with resource processors, using data to rebuild visibility and trustworthiness in industrial material flows.</p>
+        <div class="project-tags">
+          <span class="project-tag">Circular Economy</span>
+          <span class="project-tag">AI</span>
+          <span class="project-tag">Platform</span>
+          <span class="project-tag">ESG</span>
+        </div>
+        <div class="project-strategic">
+          <strong>Structural Significance</strong>
+          <span>Industrial civilization's linear model is exhausting its material base. CircleFlow addresses not just waste matching, but the reconstruction of 'material order' — making the flow, value, and ownership of resources trackable, trustworthy, and governable.</span>
+        </div>
+      </div>
+      <div class="project-card sdti">
+        <div class="project-icon" style="background:rgba(180,83,9,0.1)">🤝</div>
+        <h2>Taiwan-Japan Industrial & Technology Integration</h2>
+        <p>Promoting Taiwan-Japan collaboration across manufacturing, biomedical technology, regenerative systems, and cross-border trade. The focus goes beyond industry matchmaking — it's about how to build long-term trust across different institutional and cultural contexts, enabling technology and value to flow within a larger order.</p>
+        <div class="project-tags">
+          <span class="project-tag">Manufacturing</span>
+          <span class="project-tag">Biomedical</span>
+          <span class="project-tag">Circular Economy</span>
+          <span class="project-tag">Cross-border Trade</span>
+          <span class="project-tag">Trust Architecture</span>
+        </div>
+        <div class="project-strategic">
+          <strong>Structural Significance</strong>
+          <span>When industrial cooperation crosses borders, obstacles often lie not in technology but in differences of institutions, culture, and risk perception. This work addresses trust order — how to build sustainable cooperative structures across civilizational contexts, turning the flow of technology and value into long-term institutions rather than short-term opportunities.</span>
+        </div>
+      </div>
+      <div class="project-card debate">
+        <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
+        <h2>Multi-Model Cognitive Collaboration Framework</h2>
+        <p>Structured debate and cross-validation across multiple language models, building more reliable cognitive foundations than any single model.</p>
+        <div class="project-tags">
+          <span class="project-tag">Multi-Agent</span>
+          <span class="project-tag">Cognitive Infrastructure</span>
+        </div>
+        <div class="project-strategic">
+          <strong>Structural Significance</strong>
+          <span>A single model's output is opinion; the collision of multiple models approaches judgment. This framework addresses cognitive order — when the speed of information production far exceeds human processing capacity, how can individuals maintain the structural conditions for independent thinking and reliable decision-making?</span>
+        </div>
+      </div>
+      <div class="project-card brand">
+        <div class="project-icon" style="background:rgba(220,38,38,0.1)">📡</div>
+        <h2>Cross-Platform Content Infrastructure</h2>
+        <p>When discourse power is monopolized by algorithms, independent expression requires its own infrastructure.</p>
+        <div class="project-tags">
+          <span class="project-tag">Individual Infrastructure</span>
+          <span class="project-tag">Independent Voice</span>
+        </div>
+        <div class="project-strategic">
+          <strong>Structural Significance</strong>
+          <span>Discourse order is being redistributed by platforms and algorithms. This infrastructure addresses the question: how can an individual maintain the independence and continuity of intellectual output without depending on any single platform?</span>
+        </div>
+        <div class="project-sublinks">
+          <a href="/dashboard" class="project-sublink">📊 API Cost Dashboard</a>
+          <a href="/health/fitbit" class="project-sublink">🛏️ Fitbit Single-Source Analysis</a>
+          <a href="/health/dual" class="project-sublink">🏥 Dual-Device Integrated Analysis</a>
+          <a href="/health/multi" class="project-sublink">🔬 Multi-Source Analysis (Planned)</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collaboration CTA -->
+    <section class="projects-cta" style="margin-top:60px;padding:48px 32px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;text-align:center;">
+      <h2 style="font-size:1.6rem;margin-bottom:12px;">Want to build something structurally meaningful together?</h2>
+      <p style="color:var(--text-secondary);max-width:560px;margin:0 auto 24px;line-height:1.7;">If you have ideas or needs in circular economy, AI applications, or Taiwan-Japan industry collaboration, feel free to reach out.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="/en/#contact" class="btn-primary" style="text-decoration:none;">Contact Paul</a>
+        <a href="/en/about" class="btn-secondary" style="text-decoration:none;">About Paul</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
