@@ -1420,11 +1420,11 @@
     }
   },
   "us-ai-three-year-countdown.md": {
-    "sourceHash": "814bcbf07d56",
+    "sourceHash": "a870c9362dcd",
     "translations": {
       "en": {
-        "hash": "1cec1e40c268",
-        "translatedAt": "2026-02-28T12:21:20.788Z",
+        "hash": "418103932eac",
+        "translatedAt": "2026-03-01T12:25:33.023Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
