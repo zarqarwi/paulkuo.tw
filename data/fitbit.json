@@ -1,11 +1,11 @@
 {
-  "updated": "2026-03-01T09:30:13+08:00",
+  "updated": "2026-03-01T10:10:09+08:00",
   "today": {
-    "steps": 40,
+    "steps": 131,
     "goal": 10000,
-    "distance_km": 0.03,
-    "calories": 13,
-    "resting_hr": 71
+    "distance_km": 0.09,
+    "calories": 30,
+    "resting_hr": 69
   },
   "week": [
     {
@@ -38,7 +38,7 @@
     },
     {
       "date": "2026-03-01",
-      "steps": 40
+      "steps": 131
     }
   ]
 }
