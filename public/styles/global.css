@@ -1228,3 +1228,183 @@ body.focus-mode .article-page {
   color: #fff;
   border-color: var(--brand-navy, #1b2d4f);
 }
+/* =============================================
+   FOCUS-VISIBLE — WCAG 2.1 AA Keyboard Navigation
+   paulkuo.tw accessibility patch
+   ============================================= */
+
+/*
+ * Strategy:
+ * - :focus-visible only fires on keyboard nav (Tab), not mouse clicks
+ * - 2px offset outline in brand-navy, won't clash with existing hover states
+ * - Specific overrides for dark-bg sections (manifesto, contact, footer)
+ */
+
+/* === Global Default === */
+:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Remove the default outline on mouse click (keep for keyboard only) */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* === Nav Links & Logo === */
+.nav-logo:focus-visible,
+.nav-links a:focus-visible,
+.nav-cta:focus-visible,
+.nav-dropdown-menu a:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* === Language Switcher === */
+.lang-btn:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* === Buttons === */
+.btn-primary:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.filter-btn:focus-visible,
+.year-btn:focus-visible,
+.load-more-btn:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 2px;
+}
+
+/* === Cards (clickable) === */
+.content-card:focus-visible,
+.project-card:focus-visible,
+.related-card:focus-visible,
+.search-result-card:focus-visible,
+.feed-item:focus-visible {
+  outline: 2px solid var(--accent-ai);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* === Article Page Links === */
+.article-body a:focus-visible {
+  outline: 2px solid var(--accent-ai);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.article-back:focus-visible,
+.article-nav-link:focus-visible,
+.back-to-blog:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* === Share Buttons === */
+.share-btn:focus-visible {
+  outline: 2px solid var(--accent-ai);
+  outline-offset: 2px;
+}
+
+/* === Pillar Tags === */
+.pillar-tag:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 2px;
+}
+
+/* === Form Inputs (enhance existing :focus) === */
+.form-group input:focus-visible,
+.form-group textarea:focus-visible {
+  border-color: rgba(255,255,255,0.6);
+  outline: 2px solid rgba(255,255,255,0.4);
+  outline-offset: 1px;
+}
+
+.search-box input:focus-visible {
+  border-color: var(--accent-ai);
+  outline: none; /* border change is sufficient */
+}
+
+/* === Dark Background Sections === */
+/* Manifesto, Contact, Footer — need light outlines to be visible */
+.manifesto a:focus-visible,
+.manifesto-cta:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.7);
+  outline-offset: 3px;
+}
+
+.contact-section a:focus-visible,
+.social-link:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.7);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.btn-submit:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+/* Footer links */
+footer a:focus-visible,
+.footer-logo:focus-visible,
+.footer-social-links a:focus-visible,
+.footer-rss:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.7);
+  outline-offset: 3px;
+}
+
+/* === Hamburger Menu Button === */
+.nav-hamburger:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* === Utility Buttons (font size, focus mode) === */
+.font-size-btn:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 2px;
+}
+
+.focus-mode-btn:focus-visible {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: 3px;
+}
+
+/* === Skip to Content (optional — add later if needed) === */
+/*
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  padding: 12px 24px;
+  background: var(--brand-navy);
+  color: #fff;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 10001;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+*/
