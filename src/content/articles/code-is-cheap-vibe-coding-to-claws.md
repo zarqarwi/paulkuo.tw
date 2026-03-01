@@ -47,7 +47,7 @@ reading_context: |
 
 Karpathy 不只是 AI 研究者，他是這個時代最精準的術語鑄造師。十年間，四個詞，每一個都踩在人機關係的轉折點上。
 
-2015 年，Karpathy 在〈The Unreasonable Effectiveness of Recurrent Neural Networks〉一文裡，用「hallucination」來描述語言模型生成那些看起來很合理、實則憑空捏造的網址與內容，等於替這種「AI 亂編」行為開出了一個直覺又貼切的名字。
+2015 年，Karpathy 在〈The Unreasonable Effectiveness of Recurrent Neural Networks〉一文裡，用「hallucination」來描述語言模型生成那些看起來很合理、實則憑空捏造的網址與內容，讓這個詞在語言模型的語境中廣為人知（「hallucination」在 AI 領域最早可追溯到 1980 年代，但 Karpathy 的用法讓它成為描述 LLM 生成錯誤的標準術語）。
 
 2017 年是 Software 2.0。傳統軟體是人寫規則讓機器執行；Software 2.0 是人餵資料讓機器自己學規則。這不只是技術路線的切換，而是「誰在寫程式」這個根本問題的重新定義。
 
