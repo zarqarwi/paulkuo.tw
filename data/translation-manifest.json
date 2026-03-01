@@ -760,11 +760,11 @@
     }
   },
   "negentropy-taiwan-enterprise.md": {
-    "sourceHash": "07862acd502c",
+    "sourceHash": "e74348e2b910",
     "translations": {
       "en": {
-        "hash": "037a60af4433",
-        "translatedAt": "2026-02-23T18:05:30.060Z",
+        "hash": "aa3def159848",
+        "translatedAt": "2026-03-01T13:54:08.536Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
