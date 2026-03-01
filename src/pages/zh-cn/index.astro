@@ -1,0 +1,158 @@
+---
+/**
+ * /zh-cn/ homepage — SSR Simplified Chinese content
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PILLAR_MAP, SITE } from '../../config';
+import { calcReadingTime } from '../../utils/readingTime';
+
+const articles = (await getCollection('articles_zhcn', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const ZHCN_LABELS: Record<string, string> = {
+  ai: '智能与秩序',
+  circular: '循环再利用',
+  faith: '文明与人性',
+  startup: '创造与建构',
+  life: '沉思与记忆',
+};
+
+const homeSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${SITE.url}/zh-cn/#webpage`,
+      "url": `${SITE.url}/zh-cn/`,
+      "name": "Paul Kuo — 在智能时代重建秩序",
+      "description": "在技术与文明的交汇处，重建秩序、循环再利用、守护人性尊严。",
+      "inLanguage": "zh-CN",
+      "isPartOf": { "@id": `${SITE.url}/#website` },
+      "about": { "@id": `${SITE.url}/#person` }
+    }
+  ]
+});
+---
+<BaseLayout title="Paul Kuo — 在智能时代重建秩序" lang="zh-CN" schemaJson={homeSchema}>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="animate-in">在智能时代<br>重建<em>秩序</em></h1>
+        <p class="hero-identity animate-in delay-1">郭曜郎 Paul Kuo</p>
+        <p class="hero-domain animate-in delay-1">产业结构重整｜循环经济 × AI × 台日桥梁</p>
+        <p class="hero-tagline animate-in delay-2">我专注的一件事：在旧秩序松动的年代，设计下一个能运作的系统。</p>
+        <p class="hero-bio animate-in delay-2">横跨神学思考、创业生态与循环经济实务，长年参与企业转型与跨境合作项目，整合技术、资本与产业资源，推动可持续且可执行的结构。</p>
+        <div class="hero-pillars animate-in delay-3">
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-ai)"></span><span>智能与秩序</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-circular)"></span><span>循环再利用</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-faith)"></span><span>文明与人性</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-startup)"></span><span>创造与建构</span></span>
+          <span class="pillar-tag"><span class="pillar-dot" style="background:var(--accent-life)"></span><span>沉思与记忆</span></span>
+        </div>
+        <div class="hero-actions animate-in delay-4">
+          <a href="/zh-cn/blog" class="btn-primary">阅读文章</a>
+          <a href="/zh-cn/about" class="btn-secondary">关于 Paul</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto">
+    <div class="manifesto-inner">
+      <div class="manifesto-kicker">哲学宣言</div>
+      <p class="manifesto-quote">「道必须成为肉身，秩序必须进入现场。」</p>
+      <p class="manifesto-body">停留在概念里的秩序只是论述。进入真实的产业与人际关系后，秩序才能被重建。技术要落地，智能要入世——这是一个受过神学训练的创业者对「道成肉身」最务实的理解。</p>
+      <a href="/zh-cn/about" class="manifesto-cta">完整故事 →</a>
+    </div>
+  </section>
+
+  <!-- LATEST THINKING -->
+  <section class="section-container">
+    <div class="section-header">
+      <h2 class="section-title">最新思考</h2>
+      <a href="/zh-cn/blog" class="section-link">查看全部 →</a>
+    </div>
+    <div class="content-grid">
+      {articles.length > 0 ? articles.map((article) => {
+        const p = PILLAR_MAP[article.data.pillar];
+        const zhcnLabel = ZHCN_LABELS[article.data.pillar] || p.label;
+        const dateStr = article.data.date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
+        return (
+          <a href={`/zh-cn/articles/${article.id.replace(/\.md$/, "")}`} class={`content-card ${article.data.cover ? 'has-cover' : ''}`}>
+            {article.data.cover && (
+              <div class="card-cover">
+                <img src={article.data.cover} alt={article.data.title} width="1792" height="1024" loading="lazy" />
+              </div>
+            )}
+            <div class="content-card-category" style={`color:${p.color}`}>
+              <span class="pillar-dot" style={`background:${p.color}`}></span> {zhcnLabel}
+            </div>
+            <h3>{article.data.title}</h3>
+            <p>{article.data.description}</p>
+            <div class="content-card-footer">
+              <span>{dateStr}</span>
+              {(() => { const rt = calcReadingTime(article.body || ''); return rt > 0 ? <span class="reading-time">· 约{rt}分钟阅读</span> : null; })()}
+            </div>
+          </a>
+        );
+      }) : (
+        <p style="color:var(--text-secondary)">文章筹备中。</p>
+      )}
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section style="background:var(--bg-section)">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">项目</h2>
+      </div>
+      <div class="projects-grid">
+        <a href="/zh-cn/projects" class="project-card circleflow" style="text-decoration:none;color:inherit">
+          <div class="project-icon" style="background:rgba(5,150,105,0.1)">♻️</div>
+          <h3>CircleFlow</h3>
+          <p>循环经济数据基础设施——让资源的流向、价值与归属变得可见、可追踪、可治理。</p>
+          <div class="project-tags">
+            <span class="project-tag">循环经济</span>
+            <span class="project-tag">AI</span>
+            <span class="project-tag">平台</span>
+          </div>
+          <span class="project-cta">了解更多 →</span>
+        </a>
+        <a href="/zh-cn/projects" class="project-card debate" style="text-decoration:none;color:inherit">
+          <div class="project-icon" style="background:rgba(37,99,235,0.1)">🧠</div>
+          <h3>多模型认知协作框架</h3>
+          <p>当个人必须在信息过载中做出判断，什么样的认知结构能提供更可靠的思考支撑。</p>
+          <div class="project-tags">
+            <span class="project-tag">多代理</span>
+            <span class="project-tag">认知基础设施</span>
+          </div>
+          <span class="project-cta">了解更多 →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact" aria-label="联系 Paul Kuo" role="complementary">
+    <div class="section-container">
+      <div class="contact-grid">
+        <div class="contact-text">
+          <h2>一起做点<br>有意义的事</h2>
+          <p>关于如何让技术回到人性与秩序的实践现场、深化循环再生服务与架构、台日跨境合作的可能性——欢迎随时聊聊。</p>
+          <div class="social-links">
+            <a href="https://x.com/zarqarwi" class="social-link" target="_blank" rel="noopener">𝕏 Twitter</a>
+            <a href="https://www.linkedin.com/in/paulkuo" class="social-link" target="_blank" rel="noopener">in LinkedIn</a>
+            <a href="https://www.threads.net/@zarqarwi" class="social-link" target="_blank" rel="noopener">◉ Threads</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
