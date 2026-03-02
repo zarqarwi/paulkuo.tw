@@ -900,11 +900,11 @@
     }
   },
   "post-code-era-taste.md": {
-    "sourceHash": "237ac3aa67a5",
+    "sourceHash": "dc496f23c30a",
     "translations": {
       "en": {
-        "hash": "3679709b606c",
-        "translatedAt": "2026-02-23T18:07:22.856Z",
+        "hash": "8fae7abef193",
+        "translatedAt": "2026-03-02T09:44:43.618Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
