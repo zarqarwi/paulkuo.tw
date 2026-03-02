@@ -460,11 +460,11 @@
     }
   },
   "faith-collapse-rebuild.md": {
-    "sourceHash": "c80b566c3841",
+    "sourceHash": "aa06740bd768",
     "translations": {
       "en": {
-        "hash": "297aa320f02b",
-        "translatedAt": "2026-02-24T00:19:53.708Z",
+        "hash": "4027967f46f0",
+        "translatedAt": "2026-03-02T11:40:38.463Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
