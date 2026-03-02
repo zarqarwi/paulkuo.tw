@@ -19,18 +19,18 @@ draft: false
 readingTime: 6
 
 # === AI / Machine 專用欄位 ===
-thesis: "大時代的巨變不會等你準備好——在浪潮中存活的不是最大的，而是最能適應的，而適應的前提是輕盈。"
-domain_bridge: "歷史觀察 × 組織韌性 × 個人策略"
+thesis: "In times of great upheaval, survival belongs not to the largest, but to the most adaptable—and adaptability requires being light."
+domain_bridge: "Historical Observation × Organizational Resilience × Personal Strategy"
 confidence: high
 content_type: essay
 related_entities:
   - name: COVID-19
     type: Event
-  - name: 2019-2020 澳洲叢林大火
+  - name: 2019-2020 Australian Bushfires
     type: Event
-  - name: 2020 東京奧運延期
+  - name: 2020 Tokyo Olympics Postponement
     type: Event
-reading_context: "適合在大環境變動中思考個人或組織生存策略的讀者。這篇文章寫於 2020 年 2 月，保留了當時的即時感與不確定性。"
+reading_context: "Suited for readers thinking about personal or organizational survival strategies amid shifting environments. This article was written in February 2020, preserving the immediacy and uncertainty of that moment."
 ---
 
 This article was written on February 20, 2020.
@@ -118,3 +118,4 @@ This might be the most important survival question of our era.
 **Further Reading:**
 - [Pandemic Revelation: We Live in a Liquid World](/articles/pandemic-liquid-world) — Bauman's liquid modernity was thoroughly validated during the pandemic
 - [The Brutal Truth About Remote Work](/articles/remote-work-cruel-truth) — Is pandemic-spawned remote work liberation or another form of bondage?
+
