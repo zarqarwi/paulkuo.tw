@@ -1,9 +1,9 @@
 ---
-title: "The Age of Computational Standard: When Knowledge, Electricity, and Currency Become One"
-subtitle: "Future wealth isn't about how much money you have—it's about how much computational power you command"
-description: "From the electricity consumed by Bitcoin mining to the training costs of AI models, electrical power is becoming the new benchmark for measuring value. When knowledge can be computed, computation requires electricity, and electricity can be priced, what we're witnessing isn't just a new economic model—it's a fundamental redefinition of what 'value' means."
+title: "The Age of Computational Standard: When Knowledge, Electricity, and Currency Converge"
+subtitle: "Future 'wealth' isn't about how much money you have—it's about how much computational power you command"
+description: "From Bitcoin mining's electricity consumption to AI model training costs, electricity is becoming the new benchmark for measuring value. When knowledge can be computed, computation requires electricity, and electricity can be priced, we're witnessing not just a new economic model, but a fundamental redefinition of 'what has value.'"
 abstract: |
-  Bitcoin mines currency with electricity; AI refines knowledge with computational power. As the relationship between knowledge, electricity, and currency tightens, we're witnessing a paradigm shift in how value is measured—from the gold standard to the dollar standard, and now to the "computational power standard." Drawing from his entrepreneurial experience and observations on energy issues, Paul sketches a future most people haven't yet seen clearly: your value will increasingly depend on how much computational power you can mobilize.
+  Bitcoin mines currency with electricity, AI forges knowledge with computational power. As the relationship between knowledge, electricity, and currency grows increasingly intertwined, we're witnessing a paradigm shift in value standards—from the gold standard to the dollar standard, and now to the "computational power standard." Drawing from entrepreneurial experience and observations of energy issues, Paul attempts to sketch a future most haven't yet grasped: your value will increasingly depend on how much computational power you can mobilize.
 date: 2018-01-04
 updated: 2026-03-01
 pillar: ai
@@ -19,89 +19,88 @@ draft: false
 readingTime: 5
 
 # === AI / Machine 專用欄位 ===
-thesis: "Computational power is becoming the new standard of value—whoever controls compute controls the pricing power of the new era."
-domain_bridge: "Cryptocurrency × Energy Economics × Knowledge Work"
+thesis: "演算力正在成為新的價值基準——誰掌握算力，誰就掌握了新時代的定價權。"
+domain_bridge: "加密貨幣 × 能源經濟 × 知識工作"
 confidence: high
 content_type: essay
 related_entities:
-  - name: Bitcoin
+  - name: 比特幣
     type: Technology
-  - name: Gold Standard
+  - name: 金本位制度
     type: Framework
-  - name: Computational Power
+  - name: 演算力
     type: Concept
-  - name: Knowledge Economy
+  - name: 知識經濟
     type: Concept
 reading_context: |
-  For readers interested in the underlying logic of cryptocurrency, the economics of AI compute,
-  or the redefinition of value in the digital age, as well as knowledge workers thinking about
-  how to monetize their expertise.
+  適合對加密貨幣底層邏輯、AI 算力經濟或數位時代價值重定義感興趣的讀者，
+  以及正在思考個人知識變現的知識工作者。
 ---
 
-In late 2017, Bitcoin was closing in on $20,000. But what really made me pause wasn't the price—it was a different set of numbers: according to estimates at the time, the annual electricity consumed by global Bitcoin mining had already surpassed the total annual electricity consumption of Ireland.
+By the end of 2017, Bitcoin was approaching $20,000. But what truly made me pause wasn't the price—it was another set of numbers: according to estimates at the time, global Bitcoin mining consumed more electricity annually than the entire nation of Ireland.
 
-A decentralized digital ledger, consuming the electrical output of an entire developed nation.
+A decentralized digital ledger was consuming the electricity of a developed country.
 
-The essence of this isn't as simple as "mining is wasteful." It reveals a deeper equation: in the world of Bitcoin, electricity = computational power = currency. The more electricity you put in, the more computational power you produce; the more math problems your compute can solve, the more Bitcoin you get back. This equation is so clean it almost resembles a law of physics.
+The essence of this phenomenon isn't as simple as "mining is wasteful." It reveals a deeper equation: in Bitcoin's world, electricity = computational power = currency. The more electricity you invest, the more computational power you generate; the more mathematical problems your computational power can solve, the more Bitcoin you earn in return. This equation is so clean it almost resembles a law of physics.
 
-## When Knowledge Becomes Something You Can Compute
+## When Knowledge Becomes Computable
 
-Take this logic one step further. The rise of AI has made another equation increasingly clear: knowledge ≈ algorithms.
+Following this logic one step further, AI's rise has made another equation increasingly clear: knowledge ≈ algorithms.
 
-What does this mean? We used to say "knowledge is power," but that power was vague, hard to measure. A doctor's diagnostic ability is "very valuable," but how much exactly? A lawyer's legal analysis is "irreplaceable," but to what degree?
+What does this mean? We used to say "knowledge is power," but that power was vague and hard to measure. A doctor's diagnostic ability is "valuable," but exactly how valuable? A lawyer's legal analysis is "irreplaceable," but irreplaceable to what degree?
 
-Now, AI has made these questions quantifiable. How much compute does it take to train a medical imaging recognition model? How many GPU hours are needed to fine-tune a legal document summarization system? When knowledge is broken down into something that can be trained, replicated, and mass-produced as algorithms, its "price" emerges.
+Now, AI has made these questions quantifiable. How much computational power does it take to train a medical imaging recognition model? How many GPU hours are needed to fine-tune a legal document summarization system? When knowledge is broken down into algorithms that can be trained, replicated, and mass-produced, its "price" emerges.
 
-This isn't about devaluing knowledge. Quite the opposite—it's about finding an unprecedented pricing mechanism for knowledge.
+This isn't about diminishing the value of knowledge. Quite the opposite—it's about finding an unprecedented pricing mechanism for knowledge.
 
-## From the Gold Standard to the Computational Power Standard
+## From Gold Standard to Computational Power Standard
 
-Humanity's monetary system has gone through several major transitions.
+Humanity's monetary systems have undergone several major transitions.
 
-In the gold standard era, the value of currency was anchored to gold. The bills in your hand had value because they were backed by corresponding gold reserves. Later, the Bretton Woods system collapsed, ushering in the dollar standard—currency's value was no longer anchored to gold, but to America's economic strength and military power.
+In the gold standard era, currency value was anchored to gold. The bills in your hand had value because they were backed by corresponding gold reserves. Later, when the Bretton Woods system collapsed, we entered the dollar standard—currency value was no longer anchored to gold, but to America's economic strength and military power.
 
 So what's the next "standard"?
 
-I believe the clue lies at the intersection of Bitcoin and AI. When electricity can produce currency (Bitcoin), and electricity can also produce knowledge (AI models), then electricity—or more precisely, computational power—is the most fundamental standard of value in our era.
+I believe the clue lies at the intersection of Bitcoin and AI. When electricity can produce currency (Bitcoin) and electricity can also produce knowledge (AI models), then electricity—or more precisely, computational power—becomes the most fundamental value benchmark of this era.
 
 Whoever controls computational power controls the printing press of the new age.
 
-This is why NVIDIA's market cap has skyrocketed to the global top ranks in just a few years. It's not because their GPUs are particularly beautiful—it's because they're selling "tickets to computational power." Control the supply of compute, and you control the spigot of this new economic system.
+This is why NVIDIA's market cap could skyrocket to among the world's highest within a few years. Not because they sell particularly beautiful GPUs, but because they sell "tickets to computational power." Control the supply of computational power, and you control the faucet of this new economic system.
 
-## An Entrepreneur's Visceral Understanding
+## An Entrepreneur's Experience
 
-Running my company gave me a very personal sense of "computational power as value."
+In running companies, I've felt the reality of "computational power as value" very directly.
 
-In the early years as a digital transformation consultant, the most common question from clients was: "What's the ROI on this project?" We spent a lot of time explaining why digitalization matters, why data-driven approaches are the trend. But at the end of the day, clients cared about one thing: how much goes in, how much comes out?
+In the early days of doing digital transformation consulting, clients' most frequent question was: "How do you calculate this project's ROI?" We spent considerable time explaining why digitalization was important, why data-driven approaches were the trend. But ultimately, clients cared about just one thing: how much cost invested, how much benefit produced?
 
-Then AI tools became widely available, and the answer to that question became strikingly direct. Market analysis that used to require three people working for a week could now be completed by one person with an AI assistant in a single day. Three salaries versus one computer's electricity bill plus API costs—any boss can do that math.
+Later, as AI tools became widely adopted, the answer to this question became remarkably straightforward. What used to require three people working a week on market analysis could now be completed by one person with an AI assistant in a day. Three people's salaries vs. one computer's electricity plus API fees—any boss can calculate that.
 
-The cost of knowledge work is being recalculated as "the cost of computational power." And the cost of computational power, at its root, is the electricity bill.
+The cost of knowledge work is being recalculated as "the cost of computational power." And the cost of computational power, fundamentally, is electricity bills.
 
-This follows exactly the same logic as manufacturing. Factories use electricity to power machines that produce physical goods, while today's [knowledge workers use electricity to power AI that produces digital output](/articles/canary-in-coal-mine-ai-employment). The only difference: a factory's output is tangible objects; AI's output is intangible intelligence. But the underlying logic of energy conversion is essentially the same.
+This is exactly the same logic as manufacturing. Factories use electricity to drive machines to produce physical goods, while today's [knowledge workers use electricity to drive AI to produce digital outputs](/articles/canary-in-coal-mine-ai-employment). The only difference is that factory outputs are visible objects, while AI outputs are invisible intelligence. But the underlying energy conversion logic is essentially the same.
 
 ## The Alchemy of Traffic
 
-Following this framework, many seemingly "unreasonable" phenomena suddenly make sense.
+Following this framework, many seemingly "unreasonable" phenomena become reasonable.
 
-Take the influencer economy. Why can a YouTuber sitting in front of a camera chatting earn millions a year? Because their talent and personal charisma, through the platform's algorithmic systems, get converted into traffic. Traffic is essentially an "aggregation of attention," and attention, mediated by algorithms, can be precisely converted into advertising revenue.
+Take the influencer economy. Why can a YouTuber sitting in front of a camera chatting earn millions annually? Because their talent and charisma, through platform algorithmic systems, are converted into traffic. Traffic is essentially an "aggregation of attention," and attention, mediated by algorithms, can be precisely converted into advertising revenue.
 
-Talent → Content → Algorithmic recommendation → Traffic aggregation → Monetization.
+Talent → Content → Algorithmic recommendation → Traffic aggregation → Monetary conversion.
 
-Every step requires electricity and compute as infrastructure. Without servers, without CDNs, without recommendation algorithms, even the most talented person couldn't reach a million viewers.
+Every step requires electricity and computational power as infrastructure. Without servers, without CDNs, without recommendation algorithms, even the most talented person couldn't reach millions of viewers.
 
-So influencers aren't getting something for nothing—they're simply converting their knowledge and charisma, through digital channels and computational infrastructure, into currency within this new system. It's fundamentally the same thing as miners using physical labor to dig up gold, or engineers using brainpower to write code: [using some form of energy, through some conversion mechanism, to create socially recognized value](/articles/traffic-beyond-currency).
+So influencers aren't "getting something for nothing"—they're just converting their knowledge and charisma through digital channels and computational infrastructure into currency in this new system. This is essentially the same as miners using physical strength to dig out gold, or engineers using mental power to write programs: [using some form of energy, through some conversion mechanism, to create socially recognized value](/articles/traffic-beyond-currency).
 
-## What's Your Computational Power?
+## What Is Your Computational Power?
 
-Back to the personal level.
+Returning to the personal level.
 
-If computational power is the foundational currency of the new era, then everyone needs to ask themselves a question: How much computational power can I mobilize?
+If computational power is the fundamental currency of the new era, then everyone needs to ask themselves: how much computational power can I mobilize?
 
-This isn't just about whether you can use ChatGPT. It's about whether you can identify which problems are worth computing, whether you can design effective analytical frameworks, and whether you can distinguish signal from noise in AI's output.
+This isn't just about "whether you can use ChatGPT." It's about whether you can identify which problems are worth computing, whether you can design effective analytical frameworks, whether you can distinguish signal from noise in AI outputs.
 
-The point was never how much compute you own—GPUs can be rented, APIs can be purchased. The point is whether you have the ability to convert compute into meaningful output.
+The point was never about how much computational power you own—GPUs can be rented, APIs can be purchased. The point is whether you have the ability to convert computational power into meaningful output.
 
-Just like in the gold standard era, the point wasn't how much gold you had, but whether you could make valuable trades with that gold. The computational power standard era is the same: energy itself isn't valuable—the efficiency of energy conversion is what's valuable.
+Just like in the gold standard era, the point wasn't how much gold you had, but whether you could use gold to make valuable transactions. The computational power standard era is the same: energy itself isn't valuable, energy conversion efficiency is what's valuable.
 
-This is perhaps the most fundamental redefinition of "value" in our time.
+This may be our era's most fundamental redefinition of "what has value."
