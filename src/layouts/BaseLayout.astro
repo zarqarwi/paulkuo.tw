@@ -60,9 +60,7 @@ const langSwitchLinks = {
   'zh-CN': isHome ? '/?lang=zh-CN' : `/zh-cn${basePath}`,
 };
 
-// Check if this is an article page (for reading progress bar)
 const isArticlePage = pathname.includes('/articles/');
-// Lang prefix for nav links
 const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' : currentLang === 'zh-CN' ? '/zh-cn' : '';
 
 ---
@@ -97,13 +95,13 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" href="/favicon.png" sizes="192x192">
   <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href={`/styles/global.css?v=${globalCssV}`}>
   <link rel="stylesheet" href={`/styles/cjk-fixes.css?v=${cjkCssV}`}>
   {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
-  <!-- Site-level Person & WebSite schema (resolves @id references from article JSON-LD) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -126,6 +124,9 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
           "https://x.com/zarqarwi",
           "https://www.linkedin.com/in/paulkuo",
           "https://www.threads.net/@zarqarwi",
+          "https://www.youtube.com/@kuopaul8265",
+          "https://www.facebook.com/guo.yao.lang.2025",
+          "https://www.instagram.com/zarqarwi",
           "https://bsky.app/profile/paulkuo.bsky.social"
         ]
       },
@@ -142,11 +143,9 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   }
   </script>
   <slot name="head" />
-  <!-- WebMCP: AI agent tool registration (progressive enhancement) -->
   <script src="/webmcp.js" defer></script>
 </head>
 <body>
-  <!-- Reading Progress Bar (article pages only) -->
   {isArticlePage && <div class="reading-progress" id="reading-progress"></div>}
 
   <nav id="main-nav">
@@ -187,7 +186,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
     </div>
   </nav>
 
-  <!-- GLOBAL COST TICKER (only shown on pages that opt in) -->
   {showTicker && (
     <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料" data-nosnippet>
       <CostTicker />
@@ -225,7 +223,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   </footer>
 
   <script>
-    // === Hamburger Menu ===
     document.getElementById('hamburger-btn')?.addEventListener('click', () => {
       const navLinks = document.querySelector('.nav-links') as HTMLElement;
       const switcher = document.querySelector('.lang-switcher') as HTMLElement;
@@ -243,7 +240,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
       }
     });
 
-    // === Highlight active nav ===
     const path = window.location.pathname;
     document.querySelectorAll('.nav-links a').forEach(a => {
       const href = a.getAttribute('href');
@@ -252,178 +248,101 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
       }
     });
 
-    // === Smart Header: hide on scroll down, show on scroll up ===
     (() => {
       const nav = document.getElementById('main-nav');
       if (!nav) return;
-
-      let lastScrollY = window.scrollY;
       let ticking = false;
-      const SCROLL_THRESHOLD = 8;
-
       const updateNav = () => {
-        const currentScrollY = window.scrollY;
-        if (currentScrollY > 10) {
-          nav.classList.add('nav-scrolled');
-        } else {
-          nav.classList.remove('nav-scrolled');
-        }
+        if (window.scrollY > 10) { nav.classList.add('nav-scrolled'); }
+        else { nav.classList.remove('nav-scrolled'); }
         ticking = false;
       };
-
       window.addEventListener('scroll', () => {
-        if (!ticking) {
-          requestAnimationFrame(updateNav);
-          ticking = true;
-        }
+        if (!ticking) { requestAnimationFrame(updateNav); ticking = true; }
       }, { passive: true });
     })();
 
-    // === Reading Progress Bar (article pages only) ===
     (() => {
       const progressBar = document.getElementById('reading-progress');
       const articleBody = document.querySelector('.article-body');
       if (!progressBar || !articleBody) return;
-
       let ticking = false;
-
       const updateProgress = () => {
-        const articleRect = articleBody.getBoundingClientRect();
-        const articleTop = articleRect.top + window.scrollY;
+        const articleTop = articleBody.getBoundingClientRect().top + window.scrollY;
         const articleHeight = articleBody.scrollHeight;
         const viewportHeight = window.innerHeight;
         const scrolled = window.scrollY - articleTop + viewportHeight * 0.3;
-        const total = articleHeight;
-        const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
-
+        const progress = Math.min(Math.max(scrolled / articleHeight * 100, 0), 100);
         progressBar.style.width = `${progress}%`;
-
-        if (window.scrollY > articleTop - viewportHeight) {
-          progressBar.classList.add('visible');
-        } else {
-          progressBar.classList.remove('visible');
-        }
+        if (window.scrollY > articleTop - viewportHeight) { progressBar.classList.add('visible'); }
+        else { progressBar.classList.remove('visible'); }
         ticking = false;
       };
-
       window.addEventListener('scroll', () => {
-        if (!ticking) {
-          requestAnimationFrame(updateProgress);
-          ticking = true;
-        }
+        if (!ticking) { requestAnimationFrame(updateProgress); ticking = true; }
       }, { passive: true });
-
       updateProgress();
     })();
   </script>
-  <!-- WebMCP Imperative API: Register tools for AI agents -->
   <script>
     (function() {
       if (!('modelContext' in navigator)) return;
 
       navigator.modelContext.registerTool(
         'search_paul_articles',
-        'Search Paul Kuo\'s blog articles by keyword or topic. Returns matching articles with title, description, pillar category, and direct URL. Paul writes about AI & Order, Circular Economy, Civilization & Human Nature, Creation & Enterprise, and Reflections & Memory.',
-        {
-          keyword: { type: 'string', description: 'The topic or keyword to search for (supports Chinese and English)' }
-        },
+        'Search Paul Kuo\'s blog articles by keyword or topic. Returns matching articles with title, description, pillar category, and direct URL.',
+        { keyword: { type: 'string', description: 'The topic or keyword to search for (supports Chinese and English)' } },
         async function(args) {
           try {
             const res = await fetch('/api/search-index.json');
             const articles = await res.json();
             const q = (args.keyword || '').toLowerCase();
             const matches = articles.filter(a =>
-              a.title.toLowerCase().includes(q) ||
-              a.description.toLowerCase().includes(q) ||
-              a.tags.some(t => t.toLowerCase().includes(q)) ||
-              a.pillarLabel.includes(args.keyword)
+              a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q) ||
+              a.tags.some(t => t.toLowerCase().includes(q)) || a.pillarLabel.includes(args.keyword)
             ).slice(0, 10);
-
-            if (matches.length === 0) {
-              return {
-                content: [{ type: 'text', text: `No articles found for "${args.keyword}". Paul\'s main topics: AI, circular economy, semiconductor, theology, startup.` }]
-              };
-            }
-
-            const list = matches.map(a =>
-              `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.pillarLabel}, ${a.date})`
-            ).join('\n');
-
-            return {
-              content: [{ type: 'text', text: `Found ${matches.length} article(s) about "${args.keyword}":\n${list}` }]
-            };
-          } catch (e) {
-            return { content: [{ type: 'text', text: 'Search temporarily unavailable.' }] };
-          }
+            if (matches.length === 0) return { content: [{ type: 'text', text: `No articles found for "${args.keyword}".` }] };
+            const list = matches.map(a => `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.pillarLabel}, ${a.date})`).join('\n');
+            return { content: [{ type: 'text', text: `Found ${matches.length} article(s):\n${list}` }] };
+          } catch (e) { return { content: [{ type: 'text', text: 'Search temporarily unavailable.' }] }; }
         }
       );
 
       navigator.modelContext.registerTool(
         'get_paul_profile',
-        'Get Paul Kuo\'s professional profile, background, and expertise areas. Returns a structured summary suitable for introductions or context.',
+        'Get Paul Kuo\'s professional profile, background, and expertise areas.',
         {},
         async function() {
-          return {
-            content: [{ type: 'text', text: JSON.stringify({
-              name: 'Paul Kuo 郭曜郎',
-              title: 'Commercial Integration & AI Digital Development Director',
-              organization: 'SDTI 佳龍科技',
-              location: 'Taiwan',
-              languages: ['Chinese (Native)', 'English', 'Japanese'],
-              expertise: [
-                'Circular Economy & Urban Mining (20+ years)',
-                'AI Systems & Agentic Architecture',
-                'Taiwan-Japan Semiconductor Cooperation',
-                'PCB Metal Recovery',
-                'Theology & Human Nature'
-              ],
-              background: 'Theological training (15 years) + serial entrepreneurship (AppWorks, 厚生市集, 半畝塘). Operates as a "super individual" using AI tools to accomplish team-scale tasks.',
-              website: 'https://paulkuo.tw',
-              contact: 'paul@lasaas.com',
-              social: {
-                linkedin: 'https://linkedin.com/in/paulkuo',
-                x: 'https://x.com/zarqarwi',
-                threads: 'https://threads.net/@zarqarwi'
-              }
-            }, null, 2) }]
-          };
+          return { content: [{ type: 'text', text: JSON.stringify({
+            name: 'Paul Kuo 郭曜郎', title: 'Commercial Integration & AI Digital Development Director',
+            organization: 'SDTI 佳龍科技', location: 'Taiwan',
+            languages: ['Chinese (Native)', 'English', 'Japanese'],
+            expertise: ['Circular Economy & Urban Mining (20+ years)', 'AI Systems & Agentic Architecture',
+              'Taiwan-Japan Semiconductor Cooperation', 'PCB Metal Recovery', 'Theology & Human Nature'],
+            website: 'https://paulkuo.tw', contact: 'paul@lasaas.com',
+            social: { linkedin: 'https://linkedin.com/in/paulkuo', x: 'https://x.com/zarqarwi', threads: 'https://threads.net/@zarqarwi' }
+          }, null, 2) }] };
         }
       );
 
       navigator.modelContext.registerTool(
         'browse_by_pillar',
-        'Browse Paul Kuo\'s articles filtered by content pillar: ai (智能與秩序), circular (循環再利用), faith (文明與人性), startup (創造與建構), life (沉思與記憶).',
-        {
-          pillar: { type: 'string', description: 'Pillar key: ai, circular, faith, startup, or life' }
-        },
+        'Browse articles by content pillar: ai, circular, faith, startup, or life.',
+        { pillar: { type: 'string', description: 'Pillar key: ai, circular, faith, startup, or life' } },
         async function(args) {
           try {
             const res = await fetch('/api/search-index.json');
             const articles = await res.json();
             const matches = articles.filter(a => a.pillar === args.pillar).slice(0, 10);
-
-            if (matches.length === 0) {
-              return {
-                content: [{ type: 'text', text: `No articles found for pillar "${args.pillar}". Valid pillars: ai, circular, faith, startup, life.` }]
-              };
-            }
-
+            if (matches.length === 0) return { content: [{ type: 'text', text: `No articles for pillar "${args.pillar}". Valid: ai, circular, faith, startup, life.` }] };
             const label = matches[0].pillarLabel;
-            const list = matches.map(a =>
-              `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.date})`
-            ).join('\n');
-
-            return {
-              content: [{ type: 'text', text: `${label} — ${matches.length} article(s):\n${list}` }]
-            };
-          } catch (e) {
-            return { content: [{ type: 'text', text: 'Browse temporarily unavailable.' }] };
-          }
+            const list = matches.map(a => `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.date})`).join('\n');
+            return { content: [{ type: 'text', text: `${label} — ${matches.length} article(s):\n${list}` }] };
+          } catch (e) { return { content: [{ type: 'text', text: 'Browse temporarily unavailable.' }] }; }
         }
       );
     })();
   
-    // === Font Size Toggle ===
     const fontToggle = document.getElementById("fontToggle");
     if (fontToggle) {
       const sizes = { small: "15px", normal: "17px", large: "19px" };
@@ -441,15 +360,12 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         fontToggle.querySelectorAll(".font-size-btn").forEach(b => b.classList.toggle("active", b === btn));
       });
     }
-
   </script>
 
-  <!-- Focus Mode Toggle (article pages only) -->
   <button class="focus-mode-btn" id="focusModeBtn" title="專注閱讀" aria-label="Focus Mode" style="display:none">
     <span class="focus-icon">👁</span>
   </button>
 
-  <!-- Font Size Toggle -->
   <div class="font-size-toggle" id="fontToggle" aria-label="字級切換">
     <button class="font-size-btn" data-size="small" aria-label="小字" title="縮小字級">A-</button>
     <button class="font-size-btn active" data-size="normal" aria-label="標準" title="標準字級">A</button>
@@ -457,7 +373,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   </div>
 
   <script is:inline>
-  // === Client-side i18n for homepage + nav + ticker ===
   (function() {
     var params = new URLSearchParams(window.location.search);
     var lang = params.get('lang');
@@ -468,146 +383,77 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
       else if (p.startsWith('/zh-cn/') || p === '/zh-cn') lang = 'zh-CN';
     }
     if (!lang || lang === 'zh-Hant') return;
-    
-    fetch('/data/i18n-home.json')
-      .then(function(r) { return r.json(); })
-      .then(function(t) {
-        var T = t[lang];
-        if (!T) return;
-        
-        var navMap = {
-          'nav-home': T.nav_home,
-          'nav-blog': T.nav_blog,
-          'nav-projects': T.nav_projects,
-          'nav-feed': T.nav_feed,
-          'nav-about': T.nav_about,
-          'nav-dd-feed': T.nav_dd_feed,
-          'nav-dd-graph': T.nav_dd_graph
-        };
-        Object.keys(navMap).forEach(function(id) {
-          var el = document.getElementById(id);
-          if (el && navMap[id]) el.textContent = navMap[id];
-        });
-        var ctaEl = document.querySelector('.nav-cta');
-        if (ctaEl && T.nav_contact) ctaEl.textContent = T.nav_contact;
-        
-        document.querySelectorAll('.ticker-item .ticker-label').forEach(function(el) {
-          var text = el.textContent.trim();
-          if (text === '本月 API') el.textContent = T.ticker_monthly || text;
-          if (text === '日均') el.textContent = T.ticker_daily || text;
-          if (text === 'API 呼叫') el.textContent = T.ticker_calls || text;
-          if (text === '累計') el.textContent = T.ticker_total || text;
-          if (text === '步數') el.textContent = T.ticker_steps || text;
-          if (text === 'AI 協作') el.textContent = T.ticker_ai || text;
-        });
-        
-        var taglines = document.querySelectorAll('.hero-tagline');
-        if (taglines[0]) taglines[0].textContent = T.hero_tagline1;
-        if (taglines[1]) taglines[1].textContent = T.hero_tagline2;
-        
-        var btnRead = document.querySelector('.btn-primary');
-        var btnAbout = document.querySelector('.btn-secondary');
-        if (btnRead) btnRead.textContent = T.btn_read;
-        if (btnAbout) btnAbout.textContent = T.btn_about;
-        
-        var heroCards = document.querySelectorAll('.hero-card p');
-        if (heroCards[0]) heroCards[0].textContent = T.card1_text;
-        if (heroCards[1]) heroCards[1].textContent = T.card2_text;
-        if (heroCards[2]) heroCards[2].textContent = T.card3_text;
-        var heroMeta = document.querySelectorAll('.hero-card-meta');
-        if (heroMeta[0]) heroMeta[0].textContent = T.card1_meta;
-        
-        document.querySelectorAll('.section-title').forEach(function(el) {
-          var text = el.textContent.trim();
-          if (text === '最新思考') el.textContent = T.section_latest;
-          if (text === '動態情報') el.textContent = T.section_feed;
-          if (text === '專案') el.textContent = T.section_projects;
-        });
-        document.querySelectorAll('.section-link').forEach(function(el) {
-          if (el.textContent.includes('查看全部')) el.textContent = T.section_viewall;
-        });
-        
-        var kicker = document.querySelector('.manifesto-kicker');
-        if (kicker) kicker.textContent = T.manifesto_kicker;
-        var mBody = document.querySelector('.manifesto-body');
-        if (mBody) mBody.textContent = T.manifesto_body;
-        var mCta = document.querySelector('.manifesto-cta');
-        if (mCta) mCta.textContent = T.manifesto_cta;
-        
-        var contactH2 = document.querySelector('.contact-section h2');
-        if (contactH2) contactH2.innerHTML = T.contact_title;
-        
-        var nameLabel = document.querySelector('label[for="contact-name"]');
-        if (nameLabel) nameLabel.textContent = T.form_name;
-        var nameInput = document.getElementById('contact-name');
-        if (nameInput) nameInput.placeholder = T.form_name_ph;
-        var msgLabel = document.querySelector('label[for="contact-message"]');
-        if (msgLabel) msgLabel.textContent = T.form_message;
-        var msgInput = document.getElementById('contact-message');
-        if (msgInput) msgInput.placeholder = T.form_message_ph;
-        var submitBtn = document.getElementById('contact-submit');
-        if (submitBtn) submitBtn.textContent = T.form_submit;
-        
-        var feedDesc = document.querySelector('#feed p');
-        if (feedDesc && feedDesc.textContent.includes('7')) feedDesc.textContent = T.feed_desc;
-        
-        document.querySelectorAll('.lang-btn').forEach(function(btn) {
-          btn.classList.remove('active');
-          var href = btn.getAttribute('href') || '';
-          if (href.includes('lang=' + lang)) btn.classList.add('active');
-        });
-        
-        document.documentElement.lang = lang === 'zh-CN' ? 'zh-Hans' : lang;
-      })
-      .catch(function() {});
+    fetch('/data/i18n-home.json').then(function(r) { return r.json(); }).then(function(t) {
+      var T = t[lang]; if (!T) return;
+      var navMap = { 'nav-home': T.nav_home, 'nav-blog': T.nav_blog, 'nav-projects': T.nav_projects, 'nav-feed': T.nav_feed, 'nav-about': T.nav_about, 'nav-dd-feed': T.nav_dd_feed, 'nav-dd-graph': T.nav_dd_graph };
+      Object.keys(navMap).forEach(function(id) { var el = document.getElementById(id); if (el && navMap[id]) el.textContent = navMap[id]; });
+      var ctaEl = document.querySelector('.nav-cta'); if (ctaEl && T.nav_contact) ctaEl.textContent = T.nav_contact;
+      document.querySelectorAll('.ticker-item .ticker-label').forEach(function(el) {
+        var text = el.textContent.trim();
+        if (text === '本月 API') el.textContent = T.ticker_monthly || text;
+        if (text === '日均') el.textContent = T.ticker_daily || text;
+        if (text === 'API 呼叫') el.textContent = T.ticker_calls || text;
+        if (text === '累計') el.textContent = T.ticker_total || text;
+        if (text === '步數') el.textContent = T.ticker_steps || text;
+        if (text === 'AI 協作') el.textContent = T.ticker_ai || text;
+      });
+      var taglines = document.querySelectorAll('.hero-tagline');
+      if (taglines[0]) taglines[0].textContent = T.hero_tagline1;
+      if (taglines[1]) taglines[1].textContent = T.hero_tagline2;
+      var btnRead = document.querySelector('.btn-primary'); var btnAbout = document.querySelector('.btn-secondary');
+      if (btnRead) btnRead.textContent = T.btn_read; if (btnAbout) btnAbout.textContent = T.btn_about;
+      var heroCards = document.querySelectorAll('.hero-card p');
+      if (heroCards[0]) heroCards[0].textContent = T.card1_text; if (heroCards[1]) heroCards[1].textContent = T.card2_text; if (heroCards[2]) heroCards[2].textContent = T.card3_text;
+      var heroMeta = document.querySelectorAll('.hero-card-meta'); if (heroMeta[0]) heroMeta[0].textContent = T.card1_meta;
+      document.querySelectorAll('.section-title').forEach(function(el) {
+        var text = el.textContent.trim();
+        if (text === '最新思考') el.textContent = T.section_latest; if (text === '動態情報') el.textContent = T.section_feed; if (text === '專案') el.textContent = T.section_projects;
+      });
+      document.querySelectorAll('.section-link').forEach(function(el) { if (el.textContent.includes('查看全部')) el.textContent = T.section_viewall; });
+      var kicker = document.querySelector('.manifesto-kicker'); if (kicker) kicker.textContent = T.manifesto_kicker;
+      var mBody = document.querySelector('.manifesto-body'); if (mBody) mBody.textContent = T.manifesto_body;
+      var mCta = document.querySelector('.manifesto-cta'); if (mCta) mCta.textContent = T.manifesto_cta;
+      var contactH2 = document.querySelector('.contact-section h2'); if (contactH2) contactH2.innerHTML = T.contact_title;
+      var nameLabel = document.querySelector('label[for="contact-name"]'); if (nameLabel) nameLabel.textContent = T.form_name;
+      var nameInput = document.getElementById('contact-name'); if (nameInput) nameInput.placeholder = T.form_name_ph;
+      var msgLabel = document.querySelector('label[for="contact-message"]'); if (msgLabel) msgLabel.textContent = T.form_message;
+      var msgInput = document.getElementById('contact-message'); if (msgInput) msgInput.placeholder = T.form_message_ph;
+      var submitBtn = document.getElementById('contact-submit'); if (submitBtn) submitBtn.textContent = T.form_submit;
+      var feedDesc = document.querySelector('#feed p'); if (feedDesc && feedDesc.textContent.includes('7')) feedDesc.textContent = T.feed_desc;
+      document.querySelectorAll('.lang-btn').forEach(function(btn) { btn.classList.remove('active'); var href = btn.getAttribute('href') || ''; if (href.includes('lang=' + lang)) btn.classList.add('active'); });
+      document.documentElement.lang = lang === 'zh-CN' ? 'zh-Hans' : lang;
+    }).catch(function() {});
   })();
   </script>
 
   <script is:inline>
-  // === Focus Mode ===
   (function() {
-    var btn = document.getElementById('focusModeBtn');
-    if (!btn) return;
-    var isArticle = !!document.querySelector('.article-page, .article-content');
-    if (!isArticle) return;
+    var btn = document.getElementById('focusModeBtn'); if (!btn) return;
+    var isArticle = !!document.querySelector('.article-page, .article-content'); if (!isArticle) return;
     btn.style.display = 'flex';
-    
     var active = false;
     btn.addEventListener('click', function() {
       active = !active;
-      var nav = document.getElementById('main-nav');
-      var ticker = document.querySelector('.cost-ticker');
-      var footer = document.querySelector('footer');
-      var fontToggle = document.getElementById('fontToggle');
-      
+      var nav = document.getElementById('main-nav'); var ticker = document.querySelector('.cost-ticker'); var footer = document.querySelector('footer');
       if (active) {
         document.body.classList.add('focus-mode');
-        if (nav) nav.style.transform = 'translateY(-100%)';
-        if (ticker) ticker.style.transform = 'translateY(-100%)';
-        if (ticker) ticker.style.opacity = '0';
+        if (nav) nav.style.transform = 'translateY(-100%)'; if (ticker) { ticker.style.transform = 'translateY(-100%)'; ticker.style.opacity = '0'; }
         if (footer) footer.style.display = 'none';
-        btn.querySelector('.focus-icon').textContent = '✕';
-        btn.title = '結束專注';
+        btn.querySelector('.focus-icon').textContent = '✕'; btn.title = '結束專注';
         document.body.style.paddingTop = '0';
-        var content = document.querySelector('.article-content, .article-page');
-        if (content) content.style.paddingTop = '40px';
+        var content = document.querySelector('.article-content, .article-page'); if (content) content.style.paddingTop = '40px';
       } else {
         document.body.classList.remove('focus-mode');
-        if (nav) nav.style.transform = '';
-        if (ticker) ticker.style.transform = '';
-        if (ticker) ticker.style.opacity = '';
+        if (nav) nav.style.transform = ''; if (ticker) { ticker.style.transform = ''; ticker.style.opacity = ''; }
         if (footer) footer.style.display = '';
-        btn.querySelector('.focus-icon').textContent = '👁';
-        btn.title = '專注閱讀';
+        btn.querySelector('.focus-icon').textContent = '👁'; btn.title = '專注閱讀';
         document.body.style.paddingTop = '';
-        var content = document.querySelector('.article-content, .article-page');
-        if (content) content.style.paddingTop = '';
+        var content = document.querySelector('.article-content, .article-page'); if (content) content.style.paddingTop = '';
       }
     });
   })();
   </script>
 
-  <!-- Reading Progress Tracker -->
   <div id="readingTracker" style="display:none;position:fixed;bottom:24px;left:24px;z-index:998;background:var(--bg-card,#fff);border:1px solid var(--border,#d1d5db);border-radius:12px;padding:14px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.12);max-width:300px;cursor:pointer;transition:all 0.3s ease;opacity:0;transform:translateY(20px)">
     <div style="display:flex;align-items:center;gap:10px">
       <span style="font-size:1.2rem">📖</span>
@@ -620,108 +466,44 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   </div>
 
   <script is:inline>
-  // === Reading Progress Tracker ===
   (function() {
     var STORAGE_KEY = 'paulkuo_reading';
-    
-    function getReadingData() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } 
-      catch(e) { return {}; }
-    }
-    
-    function saveReadingData(data) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
-    }
-    
+    function getReadingData() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; } }
+    function saveReadingData(data) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {} }
     var articleEl = document.querySelector('.article-page');
     if (articleEl) {
       var articleBody = document.querySelector('.article-body');
       if (articleBody) {
-        var slug = window.location.pathname;
-        var title = document.querySelector('.article-page h1')?.textContent || '';
-        
+        var slug = window.location.pathname; var title = document.querySelector('.article-page h1')?.textContent || '';
         var saveTimer;
         window.addEventListener('scroll', function() {
           clearTimeout(saveTimer);
           saveTimer = setTimeout(function() {
-            var bodyTop = articleBody.offsetTop;
-            var bodyHeight = articleBody.scrollHeight || articleBody.offsetHeight;
-            var scrollPos = window.scrollY || document.documentElement.scrollTop;
-            var scrolled = scrollPos - bodyTop + window.innerHeight;
-            var pct = Math.min(100, Math.max(0, Math.round((scrolled / bodyHeight) * 100)));
-            
-            var data = getReadingData();
-            data.lastArticle = { slug: slug, title: title, progress: pct, ts: Date.now() };
-            saveReadingData(data);
+            var pct = Math.min(100, Math.max(0, Math.round(((window.scrollY - articleBody.offsetTop + window.innerHeight) / (articleBody.scrollHeight || articleBody.offsetHeight)) * 100)));
+            var data = getReadingData(); data.lastArticle = { slug: slug, title: title, progress: pct, ts: Date.now() }; saveReadingData(data);
           }, 300);
         });
-        
-        window.addEventListener('beforeunload', function() {
-          var data = getReadingData();
-          if (data.lastArticle && data.lastArticle.progress >= 95) {
-            data.lastArticle.progress = 100;
-            saveReadingData(data);
-          }
-        });
+        window.addEventListener('beforeunload', function() { var data = getReadingData(); if (data.lastArticle && data.lastArticle.progress >= 95) { data.lastArticle.progress = 100; saveReadingData(data); } });
       }
       return;
     }
-    
-    var data = getReadingData();
-    if (!data.lastArticle) return;
+    var data = getReadingData(); if (!data.lastArticle) return;
     if (data.lastArticle.progress <= 5 || data.lastArticle.progress >= 100) return;
     if (Date.now() - data.lastArticle.ts > 7 * 24 * 60 * 60 * 1000) return;
-    
-    var tracker = document.getElementById('readingTracker');
-    var rtTitle = document.getElementById('rtTitle');
-    var rtProgress = document.getElementById('rtProgress');
-    var rtClose = document.getElementById('rtClose');
-    
+    var tracker = document.getElementById('readingTracker'); var rtTitle = document.getElementById('rtTitle'); var rtProgress = document.getElementById('rtProgress'); var rtClose = document.getElementById('rtClose');
     if (!tracker || !rtTitle || !rtProgress) return;
-    
-    rtTitle.textContent = data.lastArticle.title;
-    rtProgress.textContent = '繼續閱讀 · 進度 ' + data.lastArticle.progress + '%';
-    
-    tracker.style.display = 'block';
-    setTimeout(function() {
-      tracker.style.opacity = '1';
-      tracker.style.transform = 'translateY(0)';
-    }, 500);
-    
-    tracker.addEventListener('click', function(e) {
-      if (e.target === rtClose || e.target.closest('#rtClose')) {
-        tracker.style.opacity = '0';
-        tracker.style.transform = 'translateY(20px)';
-        setTimeout(function() { tracker.style.display = 'none'; }, 300);
-        return;
-      }
-      window.location.href = data.lastArticle.slug;
-    });
-    
-    rtClose.addEventListener('click', function(e) {
-      e.stopPropagation();
-      tracker.style.opacity = '0';
-      tracker.style.transform = 'translateY(20px)';
-      setTimeout(function() { tracker.style.display = 'none'; }, 300);
-    });
+    rtTitle.textContent = data.lastArticle.title; rtProgress.textContent = '繼續閱讀 · 進度 ' + data.lastArticle.progress + '%';
+    tracker.style.display = 'block'; setTimeout(function() { tracker.style.opacity = '1'; tracker.style.transform = 'translateY(0)'; }, 500);
+    tracker.addEventListener('click', function(e) { if (e.target === rtClose || e.target.closest('#rtClose')) { tracker.style.opacity = '0'; tracker.style.transform = 'translateY(20px)'; setTimeout(function() { tracker.style.display = 'none'; }, 300); return; } window.location.href = data.lastArticle.slug; });
+    rtClose.addEventListener('click', function(e) { e.stopPropagation(); tracker.style.opacity = '0'; tracker.style.transform = 'translateY(20px)'; setTimeout(function() { tracker.style.display = 'none'; }, 300); });
   })();
   </script>
 
   <script is:inline>
-  if (document.querySelector('.contact-section')) {
-    document.body.classList.add('has-contact-section');
-  }
+  if (document.querySelector('.contact-section')) { document.body.classList.add('has-contact-section'); }
   </script>
   <script is:inline>
-  // === Agent-Awareness Indicator ===
-  (function() {
-    var indicator = document.getElementById('agentIndicator');
-    if (!indicator) return;
-    if ('modelContext' in navigator) {
-      indicator.style.display = 'inline';
-      setTimeout(function() { indicator.style.opacity = '1'; }, 100);
-    }
-  })();
+  (function() { var indicator = document.getElementById('agentIndicator'); if (!indicator) return; if ('modelContext' in navigator) { indicator.style.display = 'inline'; setTimeout(function() { indicator.style.opacity = '1'; }, 100); } })();
   </script>
 </body>
 </html>
