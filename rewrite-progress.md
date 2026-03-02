@@ -28,8 +28,8 @@
 | 23 | reformation-printing-politics | ✅ done |
 | 24 | refuse-follower-be-builder | ✅ done |
 | 25 | remote-work-cruel-truth | ✅ done |
-| 26 | safer-4-ai-governance | ⬜ pending |
-| 27 | sam-altman-sora-energy-ai | ⬜ pending |
-| 28 | sovereign-ai-digital-autonomy | ⬜ pending |
-| 29 | system-vs-intuition-planning | ⬜ pending |
-| 30 | traffic-beyond-currency | ⬜ pending |
+| 26 | safer-4-ai-governance | ✅ done |
+| 27 | sam-altman-sora-energy-ai | ✅ done |
+| 28 | sovereign-ai-digital-autonomy | ✅ done |
+| 29 | system-vs-intuition-planning | ✅ done |
+| 30 | traffic-beyond-currency | ✅ done |
