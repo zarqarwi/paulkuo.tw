@@ -1,0 +1,32 @@
+---
+/**
+ * FontToggle – three-button font size switcher (small / normal / large).
+ * Persists choice to localStorage.
+ */
+---
+
+<div class="font-size-toggle" id="fontToggle" aria-label="字級切換">
+  <button class="font-size-btn" data-size="small" aria-label="小字" title="縮小字級">A-</button>
+  <button class="font-size-btn active" data-size="normal" aria-label="標準" title="標準字級">A</button>
+  <button class="font-size-btn" data-size="large" aria-label="大字" title="放大字級">A+</button>
+</div>
+
+<script>
+  const fontToggle = document.getElementById("fontToggle");
+  if (fontToggle) {
+    const sizes: Record<string, string> = { small: "15px", normal: "17px", large: "19px" };
+    const saved = localStorage.getItem("fontSize") || "normal";
+    document.documentElement.style.fontSize = sizes[saved] || sizes.normal;
+    fontToggle.querySelectorAll(".font-size-btn").forEach(btn => {
+      btn.classList.toggle("active", (btn as HTMLElement).dataset.size === saved);
+    });
+    fontToggle.addEventListener("click", (e) => {
+      const btn = (e.target as HTMLElement).closest(".font-size-btn") as HTMLElement | null;
+      if (!btn) return;
+      const size = btn.dataset.size!;
+      document.documentElement.style.fontSize = sizes[size] || sizes.normal;
+      localStorage.setItem("fontSize", size);
+      fontToggle.querySelectorAll(".font-size-btn").forEach(b => b.classList.toggle("active", b === btn));
+    });
+  }
+</script>

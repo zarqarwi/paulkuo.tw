@@ -1,0 +1,60 @@
+---
+/**
+ * I18nClientSwitch – client-side DOM text replacement for homepage elements
+ * when a non-zh-Hant language is active. Fetches `/data/i18n-home.json`.
+ */
+---
+
+<script is:inline>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var lang = params.get('lang');
+  if (!lang) {
+    var p = window.location.pathname;
+    if (p.startsWith('/en/') || p === '/en') lang = 'en';
+    else if (p.startsWith('/ja/') || p === '/ja') lang = 'ja';
+    else if (p.startsWith('/zh-cn/') || p === '/zh-cn') lang = 'zh-CN';
+  }
+  if (!lang || lang === 'zh-Hant') return;
+  fetch('/data/i18n-home.json').then(function(r) { return r.json(); }).then(function(t) {
+    var T = t[lang]; if (!T) return;
+    var navMap = { 'nav-home': T.nav_home, 'nav-blog': T.nav_blog, 'nav-projects': T.nav_projects, 'nav-feed': T.nav_feed, 'nav-about': T.nav_about, 'nav-dd-feed': T.nav_dd_feed, 'nav-dd-graph': T.nav_dd_graph };
+    Object.keys(navMap).forEach(function(id) { var el = document.getElementById(id); if (el && navMap[id]) el.textContent = navMap[id]; });
+    var ctaEl = document.querySelector('.nav-cta'); if (ctaEl && T.nav_contact) ctaEl.textContent = T.nav_contact;
+    document.querySelectorAll('.ticker-item .ticker-label').forEach(function(el) {
+      var text = el.textContent.trim();
+      if (text === '本月 API') el.textContent = T.ticker_monthly || text;
+      if (text === '日均') el.textContent = T.ticker_daily || text;
+      if (text === 'API 呼叫') el.textContent = T.ticker_calls || text;
+      if (text === '累計') el.textContent = T.ticker_total || text;
+      if (text === '步數') el.textContent = T.ticker_steps || text;
+      if (text === 'AI 協作') el.textContent = T.ticker_ai || text;
+    });
+    var taglines = document.querySelectorAll('.hero-tagline');
+    if (taglines[0]) taglines[0].textContent = T.hero_tagline1;
+    if (taglines[1]) taglines[1].textContent = T.hero_tagline2;
+    var btnRead = document.querySelector('.btn-primary'); var btnAbout = document.querySelector('.btn-secondary');
+    if (btnRead) btnRead.textContent = T.btn_read; if (btnAbout) btnAbout.textContent = T.btn_about;
+    var heroCards = document.querySelectorAll('.hero-card p');
+    if (heroCards[0]) heroCards[0].textContent = T.card1_text; if (heroCards[1]) heroCards[1].textContent = T.card2_text; if (heroCards[2]) heroCards[2].textContent = T.card3_text;
+    var heroMeta = document.querySelectorAll('.hero-card-meta'); if (heroMeta[0]) heroMeta[0].textContent = T.card1_meta;
+    document.querySelectorAll('.section-title').forEach(function(el) {
+      var text = el.textContent.trim();
+      if (text === '最新思考') el.textContent = T.section_latest; if (text === '動態情報') el.textContent = T.section_feed; if (text === '專案') el.textContent = T.section_projects;
+    });
+    document.querySelectorAll('.section-link').forEach(function(el) { if (el.textContent.includes('查看全部')) el.textContent = T.section_viewall; });
+    var kicker = document.querySelector('.manifesto-kicker'); if (kicker) kicker.textContent = T.manifesto_kicker;
+    var mBody = document.querySelector('.manifesto-body'); if (mBody) mBody.textContent = T.manifesto_body;
+    var mCta = document.querySelector('.manifesto-cta'); if (mCta) mCta.textContent = T.manifesto_cta;
+    var contactH2 = document.querySelector('.contact-section h2'); if (contactH2) contactH2.innerHTML = T.contact_title;
+    var nameLabel = document.querySelector('label[for="contact-name"]'); if (nameLabel) nameLabel.textContent = T.form_name;
+    var nameInput = document.getElementById('contact-name'); if (nameInput) nameInput.placeholder = T.form_name_ph;
+    var msgLabel = document.querySelector('label[for="contact-message"]'); if (msgLabel) msgLabel.textContent = T.form_message;
+    var msgInput = document.getElementById('contact-message'); if (msgInput) msgInput.placeholder = T.form_message_ph;
+    var submitBtn = document.getElementById('contact-submit'); if (submitBtn) submitBtn.textContent = T.form_submit;
+    var feedDesc = document.querySelector('#feed p'); if (feedDesc && feedDesc.textContent.includes('7')) feedDesc.textContent = T.feed_desc;
+    document.querySelectorAll('.lang-btn').forEach(function(btn) { btn.classList.remove('active'); var href = btn.getAttribute('href') || ''; if (href.includes('lang=' + lang)) btn.classList.add('active'); });
+    document.documentElement.lang = lang === 'zh-CN' ? 'zh-Hans' : lang;
+  }).catch(function() {});
+})();
+</script>

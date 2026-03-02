@@ -1,0 +1,51 @@
+---
+/**
+ * ReadingTracker – floating card at bottom-left that shows "繼續閱讀" for
+ * partially-read articles. Saves progress to localStorage per article.
+ */
+---
+
+<div id="readingTracker" style="display:none;position:fixed;bottom:24px;left:24px;z-index:998;background:var(--bg-card,#fff);border:1px solid var(--border,#d1d5db);border-radius:12px;padding:14px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.12);max-width:300px;cursor:pointer;transition:all 0.3s ease;opacity:0;transform:translateY(20px)">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.2rem">📖</span>
+    <div>
+      <div id="rtTitle" style="font-size:0.85rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px"></div>
+      <div id="rtProgress" style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px"></div>
+    </div>
+    <button id="rtClose" style="position:absolute;top:6px;right:10px;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:0.9rem;padding:2px" aria-label="關閉">✕</button>
+  </div>
+</div>
+
+<script is:inline>
+(function() {
+  var STORAGE_KEY = 'paulkuo_reading';
+  function getReadingData() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; } }
+  function saveReadingData(data) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {} }
+  var articleEl = document.querySelector('.article-page');
+  if (articleEl) {
+    var articleBody = document.querySelector('.article-body');
+    if (articleBody) {
+      var slug = window.location.pathname; var title = document.querySelector('.article-page h1')?.textContent || '';
+      var saveTimer;
+      window.addEventListener('scroll', function() {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(function() {
+          var pct = Math.min(100, Math.max(0, Math.round(((window.scrollY - articleBody.offsetTop + window.innerHeight) / (articleBody.scrollHeight || articleBody.offsetHeight)) * 100)));
+          var data = getReadingData(); data.lastArticle = { slug: slug, title: title, progress: pct, ts: Date.now() }; saveReadingData(data);
+        }, 300);
+      });
+      window.addEventListener('beforeunload', function() { var data = getReadingData(); if (data.lastArticle && data.lastArticle.progress >= 95) { data.lastArticle.progress = 100; saveReadingData(data); } });
+    }
+    return;
+  }
+  var data = getReadingData(); if (!data.lastArticle) return;
+  if (data.lastArticle.progress <= 5 || data.lastArticle.progress >= 100) return;
+  if (Date.now() - data.lastArticle.ts > 7 * 24 * 60 * 60 * 1000) return;
+  var tracker = document.getElementById('readingTracker'); var rtTitle = document.getElementById('rtTitle'); var rtProgress = document.getElementById('rtProgress'); var rtClose = document.getElementById('rtClose');
+  if (!tracker || !rtTitle || !rtProgress) return;
+  rtTitle.textContent = data.lastArticle.title; rtProgress.textContent = '繼續閱讀 · 進度 ' + data.lastArticle.progress + '%';
+  tracker.style.display = 'block'; setTimeout(function() { tracker.style.opacity = '1'; tracker.style.transform = 'translateY(0)'; }, 500);
+  tracker.addEventListener('click', function(e) { if (e.target === rtClose || e.target.closest('#rtClose')) { tracker.style.opacity = '0'; tracker.style.transform = 'translateY(20px)'; setTimeout(function() { tracker.style.display = 'none'; }, 300); return; } window.location.href = data.lastArticle.slug; });
+  rtClose.addEventListener('click', function(e) { e.stopPropagation(); tracker.style.opacity = '0'; tracker.style.transform = 'translateY(20px)'; setTimeout(function() { tracker.style.display = 'none'; }, 300); });
+})();
+</script>

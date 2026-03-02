@@ -1,10 +1,27 @@
 ---
 import CostTicker from '../components/CostTicker.astro';
+import NavBar from '../components/layout/NavBar.astro';
+import Footer from '../components/layout/Footer.astro';
+import SchemaJsonLd from '../components/layout/SchemaJsonLd.astro';
+import ReadingProgressBar from '../components/layout/ReadingProgressBar.astro';
+import ReadingTracker from '../components/layout/ReadingTracker.astro';
+import FocusMode from '../components/layout/FocusMode.astro';
+import FontToggle from '../components/layout/FontToggle.astro';
+import I18nClientSwitch from '../components/layout/I18nClientSwitch.astro';
+import WebMCPTools from '../components/layout/WebMCPTools.astro';
 import { createHash } from 'crypto';
 import { readFileSync } from 'fs';
+import {
+  getLangFromPath,
+  getLangPrefix,
+  getBasePath,
+  getHreflangs,
+  getLangSwitchLinks,
+} from '../utils/i18n';
 
 // Content-based CSS cache busting (hash changes only when CSS content changes)
-const cssHash = (file: string) => createHash('md5').update(readFileSync(`public/styles/${file}`)).digest('hex').slice(0, 8);
+const cssHash = (file: string) =>
+  createHash('md5').update(readFileSync(`public/styles/${file}`)).digest('hex').slice(0, 8);
 const globalCssV = cssHash('global.css');
 const cjkCssV = cssHash('cjk-fixes.css');
 
@@ -19,8 +36,8 @@ interface Props {
   showTicker?: boolean;
 }
 
-const { 
-  title, 
+const {
+  title,
   description = '在技術與文明的交匯處，重建秩序、循環再利用、守護人性尊嚴。',
   ogType = 'website',
   ogUrl = 'https://paulkuo.tw',
@@ -32,47 +49,15 @@ const {
 
 const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
 
-// Determine current lang from URL
+// i18n
 const pathname = Astro.url.pathname;
-const langMap: Record<string, string> = {
-  '/en/': 'en',
-  '/ja/': 'ja',
-  '/zh-cn/': 'zh-CN',
-};
-const currentLang = Object.entries(langMap).find(([prefix]) => pathname.startsWith(prefix))?.[1] || 'zh-Hant';
-
-// Build hreflang alternates
-const basePath = pathname.replace(/^\/(en|ja|zh-cn)\//, '/');
-
-// Pages that only exist in zh-Hant (no translation pages created)
-const zhOnlyPrefixes = ['/dashboard', '/health', '/search', '/tags', '/tags-graph'];
-const isZhOnly = zhOnlyPrefixes.some(p => basePath === p || basePath.startsWith(p + '/'));
-
-const hreflangs = isZhOnly
-  ? [
-      { lang: 'zh-TW', href: `https://paulkuo.tw${basePath}` },
-      { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
-    ]
-  : [
-      { lang: 'zh-TW', href: `https://paulkuo.tw${basePath}` },
-      { lang: 'en', href: `https://paulkuo.tw/en${basePath}` },
-      { lang: 'ja', href: `https://paulkuo.tw/ja${basePath}` },
-      { lang: 'zh-CN', href: `https://paulkuo.tw/zh-cn${basePath}` },
-      { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
-    ];
-
-// Language switcher links
-const isHome = basePath === '/' || basePath === '';
-const langSwitchLinks = {
-  'zh-Hant': isHome ? '/' : basePath,
-  'en': isHome ? '/?lang=en' : `/en${basePath}`,
-  'ja': isHome ? '/?lang=ja' : `/ja${basePath}`,
-  'zh-CN': isHome ? '/?lang=zh-CN' : `/zh-cn${basePath}`,
-};
+const currentLang = getLangFromPath(pathname);
+const langPrefix = getLangPrefix(currentLang);
+const basePath = getBasePath(pathname);
+const hreflangs = getHreflangs(basePath);
+const langSwitchLinks = getLangSwitchLinks(basePath);
 
 const isArticlePage = pathname.includes('/articles/');
-const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' : currentLang === 'zh-CN' ? '/zh-cn' : '';
-
 ---
 
 <!DOCTYPE html>
@@ -112,89 +97,14 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   <link rel="stylesheet" href={`/styles/global.css?v=${globalCssV}`}>
   <link rel="stylesheet" href={`/styles/cjk-fixes.css?v=${cjkCssV}`}>
   {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Person",
-        "@id": "https://paulkuo.tw/#person",
-        "name": "Paul Kuo",
-        "alternateName": "郭曜郎",
-        "url": "https://paulkuo.tw",
-        "image": "https://paulkuo.tw/paul-photo.png",
-        "jobTitle": "Commercial Integration & AI Digital Development Director",
-        "worksFor": {
-          "@type": "Organization",
-          "name": "SDTI 佳龍科技",
-          "url": "https://www.sdti.com.tw"
-        },
-        "knowsAbout": ["Circular Economy", "AI Systems", "Semiconductor", "Theology"],
-        "sameAs": [
-          "https://x.com/zarqarwi",
-          "https://www.linkedin.com/in/paulkuo",
-          "https://www.threads.net/@zarqarwi",
-          "https://www.youtube.com/@kuopaul8265",
-          "https://www.facebook.com/guo.yao.lang.2025",
-          "https://www.instagram.com/zarqarwi",
-          "https://bsky.app/profile/paulkuo.bsky.social"
-        ]
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://paulkuo.tw/#website",
-        "name": "Paul Kuo",
-        "url": "https://paulkuo.tw",
-        "description": "在技術與文明的交匯處，重建秩序、循環再利用、守護人性尊嚴。",
-        "publisher": { "@id": "https://paulkuo.tw/#person" },
-        "inLanguage": ["zh-Hant", "en", "ja", "zh-Hans"]
-      }
-    ]
-  }
-  </script>
+  <SchemaJsonLd />
   <slot name="head" />
   <script src="/webmcp.js" defer></script>
 </head>
 <body>
-  {isArticlePage && <div class="reading-progress" id="reading-progress"></div>}
+  {isArticlePage && <ReadingProgressBar />}
 
-  <nav id="main-nav">
-    <div class="nav-inner">
-      <a href="/" class="nav-logo">Paul</a>
-      <div class="nav-links">
-        <a href={langPrefix + '/'} id="nav-home">首頁</a>
-        <a href={langPrefix + '/blog'} id="nav-blog">思想</a>
-        <a href={langPrefix + '/projects'} id="nav-projects">專案</a>
-        <div class="nav-dropdown">
-          <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-feed" class="nav-dropdown-trigger">動態情報</a>
-          <div class="nav-dropdown-menu">
-            <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-dd-feed">動態牆</a>
-            <a href={langPrefix + '/tags-graph'} id="nav-dd-graph">知識圖譜</a>
-          </div>
-        </div>
-        <a href={langPrefix + '/about'} id="nav-about">關於</a>
-        <a href="/search" id="nav-search" title="搜尋" aria-label="搜尋" style="font-size:1.1rem;line-height:1">🔍</a>
-        <a href="/#contact" class="nav-cta">聯絡我</a>
-        <div class="mobile-lang-divider"></div>
-        <div class="mobile-lang-group">
-          <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
-          <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
-          <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
-          <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
-        </div>
-      </div>
-
-      <div class="lang-switcher">
-        <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
-        <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
-        <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
-        <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
-      </div>
-      <button class="nav-hamburger" id="hamburger-btn" aria-label="選單">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
+  <NavBar langPrefix={langPrefix} currentLang={currentLang} langSwitchLinks={langSwitchLinks} />
 
   {showTicker && (
     <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料" data-nosnippet>
@@ -206,314 +116,11 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
     <slot />
   </main>
 
-  <footer role="contentinfo">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <a href="/" class="footer-logo">Paul Kuo</a>
-        <p class="footer-tagline">在技術與文明的交匯處，重建秩序。</p>
-      </div>
-      <div class="footer-social">
-        <span class="footer-social-label">找到我</span>
-        <div class="footer-social-links">
-          <a href="https://x.com/zarqarwi" target="_blank" rel="noopener" aria-label="X" title="X (Twitter)">𝕏</a>
-          <a href="https://www.linkedin.com/in/paulkuo" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">in</a>
-          <a href="https://www.threads.net/@zarqarwi" target="_blank" rel="noopener" aria-label="Threads" title="Threads">◉</a>
-          <a href="https://www.youtube.com/@kuopaul8265" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube">▶</a>
-          <a href="https://www.facebook.com/guo.yao.lang.2025" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook">f</a>
-          <a href="https://www.instagram.com/zarqarwi" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">📷</a>
-          <a href="https://bsky.app/profile/paulkuo.bsky.social" target="_blank" rel="noopener" aria-label="Bluesky" title="Bluesky">🦋</a>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>© 2026 Paul Kuo. Built with conviction.</span>
-        <a href="/subscribe" class="footer-rss" title="RSS 訂閱">RSS</a>
-        <span class="agent-indicator" id="agentIndicator" style="display:none;opacity:0;transition:opacity 0.3s ease;font-size:0.75rem;color:var(--text-secondary);cursor:help" title="This site supports AI agent interaction via WebMCP">✦ AI-ready</span>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    document.getElementById('hamburger-btn')?.addEventListener('click', () => {
-      const navLinks = document.querySelector('.nav-links') as HTMLElement;
-      const switcher = document.querySelector('.lang-switcher') as HTMLElement;
-      if (navLinks) navLinks.classList.toggle('mobile-open');
-      if (switcher) switcher.classList.toggle('mobile-open');
-    });
-
-    document.addEventListener('click', (e) => {
-      const navLinks = document.querySelector('.nav-links');
-      const switcher = document.querySelector('.lang-switcher');
-      const btn = document.getElementById('hamburger-btn');
-      if (btn && !btn.contains(e.target as Node)) {
-        if (navLinks && !navLinks.contains(e.target as Node)) navLinks.classList.remove('mobile-open');
-        if (switcher && !switcher.contains(e.target as Node)) switcher.classList.remove('mobile-open');
-      }
-    });
-
-    const path = window.location.pathname;
-    document.querySelectorAll('.nav-links a').forEach(a => {
-      const href = a.getAttribute('href');
-      if (href === path || (href !== '/' && path.startsWith(href!))) {
-        a.classList.add('active');
-      }
-    });
-
-    (() => {
-      const nav = document.getElementById('main-nav');
-      if (!nav) return;
-      let ticking = false;
-      const updateNav = () => {
-        if (window.scrollY > 10) { nav.classList.add('nav-scrolled'); }
-        else { nav.classList.remove('nav-scrolled'); }
-        ticking = false;
-      };
-      window.addEventListener('scroll', () => {
-        if (!ticking) { requestAnimationFrame(updateNav); ticking = true; }
-      }, { passive: true });
-    })();
-
-    (() => {
-      const progressBar = document.getElementById('reading-progress');
-      const articleBody = document.querySelector('.article-body');
-      if (!progressBar || !articleBody) return;
-      let ticking = false;
-      const updateProgress = () => {
-        const articleTop = articleBody.getBoundingClientRect().top + window.scrollY;
-        const articleHeight = articleBody.scrollHeight;
-        const viewportHeight = window.innerHeight;
-        const scrolled = window.scrollY - articleTop + viewportHeight * 0.3;
-        const progress = Math.min(Math.max(scrolled / articleHeight * 100, 0), 100);
-        progressBar.style.width = `${progress}%`;
-        if (window.scrollY > articleTop - viewportHeight) { progressBar.classList.add('visible'); }
-        else { progressBar.classList.remove('visible'); }
-        ticking = false;
-      };
-      window.addEventListener('scroll', () => {
-        if (!ticking) { requestAnimationFrame(updateProgress); ticking = true; }
-      }, { passive: true });
-      updateProgress();
-    })();
-  </script>
-  <script>
-    (function() {
-      if (!('modelContext' in navigator)) return;
-
-      navigator.modelContext.registerTool(
-        'search_paul_articles',
-        'Search Paul Kuo\'s blog articles by keyword or topic. Returns matching articles with title, description, pillar category, and direct URL.',
-        { keyword: { type: 'string', description: 'The topic or keyword to search for (supports Chinese and English)' } },
-        async function(args) {
-          try {
-            const res = await fetch('/api/search-index.json');
-            const articles = await res.json();
-            const q = (args.keyword || '').toLowerCase();
-            const matches = articles.filter(a =>
-              a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q) ||
-              a.tags.some(t => t.toLowerCase().includes(q)) || a.pillarLabel.includes(args.keyword)
-            ).slice(0, 10);
-            if (matches.length === 0) return { content: [{ type: 'text', text: `No articles found for "${args.keyword}".` }] };
-            const list = matches.map(a => `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.pillarLabel}, ${a.date})`).join('\n');
-            return { content: [{ type: 'text', text: `Found ${matches.length} article(s):\n${list}` }] };
-          } catch (e) { return { content: [{ type: 'text', text: 'Search temporarily unavailable.' }] }; }
-        }
-      );
-
-      navigator.modelContext.registerTool(
-        'get_paul_profile',
-        'Get Paul Kuo\'s professional profile, background, and expertise areas.',
-        {},
-        async function() {
-          return { content: [{ type: 'text', text: JSON.stringify({
-            name: 'Paul Kuo 郭曜郎', title: 'Commercial Integration & AI Digital Development Director',
-            organization: 'SDTI 佳龍科技', location: 'Taiwan',
-            languages: ['Chinese (Native)', 'English', 'Japanese'],
-            expertise: ['Circular Economy & Urban Mining (20+ years)', 'AI Systems & Agentic Architecture',
-              'Taiwan-Japan Semiconductor Cooperation', 'PCB Metal Recovery', 'Theology & Human Nature'],
-            website: 'https://paulkuo.tw', contact: 'paul@lasaas.com',
-            social: { linkedin: 'https://linkedin.com/in/paulkuo', x: 'https://x.com/zarqarwi', threads: 'https://threads.net/@zarqarwi' }
-          }, null, 2) }] };
-        }
-      );
-
-      navigator.modelContext.registerTool(
-        'browse_by_pillar',
-        'Browse articles by content pillar: ai, circular, faith, startup, or life.',
-        { pillar: { type: 'string', description: 'Pillar key: ai, circular, faith, startup, or life' } },
-        async function(args) {
-          try {
-            const res = await fetch('/api/search-index.json');
-            const articles = await res.json();
-            const matches = articles.filter(a => a.pillar === args.pillar).slice(0, 10);
-            if (matches.length === 0) return { content: [{ type: 'text', text: `No articles for pillar "${args.pillar}". Valid: ai, circular, faith, startup, life.` }] };
-            const label = matches[0].pillarLabel;
-            const list = matches.map(a => `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.date})`).join('\n');
-            return { content: [{ type: 'text', text: `${label} — ${matches.length} article(s):\n${list}` }] };
-          } catch (e) { return { content: [{ type: 'text', text: 'Browse temporarily unavailable.' }] }; }
-        }
-      );
-    })();
-  
-    const fontToggle = document.getElementById("fontToggle");
-    if (fontToggle) {
-      const sizes = { small: "15px", normal: "17px", large: "19px" };
-      const saved = localStorage.getItem("fontSize") || "normal";
-      document.documentElement.style.fontSize = sizes[saved] || sizes.normal;
-      fontToggle.querySelectorAll(".font-size-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.size === saved);
-      });
-      fontToggle.addEventListener("click", (e) => {
-        const btn = e.target.closest(".font-size-btn");
-        if (!btn) return;
-        const size = btn.dataset.size;
-        document.documentElement.style.fontSize = sizes[size] || sizes.normal;
-        localStorage.setItem("fontSize", size);
-        fontToggle.querySelectorAll(".font-size-btn").forEach(b => b.classList.toggle("active", b === btn));
-      });
-    }
-  </script>
-
-  <button class="focus-mode-btn" id="focusModeBtn" title="專注閱讀" aria-label="Focus Mode" style="display:none">
-    <span class="focus-icon">👁</span>
-  </button>
-
-  <div class="font-size-toggle" id="fontToggle" aria-label="字級切換">
-    <button class="font-size-btn" data-size="small" aria-label="小字" title="縮小字級">A-</button>
-    <button class="font-size-btn active" data-size="normal" aria-label="標準" title="標準字級">A</button>
-    <button class="font-size-btn" data-size="large" aria-label="大字" title="放大字級">A+</button>
-  </div>
-
-  <script is:inline>
-  (function() {
-    var params = new URLSearchParams(window.location.search);
-    var lang = params.get('lang');
-    if (!lang) {
-      var p = window.location.pathname;
-      if (p.startsWith('/en/') || p === '/en') lang = 'en';
-      else if (p.startsWith('/ja/') || p === '/ja') lang = 'ja';
-      else if (p.startsWith('/zh-cn/') || p === '/zh-cn') lang = 'zh-CN';
-    }
-    if (!lang || lang === 'zh-Hant') return;
-    fetch('/data/i18n-home.json').then(function(r) { return r.json(); }).then(function(t) {
-      var T = t[lang]; if (!T) return;
-      var navMap = { 'nav-home': T.nav_home, 'nav-blog': T.nav_blog, 'nav-projects': T.nav_projects, 'nav-feed': T.nav_feed, 'nav-about': T.nav_about, 'nav-dd-feed': T.nav_dd_feed, 'nav-dd-graph': T.nav_dd_graph };
-      Object.keys(navMap).forEach(function(id) { var el = document.getElementById(id); if (el && navMap[id]) el.textContent = navMap[id]; });
-      var ctaEl = document.querySelector('.nav-cta'); if (ctaEl && T.nav_contact) ctaEl.textContent = T.nav_contact;
-      document.querySelectorAll('.ticker-item .ticker-label').forEach(function(el) {
-        var text = el.textContent.trim();
-        if (text === '本月 API') el.textContent = T.ticker_monthly || text;
-        if (text === '日均') el.textContent = T.ticker_daily || text;
-        if (text === 'API 呼叫') el.textContent = T.ticker_calls || text;
-        if (text === '累計') el.textContent = T.ticker_total || text;
-        if (text === '步數') el.textContent = T.ticker_steps || text;
-        if (text === 'AI 協作') el.textContent = T.ticker_ai || text;
-      });
-      var taglines = document.querySelectorAll('.hero-tagline');
-      if (taglines[0]) taglines[0].textContent = T.hero_tagline1;
-      if (taglines[1]) taglines[1].textContent = T.hero_tagline2;
-      var btnRead = document.querySelector('.btn-primary'); var btnAbout = document.querySelector('.btn-secondary');
-      if (btnRead) btnRead.textContent = T.btn_read; if (btnAbout) btnAbout.textContent = T.btn_about;
-      var heroCards = document.querySelectorAll('.hero-card p');
-      if (heroCards[0]) heroCards[0].textContent = T.card1_text; if (heroCards[1]) heroCards[1].textContent = T.card2_text; if (heroCards[2]) heroCards[2].textContent = T.card3_text;
-      var heroMeta = document.querySelectorAll('.hero-card-meta'); if (heroMeta[0]) heroMeta[0].textContent = T.card1_meta;
-      document.querySelectorAll('.section-title').forEach(function(el) {
-        var text = el.textContent.trim();
-        if (text === '最新思考') el.textContent = T.section_latest; if (text === '動態情報') el.textContent = T.section_feed; if (text === '專案') el.textContent = T.section_projects;
-      });
-      document.querySelectorAll('.section-link').forEach(function(el) { if (el.textContent.includes('查看全部')) el.textContent = T.section_viewall; });
-      var kicker = document.querySelector('.manifesto-kicker'); if (kicker) kicker.textContent = T.manifesto_kicker;
-      var mBody = document.querySelector('.manifesto-body'); if (mBody) mBody.textContent = T.manifesto_body;
-      var mCta = document.querySelector('.manifesto-cta'); if (mCta) mCta.textContent = T.manifesto_cta;
-      var contactH2 = document.querySelector('.contact-section h2'); if (contactH2) contactH2.innerHTML = T.contact_title;
-      var nameLabel = document.querySelector('label[for="contact-name"]'); if (nameLabel) nameLabel.textContent = T.form_name;
-      var nameInput = document.getElementById('contact-name'); if (nameInput) nameInput.placeholder = T.form_name_ph;
-      var msgLabel = document.querySelector('label[for="contact-message"]'); if (msgLabel) msgLabel.textContent = T.form_message;
-      var msgInput = document.getElementById('contact-message'); if (msgInput) msgInput.placeholder = T.form_message_ph;
-      var submitBtn = document.getElementById('contact-submit'); if (submitBtn) submitBtn.textContent = T.form_submit;
-      var feedDesc = document.querySelector('#feed p'); if (feedDesc && feedDesc.textContent.includes('7')) feedDesc.textContent = T.feed_desc;
-      document.querySelectorAll('.lang-btn').forEach(function(btn) { btn.classList.remove('active'); var href = btn.getAttribute('href') || ''; if (href.includes('lang=' + lang)) btn.classList.add('active'); });
-      document.documentElement.lang = lang === 'zh-CN' ? 'zh-Hans' : lang;
-    }).catch(function() {});
-  })();
-  </script>
-
-  <script is:inline>
-  (function() {
-    var btn = document.getElementById('focusModeBtn'); if (!btn) return;
-    var isArticle = !!document.querySelector('.article-page, .article-content'); if (!isArticle) return;
-    btn.style.display = 'flex';
-    var active = false;
-    btn.addEventListener('click', function() {
-      active = !active;
-      var nav = document.getElementById('main-nav'); var ticker = document.querySelector('.cost-ticker'); var footer = document.querySelector('footer');
-      if (active) {
-        document.body.classList.add('focus-mode');
-        if (nav) nav.style.transform = 'translateY(-100%)'; if (ticker) { ticker.style.transform = 'translateY(-100%)'; ticker.style.opacity = '0'; }
-        if (footer) footer.style.display = 'none';
-        btn.querySelector('.focus-icon').textContent = '✕'; btn.title = '結束專注';
-        document.body.style.paddingTop = '0';
-        var content = document.querySelector('.article-content, .article-page'); if (content) content.style.paddingTop = '40px';
-      } else {
-        document.body.classList.remove('focus-mode');
-        if (nav) nav.style.transform = ''; if (ticker) { ticker.style.transform = ''; ticker.style.opacity = ''; }
-        if (footer) footer.style.display = '';
-        btn.querySelector('.focus-icon').textContent = '👁'; btn.title = '專注閱讀';
-        document.body.style.paddingTop = '';
-        var content = document.querySelector('.article-content, .article-page'); if (content) content.style.paddingTop = '';
-      }
-    });
-  })();
-  </script>
-
-  <div id="readingTracker" style="display:none;position:fixed;bottom:24px;left:24px;z-index:998;background:var(--bg-card,#fff);border:1px solid var(--border,#d1d5db);border-radius:12px;padding:14px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.12);max-width:300px;cursor:pointer;transition:all 0.3s ease;opacity:0;transform:translateY(20px)">
-    <div style="display:flex;align-items:center;gap:10px">
-      <span style="font-size:1.2rem">📖</span>
-      <div>
-        <div id="rtTitle" style="font-size:0.85rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px"></div>
-        <div id="rtProgress" style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px"></div>
-      </div>
-      <button id="rtClose" style="position:absolute;top:6px;right:10px;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:0.9rem;padding:2px" aria-label="關閉">✕</button>
-    </div>
-  </div>
-
-  <script is:inline>
-  (function() {
-    var STORAGE_KEY = 'paulkuo_reading';
-    function getReadingData() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; } }
-    function saveReadingData(data) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {} }
-    var articleEl = document.querySelector('.article-page');
-    if (articleEl) {
-      var articleBody = document.querySelector('.article-body');
-      if (articleBody) {
-        var slug = window.location.pathname; var title = document.querySelector('.article-page h1')?.textContent || '';
-        var saveTimer;
-        window.addEventListener('scroll', function() {
-          clearTimeout(saveTimer);
-          saveTimer = setTimeout(function() {
-            var pct = Math.min(100, Math.max(0, Math.round(((window.scrollY - articleBody.offsetTop + window.innerHeight) / (articleBody.scrollHeight || articleBody.offsetHeight)) * 100)));
-            var data = getReadingData(); data.lastArticle = { slug: slug, title: title, progress: pct, ts: Date.now() }; saveReadingData(data);
-          }, 300);
-        });
-        window.addEventListener('beforeunload', function() { var data = getReadingData(); if (data.lastArticle && data.lastArticle.progress >= 95) { data.lastArticle.progress = 100; saveReadingData(data); } });
-      }
-      return;
-    }
-    var data = getReadingData(); if (!data.lastArticle) return;
-    if (data.lastArticle.progress <= 5 || data.lastArticle.progress >= 100) return;
-    if (Date.now() - data.lastArticle.ts > 7 * 24 * 60 * 60 * 1000) return;
-    var tracker = document.getElementById('readingTracker'); var rtTitle = document.getElementById('rtTitle'); var rtProgress = document.getElementById('rtProgress'); var rtClose = document.getElementById('rtClose');
-    if (!tracker || !rtTitle || !rtProgress) return;
-    rtTitle.textContent = data.lastArticle.title; rtProgress.textContent = '繼續閱讀 · 進度 ' + data.lastArticle.progress + '%';
-    tracker.style.display = 'block'; setTimeout(function() { tracker.style.opacity = '1'; tracker.style.transform = 'translateY(0)'; }, 500);
-    tracker.addEventListener('click', function(e) { if (e.target === rtClose || e.target.closest('#rtClose')) { tracker.style.opacity = '0'; tracker.style.transform = 'translateY(20px)'; setTimeout(function() { tracker.style.display = 'none'; }, 300); return; } window.location.href = data.lastArticle.slug; });
-    rtClose.addEventListener('click', function(e) { e.stopPropagation(); tracker.style.opacity = '0'; tracker.style.transform = 'translateY(20px)'; setTimeout(function() { tracker.style.display = 'none'; }, 300); });
-  })();
-  </script>
-
-  <script is:inline>
-  if (document.querySelector('.contact-section')) { document.body.classList.add('has-contact-section'); }
-  </script>
-  <script is:inline>
-  (function() { var indicator = document.getElementById('agentIndicator'); if (!indicator) return; if ('modelContext' in navigator) { indicator.style.display = 'inline'; setTimeout(function() { indicator.style.opacity = '1'; }, 100); } })();
-  </script>
+  <Footer />
+  <WebMCPTools />
+  <FontToggle />
+  {isArticlePage && <FocusMode />}
+  <ReadingTracker />
+  <I18nClientSwitch />
 </body>
 </html>
