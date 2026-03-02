@@ -780,11 +780,11 @@
     }
   },
   "neuralese-language-sovereignty.md": {
-    "sourceHash": "82fc0269debb",
+    "sourceHash": "a31e9a29cfc2",
     "translations": {
       "en": {
-        "hash": "80c354458de9",
-        "translatedAt": "2026-02-23T18:05:40.539Z",
+        "hash": "62d6bc918698",
+        "translatedAt": "2026-03-02T08:59:36.868Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
