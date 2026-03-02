@@ -18,11 +18,11 @@
 | 13 | falsification-market-crisis | ✅ done |
 | 14 | god-beyond-definition | ✅ done |
 | 15 | homeschool-gentle-resistance | ✅ done |
-| 16 | ironman-group-education | ⬜ pending |
-| 17 | jensen-huang-ai-mirror | ⬜ pending |
-| 18 | language-truth-gemini-dialogue | ⬜ pending |
-| 19 | negentropy-taiwan-enterprise | ⬜ pending |
-| 20 | nudity-as-language-algorithm | ⬜ pending |
+| 16 | ironman-group-education | ✅ done |
+| 17 | jensen-huang-ai-mirror | ✅ done |
+| 18 | language-truth-gemini-dialogue | ✅ done |
+| 19 | negentropy-taiwan-enterprise | ✅ done |
+| 20 | nudity-as-language-algorithm | ✅ done |
 | 21 | online-learning-resource-war | ⬜ pending |
 | 22 | quiet-edge-thirteen-notes | ⬜ pending |
 | 23 | reformation-printing-politics | ⬜ pending |
