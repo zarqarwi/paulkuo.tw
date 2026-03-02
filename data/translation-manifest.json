@@ -1040,11 +1040,11 @@
     }
   },
   "sam-altman-sora-energy-ai.md": {
-    "sourceHash": "32191490fb90",
+    "sourceHash": "7c7231414d08",
     "translations": {
       "en": {
-        "hash": "2e4b5ccad6a7",
-        "translatedAt": "2026-03-02T22:49:51.648Z",
+        "hash": "88acad89dcd4",
+        "translatedAt": "2026-03-02T23:23:45.386Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
