@@ -420,11 +420,11 @@
     }
   },
   "eq-group-education.md": {
-    "sourceHash": "e1edfef26030",
+    "sourceHash": "51fae841b650",
     "translations": {
       "en": {
-        "hash": "da4164aa2d61",
-        "translatedAt": "2026-02-23T18:01:18.989Z",
+        "hash": "793527b76cea",
+        "translatedAt": "2026-03-02T22:26:08.630Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -440,11 +440,11 @@
     }
   },
   "facebook-algorithm-humanity.md": {
-    "sourceHash": "48810ba7870c",
+    "sourceHash": "d3672d3fb353",
     "translations": {
       "en": {
-        "hash": "93045e217aa2",
-        "translatedAt": "2026-02-23T18:01:37.030Z",
+        "hash": "95503243bff9",
+        "translatedAt": "2026-03-02T22:26:43.821Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -500,11 +500,11 @@
     }
   },
   "falsification-market-crisis.md": {
-    "sourceHash": "c04105df4a6d",
+    "sourceHash": "9794face8f54",
     "translations": {
       "en": {
-        "hash": "d485a57113b4",
-        "translatedAt": "2026-02-23T18:02:15.133Z",
+        "hash": "cccd76863191",
+        "translatedAt": "2026-03-02T22:27:18.409Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -560,11 +560,11 @@
     }
   },
   "god-beyond-definition.md": {
-    "sourceHash": "82f66885b014",
+    "sourceHash": "fb83ac73162d",
     "translations": {
       "en": {
-        "hash": "6ca7d19c0d10",
-        "translatedAt": "2026-02-23T18:02:44.073Z",
+        "hash": "c48f43d75df9",
+        "translatedAt": "2026-03-02T22:27:50.624Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -580,11 +580,11 @@
     }
   },
   "homeschool-gentle-resistance.md": {
-    "sourceHash": "d8a96be8a8f7",
+    "sourceHash": "1cedc92a62f4",
     "translations": {
       "en": {
-        "hash": "87288977ccee",
-        "translatedAt": "2026-02-23T18:03:01.416Z",
+        "hash": "98b32c1e4c8b",
+        "translatedAt": "2026-03-02T22:28:28.160Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
