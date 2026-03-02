@@ -23,11 +23,11 @@
 | 18 | language-truth-gemini-dialogue | ✅ done |
 | 19 | negentropy-taiwan-enterprise | ✅ done |
 | 20 | nudity-as-language-algorithm | ✅ done |
-| 21 | online-learning-resource-war | ⬜ pending |
-| 22 | quiet-edge-thirteen-notes | ⬜ pending |
-| 23 | reformation-printing-politics | ⬜ pending |
-| 24 | refuse-follower-be-builder | ⬜ pending |
-| 25 | remote-work-cruel-truth | ⬜ pending |
+| 21 | online-learning-resource-war | ✅ done |
+| 22 | quiet-edge-thirteen-notes | ✅ done |
+| 23 | reformation-printing-politics | ✅ done |
+| 24 | refuse-follower-be-builder | ✅ done |
+| 25 | remote-work-cruel-truth | ✅ done |
 | 26 | safer-4-ai-governance | ⬜ pending |
 | 27 | sam-altman-sora-energy-ai | ⬜ pending |
 | 28 | sovereign-ai-digital-autonomy | ⬜ pending |
