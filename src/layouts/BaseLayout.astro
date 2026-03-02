@@ -1,5 +1,12 @@
 ---
 import CostTicker from '../components/CostTicker.astro';
+import { createHash } from 'crypto';
+import { readFileSync } from 'fs';
+
+// Content-based CSS cache busting (hash changes only when CSS content changes)
+const cssHash = (file: string) => createHash('md5').update(readFileSync(`public/styles/${file}`)).digest('hex').slice(0, 8);
+const globalCssV = cssHash('global.css');
+const cjkCssV = cssHash('cjk-fixes.css');
 
 interface Props {
   title: string;
@@ -44,8 +51,7 @@ const hreflangs = [
   { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
 ];
 
-// Language switcher links — 指向當前頁面的對應語系版本
-// Smart lang switching: homepage uses ?lang=, other pages use path-based routing
+// Language switcher links
 const isHome = basePath === '/' || basePath === '';
 const langSwitchLinks = {
   'zh-Hant': isHome ? '/' : basePath,
@@ -94,8 +100,8 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href={`/styles/global.css?v=${Date.now().toString(36)}`}>
-  <link rel="stylesheet" href={`/styles/cjk-fixes.css?v=${Date.now().toString(36)}`}>
+  <link rel="stylesheet" href={`/styles/global.css?v=${globalCssV}`}>
+  <link rel="stylesheet" href={`/styles/cjk-fixes.css?v=${cjkCssV}`}>
   {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
   <!-- Site-level Person & WebSite schema (resolves @id references from article JSON-LD) -->
   <script type="application/ld+json">
@@ -253,18 +259,15 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
 
       let lastScrollY = window.scrollY;
       let ticking = false;
-      const SCROLL_THRESHOLD = 8; // min px to trigger hide/show
+      const SCROLL_THRESHOLD = 8;
 
       const updateNav = () => {
         const currentScrollY = window.scrollY;
-
-        // Add shadow when scrolled past top
         if (currentScrollY > 10) {
           nav.classList.add('nav-scrolled');
         } else {
           nav.classList.remove('nav-scrolled');
         }
-
         ticking = false;
       };
 
@@ -289,21 +292,17 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         const articleTop = articleRect.top + window.scrollY;
         const articleHeight = articleBody.scrollHeight;
         const viewportHeight = window.innerHeight;
-
-        // Calculate how much of the article has been scrolled through
         const scrolled = window.scrollY - articleTop + viewportHeight * 0.3;
         const total = articleHeight;
         const progress = Math.min(Math.max(scrolled / total * 100, 0), 100);
 
         progressBar.style.width = `${progress}%`;
 
-        // Show/hide
         if (window.scrollY > articleTop - viewportHeight) {
           progressBar.classList.add('visible');
         } else {
           progressBar.classList.remove('visible');
         }
-
         ticking = false;
       };
 
@@ -314,7 +313,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         }
       }, { passive: true });
 
-      // Initial check
       updateProgress();
     })();
   </script>
@@ -323,7 +321,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
     (function() {
       if (!('modelContext' in navigator)) return;
 
-      // Tool 1: Search articles by keyword
       navigator.modelContext.registerTool(
         'search_paul_articles',
         'Search Paul Kuo\'s blog articles by keyword or topic. Returns matching articles with title, description, pillar category, and direct URL. Paul writes about AI & Order, Circular Economy, Civilization & Human Nature, Creation & Enterprise, and Reflections & Memory.',
@@ -361,7 +358,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         }
       );
 
-      // Tool 2: Get Paul's profile summary
       navigator.modelContext.registerTool(
         'get_paul_profile',
         'Get Paul Kuo\'s professional profile, background, and expertise areas. Returns a structured summary suitable for introductions or context.',
@@ -394,7 +390,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         }
       );
 
-      // Tool 3: Browse articles by pillar
       navigator.modelContext.registerTool(
         'browse_by_pillar',
         'Browse Paul Kuo\'s articles filtered by content pillar: ai (智能與秩序), circular (循環再利用), faith (文明與人性), startup (創造與建構), life (沉思與記憶).',
@@ -466,7 +461,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   (function() {
     var params = new URLSearchParams(window.location.search);
     var lang = params.get('lang');
-    // Also detect lang from path-based routing (/en/, /ja/, /zh-cn/)
     if (!lang) {
       var p = window.location.pathname;
       if (p.startsWith('/en/') || p === '/en') lang = 'en';
@@ -481,7 +475,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         var T = t[lang];
         if (!T) return;
         
-        // --- Nav links ---
         var navMap = {
           'nav-home': T.nav_home,
           'nav-blog': T.nav_blog,
@@ -498,7 +491,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         var ctaEl = document.querySelector('.nav-cta');
         if (ctaEl && T.nav_contact) ctaEl.textContent = T.nav_contact;
         
-        // --- Ticker labels ---
         document.querySelectorAll('.ticker-item .ticker-label').forEach(function(el) {
           var text = el.textContent.trim();
           if (text === '本月 API') el.textContent = T.ticker_monthly || text;
@@ -509,18 +501,15 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
           if (text === 'AI 協作') el.textContent = T.ticker_ai || text;
         });
         
-        // --- Hero taglines ---
         var taglines = document.querySelectorAll('.hero-tagline');
         if (taglines[0]) taglines[0].textContent = T.hero_tagline1;
         if (taglines[1]) taglines[1].textContent = T.hero_tagline2;
         
-        // --- Buttons ---
         var btnRead = document.querySelector('.btn-primary');
         var btnAbout = document.querySelector('.btn-secondary');
         if (btnRead) btnRead.textContent = T.btn_read;
         if (btnAbout) btnAbout.textContent = T.btn_about;
         
-        // --- Hero cards ---
         var heroCards = document.querySelectorAll('.hero-card p');
         if (heroCards[0]) heroCards[0].textContent = T.card1_text;
         if (heroCards[1]) heroCards[1].textContent = T.card2_text;
@@ -528,7 +517,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         var heroMeta = document.querySelectorAll('.hero-card-meta');
         if (heroMeta[0]) heroMeta[0].textContent = T.card1_meta;
         
-        // --- Section titles ---
         document.querySelectorAll('.section-title').forEach(function(el) {
           var text = el.textContent.trim();
           if (text === '最新思考') el.textContent = T.section_latest;
@@ -539,7 +527,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
           if (el.textContent.includes('查看全部')) el.textContent = T.section_viewall;
         });
         
-        // --- Manifesto ---
         var kicker = document.querySelector('.manifesto-kicker');
         if (kicker) kicker.textContent = T.manifesto_kicker;
         var mBody = document.querySelector('.manifesto-body');
@@ -547,11 +534,9 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         var mCta = document.querySelector('.manifesto-cta');
         if (mCta) mCta.textContent = T.manifesto_cta;
         
-        // --- Contact ---
         var contactH2 = document.querySelector('.contact-section h2');
         if (contactH2) contactH2.innerHTML = T.contact_title;
         
-        // --- Form ---
         var nameLabel = document.querySelector('label[for="contact-name"]');
         if (nameLabel) nameLabel.textContent = T.form_name;
         var nameInput = document.getElementById('contact-name');
@@ -563,18 +548,15 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         var submitBtn = document.getElementById('contact-submit');
         if (submitBtn) submitBtn.textContent = T.form_submit;
         
-        // --- Feed desc ---
         var feedDesc = document.querySelector('#feed p');
         if (feedDesc && feedDesc.textContent.includes('7')) feedDesc.textContent = T.feed_desc;
         
-        // --- Active lang button ---
         document.querySelectorAll('.lang-btn').forEach(function(btn) {
           btn.classList.remove('active');
           var href = btn.getAttribute('href') || '';
           if (href.includes('lang=' + lang)) btn.classList.add('active');
         });
         
-        // --- html lang attribute ---
         document.documentElement.lang = lang === 'zh-CN' ? 'zh-Hans' : lang;
       })
       .catch(function() {});
@@ -586,7 +568,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   (function() {
     var btn = document.getElementById('focusModeBtn');
     if (!btn) return;
-    // Only show on article pages
     var isArticle = !!document.querySelector('.article-page, .article-content');
     if (!isArticle) return;
     btn.style.display = 'flex';
@@ -607,9 +588,7 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
         if (footer) footer.style.display = 'none';
         btn.querySelector('.focus-icon').textContent = '✕';
         btn.title = '結束專注';
-        // Adjust body padding
         document.body.style.paddingTop = '0';
-        // Smooth scroll to article content
         var content = document.querySelector('.article-content, .article-page');
         if (content) content.style.paddingTop = '40px';
       } else {
@@ -654,7 +633,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
     }
     
-    // On article pages: save scroll progress
     var articleEl = document.querySelector('.article-page');
     if (articleEl) {
       var articleBody = document.querySelector('.article-body');
@@ -678,7 +656,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
           }, 300);
         });
         
-        // Mark as complete if scrolled to bottom
         window.addEventListener('beforeunload', function() {
           var data = getReadingData();
           if (data.lastArticle && data.lastArticle.progress >= 95) {
@@ -687,14 +664,13 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
           }
         });
       }
-      return; // Don't show popup on article pages
+      return;
     }
     
-    // On non-article pages: show "continue reading" popup
     var data = getReadingData();
     if (!data.lastArticle) return;
-    if (data.lastArticle.progress <= 5 || data.lastArticle.progress >= 100) return; // Not started or already finished
-    if (Date.now() - data.lastArticle.ts > 7 * 24 * 60 * 60 * 1000) return; // Older than 7 days
+    if (data.lastArticle.progress <= 5 || data.lastArticle.progress >= 100) return;
+    if (Date.now() - data.lastArticle.ts > 7 * 24 * 60 * 60 * 1000) return;
     
     var tracker = document.getElementById('readingTracker');
     var rtTitle = document.getElementById('rtTitle');
@@ -732,7 +708,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   </script>
 
   <script is:inline>
-  // Fix footer gap on pages with contact section
   if (document.querySelector('.contact-section')) {
     document.body.classList.add('has-contact-section');
   }
@@ -742,7 +717,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   (function() {
     var indicator = document.getElementById('agentIndicator');
     if (!indicator) return;
-    // Show indicator if WebMCP / modelContext API is available
     if ('modelContext' in navigator) {
       indicator.style.display = 'inline';
       setTimeout(function() { indicator.style.opacity = '1'; }, 100);
