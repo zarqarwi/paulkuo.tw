@@ -13,11 +13,11 @@
 | 8 | digital-footprint-the-one | ✅ done |
 | 9 | digital-transformation-pain | ✅ done |
 | 10 | elite-arrogance-youth | ✅ done |
-| 11 | eq-group-education | ⬜ pending |
-| 12 | facebook-algorithm-humanity | ⬜ pending |
-| 13 | falsification-market-crisis | ⬜ pending |
-| 14 | god-beyond-definition | ⬜ pending |
-| 15 | homeschool-gentle-resistance | ⬜ pending |
+| 11 | eq-group-education | ✅ done |
+| 12 | facebook-algorithm-humanity | ✅ done |
+| 13 | falsification-market-crisis | ✅ done |
+| 14 | god-beyond-definition | ✅ done |
+| 15 | homeschool-gentle-resistance | ✅ done |
 | 16 | ironman-group-education | ⬜ pending |
 | 17 | jensen-huang-ai-mirror | ⬜ pending |
 | 18 | language-truth-gemini-dialogue | ⬜ pending |
