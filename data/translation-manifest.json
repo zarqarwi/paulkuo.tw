@@ -60,11 +60,11 @@
     }
   },
   "ai-always-on-economy-restructure.md": {
-    "sourceHash": "647f08536e38",
+    "sourceHash": "b7f2454bc64a",
     "translations": {
       "en": {
-        "hash": "2924ec73d9ee",
-        "translatedAt": "2026-02-23T17:56:39.322Z",
+        "hash": "76d6bf1bf6c2",
+        "translatedAt": "2026-03-02T22:07:02.997Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -140,11 +140,11 @@
     }
   },
   "algorithm-cannot-replace-decisions.md": {
-    "sourceHash": "57bae005e6d6",
+    "sourceHash": "6429efcd07e9",
     "translations": {
       "en": {
-        "hash": "706cb38c17cf",
-        "translatedAt": "2026-02-24T00:18:59.847Z",
+        "hash": "5a488a3e87aa",
+        "translatedAt": "2026-03-02T22:07:41.016Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -160,11 +160,11 @@
     }
   },
   "breaking-silo-effect.md": {
-    "sourceHash": "e102977d0fc0",
+    "sourceHash": "99151c1a21ad",
     "translations": {
       "en": {
-        "hash": "e723e910e0e6",
-        "translatedAt": "2026-02-24T00:19:11.962Z",
+        "hash": "2b5024a4aca9",
+        "translatedAt": "2026-03-02T22:08:17.773Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -180,11 +180,11 @@
     }
   },
   "broken-crutch-elderly-faith.md": {
-    "sourceHash": "09fd6a04d543",
+    "sourceHash": "cef95b65c2ab",
     "translations": {
       "en": {
-        "hash": "d61622789cec",
-        "translatedAt": "2026-02-23T17:58:06.537Z",
+        "hash": "0e9febe99a8a",
+        "translatedAt": "2026-03-02T22:09:03.447Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -200,11 +200,11 @@
     }
   },
   "burnout-society-self-exploitation.md": {
-    "sourceHash": "9d1df73c9447",
+    "sourceHash": "91746aedb471",
     "translations": {
       "en": {
-        "hash": "9cc30d9aeec5",
-        "translatedAt": "2026-02-23T17:58:19.057Z",
+        "hash": "d285127ad85b",
+        "translatedAt": "2026-03-02T22:09:44.479Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
