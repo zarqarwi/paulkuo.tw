@@ -43,13 +43,23 @@ const currentLang = Object.entries(langMap).find(([prefix]) => pathname.startsWi
 
 // Build hreflang alternates
 const basePath = pathname.replace(/^\/(en|ja|zh-cn)\//, '/');
-const hreflangs = [
-  { lang: 'zh-TW', href: `https://paulkuo.tw${basePath}` },
-  { lang: 'en', href: `https://paulkuo.tw/en${basePath}` },
-  { lang: 'ja', href: `https://paulkuo.tw/ja${basePath}` },
-  { lang: 'zh-CN', href: `https://paulkuo.tw/zh-cn${basePath}` },
-  { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
-];
+
+// Pages that only exist in zh-Hant (no translation pages created)
+const zhOnlyPrefixes = ['/dashboard', '/health', '/search', '/tags', '/tags-graph'];
+const isZhOnly = zhOnlyPrefixes.some(p => basePath === p || basePath.startsWith(p + '/'));
+
+const hreflangs = isZhOnly
+  ? [
+      { lang: 'zh-TW', href: `https://paulkuo.tw${basePath}` },
+      { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
+    ]
+  : [
+      { lang: 'zh-TW', href: `https://paulkuo.tw${basePath}` },
+      { lang: 'en', href: `https://paulkuo.tw/en${basePath}` },
+      { lang: 'ja', href: `https://paulkuo.tw/ja${basePath}` },
+      { lang: 'zh-CN', href: `https://paulkuo.tw/zh-cn${basePath}` },
+      { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
+    ];
 
 // Language switcher links
 const isHome = basePath === '/' || basePath === '';
