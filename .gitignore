@@ -42,3 +42,6 @@ recover_articles.py
 scripts/.fitbit_token
 scripts/*.log
 
+# Binary data files (should not be in git)
+*.xlsx
+*.xls
