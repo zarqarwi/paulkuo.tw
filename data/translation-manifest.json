@@ -640,11 +640,11 @@
     }
   },
   "jensen-huang-ai-mirror.md": {
-    "sourceHash": "7875cf741f2d",
+    "sourceHash": "e7d456a8ea9c",
     "translations": {
       "en": {
-        "hash": "7d5bf7232f78",
-        "translatedAt": "2026-03-02T22:33:48.929Z",
+        "hash": "8cb4cedda023",
+        "translatedAt": "2026-03-02T23:27:31.500Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
