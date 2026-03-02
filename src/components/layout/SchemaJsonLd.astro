@@ -1,0 +1,47 @@
+---
+/**
+ * SchemaJsonLd – Person + WebSite @graph for site-wide structured data.
+ * Article-level schema is passed via the `schemaJson` prop on BaseLayout.
+ */
+---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://paulkuo.tw/#person",
+      "name": "Paul Kuo",
+      "alternateName": "郭曜郎",
+      "url": "https://paulkuo.tw",
+      "image": "https://paulkuo.tw/paul-photo.png",
+      "jobTitle": "Commercial Integration & AI Digital Development Director",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "SDTI 佳龍科技",
+        "url": "https://www.sdti.com.tw"
+      },
+      "knowsAbout": ["Circular Economy", "AI Systems", "Semiconductor", "Theology"],
+      "sameAs": [
+        "https://x.com/zarqarwi",
+        "https://www.linkedin.com/in/paulkuo",
+        "https://www.threads.net/@zarqarwi",
+        "https://www.youtube.com/@kuopaul8265",
+        "https://www.facebook.com/guo.yao.lang.2025",
+        "https://www.instagram.com/zarqarwi",
+        "https://bsky.app/profile/paulkuo.bsky.social"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://paulkuo.tw/#website",
+      "name": "Paul Kuo",
+      "url": "https://paulkuo.tw",
+      "description": "在技術與文明的交匯處，重建秩序、循環再利用、守護人性尊嚴。",
+      "publisher": { "@id": "https://paulkuo.tw/#person" },
+      "inLanguage": ["zh-Hant", "en", "ja", "zh-Hans"]
+    }
+  ]
+}
+</script>

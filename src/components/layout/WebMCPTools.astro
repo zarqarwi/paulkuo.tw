@@ -1,0 +1,67 @@
+---
+/**
+ * WebMCPTools – registers three navigator.modelContext tools
+ * (search_paul_articles, get_paul_profile, browse_by_pillar)
+ * so AI agents can query the site programmatically.
+ */
+---
+
+<script>
+  (function() {
+    if (!('modelContext' in navigator)) return;
+
+    (navigator as any).modelContext.registerTool(
+      'search_paul_articles',
+      'Search Paul Kuo\'s blog articles by keyword or topic. Returns matching articles with title, description, pillar category, and direct URL.',
+      { keyword: { type: 'string', description: 'The topic or keyword to search for (supports Chinese and English)' } },
+      async function(args: { keyword?: string }) {
+        try {
+          const res = await fetch('/api/search-index.json');
+          const articles = await res.json();
+          const q = (args.keyword || '').toLowerCase();
+          const matches = articles.filter((a: any) =>
+            a.title.toLowerCase().includes(q) || a.description.toLowerCase().includes(q) ||
+            a.tags.some((t: string) => t.toLowerCase().includes(q)) || a.pillarLabel.includes(args.keyword || '')
+          ).slice(0, 10);
+          if (matches.length === 0) return { content: [{ type: 'text', text: `No articles found for "${args.keyword}".` }] };
+          const list = matches.map((a: any) => `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.pillarLabel}, ${a.date})`).join('\n');
+          return { content: [{ type: 'text', text: `Found ${matches.length} article(s):\n${list}` }] };
+        } catch (e) { return { content: [{ type: 'text', text: 'Search temporarily unavailable.' }] }; }
+      }
+    );
+
+    (navigator as any).modelContext.registerTool(
+      'get_paul_profile',
+      'Get Paul Kuo\'s professional profile, background, and expertise areas.',
+      {},
+      async function() {
+        return { content: [{ type: 'text', text: JSON.stringify({
+          name: 'Paul Kuo 郭曜郎', title: 'Commercial Integration & AI Digital Development Director',
+          organization: 'SDTI 佳龍科技', location: 'Taiwan',
+          languages: ['Chinese (Native)', 'English', 'Japanese'],
+          expertise: ['Circular Economy & Urban Mining (20+ years)', 'AI Systems & Agentic Architecture',
+            'Taiwan-Japan Semiconductor Cooperation', 'PCB Metal Recovery', 'Theology & Human Nature'],
+          website: 'https://paulkuo.tw', contact: 'paul@lasaas.com',
+          social: { linkedin: 'https://linkedin.com/in/paulkuo', x: 'https://x.com/zarqarwi', threads: 'https://threads.net/@zarqarwi' }
+        }, null, 2) }] };
+      }
+    );
+
+    (navigator as any).modelContext.registerTool(
+      'browse_by_pillar',
+      'Browse articles by content pillar: ai, circular, faith, startup, or life.',
+      { pillar: { type: 'string', description: 'Pillar key: ai, circular, faith, startup, or life' } },
+      async function(args: { pillar?: string }) {
+        try {
+          const res = await fetch('/api/search-index.json');
+          const articles = await res.json();
+          const matches = articles.filter((a: any) => a.pillar === args.pillar).slice(0, 10);
+          if (matches.length === 0) return { content: [{ type: 'text', text: `No articles for pillar "${args.pillar}". Valid: ai, circular, faith, startup, life.` }] };
+          const label = matches[0].pillarLabel;
+          const list = matches.map((a: any) => `- [${a.title}](https://paulkuo.tw/articles/${a.slug}) (${a.date})`).join('\n');
+          return { content: [{ type: 'text', text: `${label} — ${matches.length} article(s):\n${list}` }] };
+        } catch (e) { return { content: [{ type: 'text', text: 'Browse temporarily unavailable.' }] }; }
+      }
+    );
+  })();
+</script>

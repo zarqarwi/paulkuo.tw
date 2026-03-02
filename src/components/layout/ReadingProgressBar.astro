@@ -1,0 +1,32 @@
+---
+/**
+ * ReadingProgressBar – thin bar at the top of article pages showing scroll progress.
+ * Only rendered on article pages (controlled by parent).
+ */
+---
+
+<div class="reading-progress" id="reading-progress"></div>
+
+<script>
+  (() => {
+    const progressBar = document.getElementById('reading-progress');
+    const articleBody = document.querySelector('.article-body');
+    if (!progressBar || !articleBody) return;
+    let ticking = false;
+    const updateProgress = () => {
+      const articleTop = articleBody.getBoundingClientRect().top + window.scrollY;
+      const articleHeight = articleBody.scrollHeight;
+      const viewportHeight = window.innerHeight;
+      const scrolled = window.scrollY - articleTop + viewportHeight * 0.3;
+      const progress = Math.min(Math.max(scrolled / articleHeight * 100, 0), 100);
+      progressBar.style.width = `${progress}%`;
+      if (window.scrollY > articleTop - viewportHeight) { progressBar.classList.add('visible'); }
+      else { progressBar.classList.remove('visible'); }
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(updateProgress); ticking = true; }
+    }, { passive: true });
+    updateProgress();
+  })();
+</script>

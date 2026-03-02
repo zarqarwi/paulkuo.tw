@@ -1,0 +1,95 @@
+---
+/**
+ * NavBar – site navigation with lang switcher, hamburger menu, scroll shadow.
+ */
+interface Props {
+  langPrefix: string;
+  currentLang: string;
+  langSwitchLinks: Record<string, string>;
+}
+
+const { langPrefix, currentLang, langSwitchLinks } = Astro.props;
+---
+
+<nav id="main-nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">Paul</a>
+    <div class="nav-links">
+      <a href={langPrefix + '/'} id="nav-home">首頁</a>
+      <a href={langPrefix + '/blog'} id="nav-blog">思想</a>
+      <a href={langPrefix + '/projects'} id="nav-projects">專案</a>
+      <div class="nav-dropdown">
+        <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-feed" class="nav-dropdown-trigger">動態情報</a>
+        <div class="nav-dropdown-menu">
+          <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-dd-feed">動態牆</a>
+          <a href={langPrefix + '/tags-graph'} id="nav-dd-graph">知識圖譜</a>
+        </div>
+      </div>
+      <a href={langPrefix + '/about'} id="nav-about">關於</a>
+      <a href="/search" id="nav-search" title="搜尋" aria-label="搜尋" style="font-size:1.1rem;line-height:1">🔍</a>
+      <a href="/#contact" class="nav-cta">聯絡我</a>
+      <div class="mobile-lang-divider"></div>
+      <div class="mobile-lang-group">
+        <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
+        <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
+        <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
+        <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
+      </div>
+    </div>
+
+    <div class="lang-switcher">
+      <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
+      <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
+      <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
+      <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
+    </div>
+    <button class="nav-hamburger" id="hamburger-btn" aria-label="選單">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<script>
+  // Hamburger toggle
+  document.getElementById('hamburger-btn')?.addEventListener('click', () => {
+    const navLinks = document.querySelector('.nav-links') as HTMLElement;
+    const switcher = document.querySelector('.lang-switcher') as HTMLElement;
+    if (navLinks) navLinks.classList.toggle('mobile-open');
+    if (switcher) switcher.classList.toggle('mobile-open');
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    const navLinks = document.querySelector('.nav-links');
+    const switcher = document.querySelector('.lang-switcher');
+    const btn = document.getElementById('hamburger-btn');
+    if (btn && !btn.contains(e.target as Node)) {
+      if (navLinks && !navLinks.contains(e.target as Node)) navLinks.classList.remove('mobile-open');
+      if (switcher && !switcher.contains(e.target as Node)) switcher.classList.remove('mobile-open');
+    }
+  });
+
+  // Active link highlight
+  const path = window.location.pathname;
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href === path || (href !== '/' && path.startsWith(href!))) {
+      a.classList.add('active');
+    }
+  });
+
+  // Scroll shadow
+  (() => {
+    const nav = document.getElementById('main-nav');
+    if (!nav) return;
+    let ticking = false;
+    const updateNav = () => {
+      if (window.scrollY > 10) { nav.classList.add('nav-scrolled'); }
+      else { nav.classList.remove('nav-scrolled'); }
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(updateNav); ticking = true; }
+    }, { passive: true });
+  })();
+</script>
