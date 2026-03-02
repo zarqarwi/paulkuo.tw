@@ -220,11 +220,11 @@
     }
   },
   "cioran-on-suffering-and-clarity.md": {
-    "sourceHash": "af02d8f235df",
+    "sourceHash": "e90d255701c8",
     "translations": {
       "en": {
-        "hash": "f672f3c34005",
-        "translatedAt": "2026-02-23T17:58:32.531Z",
+        "hash": "bff1e201bd63",
+        "translatedAt": "2026-03-02T22:17:38.081Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -240,11 +240,11 @@
     }
   },
   "civilization-metric-system-over-goal.md": {
-    "sourceHash": "ecb5b2229f63",
+    "sourceHash": "181c8526e14a",
     "translations": {
       "en": {
-        "hash": "29b0fd083329",
-        "translatedAt": "2026-02-23T17:58:44.581Z",
+        "hash": "a79c8ed97ec3",
+        "translatedAt": "2026-03-02T22:18:18.837Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -360,11 +360,11 @@
     }
   },
   "digital-footprint-the-one.md": {
-    "sourceHash": "7e5484fd7fb7",
+    "sourceHash": "81d5a9219532",
     "translations": {
       "en": {
-        "hash": "2cfe9935fc05",
-        "translatedAt": "2026-02-23T18:00:09.476Z",
+        "hash": "014a9149d84d",
+        "translatedAt": "2026-03-02T22:18:52.044Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -380,11 +380,11 @@
     }
   },
   "digital-transformation-pain.md": {
-    "sourceHash": "a18da70ecddc",
+    "sourceHash": "03286743e11e",
     "translations": {
       "en": {
-        "hash": "13c1f648d1bd",
-        "translatedAt": "2026-02-23T09:41:28.246Z",
+        "hash": "e1e138aad196",
+        "translatedAt": "2026-03-02T22:19:33.325Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -400,11 +400,11 @@
     }
   },
   "elite-arrogance-youth.md": {
-    "sourceHash": "6c167bccae65",
+    "sourceHash": "9cec5365ebc7",
     "translations": {
       "en": {
-        "hash": "80451fb250ae",
-        "translatedAt": "2026-02-23T18:01:05.236Z",
+        "hash": "2c79ac9f03b8",
+        "translatedAt": "2026-03-02T22:20:14.028Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
