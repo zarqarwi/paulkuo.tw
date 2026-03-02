@@ -1,0 +1,23 @@
+{
+  "name": "Paul Kuo — 在技術與文明的交匯處",
+  "short_name": "Paul Kuo",
+  "description": "在技術與文明的交匯處，重建秩序、循環再利用、守護人性尊嚴。",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1a1a2e",
+  "background_color": "#ffffff",
+  "lang": "zh-Hant",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
