@@ -8,11 +8,11 @@
 | 3 | breaking-silo-effect | ✅ done |
 | 4 | broken-crutch-elderly-faith | ✅ done |
 | 5 | burnout-society-self-exploitation | ✅ done |
-| 6 | cioran-on-suffering-and-clarity | ⬜ pending |
-| 7 | civilization-metric-system-over-goal | ⬜ pending |
-| 8 | digital-footprint-the-one | ⬜ pending |
-| 9 | digital-transformation-pain | ⬜ pending |
-| 10 | elite-arrogance-youth | ⬜ pending |
+| 6 | cioran-on-suffering-and-clarity | ✅ done |
+| 7 | civilization-metric-system-over-goal | ✅ done |
+| 8 | digital-footprint-the-one | ✅ done |
+| 9 | digital-transformation-pain | ✅ done |
+| 10 | elite-arrogance-youth | ✅ done |
 | 11 | eq-group-education | ⬜ pending |
 | 12 | facebook-algorithm-humanity | ⬜ pending |
 | 13 | falsification-market-crisis | ⬜ pending |
