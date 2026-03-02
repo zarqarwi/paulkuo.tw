@@ -620,11 +620,11 @@
     }
   },
   "ironman-group-education.md": {
-    "sourceHash": "7b1c170ade39",
+    "sourceHash": "f2b1142fdcb2",
     "translations": {
       "en": {
-        "hash": "59d014eb70e9",
-        "translatedAt": "2026-02-23T18:03:46.453Z",
+        "hash": "8298a7292b0b",
+        "translatedAt": "2026-03-02T22:33:18.574Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -640,11 +640,11 @@
     }
   },
   "jensen-huang-ai-mirror.md": {
-    "sourceHash": "652c498f169c",
+    "sourceHash": "7875cf741f2d",
     "translations": {
       "en": {
-        "hash": "8016269f28a3",
-        "translatedAt": "2026-02-23T18:03:58.942Z",
+        "hash": "7d5bf7232f78",
+        "translatedAt": "2026-03-02T22:33:48.929Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -680,11 +680,11 @@
     }
   },
   "language-truth-gemini-dialogue.md": {
-    "sourceHash": "9fa7f2a6004f",
+    "sourceHash": "f7e348d2332f",
     "translations": {
       "en": {
-        "hash": "e01be66efe70",
-        "translatedAt": "2026-02-27T02:56:15.153Z",
+        "hash": "1677434857ad",
+        "translatedAt": "2026-03-02T22:34:21.912Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -760,11 +760,11 @@
     }
   },
   "negentropy-taiwan-enterprise.md": {
-    "sourceHash": "e74348e2b910",
+    "sourceHash": "61dd3adaf373",
     "translations": {
       "en": {
-        "hash": "aa3def159848",
-        "translatedAt": "2026-03-01T13:54:08.536Z",
+        "hash": "684de255cd10",
+        "translatedAt": "2026-03-02T22:34:49.801Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
@@ -800,11 +800,11 @@
     }
   },
   "nudity-as-language-algorithm.md": {
-    "sourceHash": "f9bcadcca3bb",
+    "sourceHash": "ac3fe78a93c8",
     "translations": {
       "en": {
-        "hash": "061139154ea7",
-        "translatedAt": "2026-02-27T02:56:27.562Z",
+        "hash": "4582d95c6ff5",
+        "translatedAt": "2026-03-02T22:35:20.540Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
