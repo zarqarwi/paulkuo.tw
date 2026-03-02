@@ -3,7 +3,7 @@ title: "Lessons from Shiseido GIC: Style Transcends Trend"
 subtitle: "In Yokohama, I witnessed the confidence of a nearly 150-year-old company — it never chases trends because it is style itself"
 description: "At Shiseido's Global Innovation Center (GIC) in Yokohama, I encountered a brand logic fundamentally different from the trend-chasing fashion industry: don't chase trends — define style. Founded in 1872, Shiseido's nearly 150-year survival secret isn't that it bet correctly on every trend, but that it never needed to chase them. This observation holds profound implications for personal branding and corporate strategy alike — in an era where everyone scrambles to follow trends, true competitiveness comes from the thing you don't need to follow."
 abstract: |
-  During a visit to Shiseido's Global Innovation Center (GIC) in Yokohama, Paul was struck by a single sentence: "We don't chase trends. We pursue style." This wasn't marketing speak — it was the survival philosophy of a nearly 150-year-old company. Trends are externally driven and cyclically obsolescent; style is internally driven and continuously accumulative. Drawing from his brand consulting experience at SDTI, Paul found that the most common mistake Taiwanese companies make is treating "keeping up with trends" as strategy — but trends expire, style doesn't. Starting from the Shiseido case, this essay explores why "who you are" matters far more than "what's trending now."
+  During a visit to Shiseido's Global Innovation Center (GIC) in Yokohama, Paul was struck by a single sentence: "We don't chase trends. We pursue style." This wasn't marketing speak — it was the survival philosophy of a nearly 150-year-old company. Trends are externally driven and cyclically obsolescent; style is internally driven and continuously accumulative. Drawing from his brand consulting experience, Paul found that the most common mistake Taiwanese companies make is treating "keeping up with trends" as strategy — but trends expire, style doesn't. Starting from the Shiseido case, this essay explores why "who you are" matters far more than "what's trending now."
 date: 2019-06-28
 updated: 2026-03-02
 pillar: life
@@ -63,7 +63,7 @@ Shiseido chose the latter. Over nearly 150 years, it hasn't avoided mistakes or 
 
 ---
 
-This reminded me of my experience doing brand consulting at SDTI.
+This reminded me of my experience doing brand consulting.
 
 Taiwanese companies — especially SMEs and startups — the most common brand problem isn't "not trying hard enough," but "trying too hard to chase trends."
 

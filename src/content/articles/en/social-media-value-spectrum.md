@@ -89,9 +89,9 @@ Some people are like balloons. They constantly inflate themselves, expanding and
 
 Do you want to be a bee or a balloon?
 
-## A Small Observation at SDTI
+## A Small Observation at My Company
 
-During the years I ran SDTI, I observed something interesting.
+During the years I ran my company, I observed something interesting.
 
 The best-performing people in the team usually also had the highest quality social media content. Not because they deliberately managed their personal brand, but because their quality of thinking was high—someone who thinks deeply every day naturally has substance in what they casually share.
 

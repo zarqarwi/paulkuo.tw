@@ -30,7 +30,7 @@ related_entities:
     type: Technology
   - name: 氣候韌性
     type: Concept
-  - name: SDTI
+  - name: my company
     type: Organization
 reading_context: |
   適合想超越技術炒作、理解 2030 結構性變量的策略工作者；
@@ -60,7 +60,7 @@ Interestingly, quantum computing's threats are moving faster than its applicatio
 
 ## Climate Resilience: Not a Slogan, But Cost Structure
 
-Doing metal recycling at SDTI, climate resilience isn't an abstract concept for me—it's every month's utility bills.
+Doing metal recycling at my company, climate resilience isn't an abstract concept for me—it's every month's utility bills.
 
 Renewable energy development is constrained by materials science bottlenecks and long cycles of infrastructure updates. But the more fundamental issue is: climate risks aren't single events, but triggers for compound crises—when extreme climate simultaneously impacts supply chains, food systems, and population flows, no single-point solution is adequate.
 

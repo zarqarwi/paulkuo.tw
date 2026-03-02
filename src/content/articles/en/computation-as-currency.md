@@ -70,7 +70,7 @@ This is why NVIDIA's market cap has skyrocketed to the global top ranks in just 
 
 ## An Entrepreneur's Visceral Understanding
 
-Running SDTI gave me a very personal sense of "computational power as value."
+Running my company gave me a very personal sense of "computational power as value."
 
 In the early years as a digital transformation consultant, the most common question from clients was: "What's the ROI on this project?" We spent a lot of time explaining why digitalization matters, why data-driven approaches are the trend. But at the end of the day, clients cared about one thing: how much goes in, how much comes out?
 

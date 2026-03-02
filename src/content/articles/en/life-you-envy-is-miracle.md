@@ -81,7 +81,7 @@ Same person, same life, a different coordinate system tells a completely differe
 
 ---
 
-During my years working at SDTI, I witnessed various "successful people's" anxieties.
+During my years running my company, I witnessed various "successful people's" anxieties.
 
 A founder with over 100 million in annual revenue was anxious about why it wasn't a billion. A company already serving international clients was anxious about why not bigger international clients. A manager leading a ten-person team was anxious why the adjacent department had thirty people.
 

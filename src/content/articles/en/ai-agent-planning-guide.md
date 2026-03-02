@@ -1,9 +1,9 @@
 ---
 title: "AI Agent Planning Guide: From Painful Lessons to Replicable Framework"
 subtitle: "Building Agents isn't hard—keeping them from becoming uncontrollable black boxes is"
-description: "Before deploying AI Agents, you must clearly define their scope and boundaries, or they'll easily devolve into uncontrollable black boxes. From OneUp auto-posting to debate engines to CircleFlow monitoring, every mistake I made points to the same thing: modularization, traceability, start small. This article outlines five practical principles I've distilled from real-world experience."
+description: "Before deploying AI Agents, you must clearly define their scope and boundaries, or they'll easily devolve into uncontrollable black boxes. From OneUp auto-posting to debate engines to our AI platform monitoring, every mistake I made points to the same thing: modularization, traceability, start small. This article outlines five practical principles I've distilled from real-world experience."
 abstract: |
-  Over the past year, I've built three Agent systems: a four-model debate engine, an eight-platform auto-posting pipeline, and CircleFlow production monitoring. Each one taught me different lessons through different failures—API outages, memory explosions, permission chaos, debugging hell. This isn't a theoretical guide; it's five practical principles distilled from these failures: clear positioning and boundaries, tool integration simplification, modular process decomposition, transparent monitoring mechanisms, and validation starting from small scenarios. The value of Agents isn't in replacing humans, but in extending human capability boundaries—provided you can tame them first.
+  Over the past year, I've built three Agent systems: a four-model debate engine, an eight-platform auto-posting pipeline, and our AI platform production monitoring. Each one taught me different lessons through different failures—API outages, memory explosions, permission chaos, debugging hell. This isn't a theoretical guide; it's five practical principles distilled from these failures: clear positioning and boundaries, tool integration simplification, modular process decomposition, transparent monitoring mechanisms, and validation starting from small scenarios. The value of Agents isn't in replacing humans, but in extending human capability boundaries—provided you can tame them first.
 date: 2025-10-05
 updated: 2026-02-28
 pillar: startup
@@ -30,7 +30,7 @@ related_entities:
     type: Tool
   - name: OneUp
     type: Service
-  - name: CircleFlow
+  - name: our AI platform
     type: Organization
 reading_context: |
   適合正在評估或已經開始導入 AI Agent 的技術決策者；
@@ -42,7 +42,7 @@ Late last year, my OneUp auto-posting pipeline posted the same article eight tim
 
 The lesson I learned that day was simple: Building Agents isn't hard—keeping them from going rogue is.
 
-Over the past year, I've built three Agent systems. A debate engine where GPT-4o, Gemini, and Grok argue with each other while Perplexity fact-checks. OneUp pipeline that reads schedules from Google Sheets, generates images with DALL-E, and auto-posts to eight platforms. CircleFlow's production monitoring that automatically adjusts parameters at 3 AM. Each system taught me different lessons.
+Over the past year, I've built three Agent systems. A debate engine where GPT-4o, Gemini, and Grok argue with each other while Perplexity fact-checks. OneUp pipeline that reads schedules from Google Sheets, generates images with DALL-E, and auto-posts to eight platforms. our AI platform's production monitoring that automatically adjusts parameters at 3 AM. Each system taught me different lessons.
 
 This isn't theory. These are five principles I've distilled from stepping on mines.
 
@@ -82,6 +82,6 @@ Now all my Agents have three-layer monitoring: operation logs (what was done at 
 
 The final principle is simplest and most often ignored: start small.
 
-CircleFlow's monitoring system didn't begin with full production monitoring. I started with one parameter on one production line, ran it for two weeks to confirm logic correctness, then gradually expanded. In "[You're Not Losing on Cognition](/articles/overcome-fear-start-ugly)," I discussed "make something crappy first"—same applies to Agents. Run a rough POC first, optimize while operating; it's a hundred times better than spending three months planning a perfect system that explodes on launch.
+our AI platform's monitoring system didn't begin with full production monitoring. I started with one parameter on one production line, ran it for two weeks to confirm logic correctness, then gradually expanded. In "[You're Not Losing on Cognition](/articles/overcome-fear-start-ugly)," I discussed "make something crappy first"—same applies to Agents. Run a rough POC first, optimize while operating; it's a hundred times better than spending three months planning a perfect system that explodes on launch.
 
 The value of Agents isn't in replacing humans. It's in extending human capability boundaries. But extension requires first taming them—clear positioning, modularization, traceability, start small. Each principle was bought with failure.

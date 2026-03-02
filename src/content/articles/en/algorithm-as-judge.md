@@ -69,13 +69,13 @@ Credit scoring is already routine. In China, a Sesame Credit score above 600 can
 
 Health data too. Insurance companies are already using wearable device data to assess premiums. Walk more and pay less; sit too much and pay more. Your body is no longer just yours—it's also a continuously quantified asset.
 
-Even knowledge work hasn't escaped. During my time managing SDTI, I deeply felt how "numbers" dominate decisions. When we use KPIs to evaluate an employee, conversion rates to measure a marketing campaign, reading time to judge an article's value—we're actually doing one thing: forcing the unquantifiable into quantification, then making decisions that impact real lives based on the results.
+Even knowledge work hasn't escaped. During my time managing the company, I deeply felt how "numbers" dominate decisions. When we use KPIs to evaluate an employee, conversion rates to measure a marketing campaign, reading time to judge an article's value—we're actually doing one thing: forcing the unquantifiable into quantification, then making decisions that impact real lives based on the results.
 
 ## The Entrepreneur's Paradox
 
 To be honest, I'm also a participant in this system.
 
-During my years doing digital transformation consulting at SDTI, I helped clients establish various "data-driven" evaluation systems. Revenue dashboards, customer satisfaction tracking, employee performance boards—all well-intentioned, designed to make decisions more objective and transparent.
+During my years doing digital transformation consulting, I helped clients establish various "data-driven" evaluation systems. Revenue dashboards, customer satisfaction tracking, employee performance boards—all well-intentioned, designed to make decisions more objective and transparent.
 
 But the more I did it, the more I discovered an uncomfortable truth: when you compress a person's performance into a single number, you're essentially telling them, "Your worth as a person equals this number."
 

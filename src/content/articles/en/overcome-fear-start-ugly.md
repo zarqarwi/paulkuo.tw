@@ -43,7 +43,7 @@ The result? No one remembered what I said that day. Including myself.
 
 But I remember one thing: the fear before going on stage was ten times larger than anything that actually happened after. That was the first time I realized that the volume of fear is completely disproportionate to the volume of real threat.
 
-This discovery was repeatedly validated throughout my entrepreneurial journey. CircleFlow, Ban Mu Tang, SDTI—every transition, what held me back was never insufficient capability, but being paralyzed by fear before I even started.
+This discovery was repeatedly validated throughout my entrepreneurial journey. our AI platform, Ban Mu Tang, my company—every transition, what held me back was never insufficient capability, but being paralyzed by fear before I even started.
 
 ## Fear is Outdated Firmware
 

@@ -3,7 +3,7 @@ title: "Pandemic Revelation: We Live in a Liquid World"
 subtitle: "Zygmunt Bauman predicted this twenty years ago, before borders, flights, and gatherings evaporated overnight"
 description: "The 2020 COVID-19 pandemic forced the world to suddenly experience what sociologist Zygmunt Bauman called 'liquid modernity.' The things we thought were solid—borders, flights, work, everyday gatherings—turned out to be anything but. They were always liquid; we simply chose to ignore it selectively. The pandemic didn't create uncertainty; it merely tore away the wrapping paper of certainty. When the world reopens, the question is not 'how do we go back,' but rather 'where do we go from here, with this clarity?'"
 abstract: |
-  When Zygmunt Bauman introduced "Liquid Modernity" in 2000, most people saw it as academic rhetoric. Twenty years later, COVID-19 proved him right in the cruelest way. Paul begins from his experience watching SDTI shift entirely remote during the pandemic and discovers that "liquid" is not merely a description of social structures, but a metaphor for personal survival. Those things assumed to be solid—client relationships, revenue streams, team cohesion—became completely liquid within three weeks of lockdown. This article is neither nostalgia nor critique; it's an invitation to "move forward with clarity."
+  When Zygmunt Bauman introduced "Liquid Modernity" in 2000, most people saw it as academic rhetoric. Twenty years later, COVID-19 proved him right in the cruelest way. Paul begins from his experience watching my team shift entirely remote during the pandemic and discovers that "liquid" is not merely a description of social structures, but a metaphor for personal survival. Those things assumed to be solid—client relationships, revenue streams, team cohesion—became completely liquid within three weeks of lockdown. This article is neither nostalgia nor critique; it's an invitation to "move forward with clarity."
 date: 2020-05-15
 updated: 2026-03-02
 pillar: life
@@ -59,7 +59,7 @@ What the pandemic did was not shatter a solid world.
 
 It tore away the illusion that "this world is solid."
 
-My experience at SDTI was very concrete. Before the pandemic, a large part of our business model relied on face-to-face workshops and on-site consulting services. Clients felt they were getting results only when they "saw people," and we felt we were delivering value only when we "showed up." This wasn't just an operational model; it was an entire belief system about what constitutes "effective work."
+My experience at the company I was running was very concrete. Before the pandemic, a large part of our business model relied on face-to-face workshops and on-site consulting services. Clients felt they were getting results only when they "saw people," and we felt we were delivering value only when we "showed up." This wasn't just an operational model; it was an entire belief system about what constitutes "effective work."
 
 By mid-March, everything was forced online.
 
@@ -81,7 +81,7 @@ But liquid doesn't mean fragile. This is the most important lesson I learned dur
 
 Water is liquid, but water can wear through stone. Water has no fixed shape, but it can fill any container. The essence of liquidity is not "instability" but "adaptability."
 
-In the later stages of the pandemic, SDTI gradually found a new work rhythm. The format of online workshops was redesigned—not by transferring face-to-face processes to screens, but by rethinking interaction logic for online environments. Some clients even discovered that online efficiency was higher, eliminating travel time and making cross-geographical collaboration easier.
+In the later stages of the pandemic, our team gradually found a new work rhythm. The format of online workshops was redesigned—not by transferring face-to-face processes to screens, but by rethinking interaction logic for online environments. Some clients even discovered that online efficiency was higher, eliminating travel time and making cross-geographical collaboration easier.
 
 My own writing also found a new rhythm during the pandemic. Confined at home with fewer social distractions, I had more time for thinking and writing. The early versions of some articles on this site were written during that period of "forced stillness" in 2020.
 

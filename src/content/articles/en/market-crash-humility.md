@@ -75,7 +75,7 @@ Each "I don't know" made me more lucid.
 
 Because the trap of "I know" is that—it makes you act prematurely. You make potentially ruinous decisions based on incomplete information before you've truly understood the situation. While the power of "I don't know" is that—it makes you wait. Wait for more signals, wait for a clearer picture to emerge.
 
-In running SDTI, I learned similar lessons. Every day of entrepreneurship is filled with uncertainty, and the most dangerous decisions I've witnessed don't usually come from "not knowing what to do," but from "thinking you know." Decisions made with overconfidence, decisions that didn't leave an escape route—those are truly fatal.
+In running my company, I learned similar lessons. Every day of entrepreneurship is filled with uncertainty, and the most dangerous decisions I've witnessed don't usually come from "not knowing what to do," but from "thinking you know." Decisions made with overconfidence, decisions that didn't leave an escape route—those are truly fatal.
 
 ## Reality Is Always Crueler Than Models
 

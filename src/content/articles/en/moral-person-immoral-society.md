@@ -66,9 +66,9 @@ The problem is, you can't find one "bad person" to blame. Because everyone is ju
 
 This hit me hard. Because the training I received in seminary focused heavily on "personal sin and redemption." But Niebuhr showed me that if you only address the individual level, you never reach the things that cause large-scale harm.
 
-## What I Saw at SDTI
+## What I Saw at My Company
 
-During my time running SDTI, Niebuhr's observations were repeatedly confirmed.
+During my time running the company, Niebuhr's observations were repeatedly confirmed.
 
 When helping clients with digital transformation, I often encountered this situation: everyone in the company knew the current approach was problematic, but no one dared say so. Because speaking up is seen as "causing trouble," and while the existing approach is inefficient, at least it doesn't threaten anyone's job.
 

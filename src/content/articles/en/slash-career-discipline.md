@@ -3,7 +3,7 @@ title: "The Discipline of a Slash Career: The Other Side of Freedom Is Stricter 
 subtitle: "You think a slash career means freedom? It's actually an extreme stress test of self-discipline"
 description: "Slash careers may look liberating, but they demand stricter discipline than a regular job. When external structure disappears, you must become your own boss, your own HR, and your own disciplinarian. From time management to energy management to attention management, the three thresholds of slash careers reveal a harsh truth: freedom was never the opposite of discipline—freedom is the fruit of discipline."
 abstract: |
-  The "slash career" is one of the most romanticized career visions of recent years. But Paul, drawing from his own multi-role experience—running SDTI, attending seminary, blogging, and consulting—has a deeply felt insight that few people talk about: the real barrier to a slash career isn't having diverse skills, but the intensity of self-discipline. When organizations no longer manage your time for you, what you face isn't freedom—it's chaos. This essay breaks down three levels of self-discipline and why "whether you can manage yourself" is the true dividing line between slash career success and failure.
+  The "slash career" is one of the most romanticized career visions of recent years. But Paul, drawing from his own multi-role experience—running my company, attending seminary, blogging, and consulting—has a deeply felt insight that few people talk about: the real barrier to a slash career isn't having diverse skills, but the intensity of self-discipline. When organizations no longer manage your time for you, what you face isn't freedom—it's chaos. This essay breaks down three levels of self-discipline and why "whether you can manage yourself" is the true dividing line between slash career success and failure.
 date: 2018-09-02
 updated: 2026-03-01
 pillar: startup
@@ -53,7 +53,7 @@ Sounds liberating, right? But my own experience tells me: once you remove extern
 
 ## Three Thresholds
 
-During the period when I was simultaneously running SDTI, taking classes at seminary, and writing regularly, I was forced to develop a self-management system. Not because I'm naturally disciplined, but because without one, my life would collapse within three days.
+During the period when I was simultaneously running my company, taking classes at seminary, and writing regularly, I was forced to develop a self-management system. Not because I'm naturally disciplined, but because without one, my life would collapse within three days.
 
 **The first threshold: time management.**
 

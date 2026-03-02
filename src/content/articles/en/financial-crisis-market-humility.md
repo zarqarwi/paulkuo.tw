@@ -3,7 +3,7 @@ title: "Reverence for the Unknown Surge: Ten Years of Market Lessons from the Fi
 subtitle: "We know too much, understand too little — the market taught me not how to predict, but how to be humble"
 description: "In 2017, nearly a decade after the financial crisis, Taiwan's stock index reached a five-year high, and the Dow Jones broke through 23,000. Global markets were euphoric. But what was fueling the market — genuine economic recovery, or rivers of liquidity created by global central banks printing money? There is no standard answer to this question, and 'having no standard answer' itself is the most important lesson. The market is not a physical system; it does not obey Newton's laws. Facing capital surges and complex economic systems, the only stance we can hold is humility before the unknown."
 abstract: |
-  Over the ten years from 2008's financial crisis to 2017's market peaks, Paul personally experienced the cognitive dissonance of "being bearish while everything kept rising." Those who shorted were swept out of the market; those who held on didn't always understand why they were making money. This piece is not investment advice, but the reflection of someone who learned humility in the market — from experience serving clients at SDTI, Paul discovered that the mistakes enterprises and investors make are remarkably similar: overestimating their own judgment and underestimating system complexity. True wisdom is not knowing the answer, but admitting you don't know.
+  Over the ten years from 2008's financial crisis to 2017's market peaks, Paul personally experienced the cognitive dissonance of "being bearish while everything kept rising." Those who shorted were swept out of the market; those who held on didn't always understand why they were making money. This piece is not investment advice, but the reflection of someone who learned humility in the market — from experience serving clients in my consulting work, Paul discovered that the mistakes enterprises and investors make are remarkably similar: overestimating their own judgment and underestimating system complexity. True wisdom is not knowing the answer, but admitting you don't know.
 date: 2017-10-31
 updated: 2026-03-02
 pillar: life
@@ -57,7 +57,7 @@ Honestly, nobody knows. Or more accurately: everyone has an explanation, but nob
 
 ---
 
-This reminds me of a phenomenon I repeatedly observed while working as a strategy consultant at SDTI.
+This reminds me of a phenomenon I repeatedly observed while working as a strategy consultant.
 
 Clients would always ask us: "Will this market trend continue?" "Will our digital transformation investment pay off?" "Will our competitor's strategy succeed?"
 

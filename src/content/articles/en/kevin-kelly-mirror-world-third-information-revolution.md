@@ -1,9 +1,9 @@
 ---
 title: "Mirror World: The Third Information Revolution and Kevin Kelly's Vision of 2049"
 subtitle: "The convergence of AR + AI + IoT is creating a complete digital twin of the physical world"
-description: "In Kevin Kelly's 2019 Wired article 'Mirrorworld,' he outlined the complete blueprint for the third information revolution. Digital twins, AR smart glasses, Internet of Things, mutual visibility—this isn't science fiction, but a transformation happening now. Paul's CircleFlow 'digitized urban mining' is a case study of mirror world applications in the circular economy."
+description: "In Kevin Kelly's 2019 Wired article 'Mirrorworld,' he outlined the complete blueprint for the third information revolution. Digital twins, AR smart glasses, Internet of Things, mutual visibility—this isn't science fiction, but a transformation happening now. Paul's our AI platform 'digitized urban mining' is a case study of mirror world applications in the circular economy."
 abstract: |
-  Kevin Kelly's "Mirror World" concept marks the third information revolution: after digitizing information (first revolution) and digitizing humans (second revolution), we're entering the era of digitizing everything. This article explores the mirror world's core technological layers (digital twins, AR, IoT, AI), social layers (mutual visibility, trust reconstruction), and opportunities and risks. Key insight: The jobs the mirror world needs haven't been invented yet, and CircleFlow's practice is creating these new roles.
+  Kevin Kelly's "Mirror World" concept marks the third information revolution: after digitizing information (first revolution) and digitizing humans (second revolution), we're entering the era of digitizing everything. This article explores the mirror world's core technological layers (digital twins, AR, IoT, AI), social layers (mutual visibility, trust reconstruction), and opportunities and risks. Key insight: The jobs the mirror world needs haven't been invented yet, and our AI platform's practice is creating these new roles.
 date: 2025-07-14
 pillar: ai
 tags:
@@ -28,7 +28,7 @@ related_entities:
     type: Concept
   - name: 數位孿生（Digital Twin）
     type: Technology
-  - name: CircleFlow
+  - name: our AI platform
     type: Organization
 reading_context: |
   Suitable for readers interested in understanding the direction of technological development over the next decade, especially those interested in the circular economy, urban governance, and sustainable development.
@@ -96,13 +96,13 @@ City managers can see: actual population flow (not statistical models), actual p
 
 What's the cost of this transparency? Privacy, new forms of inequality, new forms of control. But Kelly isn't describing a utopia—he's describing a reality that's happening.
 
-## CircleFlow: Mirror World Applications in the Circular Economy
+## our AI platform: Mirror World Applications in the Circular Economy
 
-My recent work at CircleFlow is building a specific version of the mirror world: **Digital twins for urban mining.**
+My recent work at our AI platform is building a specific version of the mirror world: **Digital twins for urban mining.**
 
 Traditional waste management works like this: waste comes in, gets sorted, burned or buried, end of story. No one knows how much valuable material is in this waste, and no one tracks where it ultimately goes.
 
-CircleFlow's vision: every piece of incoming waste has a digital record. Composition scanning, value assessment, sorting pathways, recycling targets. When this item is disassembled, materials extracted, and sold to downstream manufacturers, the entire process is recorded on the digital twin.
+our AI platform's vision: every piece of incoming waste has a digital record. Composition scanning, value assessment, sorting pathways, recycling targets. When this item is disassembled, materials extracted, and sold to downstream manufacturers, the entire process is recorded on the digital twin.
 
 Downstream manufacturers see: the source, purity, stress characteristics of this batch of recycled steel. They can precisely decide what to make with it.
 
@@ -120,7 +120,7 @@ Manufacturing workers? Many will be replaced by automation. But "Digital Twin Ma
 
 "Supply Chain Transparency Analyst"? "Urban Metabolism Designer"? "Material Flow Routing Optimizer"? These are positions that will emerge in the mirror world era, but today's educational systems aren't training anyone for these roles.
 
-In the circular economy field, we're already encountering this problem. The talent CircleFlow needs must understand waste management, digital systems, and AI. Such talent barely exists in the market, so we're training while doing.
+In the circular economy field, we're already encountering this problem. The talent our AI platform needs must understand waste management, digital systems, and AI. Such talent barely exists in the market, so we're training while doing.
 
 ## Risks and Surveillance
 
@@ -136,7 +136,7 @@ In Kelly's 2025 supplementary article, he mentions that what humans will see in 
 
 But the general direction is clear: **Transparency will continue increasing. The boundary between virtual and real will continue blurring. AI's understanding of the physical world will continue deepening.**
 
-In such a future, projects like CircleFlow are just beginning. Not because of their scale, but because they're doing something new—preparing for the mirror world's arrival.
+In such a future, projects like our AI platform are just beginning. Not because of their scale, but because they're doing something new—preparing for the mirror world's arrival.
 
 Creating new economic logic, new forms of work, new ways humans interact with objects.
 

@@ -67,9 +67,9 @@ The moat has shifted from "keeping others out" to "bringing others in."
 
 The more you open up, the better you integrate, the more seamless the user experience becomes. And the reason users stay in your ecosystem isn't that they can't leave you—it's that the cost of leaving has become too high, because you've integrated deeply with the other tools in their lives.
 
-## The Transformation Dilemma Seen Through SDTI
+## The Transformation Dilemma I Saw Running a Company
 
-In managing SDTI, I deeply felt the harsh reality of this logic.
+In managing my company, I deeply felt the harsh reality of this logic.
 
 Many small and medium-sized enterprises in Taiwan still operate with the mindset of "doing everything ourselves." Building their own websites, writing their own ERP, handling their own CRM. Not because they don't know better tools exist, but because "integration" requires more than just technical ability—it requires an [openness of mindset](/articles/digital-transformation-pain).
 

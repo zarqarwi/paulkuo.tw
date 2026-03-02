@@ -3,7 +3,7 @@ title: "Riding the Wave or Drowning? The Historical Turning Point We're Living T
 subtitle: "From the internet revolution to global lockdowns, our generation's 'firsts' are more thrilling—and more brutal—than any history textbook"
 description: "In early 2020, Australian wildfires had been burning for half a year, COVID-19 spread from Wuhan to the world, and the Tokyo Olympics faced the first pandemic-related postponement in history. Looking back from the future, we'll realize we stood at a massive turning point. The question isn't whether the wave will come—the wave has already arrived. The question is: are you riding the wave, or are you drowning? This article was written in February 2020, when the pandemic was just beginning and everything remained unclear. Yet certain insights remain valid six years later: in times of great change, agility survives better than size."
 abstract: |
-  Paul wrote this observation in February 2020—when COVID-19 was just beginning to spread globally and everything was still filled with uncertainty. From the internet revolution to climate disasters to global lockdowns, our generation has personally witnessed more "firsts in history" than perhaps any previous generation. When familiar order collapsed within weeks, the first to fall were the largest, most rigid organizations. SDTI's survival experience during the pandemic confirmed this point—lightweight, liquid teams that could rapidly reorganize proved more reliable than any five-year plan. This isn't prophecy, but a real-time record from someone standing at the crest of the wave.
+  Paul wrote this observation in February 2020—when COVID-19 was just beginning to spread globally and everything was still filled with uncertainty. From the internet revolution to climate disasters to global lockdowns, our generation has personally witnessed more "firsts in history" than perhaps any previous generation. When familiar order collapsed within weeks, the first to fall were the largest, most rigid organizations. Our team's survival experience during the pandemic confirmed this point—lightweight, liquid teams that could rapidly reorganize proved more reliable than any five-year plan. This isn't prophecy, but a real-time record from someone standing at the crest of the wave.
 date: 2020-02-20
 updated: 2026-03-02
 pillar: life
@@ -67,7 +67,7 @@ That was my feeling in early 2020. Not panic, but a strange lucidity—sensing t
 
 ---
 
-SDTI's experience in the early pandemic gave me very concrete understanding of this "loosening."
+Our experience in the early pandemic gave me very concrete understanding of this "loosening."
 
 We're not a big company. Small team, few clients, relatively tight operational cost control. But even so, when the pandemic hit, the impact was direct and swift. Face-to-face workshops couldn't proceed, several confirmed projects were suspended, second-quarter revenue projections had to be rewritten.
 

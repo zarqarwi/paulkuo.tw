@@ -1,7 +1,7 @@
 ---
 title: "Why Greatness Cannot Be Planned: The Stepping Stones Model and the True Trajectory of Entrepreneurship"
 subtitle: "My twenty years of entrepreneurship is living proof of this book"
-description: "Goal-oriented thinking is a trap. Kenneth Stanley and Joel Lehman's 'Why Greatness Cannot Be Planned' reveals a counterintuitive truth: from microwaves to GPUs, from Mozart to Kodak, all world-changing discoveries emerged from pursuing interests, not predetermined goals. Paul's entrepreneurial journey—from iShelly to nvesto to CircleFlow—perfectly validates the Stepping Stones model."
+description: "Goal-oriented thinking is a trap. Kenneth Stanley and Joel Lehman's 'Why Greatness Cannot Be Planned' reveals a counterintuitive truth: from microwaves to GPUs, from Mozart to Kodak, all world-changing discoveries emerged from pursuing interests, not predetermined goals. Paul's entrepreneurial journey—from iShelly to nvesto to our AI platform—perfectly validates the Stepping Stones model."
 abstract: |
   Goal-oriented planning is the enemy of innovation. This article introduces the core theory of Kenneth Stanley & Joel Lehman's "Why Greatness Cannot Be Planned": the Stepping Stones model and Novelty Search algorithm. From historical cases (Wright brothers, microwave ovens, GPUs) to reflections on national policy, to Paul Kuo's twenty years of entrepreneurial practice, revealing an uncomfortable truth: what truly changes the world are often the steps considered "furthest from the goal."
 date: 2025-06-27
@@ -87,7 +87,7 @@ Reading this book, I was re-examining my own twenty years of entrepreneurial tra
 
 **Third Stepping Stone: Good Food Machine, Thick Life Market, Ban Mu Tang.** Suddenly jumping to agri-food ecosystems. Seemed like wasting my accumulated financial expertise. But in that process I understood what real supply chains are, what farmers' real situations are, what "the difficulty of changing an ecosystem" means.
 
-**Now: CircleFlow.** Circular economy digitalization. Why can I see things others can't? Because I walked those circuitous paths. Finance × Agri-food × Architecture × AI. Every "digression" is the foundation for what I can see at this moment.
+**Now: our AI platform.** Circular economy digitalization. Why can I see things others can't? Because I walked those circuitous paths. Finance × Agri-food × Architecture × AI. Every "digression" is the foundation for what I can see at this moment.
 
 If I had "planned" twenty years ago to become a circular economy AI expert, I would have missed all these stepping stones. I would have been like a fake expert, only understanding surface knowledge, lacking real tactile experience.
 

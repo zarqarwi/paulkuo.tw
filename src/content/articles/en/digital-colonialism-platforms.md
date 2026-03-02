@@ -96,7 +96,7 @@ Pivot to Line@? The platform changes whenever it wants.
 
 This is the dilemma of digital colonialism: you can switch to another colonial master, but you can't escape the colonial structure itself. Because in today's internet ecosystem, all traffic allocation authority rests in the hands of a few giant platforms.
 
-During my time running SDTI, I deeply experienced this reality. We manage communities for clients, do content marketing, run ad campaigns. Every strategy's foundation is built on the platform's rules. And these rules can suddenly change when you're completely unprepared.
+During my time running the company, I deeply experienced this reality. We manage communities for clients, do content marketing, run ad campaigns. Every strategy's foundation is built on the platform's rules. And these rules can suddenly change when you're completely unprepared.
 
 Once, we carefully crafted a month-long Facebook content strategy for a client. Two weeks after launch, an algorithm adjustment hit—organic reach dropped 40%. The client asked me: "Is there a problem with your strategy?" I said: "The strategy didn't change. The floor beneath us did."
 

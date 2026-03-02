@@ -3,7 +3,7 @@ title: "The Always-On Economy in the AI Era: A Civilizational Turning Point from
 subtitle: "The question isn't whether AI will replace humans, but when the economy no longer needs to sleep, who decides the direction"
 description: "The real disruption AI brings isn't improved automation efficiency, but a rewrite of economic order. The always-on economy compresses decision-making rhythms, blurs organizational boundaries, and redefines responsibility attribution—the issue is no longer technical alignment, but value alignment."
 abstract: |
-  Past economic systems were built on one premise: humans get tired. All institutional design rhythms—shifts, handoffs, meetings, quarterly reviews—were benchmarked against human physiological limits. But when AI Agents that never need rest begin entering decision-making layers, this benchmark is removed. In my experience pushing CircleFlow at SDTI, I've witnessed firsthand that "always-on operations" isn't just an efficiency issue, but an order issue: decision-making frequency accelerates, organizational boundaries blur, responsibility attribution shifts. This piece explores how civilization decides direction when the economy no longer operates at human rhythm.
+  Past economic systems were built on one premise: humans get tired. All institutional design rhythms—shifts, handoffs, meetings, quarterly reviews—were benchmarked against human physiological limits. But when AI Agents that never need rest begin entering decision-making layers, this benchmark is removed. In my experience pushing our AI platform at my company, I've witnessed firsthand that "always-on operations" isn't just an efficiency issue, but an order issue: decision-making frequency accelerates, organizational boundaries blur, responsibility attribution shifts. This piece explores how civilization decides direction when the economy no longer operates at human rhythm.
 date: 2025-10-20
 updated: 2026-02-28
 pillar: ai
@@ -30,7 +30,7 @@ related_entities:
     type: Concept
   - name: AI Agent
     type: Concept
-  - name: CircleFlow
+  - name: our AI platform
     type: Organization
   - name: 秩序設計
     type: Concept
@@ -40,7 +40,7 @@ reading_context: |
   關心技術與文明關係的跨領域思考者。
 ---
 
-Last month, I was testing CircleFlow's automated monitoring module. At 3 AM, the system detected an abnormal drop in metal recovery rates on a production line, automatically adjusted parameters, and sent a report to my inbox.
+Last month, I was testing our AI platform's automated monitoring module. At 3 AM, the system detected an abnormal drop in metal recovery rates on a production line, automatically adjusted parameters, and sent a report to my inbox.
 
 I didn't see it until 8 AM. The problem had already been resolved.
 
@@ -62,7 +62,7 @@ Traditional enterprise decision-making is intermittent. Meetings, discussions, r
 
 But when models participate in decision-making, decisions become continuous flow. Not adjusting strategy once a quarter, but auto-optimizing every minute. This sounds beautiful, but there's a problem: when decision frequency far exceeds human comprehension speed, are humans still in control?
 
-My experience at SDTI is this: once systems start making decisions automatically, human roles unknowingly slide from "decision-maker" to "approver," and finally to "observer." Not because they're excluded, but because they can't keep up. This slippery slope is much faster than imagined.
+My experience at my company is this: once systems start making decisions automatically, human roles unknowingly slide from "decision-maker" to "approver," and finally to "observer." Not because they're excluded, but because they can't keep up. This slippery slope is much faster than imagined.
 
 ## Organizational Boundaries Are Dissolving
 

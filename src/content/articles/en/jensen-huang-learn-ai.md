@@ -3,7 +3,7 @@ title: "If I Were a Student, I Would Learn AI: The Civilizational Shift Behind J
 subtitle: "AI literacy is not an elective—it's your fundamental survival language in the new world"
 description: "NVIDIA CEO Jensen Huang has repeatedly stated in public forums that if he were a student again, his first choice would be to study AI. This statement isn't merely an industry trend forecast—it signals a fundamental shift in educational paradigms: from knowledge memorization to human-AI collaboration, from tool operation to problem design. As AI becomes everyone's collaborator, 'asking good questions' will replace 'knowing answers' as our core competitive advantage."
 abstract: |
-  Jensen Huang's statement—"If I were a student, I would learn AI"—has gone viral, but most people treat it merely as an industry prediction. Drawing from my experience running SDTI and implementing AI workflows in CircleFlow, I argue this isn't just career advice. It represents a fundamental rebuilding of our cognitive infrastructure: the shift from "what I know" to "what questions I can ask." This article explores the essence of AI literacy and why "knowing how to use AI" is far closer to our future core competency than "knowing how to code."
+  Jensen Huang's statement—"If I were a student, I would learn AI"—has gone viral, but most people treat it merely as an industry prediction. Drawing from my experience running my company and implementing AI workflows, I argue this isn't just career advice. It represents a fundamental rebuilding of our cognitive infrastructure: the shift from "what I know" to "what questions I can ask." This article explores the essence of AI literacy and why "knowing how to use AI" is far closer to our future core competency than "knowing how to code."
 date: 2025-05-23
 updated: 2026-03-01
 pillar: startup
@@ -69,9 +69,9 @@ This is actually fundamentally similar to programming. The core of programming i
 
 The difference is that programming requires you to learn a machine language, while prompt engineering lets you accomplish something similar using natural language. The barrier to entry is lower, but the demands on thinking quality are actually higher.
 
-## A Lesson I Learned at SDTI
+## A Lesson I Learned Running My Company
 
-This isn't abstract theory. I've witnessed this shift firsthand through my experience running SDTI and CircleFlow.
+This isn't abstract theory. I've witnessed this shift firsthand through my experience running my company.
 
 In the early days of digital transformation consulting, the most valuable people on our team were "people who knew answers"—people who knew SEO, knew Google Analytics, knew social media marketing. Their value came from the scarcity of specialized knowledge.
 
