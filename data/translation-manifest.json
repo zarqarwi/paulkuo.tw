@@ -1,10 +1,10 @@
 {
   "ai-2027-civilization-reflection.md": {
-    "sourceHash": "cbf1224e8b19",
+    "sourceHash": "9b64540b3728",
     "translations": {
       "en": {
-        "hash": "205743ef62b9",
-        "translatedAt": "2026-03-02T07:58:12.621Z",
+        "hash": "27a0e18da7f3",
+        "translatedAt": "2026-03-03T02:33:56.374Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
