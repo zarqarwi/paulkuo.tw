@@ -1660,11 +1660,11 @@
     }
   },
   "pope-leo-xiv-ai-homily.md": {
-    "sourceHash": "c33032220514",
+    "sourceHash": "8f6755cfed6e",
     "translations": {
       "en": {
-        "hash": "78b228413525",
-        "translatedAt": "2026-03-03T15:19:06.007Z",
+        "hash": "38a751309c93",
+        "translatedAt": "2026-03-03T15:26:36.297Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
