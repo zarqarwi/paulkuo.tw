@@ -1,5 +1,5 @@
 ---
-title: "AI Cannot Share Faith: A Lesson from Pope Leo XIV for All 'Efficiency Believers'"
+title: "AI Cannot Replace Faith: The Pope's Lesson for the 'Efficiency-Above-All' Generation"
 subtitle: "While the world rushes to optimize everything with AI, the Pope reminds us: some things derive their value precisely from being unoptimizable."
 description: "Pope Leo XIV's call for priests to resist the temptation of AI-written homilies is not merely pastoral guidance for the Church, but reveals a fundamental question: when efficiency logic penetrates humanity's deepest expressions of faith, what exactly do we lose?"
 abstract: |
@@ -38,7 +38,7 @@ reading_context: |
 
 February 19, 2026, Paul VI Audience Hall, Vatican. Pope Leo XIV sat down with Roman diocesan priests for forty-five minutes. Behind closed doors, no cameras, just dialogue between pastors.
 
-A few days later, Vatican News published a report, and global media exploded: "Pope tells priests not to use ChatGPT for homilies!"
+A few days later, Vatican News published a report, and the Pope's remarks on AI use sparked intense international media discussion.
 
 The headlines were attention-grabbing, but most coverage stopped there. As if this were just another "old man doesn't understand technology" story.
 
@@ -52,13 +52,13 @@ He used an analogy: "The muscles of the body, if not used, if not moved, they di
 
 This isn't about efficiency—it's about maintaining capability. Preparing a homily—reading scripture, chewing on it repeatedly, seeking connections in prayer, translating abstract theological concepts into language the congregation can understand—this process itself is a spiritual discipline. Skip this process, and you're not just saving time; you're skipping the exercise that makes you a pastor.
 
-When I was training in seminary, I spent most of my time not writing papers, but "not understanding." Reading Barth, reading Moltmann, reading theologians who made you feel stupid, then stopping at the parts you couldn't understand and asking yourself: What exactly is he saying? Does this connect with my faith experience?
+When I was training in seminary, I spent most of my time not writing papers, but the agony of "not understanding." Reading Barth, reading Moltmann, reading theologians who made you feel stupid, then stopping at the parts you couldn't understand and asking yourself: What exactly is he saying? Does this connect with my faith experience?
 
-That process of "not understanding," in retrospect, was where real learning happened. If I had ChatGPT back then, I probably would have pasted it in and asked "summarize this for me," then quickly moved on. Efficiency improved, but something would have been lost.
+That process of "not understanding," in retrospect, was where real learning happened. If I had ChatGPT back then, I probably would have pasted it in and asked "summarize this for me," then quickly moved on. Efficiency improved, but something in the soul would have been lost.
 
 This is the "atrophy" the Pope was talking about.
 
-## AI Can Never Share Faith
+## AI Cannot Share a Person's Faith
 
 The second argument is more fundamental.
 
@@ -70,15 +70,15 @@ The key phrase is "his own experience."
 
 A priest might have visited a dying parishioner that week, heard heartbreaking stories in the confessional, or been suddenly struck by a passage of scripture during pre-dawn prayer. These experiences constitute that unique voice when he steps up to the pulpit.
 
-AI can analyze tens of thousands of homily scripts, find optimal structures, most moving rhetoric, best angles for that week's readings. It can even write a homily that's flawless. But what it cannot do is: witness.
+AI can analyze tens of thousands of homily scripts, find optimal structures, most moving rhetoric, best angles for that week's readings. It can even write a masterful sermon that's flawless. But what it cannot do is: witness.
 
-Witness means: I have experienced it, so I can tell you about it. This isn't information; this is existence.
+Witness means: I have experienced it, so I can tell you about it. This isn't information; this is existence. It is the bodily suffering and inner turmoil of a pastor.
 
-I use AI for work every day now—writing articles, doing analysis, managing projects, even developing [CircleFlow's service platform](/articles/circleflow-ai-platform). But I'm very clear about one thing: AI helps me with information-level work, not meaning-level work. When I write an article about faith, what gives the article life isn't something AI can provide. It's the path I've walked myself.
+I use AI for work every day now—writing articles, doing analysis, managing projects, even developing various service models and tools. But I'm very clear about one thing: AI helps me with information-level work, not meaning-level work. When I write an article about faith, what gives the article life isn't something AI can provide. It's the path I've walked myself.
 
 This is the line the Pope is drawing.
 
-## Don't Chase Likes on TikTok
+## Don't Chase Being Liked on Social Media
 
 In the same conversation, the Pope issued another warning: don't chase likes and follower counts on social platforms like TikTok. He said this was a kind of illusion of "thinking you're giving yourself on the internet."
 
@@ -92,7 +92,7 @@ This completely violates Silicon Valley logic. But the Pope doesn't care.
 
 ## From Leo XIII to Leo XIV: Between Two Industrial Revolutions
 
-There's an easily overlooked context here.
+There's a subtle context here.
 
 In Leo XIV's first address to the College of Cardinals after his election, he said he chose this name to honor Leo XIII. Leo XIII published the encyclical *Rerum Novarum* in 1891, the foundational document of Catholic social teaching, responding to the labor exploitation, wealth inequality, and social division brought by the First Industrial Revolution.
 
@@ -104,16 +104,16 @@ Notice, his subject isn't "AI" but "technology disconnected from humanity." This
 
 ## The Boundaries of Efficiency
 
-I'm someone who uses AI every day. I use Claude to write code, GPT for multilingual translation, debate engines for strategic analysis. I believe AI is the most powerful productivity tool of this era.
+I'm someone who uses AI every single day. I use AI to write code, do multilingual translation, gather information, debate engines for strategic analysis. I believe AI is the most powerful productivity tool of this era.
 
 But precisely because of this, I better understand what the Pope is saying.
 
-Efficiency logic has its scope of application. In information processing, pattern recognition, and process optimization, AI isn't just useful—it's crushingly useful. But when you encounter concepts like "witness," "accompaniment," "faith," and "friendship," efficiency logic breaks down. Not because these things are too outdated to keep up with the times, but because their value was never in the dimension of efficiency.
+Efficiency logic has its scope of application. In information processing, pattern recognition, and process optimization, AI isn't just useful—it's crushingly useful. But when you encounter concepts like "witness," "accompaniment," "faith," "friendship," "love," and "loyalty," efficiency logic breaks down. Not because these things are too outdated to keep up with the times, but because their value was never in the dimension of efficiency.
 
-A priest spending six hours preparing a homily versus AI producing one in six seconds—the difference isn't in quality. The difference is: in those six hours, he spent time with God. The traces of that communion will flow through his voice, his pauses, that imperfect but warm word he chooses.
+A priest spending six hours preparing a sermon versus AI producing one in six seconds—the difference isn't in quality. The difference is: in those six hours, he spent time with God. The traces of that communion will flow through his voice, his pauses, that imperfect but warm word he chooses.
 
 The congregation can hear the difference.
 
-This is the line the Pope draws. Not "AI is bad," but "some things derive their value from you doing them personally."
+This is the line the Pope draws. Not "AI is bad," but "some things derive their value from you doing them personally." The friction and suffering in life are the root of meaning.
 
 In this age when everything can be optimized, knowing what shouldn't be optimized might be the most important wisdom of all.
