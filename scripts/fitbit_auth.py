@@ -16,7 +16,7 @@ import base64
 CLIENT_ID = "23V2BH"
 CLIENT_SECRET = "4adac11e3241afadf53cccfaa7b7e86a"
 REDIRECT_URI = "http://localhost:3000/callback"
-SCOPES = "activity heartrate profile"
+SCOPES = "activity heartrate profile sleep weight nutrition"
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TOKEN_FILE = os.path.join(SCRIPT_DIR, ".fitbit_token")

@@ -117,3 +117,9 @@ AIはあなたの説教原稿の品質指標を最適化してくれる：構造
 これが教皇の引いた境界線である。「AIが良くない」ではなく、「あるものについては、その価値がまさにあなた自身がそれを行うところにある」ということだ。生きることの摩擦と苦しみこそが、意味の根源なのだ。
 
 あらゆるものが最適化可能な時代において、何を最適化すべきでないかを知ることこそが、おそらく最も重要な智慧なのである。
+
+---
+
+## 参考資料
+
+- [Pope Leo XIV tells priests not to use AI to write homilies or seek likes on TikTok](https://catholicreview.org/pope-leo-xiv-tells-priests-not-to-use-ai-to-write-homilies-or-seek-likes-on-tiktok/)

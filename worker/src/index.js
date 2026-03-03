@@ -8,6 +8,7 @@
  *   GET /fitbit  — 回傳即時 Fitbit 資料（5 分鐘快取）
  *   GET /stock   — 回傳 CyberSolutions (436A.T) 即時股價（交易時段 10 分鐘 / 非交易 1 小時快取）
  *   GET /health  — 健康檢查
+ *   GET /sleep   — 睡眠資料分析（?year=2025 或 ?start=...&end=...）
  * 
  * Cron Trigger:
  *   每 6 小時 refresh Fitbit OAuth2 token
@@ -181,6 +182,112 @@ async function fetchFitbitData(kv) {
   return data;
 }
 
+
+// === Fetch Sleep Data (for analysis) ===
+async function fetchSleepData(kv, params) {
+  let tokenJson = await kv.get('fitbit_token');
+  if (!tokenJson) throw new Error('No Fitbit token configured');
+  let token = JSON.parse(tokenJson);
+
+  if (token.expires_at - Date.now() < 2 * 3600 * 1000) {
+    try { token = await refreshToken(kv); } catch (e) {
+      console.error('Proactive refresh failed:', e.message);
+    }
+  }
+
+  const year = params.get('year');
+  let startDate, endDate;
+  if (year) {
+    startDate = year + '-01-01';
+    endDate = year + '-12-31';
+  } else {
+    startDate = params.get('start');
+    endDate = params.get('end');
+  }
+  if (!startDate || !endDate) {
+    throw new Error('Provide ?year=2025 or ?start=YYYY-MM-DD&end=YYYY-MM-DD');
+  }
+
+  const cacheKey = 'sleep_cache_' + startDate + '_' + endDate;
+  const cacheJson = await kv.get(cacheKey);
+  if (cacheJson) {
+    const cache = JSON.parse(cacheJson);
+    if (Date.now() - cache.cached_at < 3600 * 1000) {
+      return { ...cache.data, _cached: true };
+    }
+  }
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const chunks = [];
+  let cur = new Date(start);
+  while (cur <= end) {
+    const chunkEnd = new Date(Math.min(cur.getTime() + 99 * 86400000, end.getTime()));
+    chunks.push([cur.toISOString().slice(0, 10), chunkEnd.toISOString().slice(0, 10)]);
+    cur = new Date(chunkEnd.getTime() + 86400000);
+  }
+
+  let allSleep = [];
+  for (const [s, e] of chunks) {
+    try {
+      const data = await fitbitGet('/1.2/user/-/sleep/date/' + s + '/' + e + '.json', token);
+      if (data.sleep) allSleep = allSleep.concat(data.sleep);
+    } catch (err) {
+      if (err.message === 'TOKEN_EXPIRED') {
+        token = await refreshToken(kv);
+        const data = await fitbitGet('/1.2/user/-/sleep/date/' + s + '/' + e + '.json', token);
+        if (data.sleep) allSleep = allSleep.concat(data.sleep);
+      } else {
+        console.error('Sleep fetch error for ' + s + '-' + e + ':', err.message);
+      }
+    }
+  }
+
+  const monthly = {};
+  for (const s of allSleep) {
+    if (!s.isMainSleep) continue;
+    const month = s.dateOfSleep ? s.dateOfSleep.slice(0, 7) : null;
+    if (!month) continue;
+    if (!monthly[month]) {
+      monthly[month] = { month: month, nights: 0, total_minutes: 0, deep_min: 0, light_min: 0, rem_min: 0, wake_min: 0, scores: [] };
+    }
+    const m = monthly[month];
+    m.nights++;
+    m.total_minutes += s.duration ? Math.round(s.duration / 60000) : 0;
+    const stages = (s.levels && s.levels.summary) || {};
+    m.deep_min += (stages.deep && stages.deep.minutes) || 0;
+    m.light_min += (stages.light && stages.light.minutes) || 0;
+    m.rem_min += (stages.rem && stages.rem.minutes) || 0;
+    m.wake_min += (stages.wake && stages.wake.minutes) || 0;
+    if (s.efficiency) m.scores.push(s.efficiency);
+  }
+
+  const summary = Object.values(monthly).map(function(m) {
+    return {
+      month: m.month,
+      nights: m.nights,
+      avg_hours: Math.round(m.total_minutes / m.nights / 60 * 10) / 10,
+      avg_deep_min: Math.round(m.deep_min / m.nights),
+      avg_light_min: Math.round(m.light_min / m.nights),
+      avg_rem_min: Math.round(m.rem_min / m.nights),
+      avg_wake_min: Math.round(m.wake_min / m.nights),
+      avg_efficiency: m.scores.length ? Math.round(m.scores.reduce(function(a, b) { return a + b; }, 0) / m.scores.length) : null,
+    };
+  }).sort(function(a, b) { return a.month.localeCompare(b.month); });
+
+  const data = {
+    updated: new Date().toISOString(),
+    source: 'cloudflare-worker',
+    range: { start: startDate, end: endDate },
+    total_nights: allSleep.filter(function(s) { return s.isMainSleep; }).length,
+    monthly: summary,
+    raw_count: allSleep.length,
+  };
+
+  await kv.put(cacheKey, JSON.stringify({ data: data, cached_at: Date.now() }));
+  return data;
+}
+
 // === Stock: TSE Trading Hours Check ===
 function isTseTradingHours() {
   // JST = UTC+9, TSE 09:00-15:30 JST
@@ -259,6 +366,145 @@ async function fetchStockData(kv) {
   return data;
 }
 
+
+// === Fetch Sleep Data ===
+async function fetchSleepData(kv, params) {
+  // Get token
+  let tokenJson = await kv.get('fitbit_token');
+  if (!tokenJson) throw new Error('No Fitbit token configured');
+  let token = JSON.parse(tokenJson);
+
+  // Proactive refresh if < 2h remaining
+  if (token.expires_at - Date.now() < 2 * 3600 * 1000) {
+    try { token = await refreshToken(kv); } catch (e) {
+      console.error('Proactive refresh failed:', e.message);
+    }
+  }
+
+  const { year, month } = params;
+
+  if (month) {
+    // Single month detail: /sleep?month=2025-03
+    const [y, m] = month.split('-').map(Number);
+    const start = `${y}-${String(m).padStart(2,'0')}-01`;
+    const lastDay = new Date(y, m, 0).getDate();
+    const end = `${y}-${String(m).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
+
+    let data;
+    try {
+      data = await fitbitGet(`/1.2/user/-/sleep/date/${start}/${end}.json`, token);
+    } catch (e) {
+      if (e.message === 'TOKEN_EXPIRED') {
+        token = await refreshToken(kv);
+        data = await fitbitGet(`/1.2/user/-/sleep/date/${start}/${end}.json`, token);
+      } else throw e;
+    }
+
+    const sleepLogs = data.sleep || [];
+    const daily = {};
+    for (const log of sleepLogs) {
+      if (!log.isMainSleep) continue;
+      const d = log.dateOfSleep;
+      if (!daily[d]) daily[d] = { date: d, duration_min: 0, deep_min: 0, light_min: 0, rem_min: 0, wake_min: 0, efficiency: 0, start: '', end: '' };
+      daily[d].duration_min += Math.round((log.duration || 0) / 60000);
+      daily[d].efficiency = log.efficiency || 0;
+      daily[d].start = log.startTime || '';
+      daily[d].end = log.endTime || '';
+      const stages = log.levels?.summary || {};
+      daily[d].deep_min += stages.deep?.minutes || 0;
+      daily[d].light_min += stages.light?.minutes || 0;
+      daily[d].rem_min += stages.rem?.minutes || 0;
+      daily[d].wake_min += stages.wake?.minutes || 0;
+    }
+
+    const days = Object.values(daily).sort((a, b) => a.date.localeCompare(b.date));
+    const avg = (arr, key) => arr.length ? Math.round(arr.reduce((s, d) => s + d[key], 0) / arr.length) : 0;
+
+    return {
+      month,
+      days_tracked: days.length,
+      avg_duration_min: avg(days, 'duration_min'),
+      avg_deep_min: avg(days, 'deep_min'),
+      avg_rem_min: avg(days, 'rem_min'),
+      avg_light_min: avg(days, 'light_min'),
+      avg_wake_min: avg(days, 'wake_min'),
+      avg_efficiency: avg(days, 'efficiency'),
+      daily: days,
+    };
+  }
+
+  if (year) {
+    // Year summary: /sleep?year=2025 — fetch in 90-day chunks
+    const y = parseInt(year);
+    const chunks = [
+      [`${y}-01-01`, `${y}-03-31`],
+      [`${y}-04-01`, `${y}-06-30`],
+      [`${y}-07-01`, `${y}-09-30`],
+      [`${y}-10-01`, `${y}-12-31`],
+    ];
+
+    const allLogs = [];
+    for (const [start, end] of chunks) {
+      try {
+        const data = await fitbitGet(`/1.2/user/-/sleep/date/${start}/${end}.json`, token);
+        if (data.sleep) allLogs.push(...data.sleep);
+      } catch (e) {
+        if (e.message === 'TOKEN_EXPIRED') {
+          token = await refreshToken(kv);
+          const data = await fitbitGet(`/1.2/user/-/sleep/date/${start}/${end}.json`, token);
+          if (data.sleep) allLogs.push(...data.sleep);
+        } else {
+          console.error(`Sleep chunk ${start}-${end} failed:`, e.message);
+        }
+      }
+    }
+
+    // Group by month
+    const months = {};
+    for (const log of allLogs) {
+      if (!log.isMainSleep) continue;
+      const m = log.dateOfSleep.slice(0, 7);
+      if (!months[m]) months[m] = { month: m, days: 0, total_min: 0, deep_min: 0, light_min: 0, rem_min: 0, wake_min: 0, efficiency_sum: 0 };
+      months[m].days++;
+      months[m].total_min += Math.round((log.duration || 0) / 60000);
+      const stages = log.levels?.summary || {};
+      months[m].deep_min += stages.deep?.minutes || 0;
+      months[m].light_min += stages.light?.minutes || 0;
+      months[m].rem_min += stages.rem?.minutes || 0;
+      months[m].wake_min += stages.wake?.minutes || 0;
+      months[m].efficiency_sum += log.efficiency || 0;
+    }
+
+    const monthly = Object.values(months)
+      .sort((a, b) => a.month.localeCompare(b.month))
+      .map(m => ({
+        month: m.month,
+        days_tracked: m.days,
+        avg_duration_min: m.days ? Math.round(m.total_min / m.days) : 0,
+        avg_deep_min: m.days ? Math.round(m.deep_min / m.days) : 0,
+        avg_rem_min: m.days ? Math.round(m.rem_min / m.days) : 0,
+        avg_light_min: m.days ? Math.round(m.light_min / m.days) : 0,
+        avg_wake_min: m.days ? Math.round(m.wake_min / m.days) : 0,
+        avg_efficiency: m.days ? Math.round(m.efficiency_sum / m.days) : 0,
+      }));
+
+    const totalDays = monthly.reduce((s, m) => s + m.days_tracked, 0);
+    const avgAll = (key) => totalDays ? Math.round(monthly.reduce((s, m) => s + m[key] * m.days_tracked, 0) / totalDays) : 0;
+
+    return {
+      year: y,
+      total_days_tracked: totalDays,
+      yearly_avg_duration_min: avgAll('avg_duration_min'),
+      yearly_avg_deep_min: avgAll('avg_deep_min'),
+      yearly_avg_rem_min: avgAll('avg_rem_min'),
+      yearly_avg_efficiency: avgAll('avg_efficiency'),
+      monthly,
+    };
+  }
+
+  throw new Error('Missing parameter: use ?year=2025 or ?month=2025-03');
+}
+
 // === Request Handler ===
 async function handleRequest(request, env) {
   const url = new URL(request.url);
@@ -305,6 +551,23 @@ async function handleRequest(request, env) {
     }
   }
 
+  // Sleep data (analysis)
+  if (path === '/sleep') {
+    try {
+      const params = {
+        year: url.searchParams.get('year'),
+        month: url.searchParams.get('month'),
+      };
+      const data = await fetchSleepData(env.TICKER_KV, params);
+      return jsonResponse(data, 200, request);
+    } catch (e) {
+      return jsonResponse({
+        error: e.message,
+        usage: '/sleep?year=2025 or /sleep?month=2025-03',
+      }, e.message.includes('Missing parameter') ? 400 : 500, request);
+    }
+  }
+
   // Stock data
   if (path === '/stock') {
     try {
@@ -315,8 +578,22 @@ async function handleRequest(request, env) {
     }
   }
 
+
+  // Sleep data (for analysis)
+  if (path === '/sleep') {
+    try {
+      const data = await fetchSleepData(env.TICKER_KV, url.searchParams);
+      return jsonResponse(data, 200, request);
+    } catch (e) {
+      return jsonResponse({
+        error: e.message,
+        usage: '/sleep?year=2025 or /sleep?start=2025-01-01&end=2025-06-30',
+      }, e.message.includes('Provide') ? 400 : 500, request);
+    }
+  }
+
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===

@@ -1,72 +1,136 @@
 #!/usr/bin/env python3
-"""timing_fetch_local.py v2 — 只抓今天的 AI 協作時間，增量更新
+"""timing_fetch_local.py v4 — 直接讀 Timing SQLite DB，用 bundleIdentifier + URL + title 精準匹配 AI 平台
 
-v1 問題：每次遍歷整月每一天（22 次 AppleScript），cron 每 10 分鐘跑一次太浪費。
-v2 改進：只查今天，歷史日從既有 JSON 讀取，月累計用加法算。
+解決歷史版本的問題：
+- v1-v2: AppleScript 只能拿 project 層級，claude.ai 埋在 Office & Business
+- v3: Web API 拿不到 app usage（只有 time entries）
+- v4: 直接讀 SQLite DB，三層匹配：bundleIdentifier → path URL → title 關鍵字
 
-AI 近似 = Development + Web Browsing + AI 工具開發 + Claude 協作 + 辯論引擎 + 內容創作
-輸出到 data/timing.json
+輸出到 data/timing.json，供 CostTicker.astro 讀取
 """
-import json, subprocess, os
+import json, os, sys, sqlite3
 from datetime import datetime, timedelta
 
+# ── 設定 ──────────────────────────────────────────────
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(SCRIPT_DIR)
 OUTPUT = os.path.join(REPO_ROOT, "data", "timing.json")
 
-AI_CATEGORIES = {
-    "Development", "Web Browsing",
-    "AI 工具開發", "Claude 協作", "辯論引擎", "自動貼文系統",
-    "內容創作",
-    "Office & Business",  # 過渡期：今天的 claude.ai 時間仍在此，等 Timing Rule 完全生效後移除
+DB_PATH = os.path.expanduser(
+    "~/Library/Application Support/info.eurocomp.Timing2/SQLite.db"
+)
+
+# ── AI 平台匹配規則（三層）──────────────────────────────
+# 1) bundleIdentifier 匹配（原生 app）
+BUNDLE_MAP = {
+    "com.anthropic.claudefordesktop": "Claude",
+    "com.openai.chat": "ChatGPT",
+    # 如有其他 AI 原生 app 在此新增
 }
 
+# 2) Path URL 匹配（瀏覽器）
+PATH_MAP = {
+    "claude.ai": "Claude",
+    "chatgpt.com": "ChatGPT",
+    "gemini.google": "Gemini",
+    "perplexity.ai": "Perplexity",
+    "chat.openai.com": "ChatGPT",
+    "aistudio.google": "Gemini",
+    "poe.com": "Poe",
+    "copilot.microsoft.com": "Copilot",
+}
 
-def fetch_day(date_str):
-    """Use AppleScript to get time summary for a single day."""
-    script = f'''set dayStart to date "{date_str}"
-set time of dayStart to 0
-set dayEnd to dayStart + 86400
-tell application "TimingHelper"
-    set summary to get time summary between dayStart and dayEnd
-    return times per project of summary
-end tell'''
+# 3) Title 關鍵字 fallback（最後手段）
+TITLE_MAP = {
+    "ChatGPT": "ChatGPT",
+    "Gemini": "Gemini",
+    "Perplexity": "Perplexity",
+}
+
+# ── SQL ───────────────────────────────────────────────
+
+# 建立 CASE WHEN 子句
+def _build_case_sql():
+    """Build SQL CASE for platform classification."""
+    parts = []
+
+    # Bundle ID（最高優先）
+    for bid, name in BUNDLE_MAP.items():
+        parts.append(f"WHEN app.bundleIdentifier = '{bid}' THEN '{name}'")
+
+    # Path URL
+    for domain, name in PATH_MAP.items():
+        parts.append(f"WHEN p.stringValue LIKE '%{domain}%' THEN '{name}'")
+
+    # Title fallback
+    for kw, name in TITLE_MAP.items():
+        parts.append(f"WHEN t.stringValue LIKE '%{kw}%' THEN '{name}'")
+
+    return "\n    ".join(parts)
+
+
+def _build_where_sql():
+    """Build SQL WHERE for AI platform filtering."""
+    conditions = []
+
+    for bid in BUNDLE_MAP:
+        conditions.append(f"app.bundleIdentifier = '{bid}'")
+
+    for domain in PATH_MAP:
+        conditions.append(f"p.stringValue LIKE '%{domain}%'")
+
+    for kw in TITLE_MAP:
+        conditions.append(f"t.stringValue LIKE '%{kw}%'")
+
+    return " OR ".join(conditions)
+
+
+QUERY_TEMPLATE = """
+SELECT
+  CASE
+    {case_sql}
+    ELSE 'Other'
+  END as platform,
+  round(sum(a.endDate - a.startDate) / 3600.0, 4) as hours,
+  count(*) as entries
+FROM AppActivity a
+LEFT JOIN Title t ON a.titleID = t.id
+LEFT JOIN Path p ON a.pathID = p.id
+LEFT JOIN Application app ON a.applicationID = app.id
+WHERE a.isDeleted = 0
+  AND date(a.startDate, 'unixepoch', 'localtime') {date_filter}
+  AND ({where_sql})
+GROUP BY platform
+ORDER BY hours DESC;
+"""
+
+
+# ── 主邏輯 ────────────────────────────────────────────
+def query_day(conn, date_str):
+    """Query AI platform hours for a specific day."""
+    sql = QUERY_TEMPLATE.format(
+        case_sql=_build_case_sql(),
+        date_filter=f"= '{date_str}'",
+        where_sql=_build_where_sql(),
+    )
     try:
-        result = subprocess.run(
-            ["osascript", "-e", script],
-            capture_output=True, text=True, timeout=60
-        )
-        if result.returncode != 0:
-            return 0.0, {}
-
-        raw = result.stdout.strip()
-        if not raw:
-            return 0.0, {}
-
-        breakdown = {}
-        total = 0.0
-        for pair in raw.split(", "):
-            idx = pair.find(":")
-            if idx == -1:
-                continue
-            key = pair[:idx].strip()
-            val_str = pair[idx+1:].strip()
-            try:
-                secs = float(val_str)
-            except ValueError:
-                continue
-            if key in AI_CATEGORIES:
-                hrs = round(secs / 3600, 2)
-                breakdown[key] = hrs
-                total += hrs
-        return round(total, 2), breakdown
+        rows = conn.execute(sql).fetchall()
     except Exception as e:
-        print(f"  Error {date_str}: {e}")
+        print(f"  ⚠ SQL error: {e}")
         return 0.0, {}
+
+    breakdown = {}
+    total = 0.0
+    for platform, hours, entries in rows:
+        if platform == "Other":
+            continue
+        breakdown[platform] = round(hours, 2)
+        total += hours
+    return round(total, 2), breakdown
 
 
 def load_existing():
-    """Load existing timing.json, return daily dict keyed by date."""
+    """Load existing timing.json."""
     if not os.path.exists(OUTPUT):
         return {}
     try:
@@ -78,44 +142,78 @@ def load_existing():
 
 
 def main():
+    if not os.path.exists(DB_PATH):
+        print(f"  ERROR: Timing DB not found at {DB_PATH}")
+        sys.exit(1)
+
     now = datetime.now()
     today_str = now.strftime("%Y-%m-%d")
     period = now.strftime("%Y-%m")
 
-    # 只查今天（1 次 AppleScript，不是 22 次）
-    today_hrs, today_breakdown = fetch_day(today_str)
+    print(f"  Timing v4 (SQLite) — {period}")
+
+    # 唯讀連接
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+
+    # 今天
+    today_hrs, today_bd = query_day(conn, today_str)
     tag = " ✦" if today_hrs > 0 else ""
     print(f"  {today_str}: {today_hrs:.1f}h{tag}")
+    if today_bd:
+        for k, v in sorted(today_bd.items(), key=lambda x: -x[1]):
+            print(f"    {k}: {v:.2f}h")
 
-    # 讀既有資料
+    # 讀既有
     existing = load_existing()
-
-    # 更新今天
     existing[today_str] = {
         "date": today_str,
         "ai_hours": today_hrs,
-        "breakdown": today_breakdown,
+        "breakdown": today_bd,
     }
 
-    # 過濾只保留本月的 daily（跨月自動清理舊資料）
-    month_prefix = period  # e.g. "2026-02"
+    # 補抓缺失天數（本月，最多 7 天）
+    month_start = datetime.strptime(f"{period}-01", "%Y-%m-%d")
+    for i in range(1, 8):
+        d = (now - timedelta(days=i)).strftime("%Y-%m-%d")
+        if d < f"{period}-01":
+            break
+        if d in existing:
+            continue
+        hrs, bd = query_day(conn, d)
+        existing[d] = {"date": d, "ai_hours": hrs, "breakdown": bd}
+        if hrs > 0:
+            print(f"  {d}: {hrs:.1f}h ✦ (backfill)")
+
+    conn.close()
+
+    # 過濾本月
     daily = sorted(
-        [v for k, v in existing.items() if k.startswith(month_prefix)],
-        key=lambda d: d["date"]
+        [v for k, v in existing.items() if k.startswith(period)],
+        key=lambda d: d["date"],
     )
 
-    # 月累計
     total_hours = sum(d["ai_hours"] for d in daily)
     active_days = sum(1 for d in daily if d["ai_hours"] > 0.1)
 
+    # 平台累計
+    platform_totals = {}
+    for d in daily:
+        for platform, hrs in d.get("breakdown", {}).items():
+            platform_totals[platform] = round(
+                platform_totals.get(platform, 0) + hrs, 2
+            )
+
     output = {
         "updated": now.strftime("%Y-%m-%dT%H:%M:%S+08:00"),
-        "source": "timing-app-local",
-        "method": "AppleScript: Development + Web Browsing + AI categories as AI proxy",
+        "source": "timing-sqlite-direct",
+        "method": "SQLite DB + bundleIdentifier/path/title matching",
+        "api_version": "v4",
         "month_summary": {
             "period": period,
             "total_ai_hours": round(total_hours, 1),
             "active_days": active_days,
+            "avg_daily": round(total_hours / max(active_days, 1), 1),
+            "platform_breakdown": platform_totals,
         },
         "daily": daily,
     }
@@ -125,6 +223,14 @@ def main():
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print(f"  ✅ {period} | {total_hours:.1f}h | {active_days} active days")
+    if platform_totals:
+        print(
+            "  📊 "
+            + " | ".join(
+                f"{k}: {v:.1f}h"
+                for k, v in sorted(platform_totals.items(), key=lambda x: -x[1])
+            )
+        )
 
 
 if __name__ == "__main__":

@@ -117,3 +117,9 @@ The congregation can hear the difference.
 This is the line the Pope draws. Not "AI is bad," but "some things derive their value from your doing them personally." Friction and suffering in life are sources of meaning.
 
 In this age when everything can be optimized, knowing what shouldn't be optimized might be the most important wisdom.
+
+---
+
+## References
+
+- [Pope Leo XIV tells priests not to use AI to write homilies or seek likes on TikTok](https://catholicreview.org/pope-leo-xiv-tells-priests-not-to-use-ai-to-write-homilies-or-seek-likes-on-tiktok/)
