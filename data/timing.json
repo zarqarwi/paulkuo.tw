@@ -1,41 +1,45 @@
 {
-  "updated": "2026-03-03T10:10:06+08:00",
-  "source": "timing-app-local",
-  "method": "AppleScript: Development + Web Browsing + AI categories as AI proxy",
+  "updated": "2026-03-03T10:20:06+08:00",
+  "source": "timing-sqlite-direct",
+  "method": "SQLite DB + bundleIdentifier/path/title matching",
+  "api_version": "v4",
   "month_summary": {
     "period": "2026-03",
-    "total_ai_hours": 11.8,
-    "active_days": 3
+    "total_ai_hours": 9.4,
+    "active_days": 3,
+    "avg_daily": 3.1,
+    "platform_breakdown": {
+      "Claude": 7.77,
+      "ChatGPT": 1.27,
+      "Gemini": 0.33
+    }
   },
   "daily": [
     {
       "date": "2026-03-01",
-      "ai_hours": 4.13,
+      "ai_hours": 3.15,
       "breakdown": {
-        "Office & Business": 3.04,
-        "Development": 0.05,
-        "Web Browsing": 0.82,
-        "AI 工具開發": 0.22
+        "Claude": 2.43,
+        "ChatGPT": 0.5,
+        "Gemini": 0.22
       }
     },
     {
       "date": "2026-03-02",
-      "ai_hours": 5.03,
+      "ai_hours": 3.84,
       "breakdown": {
-        "Office & Business": 4.05,
-        "Web Browsing": 0.8,
-        "Development": 0.09,
-        "AI 工具開發": 0.09
+        "Claude": 3.27,
+        "ChatGPT": 0.5,
+        "Gemini": 0.08
       }
     },
     {
       "date": "2026-03-03",
-      "ai_hours": 2.68,
+      "ai_hours": 2.37,
       "breakdown": {
-        "Web Browsing": 0.17,
-        "AI 工具開發": 0.03,
-        "Development": 0.09,
-        "Office & Business": 2.39
+        "Claude": 2.07,
+        "ChatGPT": 0.27,
+        "Gemini": 0.03
       }
     }
   ]
