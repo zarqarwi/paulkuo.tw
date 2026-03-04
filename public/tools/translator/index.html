@@ -215,6 +215,23 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
   <span id="countLabel">0 筆紀錄</span>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
+<div class="modal-overlay" id="summaryModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="summaryTitle">會議摘要</div>
+      <button class="modal-close" id="btnModalClose">&times;</button>
+    </div>
+    <div class="modal-body" id="summaryBody">
+      <div class="summary-loading"><div class="shimmer">正在產生摘要…</div></div>
+    </div>
+    <div class="summary-cost" id="summaryCost"></div>
+    <div class="modal-actions" id="summaryActions" style="display:none">
+      <button class="modal-action-btn" id="btnCopySummary">📋 複製</button>
+      <button class="modal-action-btn" id="btnDownloadMd">💾 下載 Markdown</button>
+      <button class="modal-action-btn" id="btnMailSummary">✉️ Email</button>
+    </div>
+  </div>
+</div>
 <script>
 var WORKER_URL = "https://paulkuo-ticker.paul-4bf.workers.dev";
 var LANGS = {
@@ -733,22 +750,5 @@ getEl("btnMailSummary").addEventListener("click", function() {
 });
 
 </script>
-<div class="modal-overlay" id="summaryModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div class="modal-title" id="summaryTitle">會議摘要</div>
-      <button class="modal-close" id="btnModalClose">&times;</button>
-    </div>
-    <div class="modal-body" id="summaryBody">
-      <div class="summary-loading"><div class="shimmer">正在產生摘要…</div></div>
-    </div>
-    <div class="summary-cost" id="summaryCost"></div>
-    <div class="modal-actions" id="summaryActions" style="display:none">
-      <button class="modal-action-btn" id="btnCopySummary">📋 複製</button>
-      <button class="modal-action-btn" id="btnDownloadMd">💾 下載 Markdown</button>
-      <button class="modal-action-btn" id="btnMailSummary">✉️ Email</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
