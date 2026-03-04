@@ -454,11 +454,11 @@ async function handleTranslate(request, env) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20241022',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1024,
         messages: [{
           role: 'user',
-          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.\n\n${trimmedText}`
+          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
         }]
       })
     });

@@ -6,7 +6,7 @@
 <title>即時會議翻譯</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100vh;background:linear-gradient(145deg,#0a0a0f,#111127,#0d1117);color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;flex-direction:column}
+body{height:100vh;background:linear-gradient(145deg,#0a0a0f,#111127,#0d1117);color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;flex-direction:column}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -94,7 +94,7 @@ function hideError(){getEl("errorBar").classList.remove("visible")}
 function renderLangs(){var sc=getEl("srcBtns"),tc=getEl("tgtBtns");sc.innerHTML="";tc.innerHTML="";var keys=Object.keys(LANGS);for(var i=0;i<keys.length;i++){(function(k){var lang=LANGS[k];var btn=document.createElement("button");btn.className="lang-btn"+(k===srcLang?" src-active":"");btn.textContent=lang.flag+" "+lang.label;btn.addEventListener("click",function(){var wasOn=listening;if(wasOn)stopRec();srcLang=k;if(srcLang===tgtLang){var alt=Object.keys(LANGS).filter(function(x){return x!==srcLang});tgtLang=alt[0]}renderLangs();updateHint();if(wasOn)setTimeout(startRec,200)});sc.appendChild(btn)})(keys[i])}for(var j=0;j<keys.length;j++){(function(k){if(k===srcLang)return;var lang=LANGS[k];var btn=document.createElement("button");btn.className="lang-btn"+(k===tgtLang?" tgt-active":"");btn.textContent=lang.flag+" "+lang.label;btn.addEventListener("click",function(){tgtLang=k;renderLangs();updateHint()});tc.appendChild(btn)})(keys[j])}}
 function updateHint(){var h=getEl("langHint");if(h)h.textContent="支援 "+LANGS[srcLang].label+" → "+LANGS[tgtLang].label+" 即時翻譯"}
 function addEntry(text){var id=++nextId;var ts=new Date().toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",second:"2-digit"});var entry={id:id,original:text,translated:null,done:false,ts:ts,src:srcLang,tgt:tgtLang};allEntries.push(entry);var emp=getEl("empty");if(emp)emp.remove();var div=document.createElement("div");div.className="entry";div.id="entry-"+id;div.innerHTML='<div class="entry-meta">'+ts+" · "+(LANGS[entry.src]||{}).flag+" → "+(LANGS[entry.tgt]||{}).flag+'</div><div class="entry-original">'+escHtml(text)+'</div><div class="entry-translated" id="trans-'+id+'"><span class="shimmer">翻譯中...</span></div>';getEl("content").appendChild(div);updateCount();scrollBottom();doTranslate(entry)}
-function updateTrans(entry){var el=getEl("trans-"+entry.id);if(!el)return;el.textContent=entry.translated||""}
+function updateTrans(entry){var el=getEl("trans-"+entry.id);if(!el)return;el.textContent=entry.translated||"";scrollBottom()}
 function showInterim(text){var box=getEl("interimBox");if(!text){if(box)box.remove();return}if(!box){box=document.createElement("div");box.id="interimBox";box.className="interim";getEl("content").appendChild(box)}box.innerHTML='<div class="interim-text">'+escHtml(text)+'<span class="cursor-blink"></span></div>';scrollBottom()}
 function clearAll(){allEntries=[];nextId=0;getEl("content").innerHTML='<div class="empty" id="empty"><div style="font-size:48px;opacity:.3">🎙️</div><div style="font-size:14px;text-align:center;line-height:1.8">按「開始翻譯」後對著麥克風說話<br><span id="langHint" style="font-size:12px;color:#374151"></span></div></div>';updateHint();updateCount()}
 function updateCount(){getEl("countLabel").textContent=allEntries.length+" 筆翻譯"}
