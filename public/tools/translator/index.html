@@ -3,48 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>即時會議翻譯</title>
+<title>即時會議翻譯 — paulkuo.tw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #FAFAF8;
+  --bg-card: #FFFFFF;
+  --bg-section: #F3F2EE;
+  --text-primary: #1A1A1A;
+  --text-secondary: #5A5A5A;
+  --text-muted: #8A8A8A;
+  --brand-navy: #1B2D4F;
+  --brand-navy-light: #2A4470;
+  --accent-ai: #2563EB;
+  --accent-circular: #059669;
+  --border: #E8E6E1;
+  --border-light: #F0EDE8;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --radius: 12px;
+  --font-body: 'DM Sans', 'Noto Sans TC', sans-serif;
+  --font-cjk: 'Noto Sans TC', sans-serif;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;margin:0;overflow:hidden}
-body{background:linear-gradient(145deg,#0a0a0f,#111127,#0d1117);color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;flex-direction:column}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes pulse{0%{transform:scale(.9);opacity:1}50%{transform:scale(1.15);opacity:.4}100%{transform:scale(.9);opacity:1}}
-.header{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.02)}
-.header-left{display:flex;align-items:center;gap:12px}
-.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff}
+
+/* Header */
+.header{padding:16px 28px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;background:rgba(250,250,248,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.header-left{display:flex;align-items:center;gap:14px}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--brand-navy);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff}
+.header-title{font-size:16px;font-weight:700;color:var(--brand-navy);font-family:var(--font-cjk)}
+.header-sub{font-size:11px;color:var(--text-muted);font-family:var(--font-body)}
 .status{display:flex;align-items:center;gap:6px}
-.status-dot{width:8px;height:8px;border-radius:50%;background:#6b7280}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted)}
 .status-dot.pulse{animation:pulse 2s infinite}
-.status-text{font-size:12px;font-weight:500;color:#6b7280}
-.controls{padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(255,255,255,.01)}
-.lang-label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.status-text{font-size:12px;font-weight:500;color:var(--text-muted)}
+
+/* Controls */
+.controls{padding:12px 28px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg)}
+.lang-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
 .lang-btns{display:flex;gap:4px;flex-wrap:wrap}
-.lang-btn{padding:5px 10px;border-radius:6px;font-size:12px;border:none;cursor:pointer;background:rgba(255,255,255,.05);color:#94a3b8;font-family:inherit}
-.lang-btn:hover{background:rgba(255,255,255,.1)}
-.lang-btn.src-active{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:600}
-.lang-btn.tgt-active{background:linear-gradient(135deg,#059669,#10b981);color:#fff;font-weight:600}
+.lang-btn{padding:5px 12px;border-radius:100px;font-size:12px;border:1.5px solid var(--border);cursor:pointer;background:transparent;color:var(--text-secondary);font-family:var(--font-body);transition:all .2s;font-weight:500}
+.lang-btn:hover{border-color:var(--brand-navy);color:var(--brand-navy)}
+.lang-btn.src-active{background:var(--brand-navy);color:#fff;border-color:var(--brand-navy);font-weight:600}
+.lang-btn.tgt-active{background:var(--accent-circular);color:#fff;border-color:var(--accent-circular);font-weight:600}
 .spacer{flex:1}
-.btn-clear{padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#64748b;font-size:12px;cursor:pointer;font-family:inherit}
-.btn-main{padding:8px 20px;border-radius:8px;border:none;color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit}
-.btn-start{background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 0 20px rgba(99,102,241,.3)}
-.btn-stop{background:linear-gradient(135deg,#dc2626,#ef4444);box-shadow:0 0 20px rgba(239,68,68,.3)}
-.error-bar{padding:8px 24px;background:rgba(239,68,68,.1);border-bottom:1px solid rgba(239,68,68,.2);color:#fca5a5;font-size:12px;display:none}
+.btn-clear{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
+.btn-clear:hover{border-color:var(--text-secondary);color:var(--text-secondary)}
+.btn-main{padding:8px 22px;border-radius:100px;border:none;color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--font-body);transition:all .2s}
+.btn-start{background:var(--brand-navy);box-shadow:0 2px 12px rgba(27,45,79,.2)}
+.btn-start:hover{background:var(--brand-navy-light);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn-stop{background:#dc2626;box-shadow:0 2px 12px rgba(220,38,38,.2)}
+.btn-stop:hover{opacity:.9}
+
+/* Error */
+.error-bar{padding:8px 28px;background:rgba(220,38,38,.06);border-bottom:1px solid rgba(220,38,38,.12);color:#dc2626;font-size:12px;display:none}
 .error-bar.visible{display:block}
-.content{flex:1;min-height:0;overflow-y:auto;padding:16px 24px 50vh 24px}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:16px;color:#4b5563}
-.entry{margin-bottom:12px;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);animation:fadeIn .3s ease-out}
-.entry-meta{font-size:10px;color:#6366f1;font-family:monospace;margin-bottom:8px}
-.entry-original{font-size:14px;line-height:1.7;color:#cbd5e1;margin-bottom:8px;padding-left:10px;border-left:2px solid #6366f1}
-.entry-translated{font-size:14px;line-height:1.7;padding-left:10px;border-left:2px solid #10b981;min-height:20px;color:#a7f3d0}
-.shimmer{background:linear-gradient(90deg,#64748b 25%,#94a3b8 50%,#64748b 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.interim{padding:12px 16px;border-radius:10px;background:rgba(99,102,241,.05);border:1px dashed rgba(99,102,241,.2)}
-.interim-text{font-size:14px;color:#818cf8;padding-left:10px;border-left:2px dashed #6366f1;opacity:.7}
-.cursor-blink{display:inline-block;width:2px;height:16px;background:#818cf8;margin-left:2px;vertical-align:middle;animation:blink 1s infinite}
-.footer{padding:10px 24px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#4b5563}
+
+/* Content area */
+.content{flex:1;min-height:0;overflow-y:auto;padding:20px 28px 50vh 28px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:16px;color:var(--text-muted)}
+
+/* Entry cards */
+.entry{margin-bottom:12px;padding:16px 20px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border-light);animation:fadeIn .3s ease-out;transition:box-shadow .2s}
+.entry:hover{box-shadow:var(--shadow-sm)}
+.entry-meta{font-size:10px;color:var(--accent-ai);font-family:monospace;margin-bottom:10px;font-weight:500}
+.entry-original{font-size:14px;line-height:1.8;color:var(--text-primary);margin-bottom:10px;padding-left:12px;border-left:3px solid var(--brand-navy);font-family:var(--font-cjk)}
+.entry-translated{font-size:14px;line-height:1.8;padding-left:12px;border-left:3px solid var(--accent-circular);min-height:20px;color:var(--accent-circular);font-family:var(--font-cjk);font-weight:500}
+.shimmer{background:linear-gradient(90deg,var(--text-muted) 25%,var(--text-secondary) 50%,var(--text-muted) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* Interim */
+.interim{padding:12px 20px;border-radius:var(--radius);background:rgba(37,99,235,.04);border:1px dashed rgba(37,99,235,.2)}
+.interim-text{font-size:14px;color:var(--accent-ai);padding-left:12px;border-left:2px dashed var(--accent-ai);opacity:.7;font-family:var(--font-cjk)}
+.cursor-blink{display:inline-block;width:2px;height:16px;background:var(--accent-ai);margin-left:2px;vertical-align:middle;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Footer */
+.footer{padding:10px 28px;border-top:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-muted);background:var(--bg)}
 .footer label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.footer input[type=checkbox]{accent-color:var(--brand-navy)}
+
+/* Mobile */
+@media(max-width:640px){
+  .header{padding:12px 16px}
+  .controls{padding:10px 16px;gap:8px}
+  .content{padding:12px 16px 50vh 16px}
+  .lang-btn{padding:4px 8px;font-size:11px}
+  .entry{padding:12px 14px}
+  .footer{padding:8px 16px}
+}
 </style>
 </head>
 <body>
@@ -52,8 +104,8 @@ body{background:linear-gradient(145deg,#0a0a0f,#111127,#0d1117);color:#e2e8f0;fo
   <div class="header-left">
     <div class="logo">T</div>
     <div>
-      <div style="font-size:15px;font-weight:600">即時會議翻譯</div>
-      <div style="font-size:11px;color:#64748b;font-family:monospace">Web Speech API + Claude Haiku (Worker)</div>
+      <div class="header-title">即時會議翻譯</div>
+      <div class="header-sub">Web Speech API + Claude Haiku (Worker)</div>
     </div>
   </div>
   <div class="status">
@@ -64,7 +116,7 @@ body{background:linear-gradient(145deg,#0a0a0f,#111127,#0d1117);color:#e2e8f0;fo
 <div class="controls">
   <span class="lang-label">聽</span>
   <div class="lang-btns" id="srcBtns"></div>
-  <span style="font-size:18px;color:#4b5563">→</span>
+  <span style="font-size:18px;color:var(--text-muted)">→</span>
   <span class="lang-label">譯</span>
   <div class="lang-btns" id="tgtBtns"></div>
   <div class="spacer"></div>
@@ -74,22 +126,21 @@ body{background:linear-gradient(145deg,#0a0a0f,#111127,#0d1117);color:#e2e8f0;fo
 <div class="error-bar" id="errorBar"></div>
 <div class="content" id="content">
   <div class="empty" id="empty">
-    <div style="font-size:48px;opacity:.3">🎙️</div>
-    <div style="font-size:14px;text-align:center;line-height:1.8">按「開始翻譯」後對著麥克風說話<br><span id="langHint" style="font-size:12px;color:#374151"></span></div>
+    <div style="font-size:48px;opacity:.25">🎙️</div>
+    <div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始翻譯」後對著麥克風說話<br><span id="langHint" style="font-size:12px"></span></div>
   </div>
 </div>
 <div class="footer">
   <span id="countLabel">0 筆翻譯</span>
-  <label><input type="checkbox" id="autoScroll" checked style="accent-color:#6366f1"> 自動捲動</label>
+  <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
 <script>
-// === Config ===
-var WORKER_URL = "https://paulkuo-ticker.paul-4bf.workers.dev";
+var WORKER_URL="https://paulkuo-ticker.paul-4bf.workers.dev";
 var LANGS={"ja":{label:"日本語",flag:"🇯🇵",code:"ja-JP"},"zh-TW":{label:"繁體中文",flag:"🇹🇼",code:"zh-TW"},"en":{label:"English",flag:"🇺🇸",code:"en-US"},"zh-CN":{label:"简体中文",flag:"🇨🇳",code:"zh-CN"},"ko":{label:"한국어",flag:"🇰🇷",code:"ko-KR"}};
 var srcLang="ja",tgtLang="zh-TW",listening=false,recognition=null,restartTimer=null,nextId=0,allEntries=[];
 function getEl(id){return document.getElementById(id)}
 function escHtml(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
-function setStatus(type){var dot=getEl("statusDot"),txt=getEl("statusText");var m={"ready":["就緒","#6b7280",false],"listening":["聆聽中","#22c55e",true],"no-speech":["等待語音…","#eab308",true],"error":["錯誤","#ef4444",false]};var v=m[type]||m["ready"];txt.textContent=v[0];txt.style.color=v[1];dot.style.background=v[1];if(v[2])dot.classList.add("pulse");else dot.classList.remove("pulse")}
+function setStatus(type){var dot=getEl("statusDot"),txt=getEl("statusText");var m={"ready":["就緒","var(--text-muted)",false],"listening":["聆聽中","#059669",true],"no-speech":["等待語音…","#d97706",true],"error":["錯誤","#dc2626",false]};var v=m[type]||m["ready"];txt.textContent=v[0];txt.style.color=v[1];dot.style.background=v[1];if(v[2])dot.classList.add("pulse");else dot.classList.remove("pulse")}
 function showError(msg){var b=getEl("errorBar");b.textContent="⚠ "+msg;b.classList.add("visible")}
 function hideError(){getEl("errorBar").classList.remove("visible")}
 function renderLangs(){var sc=getEl("srcBtns"),tc=getEl("tgtBtns");sc.innerHTML="";tc.innerHTML="";var keys=Object.keys(LANGS);for(var i=0;i<keys.length;i++){(function(k){var lang=LANGS[k];var btn=document.createElement("button");btn.className="lang-btn"+(k===srcLang?" src-active":"");btn.textContent=lang.flag+" "+lang.label;btn.addEventListener("click",function(){var wasOn=listening;if(wasOn)stopRec();srcLang=k;if(srcLang===tgtLang){var alt=Object.keys(LANGS).filter(function(x){return x!==srcLang});tgtLang=alt[0]}renderLangs();updateHint();if(wasOn)setTimeout(startRec,200)});sc.appendChild(btn)})(keys[i])}for(var j=0;j<keys.length;j++){(function(k){if(k===srcLang)return;var lang=LANGS[k];var btn=document.createElement("button");btn.className="lang-btn"+(k===tgtLang?" tgt-active":"");btn.textContent=lang.flag+" "+lang.label;btn.addEventListener("click",function(){tgtLang=k;renderLangs();updateHint()});tc.appendChild(btn)})(keys[j])}}
@@ -97,38 +148,21 @@ function updateHint(){var h=getEl("langHint");if(h)h.textContent="支援 "+LANGS
 function addEntry(text){var id=++nextId;var ts=new Date().toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",second:"2-digit"});var entry={id:id,original:text,translated:null,done:false,ts:ts,src:srcLang,tgt:tgtLang};allEntries.push(entry);var emp=getEl("empty");if(emp)emp.remove();var div=document.createElement("div");div.className="entry";div.id="entry-"+id;div.innerHTML='<div class="entry-meta">'+ts+" · "+(LANGS[entry.src]||{}).flag+" → "+(LANGS[entry.tgt]||{}).flag+'</div><div class="entry-original">'+escHtml(text)+'</div><div class="entry-translated" id="trans-'+id+'"><span class="shimmer">翻譯中...</span></div>';getEl("content").appendChild(div);updateCount();scrollBottom();doTranslate(entry)}
 function updateTrans(entry){var el=getEl("trans-"+entry.id);if(!el)return;el.textContent=entry.translated||"";scrollBottom()}
 function showInterim(text){var box=getEl("interimBox");if(!text){if(box)box.remove();return}if(!box){box=document.createElement("div");box.id="interimBox";box.className="interim";getEl("content").appendChild(box)}box.innerHTML='<div class="interim-text">'+escHtml(text)+'<span class="cursor-blink"></span></div>';scrollBottom()}
-function clearAll(){allEntries=[];nextId=0;getEl("content").innerHTML='<div class="empty" id="empty"><div style="font-size:48px;opacity:.3">🎙️</div><div style="font-size:14px;text-align:center;line-height:1.8">按「開始翻譯」後對著麥克風說話<br><span id="langHint" style="font-size:12px;color:#374151"></span></div></div>';updateHint();updateCount()}
+function clearAll(){allEntries=[];nextId=0;getEl("content").innerHTML='<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始翻譯」後對著麥克風說話<br><span id="langHint" style="font-size:12px"></span></div></div>';updateHint();updateCount()}
 function updateCount(){getEl("countLabel").textContent=allEntries.length+" 筆翻譯"}
 function scrollBottom(){if(getEl("autoScroll").checked){var c=getEl("content");requestAnimationFrame(function(){c.scrollTop=c.scrollHeight})}}
 
-// === Translation via Cloudflare Worker ===
 function doTranslate(entry){
-  fetch(WORKER_URL + "/translate", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      text: entry.original,
-      sourceLang: entry.src,
-      targetLang: entry.tgt
-    })
+  fetch(WORKER_URL+"/translate",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({text:entry.original,sourceLang:entry.src,targetLang:entry.tgt})
   })
-  .then(function(r){
-    if(!r.ok) return r.json().then(function(d){throw new Error(d.error||"HTTP "+r.status)});
-    return r.json();
-  })
-  .then(function(d){
-    entry.translated = d.translated || "(空白)";
-    entry.done = true;
-    updateTrans(entry);
-  })
-  .catch(function(e){
-    entry.translated = "⚠ " + e.message;
-    entry.done = true;
-    updateTrans(entry);
-  });
+  .then(function(r){if(!r.ok)return r.json().then(function(d){throw new Error(d.error||"HTTP "+r.status)});return r.json()})
+  .then(function(d){entry.translated=d.translated||"(空白)";entry.done=true;updateTrans(entry)})
+  .catch(function(e){entry.translated="⚠ "+e.message;entry.done=true;updateTrans(entry)});
 }
 
-// === Speech Recognition ===
 function startRec(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){showError("此瀏覽器不支援 Web Speech API");return}recognition=new SR();recognition.continuous=true;recognition.interimResults=true;recognition.lang=LANGS[srcLang].code;recognition.maxAlternatives=1;recognition.onstart=function(){setStatus("listening");hideError()};recognition.onresult=function(ev){var interim="";for(var i=ev.resultIndex;i<ev.results.length;i++){var t=ev.results[i][0].transcript;if(ev.results[i].isFinal){var tr=t.trim();if(tr){showInterim("");addEntry(tr)}}else{interim+=t}}if(interim)showInterim(interim)};recognition.onerror=function(ev){if(ev.error==="no-speech"){setStatus("no-speech");return}if(ev.error==="aborted")return;showError("語音辨識錯誤: "+ev.error);setStatus("error")};recognition.onend=function(){if(listening){restartTimer=setTimeout(function(){if(listening)try{recognition.start()}catch(e){}},300)}else{setStatus("ready");showInterim("")}};try{recognition.start();listening=true;updateToggle()}catch(e){showError("無法啟動: "+e.message)}}
 function stopRec(){listening=false;if(restartTimer)clearTimeout(restartTimer);if(recognition){recognition.stop();recognition=null}setStatus("ready");showInterim("");updateToggle()}
 function updateToggle(){var btn=getEl("btnToggle");if(listening){btn.className="btn-main btn-stop";btn.textContent="■ 停止"}else{btn.className="btn-main btn-start";btn.textContent="▶ 開始翻譯"}}
