@@ -492,9 +492,8 @@ getEl("btnAddTerm").addEventListener("click", function() {
   if (inputs.length > 0) inputs[inputs.length - 2].focus();
 });
 
-// === Inject glossary into sendAudio ===
-var _origSendAudio = sendAudio;
-sendAudio = function(blob) {
+// === sendAudio (with glossary support) ===
+function sendAudio(blob) {
   var id = ++nextId;
   var ts = new Date().toLocaleTimeString("zh-TW", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
   var entry = {id:id, original:"", translated:null, detectedLang:"", ts:ts, tgt:tgtLang};
