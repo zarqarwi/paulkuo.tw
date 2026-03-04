@@ -470,7 +470,7 @@ async function handleSTT(request, env) {
   whisperForm.append('model', 'whisper-1');
   whisperForm.append('response_format', 'verbose_json');
 
-  let transcript, detectedLang;
+  let transcript, detectedLang, audioDurationSec;
   try {
     const whisperRes = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
@@ -484,6 +484,7 @@ async function handleSTT(request, env) {
     const whisperData = await whisperRes.json();
     transcript = (whisperData.text || '').trim();
     detectedLang = whisperData.language || 'unknown';
+    audioDurationSec = whisperData.duration || 0;
   } catch (e) {
     return jsonResponse({ error: 'Whisper: ' + e.message }, 502, request);
   }
@@ -543,6 +544,23 @@ async function handleSTT(request, env) {
       }
       const claudeData = await claudeRes.json();
       const translated = claudeData.content?.[0]?.text?.trim() || '';
+
+      // Log Whisper cost
+      const whisperCost = (audioDurationSec / 60) * PRICING['whisper-1'].perMinute;
+      await logCost(env.TICKER_KV, {
+        service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator',
+        durationSec: audioDurationSec, costUSD: +whisperCost.toFixed(6), note: detectedLang
+      });
+      // Log Claude cost
+      const sttUsage = claudeData.usage || {};
+      const sttHp = PRICING['claude-haiku-4-5-20251001'];
+      const sttClaudeCost = ((sttUsage.input_tokens || 0) / 1e6) * sttHp.inputPerMTok + ((sttUsage.output_tokens || 0) / 1e6) * sttHp.outputPerMTok;
+      await logCost(env.TICKER_KV, {
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator',
+        inputTokens: sttUsage.input_tokens || 0, outputTokens: sttUsage.output_tokens || 0,
+        costUSD: +sttClaudeCost.toFixed(6), note: 'stt ' + targetLang
+      });
+
       return jsonResponse({ original: transcript, detectedLang: langCode, translated }, 200, request);
     } catch (e) {
       if (attempt === MAX_RETRIES - 1) {
@@ -720,8 +738,28 @@ async function handleRequest(request, env) {
     return handleSTT(request, env);
   }
 
+  // API cost tracking
+  if (path === '/costs') {
+    const days = parseInt(url.searchParams.get('days') || '7', 10);
+    const allLogs = [];
+    const now = new Date();
+    for (let i = 0; i < days; i++) {
+      const d = new Date(now - i * 86400000).toISOString().slice(0, 10);
+      const raw = await env.TICKER_KV.get('api_costs_' + d);
+      if (raw) {
+        const entries = JSON.parse(raw);
+        allLogs.push(...entries.map(e => ({ ...e, date: d })));
+      }
+    }
+    const totalCost = allLogs.reduce((s, e) => s + (e.costUSD || 0), 0);
+    return jsonResponse({
+      days, totalCost: +totalCost.toFixed(6),
+      entries: allLogs.length, logs: allLogs
+    }, 200, request);
+  }
+
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/costs', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
