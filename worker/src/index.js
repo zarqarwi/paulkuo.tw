@@ -485,41 +485,51 @@ async function handleSTT(request, env) {
     return jsonResponse({ original: transcript, detectedLang: langCode, translated: transcript }, 200, request);
   }
 
-  // Step 2: Claude Haiku translation
+  // Step 2: Claude Haiku translation (with retry)
   const TNAMES = {
     'ja': '日本語', 'zh-TW': '繁體中文', 'en': 'English',
     'zh-CN': '简体中文', 'ko': '한국어'
   };
   const targetName = TNAMES[targetLang] || targetLang;
   const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
+  const claudeBody = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1024,
+    messages: [{
+      role: 'user',
+      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else.${twHint}\n\n${transcript.slice(0, 2000)}`
+    }]
+  });
 
-  try {
-    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        messages: [{
-          role: 'user',
-          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else.${twHint}\n\n${transcript.slice(0, 2000)}`
-        }]
-      })
-    });
-    if (!claudeRes.ok) {
-      const err = await claudeRes.json().catch(() => ({}));
-      throw new Error(err.error?.message || `Claude API ${claudeRes.status}`);
+  const MAX_RETRIES = 3;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt));
+      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: claudeBody
+      });
+      if (claudeRes.status === 529 && attempt < MAX_RETRIES - 1) {
+        console.log(`Claude overloaded, retry ${attempt + 1}/${MAX_RETRIES}`);
+        continue;
+      }
+      if (!claudeRes.ok) {
+        const err = await claudeRes.json().catch(() => ({}));
+        throw new Error(err.error?.message || `Claude API ${claudeRes.status}`);
+      }
+      const claudeData = await claudeRes.json();
+      const translated = claudeData.content?.[0]?.text?.trim() || '';
+      return jsonResponse({ original: transcript, detectedLang: langCode, translated }, 200, request);
+    } catch (e) {
+      if (attempt === MAX_RETRIES - 1) {
+        return jsonResponse({ original: transcript, detectedLang: langCode, translated: '⚠ ' + e.message }, 200, request);
+      }
     }
-    const claudeData = await claudeRes.json();
-    const translated = claudeData.content?.[0]?.text?.trim() || '';
-    return jsonResponse({ original: transcript, detectedLang: langCode, translated }, 200, request);
-  } catch (e) {
-    // Return transcript even if translation fails
-    return jsonResponse({ original: transcript, detectedLang: langCode, translated: '⚠ ' + e.message }, 200, request);
   }
 }
 
