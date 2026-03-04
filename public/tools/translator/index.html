@@ -169,10 +169,9 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 .entry-translated.same-lang{display:none}
 
 /* Matrix rain strips */
-.matrix-strip{position:fixed;top:0;bottom:0;width:28px;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:999}
+.matrix-strip{position:fixed;top:0;left:0;width:36px;height:100vh;height:100dvh;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:9999}
 .matrix-strip.active{opacity:1}
-.matrix-strip-left{left:0}
-.matrix-strip-right{right:0}
+.matrix-strip-right{left:auto;right:0}
 </style>
 </head>
 <body>
@@ -763,7 +762,7 @@ getEl("btnMailSummary").addEventListener("click", function() {
 var matrixActive = false;
 var matrixRAF = null;
 var matrixCharSize = 14;
-var matrixStripW = 28;
+var matrixStripW = 36;
 var matrixStrips = [];
 var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\u30B5\u30B7\u30B9\u30BB\u30BD\u30BF\u30C1\u30C4\u30C6\u30C8\u30CA\u30CB\u30CC\u30CD\u30CE\u30CF\u30D2\u30D5\u30D8\u30DB\u30DE\u30DF\u30E0\u30E1\u30E2\u30E4\u30E6\u30E8\u30E9\u30EA\u30EB\u30EC\u30ED\u30EF\u30F3ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&=";
 
@@ -774,6 +773,8 @@ var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\
     c.className = "matrix-strip matrix-strip-" + side;
     c.width = matrixStripW;
     c.height = window.innerHeight;
+    c.style.width = matrixStripW + "px";
+    c.style.height = "100vh";
     document.body.appendChild(c);
     var cols = Math.floor(matrixStripW / matrixCharSize);
     var columns = [];
