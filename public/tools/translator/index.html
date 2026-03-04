@@ -168,9 +168,11 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 /* Same-language: hide redundant translation row */
 .entry-translated.same-lang{display:none}
 
-/* Matrix rain canvas */
-.matrix-canvas{position:sticky;top:0;right:0;margin-left:auto;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:0;margin-bottom:-100%;display:block}
-.matrix-canvas.active{opacity:1}
+/* Matrix rain strips */
+.matrix-strip{position:fixed;top:0;bottom:0;width:28px;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:999}
+.matrix-strip.active{opacity:1}
+.matrix-strip-left{left:0}
+.matrix-strip-right{right:0}
 </style>
 </head>
 <body>
@@ -207,7 +209,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 </div>
 <div class="error-bar" id="errorBar"></div>
 <div class="content" id="content">
-  <canvas class="matrix-canvas" id="matrixCanvas"></canvas>
+
   <div class="empty" id="empty">
     <div style="font-size:48px;opacity:.25">🎙️</div>
     <div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">
@@ -758,85 +760,72 @@ getEl("btnMailSummary").addEventListener("click", function() {
 
 
 // === Matrix Digital Rain ===
-var matrixCanvas = getEl("matrixCanvas");
-var matrixCtx = matrixCanvas.getContext("2d");
 var matrixActive = false;
 var matrixRAF = null;
-var matrixColumns = [];
-var matrixStartCol = 0;
-var matrixCharSize = 15;
+var matrixCharSize = 14;
+var matrixStripW = 28;
+var matrixStrips = [];
 var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\u30B5\u30B7\u30B9\u30BB\u30BD\u30BF\u30C1\u30C4\u30C6\u30C8\u30CA\u30CB\u30CC\u30CD\u30CE\u30CF\u30D2\u30D5\u30D8\u30DB\u30DE\u30DF\u30E0\u30E1\u30E2\u30E4\u30E6\u30E8\u30E9\u30EA\u30EB\u30EC\u30ED\u30EF\u30F3ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&=";
 
-function positionMatrixCanvas() {
-  var c = getEl("content");
-  var w = Math.floor(c.clientWidth * 0.28);
-  var h = c.clientHeight;
-  matrixCanvas.width = w;
-  matrixCanvas.height = h;
-  matrixCanvas.style.width = w + "px";
-  matrixCanvas.style.height = h + "px";
-}
-
-function initMatrix() {
-  positionMatrixCanvas();
-  var cols = Math.floor(matrixCanvas.width / matrixCharSize);
-  matrixColumns = [];
-  for (var i = 0; i < cols; i++) {
-    matrixColumns.push(Math.floor(Math.random() * matrixCanvas.height / matrixCharSize));
-  }
-}
+// Create two strip canvases
+(function() {
+  ["left","right"].forEach(function(side) {
+    var c = document.createElement("canvas");
+    c.className = "matrix-strip matrix-strip-" + side;
+    c.width = matrixStripW;
+    c.height = window.innerHeight;
+    document.body.appendChild(c);
+    var cols = Math.floor(matrixStripW / matrixCharSize);
+    var columns = [];
+    for (var i = 0; i < cols; i++) columns.push(Math.floor(Math.random() * c.height / matrixCharSize));
+    matrixStrips.push({ canvas: c, ctx: c.getContext("2d"), columns: columns });
+  });
+})();
 
 function drawMatrix() {
   if (!matrixActive) return;
-  // Semi-transparent bg overlay to create trailing effect
-  matrixCtx.fillStyle = "rgba(250, 250, 248, 0.06)";
-  matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-  matrixCtx.font = "bold " + matrixCharSize + "px monospace";
-
-  for (var i = 0; i < matrixColumns.length; i++) {
-    var ch = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-    var x = i * matrixCharSize;
-    var y = matrixColumns[i] * matrixCharSize;
-
-    // Main character
-    matrixCtx.fillStyle = "rgba(5, 150, 105, 0.2)";
-    matrixCtx.fillText(ch, x, y);
-
-    // Random bright flash
-    if (Math.random() > 0.93) {
-      matrixCtx.fillStyle = "rgba(5, 150, 105, 0.45)";
-      matrixCtx.fillText(ch, x, y);
+  matrixStrips.forEach(function(s) {
+    s.ctx.fillStyle = "rgba(250, 250, 248, 0.05)";
+    s.ctx.fillRect(0, 0, s.canvas.width, s.canvas.height);
+    s.ctx.font = matrixCharSize + "px monospace";
+    for (var i = 0; i < s.columns.length; i++) {
+      var ch = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+      var x = i * matrixCharSize;
+      var y = s.columns[i] * matrixCharSize;
+      s.ctx.fillStyle = Math.random() > 0.9 ? "rgba(5,150,105,0.6)" : "rgba(5,150,105,0.3)";
+      s.ctx.fillText(ch, x, y);
+      if (y > s.canvas.height && Math.random() > 0.975) s.columns[i] = 0;
+      else s.columns[i]++;
     }
-
-    // Reset column or advance
-    if (y > matrixCanvas.height && Math.random() > 0.975) {
-      matrixColumns[i] = 0;
-    } else {
-      matrixColumns[i]++;
-    }
-  }
+  });
   matrixRAF = requestAnimationFrame(drawMatrix);
 }
 
 function startMatrix() {
   if (matrixActive) return;
   matrixActive = true;
-  initMatrix();
-  matrixCanvas.classList.add("active");
+  matrixStrips.forEach(function(s) {
+    s.canvas.height = window.innerHeight;
+    s.canvas.classList.add("active");
+  });
   drawMatrix();
 }
 
 function stopMatrix() {
   matrixActive = false;
-  matrixCanvas.classList.remove("active");
+  matrixStrips.forEach(function(s) {
+    s.canvas.classList.remove("active");
+  });
   if (matrixRAF) { cancelAnimationFrame(matrixRAF); matrixRAF = null; }
   setTimeout(function() {
-    if (!matrixActive) matrixCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+    if (!matrixActive) matrixStrips.forEach(function(s) {
+      s.ctx.clearRect(0, 0, s.canvas.width, s.canvas.height);
+    });
   }, 1100);
 }
 
 window.addEventListener("resize", function() {
-  if (matrixActive) { positionMatrixCanvas(); initMatrix(); }
+  if (matrixActive) matrixStrips.forEach(function(s) { s.canvas.height = window.innerHeight; });
 });
 
 </script>
