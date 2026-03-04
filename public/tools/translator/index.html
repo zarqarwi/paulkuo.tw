@@ -167,6 +167,12 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 
 /* Same-language: hide redundant translation row */
 .entry-translated.same-lang{display:none}
+
+/* Matrix rain canvas */
+.matrix-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:0}
+.matrix-canvas.active{opacity:1}
+.content{position:relative}
+.content>*:not(.matrix-canvas){position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -203,6 +209,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 </div>
 <div class="error-bar" id="errorBar"></div>
 <div class="content" id="content">
+  <canvas class="matrix-canvas" id="matrixCanvas"></canvas>
   <div class="empty" id="empty">
     <div style="font-size:48px;opacity:.25">🎙️</div>
     <div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">
@@ -335,6 +342,7 @@ function startRecording() {
     updateToggle();
     setStatus("listening");
     hideError();
+    startMatrix();
 
     // Use webm/opus if available, fallback to mp4/aac (iOS Safari)
     var mimeType = "audio/webm;codecs=opus";
@@ -416,6 +424,7 @@ function stopRecording() {
   if (audioContext) { audioContext.close(); audioContext = null; }
   getEl("volFill").style.width = "0%";
   setStatus("ready");
+  stopMatrix();
   updateToggle();
 }
 
@@ -747,6 +756,87 @@ getEl("btnMailSummary").addEventListener("click", function() {
   var subject = encodeURIComponent(lastSummaryData.title || 'Meeting Summary');
   var body = encodeURIComponent(buildSummaryPlainText(lastSummaryData));
   window.open('mailto:?subject=' + subject + '&body=' + body, '_blank');
+});
+
+
+// === Matrix Digital Rain ===
+var matrixCanvas = getEl("matrixCanvas");
+var matrixCtx = matrixCanvas.getContext("2d");
+var matrixActive = false;
+var matrixRAF = null;
+var matrixColumns = [];
+var matrixCharSize = 14;
+
+// Characters: mix of katakana, latin, numbers, symbols
+var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\u30B5\u30B7\u30B9\u30BB\u30BD\u30BF\u30C1\u30C4\u30C6\u30C8\u30CA\u30CB\u30CC\u30CD\u30CE\u30CF\u30D2\u30D5\u30D8\u30DB\u30DE\u30DF\u30E0\u30E1\u30E2\u30E4\u30E6\u30E8\u30E9\u30EA\u30EB\u30EC\u30ED\u30EF\u30F3ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
+
+function initMatrix() {
+  var container = getEl("content");
+  matrixCanvas.width = container.offsetWidth;
+  matrixCanvas.height = container.offsetHeight;
+  var cols = Math.floor(matrixCanvas.width / matrixCharSize);
+  matrixColumns = [];
+  for (var i = 0; i < cols; i++) {
+    matrixColumns.push({
+      y: Math.random() * matrixCanvas.height / matrixCharSize,
+      speed: 0.3 + Math.random() * 0.7,
+      chars: []
+    });
+  }
+}
+
+function drawMatrix() {
+  if (!matrixActive) return;
+  matrixCtx.fillStyle = "rgba(250, 250, 248, 0.12)";
+  matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+  for (var i = 0; i < matrixColumns.length; i++) {
+    var col = matrixColumns[i];
+    var char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+    var x = i * matrixCharSize;
+    var y = col.y * matrixCharSize;
+
+    // Head character: bright green
+    matrixCtx.font = matrixCharSize + "px monospace";
+    matrixCtx.fillStyle = "rgba(5, 150, 105, 0.35)";
+    matrixCtx.fillText(char, x, y);
+
+    // Occasional brighter flash
+    if (Math.random() > 0.97) {
+      matrixCtx.fillStyle = "rgba(5, 150, 105, 0.6)";
+      matrixCtx.fillText(char, x, y);
+    }
+
+    col.y += col.speed;
+    if (col.y * matrixCharSize > matrixCanvas.height && Math.random() > 0.98) {
+      col.y = 0;
+      col.speed = 0.3 + Math.random() * 0.7;
+    }
+  }
+  matrixRAF = requestAnimationFrame(drawMatrix);
+}
+
+function startMatrix() {
+  if (matrixActive) return;
+  matrixActive = true;
+  initMatrix();
+  matrixCanvas.classList.add("active");
+  drawMatrix();
+}
+
+function stopMatrix() {
+  matrixActive = false;
+  matrixCanvas.classList.remove("active");
+  if (matrixRAF) { cancelAnimationFrame(matrixRAF); matrixRAF = null; }
+  // Clear canvas after fade
+  setTimeout(function() {
+    if (!matrixActive) matrixCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+  }, 1300);
+}
+
+// Handle resize
+window.addEventListener("resize", function() {
+  if (matrixActive) initMatrix();
 });
 
 </script>
