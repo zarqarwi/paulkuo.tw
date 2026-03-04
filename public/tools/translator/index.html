@@ -763,6 +763,7 @@ var matrixCtx = matrixCanvas.getContext("2d");
 var matrixActive = false;
 var matrixRAF = null;
 var matrixColumns = [];
+var matrixStartCol = 0;
 var matrixCharSize = 15;
 var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\u30B5\u30B7\u30B9\u30BB\u30BD\u30BF\u30C1\u30C4\u30C6\u30C8\u30CA\u30CB\u30CC\u30CD\u30CE\u30CF\u30D2\u30D5\u30D8\u30DB\u30DE\u30DF\u30E0\u30E1\u30E2\u30E4\u30E6\u30E8\u30E9\u30EA\u30EB\u30EC\u30ED\u30EF\u30F3ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&=";
 
@@ -778,6 +779,8 @@ function initMatrix() {
   positionMatrixCanvas();
   var cols = Math.floor(matrixCanvas.width / matrixCharSize);
   matrixColumns = [];
+  // Only use right ~28% of columns
+  matrixStartCol = Math.floor(cols * 0.72);
   for (var i = 0; i < cols; i++) {
     matrixColumns.push(Math.floor(Math.random() * matrixCanvas.height / matrixCharSize));
   }
@@ -786,22 +789,22 @@ function initMatrix() {
 function drawMatrix() {
   if (!matrixActive) return;
   // Semi-transparent bg overlay to create trailing effect
-  matrixCtx.fillStyle = "rgba(250, 250, 248, 0.08)";
-  matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+  matrixCtx.fillStyle = "rgba(250, 250, 248, 0.06)";
+  matrixCtx.fillRect(matrixStartCol * matrixCharSize, 0, matrixCanvas.width, matrixCanvas.height);
   matrixCtx.font = "bold " + matrixCharSize + "px monospace";
 
-  for (var i = 0; i < matrixColumns.length; i++) {
+  for (var i = matrixStartCol; i < matrixColumns.length; i++) {
     var ch = matrixChars[Math.floor(Math.random() * matrixChars.length)];
     var x = i * matrixCharSize;
     var y = matrixColumns[i] * matrixCharSize;
 
-    // Main character: green with decent visibility
-    matrixCtx.fillStyle = "rgba(5, 150, 105, 0.13)";
+    // Main character
+    matrixCtx.fillStyle = "rgba(5, 150, 105, 0.2)";
     matrixCtx.fillText(ch, x, y);
 
-    // Random bright flash on some chars
-    if (Math.random() > 0.95) {
-      matrixCtx.fillStyle = "rgba(5, 150, 105, 0.3)";
+    // Random bright flash
+    if (Math.random() > 0.93) {
+      matrixCtx.fillStyle = "rgba(5, 150, 105, 0.45)";
       matrixCtx.fillText(ch, x, y);
     }
 
