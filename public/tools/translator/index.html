@@ -169,9 +169,9 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 .entry-translated.same-lang{display:none}
 
 /* Matrix rain strips */
-.matrix-strip{position:fixed;top:0;left:0;width:48px;height:100vh;height:100dvh;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:9999;background:linear-gradient(to right,rgba(5,150,105,0.06),transparent)}
+.matrix-strip{position:fixed;top:0;left:0;width:48px;height:100vh;height:100dvh;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:9999;background:rgba(10,25,18,0.92)}
 .matrix-strip.active{opacity:1}
-.matrix-strip-right{left:auto;right:0;background:linear-gradient(to left,rgba(5,150,105,0.06),transparent)}
+.matrix-strip-right{left:auto;right:0}
 </style>
 </head>
 <body>
@@ -786,17 +786,17 @@ var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\
 function drawMatrix() {
   if (!matrixActive) return;
   matrixStrips.forEach(function(s) {
-    s.ctx.fillStyle = "rgba(250, 250, 248, 0.05)";
+    s.ctx.fillStyle = "rgba(10,25,18,0.06)";
     s.ctx.fillRect(0, 0, s.canvas.width, s.canvas.height);
     s.ctx.font = matrixCharSize + "px monospace";
     for (var i = 0; i < s.columns.length; i++) {
       var ch = matrixChars[Math.floor(Math.random() * matrixChars.length)];
       var x = i * matrixCharSize;
       var y = s.columns[i] * matrixCharSize;
-      s.ctx.fillStyle = Math.random() > 0.85 ? "rgba(5,150,105,0.8)" : "rgba(5,150,105,0.45)";
+      s.ctx.fillStyle = Math.random() > 0.85 ? "rgba(0,255,120,0.9)" : "rgba(0,230,100,0.5)";
       s.ctx.fillText(ch, x, y);
       if (y > s.canvas.height && Math.random() > 0.975) s.columns[i] = 0;
-      else s.columns[i]++;
+      else if (Math.random() > 0.4) s.columns[i]++;
     }
   });
   matrixRAF = requestAnimationFrame(drawMatrix);
