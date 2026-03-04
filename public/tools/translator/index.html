@@ -28,7 +28,8 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;padding-left:48px;padding-right:48px}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;transition:padding .5s ease}
+body.matrix-on{padding-left:48px;padding-right:48px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 @keyframes pulse{0%{transform:scale(.9);opacity:1}50%{transform:scale(1.15);opacity:.4}100%{transform:scale(.9);opacity:1}}
@@ -555,6 +556,7 @@ function sendAudio(blob) {
   scrollBottom();
 
   setStatus("sending");
+  if (matrixActive) matrixPulse();
 
   var form = new FormData();
   form.append("audio", blob, "audio.webm");
@@ -578,6 +580,7 @@ function sendAudio(blob) {
         return;
       }
       updateEntry(id, d.original, d.translated, d.detectedLang);
+      if (matrixActive) matrixPulse();
       if (recording) setStatus("listening");
       // Enable summary button when we have entries
       getEl("btnSummary").disabled = false;
@@ -764,6 +767,8 @@ var matrixRAF = null;
 var matrixCharSize = 14;
 var matrixStripW = 48;
 var matrixStrips = [];
+var matrixSpeed = 0.12; // base idle speed, pulses on speech activity
+var matrixSpeedDecay = null;
 var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\u30B5\u30B7\u30B9\u30BB\u30BD\u30BF\u30C1\u30C4\u30C6\u30C8\u30CA\u30CB\u30CC\u30CD\u30CE\u30CF\u30D2\u30D5\u30D8\u30DB\u30DE\u30DF\u30E0\u30E1\u30E2\u30E4\u30E6\u30E8\u30E9\u30EA\u30EB\u30EC\u30ED\u30EF\u30F3ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&=";
 
 // Create two strip canvases
@@ -796,7 +801,7 @@ function drawMatrix() {
       s.ctx.fillStyle = Math.random() > 0.85 ? "rgba(0,255,120,0.9)" : "rgba(0,230,100,0.5)";
       s.ctx.fillText(ch, x, y);
       if (y > s.canvas.height && Math.random() > 0.975) s.columns[i] = 0;
-      else if (Math.random() > 0.4) s.columns[i]++;
+      else if (Math.random() > (1 - matrixSpeed)) s.columns[i]++;
     }
   });
   matrixRAF = requestAnimationFrame(drawMatrix);
@@ -805,6 +810,7 @@ function drawMatrix() {
 function startMatrix() {
   if (matrixActive) return;
   matrixActive = true;
+  document.body.classList.add("matrix-on");
   matrixStrips.forEach(function(s) {
     s.canvas.height = window.innerHeight;
     s.canvas.classList.add("active");
@@ -814,6 +820,7 @@ function startMatrix() {
 
 function stopMatrix() {
   matrixActive = false;
+  document.body.classList.remove("matrix-on");
   matrixStrips.forEach(function(s) {
     s.canvas.classList.remove("active");
   });
@@ -823,6 +830,16 @@ function stopMatrix() {
       s.ctx.clearRect(0, 0, s.canvas.width, s.canvas.height);
     });
   }, 1100);
+}
+
+// Pulse rain speed when speech activity happens
+function matrixPulse() {
+  matrixSpeed = 0.7;
+  if (matrixSpeedDecay) clearTimeout(matrixSpeedDecay);
+  matrixSpeedDecay = setTimeout(function() {
+    matrixSpeed = 0.35;
+    matrixSpeedDecay = setTimeout(function() { matrixSpeed = 0.12; }, 2500);
+  }, 1000);
 }
 
 window.addEventListener("resize", function() {
