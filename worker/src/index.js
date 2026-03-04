@@ -5,10 +5,11 @@
  * 取代原本的 cron → git commit → build 架構
  * 
  * Endpoints:
- *   GET /fitbit  — 回傳即時 Fitbit 資料（5 分鐘快取）
- *   GET /stock   — 回傳 CyberSolutions (436A.T) 即時股價（交易時段 10 分鐘 / 非交易 1 小時快取）
- *   GET /health  — 健康檢查
- *   GET /sleep   — 睡眠資料分析（?year=2025 或 ?start=...&end=...）
+ *   GET  /fitbit    — 回傳即時 Fitbit 資料（5 分鐘快取）
+ *   GET  /stock     — 回傳 CyberSolutions (436A.T) 即時股價（交易時段 10 分鐘 / 非交易 1 小時快取）
+ *   GET  /health    — 健康檢查
+ *   GET  /sleep     — 睡眠資料分析（?year=2025 或 ?start=...&end=...）
+ *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
  * 
  * Cron Trigger:
  *   每 6 小時 refresh Fitbit OAuth2 token
@@ -30,6 +31,7 @@ const ALLOWED_ORIGINS = [
   'https://paulkuo.tw',
   'http://localhost:4321', // Astro dev
   'http://localhost:3000',
+  'null', // file:// protocol (local HTML)
 ];
 
 // === CORS ===
@@ -38,7 +40,7 @@ function corsHeaders(request) {
   const allowed = ALLOWED_ORIGINS.find(o => origin.startsWith(o)) || ALLOWED_ORIGINS[0];
   return {
     'Access-Control-Allow-Origin': allowed,
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
   };
@@ -182,111 +184,6 @@ async function fetchFitbitData(kv) {
   return data;
 }
 
-
-// === Fetch Sleep Data (for analysis) ===
-async function fetchSleepData(kv, params) {
-  let tokenJson = await kv.get('fitbit_token');
-  if (!tokenJson) throw new Error('No Fitbit token configured');
-  let token = JSON.parse(tokenJson);
-
-  if (token.expires_at - Date.now() < 2 * 3600 * 1000) {
-    try { token = await refreshToken(kv); } catch (e) {
-      console.error('Proactive refresh failed:', e.message);
-    }
-  }
-
-  const year = params.get('year');
-  let startDate, endDate;
-  if (year) {
-    startDate = year + '-01-01';
-    endDate = year + '-12-31';
-  } else {
-    startDate = params.get('start');
-    endDate = params.get('end');
-  }
-  if (!startDate || !endDate) {
-    throw new Error('Provide ?year=2025 or ?start=YYYY-MM-DD&end=YYYY-MM-DD');
-  }
-
-  const cacheKey = 'sleep_cache_' + startDate + '_' + endDate;
-  const cacheJson = await kv.get(cacheKey);
-  if (cacheJson) {
-    const cache = JSON.parse(cacheJson);
-    if (Date.now() - cache.cached_at < 3600 * 1000) {
-      return { ...cache.data, _cached: true };
-    }
-  }
-
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const chunks = [];
-  let cur = new Date(start);
-  while (cur <= end) {
-    const chunkEnd = new Date(Math.min(cur.getTime() + 99 * 86400000, end.getTime()));
-    chunks.push([cur.toISOString().slice(0, 10), chunkEnd.toISOString().slice(0, 10)]);
-    cur = new Date(chunkEnd.getTime() + 86400000);
-  }
-
-  let allSleep = [];
-  for (const [s, e] of chunks) {
-    try {
-      const data = await fitbitGet('/1.2/user/-/sleep/date/' + s + '/' + e + '.json', token);
-      if (data.sleep) allSleep = allSleep.concat(data.sleep);
-    } catch (err) {
-      if (err.message === 'TOKEN_EXPIRED') {
-        token = await refreshToken(kv);
-        const data = await fitbitGet('/1.2/user/-/sleep/date/' + s + '/' + e + '.json', token);
-        if (data.sleep) allSleep = allSleep.concat(data.sleep);
-      } else {
-        console.error('Sleep fetch error for ' + s + '-' + e + ':', err.message);
-      }
-    }
-  }
-
-  const monthly = {};
-  for (const s of allSleep) {
-    if (!s.isMainSleep) continue;
-    const month = s.dateOfSleep ? s.dateOfSleep.slice(0, 7) : null;
-    if (!month) continue;
-    if (!monthly[month]) {
-      monthly[month] = { month: month, nights: 0, total_minutes: 0, deep_min: 0, light_min: 0, rem_min: 0, wake_min: 0, scores: [] };
-    }
-    const m = monthly[month];
-    m.nights++;
-    m.total_minutes += s.duration ? Math.round(s.duration / 60000) : 0;
-    const stages = (s.levels && s.levels.summary) || {};
-    m.deep_min += (stages.deep && stages.deep.minutes) || 0;
-    m.light_min += (stages.light && stages.light.minutes) || 0;
-    m.rem_min += (stages.rem && stages.rem.minutes) || 0;
-    m.wake_min += (stages.wake && stages.wake.minutes) || 0;
-    if (s.efficiency) m.scores.push(s.efficiency);
-  }
-
-  const summary = Object.values(monthly).map(function(m) {
-    return {
-      month: m.month,
-      nights: m.nights,
-      avg_hours: Math.round(m.total_minutes / m.nights / 60 * 10) / 10,
-      avg_deep_min: Math.round(m.deep_min / m.nights),
-      avg_light_min: Math.round(m.light_min / m.nights),
-      avg_rem_min: Math.round(m.rem_min / m.nights),
-      avg_wake_min: Math.round(m.wake_min / m.nights),
-      avg_efficiency: m.scores.length ? Math.round(m.scores.reduce(function(a, b) { return a + b; }, 0) / m.scores.length) : null,
-    };
-  }).sort(function(a, b) { return a.month.localeCompare(b.month); });
-
-  const data = {
-    updated: new Date().toISOString(),
-    source: 'cloudflare-worker',
-    range: { start: startDate, end: endDate },
-    total_nights: allSleep.filter(function(s) { return s.isMainSleep; }).length,
-    monthly: summary,
-    raw_count: allSleep.length,
-  };
-
-  await kv.put(cacheKey, JSON.stringify({ data: data, cached_at: Date.now() }));
-  return data;
-}
 
 // === Stock: TSE Trading Hours Check ===
 function isTseTradingHours() {
@@ -505,6 +402,81 @@ async function fetchSleepData(kv, params) {
   throw new Error('Missing parameter: use ?year=2025 or ?month=2025-03');
 }
 
+// === Translate via Claude Haiku ===
+const TRANSLATE_RATE_LIMIT = 30; // max requests per minute per IP
+
+async function handleTranslate(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+
+  // Check API key is configured
+  if (!env.ANTHROPIC_API_KEY) {
+    return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400, request);
+  }
+
+  const { text, sourceLang, targetLang } = body;
+  if (!text || !targetLang) {
+    return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
+  }
+
+  // Simple rate limiting via KV (per IP, per minute)
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rateKey = `rate_translate_${ip}_${Math.floor(Date.now() / 60000)}`;
+  const count = parseInt(await env.TICKER_KV.get(rateKey) || '0', 10);
+  if (count >= TRANSLATE_RATE_LIMIT) {
+    return jsonResponse({ error: 'Rate limited. Max 30 requests/min.' }, 429, request);
+  }
+  await env.TICKER_KV.put(rateKey, String(count + 1), { expirationTtl: 120 });
+
+  // Truncate to prevent abuse (max 2000 chars)
+  const trimmedText = text.slice(0, 2000);
+
+  const TNAMES = {
+    'ja': '日本語', 'zh-TW': '繁體中文', 'en': 'English',
+    'zh-CN': '简体中文', 'ko': '한국어'
+  };
+  const targetName = TNAMES[targetLang] || targetLang;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20241022',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.\n\n${trimmedText}`
+        }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Anthropic API ${res.status}`);
+    }
+
+    const data = await res.json();
+    const translated = data.content?.[0]?.text?.trim() || '';
+
+    return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 502, request);
+  }
+}
+
 // === Request Handler ===
 async function handleRequest(request, env) {
   const url = new URL(request.url);
@@ -579,21 +551,13 @@ async function handleRequest(request, env) {
   }
 
 
-  // Sleep data (for analysis)
-  if (path === '/sleep') {
-    try {
-      const data = await fetchSleepData(env.TICKER_KV, url.searchParams);
-      return jsonResponse(data, 200, request);
-    } catch (e) {
-      return jsonResponse({
-        error: e.message,
-        usage: '/sleep?year=2025 or /sleep?start=2025-01-01&end=2025-06-30',
-      }, e.message.includes('Provide') ? 400 : 500, request);
-    }
+  // Translate
+  if (path === '/translate') {
+    return handleTranslate(request, env);
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
