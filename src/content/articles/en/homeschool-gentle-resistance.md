@@ -3,7 +3,7 @@ title: "The Truth About Homeschooling: A Parent's Insights and Gentle Resistance
 subtitle: "Choosing homeschooling isn't about escaping the system—it's taking your child into an experiment with no standard answers"
 description: "Choosing homeschool education isn't about finding shortcuts to college admission, but rather a reflection on industrial civilization and capitalist living. Homeschooling is full of gray areas and uncertainty, severely testing parents' capacity for accompaniment. When facing unfair situations, true education is teaching children to practice 'gentle and courteous resistance.'"
 abstract: |
-  In 2015, we chose to let our child participate in non-school-based homeschool education. When we made this decision, many people thought we were crazy. As a serial entrepreneur, I understand the pace of industry transformation better than most—and the gap between the capabilities that institutional education cultivates and what the future world needs is so large that I couldn't pretend not to see it. After several years of this journey, I want to honestly share: homeschooling is not a romantic utopia, it's an experiment that severely tests parents' hearts. But in this process, I learned something more important than any academic subject—teaching children to practice "gentle and courteous resistance" when they encounter unfairness.
+  In 2014, we chose to let our child participate in non-school-based experimental education. When we made this decision, many people thought we were crazy. As a serial entrepreneur, I understand the pace of industry transformation better than most—and the gap between the capabilities that institutional education cultivates and what the future world needs is so large that I couldn't pretend not to see it. After several years of this journey, I want to honestly share: homeschooling is not a romantic utopia, it's an experiment that severely tests parents' hearts. But in this process, I learned something more important than any academic subject—teaching children to practice "gentle and courteous resistance" when they encounter unfairness.
 date: 2023-05-27
 updated: 2026-03-03
 pillar: life
@@ -34,7 +34,7 @@ reading_context: |
   對體制教育有不滿但不確定替代方案長什麼樣的讀者。
 ---
 
-In 2015, my wife and I made a decision that left many friends and family members shaking their heads: we let our child leave school to participate in non-school-based homeschool education.
+In 2014, my child's mother and I made a decision that left many friends and family members shaking their heads: we let our child leave school to participate in non-school-based experimental education (commonly known as homeschool education).
 
 When we made this decision, my child was still young. People around us had similar reactions: "Are you sure?" "What about college admissions later?" "Won't he become disconnected from society?"
 
@@ -42,7 +42,7 @@ Some people were more polite and spoke more diplomatically. Others said directly
 
 I don't blame them. Because in Taiwan's social context, "leaving school" itself carries a rebellious undertone. It's as if you're negating the path everyone else has taken.
 
-But my motivation was actually very practical. As an entrepreneur, I face the forefront of industry transformation every day. I see AI reshaping the definition of work, globalization changing the landscape of competition, and the half-life of knowledge getting shorter and shorter. Then I look back at institutional education—how much of what it spends twelve years teaching children will still be useful ten years later?
+But my motivation was actually very practical. As an entrepreneur, I face the forefront of industry transformation every day. The environment is reshaping the definition of work, globalization changing the landscape of competition, and the half-life of knowledge getting shorter and shorter. Then I look back at institutional education—how much of what it spends twelve years teaching children will still be useful ten years later?
 
 This gap is so large that I couldn't pretend not to see it.
 
@@ -50,9 +50,9 @@ This gap is so large that I couldn't pretend not to see it.
 
 But let me be clear first: homeschool education is not a utopia.
 
-Many narratives about homeschooling online are too romantic. Things like "letting children freely explore their talents," "learning in nature," "innovative education that breaks free from frameworks"—these sound beautiful, but if you actually step into it, you'll find reality is full of gray areas.
+Many narratives about homeschooling online are too romantic. Things like "letting children freely explore their talents," "learning in nature," "innovative education that breaks free from frameworks"—these sound beautiful, but if you actually step into it, you'll find reality is full of gray areas. Including communication conflicts with the children.
 
-After several years of this journey, I've summarized a few of the most honest insights.
+After several years of this journey, I've summarized a few insights (note: this piece was originally written in 2016).
 
 Homeschooling is accompaniment, not outsourcing. You can't just pay money to an institution or consultant and then expect them to handle your child's education for you. That's no different in essence from sending your child to school. Homeschooling requires deep parental involvement—not the kind of involvement where you supervise homework, but thinking together about "what should we learn today," "why should we learn this," and "what meaning does this learning have for his future."
 
