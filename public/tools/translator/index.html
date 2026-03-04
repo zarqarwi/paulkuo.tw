@@ -164,6 +164,9 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 .modal-action-btn:hover{border-color:var(--brand-navy);color:var(--brand-navy);background:rgba(27,45,79,.04)}
 .modal-action-btn.copied{border-color:var(--accent-circular);color:var(--accent-circular)}
 @media(max-width:640px){.modal-actions{padding:10px 18px 16px}.modal-action-btn{font-size:11px;padding:8px 12px}}
+
+/* Same-language: hide redundant translation row */
+.entry-translated.same-lang{display:none}
 </style>
 </head>
 <body>
@@ -172,7 +175,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
     <div class="logo">T</div>
     <div>
       <div class="header-title">阿哥拉廣場｜即時會議翻譯</div>
-      <div class="header-sub">Whisper + Claude Haiku · 自動語言偵測</div>
+      <div class="header-sub">Whisper + Claude Haiku · 語音辨識 / 翻譯 / 會議紀錄</div>
     </div>
   </div>
   <div class="status">
@@ -182,13 +185,13 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
   </div>
 </div>
 <div class="controls">
-  <span class="lang-label">翻譯成</span>
+  <span class="lang-label">語言</span>
   <div class="lang-btns" id="tgtBtns"></div>
   <button class="glossary-toggle" id="btnGlossary" title="術語表設定">📖 術語表</button>
   <div class="spacer"></div>
   <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋 摘要</button>
   <button class="btn-clear" id="btnClear">清除</button>
-  <button class="btn-main btn-start" id="btnToggle">🎙 開始翻譯</button>
+  <button class="btn-main btn-start" id="btnToggle">🎙 開始</button>
 </div>
 <div class="vol-bar"><div class="vol-fill" id="volFill"></div></div>
 <div class="glossary-panel" id="glossaryPanel">
@@ -203,13 +206,13 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
   <div class="empty" id="empty">
     <div style="font-size:48px;opacity:.25">🎙️</div>
     <div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">
-      按「開始翻譯」後對著麥克風說話<br>
+      按「開始」後對著麥克風說話<br>
       <span style="font-size:12px">自動偵測語言（日/英/中/韓）· 支援所有瀏覽器</span>
     </div>
   </div>
 </div>
 <div class="footer">
-  <span id="countLabel">0 筆翻譯</span>
+  <span id="countLabel">0 筆紀錄</span>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
 <script>
@@ -412,17 +415,24 @@ function updateEntry(id, original, translated, detectedLang) {
   metaEl.querySelector(".entry-meta").innerHTML = ts + " · " + flag + " → " + tgtFlag +
     (detectedLang ? '<span class="entry-lang">' + detectedLang + '</span>' : '');
   getEl("orig-" + id).textContent = original;
-  getEl("trans-" + id).textContent = translated || "";
+  var transEl = getEl("trans-" + id);
+  if (translated && translated !== original) {
+    transEl.textContent = translated;
+    transEl.classList.remove("same-lang");
+  } else {
+    transEl.textContent = "";
+    transEl.classList.add("same-lang");
+  }
   scrollBottom();
 }
 
 // UI helpers
 function clearAll() {
   allEntries = []; nextId = 0;
-  getEl("content").innerHTML = '<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始翻譯」後對著麥克風說話<br><span style="font-size:12px">自動偵測語言（日/英/中/韓）· 支援所有瀏覽器</span></div></div>';
+  getEl("content").innerHTML = '<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始」後對著麥克風說話<br><span style="font-size:12px">自動偵測語言（日/英/中/韓）· 支援所有瀏覽器</span></div></div>';
   updateCount();
 }
-function updateCount() { getEl("countLabel").textContent = allEntries.length + " 筆翻譯"; }
+function updateCount() { getEl("countLabel").textContent = allEntries.length + " 筆紀錄"; }
 function scrollBottom() {
   if (getEl("autoScroll").checked) {
     var c = getEl("content");
@@ -432,7 +442,7 @@ function scrollBottom() {
 function updateToggle() {
   var btn = getEl("btnToggle");
   if (recording) { btn.className = "btn-main btn-stop"; btn.textContent = "■ 停止"; }
-  else { btn.className = "btn-main btn-start"; btn.textContent = "🎙 開始翻譯"; }
+  else { btn.className = "btn-main btn-start"; btn.textContent = "🎙 開始"; }
 }
 
 // Event listeners
