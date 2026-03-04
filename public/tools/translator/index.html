@@ -107,6 +107,56 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
   .footer{padding:8px 16px}
   .vol-bar{margin:0 16px}
 }
+
+/* Glossary panel */
+.glossary-toggle{padding:6px 14px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text-secondary);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
+.glossary-toggle:hover{border-color:var(--accent-ai);color:var(--accent-ai)}
+.glossary-toggle.active{background:rgba(37,99,235,.08);border-color:var(--accent-ai);color:var(--accent-ai)}
+.glossary-panel{display:none;padding:12px 28px;border-bottom:1px solid var(--border-light);background:var(--bg-section);animation:fadeIn .2s}
+.glossary-panel.visible{display:block}
+.glossary-row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.glossary-input{flex:1;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:var(--font-body);background:var(--bg-card);color:var(--text-primary);outline:none;transition:border-color .2s}
+.glossary-input:focus{border-color:var(--accent-ai)}
+.glossary-input::placeholder{color:var(--text-muted)}
+.glossary-rm{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.glossary-rm:hover{border-color:#dc2626;color:#dc2626;background:rgba(220,38,38,.06)}
+.glossary-actions{display:flex;gap:8px;margin-top:8px}
+.glossary-add{padding:4px 12px;border-radius:100px;border:1.5px dashed var(--border);background:transparent;color:var(--text-muted);font-size:11px;cursor:pointer;font-family:var(--font-body);transition:all .2s}
+.glossary-add:hover{border-color:var(--accent-ai);color:var(--accent-ai)}
+.glossary-hint{font-size:11px;color:var(--text-muted);margin-top:4px}
+
+/* Summary button & modal */
+.btn-summary{padding:6px 14px;border-radius:100px;border:1.5px solid var(--accent-circular);background:transparent;color:var(--accent-circular);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
+.btn-summary:hover{background:var(--accent-circular);color:#fff}
+.btn-summary:disabled{opacity:.4;cursor:not-allowed}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.visible{display:flex}
+.modal-box{background:var(--bg-card);border-radius:16px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:fadeIn .25s}
+.modal-header{padding:20px 24px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-light);position:sticky;top:0;background:var(--bg-card);border-radius:16px 16px 0 0;z-index:1}
+.modal-title{font-size:16px;font-weight:700;color:var(--brand-navy);font-family:var(--font-cjk)}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg-section);color:var(--text-secondary);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:var(--border);color:var(--text-primary)}
+.modal-body{padding:20px 24px}
+.summary-section{margin-bottom:16px}
+.summary-section h3{font-size:13px;font-weight:600;color:var(--accent-ai);margin-bottom:6px;font-family:var(--font-body)}
+.summary-section p{font-size:14px;line-height:1.8;color:var(--text-primary);font-family:var(--font-cjk)}
+.summary-section ul{padding-left:18px;margin:0}
+.summary-section li{font-size:13px;line-height:1.8;color:var(--text-primary);font-family:var(--font-cjk);margin-bottom:2px}
+.summary-cost{font-size:11px;color:var(--text-muted);text-align:right;padding:8px 24px 16px;border-top:1px solid var(--border-light)}
+.summary-loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;color:var(--text-muted);font-size:14px}
+.summary-loading .shimmer{font-size:14px}
+
+/* Mobile additions */
+@media(max-width:640px){
+  .glossary-panel{padding:10px 16px}
+  .glossary-row{flex-wrap:nowrap}
+  .glossary-input{min-width:0;font-size:13px;padding:8px 10px}
+  .modal-overlay{padding:10px}
+  .modal-box{max-height:90vh}
+  .modal-header{padding:16px 18px 10px}
+  .modal-body{padding:16px 18px}
+  .btn-summary{min-height:36px}
+}
 </style>
 </head>
 <body>
@@ -127,11 +177,20 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 <div class="controls">
   <span class="lang-label">翻譯成</span>
   <div class="lang-btns" id="tgtBtns"></div>
+  <button class="glossary-toggle" id="btnGlossary" title="術語表設定">📖 術語表</button>
   <div class="spacer"></div>
+  <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋 摘要</button>
   <button class="btn-clear" id="btnClear">清除</button>
   <button class="btn-main btn-start" id="btnToggle">🎙 開始翻譯</button>
 </div>
 <div class="vol-bar"><div class="vol-fill" id="volFill"></div></div>
+<div class="glossary-panel" id="glossaryPanel">
+  <div id="glossaryRows"></div>
+  <div class="glossary-actions">
+    <button class="glossary-add" id="btnAddTerm">+ 新增術語</button>
+  </div>
+  <div class="glossary-hint">輸入專有名詞和對應翻譯，翻譯和語音辨識時會優先使用這些術語。</div>
+</div>
 <div class="error-bar" id="errorBar"></div>
 <div class="content" id="content">
   <div class="empty" id="empty">
@@ -333,57 +392,7 @@ function stopRecording() {
   updateToggle();
 }
 
-// Send audio to Worker /stt
-function sendAudio(blob) {
-  var id = ++nextId;
-  var ts = new Date().toLocaleTimeString("zh-TW", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
-  var entry = {id:id, original:"", translated:null, detectedLang:"", ts:ts, tgt:tgtLang};
-  allEntries.push(entry);
-
-  var emp = getEl("empty");
-  if (emp) emp.remove();
-
-  var div = document.createElement("div");
-  div.className = "entry";
-  div.id = "entry-" + id;
-  div.innerHTML = '<div class="entry-meta">' + ts + ' · <span class="shimmer">辨識中…</span></div>' +
-    '<div class="entry-original" id="orig-' + id + '"><span class="shimmer">語音辨識處理中</span></div>' +
-    '<div class="entry-translated" id="trans-' + id + '"><span class="shimmer">翻譯中...</span></div>';
-  getEl("content").appendChild(div);
-  updateCount();
-  scrollBottom();
-
-  setStatus("sending");
-
-  var form = new FormData();
-  form.append("audio", blob, "audio.webm");
-  form.append("targetLang", tgtLang);
-
-  console.log('[translator] POSTing to /stt, blob size:', blob.size);
-  fetch(WORKER_URL + "/stt", { method: "POST", body: form })
-    .then(function(r) { console.log('[translator] /stt response:', r.status); return r.json(); })
-    .then(function(d) {
-      if (d.error) {
-        updateEntry(id, "⚠ " + d.error, "", "");
-        return;
-      }
-      if (!d.original) {
-        // Empty — remove the entry
-        var el = getEl("entry-" + id);
-        if (el) el.remove();
-        allEntries = allEntries.filter(function(e) { return e.id !== id; });
-        updateCount();
-        return;
-      }
-      updateEntry(id, d.original, d.translated, d.detectedLang);
-      if (recording) setStatus("listening");
-    })
-    .catch(function(e) {
-      updateEntry(id, "⚠ 連線錯誤: " + e.message, "", "");
-      if (recording) setStatus("listening");
-    });
-}
-
+// sendAudio replaced by glossary-aware version below
 function updateEntry(id, original, translated, detectedLang) {
   var entry = allEntries.find(function(e) { return e.id === id; });
   if (entry) { entry.original = original; entry.translated = translated; entry.detectedLang = detectedLang; }
@@ -427,6 +436,209 @@ getEl("btnClear").addEventListener("click", clearAll);
 
 // Init
 renderLangs();
+renderGlossary();
+
+// === Glossary Management ===
+var glossary = [];
+
+function renderGlossary() {
+  var container = getEl("glossaryRows");
+  container.innerHTML = "";
+  glossary.forEach(function(g, i) {
+    var row = document.createElement("div");
+    row.className = "glossary-row";
+    row.innerHTML = '<input class="glossary-input" placeholder="原文術語" value="' + escHtml(g.term) + '" data-idx="' + i + '" data-field="term">' +
+      '<span style="color:var(--text-muted);font-size:12px">→</span>' +
+      '<input class="glossary-input" placeholder="翻譯" value="' + escHtml(g.translation) + '" data-idx="' + i + '" data-field="translation">' +
+      '<button class="glossary-rm" data-idx="' + i + '">&times;</button>';
+    container.appendChild(row);
+  });
+  // Bind events
+  container.querySelectorAll(".glossary-input").forEach(function(inp) {
+    inp.addEventListener("input", function() {
+      var idx = parseInt(this.getAttribute("data-idx"));
+      var field = this.getAttribute("data-field");
+      if (glossary[idx]) glossary[idx][field] = this.value;
+    });
+  });
+  container.querySelectorAll(".glossary-rm").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      glossary.splice(parseInt(this.getAttribute("data-idx")), 1);
+      renderGlossary();
+    });
+  });
+}
+
+function getCleanGlossary() {
+  return glossary.filter(function(g) { return g.term.trim() && g.translation.trim(); });
+}
+
+// Toggle glossary panel
+getEl("btnGlossary").addEventListener("click", function() {
+  var panel = getEl("glossaryPanel");
+  var btn = getEl("btnGlossary");
+  panel.classList.toggle("visible");
+  btn.classList.toggle("active");
+  if (panel.classList.contains("visible") && glossary.length === 0) {
+    glossary.push({term:"", translation:""});
+    renderGlossary();
+  }
+});
+
+// Add term
+getEl("btnAddTerm").addEventListener("click", function() {
+  glossary.push({term:"", translation:""});
+  renderGlossary();
+  var inputs = getEl("glossaryRows").querySelectorAll(".glossary-input");
+  if (inputs.length > 0) inputs[inputs.length - 2].focus();
+});
+
+// === Inject glossary into sendAudio ===
+var _origSendAudio = sendAudio;
+sendAudio = function(blob) {
+  var id = ++nextId;
+  var ts = new Date().toLocaleTimeString("zh-TW", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  var entry = {id:id, original:"", translated:null, detectedLang:"", ts:ts, tgt:tgtLang};
+  allEntries.push(entry);
+
+  var emp = getEl("empty");
+  if (emp) emp.remove();
+
+  var div = document.createElement("div");
+  div.className = "entry";
+  div.id = "entry-" + id;
+  div.innerHTML = '<div class="entry-meta">' + ts + ' · <span class="shimmer">辨識中…</span></div>' +
+    '<div class="entry-original" id="orig-' + id + '"><span class="shimmer">語音辨識處理中</span></div>' +
+    '<div class="entry-translated" id="trans-' + id + '"><span class="shimmer">翻譯中...</span></div>';
+  getEl("content").appendChild(div);
+  updateCount();
+  scrollBottom();
+
+  setStatus("sending");
+
+  var form = new FormData();
+  form.append("audio", blob, "audio.webm");
+  form.append("targetLang", tgtLang);
+  var cg = getCleanGlossary();
+  if (cg.length > 0) form.append("glossary", JSON.stringify(cg));
+
+  console.log('[translator] POSTing to /stt, blob size:', blob.size, 'glossary:', cg.length);
+  fetch(WORKER_URL + "/stt", { method: "POST", body: form })
+    .then(function(r) { console.log('[translator] /stt response:', r.status); return r.json(); })
+    .then(function(d) {
+      if (d.error) {
+        updateEntry(id, "\u26a0 " + d.error, "", "");
+        return;
+      }
+      if (!d.original) {
+        var el = getEl("entry-" + id);
+        if (el) el.remove();
+        allEntries = allEntries.filter(function(e) { return e.id !== id; });
+        updateCount();
+        return;
+      }
+      updateEntry(id, d.original, d.translated, d.detectedLang);
+      if (recording) setStatus("listening");
+      // Enable summary button when we have entries
+      getEl("btnSummary").disabled = false;
+    })
+    .catch(function(e) {
+      updateEntry(id, "\u26a0 連線錯誤: " + e.message, "", "");
+      if (recording) setStatus("listening");
+    });
+};
+
+// === Summary ===
+getEl("btnSummary").addEventListener("click", function() {
+  if (allEntries.length === 0) return;
+
+  // Build transcript text
+  var lines = allEntries.map(function(e) {
+    var src = e.original || "";
+    var tr = e.translated || "";
+    if (!src) return null;
+    return "[" + e.ts + "] " + src + (tr && tr !== src ? "\n(" + tr + ")" : "");
+  }).filter(Boolean);
+
+  if (lines.length === 0) return;
+
+  var transcript = lines.join("\n\n");
+  var modal = getEl("summaryModal");
+  var body = getEl("summaryBody");
+  var cost = getEl("summaryCost");
+  var title = getEl("summaryTitle");
+
+  title.textContent = "會議摘要";
+  body.innerHTML = '<div class="summary-loading"><div class="shimmer">正在產生摘要…</div><div style="font-size:12px">分析 ' + allEntries.length + ' 筆翻譯紀錄</div></div>';
+  cost.textContent = "";
+  modal.classList.add("visible");
+
+  fetch(WORKER_URL + "/summarize", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      text: transcript,
+      lang: tgtLang,
+      glossary: getCleanGlossary()
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.error) {
+      body.innerHTML = '<div style="color:#dc2626;padding:20px">\u26a0 ' + escHtml(d.error) + '</div>';
+      return;
+    }
+    title.textContent = d.title || "會議摘要";
+    var h = '';
+    if (d.summary) {
+      h += '<div class="summary-section"><h3>📝 摘要</h3><p>' + escHtml(d.summary).replace(/\n/g, '<br>') + '</p></div>';
+    }
+    if (d.keyPoints && d.keyPoints.length > 0) {
+      h += '<div class="summary-section"><h3>💡 重點</h3><ul>' + d.keyPoints.map(function(p) { return '<li>' + escHtml(p) + '</li>'; }).join('') + '</ul></div>';
+    }
+    if (d.actionItems && d.actionItems.length > 0) {
+      h += '<div class="summary-section"><h3>✅ 待辦事項</h3><ul>' + d.actionItems.map(function(a) { return '<li>' + escHtml(a) + '</li>'; }).join('') + '</ul></div>';
+    }
+    if (d.decisions && d.decisions.length > 0) {
+      h += '<div class="summary-section"><h3>🔖 決議</h3><ul>' + d.decisions.map(function(a) { return '<li>' + escHtml(a) + '</li>'; }).join('') + '</ul></div>';
+    }
+    body.innerHTML = h || '<div style="padding:20px;color:var(--text-muted)">無法產生有效摘要</div>';
+    if (d.costUSD !== undefined) {
+      cost.textContent = "API cost: $" + d.costUSD.toFixed(6);
+    }
+  })
+  .catch(function(e) {
+    body.innerHTML = '<div style="color:#dc2626;padding:20px">\u26a0 連線錯誤: ' + escHtml(e.message) + '</div>';
+  });
+});
+
+// Close modal
+getEl("btnModalClose").addEventListener("click", function() {
+  getEl("summaryModal").classList.remove("visible");
+});
+getEl("summaryModal").addEventListener("click", function(e) {
+  if (e.target === this) this.classList.remove("visible");
+});
+
+// Update summary button state when entries change
+var _origClearAll = clearAll;
+clearAll = function() {
+  _origClearAll();
+  getEl("btnSummary").disabled = true;
+};
+
 </script>
+<div class="modal-overlay" id="summaryModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="summaryTitle">會議摘要</div>
+      <button class="modal-close" id="btnModalClose">&times;</button>
+    </div>
+    <div class="modal-body" id="summaryBody">
+      <div class="summary-loading"><div class="shimmer">正在產生摘要…</div></div>
+    </div>
+    <div class="summary-cost" id="summaryCost"></div>
+  </div>
+</div>
 </body>
 </html>

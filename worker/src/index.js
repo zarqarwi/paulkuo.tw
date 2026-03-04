@@ -455,6 +455,8 @@ async function handleSTT(request, env) {
 
   const audioFile = formData.get('audio');
   const targetLang = formData.get('targetLang') || 'zh-TW';
+  let glossary = [];
+  try { const g = formData.get('glossary'); if (g) glossary = JSON.parse(g); } catch(e) {}
   if (!audioFile) {
     return jsonResponse({ error: 'Missing audio file' }, 400, request);
   }
@@ -512,12 +514,16 @@ async function handleSTT(request, env) {
   };
   const targetName = TNAMES[targetLang] || targetLang;
   const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
+  let glossaryHint = '';
+  if (glossary && glossary.length > 0) {
+    glossaryHint = '\nGlossary (always use these exact translations):\n' + glossary.map(g => '- ' + g.term + ' → ' + g.translation).join('\n') + '\n';
+  }
   const claudeBody = JSON.stringify({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 1024,
     messages: [{
       role: 'user',
-      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else.${twHint}\n\n${transcript.slice(0, 2000)}`
+      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else.${twHint}${glossaryHint}\n\n${transcript.slice(0, 2000)}`
     }]
   });
 
@@ -590,7 +596,7 @@ async function handleTranslate(request, env) {
     return jsonResponse({ error: 'Invalid JSON' }, 400, request);
   }
 
-  const { text, sourceLang, targetLang } = body;
+  const { text, sourceLang, targetLang, glossary } = body;
   if (!text || !targetLang) {
     return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   }
@@ -626,7 +632,7 @@ async function handleTranslate(request, env) {
         max_tokens: 1024,
         messages: [{
           role: 'user',
-          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
+          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}${glossary && glossary.length > 0 ? '\nGlossary (always use these exact translations):\n' + glossary.map(g => '- ' + g.term + ' \u2192 ' + g.translation).join('\n') + '\n' : ''}\n\n${trimmedText}`
         }]
       })
     });
