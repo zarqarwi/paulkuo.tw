@@ -172,6 +172,7 @@ var SILENCE_THRESHOLD = 0.015;  // RMS below this = silence
 var SILENCE_DURATION = 1500;    // ms of silence before sending
 var MIN_CHUNK_MS = 800;         // ignore chunks shorter than this
 var chunkStartTime = 0;
+var hasSound = false;
 
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -228,11 +229,12 @@ function startVolumeMeter(stream) {
 
     // Silence detection
     if (rms < SILENCE_THRESHOLD) {
-      if (!silenceTimer && chunks.length > 0) {
+      if (!silenceTimer && (Date.now() - chunkStartTime) > MIN_CHUNK_MS) {
         silenceTimer = setTimeout(function() { sendChunks(); }, SILENCE_DURATION);
       }
     } else {
       if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+      hasSound = true;
     }
     requestAnimationFrame(tick);
   }
@@ -266,13 +268,14 @@ function startRecording() {
     };
 
     mediaRecorder.onstop = function() {
-      // If stopped by silence detection, send; if stopped by user, also send remaining
-      if (chunks.length > 0 && (Date.now() - chunkStartTime) > MIN_CHUNK_MS) {
+      // Send if we have data and detected sound
+      if (chunks.length > 0 && hasSound) {
         var blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
         sendAudio(blob);
       }
       chunks = [];
       chunkStartTime = Date.now();
+      hasSound = false;
 
       // Restart if still recording
       if (recording) {
