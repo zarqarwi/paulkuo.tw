@@ -1,0 +1,113 @@
+---
+/**
+ * SiteHead.astro — <head> 內容元件
+ * 負責 meta tags, OG, Twitter, JSON-LD, hreflang, CSS, fonts
+ * 由 BaseLayout.astro 在 <head> 內呼叫，不自帶 <head> 標籤
+ */
+import { createHash } from 'crypto';
+import { readFileSync } from 'fs';
+
+const cssHash = (file: string) => createHash('md5').update(readFileSync(`public/styles/${file}`)).digest('hex').slice(0, 8);
+const globalCssV = cssHash('global.css');
+const cjkCssV = cssHash('cjk-fixes.css');
+
+interface Props {
+  title: string;
+  description: string;
+  ogType: string;
+  ogUrl: string;
+  ogImage: string;
+  schemaJson?: string;
+  canonical: string;
+  currentLang: string;
+  hreflangs: { lang: string; href: string }[];
+}
+
+const {
+  title,
+  description,
+  ogType,
+  ogUrl,
+  ogImage,
+  schemaJson,
+  canonical,
+  currentLang,
+  hreflangs,
+} = Astro.props;
+---
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title}</title>
+<meta name="description" content={description}>
+<meta name="author" content="Paul Kuo">
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:type" content={ogType}>
+<meta property="og:url" content={ogUrl}>
+<meta property="og:image" content={ogImage}>
+<meta property="og:locale" content={currentLang === 'zh-Hant' ? 'zh_TW' : currentLang === 'zh-CN' ? 'zh_CN' : currentLang === 'ja' ? 'ja_JP' : 'en_US'} />
+<meta property="og:site_name" content="Paul Kuo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content={title}>
+<meta name="twitter:description" content={description}>
+<meta name="twitter:image" content={ogImage}>
+<meta name="twitter:site" content="@zarqarwi">
+<meta name="twitter:creator" content="@zarqarwi">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<link rel="canonical" href={canonical}>
+{hreflangs.map(h => (
+  <link rel="alternate" hreflang={h.lang} href={h.href} />
+))}
+<link rel="alternate" type="application/rss+xml" title="Paul Kuo RSS Feed" href="/rss.xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/favicon.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href={`/styles/global.css?v=${globalCssV}`}>
+<link rel="stylesheet" href={`/styles/cjk-fixes.css?v=${cjkCssV}`}>
+{schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://paulkuo.tw/#person",
+      "name": "Paul Kuo",
+      "alternateName": "郭曜郎",
+      "url": "https://paulkuo.tw",
+      "image": "https://paulkuo.tw/paul-photo.png",
+      "jobTitle": "Commercial Integration & AI Digital Development Director",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "SDTI 佳龍科技",
+        "url": "https://www.sdti.com.tw"
+      },
+      "knowsAbout": ["Circular Economy", "AI Systems", "Semiconductor", "Theology"],
+      "sameAs": [
+        "https://x.com/zarqarwi",
+        "https://www.linkedin.com/in/paulkuo",
+        "https://www.threads.net/@zarqarwi",
+        "https://www.youtube.com/@kuopaul8265",
+        "https://www.facebook.com/guo.yao.lang.2025",
+        "https://www.instagram.com/zarqarwi",
+        "https://bsky.app/profile/paulkuo.bsky.social"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://paulkuo.tw/#website",
+      "name": "Paul Kuo",
+      "url": "https://paulkuo.tw",
+      "description": "在技術與文明的交匯處，重建秩序、循環再利用、守護人性尊嚴。",
+      "publisher": { "@id": "https://paulkuo.tw/#person" },
+      "inLanguage": ["zh-Hant", "en", "ja", "zh-Hans"]
+    }
+  ]
+}
+</script>
+<script src="/webmcp.js" defer></script>

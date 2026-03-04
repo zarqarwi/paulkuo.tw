@@ -1,0 +1,38 @@
+---
+/**
+ * FocusMode.astro — 專注閱讀模式
+ * 文章頁面顯示切換按鈕，隱藏 nav/ticker/footer 專注閱讀
+ */
+---
+
+<button class="focus-mode-btn" id="focusModeBtn" title="專注閱讀" aria-label="Focus Mode" style="display:none">
+  <span class="focus-icon">👁</span>
+</button>
+
+<script is:inline>
+(function() {
+  var btn = document.getElementById('focusModeBtn'); if (!btn) return;
+  var isArticle = !!document.querySelector('.article-page, .article-content'); if (!isArticle) return;
+  btn.style.display = 'flex';
+  var active = false;
+  btn.addEventListener('click', function() {
+    active = !active;
+    var nav = document.getElementById('main-nav'); var ticker = document.querySelector('.cost-ticker'); var footer = document.querySelector('footer');
+    if (active) {
+      document.body.classList.add('focus-mode');
+      if (nav) nav.style.transform = 'translateY(-100%)'; if (ticker) { ticker.style.transform = 'translateY(-100%)'; ticker.style.opacity = '0'; }
+      if (footer) footer.style.display = 'none';
+      btn.querySelector('.focus-icon').textContent = '✕'; btn.title = '結束專注';
+      document.body.style.paddingTop = '0';
+      var content = document.querySelector('.article-content, .article-page'); if (content) content.style.paddingTop = '40px';
+    } else {
+      document.body.classList.remove('focus-mode');
+      if (nav) nav.style.transform = ''; if (ticker) { ticker.style.transform = ''; ticker.style.opacity = ''; }
+      if (footer) footer.style.display = '';
+      btn.querySelector('.focus-icon').textContent = '👁'; btn.title = '專注閱讀';
+      document.body.style.paddingTop = '';
+      var content = document.querySelector('.article-content, .article-page'); if (content) content.style.paddingTop = '';
+    }
+  });
+})();
+</script>

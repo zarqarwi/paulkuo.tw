@@ -1,0 +1,32 @@
+---
+/**
+ * SiteFooter.astro — 網站頁尾元件
+ * 包含品牌、社群連結、版權宣告、AI-ready 指示器
+ */
+---
+
+<footer role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">Paul Kuo</a>
+      <p class="footer-tagline">在技術與文明的交匯處，重建秩序。</p>
+    </div>
+    <div class="footer-social">
+      <span class="footer-social-label">找到我</span>
+      <div class="footer-social-links">
+        <a href="https://x.com/zarqarwi" target="_blank" rel="noopener" aria-label="X" title="X (Twitter)">𝕏</a>
+        <a href="https://www.linkedin.com/in/paulkuo" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">in</a>
+        <a href="https://www.threads.net/@zarqarwi" target="_blank" rel="noopener" aria-label="Threads" title="Threads">◉</a>
+        <a href="https://www.youtube.com/@kuopaul8265" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube">▶</a>
+        <a href="https://www.facebook.com/guo.yao.lang.2025" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook">f</a>
+        <a href="https://www.instagram.com/zarqarwi" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">📷</a>
+        <a href="https://bsky.app/profile/paulkuo.bsky.social" target="_blank" rel="noopener" aria-label="Bluesky" title="Bluesky">🦋</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Paul Kuo. Built with conviction.</span>
+      <a href="/subscribe" class="footer-rss" title="RSS 訂閱">RSS</a>
+      <span class="agent-indicator" id="agentIndicator" style="display:none;opacity:0;transition:opacity 0.3s ease;font-size:0.75rem;color:var(--text-secondary);cursor:help" title="This site supports AI agent interaction via WebMCP">✦ AI-ready</span>
+    </div>
+  </div>
+</footer>
