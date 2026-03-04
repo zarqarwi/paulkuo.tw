@@ -169,7 +169,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 .entry-translated.same-lang{display:none}
 
 /* Matrix rain canvas */
-.matrix-canvas{position:fixed;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:0}
+.matrix-canvas{position:sticky;top:0;left:0;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:-1;margin-bottom:-100%}
 .matrix-canvas.active{opacity:1}
 </style>
 </head>
@@ -206,8 +206,8 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
   <div class="glossary-hint">輸入專有名詞和對應翻譯，翻譯和語音辨識時會優先使用這些術語。</div>
 </div>
 <div class="error-bar" id="errorBar"></div>
-<canvas class="matrix-canvas" id="matrixCanvas"></canvas>
 <div class="content" id="content">
+  <canvas class="matrix-canvas" id="matrixCanvas"></canvas>
   <div class="empty" id="empty">
     <div style="font-size:48px;opacity:.25">🎙️</div>
     <div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">
@@ -767,11 +767,11 @@ var matrixCharSize = 15;
 var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\u30B5\u30B7\u30B9\u30BB\u30BD\u30BF\u30C1\u30C4\u30C6\u30C8\u30CA\u30CB\u30CC\u30CD\u30CE\u30CF\u30D2\u30D5\u30D8\u30DB\u30DE\u30DF\u30E0\u30E1\u30E2\u30E4\u30E6\u30E8\u30E9\u30EA\u30EB\u30EC\u30ED\u30EF\u30F3ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&=";
 
 function positionMatrixCanvas() {
-  var rect = getEl("content").getBoundingClientRect();
-  matrixCanvas.style.left = rect.left + "px";
-  matrixCanvas.style.top = rect.top + "px";
-  matrixCanvas.width = rect.width;
-  matrixCanvas.height = rect.height;
+  var c = getEl("content");
+  matrixCanvas.width = c.clientWidth;
+  matrixCanvas.height = c.clientHeight;
+  matrixCanvas.style.width = c.clientWidth + "px";
+  matrixCanvas.style.height = c.clientHeight + "px";
 }
 
 function initMatrix() {
@@ -833,7 +833,7 @@ function stopMatrix() {
 }
 
 window.addEventListener("resize", function() {
-  if (matrixActive) positionMatrixCanvas();
+  if (matrixActive) { positionMatrixCanvas(); initMatrix(); }
 });
 
 </script>
