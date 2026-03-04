@@ -50,7 +50,6 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 .lang-btns{display:flex;gap:4px;flex-wrap:wrap}
 .lang-btn{padding:5px 12px;border-radius:100px;font-size:12px;border:1.5px solid var(--border);cursor:pointer;background:transparent;color:var(--text-secondary);font-family:var(--font-body);transition:all .2s;font-weight:500}
 .lang-btn:hover{border-color:var(--brand-navy);color:var(--brand-navy)}
-.lang-btn.src-active{background:var(--brand-navy);color:#fff;border-color:var(--brand-navy);font-weight:600}
 .lang-btn.tgt-active{background:var(--accent-circular);color:#fff;border-color:var(--accent-circular);font-weight:600}
 .spacer{flex:1}
 .btn-clear{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
@@ -69,19 +68,23 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 .content{flex:1;min-height:0;overflow-y:auto;padding:20px 28px 80px 28px}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:16px;color:var(--text-muted)}
 
+/* Volume meter */
+.vol-bar{height:3px;background:var(--border-light);border-radius:2px;overflow:hidden;margin:0 28px}
+.vol-fill{height:100%;background:var(--accent-circular);width:0%;transition:width .1s}
+
 /* Entry cards */
 .entry{margin-bottom:12px;padding:16px 20px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border-light);animation:fadeIn .3s ease-out;transition:box-shadow .2s}
 .entry:hover{box-shadow:var(--shadow-sm)}
 .entry-meta{font-size:10px;color:var(--accent-ai);font-family:monospace;margin-bottom:10px;font-weight:500}
+.entry-lang{display:inline-block;padding:1px 6px;border-radius:4px;background:rgba(37,99,235,.08);font-size:9px;font-weight:600;color:var(--accent-ai);margin-left:6px}
 .entry-original{font-size:14px;line-height:1.8;color:var(--text-primary);margin-bottom:10px;padding-left:12px;border-left:3px solid var(--brand-navy);font-family:var(--font-cjk)}
 .entry-translated{font-size:14px;line-height:1.8;padding-left:12px;border-left:3px solid var(--accent-circular);min-height:20px;color:var(--accent-circular);font-family:var(--font-cjk);font-weight:500}
 .shimmer{background:linear-gradient(90deg,var(--text-muted) 25%,var(--text-secondary) 50%,var(--text-muted) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
-/* Interim */
-.interim{padding:12px 20px;border-radius:var(--radius);background:rgba(37,99,235,.04);border:1px dashed rgba(37,99,235,.2)}
-.interim-text{font-size:14px;color:var(--accent-ai);padding-left:12px;border-left:2px dashed var(--accent-ai);opacity:.7;font-family:var(--font-cjk)}
-.cursor-blink{display:inline-block;width:2px;height:16px;background:var(--accent-ai);margin-left:2px;vertical-align:middle;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+/* Recording indicator */
+.rec-indicator{display:none;align-items:center;gap:6px;font-size:11px;color:#dc2626;font-weight:600}
+.rec-indicator.visible{display:flex}
+.rec-dot{width:8px;height:8px;border-radius:50%;background:#dc2626;animation:pulse 1.5s infinite}
 
 /* Footer */
 .footer{padding:10px 28px;border-top:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-muted);background:var(--bg)}
@@ -102,6 +105,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
   .entry{padding:12px 14px}
   .entry-original,.entry-translated{font-size:13px}
   .footer{padding:8px 16px}
+  .vol-bar{margin:0 16px}
 }
 </style>
 </head>
@@ -111,29 +115,31 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
     <div class="logo">T</div>
     <div>
       <div class="header-title">阿哥拉廣場｜即時會議翻譯</div>
-      <div class="header-sub">Web Speech API + Claude Haiku (Worker)</div>
+      <div class="header-sub">Whisper + Claude Haiku · 自動語言偵測</div>
     </div>
   </div>
   <div class="status">
+    <div class="rec-indicator" id="recIndicator"><div class="rec-dot"></div><span>REC</span></div>
     <div class="status-dot" id="statusDot"></div>
     <span class="status-text" id="statusText">就緒</span>
   </div>
 </div>
 <div class="controls">
-  <span class="lang-label">聽</span>
-  <div class="lang-btns" id="srcBtns"></div>
-  <span style="font-size:18px;color:var(--text-muted)">→</span>
-  <span class="lang-label">譯</span>
+  <span class="lang-label">翻譯成</span>
   <div class="lang-btns" id="tgtBtns"></div>
   <div class="spacer"></div>
   <button class="btn-clear" id="btnClear">清除</button>
-  <button class="btn-main btn-start" id="btnToggle">▶ 開始翻譯</button>
+  <button class="btn-main btn-start" id="btnToggle">🎙 開始翻譯</button>
 </div>
+<div class="vol-bar"><div class="vol-fill" id="volFill"></div></div>
 <div class="error-bar" id="errorBar"></div>
 <div class="content" id="content">
   <div class="empty" id="empty">
     <div style="font-size:48px;opacity:.25">🎙️</div>
-    <div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始翻譯」後對著麥克風說話<br><span id="langHint" style="font-size:12px"></span></div>
+    <div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">
+      按「開始翻譯」後對著麥克風說話<br>
+      <span style="font-size:12px">自動偵測語言（日/英/中/韓）· 支援所有瀏覽器</span>
+    </div>
   </div>
 </div>
 <div class="footer">
@@ -141,40 +147,268 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
 <script>
-var WORKER_URL="https://paulkuo-ticker.paul-4bf.workers.dev";
-var LANGS={"ja":{label:"日本語",flag:"🇯🇵",code:"ja-JP"},"zh-TW":{label:"繁體中文",flag:"🇹🇼",code:"zh-TW"},"en":{label:"English",flag:"🇺🇸",code:"en-US"},"zh-CN":{label:"简体中文",flag:"🇨🇳",code:"zh-CN"},"ko":{label:"한국어",flag:"🇰🇷",code:"ko-KR"}};
-var srcLang="ja",tgtLang="zh-TW",listening=false,recognition=null,restartTimer=null,nextId=0,allEntries=[];
-function getEl(id){return document.getElementById(id)}
-function escHtml(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
-function setStatus(type){var dot=getEl("statusDot"),txt=getEl("statusText");var m={"ready":["就緒","var(--text-muted)",false],"listening":["聆聽中","#059669",true],"no-speech":["等待語音…","#d97706",true],"error":["錯誤","#dc2626",false]};var v=m[type]||m["ready"];txt.textContent=v[0];txt.style.color=v[1];dot.style.background=v[1];if(v[2])dot.classList.add("pulse");else dot.classList.remove("pulse")}
-function showError(msg){var b=getEl("errorBar");b.textContent="⚠ "+msg;b.classList.add("visible")}
-function hideError(){getEl("errorBar").classList.remove("visible")}
-function renderLangs(){var sc=getEl("srcBtns"),tc=getEl("tgtBtns");sc.innerHTML="";tc.innerHTML="";var keys=Object.keys(LANGS);for(var i=0;i<keys.length;i++){(function(k){var lang=LANGS[k];var btn=document.createElement("button");btn.className="lang-btn"+(k===srcLang?" src-active":"");btn.textContent=lang.flag+" "+lang.label;btn.addEventListener("click",function(){var wasOn=listening;if(wasOn)stopRec();srcLang=k;if(srcLang===tgtLang){var alt=Object.keys(LANGS).filter(function(x){return x!==srcLang});tgtLang=alt[0]}renderLangs();updateHint();if(wasOn)setTimeout(startRec,200)});sc.appendChild(btn)})(keys[i])}for(var j=0;j<keys.length;j++){(function(k){if(k===srcLang)return;var lang=LANGS[k];var btn=document.createElement("button");btn.className="lang-btn"+(k===tgtLang?" tgt-active":"");btn.textContent=lang.flag+" "+lang.label;btn.addEventListener("click",function(){tgtLang=k;renderLangs();updateHint()});tc.appendChild(btn)})(keys[j])}}
-function updateHint(){var h=getEl("langHint");if(h)h.textContent="支援 "+LANGS[srcLang].label+" → "+LANGS[tgtLang].label+" 即時翻譯"}
-function addEntry(text){var id=++nextId;var ts=new Date().toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",second:"2-digit"});var entry={id:id,original:text,translated:null,done:false,ts:ts,src:srcLang,tgt:tgtLang};allEntries.push(entry);var emp=getEl("empty");if(emp)emp.remove();var div=document.createElement("div");div.className="entry";div.id="entry-"+id;div.innerHTML='<div class="entry-meta">'+ts+" · "+(LANGS[entry.src]||{}).flag+" → "+(LANGS[entry.tgt]||{}).flag+'</div><div class="entry-original">'+escHtml(text)+'</div><div class="entry-translated" id="trans-'+id+'"><span class="shimmer">翻譯中...</span></div>';getEl("content").appendChild(div);updateCount();scrollBottom();doTranslate(entry)}
-function updateTrans(entry){var el=getEl("trans-"+entry.id);if(!el)return;el.textContent=entry.translated||"";scrollBottom()}
-function showInterim(text){var box=getEl("interimBox");if(!text){if(box)box.remove();return}if(!box){box=document.createElement("div");box.id="interimBox";box.className="interim";getEl("content").appendChild(box)}box.innerHTML='<div class="interim-text">'+escHtml(text)+'<span class="cursor-blink"></span></div>';scrollBottom()}
-function clearAll(){allEntries=[];nextId=0;getEl("content").innerHTML='<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始翻譯」後對著麥克風說話<br><span id="langHint" style="font-size:12px"></span></div></div>';updateHint();updateCount()}
-function updateCount(){getEl("countLabel").textContent=allEntries.length+" 筆翻譯"}
-function scrollBottom(){if(getEl("autoScroll").checked){var c=getEl("content");requestAnimationFrame(function(){c.scrollTop=c.scrollHeight})}}
+var WORKER_URL = "https://paulkuo-ticker.paul-4bf.workers.dev";
+var LANGS = {
+  "zh-TW": {label:"繁體中文", flag:"🇹🇼"},
+  "en":    {label:"English",  flag:"🇺🇸"},
+  "ja":    {label:"日本語",   flag:"🇯🇵"},
+  "zh-CN": {label:"简体中文", flag:"🇨🇳"},
+  "ko":    {label:"한국어",   flag:"🇰🇷"}
+};
+var LANG_FLAGS = {"ja":"🇯🇵","en":"🇺🇸","zh-TW":"🇹🇼","zh-CN":"🇨🇳","ko":"🇰🇷","chinese":"🇨🇳","japanese":"🇯🇵","english":"🇺🇸","korean":"🇰🇷"};
 
-function doTranslate(entry){
-  fetch(WORKER_URL+"/translate",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({text:entry.original,sourceLang:entry.src,targetLang:entry.tgt})
-  })
-  .then(function(r){if(!r.ok)return r.json().then(function(d){throw new Error(d.error||"HTTP "+r.status)});return r.json()})
-  .then(function(d){entry.translated=d.translated||"(空白)";entry.done=true;updateTrans(entry)})
-  .catch(function(e){entry.translated="⚠ "+e.message;entry.done=true;updateTrans(entry)});
+var tgtLang = "zh-TW";
+var recording = false;
+var mediaRecorder = null;
+var audioContext = null;
+var analyser = null;
+var silenceTimer = null;
+var chunks = [];
+var nextId = 0;
+var allEntries = [];
+
+// Tuning
+var SILENCE_THRESHOLD = 0.015;  // RMS below this = silence
+var SILENCE_DURATION = 1500;    // ms of silence before sending
+var MIN_CHUNK_MS = 800;         // ignore chunks shorter than this
+var chunkStartTime = 0;
+
+function getEl(id) { return document.getElementById(id); }
+function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+// Status
+function setStatus(type) {
+  var dot = getEl("statusDot"), txt = getEl("statusText"), rec = getEl("recIndicator");
+  var m = {
+    "ready":     ["就緒",       "var(--text-muted)", false],
+    "listening": ["聆聽中",     "#059669",           true],
+    "sending":   ["辨識中…",    "var(--accent-ai)",  true],
+    "error":     ["錯誤",       "#dc2626",           false]
+  };
+  var v = m[type] || m["ready"];
+  txt.textContent = v[0]; txt.style.color = v[1]; dot.style.background = v[1];
+  if (v[2]) { dot.classList.add("pulse"); } else { dot.classList.remove("pulse"); }
+  rec.classList.toggle("visible", type === "listening" || type === "sending");
 }
 
-function startRec(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){showError("此瀏覽器不支援 Web Speech API");return}recognition=new SR();recognition.continuous=true;recognition.interimResults=true;recognition.lang=LANGS[srcLang].code;recognition.maxAlternatives=1;recognition.onstart=function(){setStatus("listening");hideError()};recognition.onresult=function(ev){var interim="";for(var i=ev.resultIndex;i<ev.results.length;i++){var t=ev.results[i][0].transcript;if(ev.results[i].isFinal){var tr=t.trim();if(tr){showInterim("");addEntry(tr)}}else{interim+=t}}if(interim)showInterim(interim)};recognition.onerror=function(ev){if(ev.error==="no-speech"){setStatus("no-speech");return}if(ev.error==="aborted")return;showError("語音辨識錯誤: "+ev.error);setStatus("error")};recognition.onend=function(){if(listening){restartTimer=setTimeout(function(){if(listening)try{recognition.start()}catch(e){}},300)}else{setStatus("ready");showInterim("")}};try{recognition.start();listening=true;updateToggle()}catch(e){showError("無法啟動: "+e.message)}}
-function stopRec(){listening=false;if(restartTimer)clearTimeout(restartTimer);if(recognition){recognition.stop();recognition=null}setStatus("ready");showInterim("");updateToggle()}
-function updateToggle(){var btn=getEl("btnToggle");if(listening){btn.className="btn-main btn-stop";btn.textContent="■ 停止"}else{btn.className="btn-main btn-start";btn.textContent="▶ 開始翻譯"}}
-getEl("btnToggle").addEventListener("click",function(){if(listening)stopRec();else startRec()});
-getEl("btnClear").addEventListener("click",clearAll);
-renderLangs();updateHint();
+function showError(msg) { var b = getEl("errorBar"); b.textContent = "⚠ " + msg; b.classList.add("visible"); }
+function hideError() { getEl("errorBar").classList.remove("visible"); }
+
+// Target language buttons (no source selection needed — Whisper auto-detects)
+function renderLangs() {
+  var tc = getEl("tgtBtns");
+  tc.innerHTML = "";
+  Object.keys(LANGS).forEach(function(k) {
+    var lang = LANGS[k];
+    var btn = document.createElement("button");
+    btn.className = "lang-btn" + (k === tgtLang ? " tgt-active" : "");
+    btn.textContent = lang.flag + " " + lang.label;
+    btn.addEventListener("click", function() { tgtLang = k; renderLangs(); });
+    tc.appendChild(btn);
+  });
+}
+
+// Volume meter
+function startVolumeMeter(stream) {
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  var source = audioContext.createMediaStreamSource(stream);
+  analyser = audioContext.createAnalyser();
+  analyser.fftSize = 512;
+  source.connect(analyser);
+  var dataArray = new Float32Array(analyser.fftSize);
+  var volEl = getEl("volFill");
+
+  function tick() {
+    if (!recording) { volEl.style.width = "0%"; return; }
+    analyser.getFloatTimeDomainData(dataArray);
+    var sum = 0;
+    for (var i = 0; i < dataArray.length; i++) sum += dataArray[i] * dataArray[i];
+    var rms = Math.sqrt(sum / dataArray.length);
+    volEl.style.width = Math.min(100, rms * 500) + "%";
+
+    // Silence detection
+    if (rms < SILENCE_THRESHOLD) {
+      if (!silenceTimer && chunks.length > 0) {
+        silenceTimer = setTimeout(function() { sendChunks(); }, SILENCE_DURATION);
+      }
+    } else {
+      if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+// Recording
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    recording = true;
+    updateToggle();
+    setStatus("listening");
+    hideError();
+
+    // Use webm/opus if available, fallback to mp4/aac (iOS Safari)
+    var mimeType = "audio/webm;codecs=opus";
+    if (!MediaRecorder.isTypeSupported(mimeType)) {
+      mimeType = "audio/mp4";
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = ""; // let browser decide
+      }
+    }
+
+    var options = mimeType ? { mimeType: mimeType } : {};
+    mediaRecorder = new MediaRecorder(stream, options);
+    chunks = [];
+    chunkStartTime = Date.now();
+
+    mediaRecorder.ondataavailable = function(e) {
+      if (e.data && e.data.size > 0) chunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = function() {
+      // If stopped by silence detection, send; if stopped by user, also send remaining
+      if (chunks.length > 0 && (Date.now() - chunkStartTime) > MIN_CHUNK_MS) {
+        var blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
+        sendAudio(blob);
+      }
+      chunks = [];
+      chunkStartTime = Date.now();
+
+      // Restart if still recording
+      if (recording) {
+        try { mediaRecorder.start(); } catch(e) {}
+      }
+    };
+
+    mediaRecorder.start();
+    startVolumeMeter(stream);
+    // Keep reference to stream for cleanup
+    mediaRecorder._stream = stream;
+  }).catch(function(e) {
+    showError("無法取得麥克風: " + e.message);
+    setStatus("error");
+  });
+}
+
+function sendChunks() {
+  silenceTimer = null;
+  if (mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.stop(); // triggers onstop → sends audio → restarts
+  }
+}
+
+function stopRecording() {
+  recording = false;
+  if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+  if (mediaRecorder) {
+    if (mediaRecorder.state === "recording") {
+      mediaRecorder.stop(); // will trigger onstop, but recording=false so won't restart
+    }
+    // Stop all tracks
+    if (mediaRecorder._stream) {
+      mediaRecorder._stream.getTracks().forEach(function(t) { t.stop(); });
+    }
+    mediaRecorder = null;
+  }
+  if (audioContext) { audioContext.close(); audioContext = null; }
+  getEl("volFill").style.width = "0%";
+  setStatus("ready");
+  updateToggle();
+}
+
+// Send audio to Worker /stt
+function sendAudio(blob) {
+  var id = ++nextId;
+  var ts = new Date().toLocaleTimeString("zh-TW", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  var entry = {id:id, original:"", translated:null, detectedLang:"", ts:ts, tgt:tgtLang};
+  allEntries.push(entry);
+
+  var emp = getEl("empty");
+  if (emp) emp.remove();
+
+  var div = document.createElement("div");
+  div.className = "entry";
+  div.id = "entry-" + id;
+  div.innerHTML = '<div class="entry-meta">' + ts + ' · <span class="shimmer">辨識中…</span></div>' +
+    '<div class="entry-original" id="orig-' + id + '"><span class="shimmer">語音辨識處理中</span></div>' +
+    '<div class="entry-translated" id="trans-' + id + '"><span class="shimmer">翻譯中...</span></div>';
+  getEl("content").appendChild(div);
+  updateCount();
+  scrollBottom();
+
+  setStatus("sending");
+
+  var form = new FormData();
+  form.append("audio", blob, "audio.webm");
+  form.append("targetLang", tgtLang);
+
+  fetch(WORKER_URL + "/stt", { method: "POST", body: form })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) {
+        updateEntry(id, "⚠ " + d.error, "", "");
+        return;
+      }
+      if (!d.original) {
+        // Empty — remove the entry
+        var el = getEl("entry-" + id);
+        if (el) el.remove();
+        allEntries = allEntries.filter(function(e) { return e.id !== id; });
+        updateCount();
+        return;
+      }
+      updateEntry(id, d.original, d.translated, d.detectedLang);
+      if (recording) setStatus("listening");
+    })
+    .catch(function(e) {
+      updateEntry(id, "⚠ 連線錯誤: " + e.message, "", "");
+      if (recording) setStatus("listening");
+    });
+}
+
+function updateEntry(id, original, translated, detectedLang) {
+  var entry = allEntries.find(function(e) { return e.id === id; });
+  if (entry) { entry.original = original; entry.translated = translated; entry.detectedLang = detectedLang; }
+
+  var metaEl = getEl("entry-" + id);
+  if (!metaEl) return;
+  var flag = LANG_FLAGS[detectedLang] || "🌐";
+  var tgtFlag = (LANGS[entry.tgt] || {}).flag || "";
+  var ts = entry.ts;
+  metaEl.querySelector(".entry-meta").innerHTML = ts + " · " + flag + " → " + tgtFlag +
+    (detectedLang ? '<span class="entry-lang">' + detectedLang + '</span>' : '');
+  getEl("orig-" + id).textContent = original;
+  getEl("trans-" + id).textContent = translated || "";
+  scrollBottom();
+}
+
+// UI helpers
+function clearAll() {
+  allEntries = []; nextId = 0;
+  getEl("content").innerHTML = '<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:14px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始翻譯」後對著麥克風說話<br><span style="font-size:12px">自動偵測語言（日/英/中/韓）· 支援所有瀏覽器</span></div></div>';
+  updateCount();
+}
+function updateCount() { getEl("countLabel").textContent = allEntries.length + " 筆翻譯"; }
+function scrollBottom() {
+  if (getEl("autoScroll").checked) {
+    var c = getEl("content");
+    requestAnimationFrame(function() { c.scrollTop = c.scrollHeight; });
+  }
+}
+function updateToggle() {
+  var btn = getEl("btnToggle");
+  if (recording) { btn.className = "btn-main btn-stop"; btn.textContent = "■ 停止"; }
+  else { btn.className = "btn-main btn-start"; btn.textContent = "🎙 開始翻譯"; }
+}
+
+// Event listeners
+getEl("btnToggle").addEventListener("click", function() {
+  if (recording) stopRecording(); else startRecording();
+});
+getEl("btnClear").addEventListener("click", clearAll);
+
+// Init
+renderLangs();
 </script>
 </body>
 </html>

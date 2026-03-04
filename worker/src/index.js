@@ -10,6 +10,7 @@
  *   GET  /health    — 健康檢查
  *   GET  /sleep     — 睡眠資料分析（?year=2025 或 ?start=...&end=...）
  *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
+ *   POST /stt       — 語音辨識 + 翻譯（Whisper → Claude Haiku）
  * 
  * Cron Trigger:
  *   每 6 小時 refresh Fitbit OAuth2 token
@@ -402,6 +403,126 @@ async function fetchSleepData(kv, params) {
   throw new Error('Missing parameter: use ?year=2025 or ?month=2025-03');
 }
 
+// === STT via Whisper + Translate via Claude Haiku ===
+const STT_RATE_LIMIT = 20; // max requests per minute per IP
+
+async function handleSTT(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+  if (!env.OPENAI_API_KEY) {
+    return jsonResponse({ error: 'OPENAI_API_KEY not configured' }, 500, request);
+  }
+  if (!env.ANTHROPIC_API_KEY) {
+    return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
+  }
+
+  // Rate limit
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rateKey = `rate_stt_${ip}_${Math.floor(Date.now() / 60000)}`;
+  const count = parseInt(await env.TICKER_KV.get(rateKey) || '0', 10);
+  if (count >= STT_RATE_LIMIT) {
+    return jsonResponse({ error: 'Rate limited. Max 20 requests/min.' }, 429, request);
+  }
+  await env.TICKER_KV.put(rateKey, String(count + 1), { expirationTtl: 120 });
+
+  // Parse form data (audio file + targetLang)
+  let formData;
+  try {
+    formData = await request.formData();
+  } catch (e) {
+    return jsonResponse({ error: 'Expected multipart form data' }, 400, request);
+  }
+
+  const audioFile = formData.get('audio');
+  const targetLang = formData.get('targetLang') || 'zh-TW';
+  if (!audioFile) {
+    return jsonResponse({ error: 'Missing audio file' }, 400, request);
+  }
+
+  // Check file size (max 10MB)
+  if (audioFile.size > 10 * 1024 * 1024) {
+    return jsonResponse({ error: 'Audio file too large (max 10MB)' }, 400, request);
+  }
+
+  // Step 1: Whisper STT
+  const whisperForm = new FormData();
+  whisperForm.append('file', audioFile, 'audio.webm');
+  whisperForm.append('model', 'whisper-1');
+  whisperForm.append('response_format', 'verbose_json');
+
+  let transcript, detectedLang;
+  try {
+    const whisperRes = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
+      body: whisperForm,
+    });
+    if (!whisperRes.ok) {
+      const err = await whisperRes.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Whisper API ${whisperRes.status}`);
+    }
+    const whisperData = await whisperRes.json();
+    transcript = (whisperData.text || '').trim();
+    detectedLang = whisperData.language || 'unknown';
+  } catch (e) {
+    return jsonResponse({ error: 'Whisper: ' + e.message }, 502, request);
+  }
+
+  if (!transcript) {
+    return jsonResponse({ original: '', detectedLang: 'unknown', translated: '' }, 200, request);
+  }
+
+  // Map Whisper language codes to our lang codes
+  const WHISPER_TO_LANG = {
+    'japanese': 'ja', 'english': 'en', 'chinese': 'zh-TW',
+    'korean': 'ko', 'mandarin': 'zh-TW'
+  };
+  const langCode = WHISPER_TO_LANG[detectedLang] || detectedLang;
+
+  // Skip translation if source == target
+  if (langCode === targetLang) {
+    return jsonResponse({ original: transcript, detectedLang: langCode, translated: transcript }, 200, request);
+  }
+
+  // Step 2: Claude Haiku translation
+  const TNAMES = {
+    'ja': '日本語', 'zh-TW': '繁體中文', 'en': 'English',
+    'zh-CN': '简体中文', 'ko': '한국어'
+  };
+  const targetName = TNAMES[targetLang] || targetLang;
+  const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
+
+  try {
+    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else.${twHint}\n\n${transcript.slice(0, 2000)}`
+        }]
+      })
+    });
+    if (!claudeRes.ok) {
+      const err = await claudeRes.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Claude API ${claudeRes.status}`);
+    }
+    const claudeData = await claudeRes.json();
+    const translated = claudeData.content?.[0]?.text?.trim() || '';
+    return jsonResponse({ original: transcript, detectedLang: langCode, translated }, 200, request);
+  } catch (e) {
+    // Return transcript even if translation fails
+    return jsonResponse({ original: transcript, detectedLang: langCode, translated: '⚠ ' + e.message }, 200, request);
+  }
+}
+
 // === Translate via Claude Haiku ===
 const TRANSLATE_RATE_LIMIT = 30; // max requests per minute per IP
 
@@ -551,13 +672,18 @@ async function handleRequest(request, env) {
   }
 
 
-  // Translate
+  // Translate (legacy Web Speech API)
   if (path === '/translate') {
     return handleTranslate(request, env);
   }
 
+  // STT + Translate (Whisper + Claude Haiku)
+  if (path === '/stt') {
+    return handleSTT(request, env);
+  }
+
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
