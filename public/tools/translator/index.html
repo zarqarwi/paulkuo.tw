@@ -173,6 +173,7 @@ var SILENCE_DURATION = 1500;    // ms of silence before sending
 var MIN_CHUNK_MS = 800;         // ignore chunks shorter than this
 var chunkStartTime = 0;
 var hasSound = false;
+var autoSendInterval = null;
 
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -264,13 +265,16 @@ function startRecording() {
     chunkStartTime = Date.now();
 
     mediaRecorder.ondataavailable = function(e) {
+      console.log('[translator] data available:', e.data ? e.data.size : 0, 'bytes');
       if (e.data && e.data.size > 0) chunks.push(e.data);
     };
 
     mediaRecorder.onstop = function() {
-      // Send if we have data and detected sound
-      if (chunks.length > 0 && hasSound) {
+      console.log('[translator] recorder stopped, chunks:', chunks.length, 'hasSound:', hasSound);
+      // Send if we have data
+      if (chunks.length > 0) {
         var blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
+        console.log('[translator] sending blob:', blob.size, 'bytes');
         sendAudio(blob);
       }
       chunks = [];
@@ -279,14 +283,23 @@ function startRecording() {
 
       // Restart if still recording
       if (recording) {
-        try { mediaRecorder.start(); } catch(e) {}
+        try { mediaRecorder.start(3000); } catch(e) { console.error('[translator] restart failed:', e); }
       }
     };
 
-    mediaRecorder.start();
+    mediaRecorder.start(3000); // timeslice: fire ondataavailable every 3s
     startVolumeMeter(stream);
     // Keep reference to stream for cleanup
     mediaRecorder._stream = stream;
+    console.log('[translator] recording started, mimeType:', mediaRecorder.mimeType);
+
+    // Fallback: auto-send every 5 seconds if silence detection doesn't trigger
+    autoSendInterval = setInterval(function() {
+      if (recording && chunks.length > 0 && mediaRecorder && mediaRecorder.state === 'recording') {
+        console.log('[translator] auto-send triggered, chunks:', chunks.length);
+        mediaRecorder.stop();
+      }
+    }, 5000);
   }).catch(function(e) {
     showError("無法取得麥克風: " + e.message);
     setStatus("error");
@@ -303,6 +316,7 @@ function sendChunks() {
 function stopRecording() {
   recording = false;
   if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+  if (autoSendInterval) { clearInterval(autoSendInterval); autoSendInterval = null; }
   if (mediaRecorder) {
     if (mediaRecorder.state === "recording") {
       mediaRecorder.stop(); // will trigger onstop, but recording=false so won't restart
@@ -345,8 +359,9 @@ function sendAudio(blob) {
   form.append("audio", blob, "audio.webm");
   form.append("targetLang", tgtLang);
 
+  console.log('[translator] POSTing to /stt, blob size:', blob.size);
   fetch(WORKER_URL + "/stt", { method: "POST", body: form })
-    .then(function(r) { return r.json(); })
+    .then(function(r) { console.log('[translator] /stt response:', r.status); return r.json(); })
     .then(function(d) {
       if (d.error) {
         updateEntry(id, "⚠ " + d.error, "", "");
