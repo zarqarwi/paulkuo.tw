@@ -41,22 +41,27 @@ const actionLabels: Record<string, Record<LangKey, string>> = {
   'cover-image': { 'zh-tw': 'DALL-E 封面圖', en: 'DALL-E Cover Image', ja: 'DALL-E カバー画像', 'zh-cn': 'DALL-E 封面图' },
   'image-gen': { 'zh-tw': 'DALL-E 封面圖', en: 'DALL-E Cover Image', ja: 'DALL-E カバー画像', 'zh-cn': 'DALL-E 封面图' },
 };
-
 const items: CostItem[] = [];
-const seenActions = new Set<string>();
-
+const aggregated = new Map<string, { label: string; costUSD: number; costTWD: number }>();
 for (const r of costs) {
-  // Deduplicate: cover-image and image-gen are the same thing
+  // Normalize: cover-image and image-gen are the same thing
   const normalizedAction = r.action === 'image-gen' ? 'cover-image' : r.action;
-  if (seenActions.has(normalizedAction)) continue;
-  seenActions.add(normalizedAction);
-
   const labels = actionLabels[r.action] || actionLabels[normalizedAction];
-  items.push({
-    label: labels ? labels[lang] || labels['zh-tw'] : r.action,
-    costUSD: r.costUSD || 0,
-    costTWD: r.costTWD || 0,
-  });
+  const label = labels ? labels[lang] || labels['zh-tw'] : r.action;
+  if (aggregated.has(normalizedAction)) {
+    const existing = aggregated.get(normalizedAction)!;
+    existing.costUSD += r.costUSD || 0;
+    existing.costTWD += r.costTWD || 0;
+  } else {
+    aggregated.set(normalizedAction, {
+      label,
+      costUSD: r.costUSD || 0,
+      costTWD: r.costTWD || 0,
+    });
+  }
+}
+for (const entry of aggregated.values()) {
+  items.push(entry);
 }
 
 // Sort: translations first, then cover image

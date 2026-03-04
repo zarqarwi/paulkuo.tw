@@ -469,3 +469,4 @@
 {"timestamp":"2026-03-03T10:09:49.738Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":3608,"outputTokens":3239,"costUSD":0.059409,"costTWD":1.93,"note":"pope-leo-xiv-ai-homily"}
 {"timestamp":"2026-03-03T15:19:06.006Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":3610,"outputTokens":2222,"costUSD":0.04416,"costTWD":1.44,"note":"pope-leo-xiv-ai-homily"}
 {"timestamp":"2026-03-03T15:26:36.296Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":3693,"outputTokens":2303,"costUSD":0.045624,"costTWD":1.48,"note":"pope-leo-xiv-ai-homily"}
+{"timestamp":"2026-03-03T10:05:00.000Z","service":"openai","model":"dall-e-3","action":"image-gen","source":"generate-cover","inputTokens":0,"outputTokens":0,"costUSD":0.04,"costTWD":1.3,"note":"pope-leo-xiv-ai-homily"}
