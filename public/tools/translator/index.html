@@ -169,7 +169,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 .entry-translated.same-lang{display:none}
 
 /* Matrix rain canvas */
-.matrix-canvas{position:sticky;top:0;left:0;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:0;margin-bottom:-100%}
+.matrix-canvas{position:sticky;top:0;right:0;margin-left:auto;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:0;margin-bottom:-100%;display:block}
 .matrix-canvas.active{opacity:1}
 </style>
 </head>
@@ -769,18 +769,18 @@ var matrixChars = "\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\
 
 function positionMatrixCanvas() {
   var c = getEl("content");
-  matrixCanvas.width = c.clientWidth;
-  matrixCanvas.height = c.clientHeight;
-  matrixCanvas.style.width = c.clientWidth + "px";
-  matrixCanvas.style.height = c.clientHeight + "px";
+  var w = Math.floor(c.clientWidth * 0.28);
+  var h = c.clientHeight;
+  matrixCanvas.width = w;
+  matrixCanvas.height = h;
+  matrixCanvas.style.width = w + "px";
+  matrixCanvas.style.height = h + "px";
 }
 
 function initMatrix() {
   positionMatrixCanvas();
   var cols = Math.floor(matrixCanvas.width / matrixCharSize);
   matrixColumns = [];
-  // Only use right ~28% of columns
-  matrixStartCol = Math.floor(cols * 0.72);
   for (var i = 0; i < cols; i++) {
     matrixColumns.push(Math.floor(Math.random() * matrixCanvas.height / matrixCharSize));
   }
@@ -790,10 +790,10 @@ function drawMatrix() {
   if (!matrixActive) return;
   // Semi-transparent bg overlay to create trailing effect
   matrixCtx.fillStyle = "rgba(250, 250, 248, 0.06)";
-  matrixCtx.fillRect(matrixStartCol * matrixCharSize, 0, matrixCanvas.width, matrixCanvas.height);
+  matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
   matrixCtx.font = "bold " + matrixCharSize + "px monospace";
 
-  for (var i = matrixStartCol; i < matrixColumns.length; i++) {
+  for (var i = 0; i < matrixColumns.length; i++) {
     var ch = matrixChars[Math.floor(Math.random() * matrixChars.length)];
     var x = i * matrixCharSize;
     var y = matrixColumns[i] * matrixCharSize;
