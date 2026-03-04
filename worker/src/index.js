@@ -601,6 +601,15 @@ async function handleTranslate(request, env) {
 
     const data = await res.json();
     const translated = data.content?.[0]?.text?.trim() || '';
+    // Log cost
+    const usage = data.usage || {};
+    const hp = PRICING['claude-haiku-4-5-20251001'];
+    const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
+    await logCost(env.TICKER_KV, {
+      service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator',
+      inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
+      costUSD: +claudeCost.toFixed(6), note: `legacy ${targetLang}`
+    });
 
     return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
   } catch (e) {
