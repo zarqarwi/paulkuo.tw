@@ -35,6 +35,25 @@ const ALLOWED_ORIGINS = [
   'null', // file:// protocol (local HTML)
 ];
 
+// === API Pricing (per million tokens) ===
+const PRICING = {
+  'claude-haiku-4-5-20251001': { inputPerMTok: 0.80, outputPerMTok: 4.00 },
+  'whisper-1': { perMinute: 0.006 },
+};
+
+// === Cost Logging ===
+async function logCost(kv, entry) {
+  try {
+    const key = 'api_costs_' + new Date().toISOString().slice(0, 10); // daily key
+    const existing = await kv.get(key);
+    const logs = existing ? JSON.parse(existing) : [];
+    logs.push({ ...entry, timestamp: new Date().toISOString() });
+    await kv.put(key, JSON.stringify(logs), { expirationTtl: 90 * 86400 }); // 90 days
+  } catch (e) {
+    console.error('logCost failed:', e.message);
+  }
+}
+
 // === CORS ===
 function corsHeaders(request) {
   const origin = request.headers.get('Origin') || '';
