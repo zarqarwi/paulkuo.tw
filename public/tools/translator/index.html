@@ -112,6 +112,10 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   .btn-clear{min-height:36px;font-size:12px}
   .btn-main{min-height:40px;padding:8px 16px;font-size:13px;white-space:nowrap;flex-shrink:0}
   .today-stats,.today-stats.visible{display:none!important}
+  .controls > div:last-of-type{flex-wrap:wrap;justify-content:flex-end}
+  .controls > div:last-of-type .spacer{display:none}
+  .controls > div:last-of-type .glossary-toggle{order:-1}
+  .btn-main{flex:1;min-width:0;justify-content:center}
   .glossary-toggle .btn-text,.btn-summary .btn-text,.btn-clear .btn-text{display:none}
   .btn-clear .btn-icon{display:inline!important}
   .content{padding:12px 16px 60px 16px}
@@ -141,7 +145,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 /* Summary button & modal */
 .btn-summary{padding:9px 18px;border-radius:100px;border:1.5px solid var(--accent-circular);background:transparent;color:var(--accent-circular);font-size:14px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
 .btn-summary:hover{background:var(--accent-circular);color:#fff}
-.btn-summary:disabled{opacity:.55;cursor:not-allowed;border-style:dashed}
+.btn-summary:disabled{opacity:.7;cursor:not-allowed;border-style:dashed}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
 .modal-overlay.visible{display:flex}
 .modal-box{background:var(--bg-card);border-radius:16px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:fadeIn .25s}
