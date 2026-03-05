@@ -841,7 +841,9 @@ function translateSegmentStreaming(id, segmentText) {
     transEl.innerHTML = '<span class="shimmer">\u7ffb\u8b6f\u4e2d...</span>';
   }
 
+  var cg = getCleanGlossary();
   var payload = { text: segmentText, sourceLang: srcLang, targetLang: tgtLang, code: inviteCode };
+  if (cg.length > 0) payload.glossary = cg;
 
   fetch(WORKER_URL + '/translate-stream', {
     method: 'POST',

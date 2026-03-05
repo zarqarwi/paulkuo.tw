@@ -715,7 +715,7 @@ async function handleTranslate(request, env) {
     return jsonResponse({ error: 'Invalid JSON' }, 400, request);
   }
 
-  const { text, sourceLang, targetLang, code: userCode } = body;
+  const { text, sourceLang, targetLang, code: userCode, glossary } = body;
   if (!text || !targetLang) {
     return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   }
@@ -819,6 +819,7 @@ async function handleTranslateStream(request, env) {
   const trimmedText = text.slice(0, 2000);
   const targetName = TNAMES[targetLang] || targetLang;
   const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
+  const glossaryHint = (glossary && glossary.length > 0) ? '\nUse these terminology translations: ' + glossary.map(g => g.term + ' → ' + g.translation).join(', ') + '.' : '';
 
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -833,7 +834,7 @@ async function handleTranslateStream(request, env) {
       stream: true,
       messages: [{
         role: 'user',
-        content: 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translation, nothing else.' + twHint + '\n\n' + trimmedText
+        content: 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translation, nothing else.' + twHint + glossaryHint + '\n\n' + trimmedText
       }]
     })
   });
