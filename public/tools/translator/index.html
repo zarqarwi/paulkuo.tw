@@ -626,7 +626,7 @@ var dgPreConnected = false;
 var dgPreWs = null;
 
 function preConnectDeepgram() {
-  if (dgPreConnected || !inviteCode) return;
+  if (dgPreConnected || !inviteCode) return; dgPreConnected = true;
   fetch(WORKER_URL + '/deepgram-token?code=' + encodeURIComponent(inviteCode))
     .then(function(r) { return r.json(); })
     .then(function(d) {
@@ -680,7 +680,7 @@ function connectDgWebSocket(stream) {
       var wsParams = [
         'model=nova-2',
         'interim_results=true',
-        'utterance_end_ms=1500',
+        'utterance_end_ms=3000',
         'smart_format=true',
         'punctuate=true',
         
