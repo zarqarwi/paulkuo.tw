@@ -736,47 +736,58 @@ async function handleTranslate(request, env) {
   const trimmedText = text.slice(0, 2000);
 
   const targetName = TNAMES[targetLang] || targetLang;
+  const claudeBody = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1024,
+    messages: [{
+      role: 'user',
+      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
+    }]
+  });
 
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        messages: [{
-          role: 'user',
-          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
-        }]
-      })
-    });
+  const MAX_RETRIES = 3;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt));
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: claudeBody
+      });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `Anthropic API ${res.status}`);
+      if (res.status === 529 && attempt < MAX_RETRIES - 1) {
+        console.log('Translate: Claude overloaded, retry ' + (attempt + 1));
+        continue;
+      }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || `Anthropic API ${res.status}`);
+      }
+
+      const data = await res.json();
+      const translated = data.content?.[0]?.text?.trim() || '';
+
+      // Log Claude cost with code tracking
+      const usage = data.usage || {};
+      const hp = PRICING['claude-haiku-4-5-20251001'];
+      const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
+      await logCost(env.TICKER_KV, {
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: userCode || '',
+        inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
+        costUSD: +claudeCost.toFixed(6),
+        note: (sourceLang || 'auto') + '>' + targetLang
+      });
+
+      return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
+    } catch (e) {
+      if (attempt === MAX_RETRIES - 1) {
+        return jsonResponse({ error: e.message }, 502, request);
+      }
     }
-
-    const data = await res.json();
-    const translated = data.content?.[0]?.text?.trim() || '';
-
-    // Log Claude cost with code tracking
-    const usage = data.usage || {};
-    const hp = PRICING['claude-haiku-4-5-20251001'];
-    const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
-    await logCost(env.TICKER_KV, {
-      service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: userCode || '',
-      inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
-      costUSD: +claudeCost.toFixed(6),
-      note: (sourceLang || 'auto') + '>' + targetLang
-    });
-
-    return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
-  } catch (e) {
-    return jsonResponse({ error: e.message }, 502, request);
   }
 }
 
