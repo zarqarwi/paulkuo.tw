@@ -574,6 +574,13 @@ async function handleSTT(request, env) {
   const audioFile = formData.get('audio');
   const targetLang = formData.get('targetLang') || 'zh-TW';
   const userCode = formData.get('code') || '';
+
+  // === Invite code verification ===
+  const codeInfo = await validateCode(userCode, env.TICKER_KV);
+  if (!codeInfo) {
+    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  }
+
   if (!audioFile) {
     return jsonResponse({ error: 'Missing audio file' }, 400, request);
   }
@@ -708,9 +715,15 @@ async function handleTranslate(request, env) {
     return jsonResponse({ error: 'Invalid JSON' }, 400, request);
   }
 
-  const { text, sourceLang, targetLang } = body;
+  const { text, sourceLang, targetLang, code: userCode } = body;
   if (!text || !targetLang) {
     return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
+  }
+
+  // === Invite code verification ===
+  const codeInfo = await validateCode(userCode || '', env.TICKER_KV);
+  if (!codeInfo) {
+    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
   }
 
   // Rate limit (in-memory, no KV writes)
@@ -750,6 +763,17 @@ async function handleTranslate(request, env) {
     const data = await res.json();
     const translated = data.content?.[0]?.text?.trim() || '';
 
+    // Log Claude cost with code tracking
+    const usage = data.usage || {};
+    const hp = PRICING['claude-haiku-4-5-20251001'];
+    const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
+    await logCost(env.TICKER_KV, {
+      service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: userCode || '',
+      inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
+      costUSD: +claudeCost.toFixed(6),
+      note: (sourceLang || 'auto') + '>' + targetLang
+    });
+
     return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
   } catch (e) {
     return jsonResponse({ error: e.message }, 502, request);
@@ -774,6 +798,13 @@ async function handleSummarize(request, env) {
   }
 
   const { text, lang, glossary, code: sumCode } = body;
+
+  // === Invite code verification ===
+  const sumCodeInfo = await validateCode(sumCode || '', env.TICKER_KV);
+  if (!sumCodeInfo) {
+    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  }
+
   if (!text || text.trim().length < 20) {
     return jsonResponse({ error: 'Text too short for summary' }, 400, request);
   }
