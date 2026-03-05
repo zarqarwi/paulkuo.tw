@@ -787,7 +787,11 @@ async function handleSummarize(request, env) {
     glossaryHint = '\nGlossary (use these term translations):\n' + glossary.map(g => '- ' + g.term + ' = ' + g.translation).join('\n') + '\n';
   }
 
-  const prompt = `You are a professional meeting assistant. Analyze the following meeting transcript and produce a structured summary in ${langName}.${glossaryHint}
+  let localeHint = '';
+  if (lang === 'zh-TW') {
+    localeHint = '\nIMPORTANT: Use Taiwan Traditional Chinese (台灣正體中文). Use Taiwan-specific terms: 簡報 (not 演示文稿), 投影片 (not 幻燈片), 軟體 (not 软件), 影片 (not 視頻), 網路 (not 網絡). Never use Simplified Chinese characters or mainland Chinese expressions.\n';
+  }
+  const prompt = `You are a professional meeting assistant. Analyze the following meeting transcript and produce a structured summary in ${langName}.${localeHint}${glossaryHint}
 
 Output ONLY valid JSON with this structure:
 {
