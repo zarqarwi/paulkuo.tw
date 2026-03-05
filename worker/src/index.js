@@ -14,6 +14,7 @@
  *   GET  /costs     — API 費用追蹤（?days=30）
  *   GET  /usage         — 使用統計（admin only, ?days=30&code=xxx）
  *   POST /validate-code — 邀請碼驗證
+ *   GET  /deepgram-token — Deepgram 臨時 token（需邀請碼）
  * 
  * Cron Trigger:
  *   每 6 小時 refresh Fitbit OAuth2 token
@@ -986,6 +987,22 @@ async function handleUsage(request, env) {
   }, 200, request);
 }
 
+// === Deepgram Token (for streaming STT) ===
+async function handleDeepgramToken(request, env) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code') || '';
+  const codeInfo = await validateCode(code, env.TICKER_KV);
+  if (!codeInfo) {
+    return jsonResponse({ error: 'Invalid invite code' }, 403, request);
+  }
+  const dgKey = env.DEEPGRAM_API_KEY;
+  if (!dgKey) {
+    return jsonResponse({ error: 'Deepgram not configured' }, 500, request);
+  }
+  // Return key for frontend WebSocket connection (protected by invite code)
+  return jsonResponse({ key: dgKey, expiresIn: 3600 }, 200, request);
+}
+
 async function handleRequest(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -1085,13 +1102,18 @@ async function handleRequest(request, env) {
     return handleUsage(request, env);
   }
 
+  // Deepgram token for streaming STT
+  if (path === '/deepgram-token') {
+    return handleDeepgramToken(request, env);
+  }
+
   // Invite code validation
   if (path === '/validate-code') {
     return handleValidateCode(request, env);
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/deepgram-token', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
