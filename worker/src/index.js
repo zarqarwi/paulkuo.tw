@@ -12,6 +12,7 @@
  *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
  *   POST /stt       — 語音辨識 + 翻譯（Whisper → Claude Haiku）
  *   GET  /costs     — API 費用追蹤（?days=30）
+ *   POST /validate-code — 邀請碼驗證
  * 
  * Cron Trigger:
  *   每 6 小時 refresh Fitbit OAuth2 token
@@ -36,6 +37,26 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'null', // file:// protocol (local HTML)
 ];
+
+// === Invite Codes (hardcoded defaults + KV overrides) ===
+const DEFAULT_CODES = {
+  'agora2026': { name: 'Paul', role: 'admin' },
+  'demo2026':  { name: 'Demo User', role: 'user' },
+};
+
+async function validateCode(code, kv) {
+  if (!code) return null;
+  const c = code.trim().toLowerCase();
+  // Check KV first (allows dynamic code management)
+  try {
+    const kvCodes = await kv.get('invite_codes');
+    if (kvCodes) {
+      const parsed = JSON.parse(kvCodes);
+      if (parsed[c]) return parsed[c];
+    }
+  } catch (e) { /* ignore KV errors, fall through to defaults */ }
+  return DEFAULT_CODES[c] || null;
+}
 
 // === In-memory rate limiting (no KV writes) ===
 const rateLimitMap = new Map();
@@ -840,6 +861,22 @@ ${truncated}`;
   }
 }
 
+// === Validate Invite Code ===
+async function handleValidateCode(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+  let body;
+  try { body = await request.json(); } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400, request);
+  }
+  const result = await validateCode(body.code, env.TICKER_KV);
+  if (result) {
+    return jsonResponse({ valid: true, name: result.name, role: result.role }, 200, request);
+  }
+  return jsonResponse({ valid: false }, 200, request);
+}
+
 async function handleRequest(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -933,8 +970,14 @@ async function handleRequest(request, env) {
     return handleCosts(request, env);
   }
 
+
+  // Invite code validation
+  if (path === '/validate-code') {
+    return handleValidateCode(request, env);
+  }
+
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/validate-code', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===

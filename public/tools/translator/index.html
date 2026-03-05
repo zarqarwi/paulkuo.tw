@@ -169,6 +169,23 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 /* Same-language: hide redundant translation row */
 .entry-translated.same-lang{display:none}
 
+
+/* Invite gate overlay */
+.gate-overlay{position:fixed;inset:0;background:rgba(250,250,248,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.gate-box{background:var(--bg-card);border-radius:16px;padding:36px 32px;box-shadow:var(--shadow-md);max-width:380px;width:90%;text-align:center}
+.gate-logo{font-size:42px;margin-bottom:12px}
+.gate-title{font-size:22px;font-weight:700;color:var(--brand-navy);margin-bottom:6px;font-family:var(--font-cjk)}
+.gate-desc{font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.6}
+.gate-input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;font-family:var(--font-body);outline:none;transition:border-color .2s;text-align:center;letter-spacing:.1em}
+.gate-input:focus{border-color:var(--accent-ai)}
+.gate-input::placeholder{color:var(--text-muted);letter-spacing:0}
+.gate-btn{width:100%;padding:12px;border-radius:100px;border:none;background:var(--brand-navy);color:#fff;font-size:16px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .2s;margin-top:12px}
+.gate-btn:hover{background:var(--brand-navy-light);transform:translateY(-1px)}
+.gate-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.gate-error{color:#dc2626;font-size:13px;margin-top:10px;display:none}
+.user-badge{display:none;padding:5px 12px;border-radius:100px;background:rgba(37,99,235,.08);color:var(--accent-ai);font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(37,99,235,.15);transition:all .2s}
+.user-badge:hover{background:rgba(37,99,235,.15)}
+
 /* Matrix rain strips */
 .matrix-strip{position:fixed;top:0;left:0;width:48px;height:100vh;height:100dvh;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:9999;background:rgba(10,25,18,0.92)}
 .matrix-strip.active{opacity:1}
@@ -176,6 +193,16 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 </style>
 </head>
 <body>
+<div class="gate-overlay" id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">🏛️</div>
+    <div class="gate-title">阿哥拉廣場</div>
+    <div class="gate-desc">即時會議翻譯工具（測試版）<br>請輸入邀請碼進入</div>
+    <input class="gate-input" id="gateInput" type="text" placeholder="邀請碼" autocomplete="off" spellcheck="false">
+    <button class="gate-btn" id="gateBtn">進入</button>
+    <div class="gate-error" id="gateError">邀請碼無效，請確認後重試</div>
+  </div>
+</div>
 <div class="header">
   <div class="header-left">
     <div class="logo">T</div>
@@ -185,6 +212,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
     </div>
   </div>
   <div class="status">
+    <span class="user-badge" id="userBadge" title="點擊登出"></span>
     <div class="rec-indicator" id="recIndicator"><div class="rec-dot"></div><span>REC</span></div>
     <div class="status-dot" id="statusDot"></div>
     <span class="status-text" id="statusText">就緒</span>
