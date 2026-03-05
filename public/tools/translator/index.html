@@ -378,8 +378,8 @@ function startRecording() {
 
     mediaRecorder.onstop = function() {
       console.log('[translator] recorder stopped, chunks:', chunks.length, 'hasSound:', hasSound);
-      // Send if we have data
-      if (chunks.length > 0) {
+      // Skip if no meaningful sound (prevents Whisper hallucination)
+      if (chunks.length > 0 && hasSound) {
         var blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
         console.log('[translator] sending blob:', blob.size, 'bytes');
         sendAudio(blob);
