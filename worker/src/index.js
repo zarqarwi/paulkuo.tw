@@ -425,25 +425,49 @@ const PRICING = {
   'claude-haiku-4-5-20251001': { inputPerMTok: 0.80, outputPerMTok: 4.00 },
 };
 
+// === Batched cost logging (reduces KV writes by ~50x) ===
+const costBuffer = [];
+const COST_FLUSH_SIZE = 50;
+let costFlushTimer = null;
+
 async function logCost(kv, record) {
   const now = new Date();
-  const dateKey = `costs_${now.toISOString().slice(0, 10)}`;
-  const entry = {
+  costBuffer.push({
     timestamp: now.toISOString(),
     ...record,
     costTWD: +(record.costUSD * 32.5).toFixed(4),
-  };
-  try {
-    const existing = await kv.get(dateKey);
-    const arr = existing ? JSON.parse(existing) : [];
-    arr.push(entry);
-    await kv.put(dateKey, JSON.stringify(arr), { expirationTtl: 90 * 86400 }); // keep 90 days
-  } catch (e) {
-    console.error('logCost failed:', e.message);
+  });
+  if (costBuffer.length >= COST_FLUSH_SIZE) {
+    await flushCosts(kv);
+  }
+}
+
+async function flushCosts(kv) {
+  if (costBuffer.length === 0) return;
+  const toFlush = costBuffer.splice(0);
+  // Group by date
+  const byDate = {};
+  toFlush.forEach(e => {
+    const d = e.timestamp.slice(0, 10);
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(e);
+  });
+  for (const [date, entries] of Object.entries(byDate)) {
+    const dateKey = `costs_${date}`;
+    try {
+      const existing = await kv.get(dateKey);
+      const arr = existing ? JSON.parse(existing) : [];
+      arr.push(...entries);
+      await kv.put(dateKey, JSON.stringify(arr), { expirationTtl: 90 * 86400 });
+    } catch (e) {
+      console.error('flushCosts failed:', e.message);
+    }
   }
 }
 
 async function handleCosts(request, env) {
+  // Flush buffer first so results are up-to-date
+  await flushCosts(env.TICKER_KV);
   const url = new URL(request.url);
   const days = Math.min(parseInt(url.searchParams.get('days') || '30', 10), 90);
   const records = [];
@@ -899,11 +923,14 @@ async function handleRequest(request, env) {
     return handleSTT(request, env);
   }
 
+<<<<<<< Updated upstream
   // Meeting summary
   if (path === '/summarize') {
     return handleSummarize(request, env);
   }
 
+=======
+>>>>>>> Stashed changes
   // Cost tracking
   if (path === '/costs') {
     return handleCosts(request, env);
@@ -925,6 +952,13 @@ async function handleScheduled(event, env) {
 
 // === Export ===
 export default {
-  fetch: handleRequest,
+  fetch: async (request, env, ctx) => {
+    const response = await handleRequest(request, env);
+    // Flush cost buffer after response if batch is large enough
+    if (costBuffer.length >= 10) {
+      ctx.waitUntil(flushCosts(env.TICKER_KV));
+    }
+    return response;
+  },
   scheduled: handleScheduled,
 };
