@@ -167,7 +167,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 @media(max-width:640px){.modal-actions{padding:10px 18px 16px}.modal-action-btn{font-size:11px;padding:8px 12px}}
 
 /* Same-language: hide redundant translation row */
-.entry-translated.same-lang{display:none}
+.entry-translated.same-lang{font-size:12px;color:var(--text-muted);font-style:italic}
 
 
 /* Invite gate overlay */
@@ -486,6 +486,9 @@ function updateEntry(id, original, translated, detectedLang) {
   if (translated && translated !== original) {
     transEl.textContent = translated;
     transEl.classList.remove("same-lang");
+  } else if (translated && translated === original) {
+    transEl.textContent = "✓ 同語言確認";
+    transEl.classList.add("same-lang");
   } else {
     transEl.textContent = "";
     transEl.classList.add("same-lang");
