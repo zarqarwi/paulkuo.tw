@@ -617,27 +617,62 @@ function stopRecording() {
 }
 
 // === Deepgram Streaming STT ===
-function startDeepgramStreaming() {
-  setStatus('sending');
-  hideError();
-  // Step 1: Get Deepgram key
+// Pre-connect: fetch token + open WS as soon as user logs in
+var dgPreConnected = false;
+var dgPreWs = null;
+
+function preConnectDeepgram() {
+  if (dgPreConnected || !inviteCode) return;
   fetch(WORKER_URL + '/deepgram-token?code=' + encodeURIComponent(inviteCode))
     .then(function(r) { return r.json(); })
     .then(function(d) {
-      if (d.error) { showError('Deepgram: ' + d.error); setStatus('error'); return; }
+      if (d.error || !d.key) return;
       dgKey = d.key;
-      // Step 2: Get mic
-      return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      console.log('[dg] Pre-fetched token, length=' + dgKey.length);
     })
+    .catch(function(e) { console.warn('[dg] Pre-fetch failed:', e); });
+}
+
+function startDeepgramStreaming() {
+  setStatus('sending');
+  hideError();
+
+  function afterToken() {
+    // Get mic
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } })
     .then(function(stream) {
-      if (!stream) return; // error already shown
       dgStream = stream;
       recording = true;
       updateToggle();
       startMatrix();
       startVolumeMeter(stream);
+      connectDgWebSocket(stream);
+    })
+    .catch(function(e) {
+      showError('\u7121\u6cd5\u53d6\u5f97\u9ea5\u514b\u98a8: ' + e.message);
+      setStatus('error');
+    });
+  }
 
-      // Step 3: Open Deepgram WebSocket
+  if (dgKey) {
+    afterToken();
+  } else {
+    fetch(WORKER_URL + '/deepgram-token?code=' + encodeURIComponent(inviteCode))
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.error) { showError('Deepgram: ' + d.error); setStatus('error'); return; }
+        dgKey = d.key;
+        afterToken();
+      })
+      .catch(function(e) {
+        showError('Token \u53d6\u5f97\u5931\u6557: ' + e.message);
+        setStatus('error');
+      });
+  }
+}
+
+function connectDgWebSocket(stream) {
+      // Open Deepgram WebSocket
       var wsParams = [
         'model=nova-2',
         'interim_results=true',
@@ -645,14 +680,15 @@ function startDeepgramStreaming() {
         'smart_format=true',
         'punctuate=true',
         'detect_language=true',
-        'token=' + encodeURIComponent(dgKey)
       ].join('&');
       var wsUrl = 'wss://api.deepgram.com/v1/listen?' + wsParams;
-      dgWs = new WebSocket(wsUrl);
+      dgWs = new WebSocket(wsUrl, ['token', dgKey]);
       dgWs.binaryType = 'arraybuffer';
 
       dgWs.onopen = function() {
-        console.log('[dg] WebSocket connected, sending audio as ' + (dgMediaRecorder ? '' : 'pending ') + (mimeType || 'default'));
+        window._dgAttempt = 0;
+        console.log('[dg] WebSocket connected');
+        hideError();
         setStatus('listening');
         // Step 4: Start MediaRecorder, send chunks to WS
         var mimeType = 'audio/webm;codecs=opus';
@@ -1360,6 +1396,7 @@ function tryEnter() {
       hideGate();
       showUserBadge();
       loadTodayStats();
+      preConnectDeepgram();
     } else {
       getEl("gateError").style.display = "block";
       getEl("gateInput").classList.add("error");
