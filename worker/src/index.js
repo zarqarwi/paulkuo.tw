@@ -446,6 +446,14 @@ const PRICING = {
   'whisper-1': { perMinute: 0.006 },
   'claude-haiku-4-5-20251001': { inputPerMTok: 0.80, outputPerMTok: 4.00 },
 };
+// Language display names (shared across translate/stt/summarize)
+const TNAMES = {
+  'ja': '日本語', 'zh-TW': '繁體中文', 'en': 'English',
+  'zh-CN': '简体中文', 'ko': '한국어',
+  'vi': 'Tiếng Việt', 'th': 'ภาษาไทย', 'id': 'Bahasa Indonesia',
+  'de': 'Deutsch', 'es': 'Español', 'fr': 'Français'
+};
+
 
 // === Batched cost logging (reduces KV writes by ~50x) ===
 const costBuffer = [];
@@ -488,9 +496,15 @@ async function flushCosts(kv) {
 }
 
 async function handleCosts(request, env) {
+  const url = new URL(request.url);
+  // Admin auth required
+  const adminCode = url.searchParams.get('code') || '';
+  const codeInfo = await validateCode(adminCode, env.TICKER_KV);
+  if (!codeInfo || codeInfo.role !== 'admin') {
+    return jsonResponse({ error: 'Admin access required' }, 403, request);
+  }
   // Flush buffer first so results are up-to-date
   await flushCosts(env.TICKER_KV);
-  const url = new URL(request.url);
   const days = Math.min(parseInt(url.searchParams.get('days') || '30', 10), 90);
   const records = [];
   const now = new Date();
@@ -621,12 +635,6 @@ async function handleSTT(request, env) {
   }
 
   // Step 2: Claude Haiku translation (with retry)
-  const TNAMES = {
-    'ja': '日本語', 'zh-TW': '繁體中文', 'en': 'English',
-    'zh-CN': '简体中文', 'ko': '한국어',
-    'vi': 'Tiếng Việt', 'th': 'ภาษาไทย', 'id': 'Bahasa Indonesia',
-    'de': 'Deutsch', 'es': 'Español', 'fr': 'Français'
-  };
   const targetName = TNAMES[targetLang] || targetLang;
   const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
   const claudeBody = JSON.stringify({
@@ -714,12 +722,6 @@ async function handleTranslate(request, env) {
   // Truncate to prevent abuse (max 2000 chars)
   const trimmedText = text.slice(0, 2000);
 
-  const TNAMES = {
-    'ja': '日本語', 'zh-TW': '繁體中文', 'en': 'English',
-    'zh-CN': '简体中文', 'ko': '한국어',
-    'vi': 'Tiếng Việt', 'th': 'ภาษาไทย', 'id': 'Bahasa Indonesia',
-    'de': 'Deutsch', 'es': 'Español', 'fr': 'Français'
-  };
   const targetName = TNAMES[targetLang] || targetLang;
 
   try {
@@ -777,12 +779,7 @@ async function handleSummarize(request, env) {
   }
 
   const truncated = text.slice(0, 100000);
-  const LNAMES = {
-    'zh-TW': '繁體中文', 'en': 'English', 'ja': '日本語', 'zh-CN': '简体中文', 'ko': '한국어',
-    'vi': 'Tiếng Việt', 'th': 'ภาษาไทย', 'id': 'Bahasa Indonesia',
-    'de': 'Deutsch', 'es': 'Español', 'fr': 'Français'
-  };
-  const langName = LNAMES[lang] || lang || '繁體中文';
+  const langName = TNAMES[lang] || lang || '繁體中文';
 
   let glossaryHint = '';
   if (glossary && glossary.length > 0) {
