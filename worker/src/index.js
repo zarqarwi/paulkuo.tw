@@ -12,6 +12,7 @@
  *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
  *   POST /stt       — 語音辨識 + 翻譯（Whisper → Claude Haiku）
  *   GET  /costs     — API 費用追蹤（?days=30）
+ *   GET  /usage         — 使用統計（admin only, ?days=30&code=xxx）
  *   POST /validate-code — 邀請碼驗證
  * 
  * Cron Trigger:
@@ -558,6 +559,7 @@ async function handleSTT(request, env) {
 
   const audioFile = formData.get('audio');
   const targetLang = formData.get('targetLang') || 'zh-TW';
+  const userCode = formData.get('code') || '';
   if (!audioFile) {
     return jsonResponse({ error: 'Missing audio file' }, 400, request);
   }
@@ -591,7 +593,7 @@ async function handleSTT(request, env) {
     const audioDuration = whisperData.duration || 5; // seconds
     const whisperCost = (audioDuration / 60) * PRICING['whisper-1'].perMinute;
     await logCost(env.TICKER_KV, {
-      service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator',
+      service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator', code: userCode,
       costUSD: +whisperCost.toFixed(6), durationSec: audioDuration,
       note: `${detectedLang} ${audioDuration.toFixed(1)}s`
     });
@@ -664,7 +666,7 @@ async function handleSTT(request, env) {
       const hp = PRICING['claude-haiku-4-5-20251001'];
       const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator',
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: userCode,
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +claudeCost.toFixed(6),
         note: `${langCode}→${targetLang}`
@@ -769,7 +771,7 @@ async function handleSummarize(request, env) {
     return jsonResponse({ error: 'Invalid JSON' }, 400, request);
   }
 
-  const { text, lang, glossary } = body;
+  const { text, lang, glossary, code: sumCode } = body;
   if (!text || text.trim().length < 20) {
     return jsonResponse({ error: 'Text too short for summary' }, 400, request);
   }
@@ -843,7 +845,7 @@ ${truncated}`;
       const hp = PRICING['claude-haiku-4-5-20251001'];
       const cost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'summarize', source: 'translator',
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'summarize', source: 'translator', code: sumCode || '',
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +cost.toFixed(6), note: langName
       });
@@ -879,6 +881,67 @@ async function handleValidateCode(request, env) {
     return jsonResponse({ valid: true, name: result.name, role: result.role }, 200, request);
   }
   return jsonResponse({ valid: false }, 200, request);
+}
+
+// === Usage Statistics ===
+async function handleUsage(request, env) {
+  const url = new URL(request.url);
+  const days = Math.min(parseInt(url.searchParams.get('days') || '30'), 90);
+  const adminCode = url.searchParams.get('code') || '';
+  
+  // Only admin can view usage
+  const codeInfo = await validateCode(adminCode, env.TICKER_KV);
+  if (!codeInfo || codeInfo.role !== 'admin') {
+    return jsonResponse({ error: 'Admin access required' }, 403, request);
+  }
+
+  await flushCosts(env.TICKER_KV);
+
+  const now = new Date();
+  const byCode = {};
+  let totalCost = 0;
+  let totalRequests = 0;
+
+  for (let i = 0; i < days; i++) {
+    const d = new Date(now - i * 86400000);
+    const dateKey = `costs_${d.toISOString().slice(0, 10)}`;
+    try {
+      const raw = await env.TICKER_KV.get(dateKey);
+      if (!raw) continue;
+      const entries = JSON.parse(raw);
+      entries.forEach(e => {
+        if (e.source !== 'translator') return;
+        const code = e.code || 'unknown';
+        if (!byCode[code]) {
+          byCode[code] = { code, requests: 0, costUSD: 0, costTWD: 0, actions: {}, lastUsed: '' };
+        }
+        byCode[code].requests++;
+        byCode[code].costUSD += (e.costUSD || 0);
+        byCode[code].costTWD += (e.costTWD || 0);
+        const act = e.action || 'other';
+        byCode[code].actions[act] = (byCode[code].actions[act] || 0) + 1;
+        if (e.timestamp > byCode[code].lastUsed) {
+          byCode[code].lastUsed = e.timestamp;
+        }
+        totalCost += (e.costUSD || 0);
+        totalRequests++;
+      });
+    } catch (e) { /* skip corrupted day */ }
+  }
+
+  // Round numbers
+  Object.values(byCode).forEach(u => {
+    u.costUSD = +u.costUSD.toFixed(6);
+    u.costTWD = +u.costTWD.toFixed(4);
+  });
+
+  return jsonResponse({
+    period: `${days} days`,
+    totalRequests,
+    totalCostUSD: +totalCost.toFixed(6),
+    totalCostTWD: +(totalCost * 32.5).toFixed(4),
+    users: Object.values(byCode).sort((a, b) => b.costUSD - a.costUSD)
+  }, 200, request);
 }
 
 async function handleRequest(request, env) {
@@ -975,13 +1038,18 @@ async function handleRequest(request, env) {
   }
 
 
+  // Usage statistics (admin only)
+  if (path === '/usage') {
+    return handleUsage(request, env);
+  }
+
   // Invite code validation
   if (path === '/validate-code') {
     return handleValidateCode(request, env);
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/validate-code', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
