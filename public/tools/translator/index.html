@@ -484,16 +484,13 @@ function startRecording() {
     chunkStartTime = Date.now();
 
     mediaRecorder.ondataavailable = function(e) {
-      console.log('[translator] data available:', e.data ? e.data.size : 0, 'bytes');
       if (e.data && e.data.size > 0) chunks.push(e.data);
     };
 
     mediaRecorder.onstop = function() {
-      console.log('[translator] recorder stopped, chunks:', chunks.length, 'hasSound:', hasSound);
       // Skip if no meaningful sound (prevents Whisper hallucination)
       if (chunks.length > 0 && hasSound) {
         var blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
-        console.log('[translator] sending blob:', blob.size, 'bytes');
         sendAudio(blob);
       }
       chunks = [];
@@ -510,12 +507,10 @@ function startRecording() {
     startVolumeMeter(stream);
     // Keep reference to stream for cleanup
     mediaRecorder._stream = stream;
-    console.log('[translator] recording started, mimeType:', mediaRecorder.mimeType);
 
     // Fallback: auto-send every 5 seconds if silence detection doesn't trigger
     autoSendInterval = setInterval(function() {
       if (recording && chunks.length > 0 && mediaRecorder && mediaRecorder.state === 'recording') {
-        console.log('[translator] auto-send triggered, chunks:', chunks.length);
         mediaRecorder.stop();
       }
     }, 5000);
@@ -583,6 +578,7 @@ function updateEntry(id, original, translated, detectedLang) {
 // UI helpers
 function clearAll() {
   allEntries = []; nextId = 0;
+  getEl("btnSummary").disabled = true;
   getEl("content").innerHTML = '<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始」後對著麥克風說話<br><span style="font-size:12px">自動偵測 11 種語言 · 支援所有瀏覽器</span><br><a href="#" onclick="getEl(\'helpModal\').classList.add(\'visible\');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none">第一次使用？看使用說明 →</a></div></div>';
   updateCount();
 }
@@ -693,9 +689,8 @@ function sendAudio(blob) {
   if (cg.length > 0) form.append("glossary", JSON.stringify(cg));
   form.append("code", inviteCode);
 
-  console.log('[translator] POSTing to /stt, blob size:', blob.size, 'glossary:', cg.length);
   fetch(WORKER_URL + "/stt", { method: "POST", body: form })
-    .then(function(r) { console.log('[translator] /stt response:', r.status); return r.json(); })
+    .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.error) {
         updateEntry(id, "\u26a0 " + d.error, "", "");
@@ -807,12 +802,7 @@ getEl("helpModal").addEventListener("click", function(e) {
   if (e.target === this) this.classList.remove("visible");
 });
 
-// Update summary button state when entries change
-var _origClearAll = clearAll;
-clearAll = function() {
-  _origClearAll();
-  getEl("btnSummary").disabled = true;
-};
+
 
 
 // === Summary export: last summary data ===

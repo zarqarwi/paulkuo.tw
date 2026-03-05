@@ -632,7 +632,10 @@ async function handleSTT(request, env) {
     'korean': 'ko', 'mandarin': 'zh-TW',
     'vietnamese': 'vi', 'thai': 'th', 'indonesian': 'id',
     'german': 'de', 'spanish': 'es', 'french': 'fr',
-    'nynorsk': 'ko', 'nn': 'ko'  // Whisper often misdetects Korean as Nynorsk
+    // Whisper consistently misdetects Korean speech as Norwegian Nynorsk (nynorsk/nn).
+    // Known Whisper bug: Korean prosody triggers the Nynorsk classifier.
+    // Ref: https://github.com/openai/whisper/issues/680
+    'nynorsk': 'ko', 'nn': 'ko'
   };
   const langCode = WHISPER_TO_LANG[detectedLang] || detectedLang;
 
