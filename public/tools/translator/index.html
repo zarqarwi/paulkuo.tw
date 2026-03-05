@@ -217,6 +217,12 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .matrix-strip{position:fixed;top:0;left:0;width:48px;height:100vh;height:100dvh;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:9999;background:rgba(10,25,18,0.92)}
 .matrix-strip.active{opacity:1}
 .matrix-strip-right{left:auto;right:0}
+
+/* Today stats badge */
+.today-stats{font-size:12px;color:var(--text-muted);padding:4px 12px;border-radius:100px;border:1px solid var(--border-light);background:var(--bg-section);white-space:nowrap;display:none;align-items:center;gap:6px;font-family:var(--font-body);font-variant-numeric:tabular-nums}
+.today-stats.visible{display:inline-flex}
+.today-stats .stat-val{font-weight:600;color:var(--text-secondary)}
+.today-stats .stat-cost{color:var(--accent-ai);font-weight:600}
 </style>
 </head>
 <body>
@@ -252,6 +258,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   </div>
   <div style="display:flex;align-items:center;gap:8px;width:100%">
     <button class="glossary-toggle" id="btnGlossary" title="術語表設定">📖<span class="btn-text"> 術語表</span></button>
+    <span class="today-stats" id="todayStats"></span>
     <div class="spacer"></div>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
     <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
@@ -708,6 +715,7 @@ function sendAudio(blob) {
       if (recording) setStatus("listening");
       // Enable summary button when we have entries
       getEl("btnSummary").disabled = false;
+      scheduleStatsRefresh();
     })
     .catch(function(e) {
       updateEntry(id, "\u26a0 連線錯誤: " + e.message, "", "");
@@ -1007,6 +1015,7 @@ function tryEnter() {
       sessionStorage.setItem("userName", d.name);
       hideGate();
       showUserBadge();
+      loadTodayStats();
     } else {
       getEl("gateError").style.display = "block";
       getEl("gateInput").classList.add("error");
@@ -1043,12 +1052,40 @@ if (inviteCode) {
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
-    if (d.valid) { hideGate(); userName = d.name; sessionStorage.setItem("userName", d.name); showUserBadge(); }
+    if (d.valid) { hideGate(); userName = d.name; sessionStorage.setItem("userName", d.name); showUserBadge(); loadTodayStats(); }
     else { sessionStorage.removeItem("inviteCode"); showGate(); }
   })
   .catch(function() { hideGate(); showUserBadge(); }); // offline = trust cache
 } else {
   showGate();
+}
+
+
+// === Today Stats ===
+function loadTodayStats() {
+  if (!inviteCode) return;
+  fetch(WORKER_URL + "/costs?days=1&code=" + encodeURIComponent(inviteCode))
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d) {
+      var el = getEl("todayStats");
+      var reqs = d.totalRecords || 0;
+      var cost = d.totalUSD || 0;
+      var twd = d.totalTWD || 0;
+      if (reqs === 0) {
+        el.innerHTML = "\u4eca\u65e5\uff1a\u5c1a\u672a\u4f7f\u7528";
+      } else {
+        el.innerHTML = "\u4eca\u65e5 <span class=\"stat-val\">" + reqs + " \u7b46</span> \u00b7 <span class=\"stat-cost\">$" + cost.toFixed(4) + "</span> <span style=\"font-size:10px;opacity:.6\">\u2248NT$" + twd.toFixed(2) + "</span>";
+      }
+      el.classList.add("visible");
+    })
+    .catch(function() { /* non-admin or error: hide silently */ });
+}
+
+// Refresh stats after each STT request completes
+var _statsRefreshTimer = null;
+function scheduleStatsRefresh() {
+  if (_statsRefreshTimer) clearTimeout(_statsRefreshTimer);
+  _statsRefreshTimer = setTimeout(loadTodayStats, 3000);
 }
 
 </script>
