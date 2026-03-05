@@ -1001,13 +1001,13 @@ async function handleDeepgramToken(request, env) {
   }
   // Generate temporary token (30s TTL) — recommended for client-side apps
   try {
-    const res = await fetch('https://api.deepgram.com/v1/auth/token', {
+    const res = await fetch('https://api.deepgram.com/v1/auth/grant', {
       method: 'POST',
       headers: {
         'Authorization': 'Token ' + dgKey,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ time_to_live: 120 }), // 2 min TTL for slow connections
+      body: JSON.stringify({ ttl_seconds: 120 }), // 2 min TTL for slow connections
     });
     if (!res.ok) {
       // Fallback: return raw key if temp token fails
