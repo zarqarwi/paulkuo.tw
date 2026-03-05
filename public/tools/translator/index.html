@@ -304,7 +304,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 </div>
 <div class="footer">
   <span id="countLabel">0 筆紀錄</span>
-    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇ 匯出</button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Google Sheets</span></button></div></div>
+    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇ 匯出</button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果，不含原文與時間戳</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Google Sheets</span></button></div></div>
   <button class="help-btn" id="btnHelp">❓ 使用說明</button>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
@@ -487,7 +487,6 @@ function startVolumeMeter(stream) {
 
 // Recording
 function startRecording() {
-  clearAll();
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
     recording = true;
     updateToggle();
@@ -632,6 +631,11 @@ renderLangs();
 
 // === Glossary Management ===
 var glossary = [];
+// Load glossary from sessionStorage
+try {
+  var savedGlossary = sessionStorage.getItem("glossaryData");
+  if (savedGlossary) glossary = JSON.parse(savedGlossary);
+} catch(e) { glossary = []; }
 
 function renderGlossary() {
   var container = getEl("glossaryRows");
@@ -651,14 +655,20 @@ function renderGlossary() {
       var idx = parseInt(this.getAttribute("data-idx"));
       var field = this.getAttribute("data-field");
       if (glossary[idx]) glossary[idx][field] = this.value;
+      saveGlossary();
     });
   });
   container.querySelectorAll(".glossary-rm").forEach(function(btn) {
     btn.addEventListener("click", function() {
       glossary.splice(parseInt(this.getAttribute("data-idx")), 1);
+      saveGlossary();
       renderGlossary();
     });
   });
+}
+
+function saveGlossary() {
+  try { sessionStorage.setItem("glossaryData", JSON.stringify(glossary)); } catch(e) {}
 }
 
 function getCleanGlossary() {
@@ -671,8 +681,11 @@ getEl("btnGlossary").addEventListener("click", function() {
   var btn = getEl("btnGlossary");
   panel.classList.toggle("visible");
   btn.classList.toggle("active");
-  if (panel.classList.contains("visible") && glossary.length === 0) {
-    glossary.push({term:"", translation:""});
+  if (panel.classList.contains("visible")) {
+    if (glossary.length === 0) {
+      glossary.push({term:"", translation:""});
+      saveGlossary();
+    }
     renderGlossary();
   }
 });
@@ -680,6 +693,7 @@ getEl("btnGlossary").addEventListener("click", function() {
 // Add term
 getEl("btnAddTerm").addEventListener("click", function() {
   glossary.push({term:"", translation:""});
+  saveGlossary();
   renderGlossary();
   var inputs = getEl("glossaryRows").querySelectorAll(".glossary-input");
   if (inputs.length > 0) inputs[inputs.length - 2].focus();
@@ -840,20 +854,20 @@ function buildSummaryMarkdown(d) {
   var now = new Date();
   md += '*' + now.toLocaleDateString('zh-TW') + ' ' + now.toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'}) + '*\n\n';
   if (d.summary) {
-    md += '## Summary\n\n' + d.summary + '\n\n';
+    md += '## 摘要\n\n' + d.summary + '\n\n';
   }
   if (d.keyPoints && d.keyPoints.length > 0) {
-    md += '## Key Points\n\n';
+    md += '## 重點\n\n';
     d.keyPoints.forEach(function(p) { md += '- ' + p + '\n'; });
     md += '\n';
   }
   if (d.actionItems && d.actionItems.length > 0) {
-    md += '## Action Items\n\n';
+    md += '## 待辦事項\n\n';
     d.actionItems.forEach(function(a) { md += '- [ ] ' + a + '\n'; });
     md += '\n';
   }
   if (d.decisions && d.decisions.length > 0) {
-    md += '## Decisions\n\n';
+    md += '## 決議\n\n';
     d.decisions.forEach(function(a) { md += '- ' + a + '\n'; });
     md += '\n';
   }
@@ -865,17 +879,17 @@ function buildSummaryPlainText(d) {
   t += new Array((d.title || 'Meeting Summary').length + 1).join('=') + '\n\n';
   if (d.summary) t += d.summary + '\n\n';
   if (d.keyPoints && d.keyPoints.length > 0) {
-    t += '--- Key Points ---\n';
+    t += '--- 重點 ---\n';
     d.keyPoints.forEach(function(p) { t += '\u2022 ' + p + '\n'; });
     t += '\n';
   }
   if (d.actionItems && d.actionItems.length > 0) {
-    t += '--- Action Items ---\n';
+    t += '--- 待辦事項 ---\n';
     d.actionItems.forEach(function(a) { t += '\u2022 ' + a + '\n'; });
     t += '\n';
   }
   if (d.decisions && d.decisions.length > 0) {
-    t += '--- Decisions ---\n';
+    t += '--- 決議 ---\n';
     d.decisions.forEach(function(a) { t += '\u2022 ' + a + '\n'; });
     t += '\n';
   }
@@ -1170,6 +1184,28 @@ getEl("exportTxt").addEventListener("click", function() {
 getEl("exportCsv").addEventListener("click", function() {
   var d = new Date().toISOString().slice(0, 10);
   downloadFile(buildTranscriptCsv(), d + "_transcript.csv", "text/csv;charset=utf-8");
+});
+
+// === Translated-only TXT export ===
+function buildTranslatedTxt() {
+  var lines = [];
+  var dateStr = new Date().toLocaleDateString("zh-TW");
+  lines.push("翻譯全文 — " + dateStr);
+  lines.push("輸出語言：" + (LANG_NAMES[tgtLang] || tgtLang));
+  lines.push("==================================================");
+  lines.push("");
+  allEntries.forEach(function(e) {
+    if (!e.original) return;
+    var text = (e.translated && e.translated !== e.original) ? e.translated : e.original;
+    lines.push(text);
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+
+getEl("exportTranslated").addEventListener("click", function() {
+  var d = new Date().toISOString().slice(0, 10);
+  downloadFile(buildTranslatedTxt(), d + "_translated.txt", "text/plain;charset=utf-8");
 });
 
 </script>
