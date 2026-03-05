@@ -1167,6 +1167,35 @@ async function handleRequest(request, env) {
     return handleLogCost(request, env);
   }
 
+  // WebSocket proxy to Deepgram (edge → Deepgram, much faster than client direct)
+  if (path === '/ws/stt') {
+    const upgradeHeader = request.headers.get('Upgrade');
+    if (upgradeHeader !== 'websocket') {
+      return jsonResponse({ error: 'WebSocket upgrade required' }, 426, request);
+    }
+    // Auth: code passed as query param
+    const wsCode = url.searchParams.get('code') || '';
+    const wsCodeInfo = await validateCode(wsCode, env.TICKER_KV);
+    if (!wsCodeInfo) {
+      return jsonResponse({ error: 'Invalid invite code' }, 403, request);
+    }
+    const dgKey = env.DEEPGRAM_API_KEY;
+    if (!dgKey) {
+      return jsonResponse({ error: 'Deepgram not configured' }, 500, request);
+    }
+    // Build upstream Deepgram URL with all query params except 'code'
+    const dgParams = new URLSearchParams(url.searchParams);
+    dgParams.delete('code');
+    const dgUrl = 'https://api.deepgram.com/v1/listen?' + dgParams.toString();
+    // Proxy: fetch with Upgrade header → Cloudflare auto-pipes the WebSocket
+    return fetch(dgUrl, {
+      headers: {
+        'Upgrade': 'websocket',
+        'Authorization': 'Token ' + dgKey,
+      },
+    });
+  }
+
   // Invite code validation
   if (path === '/validate-code') {
     return handleValidateCode(request, env);

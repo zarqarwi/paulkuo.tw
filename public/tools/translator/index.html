@@ -685,8 +685,8 @@ function connectDgWebSocket(stream) {
         'punctuate=true',
         'detect_language=true',
       ].join('&');
-      var wsUrl = 'wss://api.deepgram.com/v1/listen?' + wsParams;
-      dgWs = new WebSocket(wsUrl, ['token', dgKey]);
+      var wsUrl = WORKER_URL.replace('https://', 'wss://') + '/ws/stt?code=' + encodeURIComponent(inviteCode) + '&' + wsParams;
+      dgWs = new WebSocket(wsUrl);
       dgWs.binaryType = 'arraybuffer';
 
       dgWs.onopen = function() {
