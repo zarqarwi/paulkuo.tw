@@ -394,9 +394,10 @@ var LANGS = {
   "id":    {label:"Bahasa",   flag:"🇮🇩"},
   "de":    {label:"Deutsch",  flag:"🇩🇪"},
   "es":    {label:"Español",  flag:"🇪🇸"},
-  "fr":    {label:"Français", flag:"🇫🇷"}
+  "fr":    {label:"Français", flag:"🇫🇷"},
+  "pt":    {label:"Português", flag:"🇧🇷"}
 };
-var LANG_FLAGS = {"ja":"🇯🇵","en":"🇺🇸","zh-TW":"🇹🇼","zh-CN":"🇨🇳","ko":"🇰🇷","chinese":"🇨🇳","japanese":"🇯🇵","english":"🇺🇸","korean":"🇰🇷","vietnamese":"🇻🇳","vi":"🇻🇳","thai":"🇹🇭","th":"🇹🇭","indonesian":"🇮🇩","id":"🇮🇩","german":"🇩🇪","de":"🇩🇪","spanish":"🇪🇸","es":"🇪🇸","french":"🇫🇷","fr":"🇫🇷"};
+var LANG_FLAGS = {"ja":"🇯🇵","en":"🇺🇸","zh-TW":"🇹🇼","zh-CN":"🇨🇳","ko":"🇰🇷","chinese":"🇨🇳","japanese":"🇯🇵","english":"🇺🇸","korean":"🇰🇷","vietnamese":"🇻🇳","vi":"🇻🇳","thai":"🇹🇭","th":"🇹🇭","indonesian":"🇮🇩","id":"🇮🇩","german":"🇩🇪","de":"🇩🇪","spanish":"🇪🇸","es":"🇪🇸","french":"🇫🇷","fr":"🇫🇷","portuguese":"🇧🇷","pt":"🇧🇷"};
 
 var tgtLang = "zh-TW";
 var inviteCode = sessionStorage.getItem("inviteCode") || "";
@@ -1123,7 +1124,7 @@ function scheduleStatsRefresh() {
 
 
 // === Full Transcript Export ===
-var LANG_NAMES = {"ja":"日本語","zh-TW":"繁體中文","en":"English","zh-CN":"简体中文","ko":"한국어","vi":"Tiếng Việt","th":"ภาษาไทย","id":"Bahasa Indonesia","de":"Deutsch","es":"Español","fr":"Français"};
+var LANG_NAMES = {"ja":"日本語","zh-TW":"繁體中文","en":"English","zh-CN":"简体中文","ko":"한국어","vi":"Tiếng Việt","th":"ภาษาไทย","id":"Bahasa Indonesia","de":"Deutsch","es":"Español","fr":"Français","pt":"Português"};
 
 getEl("btnExport").addEventListener("click", function(e) {
   e.stopPropagation();
