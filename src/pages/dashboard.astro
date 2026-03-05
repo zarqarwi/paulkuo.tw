@@ -81,38 +81,58 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
 
 <script define:vars={{ costRecords }} is:inline>
-// ── Auth ──
-const DASH_KEY = 'paulkuo2026';
+// ── Auth (via Worker /validate-code — no hardcoded passwords) ──
+const WORKER = 'https://paulkuo-ticker.paul-4bf.workers.dev';
 const authGate = document.getElementById('authGate');
 const dashMain = document.getElementById('dashboardMain');
 const authInput = document.getElementById('authInput');
 const authBtn = document.getElementById('authBtn');
 
 var charts = {};
+var dashCode = sessionStorage.getItem('dash_code') || '';
 
-function checkAuth() {
+async function verifyCode(code) {
+  try {
+    const res = await fetch(WORKER + '/validate-code', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ code })
+    });
+    const d = await res.json();
+    if (d.valid && d.role === 'admin') return d;
+  } catch(e) {}
+  return null;
+}
+
+async function checkAuth() {
   const urlKey = new URLSearchParams(window.location.search).get('key');
-  const stored = sessionStorage.getItem('dash_auth');
-  if (urlKey === DASH_KEY || stored === DASH_KEY) {
-    sessionStorage.setItem('dash_auth', DASH_KEY);
-    authGate.style.display = 'none';
-    dashMain.style.display = 'block';
-    initDashboard();
-    return;
+  const code = urlKey || dashCode;
+  if (code) {
+    const result = await verifyCode(code);
+    if (result) {
+      dashCode = code;
+      sessionStorage.setItem('dash_code', code);
+      authGate.style.display = 'none';
+      dashMain.style.display = 'block';
+      initDashboard();
+      return;
+    }
   }
 }
-// checkAuth() moved after const declarations below
 
-authBtn.addEventListener('click', () => {
-  if (authInput.value === DASH_KEY) {
-    sessionStorage.setItem('dash_auth', DASH_KEY);
+authBtn.addEventListener('click', async () => {
+  authBtn.textContent = '驗證中…'; authBtn.disabled = true;
+  const result = await verifyCode(authInput.value.trim().toLowerCase());
+  if (result) {
+    dashCode = authInput.value.trim().toLowerCase();
+    sessionStorage.setItem('dash_code', dashCode);
     authGate.style.display = 'none';
     dashMain.style.display = 'block';
     initDashboard();
   } else {
     authInput.style.borderColor = '#ef4444';
     authInput.value = '';
-    authInput.placeholder = '密碼錯誤';
+    authInput.placeholder = '密碼錯誤或非管理員';
+    authBtn.textContent = '進入'; authBtn.disabled = false;
   }
 });
 authInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
@@ -143,7 +163,7 @@ const ACT_LABEL = { debate:'辯論', 'translate-en':'翻譯 EN', 'translate-ja':
 // Fetch live costs from Worker and merge with static data
 async function fetchLiveCosts() {
   try {
-    const res = await fetch('https://paulkuo-ticker.paul-4bf.workers.dev/costs?days=90&code=agora2026');
+    const res = await fetch(WORKER + '/costs?days=90&code=' + encodeURIComponent(dashCode));
     if (!res.ok) return [];
     const data = await res.json();
     return data.records || [];

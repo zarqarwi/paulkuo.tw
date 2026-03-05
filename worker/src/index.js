@@ -27,7 +27,7 @@
  */
 
 const FITBIT_CLIENT_ID = '23V2BH';
-const FITBIT_CLIENT_SECRET = '4adac11e3241afadf53cccfaa7b7e86a';
+// FITBIT_CLIENT_SECRET moved to env secret (wrangler secret put FITBIT_CLIENT_SECRET)
 const CACHE_TTL_SEC = 300; // 5 分鐘快取（Fitbit）
 const STOCK_SYMBOL = '436A.T';
 const STOCK_NAME = 'CyberSolutions';
@@ -103,7 +103,8 @@ async function refreshToken(kv) {
   }
   const token = JSON.parse(tokenJson);
 
-  const creds = btoa(`${FITBIT_CLIENT_ID}:${FITBIT_CLIENT_SECRET}`);
+  const creds = btoa(`${FITBIT_CLIENT_ID}:${env.FITBIT_CLIENT_SECRET || ""}`);
+    if (!env.FITBIT_CLIENT_SECRET) return jsonResponse({ error: "FITBIT_CLIENT_SECRET not configured" }, 500, request);
   const res = await fetch('https://api.fitbit.com/oauth2/token', {
     method: 'POST',
     headers: {
