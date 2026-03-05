@@ -999,8 +999,28 @@ async function handleDeepgramToken(request, env) {
   if (!dgKey) {
     return jsonResponse({ error: 'Deepgram not configured' }, 500, request);
   }
-  // Return key for frontend WebSocket connection (protected by invite code)
-  return jsonResponse({ key: dgKey, expiresIn: 3600 }, 200, request);
+  // Generate temporary token (30s TTL) — recommended for client-side apps
+  try {
+    const res = await fetch('https://api.deepgram.com/v1/auth/token', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Token ' + dgKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ time_to_live: 120 }), // 2 min TTL for slow connections
+    });
+    if (!res.ok) {
+      // Fallback: return raw key if temp token fails
+      console.error('Deepgram temp token failed:', res.status);
+      return jsonResponse({ key: dgKey, expiresIn: 3600, temp: false }, 200, request);
+    }
+    const data = await res.json();
+    return jsonResponse({ key: data.access_token || data.token, expiresIn: 120, temp: true }, 200, request);
+  } catch (e) {
+    // Fallback: return raw key
+    console.error('Deepgram temp token error:', e.message);
+    return jsonResponse({ key: dgKey, expiresIn: 3600, temp: false }, 200, request);
+  }
 }
 
 

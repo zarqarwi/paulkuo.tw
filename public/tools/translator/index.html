@@ -644,10 +644,11 @@ function startDeepgramStreaming() {
         'utterance_end_ms=1500',
         'smart_format=true',
         'punctuate=true',
-        'detect_language=true'
+        'detect_language=true',
+        'token=' + encodeURIComponent(dgKey)
       ].join('&');
       var wsUrl = 'wss://api.deepgram.com/v1/listen?' + wsParams;
-      dgWs = new WebSocket(wsUrl, ['token', dgKey]);
+      dgWs = new WebSocket(wsUrl);
       dgWs.binaryType = 'arraybuffer';
 
       dgWs.onopen = function() {
@@ -678,9 +679,21 @@ function startDeepgramStreaming() {
         handleDgMessage(evt);
       };
 
+      var dgRetried = false;
       dgWs.onerror = function(e) {
         console.error('[dg] WebSocket error', e);
-        showError('Deepgram 連線錯誤，切換至批次模式');
+        if (!dgRetried) {
+          dgRetried = true;
+          console.log('[dg] Retrying connection...');
+          showError('Deepgram 連線中…重試');
+          setTimeout(function() {
+            hideError();
+            if (recording) stopRecording();
+            startDeepgramStreaming();
+          }, 1000);
+          return;
+        }
+        showError('Deepgram 連線失敗，切換至批次模式');
         sttMode = 'whisper';
         getEl('sttMode').value = 'whisper';
         stopRecording();
