@@ -574,6 +574,7 @@ function sendAudio(blob) {
   form.append("targetLang", tgtLang);
   var cg = getCleanGlossary();
   if (cg.length > 0) form.append("glossary", JSON.stringify(cg));
+  form.append("code", inviteCode);
 
   console.log('[translator] POSTing to /stt, blob size:', blob.size, 'glossary:', cg.length);
   fetch(WORKER_URL + "/stt", { method: "POST", body: form })
