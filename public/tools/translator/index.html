@@ -261,6 +261,8 @@ var LANGS = {
 var LANG_FLAGS = {"ja":"🇯🇵","en":"🇺🇸","zh-TW":"🇹🇼","zh-CN":"🇨🇳","ko":"🇰🇷","chinese":"🇨🇳","japanese":"🇯🇵","english":"🇺🇸","korean":"🇰🇷","vietnamese":"🇻🇳","vi":"🇻🇳","thai":"🇹🇭","th":"🇹🇭","indonesian":"🇮🇩","id":"🇮🇩","german":"🇩🇪","de":"🇩🇪","spanish":"🇪🇸","es":"🇪🇸","french":"🇫🇷","fr":"🇫🇷"};
 
 var tgtLang = "zh-TW";
+var inviteCode = sessionStorage.getItem("inviteCode") || "";
+var userName = sessionStorage.getItem("userName") || "";
 var recording = false;
 var mediaRecorder = null;
 var audioContext = null;
