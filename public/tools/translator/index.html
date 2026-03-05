@@ -901,7 +901,7 @@ function translateSegmentStreaming(id, segmentText) {
                 entry._timings.ttft = performance.now();
                 firstTokenRecorded = true;
               }
-              _segmentTranslations[id] += evt.t;
+              _segmentTranslations[id] = (_segmentTranslations[id] || '') + evt.t;
               if (transEl) {
                 transEl.textContent = _segmentTranslations[id];
                 transEl.classList.remove('same-lang');
@@ -961,13 +961,18 @@ function finalizeEntry(id, text) {
   }).catch(function(e) { console.warn('[dg] cost log failed:', e); });
   dgUtteranceDuration = 0;
 
-  // Show perf badge after a short delay (wait for last translation to finish)
-  setTimeout(function() {
-    if (typeof showPerfBadge === 'function') showPerfBadge(id, entry._timings || {});
-  }, 500);
+  // Show perf badge after translation finishes (poll until translateDone exists)
+  var _perfPoll = setInterval(function() {
+    if (entry._timings && entry._timings.translateDone) {
+      clearInterval(_perfPoll);
+      if (typeof showPerfBadge === 'function') showPerfBadge(id, entry._timings);
+    }
+  }, 300);
+  // Safety: stop polling after 10s
+  setTimeout(function() { clearInterval(_perfPoll); }, 10000);
 
-  // Clean up segment translations
-  delete _segmentTranslations[id];
+  // Don't delete _segmentTranslations here — async translations may still be in flight
+  // Cleanup happens naturally when a new entry starts
 }
 
 function showPerfBadge(id, t) {
