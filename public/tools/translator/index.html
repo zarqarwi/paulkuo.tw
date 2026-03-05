@@ -109,6 +109,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   .lang-btn{padding:6px 10px;font-size:11px;min-height:36px;display:flex;align-items:center;white-space:nowrap;flex-shrink:0}
   .glossary-toggle{padding:6px 12px;font-size:12px}
   .btn-summary{padding:6px 12px;font-size:12px}
+  .export-btn{padding:6px 12px;font-size:12px}
   .btn-clear{min-height:36px;font-size:12px}
   .btn-main{min-height:40px;padding:8px 16px;font-size:13px;white-space:nowrap;flex-shrink:0}
   .today-stats,.today-stats.visible{display:none!important}
@@ -116,7 +117,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   .controls > div:last-of-type .spacer{display:none}
   .controls > div:last-of-type .glossary-toggle{order:-1}
   .btn-main{flex:1;min-width:0;justify-content:center}
-  .glossary-toggle .btn-text,.btn-summary .btn-text,.btn-clear .btn-text{display:none}
+  .glossary-toggle .btn-text,.btn-summary .btn-text,.btn-clear .btn-text,.export-btn .btn-text{display:none}
   .btn-clear .btn-icon{display:inline!important}
   .content{padding:12px 16px 60px 16px}
   .entry{padding:18px 20px}
@@ -241,10 +242,10 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 
 /* Export dropdown */
 .export-wrap{position:relative;display:inline-block}
-.export-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:2px 8px;border-radius:6px;font-family:var(--font-body);transition:color .2s}
-.export-btn:hover{color:var(--accent-ai)}
-.export-btn:disabled{opacity:.4;cursor:not-allowed}
-.export-menu{display:none;position:absolute;bottom:100%;left:0;margin-bottom:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-md);overflow:hidden;min-width:160px;z-index:100;animation:fadeIn .15s}
+.export-btn{padding:9px 18px;border-radius:100px;border:1.5px solid var(--accent-ai);background:transparent;color:var(--accent-ai);font-size:14px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
+.export-btn:hover{background:var(--accent-ai);color:#fff}
+.export-btn:disabled{opacity:.7;cursor:not-allowed;border-style:dashed}
+.export-menu{display:none;position:absolute;top:100%;right:0;margin-top:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-md);overflow:hidden;min-width:160px;z-index:100;animation:fadeIn .15s}
 .export-menu.visible{display:block}
 .export-item{display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;color:var(--text-primary);cursor:pointer;font-family:var(--font-body);transition:background .15s}
 .export-item:hover{background:var(--bg-section)}
@@ -289,6 +290,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
     <span class="today-stats" id="todayStats"></span>
     <div class="spacer"></div>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
+    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button></div></div>
     <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
     <button class="btn-main btn-start" id="btnToggle">🎙 開始</button>
   </div>
@@ -314,7 +316,6 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 </div>
 <div class="footer">
   <span id="countLabel">0 筆紀錄</span>
-    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇ 匯出</button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果，不含原文與時間戳</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Google Sheets</span></button></div></div>
   <button class="help-btn" id="btnHelp">❓ 使用說明</button>
   <label class="stt-toggle">STT <select id="sttMode"><option value="deepgram">串流</option><option value="whisper">批次</option></select></label>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
