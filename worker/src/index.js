@@ -923,21 +923,18 @@ async function handleRequest(request, env) {
     return handleSTT(request, env);
   }
 
-<<<<<<< Updated upstream
   // Meeting summary
   if (path === '/summarize') {
     return handleSummarize(request, env);
   }
 
-=======
->>>>>>> Stashed changes
   // Cost tracking
   if (path === '/costs') {
     return handleCosts(request, env);
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/costs', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
