@@ -37,6 +37,19 @@ const ALLOWED_ORIGINS = [
   'null', // file:// protocol (local HTML)
 ];
 
+// === In-memory rate limiting (no KV writes) ===
+const rateLimitMap = new Map();
+function checkRateLimit(ip, limit) {
+  const now = Date.now();
+  const key = ip + '_' + Math.floor(now / 60000);
+  // Clean old entries
+  if (rateLimitMap.size > 1000) rateLimitMap.clear();
+  const count = rateLimitMap.get(key) || 0;
+  if (count >= limit) return false;
+  rateLimitMap.set(key, count + 1);
+  return true;
+}
+
 // === CORS ===
 function corsHeaders(request) {
   const origin = request.headers.get('Origin') || '';
@@ -484,16 +497,11 @@ async function handleSTT(request, env) {
     return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
   }
 
-  // Rate limit (graceful — skip if KV writes exhausted)
-  try {
-    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateKey = `rate_stt_${ip}_${Math.floor(Date.now() / 60000)}`;
-    const count = parseInt(await env.TICKER_KV.get(rateKey) || '0', 10);
-    if (count >= STT_RATE_LIMIT) {
-      return jsonResponse({ error: 'Rate limited. Max 20 requests/min.' }, 429, request);
-    }
-    await env.TICKER_KV.put(rateKey, String(count + 1), { expirationTtl: 120 });
-  } catch (e) { console.log('Rate limit KV skip:', e.message); }
+  // Rate limit (in-memory, no KV writes)
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (!checkRateLimit(ip, STT_RATE_LIMIT)) {
+    return jsonResponse({ error: 'Rate limited. Max 20 requests/min.' }, 429, request);
+  }
 
   // Parse form data (audio file + targetLang)
   let formData;
@@ -650,16 +658,11 @@ async function handleTranslate(request, env) {
     return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   }
 
-  // Simple rate limiting via KV (graceful — skip if KV writes exhausted)
-  try {
-    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateKey = `rate_translate_${ip}_${Math.floor(Date.now() / 60000)}`;
-    const count = parseInt(await env.TICKER_KV.get(rateKey) || '0', 10);
-    if (count >= TRANSLATE_RATE_LIMIT) {
-      return jsonResponse({ error: 'Rate limited. Max 30 requests/min.' }, 429, request);
-    }
-    await env.TICKER_KV.put(rateKey, String(count + 1), { expirationTtl: 120 });
-  } catch (e) { console.log('Rate limit KV skip:', e.message); }
+  // Rate limit (in-memory, no KV writes)
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (!checkRateLimit(ip, TRANSLATE_RATE_LIMIT)) {
+    return jsonResponse({ error: 'Rate limited. Max 30 requests/min.' }, 429, request);
+  }
 
   // Truncate to prevent abuse (max 2000 chars)
   const trimmedText = text.slice(0, 2000);
@@ -705,6 +708,114 @@ async function handleTranslate(request, env) {
 }
 
 // === Request Handler ===
+// === Meeting Summary via Claude Haiku ===
+async function handleSummarize(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+  if (!env.ANTHROPIC_API_KEY) {
+    return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400, request);
+  }
+
+  const { text, lang, glossary } = body;
+  if (!text || text.trim().length < 20) {
+    return jsonResponse({ error: 'Text too short for summary' }, 400, request);
+  }
+
+  const truncated = text.slice(0, 100000);
+  const LNAMES = {
+    'zh-TW': '繁體中文', 'en': 'English', 'ja': '日本語', 'zh-CN': '简体中文', 'ko': '한국어',
+    'vi': 'Tiếng Việt', 'th': 'ภาษาไทย', 'id': 'Bahasa Indonesia',
+    'de': 'Deutsch', 'es': 'Español', 'fr': 'Français'
+  };
+  const langName = LNAMES[lang] || lang || '繁體中文';
+
+  let glossaryHint = '';
+  if (glossary && glossary.length > 0) {
+    glossaryHint = '\nGlossary (use these term translations):\n' + glossary.map(g => '- ' + g.term + ' = ' + g.translation).join('\n') + '\n';
+  }
+
+  const prompt = `You are a professional meeting assistant. Analyze the following meeting transcript and produce a structured summary in ${langName}.${glossaryHint}
+
+Output ONLY valid JSON with this structure:
+{
+  "title": "brief meeting title",
+  "summary": "2-3 paragraph executive summary",
+  "keyPoints": ["point 1", "point 2"],
+  "actionItems": ["action 1", "action 2"],
+  "decisions": ["decision 1"]
+}
+
+If no action items or decisions are found, use empty arrays.
+
+--- TRANSCRIPT ---
+${truncated}`;
+
+  const MAX_RETRIES = 3;
+  const claudeBody = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 4096,
+    messages: [{ role: 'user', content: prompt }]
+  });
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1500 * attempt));
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: claudeBody
+      });
+
+      if (res.status === 529 && attempt < MAX_RETRIES - 1) {
+        console.log('Summarize: Claude overloaded, retry ' + (attempt+1));
+        continue;
+      }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || `Claude API ${res.status}`);
+      }
+
+      const data = await res.json();
+      const raw = data.content?.[0]?.text?.trim() || '';
+
+      const usage = data.usage || {};
+      const hp = PRICING['claude-haiku-4-5-20251001'];
+      const cost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
+      await logCost(env.TICKER_KV, {
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'summarize', source: 'translator',
+        inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
+        costUSD: +cost.toFixed(6), note: langName
+      });
+
+      let parsed;
+      try {
+        const jsonMatch = raw.match(/\{[\s\S]*\}/);
+        parsed = JSON.parse(jsonMatch ? jsonMatch[0] : raw);
+      } catch (e) {
+        parsed = { title: 'Meeting Summary', summary: raw, keyPoints: [], actionItems: [], decisions: [] };
+      }
+
+      return jsonResponse({ ...parsed, costUSD: +cost.toFixed(6) }, 200, request);
+    } catch (e) {
+      if (attempt === MAX_RETRIES - 1) {
+        return jsonResponse({ error: 'Summarize failed: ' + e.message }, 502, request);
+      }
+    }
+  }
+}
+
 async function handleRequest(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -786,6 +897,11 @@ async function handleRequest(request, env) {
   // STT + Translate (Whisper + Claude Haiku)
   if (path === '/stt') {
     return handleSTT(request, env);
+  }
+
+  // Meeting summary
+  if (path === '/summarize') {
+    return handleSummarize(request, env);
   }
 
   // Cost tracking
