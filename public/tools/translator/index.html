@@ -1428,7 +1428,7 @@ if (inviteCode) {
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
-    if (d.valid) { hideGate(); userName = d.name; sessionStorage.setItem("userName", d.name); showUserBadge(); loadTodayStats(); }
+    if (d.valid) { hideGate(); userName = d.name; sessionStorage.setItem("userName", d.name); showUserBadge(); loadTodayStats(); preConnectDeepgram(); }
     else { sessionStorage.removeItem("inviteCode"); showGate(); }
   })
   .catch(function() { hideGate(); showUserBadge(); }); // offline = trust cache
