@@ -47,7 +47,8 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 
 /* Controls */
 .controls{padding:12px 32px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg)}
-.lang-label{font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.lang-label{font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;white-space:nowrap;flex-shrink:0}
+.lang-scroll{display:flex;flex:1;min-width:0}
 .lang-btns{display:flex;gap:3px;flex-wrap:wrap}
 .lang-btn{padding:6px 12px;border-radius:100px;font-size:13px;border:1.5px solid var(--border);cursor:pointer;background:transparent;color:var(--text-secondary);font-family:var(--font-body);transition:all .2s;font-weight:500}
 .lang-btn:hover{border-color:var(--brand-navy);color:var(--brand-navy)}
@@ -98,10 +99,20 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   .header-title{font-size:14px}
   .header-sub{display:none}
   .logo{width:32px;height:32px;font-size:14px}
-  .controls{padding:10px 16px;gap:8px}
-  .lang-btn{padding:6px 10px;font-size:11px;min-height:36px;display:flex;align-items:center}
-  .btn-clear{min-height:36px}
-  .btn-main{min-height:40px;padding:8px 16px}
+  .user-badge{font-size:11px;padding:3px 8px}
+  .status-text{font-size:12px}
+  .controls{padding:10px 16px;gap:6px}
+  .lang-label{display:none}
+  .lang-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;mask-image:linear-gradient(90deg,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent)}
+  .lang-scroll::-webkit-scrollbar{display:none}
+  .lang-btns{flex-wrap:nowrap}
+  .lang-btn{padding:6px 10px;font-size:11px;min-height:36px;display:flex;align-items:center;white-space:nowrap;flex-shrink:0}
+  .glossary-toggle{padding:6px 12px;font-size:12px}
+  .btn-summary{padding:6px 12px;font-size:12px}
+  .btn-clear{min-height:36px;font-size:12px}
+  .btn-main{min-height:40px;padding:8px 16px;font-size:13px}
+  .glossary-toggle .btn-text,.btn-summary .btn-text,.btn-clear .btn-text{display:none}
+  .btn-clear .btn-icon{display:inline!important}
   .content{padding:12px 16px 60px 16px}
   .entry{padding:18px 20px}
   .entry-original,.entry-translated{font-size:15px}
@@ -183,6 +194,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .gate-btn:hover{background:var(--brand-navy-light);transform:translateY(-1px)}
 .gate-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .gate-error{color:#dc2626;font-size:13px;margin-top:10px;display:none}
+.gate-input.error{border-color:#dc2626}
 .user-badge{display:none;padding:5px 12px;border-radius:100px;background:rgba(37,99,235,.08);color:var(--accent-ai);font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(37,99,235,.15);transition:all .2s}
 .user-badge:hover{background:rgba(37,99,235,.15)}
 
@@ -236,13 +248,13 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 <div class="controls">
   <div style="display:flex;align-items:center;gap:6px;width:100%">
     <span class="lang-label">輸出語言</span>
-    <div class="lang-btns" id="tgtBtns"></div>
+    <div class="lang-scroll"><div class="lang-btns" id="tgtBtns"></div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px;width:100%">
-    <button class="glossary-toggle" id="btnGlossary" title="術語表設定">📖 術語表</button>
+    <button class="glossary-toggle" id="btnGlossary" title="術語表設定">📖<span class="btn-text"> 術語表</span></button>
     <div class="spacer"></div>
-    <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋 摘要</button>
-    <button class="btn-clear" id="btnClear">清除</button>
+    <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
+    <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
     <button class="btn-main btn-start" id="btnToggle">🎙 開始</button>
   </div>
 </div>
@@ -261,7 +273,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
     <div style="font-size:48px;opacity:.25">🎙️</div>
     <div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">
       按「開始」後對著麥克風說話<br>
-      <span style="font-size:12px">自動偵測 11 種語言 · Whisper 語音辨識 + Claude Haiku 翻譯 · 支援所有瀏覽器</span>
+      <span style="font-size:12px">自動偵測 11 種語言 · Whisper 語音辨識 + Claude Haiku 翻譯 · 支援所有瀏覽器</span><br><a href="#" onclick="getEl('helpModal').classList.add('visible');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none;margin-top:4px;display:inline-block">第一次使用？看使用說明 →</a>
     </div>
   </div>
 </div>
@@ -571,7 +583,7 @@ function updateEntry(id, original, translated, detectedLang) {
 // UI helpers
 function clearAll() {
   allEntries = []; nextId = 0;
-  getEl("content").innerHTML = '<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始」後對著麥克風說話<br><span style="font-size:12px">自動偵測語言（日/英/中/韓）· 支援所有瀏覽器</span></div></div>';
+  getEl("content").innerHTML = '<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始」後對著麥克風說話<br><span style="font-size:12px">自動偵測 11 種語言 · 支援所有瀏覽器</span><br><a href="#" onclick="getEl(\'helpModal\').classList.add(\'visible\');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none">第一次使用？看使用說明 →</a></div></div>';
   updateCount();
 }
 function updateCount() { getEl("countLabel").textContent = allEntries.length + " 筆紀錄"; }
@@ -985,6 +997,8 @@ function showUserBadge() {
 }
 
 function tryEnter() {
+  getEl("gateInput").classList.remove("error");
+  getEl("gateError").style.display = "none";
   var code = getEl("gateInput").value.trim().toLowerCase();
   if (!code) return;
   getEl("gateBtn").textContent = "\u9a57\u8b49\u4e2d\u2026";
@@ -1005,12 +1019,14 @@ function tryEnter() {
       showUserBadge();
     } else {
       getEl("gateError").style.display = "block";
+      getEl("gateInput").classList.add("error");
       getEl("gateBtn").textContent = "\u9032\u5165";
       getEl("gateBtn").disabled = false;
     }
   })
   .catch(function() {
     getEl("gateError").style.display = "block";
+    getEl("gateInput").classList.add("error");
     getEl("gateBtn").textContent = "\u9032\u5165";
     getEl("gateBtn").disabled = false;
   });
@@ -1019,6 +1035,7 @@ function tryEnter() {
 getEl("gateBtn").addEventListener("click", tryEnter);
 getEl("gateInput").addEventListener("keydown", function(e) { if (e.key === "Enter") tryEnter(); });
 getEl("userBadge").addEventListener("click", function() {
+  if (!confirm("確定要登出嗎？")) return;
   sessionStorage.removeItem("inviteCode");
   sessionStorage.removeItem("userName");
   inviteCode = "";
