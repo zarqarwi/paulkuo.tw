@@ -41,23 +41,18 @@ const ALLOWED_ORIGINS = [
 ];
 
 // === Invite Codes (hardcoded defaults + KV overrides) ===
-const DEFAULT_CODES = {
-  'agora2026': { name: 'Paul', role: 'admin' },
-  'demo2026':  { name: 'Demo User', role: 'user' },
-};
-
+// Invite codes stored in KV (key: 'invite_codes') — no hardcoded defaults
 async function validateCode(code, kv) {
   if (!code) return null;
   const c = code.trim().toLowerCase();
-  // Check KV first (allows dynamic code management)
   try {
     const kvCodes = await kv.get('invite_codes');
     if (kvCodes) {
       const parsed = JSON.parse(kvCodes);
       if (parsed[c]) return parsed[c];
     }
-  } catch (e) { /* ignore KV errors, fall through to defaults */ }
-  return DEFAULT_CODES[c] || null;
+  } catch (e) { /* ignore KV errors */ }
+  return null;
 }
 
 // === In-memory rate limiting (no KV writes) ===
@@ -1104,40 +1099,7 @@ async function handleUsage(request, env) {
 }
 
 // === Deepgram Token (for streaming STT) ===
-async function handleDeepgramToken(request, env) {
-  const url = new URL(request.url);
-  const code = url.searchParams.get('code') || '';
-  const codeInfo = await validateCode(code, env.TICKER_KV);
-  if (!codeInfo) {
-    return jsonResponse({ error: 'Invalid invite code' }, 403, request);
-  }
-  const dgKey = env.DEEPGRAM_API_KEY;
-  if (!dgKey) {
-    return jsonResponse({ error: 'Deepgram not configured' }, 500, request);
-  }
-  // Generate temporary token (30s TTL) — recommended for client-side apps
-  try {
-    const res = await fetch('https://api.deepgram.com/v1/auth/grant', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Token ' + dgKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ttl_seconds: 120 }), // 2 min TTL for slow connections
-    });
-    if (!res.ok) {
-      // Fallback: return raw key if temp token fails
-      console.error('Deepgram temp token failed:', res.status);
-      return jsonResponse({ key: dgKey, expiresIn: 3600, temp: false }, 200, request);
-    }
-    const data = await res.json();
-    return jsonResponse({ key: data.access_token || data.token, expiresIn: 120, temp: true }, 200, request);
-  } catch (e) {
-    // Fallback: return raw key
-    console.error('Deepgram temp token error:', e.message);
-    return jsonResponse({ key: dgKey, expiresIn: 3600, temp: false }, 200, request);
-  }
-}
+// handleDeepgramToken removed — /ws/stt proxy handles Deepgram auth
 
 
 // === Log External Costs (e.g. Deepgram streaming from frontend) ===
@@ -1279,9 +1241,7 @@ async function handleRequest(request, env) {
   }
 
   // Deepgram token for streaming STT
-  if (path === '/deepgram-token') {
-    return handleDeepgramToken(request, env);
-  }
+  // /deepgram-token removed — auth handled by /ws/stt proxy
 
   // Log external costs (e.g. Deepgram streaming billed client-side)
   if (path === '/log-cost') {
@@ -1323,7 +1283,7 @@ async function handleRequest(request, env) {
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/deepgram-token', '/log-cost', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===

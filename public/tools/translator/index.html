@@ -439,7 +439,6 @@ var autoSendInterval = null;
 // Deepgram streaming state
 var sttMode = 'deepgram'; // 'deepgram' | 'whisper'
 var dgWs = null;
-var dgKey = null;
 var liveEntryId = null;
 var liveText = '';
 var dgMediaRecorder = null;
@@ -628,58 +627,25 @@ function stopRecording() {
 }
 
 // === Deepgram Streaming STT ===
-// Pre-connect: fetch token + open WS as soon as user logs in
-var dgPreConnected = false;
-var dgPreWs = null;
-
-function preConnectDeepgram() {
-  if (dgPreConnected || !inviteCode) return; dgPreConnected = true;
-  fetch(WORKER_URL + '/deepgram-token?code=' + encodeURIComponent(inviteCode))
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.error || !d.key) return;
-      dgKey = d.key;
-      console.log('[dg] Pre-fetched token, length=' + dgKey.length);
-    })
-    .catch(function(e) { console.warn('[dg] Pre-fetch failed:', e); });
-}
+// Auth handled by Worker /ws/stt proxy — no client-side token needed
 
 function startDeepgramStreaming() {
   setStatus('sending');
   hideError();
-
-  function afterToken() {
-    // Get mic
-    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } })
-    .then(function(stream) {
-      dgStream = stream;
-      recording = true;
-      updateToggle();
-      startMatrix();
-      startVolumeMeter(stream);
-      connectDgWebSocket(stream);
-    })
-    .catch(function(e) {
-      showError('\u7121\u6cd5\u53d6\u5f97\u9ea5\u514b\u98a8: ' + e.message);
-      setStatus('error');
-    });
-  }
-
-  if (dgKey) {
-    afterToken();
-  } else {
-    fetch(WORKER_URL + '/deepgram-token?code=' + encodeURIComponent(inviteCode))
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.error) { showError('Deepgram: ' + d.error); setStatus('error'); return; }
-        dgKey = d.key;
-        afterToken();
-      })
-      .catch(function(e) {
-        showError('Token \u53d6\u5f97\u5931\u6557: ' + e.message);
-        setStatus('error');
-      });
-  }
+  // Auth handled by Worker /ws/stt proxy — just get mic and connect
+  navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } })
+  .then(function(stream) {
+    dgStream = stream;
+    recording = true;
+    updateToggle();
+    startMatrix();
+    startVolumeMeter(stream);
+    connectDgWebSocket(stream);
+  })
+  .catch(function(e) {
+    showError('\u7121\u6cd5\u53d6\u5f97\u9ea5\u514b\u98a8: ' + e.message);
+    setStatus('error');
+  });
 }
 
 function connectDgWebSocket(stream) {
@@ -1491,7 +1457,6 @@ function tryEnter() {
       hideGate();
       showUserBadge();
       loadTodayStats();
-      preConnectDeepgram();
     } else {
       getEl("gateError").style.display = "block";
       getEl("gateInput").classList.add("error");
@@ -1528,7 +1493,7 @@ if (inviteCode) {
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
-    if (d.valid) { hideGate(); userName = d.name; sessionStorage.setItem("userName", d.name); showUserBadge(); loadTodayStats(); preConnectDeepgram(); }
+    if (d.valid) { hideGate(); userName = d.name; sessionStorage.setItem("userName", d.name); showUserBadge(); loadTodayStats(); }
     else { sessionStorage.removeItem("inviteCode"); showGate(); }
   })
   .catch(function() { hideGate(); showUserBadge(); }); // offline = trust cache
