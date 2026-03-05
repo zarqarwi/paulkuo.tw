@@ -11,6 +11,7 @@
  *   GET  /sleep     — 睡眠資料分析（?year=2025 或 ?start=...&end=...）
  *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
  *   POST /stt       — 語音辨識 + 翻譯（Whisper → Claude Haiku）
+ *   GET  /costs     — API 費用追蹤（?days=30）
  * 
  * Cron Trigger:
  *   每 6 小時 refresh Fitbit OAuth2 token
@@ -19,6 +20,7 @@
  *   fitbit_token — { access_token, refresh_token, expires_at }
  *   fitbit_cache — { data, cached_at }
  *   stock_cache  — { data, cached_at }
+ *   costs_YYYY-MM-DD — [ {timestamp, service, model, action, source, costUSD, ...} ]
  */
 
 const FITBIT_CLIENT_ID = '23V2BH';
@@ -34,25 +36,6 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'null', // file:// protocol (local HTML)
 ];
-
-// === API Pricing (per million tokens) ===
-const PRICING = {
-  'claude-haiku-4-5-20251001': { inputPerMTok: 0.80, outputPerMTok: 4.00 },
-  'whisper-1': { perMinute: 0.006 },
-};
-
-// === Cost Logging ===
-async function logCost(kv, entry) {
-  try {
-    const key = 'api_costs_' + new Date().toISOString().slice(0, 10); // daily key
-    const existing = await kv.get(key);
-    const logs = existing ? JSON.parse(existing) : [];
-    logs.push({ ...entry, timestamp: new Date().toISOString() });
-    await kv.put(key, JSON.stringify(logs), { expirationTtl: 90 * 86400 }); // 90 days
-  } catch (e) {
-    console.error('logCost failed:', e.message);
-  }
-}
 
 // === CORS ===
 function corsHeaders(request) {
@@ -422,6 +405,71 @@ async function fetchSleepData(kv, params) {
   throw new Error('Missing parameter: use ?year=2025 or ?month=2025-03');
 }
 
+// === Cost Tracking ===
+// Pricing (per Mar 2026)
+const PRICING = {
+  'whisper-1': { perMinute: 0.006 },
+  'claude-haiku-4-5-20251001': { inputPerMTok: 0.80, outputPerMTok: 4.00 },
+};
+
+async function logCost(kv, record) {
+  const now = new Date();
+  const dateKey = `costs_${now.toISOString().slice(0, 10)}`;
+  const entry = {
+    timestamp: now.toISOString(),
+    ...record,
+    costTWD: +(record.costUSD * 32.5).toFixed(4),
+  };
+  try {
+    const existing = await kv.get(dateKey);
+    const arr = existing ? JSON.parse(existing) : [];
+    arr.push(entry);
+    await kv.put(dateKey, JSON.stringify(arr), { expirationTtl: 90 * 86400 }); // keep 90 days
+  } catch (e) {
+    console.error('logCost failed:', e.message);
+  }
+}
+
+async function handleCosts(request, env) {
+  const url = new URL(request.url);
+  const days = Math.min(parseInt(url.searchParams.get('days') || '30', 10), 90);
+  const records = [];
+  const now = new Date();
+
+  for (let i = 0; i < days; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const dateKey = `costs_${d.toISOString().slice(0, 10)}`;
+    const data = await env.TICKER_KV.get(dateKey);
+    if (data) {
+      try { records.push(...JSON.parse(data)); } catch(e) {}
+    }
+  }
+
+  // Summary
+  const totalUSD = records.reduce((s, r) => s + (r.costUSD || 0), 0);
+  const byService = {};
+  const bySource = {};
+  const byDate = {};
+  records.forEach(r => {
+    byService[r.service] = (byService[r.service] || 0) + (r.costUSD || 0);
+    bySource[r.source] = (bySource[r.source] || 0) + (r.costUSD || 0);
+    const day = (r.timestamp || '').slice(0, 10);
+    if (day) byDate[day] = (byDate[day] || 0) + (r.costUSD || 0);
+  });
+
+  return jsonResponse({
+    days,
+    totalRecords: records.length,
+    totalUSD: +totalUSD.toFixed(6),
+    totalTWD: +(totalUSD * 32.5).toFixed(2),
+    byService,
+    bySource,
+    byDate,
+    records: records.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || '')),
+  }, 200, request);
+}
+
 // === STT via Whisper + Translate via Claude Haiku ===
 const STT_RATE_LIMIT = 20; // max requests per minute per IP
 
@@ -436,14 +484,16 @@ async function handleSTT(request, env) {
     return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
   }
 
-  // Rate limit
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-  const rateKey = `rate_stt_${ip}_${Math.floor(Date.now() / 60000)}`;
-  const count = parseInt(await env.TICKER_KV.get(rateKey) || '0', 10);
-  if (count >= STT_RATE_LIMIT) {
-    return jsonResponse({ error: 'Rate limited. Max 20 requests/min.' }, 429, request);
-  }
-  await env.TICKER_KV.put(rateKey, String(count + 1), { expirationTtl: 120 });
+  // Rate limit (graceful — skip if KV writes exhausted)
+  try {
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const rateKey = `rate_stt_${ip}_${Math.floor(Date.now() / 60000)}`;
+    const count = parseInt(await env.TICKER_KV.get(rateKey) || '0', 10);
+    if (count >= STT_RATE_LIMIT) {
+      return jsonResponse({ error: 'Rate limited. Max 20 requests/min.' }, 429, request);
+    }
+    await env.TICKER_KV.put(rateKey, String(count + 1), { expirationTtl: 120 });
+  } catch (e) { console.log('Rate limit KV skip:', e.message); }
 
   // Parse form data (audio file + targetLang)
   let formData;
@@ -455,8 +505,6 @@ async function handleSTT(request, env) {
 
   const audioFile = formData.get('audio');
   const targetLang = formData.get('targetLang') || 'zh-TW';
-  let glossary = [];
-  try { const g = formData.get('glossary'); if (g) glossary = JSON.parse(g); } catch(e) {}
   if (!audioFile) {
     return jsonResponse({ error: 'Missing audio file' }, 400, request);
   }
@@ -472,7 +520,7 @@ async function handleSTT(request, env) {
   whisperForm.append('model', 'whisper-1');
   whisperForm.append('response_format', 'verbose_json');
 
-  let transcript, detectedLang, audioDurationSec;
+  let transcript, detectedLang;
   try {
     const whisperRes = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
@@ -486,7 +534,14 @@ async function handleSTT(request, env) {
     const whisperData = await whisperRes.json();
     transcript = (whisperData.text || '').trim();
     detectedLang = whisperData.language || 'unknown';
-    audioDurationSec = whisperData.duration || 0;
+    // Log Whisper cost
+    const audioDuration = whisperData.duration || 5; // seconds
+    const whisperCost = (audioDuration / 60) * PRICING['whisper-1'].perMinute;
+    await logCost(env.TICKER_KV, {
+      service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator',
+      costUSD: +whisperCost.toFixed(6), durationSec: audioDuration,
+      note: `${detectedLang} ${audioDuration.toFixed(1)}s`
+    });
   } catch (e) {
     return jsonResponse({ error: 'Whisper: ' + e.message }, 502, request);
   }
@@ -514,16 +569,12 @@ async function handleSTT(request, env) {
   };
   const targetName = TNAMES[targetLang] || targetLang;
   const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
-  let glossaryHint = '';
-  if (glossary && glossary.length > 0) {
-    glossaryHint = '\nGlossary (always use these exact translations):\n' + glossary.map(g => '- ' + g.term + ' → ' + g.translation).join('\n') + '\n';
-  }
   const claudeBody = JSON.stringify({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 1024,
     messages: [{
       role: 'user',
-      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else.${twHint}${glossaryHint}\n\n${transcript.slice(0, 2000)}`
+      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else.${twHint}\n\n${transcript.slice(0, 2000)}`
     }]
   });
 
@@ -550,23 +601,16 @@ async function handleSTT(request, env) {
       }
       const claudeData = await claudeRes.json();
       const translated = claudeData.content?.[0]?.text?.trim() || '';
-
-      // Log Whisper cost
-      const whisperCost = (audioDurationSec / 60) * PRICING['whisper-1'].perMinute;
-      await logCost(env.TICKER_KV, {
-        service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator',
-        durationSec: audioDurationSec, costUSD: +whisperCost.toFixed(6), note: detectedLang
-      });
       // Log Claude cost
-      const sttUsage = claudeData.usage || {};
-      const sttHp = PRICING['claude-haiku-4-5-20251001'];
-      const sttClaudeCost = ((sttUsage.input_tokens || 0) / 1e6) * sttHp.inputPerMTok + ((sttUsage.output_tokens || 0) / 1e6) * sttHp.outputPerMTok;
+      const usage = claudeData.usage || {};
+      const hp = PRICING['claude-haiku-4-5-20251001'];
+      const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
         service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator',
-        inputTokens: sttUsage.input_tokens || 0, outputTokens: sttUsage.output_tokens || 0,
-        costUSD: +sttClaudeCost.toFixed(6), note: 'stt ' + targetLang
+        inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
+        costUSD: +claudeCost.toFixed(6),
+        note: `${langCode}→${targetLang}`
       });
-
       return jsonResponse({ original: transcript, detectedLang: langCode, translated }, 200, request);
     } catch (e) {
       if (attempt === MAX_RETRIES - 1) {
@@ -596,19 +640,21 @@ async function handleTranslate(request, env) {
     return jsonResponse({ error: 'Invalid JSON' }, 400, request);
   }
 
-  const { text, sourceLang, targetLang, glossary } = body;
+  const { text, sourceLang, targetLang } = body;
   if (!text || !targetLang) {
     return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   }
 
-  // Simple rate limiting via KV (per IP, per minute)
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-  const rateKey = `rate_translate_${ip}_${Math.floor(Date.now() / 60000)}`;
-  const count = parseInt(await env.TICKER_KV.get(rateKey) || '0', 10);
-  if (count >= TRANSLATE_RATE_LIMIT) {
-    return jsonResponse({ error: 'Rate limited. Max 30 requests/min.' }, 429, request);
-  }
-  await env.TICKER_KV.put(rateKey, String(count + 1), { expirationTtl: 120 });
+  // Simple rate limiting via KV (graceful — skip if KV writes exhausted)
+  try {
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const rateKey = `rate_translate_${ip}_${Math.floor(Date.now() / 60000)}`;
+    const count = parseInt(await env.TICKER_KV.get(rateKey) || '0', 10);
+    if (count >= TRANSLATE_RATE_LIMIT) {
+      return jsonResponse({ error: 'Rate limited. Max 30 requests/min.' }, 429, request);
+    }
+    await env.TICKER_KV.put(rateKey, String(count + 1), { expirationTtl: 120 });
+  } catch (e) { console.log('Rate limit KV skip:', e.message); }
 
   // Truncate to prevent abuse (max 2000 chars)
   const trimmedText = text.slice(0, 2000);
@@ -632,7 +678,7 @@ async function handleTranslate(request, env) {
         max_tokens: 1024,
         messages: [{
           role: 'user',
-          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}${glossary && glossary.length > 0 ? '\nGlossary (always use these exact translations):\n' + glossary.map(g => '- ' + g.term + ' \u2192 ' + g.translation).join('\n') + '\n' : ''}\n\n${trimmedText}`
+          content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
         }]
       })
     });
@@ -644,123 +690,10 @@ async function handleTranslate(request, env) {
 
     const data = await res.json();
     const translated = data.content?.[0]?.text?.trim() || '';
-    // Log cost
-    const usage = data.usage || {};
-    const hp = PRICING['claude-haiku-4-5-20251001'];
-    const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
-    await logCost(env.TICKER_KV, {
-      service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator',
-      inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
-      costUSD: +claudeCost.toFixed(6), note: `legacy ${targetLang}`
-    });
 
     return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
   } catch (e) {
     return jsonResponse({ error: e.message }, 502, request);
-  }
-}
-
-// === Meeting Summary via Claude Haiku ===
-async function handleSummarize(request, env) {
-  if (request.method !== 'POST') {
-    return jsonResponse({ error: 'POST required' }, 405, request);
-  }
-  if (!env.ANTHROPIC_API_KEY) {
-    return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
-  }
-
-  let body;
-  try {
-    body = await request.json();
-  } catch (e) {
-    return jsonResponse({ error: 'Invalid JSON' }, 400, request);
-  }
-
-  const { text, lang, glossary } = body;
-  if (!text || text.trim().length < 20) {
-    return jsonResponse({ error: 'Text too short for summary' }, 400, request);
-  }
-
-  const truncated = text.slice(0, 100000);
-  const LNAMES = { 'zh-TW': '繁體中文', 'en': 'English', 'ja': '日本語', 'zh-CN': '简体中文', 'ko': '한국어' };
-  const langName = LNAMES[lang] || lang || '繁體中文';
-
-  let glossaryHint = '';
-  if (glossary && glossary.length > 0) {
-    glossaryHint = '\nGlossary (use these term translations):\n' + glossary.map(g => '- ' + g.term + ' = ' + g.translation).join('\n') + '\n';
-  }
-
-  const prompt = `You are a professional meeting assistant. Analyze the following meeting transcript and produce a structured summary in ${langName}.${glossaryHint}
-
-Output ONLY valid JSON with this structure:
-{
-  "title": "brief meeting title",
-  "summary": "2-3 paragraph executive summary",
-  "keyPoints": ["point 1", "point 2"],
-  "actionItems": ["action 1", "action 2"],
-  "decisions": ["decision 1"]
-}
-
-If no action items or decisions are found, use empty arrays.
-
---- TRANSCRIPT ---
-${truncated}`;
-
-  const MAX_RETRIES = 3;
-  const claudeBody = JSON.stringify({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 4096,
-    messages: [{ role: 'user', content: prompt }]
-  });
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-  try {
-    if (attempt > 0) await new Promise(r => setTimeout(r, 1500 * attempt));
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: claudeBody
-    });
-
-    if (res.status === 529 && attempt < MAX_RETRIES - 1) {
-      console.log('Summarize: Claude overloaded, retry ' + (attempt+1));
-      continue;
-    }
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `Claude API ${res.status}`);
-    }
-
-    const data = await res.json();
-    const raw = data.content?.[0]?.text?.trim() || '';
-
-    const usage = data.usage || {};
-    const hp = PRICING['claude-haiku-4-5-20251001'];
-    const cost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
-    await logCost(env.TICKER_KV, {
-      service: 'anthropic', model: 'claude-haiku-4.5', action: 'summarize', source: 'translator',
-      inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
-      costUSD: +cost.toFixed(6), note: langName
-    });
-
-    let parsed;
-    try {
-      const jsonMatch = raw.match(/\{[\s\S]*\}/);
-      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : raw);
-    } catch (e) {
-      parsed = { title: 'Meeting Summary', summary: raw, keyPoints: [], actionItems: [], decisions: [] };
-    }
-
-    return jsonResponse({ ...parsed, costUSD: +cost.toFixed(6) }, 200, request);
-  } catch (e) {
-    if (attempt === MAX_RETRIES - 1) {
-      return jsonResponse({ error: 'Summarize failed: ' + e.message }, 502, request);
-    }
-  }
   }
 }
 
@@ -848,33 +781,13 @@ async function handleRequest(request, env) {
     return handleSTT(request, env);
   }
 
-  // Meeting summary
-  if (path === '/summarize') {
-    return handleSummarize(request, env);
-  }
-
-  // API cost tracking
+  // Cost tracking
   if (path === '/costs') {
-    const days = parseInt(url.searchParams.get('days') || '7', 10);
-    const allLogs = [];
-    const now = new Date();
-    for (let i = 0; i < days; i++) {
-      const d = new Date(now - i * 86400000).toISOString().slice(0, 10);
-      const raw = await env.TICKER_KV.get('api_costs_' + d);
-      if (raw) {
-        const entries = JSON.parse(raw);
-        allLogs.push(...entries.map(e => ({ ...e, date: d })));
-      }
-    }
-    const totalCost = allLogs.reduce((s, e) => s + (e.costUSD || 0), 0);
-    return jsonResponse({
-      days, totalCost: +totalCost.toFixed(6),
-      entries: allLogs.length, logs: allLogs
-    }, 200, request);
+    return handleCosts(request, env);
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/costs', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===

@@ -97,7 +97,7 @@ function checkAuth() {
     sessionStorage.setItem('dash_auth', DASH_KEY);
     authGate.style.display = 'none';
     dashMain.style.display = 'block';
-    if (costRecords.length > 0) render(costRecords);
+    initDashboard();
     return;
   }
 }
@@ -108,7 +108,7 @@ authBtn.addEventListener('click', () => {
     sessionStorage.setItem('dash_auth', DASH_KEY);
     authGate.style.display = 'none';
     dashMain.style.display = 'block';
-    if (costRecords.length > 0) render(costRecords);
+    initDashboard();
   } else {
     authInput.style.borderColor = '#ef4444';
     authInput.value = '';
@@ -132,11 +132,37 @@ document.getElementById('fileUpload').addEventListener('change', e => {
 
 // ── Colors ──
 const SVC_CLR = { anthropic:'#6366f1', openai:'#10b981', google:'#3b82f6', xai:'#f97316', perplexity:'#8b5cf6' };
-const SRC_CLR = { 'debate-engine':'#f59e0b', 'translate-article':'#3b82f6', 'publish-social':'#ec4899', 'debate-to-article':'#06b6d4' };
+const SRC_CLR = { 'debate-engine':'#f59e0b', 'translate-article':'#3b82f6', 'publish-social':'#ec4899', 'debate-to-article':'#06b6d4', 'translator':'#059669' };
 const ACT_CLR = { debate:'#f59e0b', 'translate-en':'#3b82f6', 'translate-ja':'#60a5fa', 'translate-zh-cn':'#93c5fd',
-  'social-summary':'#ec4899', 'image-gen':'#10b981', 'debate-to-article':'#06b6d4', factcheck:'#8b5cf6' };
+  'social-summary':'#ec4899', 'image-gen':'#10b981', 'debate-to-article':'#06b6d4', factcheck:'#8b5cf6',
+  stt:'#10b981', translate:'#6366f1' };
 const ACT_LABEL = { debate:'辯論', 'translate-en':'翻譯 EN', 'translate-ja':'翻譯 JA', 'translate-zh-cn':'翻譯 簡中',
-  'social-summary':'社群摘要', 'image-gen':'DALL-E 配圖', 'debate-to-article':'辯論轉文章', factcheck:'事實查核' };
+  'social-summary':'社群摘要', 'image-gen':'DALL-E 配圖', 'debate-to-article':'辯論轉文章', factcheck:'事實查核',
+  stt:'語音辨識', translate:'即時翻譯' };
+
+// Fetch live costs from Worker and merge with static data
+async function fetchLiveCosts() {
+  try {
+    const res = await fetch('https://paulkuo-ticker.paul-4bf.workers.dev/costs?days=90');
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.records || [];
+  } catch(e) { console.warn('Failed to fetch live costs:', e); return []; }
+}
+
+async function initDashboard() {
+  const live = await fetchLiveCosts();
+  // Merge: static (costs.jsonl) + live (Worker KV)
+  const allRecords = [...costRecords, ...live];
+  // Deduplicate by timestamp+service+action
+  const seen = new Set();
+  const merged = allRecords.filter(r => {
+    const key = `${r.timestamp}_${r.service}_${r.action}_${r.costUSD}`;
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+  if (merged.length > 0) render(merged);
+}
 
 // Now safe to call after all const declarations
 checkAuth();

@@ -337,6 +337,7 @@ function startVolumeMeter(stream) {
 
 // Recording
 function startRecording() {
+  clearAll();
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
     recording = true;
     updateToggle();
