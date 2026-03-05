@@ -592,8 +592,8 @@ async function handleSTT(request, env) {
   };
   const langCode = WHISPER_TO_LANG[detectedLang] || detectedLang;
 
-  // Skip translation if source == target
-  if (langCode === targetLang) {
+  // Skip translation if source == target (but NOT zh-TW: Whisper outputs simplified, need Claude to convert)
+  if (langCode === targetLang && targetLang !== 'zh-TW') {
     return jsonResponse({ original: transcript, detectedLang: langCode, translated: transcript }, 200, request);
   }
 
