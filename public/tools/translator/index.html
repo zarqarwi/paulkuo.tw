@@ -186,6 +186,21 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .user-badge{display:none;padding:5px 12px;border-radius:100px;background:rgba(37,99,235,.08);color:var(--accent-ai);font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(37,99,235,.15);transition:all .2s}
 .user-badge:hover{background:rgba(37,99,235,.15)}
 
+
+/* Help guide modal */
+.help-btn{padding:4px 12px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all .2s}
+.help-btn:hover{border-color:var(--accent-ai);color:var(--accent-ai)}
+.help-section{margin-bottom:20px}
+.help-section h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--brand-navy)}
+.help-section p,.help-section li{font-size:13px;line-height:1.8;color:var(--text-secondary)}
+.help-section ul{padding-left:1.2em;margin:0}
+.help-section li{margin-bottom:4px}
+.help-section .help-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.help-section .step-num{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--accent-ai);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.help-section .step-text{flex:1;font-size:13px;line-height:1.6;color:var(--text-secondary)}
+.help-section code{background:rgba(0,0,0,.05);padding:2px 6px;border-radius:4px;font-size:12px}
+.help-divider{height:1px;background:var(--border-light);margin:16px 0}
+
 /* Matrix rain strips */
 .matrix-strip{position:fixed;top:0;left:0;width:48px;height:100vh;height:100dvh;pointer-events:none;opacity:0;transition:opacity 1s ease;z-index:9999;background:rgba(10,25,18,0.92)}
 .matrix-strip.active{opacity:1}
@@ -252,6 +267,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 </div>
 <div class="footer">
   <span id="countLabel">0 筆紀錄</span>
+  <button class="help-btn" id="btnHelp">❓ 使用說明</button>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
 <div class="modal-overlay" id="summaryModal">
@@ -268,6 +284,62 @@ body.matrix-on{padding-left:48px;padding-right:48px}
       <button class="modal-action-btn" id="btnCopySummary">📋 複製</button>
       <button class="modal-action-btn" id="btnDownloadMd">💾 下載 Markdown</button>
       <button class="modal-action-btn" id="btnMailSummary">✉️ Email</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="helpModal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">使用說明</div>
+      <button class="modal-close" id="btnHelpClose">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px 24px">
+
+      <div class="help-section">
+        <h3>🎙️ 基本操作</h3>
+        <div class="help-step"><span class="step-num">1</span><span class="step-text">點選「開始」，瀏覽器會要求<strong>麥克風授權</strong>，請允許</span></div>
+        <div class="help-step"><span class="step-num">2</span><span class="step-text">選擇<strong>輸出語言</strong>（上方語言列），系統會自動偵測你說的語言並翻譯</span></div>
+        <div class="help-step"><span class="step-num">3</span><span class="step-text">對著麥克風說話，翻譯結果會即時顯示在畫面上</span></div>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">💡 支援 11 種語言自動偵測，適用所有主流瀏覽器（含 iOS Safari）</p>
+      </div>
+
+      <div class="help-divider"></div>
+
+      <div class="help-section">
+        <h3>📖 術語表</h3>
+        <p>點選「術語表」按鈕可以設定<strong>專業術語對照</strong>，確保翻譯一致性。</p>
+        <ul>
+          <li>左欄填原文術語，右欄填目標語言的翻譯</li>
+          <li>按 ＋ 新增更多術語，按 ✕ 移除</li>
+          <li>術語會同時套用在即時翻譯和會議摘要</li>
+        </ul>
+        <p style="margin-top:6px;font-size:12px;color:var(--text-muted)">範例：CLGM → 龍鱗綠色材料 ／ PCB → 印刷電路板</p>
+      </div>
+
+      <div class="help-divider"></div>
+
+      <div class="help-section">
+        <h3>📋 會議摘要</h3>
+        <p>累積翻譯紀錄後，點選「摘要」按鈕，AI 會自動產生：</p>
+        <ul>
+          <li><strong>會議標題</strong>與<strong>執行摘要</strong></li>
+          <li><strong>重點整理</strong>、<strong>待辦事項</strong>、<strong>決議</strong></li>
+        </ul>
+        <p>摘要完成後可以<strong>複製文字</strong>、<strong>下載 Markdown</strong> 或直接<strong>開啟 Email</strong> 分享。</p>
+      </div>
+
+      <div class="help-divider"></div>
+
+      <div class="help-section">
+        <h3>🔑 邀請碼</h3>
+        <p>本工具為邀請制，請向管理員索取邀請碼。</p>
+        <ul>
+          <li>輸入邀請碼後會記住登入狀態（同一瀏覽器）</li>
+          <li>點選右上角的使用者名稱可以<strong>登出</strong></li>
+          <li>想邀請朋友？請分享網址 + 邀請碼即可</li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </div>
@@ -709,6 +781,17 @@ getEl("btnModalClose").addEventListener("click", function() {
   getEl("summaryModal").classList.remove("visible");
 });
 getEl("summaryModal").addEventListener("click", function(e) {
+  if (e.target === this) this.classList.remove("visible");
+});
+
+// === Help modal ===
+getEl("btnHelp").addEventListener("click", function() {
+  getEl("helpModal").classList.add("visible");
+});
+getEl("btnHelpClose").addEventListener("click", function() {
+  getEl("helpModal").classList.remove("visible");
+});
+getEl("helpModal").addEventListener("click", function(e) {
   if (e.target === this) this.classList.remove("visible");
 });
 
