@@ -188,6 +188,11 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 
 /* Deepgram streaming cost indicator */
 .dg-cost-tag{font-size:10px;color:var(--text-muted);margin-left:8px}
+.perf-badge{font-size:11px;color:var(--text-muted);margin-top:8px;font-family:monospace;opacity:.7}
+.perf-badge span{margin-right:10px}
+.perf-badge .perf-fast{color:#059669}
+.perf-badge .perf-mid{color:#B45309}
+.perf-badge .perf-slow{color:#dc2626}
 
 /* Deepgram streaming */
 .interim-text{color:var(--text-muted);font-style:italic;transition:color .2s}
@@ -441,6 +446,8 @@ var dgMediaRecorder = null;
 var dgStream = null;
 var dgLang = '';
 var dgUtteranceDuration = 0; // seconds of audio in current utterance
+var dgTimings = {}; // per-utterance timing
+var dgPerfHistory = []; // all timings for averages
 var dgRetryCount = 0;
 var dgRetryTimer = null;
 
@@ -788,6 +795,7 @@ function handleDgMessage(evt) {
   if (!liveEntryId) {
     // Create new live entry
     dgUtteranceDuration = 0;
+    dgTimings = { firstResult: performance.now() };
     liveEntryId = ++nextId;
     var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
     var entry = {id:liveEntryId, original:'', translated:null, detectedLang:'', ts:ts, tgt:tgtLang};
@@ -830,11 +838,44 @@ function handleDgMessage(evt) {
   if (matrixActive) matrixPulse();
 }
 
+function showPerfBadge(id, t) {
+  if (!t.firstResult || !t.finalize) return;
+  var stt = ((t.finalize - t.firstResult) / 1000).toFixed(1);
+  var ttft = t.ttft ? ((t.ttft - t.finalize) / 1000).toFixed(1) : '-';
+  var transDur = (t.ttft && t.translateDone) ? ((t.translateDone - t.ttft) / 1000).toFixed(1) : '-';
+  var e2e = t.translateDone ? ((t.translateDone - t.firstResult) / 1000).toFixed(1) : '-';
+  function cls(v) { var n = parseFloat(v); if (isNaN(n)) return ''; return n < 1 ? 'perf-fast' : n < 2.5 ? 'perf-mid' : 'perf-slow'; }
+  var el = getEl('entry-' + id);
+  if (!el) return;
+  var badge = document.createElement('div');
+  badge.className = 'perf-badge';
+  badge.innerHTML = '<span class="' + cls(stt) + '">STT ' + stt + 's</span>' +
+    '<span class="' + cls(ttft) + '">TTFT ' + ttft + 's</span>' +
+    '<span class="' + cls(transDur) + '">翻譯 ' + transDur + 's</span>' +
+    '<span class="' + cls(e2e) + '">E2E ' + e2e + 's</span>';
+  el.appendChild(badge);
+  // Track history
+  dgPerfHistory.push({ stt: +stt, ttft: +ttft, trans: +transDur, e2e: +e2e });
+  updatePerfAvg();
+}
+
+function updatePerfAvg() {
+  if (dgPerfHistory.length < 1) return;
+  var avg = function(key) {
+    var vals = dgPerfHistory.map(function(p) { return p[key]; }).filter(function(v) { return !isNaN(v); });
+    return vals.length ? (vals.reduce(function(a,b){return a+b;},0) / vals.length).toFixed(1) : '-';
+  };
+  var el = getEl('countLabel');
+  if (el) el.textContent = allEntries.length + ' 筆 · 平均 TTFT ' + avg('ttft') + 's · E2E ' + avg('e2e') + 's';
+}
+
 function finalizeDgUtterance(id, text) {
   var entry = allEntries.find(function(e) { return e.id === id; });
   if (!entry) return;
   entry.original = text;
   entry.detectedLang = dgLang;
+  dgTimings.finalize = performance.now();
+  entry._timings = Object.assign({}, dgTimings);
 
   var origEl = getEl('orig-' + id);
   if (origEl) { origEl.textContent = text; origEl.classList.remove('interim-text'); }
@@ -897,6 +938,7 @@ function finalizeDgUtterance(id, text) {
     var decoder = new TextDecoder();
     var translated = '';
     if (transEl) { transEl.textContent = ''; transEl.classList.remove('same-lang'); }
+    var _ttftRecorded = false;
     function readChunk() {
       reader.read().then(function(result) {
         if (result.done) return;
@@ -908,11 +950,14 @@ function finalizeDgUtterance(id, text) {
           try {
             var evt = JSON.parse(line.slice(6));
             if (evt.t) {
+              if (!_ttftRecorded) { entry._timings.ttft = performance.now(); _ttftRecorded = true; }
               translated += evt.t;
               if (transEl) transEl.textContent = translated;
               scrollBottom();
             }
             if (evt.done) {
+              entry._timings.translateDone = performance.now();
+              showPerfBadge(id, entry._timings);
               entry.translated = translated;
               if (translated === text) {
                 if (transEl) { transEl.textContent = '\u2713 \u540c\u8a9e\u8a00\u78ba\u8a8d'; transEl.classList.add('same-lang'); }
