@@ -607,7 +607,7 @@ function stopRecording() {
   if (liveEntryId && liveText) {
     var el = getEl('entry-' + liveEntryId);
     if (el) el.classList.remove('entry-live');
-    finalizeDgUtterance(liveEntryId, liveText);
+    finalizeEntry(liveEntryId, liveText);
   }
   liveEntryId = null; liveText = '';
   // Whisper cleanup
@@ -769,7 +769,7 @@ function handleDgMessage(evt) {
     if (liveEntryId && liveText) {
       var el = getEl('entry-' + liveEntryId);
       if (el) el.classList.remove('entry-live');
-      finalizeDgUtterance(liveEntryId, liveText);
+      finalizeEntry(liveEntryId, liveText);
       liveEntryId = null; liveText = '';
     }
     return;
@@ -818,11 +818,14 @@ function handleDgMessage(evt) {
     getEl('orig-' + liveEntryId).textContent = liveText;
     getEl('orig-' + liveEntryId).classList.remove('interim-text');
 
+    // Immediately translate this segment (don't wait for utterance_end)
+    translateSegmentStreaming(liveEntryId, text);
+
     if (data.speech_final) {
-      // Utterance complete — finalize
+      // Utterance complete — finalize card
       var el = getEl('entry-' + liveEntryId);
       if (el) el.classList.remove('entry-live');
-      finalizeDgUtterance(liveEntryId, liveText);
+      finalizeEntry(liveEntryId, liveText);
       liveEntryId = null; liveText = '';
     }
   } else {
@@ -836,6 +839,135 @@ function handleDgMessage(evt) {
   }
   scrollBottom();
   if (matrixActive) matrixPulse();
+}
+
+// === Translate each is_final segment immediately (no waiting for utterance_end) ===
+var _segmentTranslations = {}; // id -> accumulated translated text
+
+function translateSegmentStreaming(id, segmentText) {
+  if (!segmentText || !segmentText.trim()) return;
+
+  var entry = allEntries.find(function(e) { return e.id === id; });
+  if (!entry) return;
+
+  // Map language
+  var DG_LANG_MAP = {'zh':'zh-TW','zh-TW':'zh-TW','zh-CN':'zh-CN','ja':'ja','en':'en','ko':'ko','vi':'vi','th':'th','id':'id','de':'de','es':'es','fr':'fr','pt':'pt'};
+  var srcLang = DG_LANG_MAP[dgLang] || dgLang;
+
+  // Skip translation if same language
+  if (srcLang === tgtLang && tgtLang !== 'zh-TW') {
+    if (!_segmentTranslations[id]) _segmentTranslations[id] = '';
+    _segmentTranslations[id] += ((_segmentTranslations[id] ? ' ' : '') + segmentText);
+    var transEl = getEl('trans-' + id);
+    if (transEl) { transEl.textContent = '\u2713 \u540c\u8a9e\u8a00\u78ba\u8a8d'; transEl.classList.add('same-lang'); }
+    return;
+  }
+
+  // Record timing for TTFT measurement
+  var segStart = performance.now();
+  var firstTokenRecorded = false;
+
+  var transEl = getEl('trans-' + id);
+  if (!_segmentTranslations[id]) _segmentTranslations[id] = '';
+
+  // Show shimmer only on first segment
+  if (!_segmentTranslations[id] && transEl) {
+    transEl.innerHTML = '<span class="shimmer">\u7ffb\u8b6f\u4e2d...</span>';
+  }
+
+  var payload = { text: segmentText, sourceLang: srcLang, targetLang: tgtLang, code: inviteCode };
+
+  fetch(WORKER_URL + '/translate-stream', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) {
+    if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || r.status); });
+    var reader = r.body.getReader();
+    var decoder = new TextDecoder();
+    function readChunk() {
+      reader.read().then(function(result) {
+        if (result.done) return;
+        var chunk = decoder.decode(result.value, { stream: true });
+        var lines = chunk.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (line.indexOf('data: ') !== 0) continue;
+          try {
+            var evt = JSON.parse(line.slice(6));
+            if (evt.t) {
+              if (!firstTokenRecorded && entry._timings) {
+                entry._timings.ttft = performance.now();
+                firstTokenRecorded = true;
+              }
+              _segmentTranslations[id] += evt.t;
+              if (transEl) {
+                transEl.textContent = _segmentTranslations[id];
+                transEl.classList.remove('same-lang');
+              }
+              scrollBottom();
+            }
+            if (evt.done) {
+              entry.translated = _segmentTranslations[id];
+              if (entry._timings && !entry._timings.translateDone) {
+                entry._timings.translateDone = performance.now();
+              }
+              getEl('btnSummary').disabled = false;
+              scheduleStatsRefresh();
+            }
+          } catch(e) {}
+        }
+        readChunk();
+      });
+    }
+    readChunk();
+  })
+  .catch(function(e) {
+    if (transEl) transEl.textContent = '\u26a0 ' + e.message;
+  });
+}
+
+// === Finalize entry (called on speech_final/utterance_end — translation already done) ===
+function finalizeEntry(id, text) {
+  var entry = allEntries.find(function(e) { return e.id === id; });
+  if (!entry) return;
+  entry.original = text;
+  entry.detectedLang = dgLang;
+  if (!entry._timings) entry._timings = {};
+  entry._timings.finalize = performance.now();
+
+  // Update meta
+  var flag = LANG_FLAGS[dgLang] || '\ud83c\udf10';
+  var tgtFlag = (LANGS[tgtLang] || {}).flag || '';
+  var metaEl = getEl('entry-' + id);
+  if (metaEl) {
+    metaEl.querySelector('.entry-meta').innerHTML = entry.ts + ' \u00b7 ' + flag + ' \u2192 ' + tgtFlag +
+      (dgLang ? '<span class="entry-lang">' + dgLang + '</span>' : '') + ' <span style="font-size:10px;color:var(--accent-ai)">\u2022 \u4e32\u6d41</span>';
+  }
+
+  // Log Deepgram cost
+  var durSec = dgUtteranceDuration || 1;
+  var dgCost = (durSec / 60) * 0.0077;
+  fetch(WORKER_URL + '/log-cost', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      service: 'deepgram', model: 'nova-2', action: 'stt-stream',
+      source: 'translator', code: inviteCode,
+      durationSec: +durSec.toFixed(1), costUSD: +dgCost.toFixed(6),
+      note: dgLang + ' ' + durSec.toFixed(1) + 's'
+    })
+  }).catch(function(e) { console.warn('[dg] cost log failed:', e); });
+  dgUtteranceDuration = 0;
+
+  // Show perf badge after a short delay (wait for last translation to finish)
+  setTimeout(function() {
+    if (typeof showPerfBadge === 'function') showPerfBadge(id, entry._timings || {});
+  }, 500);
+
+  // Clean up segment translations
+  delete _segmentTranslations[id];
 }
 
 function showPerfBadge(id, t) {
