@@ -452,15 +452,24 @@ const TNAMES = {
 };
 
 
+// === Taiwan timezone helper (UTC+8) ===
+function twISOString(date) {
+  const d = date || new Date();
+  return new Date(d.getTime() + 8 * 3600 * 1000).toISOString().replace('Z', '+08:00');
+}
+function twDateStr(date) {
+  const d = date || new Date();
+  return new Date(d.getTime() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
 // === Batched cost logging (reduces KV writes by ~50x) ===
 const costBuffer = [];
 const COST_FLUSH_SIZE = 50;
 let costFlushTimer = null;
 
 async function logCost(kv, record) {
-  const now = new Date();
   costBuffer.push({
-    timestamp: now.toISOString(),
+    timestamp: twISOString(),
     ...record,
     costTWD: +(record.costUSD * 32.5).toFixed(4),
   });
@@ -507,9 +516,8 @@ async function handleCosts(request, env) {
   const now = new Date();
 
   for (let i = 0; i < days; i++) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    const dateKey = `costs_${d.toISOString().slice(0, 10)}`;
+    const d = new Date(now.getTime() - i * 86400000);
+    const dateKey = `costs_${twDateStr(d)}`;
     const data = await env.TICKER_KV.get(dateKey);
     if (data) {
       try { records.push(...JSON.parse(data)); } catch(e) {}
