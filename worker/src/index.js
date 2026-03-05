@@ -553,7 +553,9 @@ async function handleSTT(request, env) {
   // Map Whisper language codes to our lang codes
   const WHISPER_TO_LANG = {
     'japanese': 'ja', 'english': 'en', 'chinese': 'zh-TW',
-    'korean': 'ko', 'mandarin': 'zh-TW'
+    'korean': 'ko', 'mandarin': 'zh-TW',
+    'vietnamese': 'vi', 'thai': 'th', 'indonesian': 'id',
+    'german': 'de', 'spanish': 'es', 'french': 'fr'
   };
   const langCode = WHISPER_TO_LANG[detectedLang] || detectedLang;
 
@@ -565,7 +567,9 @@ async function handleSTT(request, env) {
   // Step 2: Claude Haiku translation (with retry)
   const TNAMES = {
     'ja': '日本語', 'zh-TW': '繁體中文', 'en': 'English',
-    'zh-CN': '简体中文', 'ko': '한국어'
+    'zh-CN': '简体中文', 'ko': '한국어',
+    'vi': 'Tiếng Việt', 'th': 'ภาษาไทย', 'id': 'Bahasa Indonesia',
+    'de': 'Deutsch', 'es': 'Español', 'fr': 'Français'
   };
   const targetName = TNAMES[targetLang] || targetLang;
   const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
@@ -661,7 +665,9 @@ async function handleTranslate(request, env) {
 
   const TNAMES = {
     'ja': '日本語', 'zh-TW': '繁體中文', 'en': 'English',
-    'zh-CN': '简体中文', 'ko': '한국어'
+    'zh-CN': '简体中文', 'ko': '한국어',
+    'vi': 'Tiếng Việt', 'th': 'ภาษาไทย', 'id': 'Bahasa Indonesia',
+    'de': 'Deutsch', 'es': 'Español', 'fr': 'Français'
   };
   const targetName = TNAMES[targetLang] || targetLang;
 
