@@ -425,7 +425,6 @@ const PRICING = {
   'claude-haiku-4-5-20251001': { inputPerMTok: 0.80, outputPerMTok: 4.00 },
 };
 
-<<<<<<< Updated upstream
 // === Batched cost logging (reduces KV writes by ~50x) ===
 const costBuffer = [];
 const COST_FLUSH_SIZE = 50;
@@ -463,32 +462,12 @@ async function flushCosts(kv) {
     } catch (e) {
       console.error('flushCosts failed:', e.message);
     }
-=======
-async function logCost(kv, record) {
-  const now = new Date();
-  const dateKey = `costs_${now.toISOString().slice(0, 10)}`;
-  const entry = {
-    timestamp: now.toISOString(),
-    ...record,
-    costTWD: +(record.costUSD * 32.5).toFixed(4),
-  };
-  try {
-    const existing = await kv.get(dateKey);
-    const arr = existing ? JSON.parse(existing) : [];
-    arr.push(entry);
-    await kv.put(dateKey, JSON.stringify(arr), { expirationTtl: 90 * 86400 }); // keep 90 days
-  } catch (e) {
-    console.error('logCost failed:', e.message);
->>>>>>> Stashed changes
   }
 }
 
 async function handleCosts(request, env) {
-<<<<<<< Updated upstream
   // Flush buffer first so results are up-to-date
   await flushCosts(env.TICKER_KV);
-=======
->>>>>>> Stashed changes
   const url = new URL(request.url);
   const days = Math.min(parseInt(url.searchParams.get('days') || '30', 10), 90);
   const records = [];
@@ -944,25 +923,18 @@ async function handleRequest(request, env) {
     return handleSTT(request, env);
   }
 
-<<<<<<< Updated upstream
   // Meeting summary
   if (path === '/summarize') {
     return handleSummarize(request, env);
   }
 
-=======
->>>>>>> Stashed changes
   // Cost tracking
   if (path === '/costs') {
     return handleCosts(request, env);
   }
 
   // 404
-<<<<<<< Updated upstream
   return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/health'] }, 404, request);
-=======
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/costs', '/health'] }, 404, request);
->>>>>>> Stashed changes
 }
 
 // === Cron Trigger (token refresh) ===
