@@ -798,7 +798,7 @@ function handleDgMessage(evt) {
     dgTimings = { firstResult: performance.now() };
     liveEntryId = ++nextId;
     var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    var entry = {id:liveEntryId, original:'', translated:null, detectedLang:'', ts:ts, tgt:tgtLang};
+    var entry = {id:liveEntryId, original:'', translated:null, detectedLang:'', ts:ts, tgt:tgtLang, _timings: { firstResult: performance.now() }};
     allEntries.push(entry);
     var emp = getEl('empty'); if (emp) emp.remove();
     var div = document.createElement('div');
