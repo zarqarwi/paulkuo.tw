@@ -143,7 +143,7 @@ const ACT_LABEL = { debate:'辯論', 'translate-en':'翻譯 EN', 'translate-ja':
 // Fetch live costs from Worker and merge with static data
 async function fetchLiveCosts() {
   try {
-    const res = await fetch('https://paulkuo-ticker.paul-4bf.workers.dev/costs?days=90');
+    const res = await fetch('https://paulkuo-ticker.paul-4bf.workers.dev/costs?days=90&code=agora2026');
     if (!res.ok) return [];
     const data = await res.json();
     return data.records || [];
