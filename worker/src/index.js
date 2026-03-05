@@ -1003,6 +1003,41 @@ async function handleDeepgramToken(request, env) {
   return jsonResponse({ key: dgKey, expiresIn: 3600 }, 200, request);
 }
 
+
+// === Log External Costs (e.g. Deepgram streaming from frontend) ===
+async function handleLogCost(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+  let body;
+  try { body = await request.json(); } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400, request);
+  }
+  const { service, model, action, source, durationSec, costUSD, note, code } = body;
+  const codeInfo = await validateCode(code || '', env.TICKER_KV);
+  if (!codeInfo) {
+    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  }
+  if (!service || !action || costUSD === undefined) {
+    return jsonResponse({ error: 'Missing required fields: service, action, costUSD' }, 400, request);
+  }
+  if (costUSD > 1) {
+    return jsonResponse({ error: 'Cost too high for single entry' }, 400, request);
+  }
+  await logCost(env.TICKER_KV, {
+    service: service || 'unknown',
+    model: model || '',
+    action: action || 'unknown',
+    source: source || 'unknown',
+    code: code || '',
+    costUSD: +Number(costUSD).toFixed(6),
+    durationSec: durationSec || 0,
+    note: (note || '').slice(0, 200),
+  });
+  await flushCosts(env.TICKER_KV);
+  return jsonResponse({ ok: true }, 200, request);
+}
+
 async function handleRequest(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -1107,13 +1142,18 @@ async function handleRequest(request, env) {
     return handleDeepgramToken(request, env);
   }
 
+  // Log external costs (e.g. Deepgram streaming billed client-side)
+  if (path === '/log-cost') {
+    return handleLogCost(request, env);
+  }
+
   // Invite code validation
   if (path === '/validate-code') {
     return handleValidateCode(request, env);
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/deepgram-token', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/deepgram-token', '/log-cost', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===

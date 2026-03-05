@@ -185,6 +185,9 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 /* Same-language: hide redundant translation row */
 .entry-translated.same-lang{font-size:12px;color:var(--text-muted);font-style:italic}
 
+/* Deepgram streaming cost indicator */
+.dg-cost-tag{font-size:10px;color:var(--text-muted);margin-left:8px}
+
 /* Deepgram streaming */
 .interim-text{color:var(--text-muted);font-style:italic;transition:color .2s}
 .entry-live{border:1px dashed var(--accent-ai);background:rgba(37,99,235,0.02)}
@@ -436,6 +439,7 @@ var liveText = '';
 var dgMediaRecorder = null;
 var dgStream = null;
 var dgLang = '';
+var dgUtteranceDuration = 0; // seconds of audio in current utterance
 
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -719,8 +723,15 @@ function handleDgMessage(evt) {
 
   if (!text) return;
 
+  // Track audio duration from Deepgram response
+  if (data.start !== undefined && data.duration !== undefined) {
+    var endTime = data.start + data.duration;
+    if (endTime > dgUtteranceDuration) dgUtteranceDuration = endTime;
+  }
+
   if (!liveEntryId) {
     // Create new live entry
+    dgUtteranceDuration = 0;
     liveEntryId = ++nextId;
     var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
     var entry = {id:liveEntryId, original:'', translated:null, detectedLang:'', ts:ts, tgt:tgtLang};
@@ -771,6 +782,22 @@ function finalizeDgUtterance(id, text) {
 
   var origEl = getEl('orig-' + id);
   if (origEl) { origEl.textContent = text; origEl.classList.remove('interim-text'); }
+
+  // Log Deepgram cost to Worker (fire-and-forget)
+  var durSec = dgUtteranceDuration || 1;
+  var dgCost = (durSec / 60) * 0.0077; // $0.0077/min streaming
+  fetch(WORKER_URL + '/log-cost', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      service: 'deepgram', model: 'nova-2', action: 'stt-stream',
+      source: 'translator', code: inviteCode,
+      durationSec: +durSec.toFixed(1),
+      costUSD: +dgCost.toFixed(6),
+      note: dgLang + ' ' + durSec.toFixed(1) + 's'
+    })
+  }).catch(function(e) { console.warn('[dg] cost log failed:', e); });
+  dgUtteranceDuration = 0;
 
   // Update meta with detected language
   var flag = LANG_FLAGS[dgLang] || '\ud83c\udf10';
