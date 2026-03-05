@@ -441,6 +441,8 @@ var dgMediaRecorder = null;
 var dgStream = null;
 var dgLang = '';
 var dgUtteranceDuration = 0; // seconds of audio in current utterance
+var dgRetryCount = 0;
+var dgRetryTimer = null;
 
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -582,6 +584,8 @@ function stopRecording() {
   if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
   if (autoSendInterval) { clearInterval(autoSendInterval); autoSendInterval = null; }
   // Deepgram cleanup
+  if (dgRetryTimer) { clearTimeout(dgRetryTimer); dgRetryTimer = null; }
+  dgRetryCount = 0;
   if (dgWs) {
     try { dgWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
     try { dgWs.close(); } catch(e) {}
@@ -686,7 +690,7 @@ function connectDgWebSocket(stream) {
       dgWs.binaryType = 'arraybuffer';
 
       dgWs.onopen = function() {
-        window._dgAttempt = 0;
+        dgRetryCount = 0;
         console.log('[dg] WebSocket connected');
         hideError();
         setStatus('listening');
@@ -715,24 +719,29 @@ function connectDgWebSocket(stream) {
         handleDgMessage(evt);
       };
 
-      var dgRetried = false;
       dgWs.onerror = function(e) {
-        console.error('[dg] WebSocket error', e);
-        if (!dgRetried) {
-          dgRetried = true;
-          console.log('[dg] Retrying connection...');
-          showError('Deepgram 連線中…重試');
-          setTimeout(function() {
+        console.error('[dg] WebSocket error, attempt=' + dgRetryCount);
+        if (dgRetryCount < 2 && recording) {
+          dgRetryCount++;
+          showError('Deepgram 連線中…第 ' + dgRetryCount + ' 次重試');
+          // Clean up current WS without triggering full stop
+          if (dgWs) { try { dgWs.close(); } catch(x) {} dgWs = null; }
+          if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(x) {} dgMediaRecorder = null; }
+          dgRetryTimer = setTimeout(function() {
+            dgRetryTimer = null;
+            if (!recording) return; // user pressed stop during wait
             hideError();
-            if (recording) stopRecording();
-            startDeepgramStreaming();
-          }, 1000);
+            connectDgWebSocket(dgStream);
+          }, 1500 * dgRetryCount);
           return;
         }
+        console.log('[dg] Max retries reached, falling back to Whisper');
         showError('Deepgram 連線失敗，切換至批次模式');
         sttMode = 'whisper';
         getEl('sttMode').value = 'whisper';
         stopRecording();
+        // Auto-start in Whisper mode
+        setTimeout(function() { startRecording(); }, 500);
       };
 
       dgWs.onclose = function(e) {
