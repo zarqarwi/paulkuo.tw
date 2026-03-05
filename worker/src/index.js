@@ -795,6 +795,121 @@ async function handleTranslate(request, env) {
   }
 }
 
+// === Streaming Translation via Claude Haiku (SSE) ===
+async function handleTranslateStream(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+  if (!env.ANTHROPIC_API_KEY) {
+    return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
+  }
+  let body;
+  try { body = await request.json(); } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400, request);
+  }
+  const { text, sourceLang, targetLang, code: userCode } = body;
+  if (!text || !targetLang) {
+    return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
+  }
+  const codeInfo = await validateCode(userCode || '', env.TICKER_KV);
+  if (!codeInfo) {
+    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  }
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (!checkRateLimit(ip, TRANSLATE_RATE_LIMIT)) {
+    return jsonResponse({ error: 'Rate limited' }, 429, request);
+  }
+
+  const trimmedText = text.slice(0, 2000);
+  const targetName = TNAMES[targetLang] || targetLang;
+  const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
+
+  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      stream: true,
+      messages: [{
+        role: 'user',
+        content: 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translation, nothing else.' + twHint + '\n\n' + trimmedText
+      }]
+    })
+  });
+
+  if (!claudeRes.ok) {
+    const err = await claudeRes.json().catch(() => ({}));
+    return jsonResponse({ error: err.error?.message || 'Claude API ' + claudeRes.status }, 502, request);
+  }
+
+  // Transform Anthropic SSE → simplified SSE for frontend
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const encoder = new TextEncoder();
+  let inputTokens = 0, outputTokens = 0;
+
+  (async () => {
+    const reader = claudeRes.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6);
+          if (data === '[DONE]') continue;
+          try {
+            const evt = JSON.parse(data);
+            if (evt.type === 'content_block_delta' && evt.delta?.text) {
+              await writer.write(encoder.encode('data: ' + JSON.stringify({ t: evt.delta.text }) + '\n\n'));
+            }
+            if (evt.type === 'message_delta' && evt.usage) {
+              outputTokens = evt.usage.output_tokens || 0;
+            }
+            if (evt.type === 'message_start' && evt.message?.usage) {
+              inputTokens = evt.message.usage.input_tokens || 0;
+            }
+          } catch (e) {}
+        }
+      }
+      // Send done event with cost
+      const hp = PRICING['claude-haiku-4-5-20251001'];
+      const cost = (inputTokens / 1e6) * hp.inputPerMTok + (outputTokens / 1e6) * hp.outputPerMTok;
+      await writer.write(encoder.encode('data: ' + JSON.stringify({ done: true, costUSD: +cost.toFixed(6) }) + '\n\n'));
+      // Log cost
+      await logCost(env.TICKER_KV, {
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate-stream',
+        source: 'translator', code: userCode || '',
+        inputTokens, outputTokens, costUSD: +cost.toFixed(6),
+        note: (sourceLang || 'auto') + '>' + targetLang
+      });
+    } catch (e) {
+      await writer.write(encoder.encode('data: ' + JSON.stringify({ error: e.message }) + '\n\n'));
+    } finally {
+      await writer.close();
+    }
+  })();
+
+  return new Response(readable, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      ...corsHeaders(request),
+    },
+  });
+}
+
 // === Request Handler ===
 // === Meeting Summary via Claude Haiku ===
 async function handleSummarize(request, env) {
@@ -1141,6 +1256,11 @@ async function handleRequest(request, env) {
     return handleSTT(request, env);
   }
 
+  // Streaming translation (SSE)
+  if (path === '/translate-stream') {
+    return handleTranslateStream(request, env);
+  }
+
   // Meeting summary
   if (path === '/summarize') {
     return handleSummarize(request, env);
@@ -1202,7 +1322,7 @@ async function handleRequest(request, env) {
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/deepgram-token', '/log-cost', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/deepgram-token', '/log-cost', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===

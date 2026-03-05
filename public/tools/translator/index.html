@@ -881,34 +881,54 @@ function finalizeDgUtterance(id, text) {
     return;
   }
 
-  // POST to /translate
+  // POST to /translate-stream (SSE streaming)
   var cg = getCleanGlossary();
   var payload = { text: text, sourceLang: srcLang, targetLang: tgtLang, code: inviteCode };
   if (cg.length > 0) payload.glossary = cg;
 
-  fetch(WORKER_URL + '/translate', {
+  fetch(WORKER_URL + '/translate-stream', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(payload)
   })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    if (d.error) {
-      if (transEl) transEl.textContent = '\u26a0 ' + d.error;
-      return;
+  .then(function(r) {
+    if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || r.status); });
+    var reader = r.body.getReader();
+    var decoder = new TextDecoder();
+    var translated = '';
+    if (transEl) { transEl.textContent = ''; transEl.classList.remove('same-lang'); }
+    function readChunk() {
+      reader.read().then(function(result) {
+        if (result.done) return;
+        var chunk = decoder.decode(result.value, { stream: true });
+        var lines = chunk.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (line.indexOf('data: ') !== 0) continue;
+          try {
+            var evt = JSON.parse(line.slice(6));
+            if (evt.t) {
+              translated += evt.t;
+              if (transEl) transEl.textContent = translated;
+              scrollBottom();
+            }
+            if (evt.done) {
+              entry.translated = translated;
+              if (translated === text) {
+                if (transEl) { transEl.textContent = '\u2713 \u540c\u8a9e\u8a00\u78ba\u8a8d'; transEl.classList.add('same-lang'); }
+              }
+              getEl('btnSummary').disabled = false;
+              scheduleStatsRefresh();
+            }
+            if (evt.error) {
+              if (transEl) transEl.textContent = '\u26a0 ' + evt.error;
+            }
+          } catch(e) {}
+        }
+        readChunk();
+      });
     }
-    entry.translated = d.translated || '';
-    if (transEl) {
-      if (d.translated && d.translated !== text) {
-        transEl.textContent = d.translated;
-        transEl.classList.remove('same-lang');
-      } else {
-        transEl.textContent = '\u2713 \u540c\u8a9e\u8a00\u78ba\u8a8d';
-        transEl.classList.add('same-lang');
-      }
-    }
-    getEl('btnSummary').disabled = false;
-    scheduleStatsRefresh();
+    readChunk();
   })
   .catch(function(e) {
     if (transEl) transEl.textContent = '\u26a0 ' + e.message;
