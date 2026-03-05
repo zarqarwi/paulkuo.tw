@@ -644,16 +644,14 @@ function startDeepgramStreaming() {
         'utterance_end_ms=1500',
         'smart_format=true',
         'punctuate=true',
-        'detect_language=true',
-        'encoding=opus',
-        'sample_rate=48000'
+        'detect_language=true'
       ].join('&');
       var wsUrl = 'wss://api.deepgram.com/v1/listen?' + wsParams;
       dgWs = new WebSocket(wsUrl, ['token', dgKey]);
       dgWs.binaryType = 'arraybuffer';
 
       dgWs.onopen = function() {
-        console.log('[dg] WebSocket connected');
+        console.log('[dg] WebSocket connected, sending audio as ' + (dgMediaRecorder ? '' : 'pending ') + (mimeType || 'default'));
         setStatus('listening');
         // Step 4: Start MediaRecorder, send chunks to WS
         var mimeType = 'audio/webm;codecs=opus';
@@ -663,8 +661,11 @@ function startDeepgramStreaming() {
         }
         var opts = mimeType ? { mimeType: mimeType } : {};
         dgMediaRecorder = new MediaRecorder(stream, opts);
+        var dgChunkCount = 0;
         dgMediaRecorder.ondataavailable = function(e) {
           if (e.data && e.data.size > 0 && dgWs && dgWs.readyState === WebSocket.OPEN) {
+            dgChunkCount++;
+            if (dgChunkCount <= 3) console.log('[dg] sending chunk #' + dgChunkCount + ' size=' + e.data.size + ' type=' + e.data.type);
             e.data.arrayBuffer().then(function(buf) {
               dgWs.send(buf);
             });
@@ -721,6 +722,7 @@ function handleDgMessage(evt) {
   var text = (alt.transcript || '').trim();
   var lang = alt.detected_language || dgLang || '';
   if (lang) dgLang = lang;
+  if (text) console.log('[dg] result: final=' + data.is_final + ' speech_final=' + (data.speech_final||false) + ' lang=' + lang + ' "' + text.slice(0,50) + '"');
 
   if (!text) return;
 
