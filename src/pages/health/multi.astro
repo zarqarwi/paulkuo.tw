@@ -75,13 +75,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 </div>
 
 <script is:inline>
-const PASS = 'paulkuo2026';
+const WORKER = 'https://paulkuo-ticker.paul-4bf.workers.dev';
 const gate = document.getElementById('authGate');
 const main = document.getElementById('mainContent');
 const inp = document.getElementById('authInput');
 const btn = document.getElementById('authBtn');
-if (sessionStorage.getItem('health_auth') === 'ok') { gate.style.display='none'; main.style.display='block'; }
-btn.onclick = () => { if(inp.value===PASS){sessionStorage.setItem('health_auth','ok');gate.style.display='none';main.style.display='block';}else{inp.style.border='2px solid #ef4444';} };
+var _code = sessionStorage.getItem('health_code') || '';
+async function _verify(code) {
+  try { const r = await fetch(WORKER+'/validate-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}); const d = await r.json(); return d.valid && d.role === 'admin'; } catch(e) { return false; }
+}
+(async()=>{ if(_code && await _verify(_code)){gate.style.display='none';main.style.display='block';} })();
+btn.onclick = async () => {
+  btn.textContent='驗證中…'; btn.disabled=true;
+  if(await _verify(inp.value.trim().toLowerCase())){_code=inp.value.trim().toLowerCase();sessionStorage.setItem('health_code',_code);gate.style.display='none';main.style.display='block';}
+  else{inp.style.border='2px solid #ef4444';inp.value='';inp.placeholder='密碼錯誤或非管理員';btn.textContent='進入';btn.disabled=false;}
+};
 inp.onkeydown = e => { if(e.key==='Enter') btn.click(); };
 </script>
 

@@ -130,17 +130,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 <script is:inline>
 // Auth gate - same as dashboard
-const DASH_KEY = 'paulkuo2026';
+const WORKER = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+var _hCode = sessionStorage.getItem('health_code') || '';
+async function _verify(code) {
+  try { const r = await fetch(WORKER+'/validate-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}); const d = await r.json(); return d.valid && d.role === 'admin'; } catch(e) { return false; }
+}
 const authGate = document.getElementById('authGate');
 const mainEl = document.getElementById('mainContent') || document.getElementById('healthMain');
 const authInput = document.getElementById('authInput');
 const authBtn = document.getElementById('authBtn');
 
-function checkAuth() {
+async function checkAuth() {
   const urlKey = new URLSearchParams(window.location.search).get('key');
-  const stored = sessionStorage.getItem('dash_auth');
-  if (urlKey === DASH_KEY || stored === DASH_KEY) {
-    sessionStorage.setItem('dash_auth', DASH_KEY);
+  
+  const code = urlKey || _hCode; if (code && await _verify(code)) { _hCode = code; sessionStorage.setItem('health_code', code); /* replaced */ if (true) {
+    
     authGate.style.display = 'none';
     mainEl.style.display = 'block';
     return;
@@ -148,15 +152,15 @@ function checkAuth() {
 }
 checkAuth();
 
-authBtn.addEventListener('click', () => {
-  if (authInput.value === DASH_KEY) {
-    sessionStorage.setItem('dash_auth', DASH_KEY);
+authBtn.addEventListener('click', async () => {
+  authBtn.textContent='驗證中…';authBtn.disabled=true; if (await _verify(authInput.value.trim().toLowerCase())) { _hCode=authInput.value.trim().toLowerCase(); sessionStorage.setItem('health_code',_hCode); if(true) {
+    
     authGate.style.display = 'none';
     mainEl.style.display = 'block';
   } else {
     authInput.style.borderColor = '#ef4444';
     authInput.value = '';
-    authInput.placeholder = '密碼錯誤';
+    authInput.placeholder = '密碼錯誤或非管理員'; authBtn.textContent='進入'; authBtn.disabled=false;
   }
 });
 authInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
