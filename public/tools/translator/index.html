@@ -185,6 +185,13 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 /* Same-language: hide redundant translation row */
 .entry-translated.same-lang{font-size:12px;color:var(--text-muted);font-style:italic}
 
+/* Deepgram streaming */
+.interim-text{color:var(--text-muted);font-style:italic;transition:color .2s}
+.entry-live{border:1px dashed var(--accent-ai);background:rgba(37,99,235,0.02)}
+.entry-live .entry-original{border-left-color:var(--accent-ai);opacity:.85}
+.stt-toggle{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted)}
+.stt-toggle select{padding:2px 6px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg-card);color:var(--text-secondary);font-family:var(--font-body);cursor:pointer}
+
 
 /* Invite gate overlay */
 .gate-overlay{position:fixed;inset:0;background:rgba(250,250,248,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
@@ -258,7 +265,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
       <div class="logo">T</div>
       <div>
         <div class="header-title">阿哥拉廣場｜即時會議翻譯</div>
-        <div class="header-sub">Whisper + Claude Haiku · 語音辨識 / 翻譯 / 會議紀錄</div>
+        <div class="header-sub" id="headerSub">Deepgram Nova-2 串流 + Claude Haiku · 語音辨識 / 翻譯 / 會議紀錄</div>
       </div>
     </a>
   </div>
@@ -306,6 +313,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   <span id="countLabel">0 筆紀錄</span>
     <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇ 匯出</button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果，不含原文與時間戳</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Google Sheets</span></button></div></div>
   <button class="help-btn" id="btnHelp">❓ 使用說明</button>
+  <label class="stt-toggle">STT <select id="sttMode"><option value="deepgram">串流</option><option value="whisper">批次</option></select></label>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
 <div class="modal-overlay" id="summaryModal">
@@ -419,6 +427,16 @@ var chunkStartTime = 0;
 var hasSound = false;
 var autoSendInterval = null;
 
+// Deepgram streaming state
+var sttMode = 'deepgram'; // 'deepgram' | 'whisper'
+var dgWs = null;
+var dgKey = null;
+var liveEntryId = null;
+var liveText = '';
+var dgMediaRecorder = null;
+var dgStream = null;
+var dgLang = '';
+
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
@@ -488,6 +506,7 @@ function startVolumeMeter(stream) {
 
 // Recording
 function startRecording() {
+  if (sttMode === 'deepgram') { startDeepgramStreaming(); return; }
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
     recording = true;
     updateToggle();
@@ -557,11 +576,29 @@ function stopRecording() {
   recording = false;
   if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
   if (autoSendInterval) { clearInterval(autoSendInterval); autoSendInterval = null; }
+  // Deepgram cleanup
+  if (dgWs) {
+    try { dgWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
+    try { dgWs.close(); } catch(e) {}
+    dgWs = null;
+  }
+  if (dgMediaRecorder) {
+    if (dgMediaRecorder.state === 'recording') dgMediaRecorder.stop();
+    dgMediaRecorder = null;
+  }
+  if (dgStream) { dgStream.getTracks().forEach(function(t) { t.stop(); }); dgStream = null; }
+  // Finalize live entry if any
+  if (liveEntryId && liveText) {
+    var el = getEl('entry-' + liveEntryId);
+    if (el) el.classList.remove('entry-live');
+    finalizeDgUtterance(liveEntryId, liveText);
+  }
+  liveEntryId = null; liveText = '';
+  // Whisper cleanup
   if (mediaRecorder) {
     if (mediaRecorder.state === "recording") {
-      mediaRecorder.stop(); // will trigger onstop, but recording=false so won't restart
+      mediaRecorder.stop();
     }
-    // Stop all tracks
     if (mediaRecorder._stream) {
       mediaRecorder._stream.getTracks().forEach(function(t) { t.stop(); });
     }
@@ -572,6 +609,227 @@ function stopRecording() {
   setStatus("ready");
   stopMatrix();
   updateToggle();
+}
+
+// === Deepgram Streaming STT ===
+function startDeepgramStreaming() {
+  setStatus('sending');
+  hideError();
+  // Step 1: Get Deepgram key
+  fetch(WORKER_URL + '/deepgram-token?code=' + encodeURIComponent(inviteCode))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) { showError('Deepgram: ' + d.error); setStatus('error'); return; }
+      dgKey = d.key;
+      // Step 2: Get mic
+      return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    })
+    .then(function(stream) {
+      if (!stream) return; // error already shown
+      dgStream = stream;
+      recording = true;
+      updateToggle();
+      startMatrix();
+      startVolumeMeter(stream);
+
+      // Step 3: Open Deepgram WebSocket
+      var wsParams = [
+        'model=nova-2',
+        'interim_results=true',
+        'utterance_end_ms=1500',
+        'smart_format=true',
+        'punctuate=true',
+        'detect_language=true',
+        'encoding=opus',
+        'sample_rate=48000'
+      ].join('&');
+      var wsUrl = 'wss://api.deepgram.com/v1/listen?' + wsParams;
+      dgWs = new WebSocket(wsUrl, ['token', dgKey]);
+      dgWs.binaryType = 'arraybuffer';
+
+      dgWs.onopen = function() {
+        console.log('[dg] WebSocket connected');
+        setStatus('listening');
+        // Step 4: Start MediaRecorder, send chunks to WS
+        var mimeType = 'audio/webm;codecs=opus';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'audio/mp4';
+          if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
+        }
+        var opts = mimeType ? { mimeType: mimeType } : {};
+        dgMediaRecorder = new MediaRecorder(stream, opts);
+        dgMediaRecorder.ondataavailable = function(e) {
+          if (e.data && e.data.size > 0 && dgWs && dgWs.readyState === WebSocket.OPEN) {
+            e.data.arrayBuffer().then(function(buf) {
+              dgWs.send(buf);
+            });
+          }
+        };
+        dgMediaRecorder.start(250); // 250ms chunks for low latency
+      };
+
+      dgWs.onmessage = function(evt) {
+        handleDgMessage(evt);
+      };
+
+      dgWs.onerror = function(e) {
+        console.error('[dg] WebSocket error', e);
+        showError('Deepgram 連線錯誤，切換至批次模式');
+        sttMode = 'whisper';
+        getEl('sttMode').value = 'whisper';
+        stopRecording();
+      };
+
+      dgWs.onclose = function(e) {
+        console.log('[dg] WebSocket closed', e.code, e.reason);
+        if (recording) {
+          // Unexpected close — stop gracefully
+          stopRecording();
+        }
+      };
+    })
+    .catch(function(e) {
+      showError('\u7121\u6cd5\u555f\u52d5: ' + e.message);
+      setStatus('error');
+    });
+}
+
+function handleDgMessage(evt) {
+  var data;
+  try { data = JSON.parse(evt.data); } catch(e) { return; }
+
+  // Handle UtteranceEnd separately (finalize current utterance)
+  if (data.type === 'UtteranceEnd') {
+    if (liveEntryId && liveText) {
+      var el = getEl('entry-' + liveEntryId);
+      if (el) el.classList.remove('entry-live');
+      finalizeDgUtterance(liveEntryId, liveText);
+      liveEntryId = null; liveText = '';
+    }
+    return;
+  }
+
+  if (data.type !== 'Results') return;
+
+  var alt = data.channel && data.channel.alternatives && data.channel.alternatives[0];
+  if (!alt) return;
+  var text = (alt.transcript || '').trim();
+  var lang = alt.detected_language || dgLang || '';
+  if (lang) dgLang = lang;
+
+  if (!text) return;
+
+  if (!liveEntryId) {
+    // Create new live entry
+    liveEntryId = ++nextId;
+    var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    var entry = {id:liveEntryId, original:'', translated:null, detectedLang:'', ts:ts, tgt:tgtLang};
+    allEntries.push(entry);
+    var emp = getEl('empty'); if (emp) emp.remove();
+    var div = document.createElement('div');
+    div.className = 'entry entry-live';
+    div.id = 'entry-' + liveEntryId;
+    div.innerHTML = '<div class="entry-meta">' + ts + ' · \ud83c\udf10 \u8fa8\u8b58\u4e2d</div>' +
+      '<div class="entry-original interim-text" id="orig-' + liveEntryId + '"></div>' +
+      '<div class="entry-translated" id="trans-' + liveEntryId + '"></div>';
+    getEl('content').appendChild(div);
+    updateCount();
+  }
+
+  // Update live text
+  if (data.is_final) {
+    // Accumulate final segments
+    liveText += (liveText ? ' ' : '') + text;
+    getEl('orig-' + liveEntryId).textContent = liveText;
+    getEl('orig-' + liveEntryId).classList.remove('interim-text');
+
+    if (data.speech_final) {
+      // Utterance complete — finalize
+      var el = getEl('entry-' + liveEntryId);
+      if (el) el.classList.remove('entry-live');
+      finalizeDgUtterance(liveEntryId, liveText);
+      liveEntryId = null; liveText = '';
+    }
+  } else {
+    // Interim — show gray preview
+    var preview = liveText ? liveText + ' ' + text : text;
+    var origEl = getEl('orig-' + liveEntryId);
+    if (origEl) {
+      origEl.textContent = preview;
+      origEl.classList.add('interim-text');
+    }
+  }
+  scrollBottom();
+  if (matrixActive) matrixPulse();
+}
+
+function finalizeDgUtterance(id, text) {
+  var entry = allEntries.find(function(e) { return e.id === id; });
+  if (!entry) return;
+  entry.original = text;
+  entry.detectedLang = dgLang;
+
+  var origEl = getEl('orig-' + id);
+  if (origEl) { origEl.textContent = text; origEl.classList.remove('interim-text'); }
+
+  // Update meta with detected language
+  var flag = LANG_FLAGS[dgLang] || '\ud83c\udf10';
+  var tgtFlag = (LANGS[tgtLang] || {}).flag || '';
+  var metaEl = getEl('entry-' + id);
+  if (metaEl) {
+    metaEl.querySelector('.entry-meta').innerHTML = entry.ts + ' \u00b7 ' + flag + ' \u2192 ' + tgtFlag +
+      (dgLang ? '<span class="entry-lang">' + dgLang + '</span>' : '') + ' <span style="font-size:10px;color:var(--accent-ai)">\u2022 \u4e32\u6d41</span>';
+  }
+
+  // Show translating indicator
+  var transEl = getEl('trans-' + id);
+  if (transEl) transEl.innerHTML = '<span class="shimmer">\u7ffb\u8b6f\u4e2d...</span>';
+
+  // Map Deepgram lang to our codes
+  var DG_LANG_MAP = {'zh':'zh-TW','zh-TW':'zh-TW','zh-CN':'zh-CN','ja':'ja','en':'en','ko':'ko','vi':'vi','th':'th','id':'id','de':'de','es':'es','fr':'fr','pt':'pt'};
+  var srcLang = DG_LANG_MAP[dgLang] || dgLang;
+
+  // Skip translation if source == target
+  if (srcLang === tgtLang && tgtLang !== 'zh-TW') {
+    entry.translated = text;
+    if (transEl) { transEl.textContent = '\u2713 \u540c\u8a9e\u8a00\u78ba\u8a8d'; transEl.classList.add('same-lang'); }
+    getEl('btnSummary').disabled = false;
+    scheduleStatsRefresh();
+    return;
+  }
+
+  // POST to /translate
+  var cg = getCleanGlossary();
+  var payload = { text: text, sourceLang: srcLang, targetLang: tgtLang, code: inviteCode };
+  if (cg.length > 0) payload.glossary = cg;
+
+  fetch(WORKER_URL + '/translate', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.error) {
+      if (transEl) transEl.textContent = '\u26a0 ' + d.error;
+      return;
+    }
+    entry.translated = d.translated || '';
+    if (transEl) {
+      if (d.translated && d.translated !== text) {
+        transEl.textContent = d.translated;
+        transEl.classList.remove('same-lang');
+      } else {
+        transEl.textContent = '\u2713 \u540c\u8a9e\u8a00\u78ba\u8a8d';
+        transEl.classList.add('same-lang');
+      }
+    }
+    getEl('btnSummary').disabled = false;
+    scheduleStatsRefresh();
+  })
+  .catch(function(e) {
+    if (transEl) transEl.textContent = '\u26a0 ' + e.message;
+  });
 }
 
 // sendAudio replaced by glossary-aware version below
@@ -626,6 +884,15 @@ getEl("btnToggle").addEventListener("click", function() {
   if (recording) stopRecording(); else startRecording();
 });
 getEl("btnClear").addEventListener("click", clearAll);
+
+// STT mode binding
+getEl('sttMode').addEventListener('change', function() {
+  sttMode = this.value;
+  var sub = getEl('headerSub');
+  if (sub) sub.textContent = sttMode === 'deepgram'
+    ? 'Deepgram Nova-2 串流 + Claude Haiku · 語音辨識 / 翻譯 / 會議紀錄'
+    : 'Whisper + Claude Haiku · 語音辨識 / 翻譯 / 會議紀錄';
+});
 
 // Init
 renderLangs();
