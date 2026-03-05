@@ -228,6 +228,17 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .today-stats.visible{display:inline-flex}
 .today-stats .stat-val{font-weight:600;color:var(--text-secondary)}
 .today-stats .stat-cost{color:var(--accent-ai);font-weight:600}
+
+/* Export dropdown */
+.export-wrap{position:relative;display:inline-block}
+.export-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:2px 8px;border-radius:6px;font-family:var(--font-body);transition:color .2s}
+.export-btn:hover{color:var(--accent-ai)}
+.export-btn:disabled{opacity:.4;cursor:not-allowed}
+.export-menu{display:none;position:absolute;bottom:100%;left:0;margin-bottom:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-md);overflow:hidden;min-width:160px;z-index:100;animation:fadeIn .15s}
+.export-menu.visible{display:block}
+.export-item{display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;color:var(--text-primary);cursor:pointer;font-family:var(--font-body);transition:background .15s}
+.export-item:hover{background:var(--bg-section)}
+.export-item span{font-size:11px;color:var(--text-muted);display:block;margin-top:2px}
 </style>
 </head>
 <body>
@@ -291,6 +302,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 </div>
 <div class="footer">
   <span id="countLabel">0 筆紀錄</span>
+    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇ 匯出</button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Google Sheets</span></button></div></div>
   <button class="help-btn" id="btnHelp">❓ 使用說明</button>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
@@ -594,7 +606,7 @@ function clearAll() {
   getEl("content").innerHTML = '<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始」後對著麥克風說話<br><span style="font-size:12px">自動偵測 11 種語言 · 支援所有瀏覽器</span><br><a href="#" onclick="getEl(\'helpModal\').classList.add(\'visible\');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none">第一次使用？看使用說明 →</a></div></div>';
   updateCount();
 }
-function updateCount() { getEl("countLabel").textContent = allEntries.length + " 筆紀錄"; }
+function updateCount() { getEl("countLabel").textContent = allEntries.length + " 筆紀錄"; getEl("btnExport").disabled = allEntries.length === 0; }
 function scrollBottom() {
   if (getEl("autoScroll").checked) {
     var c = getEl("content");
@@ -1092,6 +1104,71 @@ function scheduleStatsRefresh() {
   if (_statsRefreshTimer) clearTimeout(_statsRefreshTimer);
   _statsRefreshTimer = setTimeout(loadTodayStats, 3000);
 }
+
+
+// === Full Transcript Export ===
+var LANG_NAMES = {"ja":"日本語","zh-TW":"繁體中文","en":"English","zh-CN":"简体中文","ko":"한국어","vi":"Tiếng Việt","th":"ภาษาไทย","id":"Bahasa Indonesia","de":"Deutsch","es":"Español","fr":"Français"};
+
+getEl("btnExport").addEventListener("click", function(e) {
+  e.stopPropagation();
+  if (allEntries.length === 0) return;
+  getEl("exportMenu").classList.toggle("visible");
+});
+document.addEventListener("click", function() {
+  getEl("exportMenu").classList.remove("visible");
+});
+
+function buildTranscriptTxt() {
+  var lines = [];
+  var dateStr = new Date().toLocaleDateString("zh-TW");
+  lines.push("會議翻譯紀錄 — " + dateStr);
+  lines.push("輸出語言：" + (LANG_NAMES[tgtLang] || tgtLang));
+  lines.push("總計：" + allEntries.length + " 筆");
+  lines.push("==================================================");
+  lines.push("");
+  allEntries.forEach(function(e) {
+    if (!e.original) return;
+    lines.push("[" + e.ts + "] " + (e.detectedLang ? "(" + e.detectedLang + ")" : ""));
+    lines.push("原文：" + e.original);
+    if (e.translated && e.translated !== e.original) {
+      lines.push("翻譯：" + e.translated);
+    }
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+
+function buildTranscriptCsv() {
+  var rows = [];
+  rows.push("時間,偵測語言,原文,翻譯,目標語言");
+  allEntries.forEach(function(e) {
+    if (!e.original) return;
+    var esc = function(s) { return '"' + (s || "").replace(/"/g, '""') + '"'; };
+    rows.push([esc(e.ts), esc(e.detectedLang || ""), esc(e.original), esc(e.translated || ""), esc(e.tgt || tgtLang)].join(","));
+  });
+  return "\uFEFF" + rows.join("\n");
+}
+
+function downloadFile(content, filename, mimeType) {
+  var blob = new Blob([content], { type: mimeType });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  getEl("exportMenu").classList.remove("visible");
+}
+
+getEl("exportTxt").addEventListener("click", function() {
+  var d = new Date().toISOString().slice(0, 10);
+  downloadFile(buildTranscriptTxt(), d + "_transcript.txt", "text/plain;charset=utf-8");
+});
+
+getEl("exportCsv").addEventListener("click", function() {
+  var d = new Date().toISOString().slice(0, 10);
+  downloadFile(buildTranscriptCsv(), d + "_transcript.csv", "text/csv;charset=utf-8");
+});
 
 </script>
 </body>
