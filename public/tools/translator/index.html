@@ -445,6 +445,7 @@ var dgMediaRecorder = null;
 var dgStream = null;
 var dgLang = '';
 var dgUtteranceDuration = 0; // seconds of audio in current utterance
+var dgUtteranceStart = -1; // start position of current utterance in stream
 var dgTimings = {}; // per-utterance timing
 var dgPerfHistory = []; // all timings for averages
 var dgRetryCount = 0;
@@ -752,15 +753,16 @@ function handleDgMessage(evt) {
 
   if (!text) return;
 
-  // Track audio duration from Deepgram response
+  // Track audio duration from Deepgram response (relative to utterance start)
   if (data.start !== undefined && data.duration !== undefined) {
-    var endTime = data.start + data.duration;
-    if (endTime > dgUtteranceDuration) dgUtteranceDuration = endTime;
+    if (dgUtteranceStart < 0) dgUtteranceStart = data.start;
+    dgUtteranceDuration = (data.start + data.duration) - dgUtteranceStart;
   }
 
   if (!liveEntryId) {
     // Create new live entry
     dgUtteranceDuration = 0;
+    dgUtteranceStart = -1;
     dgTimings = { firstResult: performance.now() };
     liveEntryId = ++nextId;
     var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
