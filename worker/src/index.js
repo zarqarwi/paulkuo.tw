@@ -555,7 +555,8 @@ async function handleSTT(request, env) {
     'japanese': 'ja', 'english': 'en', 'chinese': 'zh-TW',
     'korean': 'ko', 'mandarin': 'zh-TW',
     'vietnamese': 'vi', 'thai': 'th', 'indonesian': 'id',
-    'german': 'de', 'spanish': 'es', 'french': 'fr'
+    'german': 'de', 'spanish': 'es', 'french': 'fr',
+    'nynorsk': 'ko', 'nn': 'ko'  // Whisper often misdetects Korean as Nynorsk
   };
   const langCode = WHISPER_TO_LANG[detectedLang] || detectedLang;
 
