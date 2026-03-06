@@ -1,0 +1,8 @@
+---
+/**
+ * /articles/ → /blog 重導向
+ * 文章列表統一在 /blog，個別文章在 /articles/slug
+ * 這個頁面確保 /articles/ 不會 404
+ */
+return Astro.redirect('/blog', 301);
+---
