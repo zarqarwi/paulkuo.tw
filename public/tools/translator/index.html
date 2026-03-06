@@ -53,6 +53,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .lang-btn{padding:6px 12px;border-radius:100px;font-size:13px;border:1.5px solid var(--border);cursor:pointer;background:transparent;color:var(--text-secondary);font-family:var(--font-body);transition:all .2s;font-weight:500;white-space:nowrap;flex-shrink:0}
 .lang-btn:hover{border-color:var(--brand-navy);color:var(--brand-navy)}
 .lang-btn.tgt-active{background:var(--accent-circular);color:#fff;border-color:var(--accent-circular);font-weight:600}
+.lang-btn.src-active{background:var(--accent-ai);color:#fff;border-color:var(--accent-ai);font-weight:600}
 .spacer{flex:1}
 .btn-clear{padding:9px 20px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:14px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
 .btn-clear:hover{border-color:var(--text-secondary);color:var(--text-secondary)}
@@ -287,6 +288,10 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 </div>
 <div class="controls">
   <div style="display:flex;align-items:center;gap:6px;width:100%">
+    <span class="lang-label">來源語言</span>
+    <div class="lang-scroll"><div class="lang-btns" id="srcBtns"></div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;width:100%">
     <span class="lang-label">輸出語言</span>
     <div class="lang-scroll"><div class="lang-btns" id="tgtBtns"></div></div>
   </div>
@@ -315,7 +320,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
     <div style="font-size:48px;opacity:.25">🎙️</div>
     <div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">
       按「開始」後對著麥克風說話<br>
-      <span style="font-size:12px">自動偵測 12 種語言 · Deepgram 串流辨識 + Claude Haiku 翻譯 · 支援所有瀏覽器</span><br><a href="#" onclick="getEl('helpModal').classList.add('visible');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none;margin-top:4px;display:inline-block">第一次使用？看使用說明 →</a>
+      <span style="font-size:12px">支援 12 種語言 · Deepgram 串流辨識 + Claude Haiku 翻譯 · 支援所有瀏覽器</span><br><a href="#" onclick="getEl('helpModal').classList.add('visible');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none;margin-top:4px;display:inline-block">第一次使用？看使用說明 →</a>
     </div>
   </div>
 </div>
@@ -417,6 +422,21 @@ var LANGS = {
 var LANG_FLAGS = {"ja":"🇯🇵","en":"🇺🇸","zh-TW":"🇹🇼","zh-CN":"🇨🇳","ko":"🇰🇷","chinese":"🇨🇳","japanese":"🇯🇵","english":"🇺🇸","korean":"🇰🇷","vietnamese":"🇻🇳","vi":"🇻🇳","thai":"🇹🇭","th":"🇹🇭","indonesian":"🇮🇩","id":"🇮🇩","german":"🇩🇪","de":"🇩🇪","spanish":"🇪🇸","es":"🇪🇸","french":"🇫🇷","fr":"🇫🇷","portuguese":"🇧🇷","pt":"🇧🇷"};
 
 var tgtLang = "zh-TW";
+var srcInputLang = 'auto'; // 'auto' | 'en' | 'zh' | 'ja' | etc. — Deepgram language code
+var SRC_LANGS = [
+  {code:'auto', label:'自動', flag:'🌐'},
+  {code:'en', label:'English', flag:'🇺🇸'},
+  {code:'zh', label:'中文', flag:'🇹🇼'},
+  {code:'ja', label:'日本語', flag:'🇯🇵'},
+  {code:'ko', label:'한국어', flag:'🇰🇷'},
+  {code:'vi', label:'Tiếng Việt', flag:'🇻🇳'},
+  {code:'th', label:'ไทย', flag:'🇹🇭'},
+  {code:'id', label:'Bahasa', flag:'🇮🇩'},
+  {code:'de', label:'Deutsch', flag:'🇩🇪'},
+  {code:'es', label:'Español', flag:'🇪🇸'},
+  {code:'fr', label:'Français', flag:'🇫🇷'},
+  {code:'pt', label:'Português', flag:'🇧🇷'}
+];
 var inviteCode = sessionStorage.getItem("inviteCode") || "";
 var userName = sessionStorage.getItem("userName") || "";
 var recording = false;
@@ -483,6 +503,29 @@ function renderLangs() {
     btn.textContent = lang.flag + " " + lang.label;
     btn.addEventListener("click", function() { tgtLang = k; renderLangs(); });
     tc.appendChild(btn);
+  });
+}
+
+// Source language buttons (for Deepgram STT)
+function renderSrcLangs() {
+  var sc = getEl('srcBtns');
+  sc.innerHTML = '';
+  SRC_LANGS.forEach(function(lang) {
+    var btn = document.createElement('button');
+    btn.className = 'lang-btn' + (lang.code === srcInputLang ? ' src-active' : '');
+    btn.textContent = lang.flag + ' ' + lang.label;
+    btn.addEventListener('click', function() {
+      var prev = srcInputLang;
+      srcInputLang = lang.code;
+      renderSrcLangs();
+      // If recording, reconnect WebSocket with new language
+      if (recording && sttMode === 'deepgram' && prev !== srcInputLang) {
+        if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
+        if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
+        connectDgWebSocket(dgStream);
+      }
+    });
+    sc.appendChild(btn);
   });
 }
 
@@ -651,13 +694,14 @@ function startDeepgramStreaming() {
 
 function connectDgWebSocket(stream) {
       // Open Deepgram WebSocket
+      var langParam = (srcInputLang && srcInputLang !== 'auto') ? 'language=' + srcInputLang : 'language=multi';
       var wsParams = [
         'model=nova-2',
         'interim_results=true',
         'utterance_end_ms=3000',
         'smart_format=true',
         'punctuate=true',
-        'language=multi'
+        langParam
       ].join('&');
       var wsUrl = WORKER_URL.replace('https://', 'wss://') + '/ws/stt?code=' + encodeURIComponent(inviteCode) + '&' + wsParams;
       dgWs = new WebSocket(wsUrl);
@@ -1040,6 +1084,7 @@ getEl('sttMode').addEventListener('change', function() {
 
 // Init
 renderLangs();
+renderSrcLangs();
 
 // === Glossary Management ===
 var glossary = [];
