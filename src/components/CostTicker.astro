@@ -179,7 +179,7 @@ function drawSparkline(vals) {
 
 // Single fetch to /ticker updates ALL live data (costs + fitbit + stock)
 (function() {
-  fetch('https://paulkuo-ticker.paul-4bf.workers.dev/ticker')
+  fetch('https://api.paulkuo.tw/ticker')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       // Fitbit

@@ -469,7 +469,7 @@ initAll();
 
 <script is:inline>
 // Auth gate - same as dashboard
-const WORKER = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+const WORKER = 'https://api.paulkuo.tw';
 var _hCode = sessionStorage.getItem('health_code') || '';
 async function _verify(code) {
   try { const r = await fetch(WORKER+'/validate-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}); const d = await r.json(); return d.valid && d.role === 'admin'; } catch(e) { return false; }

@@ -53,15 +53,15 @@ const ALLOWED_ORIGINS = [
 
 // === Auth Config ===
 const GOOGLE_CLIENT_ID = '220236417478-a3b13lfa6e4q1100bdmdhuc07o97cc1c.apps.googleusercontent.com';
-const GOOGLE_REDIRECT_URI = 'https://paulkuo-ticker.paul-4bf.workers.dev/auth/google/callback';
+const GOOGLE_REDIRECT_URI = 'https://api.paulkuo.tw/auth/google/callback';
 const GOOGLE_SCOPES = 'openid email profile';
 // LINE Login
 const LINE_CHANNEL_ID = '2009342944';
-const LINE_REDIRECT_URI = 'https://paulkuo-ticker.paul-4bf.workers.dev/auth/line/callback';
+const LINE_REDIRECT_URI = 'https://api.paulkuo.tw/auth/line/callback';
 const LINE_SCOPES = 'profile openid email';
 // Facebook Login
 const FB_APP_ID = '1625606208779447';
-const FB_REDIRECT_URI = 'https://paulkuo-ticker.paul-4bf.workers.dev/auth/facebook/callback';
+const FB_REDIRECT_URI = 'https://api.paulkuo.tw/auth/facebook/callback';
 const FB_SCOPES = 'public_profile,email';
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 const SITE_URL = 'https://paulkuo.tw';
@@ -1365,12 +1365,11 @@ function nanoid(size = 21) {
 }
 
 function setSessionCookie(sessionId) {
-  // SameSite=None required for cross-origin Worker→site cookie
-  // When api.paulkuo.tw custom domain is set, can switch to SameSite=Lax + Domain=.paulkuo.tw
-  return `session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${SESSION_MAX_AGE}`;
+  // SameSite=Lax + Domain=.paulkuo.tw — cookie shared across paulkuo.tw subdomains
+  return `session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Domain=.paulkuo.tw; Max-Age=${SESSION_MAX_AGE}`;
 }
 function clearSessionCookie() {
-  return 'session=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0';
+  return 'session=; Path=/; HttpOnly; Secure; SameSite=Lax; Domain=.paulkuo.tw; Max-Age=0';
 }
 function getSessionFromCookie(request) {
   const cookie = request.headers.get('Cookie') || '';

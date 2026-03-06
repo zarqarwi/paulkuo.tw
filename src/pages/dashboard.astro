@@ -82,7 +82,7 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
 <script define:vars={{ costRecords }} is:inline>
 // ── Auth (via Worker /validate-code — no hardcoded passwords) ──
-const WORKER = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+const WORKER = 'https://api.paulkuo.tw';
 const authGate = document.getElementById('authGate');
 const dashMain = document.getElementById('dashboardMain');
 const authInput = document.getElementById('authInput');
