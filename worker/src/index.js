@@ -21,6 +21,8 @@
  *   GET  /auth/google/callback — Google OAuth callback
  *   GET  /auth/line/login      — 導向 LINE OAuth
  *   GET  /auth/line/callback   — LINE OAuth callback
+ *   GET  /auth/facebook/login  — 導向 Facebook OAuth
+ *   GET  /auth/facebook/callback — Facebook OAuth callback
  *   GET  /auth/me              — 取得目前登入用戶
  *   POST /auth/logout          — 登出
  *   GET  /auth/admin/members   — 會員列表（admin only）
@@ -57,6 +59,10 @@ const GOOGLE_SCOPES = 'openid email profile';
 const LINE_CHANNEL_ID = '2009342944';
 const LINE_REDIRECT_URI = 'https://paulkuo-ticker.paul-4bf.workers.dev/auth/line/callback';
 const LINE_SCOPES = 'profile openid email';
+// Facebook Login
+const FB_APP_ID = '1625606208779447';
+const FB_REDIRECT_URI = 'https://paulkuo-ticker.paul-4bf.workers.dev/auth/facebook/callback';
+const FB_SCOPES = 'public_profile,email';
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 const SITE_URL = 'https://paulkuo.tw';
 
@@ -1520,6 +1526,93 @@ async function handleLineCallback(request, env) {
   }
 }
 
+
+// Facebook Login Step 1: redirect to Facebook
+function handleFacebookLogin(request) {
+  const state = nanoid(32);
+  const params = new URLSearchParams({
+    client_id: FB_APP_ID,
+    redirect_uri: FB_REDIRECT_URI,
+    state,
+    scope: FB_SCOPES,
+    response_type: 'code',
+  });
+  const headers = new Headers({
+    Location: `https://www.facebook.com/v19.0/dialog/oauth?${params}`,
+    'Set-Cookie': `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
+  });
+  return new Response(null, { status: 302, headers });
+}
+
+// Facebook Login Step 2: handle callback
+async function handleFacebookCallback(request, env) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
+  const error = url.searchParams.get('error');
+
+  if (error) return Response.redirect(`${SITE_URL}?auth_error=${encodeURIComponent(error)}`, 302);
+  if (!code || !state) return Response.redirect(`${SITE_URL}?auth_error=missing_params`, 302);
+
+  // CSRF check
+  const cookie = request.headers.get('Cookie') || '';
+  const stateMatch = cookie.match(/(?:^|;\s*)oauth_state=([^\s;]+)/);
+  if (!stateMatch || stateMatch[1] !== state) {
+    return Response.redirect(`${SITE_URL}?auth_error=csrf_failed`, 302);
+  }
+
+  try {
+    // Exchange code for token
+    const tokenParams = new URLSearchParams({
+      client_id: FB_APP_ID,
+      client_secret: env.FB_APP_SECRET,
+      redirect_uri: FB_REDIRECT_URI,
+      code,
+    });
+    const tokenRes = await fetch(`https://graph.facebook.com/v19.0/oauth/access_token?${tokenParams}`);
+    if (!tokenRes.ok) {
+      console.error('FB token exchange failed:', await tokenRes.text());
+      return Response.redirect(`${SITE_URL}?auth_error=token_failed`, 302);
+    }
+    const tokens = await tokenRes.json();
+
+    // Get user profile + email
+    const profileRes = await fetch(
+      `https://graph.facebook.com/v19.0/me?fields=id,name,email,picture.type(large)&access_token=${tokens.access_token}`
+    );
+    if (!profileRes.ok) return Response.redirect(`${SITE_URL}?auth_error=profile_failed`, 302);
+    const profile = await profileRes.json();
+
+    // Upsert user in D1
+    const userId = await upsertUser(env.AUTH_DB, {
+      email: profile.email || `fb_${profile.id}@facebook.user`,
+      name: profile.name,
+      avatar: profile.picture?.data?.url || '',
+      provider: 'facebook',
+      providerId: profile.id,
+    });
+
+    // Create session
+    const sessionId = nanoid(32);
+    const expiresAt = new Date(Date.now() + SESSION_MAX_AGE * 1000).toISOString();
+    await env.AUTH_DB.prepare(
+      'INSERT INTO sessions (id, user_id, expires_at, user_agent, ip) VALUES (?, ?, ?, ?, ?)'
+    ).bind(sessionId, userId, expiresAt,
+      (request.headers.get('User-Agent') || '').slice(0, 200),
+      request.headers.get('CF-Connecting-IP') || ''
+    ).run();
+
+    // Redirect with session cookie
+    const headers = new Headers({ Location: `${SITE_URL}?auth_success=1` });
+    headers.append('Set-Cookie', setSessionCookie(sessionId));
+    headers.append('Set-Cookie', 'oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+    return new Response(null, { status: 302, headers });
+  } catch (err) {
+    console.error('Facebook OAuth error:', err);
+    return Response.redirect(`${SITE_URL}?auth_error=server_error`, 302);
+  }
+}
+
 async function upsertUser(db, { email, name, avatar, provider, providerId }) {
   const existing = await db.prepare(
     'SELECT id FROM users WHERE provider = ? AND provider_id = ?'
@@ -1753,6 +1846,12 @@ async function handleRequest(request, env) {
   if (path === '/auth/line/callback' && request.method === 'GET') {
     return handleLineCallback(request, env);
   }
+  if (path === '/auth/facebook/login' && request.method === 'GET') {
+    return handleFacebookLogin(request);
+  }
+  if (path === '/auth/facebook/callback' && request.method === 'GET') {
+    return handleFacebookCallback(request, env);
+  }
   if (path === '/auth/me' && request.method === 'GET') {
     return handleAuthMe(request, env);
   }
@@ -1764,7 +1863,7 @@ async function handleRequest(request, env) {
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/line/login', '/auth/me', '/auth/logout', '/auth/admin/members'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/line/login', '/auth/facebook/login', '/auth/me', '/auth/logout', '/auth/admin/members'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
