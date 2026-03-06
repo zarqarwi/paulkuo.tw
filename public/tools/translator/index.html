@@ -657,7 +657,7 @@ function connectDgWebSocket(stream) {
         'utterance_end_ms=3000',
         'smart_format=true',
         'punctuate=true',
-        'detect_language=true'
+        'language=multi'
       ].join('&');
       var wsUrl = WORKER_URL.replace('https://', 'wss://') + '/ws/stt?code=' + encodeURIComponent(inviteCode) + '&' + wsParams;
       dgWs = new WebSocket(wsUrl);
