@@ -147,7 +147,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 /* Summary button & modal */
 .btn-summary{padding:9px 18px;border-radius:100px;border:1.5px solid var(--accent-circular);background:transparent;color:var(--accent-circular);font-size:14px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
 .btn-summary:hover{background:var(--accent-circular);color:#fff}
-.btn-summary:disabled{opacity:.7;cursor:not-allowed;border-style:dashed}
+.btn-summary:disabled{opacity:.4;cursor:not-allowed}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
 .modal-overlay.visible{display:flex}
 .modal-box{background:var(--bg-card);border-radius:16px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:fadeIn .25s}
@@ -250,7 +250,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .export-wrap{position:relative;display:inline-block}
 .export-btn{padding:9px 18px;border-radius:100px;border:1.5px solid var(--accent-ai);background:transparent;color:var(--accent-ai);font-size:14px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
 .export-btn:hover{background:var(--accent-ai);color:#fff}
-.export-btn:disabled{opacity:.7;cursor:not-allowed;border-style:dashed}
+.export-btn:disabled{opacity:.4;cursor:not-allowed}
 .export-menu{display:none;position:absolute;top:100%;right:0;margin-top:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-md);overflow:hidden;min-width:160px;z-index:100;animation:fadeIn .15s}
 .export-menu.visible{display:block}
 .export-item{display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;color:var(--text-primary);cursor:pointer;font-family:var(--font-body);transition:background .15s}
@@ -275,7 +275,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
       <div class="logo">T</div>
       <div>
         <div class="header-title">阿哥拉廣場｜即時會議翻譯</div>
-        <div class="header-sub" id="headerSub">Deepgram Nova-2 串流 + Claude Haiku · 語音辨識 / 翻譯 / 會議紀錄</div>
+        <div class="header-sub" id="headerSub">AI 即時語音辨識 · 翻譯 · 會議紀錄</div>
       </div>
     </a>
   </div>
@@ -438,6 +438,7 @@ var SRC_LANGS = [
 ];
 var inviteCode = sessionStorage.getItem("inviteCode") || "";
 var userName = sessionStorage.getItem("userName") || "";
+var _isAdmin = false; // set on login, controls perf badge + cost visibility
 var recording = false;
 var mediaRecorder = null;
 var audioContext = null;
@@ -1004,10 +1005,12 @@ function finalizeEntry(id, text) {
 
 function showPerfBadge(id, t) {
   if (!t.firstResult || !t.finalize) return;
-  var stt = ((t.finalize - t.firstResult) / 1000).toFixed(1);
-  var ttft = t.ttft ? ((t.ttft - t.finalize) / 1000).toFixed(1) : '-';
-  var transDur = (t.ttft && t.translateDone) ? ((t.translateDone - t.ttft) / 1000).toFixed(1) : '-';
-  var e2e = t.translateDone ? ((t.translateDone - t.firstResult) / 1000).toFixed(1) : '-';
+  // Only show perf badges for admin users
+  if (!_isAdmin) return;
+  var stt = Math.max(0, (t.finalize - t.firstResult) / 1000).toFixed(1);
+  var ttft = t.ttft ? Math.max(0, (t.ttft - t.finalize) / 1000).toFixed(1) : '-';
+  var transDur = (t.ttft && t.translateDone) ? Math.max(0, (t.translateDone - t.ttft) / 1000).toFixed(1) : '-';
+  var e2e = t.translateDone ? Math.max(0, (t.translateDone - t.firstResult) / 1000).toFixed(1) : '-';
   function cls(v) { var n = parseFloat(v); if (isNaN(n)) return ''; return n < 1 ? 'perf-fast' : n < 2.5 ? 'perf-mid' : 'perf-slow'; }
   var el = getEl('entry-' + id);
   if (!el) return;
@@ -1091,8 +1094,8 @@ getEl('sttMode').addEventListener('change', function() {
   sttMode = this.value;
   var sub = getEl('headerSub');
   if (sub) sub.textContent = sttMode === 'deepgram'
-    ? 'Deepgram Nova-2 串流 + Claude Haiku · 語音辨識 / 翻譯 / 會議紀錄'
-    : 'Whisper + Claude Haiku · 語音辨識 / 翻譯 / 會議紀錄';
+    ? 'AI 即時語音辨識 · 翻譯 · 會議紀錄'
+    : 'AI 語音辨識 · 翻譯 · 會議紀錄';
 });
 
 // Init
@@ -1514,11 +1517,12 @@ function tryEnter() {
     if (d.valid) {
       inviteCode = code;
       userName = d.name;
+      _isAdmin = (d.role === 'admin');
       sessionStorage.setItem("inviteCode", code);
       sessionStorage.setItem("userName", d.name);
       hideGate();
       showUserBadge();
-      loadTodayStats();
+      if (_isAdmin) loadTodayStats();
     } else {
       getEl("gateError").style.display = "block";
       getEl("gateInput").classList.add("error");
@@ -1555,7 +1559,7 @@ if (inviteCode) {
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
-    if (d.valid) { hideGate(); userName = d.name; sessionStorage.setItem("userName", d.name); showUserBadge(); loadTodayStats(); }
+    if (d.valid) { hideGate(); userName = d.name; _isAdmin = (d.role === 'admin'); sessionStorage.setItem("userName", d.name); showUserBadge(); if (_isAdmin) loadTodayStats(); }
     else { sessionStorage.removeItem("inviteCode"); showGate(); }
   })
   .catch(function() { hideGate(); showUserBadge(); }); // offline = trust cache
