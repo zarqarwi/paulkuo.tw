@@ -19,6 +19,8 @@
  * Auth:
  *   GET  /auth/google/login    — 導向 Google OAuth
  *   GET  /auth/google/callback — Google OAuth callback
+ *   GET  /auth/line/login      — 導向 LINE OAuth
+ *   GET  /auth/line/callback   — LINE OAuth callback
  *   GET  /auth/me              — 取得目前登入用戶
  *   POST /auth/logout          — 登出
  *   GET  /auth/admin/members   — 會員列表（admin only）
@@ -51,6 +53,10 @@ const ALLOWED_ORIGINS = [
 const GOOGLE_CLIENT_ID = '220236417478-a3b13lfa6e4q1100bdmdhuc07o97cc1c.apps.googleusercontent.com';
 const GOOGLE_REDIRECT_URI = 'https://paulkuo-ticker.paul-4bf.workers.dev/auth/google/callback';
 const GOOGLE_SCOPES = 'openid email profile';
+// LINE Login
+const LINE_CHANNEL_ID = '2009342944';
+const LINE_REDIRECT_URI = 'https://paulkuo-ticker.paul-4bf.workers.dev/auth/line/callback';
+const LINE_SCOPES = 'profile openid email';
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 const SITE_URL = 'https://paulkuo.tw';
 
@@ -1414,6 +1420,106 @@ async function handleGoogleCallback(request, env) {
   }
 }
 
+
+// LINE Login Step 1: redirect to LINE
+function handleLineLogin(request) {
+  const state = nanoid(32);
+  const params = new URLSearchParams({
+    response_type: 'code',
+    client_id: LINE_CHANNEL_ID,
+    redirect_uri: LINE_REDIRECT_URI,
+    state,
+    scope: LINE_SCOPES,
+  });
+  const headers = new Headers({
+    Location: `https://access.line.me/oauth2/v2.1/authorize?${params}`,
+    'Set-Cookie': `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
+  });
+  return new Response(null, { status: 302, headers });
+}
+
+// LINE Login Step 2: handle callback
+async function handleLineCallback(request, env) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
+  const error = url.searchParams.get('error');
+
+  if (error) return Response.redirect(`${SITE_URL}?auth_error=${encodeURIComponent(error)}`, 302);
+  if (!code || !state) return Response.redirect(`${SITE_URL}?auth_error=missing_params`, 302);
+
+  // CSRF check
+  const cookie = request.headers.get('Cookie') || '';
+  const stateMatch = cookie.match(/(?:^|;\s*)oauth_state=([^\s;]+)/);
+  if (!stateMatch || stateMatch[1] !== state) {
+    return Response.redirect(`${SITE_URL}?auth_error=csrf_failed`, 302);
+  }
+
+  try {
+    // Exchange code for token
+    const tokenRes = await fetch('https://api.line.me/oauth2/v2.1/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: LINE_REDIRECT_URI,
+        client_id: LINE_CHANNEL_ID,
+        client_secret: env.LINE_CHANNEL_SECRET,
+      }),
+    });
+    if (!tokenRes.ok) {
+      console.error('LINE token exchange failed:', await tokenRes.text());
+      return Response.redirect(`${SITE_URL}?auth_error=token_failed`, 302);
+    }
+    const tokens = await tokenRes.json();
+
+    // Get user profile
+    const profileRes = await fetch('https://api.line.me/v2/profile', {
+      headers: { Authorization: `Bearer ${tokens.access_token}` },
+    });
+    if (!profileRes.ok) return Response.redirect(`${SITE_URL}?auth_error=profile_failed`, 302);
+    const profile = await profileRes.json();
+
+    // Get email from id_token (if available)
+    let email = '';
+    if (tokens.id_token) {
+      try {
+        const payload = JSON.parse(atob(tokens.id_token.split('.')[1]));
+        email = payload.email || '';
+      } catch (e) { /* no email */ }
+    }
+
+    // Upsert user in D1
+    const userId = await upsertUser(env.AUTH_DB, {
+      email: email || `line_${profile.userId}@line.user`,
+      name: profile.displayName,
+      avatar: profile.pictureUrl || '',
+      provider: 'line',
+      providerId: profile.userId,
+    });
+
+    // Create session
+    const sessionId = nanoid(32);
+    const expiresAt = new Date(Date.now() + SESSION_MAX_AGE * 1000).toISOString();
+    await env.AUTH_DB.prepare(
+      'INSERT INTO sessions (id, user_id, expires_at, user_agent, ip) VALUES (?, ?, ?, ?, ?)'
+    ).bind(sessionId, userId, expiresAt,
+      (request.headers.get('User-Agent') || '').slice(0, 200),
+      request.headers.get('CF-Connecting-IP') || ''
+    ).run();
+
+    // Redirect with session cookie
+    const headers = new Headers({ Location: `${SITE_URL}?auth_success=1` });
+    headers.append('Set-Cookie', setSessionCookie(sessionId));
+    headers.append('Set-Cookie', 'oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+    return new Response(null, { status: 302, headers });
+  } catch (err) {
+    console.error('LINE OAuth error:', err);
+    return Response.redirect(`${SITE_URL}?auth_error=server_error`, 302);
+  }
+}
+
 async function upsertUser(db, { email, name, avatar, provider, providerId }) {
   const existing = await db.prepare(
     'SELECT id FROM users WHERE provider = ? AND provider_id = ?'
@@ -1641,6 +1747,12 @@ async function handleRequest(request, env) {
   if (path === '/auth/google/callback' && request.method === 'GET') {
     return handleGoogleCallback(request, env);
   }
+  if (path === '/auth/line/login' && request.method === 'GET') {
+    return handleLineLogin(request);
+  }
+  if (path === '/auth/line/callback' && request.method === 'GET') {
+    return handleLineCallback(request, env);
+  }
   if (path === '/auth/me' && request.method === 'GET') {
     return handleAuthMe(request, env);
   }
@@ -1652,7 +1764,7 @@ async function handleRequest(request, env) {
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/me', '/auth/logout', '/auth/admin/members'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/line/login', '/auth/me', '/auth/logout', '/auth/admin/members'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
