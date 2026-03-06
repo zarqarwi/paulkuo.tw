@@ -657,7 +657,7 @@ async function handleSTT(request, env) {
     max_tokens: 1024,
     messages: [{
       role: 'user',
-      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else.${twHint}\n\n${transcript.slice(0, 2000)}`
+      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Fix any obvious speech recognition errors before translating. Output ONLY the translation, nothing else.${twHint}\n\n${transcript.slice(0, 2000)}`
     }]
   });
 
@@ -749,7 +749,7 @@ async function handleTranslate(request, env) {
     max_tokens: 1024,
     messages: [{
       role: 'user',
-      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
+      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Fix any obvious speech recognition errors before translating. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
     }]
   });
 
@@ -842,7 +842,7 @@ async function handleTranslateStream(request, env) {
       stream: true,
       messages: [{
         role: 'user',
-        content: 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translation, nothing else.' + twHint + glossaryHint + '\n\n' + trimmedText
+        content: 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Fix any obvious speech recognition errors before translating. Output ONLY the translation, nothing else.' + twHint + glossaryHint + '\n\n' + trimmedText
       }]
     })
   });
