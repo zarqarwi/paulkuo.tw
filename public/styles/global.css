@@ -1619,3 +1619,5 @@ footer a:focus-visible,
   display: flex; flex-direction: column; gap: 4px;
 }
 .nav-auth-login-mobile-line svg { margin-right: 2px; }
+
+.nav-auth-provider-fb:hover { background: rgba(24,119,242,0.06); }
