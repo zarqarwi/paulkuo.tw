@@ -976,7 +976,7 @@ function finalizeEntry(id, text) {
 
   // Log Deepgram cost
   var durSec = dgUtteranceDuration || 1;
-  var dgCost = (durSec / 60) * 0.0069; // Nova-3 streaming rate
+  var dgCost = (durSec / 60) * 0.0077; // Nova-3 streaming rate (same as Nova-2)
   fetch(WORKER_URL + '/log-cost', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
