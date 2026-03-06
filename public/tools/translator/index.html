@@ -118,7 +118,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   .controls > div:last-of-type .spacer{display:none}
   .controls > div:last-of-type .glossary-toggle{order:-1}
   .btn-main{flex:1;min-width:0;justify-content:center}
-  .glossary-toggle .btn-text,.btn-summary .btn-text,.btn-clear .btn-text,.export-btn .btn-text{display:none}
+  .glossary-toggle .btn-text,.btn-subtitle .btn-text,.btn-summary .btn-text,.btn-clear .btn-text,.export-btn .btn-text{display:none}
   .btn-clear .btn-icon{display:inline!important}
   .content{padding:12px 16px 60px 16px}
   .entry{padding:18px 20px}
@@ -148,6 +148,14 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .btn-summary{padding:9px 18px;border-radius:100px;border:1.5px solid var(--accent-circular);background:transparent;color:var(--accent-circular);font-size:14px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
 .btn-summary:hover{background:var(--accent-circular);color:#fff}
 .btn-summary:disabled{opacity:.4;cursor:not-allowed}
+.subtitle-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;flex-direction:column;justify-content:flex-end;align-items:center;padding:5vh 6vw 8vh;cursor:pointer;user-select:none}
+.subtitle-overlay.active{display:flex}
+.subtitle-original{font-size:clamp(18px,2.5vw,28px);color:rgba(255,255,255,.55);text-align:center;line-height:1.6;margin-bottom:2vh;max-width:90vw;font-family:var(--font-cjk)}
+.subtitle-translated{font-size:clamp(32px,5vw,64px);color:#fff;text-align:center;line-height:1.4;max-width:90vw;font-family:var(--font-cjk);font-weight:700;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.subtitle-hint{position:absolute;top:20px;right:24px;color:rgba(255,255,255,.3);font-size:13px}
+.btn-subtitle{padding:9px 18px;border-radius:100px;border:1.5px solid var(--brand-navy);background:transparent;color:var(--brand-navy);font-size:14px;cursor:pointer;font-family:var(--font-body);transition:all .2s;font-weight:500}
+.btn-subtitle:hover{background:var(--brand-navy);color:#fff}
+.btn-subtitle.on{background:var(--brand-navy);color:#fff}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
 .modal-overlay.visible{display:flex}
 .modal-box{background:var(--bg-card);border-radius:16px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:fadeIn .25s}
@@ -318,6 +326,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
     <button class="glossary-toggle" id="btnGlossary" title="術語表設定">📖<span class="btn-text"> 術語表</span></button>
     <span class="today-stats" id="todayStats"></span>
     <div class="spacer"></div>
+    <button class="btn-subtitle" id="btnSubtitle" title="字幕模式：全屏顯示翻譯">🖥<span class="btn-text"> 字幕</span></button>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
     <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button></div></div>
     <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
@@ -1116,11 +1125,45 @@ function clearAll() {
   updateCount();
 }
 function updateCount() { getEl("countLabel").textContent = allEntries.length + " 筆紀錄"; getEl("btnExport").disabled = allEntries.length === 0; }
+// === Subtitle Mode ===
+var subtitleActive = false;
+function toggleSubtitle() {
+  subtitleActive = !subtitleActive;
+  var ov = getEl('subtitleOverlay');
+  var btn = getEl('btnSubtitle');
+  if (subtitleActive) {
+    ov.classList.add('active');
+    btn.classList.add('on');
+    updateSubtitle();
+    try { if (ov.requestFullscreen) ov.requestFullscreen(); } catch(e) {}
+  } else {
+    ov.classList.remove('active');
+    btn.classList.remove('on');
+    try { if (document.fullscreenElement) document.exitFullscreen(); } catch(e) {}
+  }
+}
+function updateSubtitle() {
+  if (!subtitleActive) return;
+  var last = null;
+  for (var i = allEntries.length - 1; i >= 0; i--) {
+    if (allEntries[i].original) { last = allEntries[i]; break; }
+  }
+  if (!last) return;
+  var origEl = getEl('subOriginal');
+  var transEl = getEl('subTranslated');
+  origEl.textContent = last.original || '';
+  var t = _segmentTranslations[last.id] || last.translated || '';
+  transEl.textContent = t || '翻譯中...';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && subtitleActive) toggleSubtitle(); });
+document.addEventListener('fullscreenchange', function() { if (!document.fullscreenElement && subtitleActive) { subtitleActive = false; getEl('subtitleOverlay').classList.remove('active'); getEl('btnSubtitle').classList.remove('on'); } });
+getEl('btnSubtitle').addEventListener('click', function(e) { e.stopPropagation(); toggleSubtitle(); });
 function scrollBottom() {
   if (getEl("autoScroll").checked) {
     var c = getEl("content");
     requestAnimationFrame(function() { c.scrollTop = c.scrollHeight; });
   }
+  updateSubtitle();
 }
 function updateToggle() {
   var btn = getEl("btnToggle");
@@ -1770,5 +1813,10 @@ getEl("exportTranslated").addEventListener("click", function() {
 });
 
 </script>
+<div class="subtitle-overlay" id="subtitleOverlay" onclick="toggleSubtitle()">
+  <div class="subtitle-hint">ESC 或點擊退出</div>
+  <div class="subtitle-original" id="subOriginal"></div>
+  <div class="subtitle-translated" id="subTranslated">等待語音輸入...</div>
+</div>
 </body>
 </html>
