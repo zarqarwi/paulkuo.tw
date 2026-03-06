@@ -1127,6 +1127,7 @@ function clearAll() {
 function updateCount() { getEl("countLabel").textContent = allEntries.length + " 筆紀錄"; getEl("btnExport").disabled = allEntries.length === 0; }
 // === Subtitle Mode ===
 var subtitleActive = false;
+var subtitleFullscreen = false;
 function toggleSubtitle() {
   subtitleActive = !subtitleActive;
   var ov = getEl('subtitleOverlay');
@@ -1135,10 +1136,14 @@ function toggleSubtitle() {
     ov.classList.add('active');
     btn.classList.add('on');
     updateSubtitle();
-    try { if (ov.requestFullscreen) ov.requestFullscreen(); } catch(e) {}
+    try {
+      if (ov.requestFullscreen) { ov.requestFullscreen().then(function() { subtitleFullscreen = true; }).catch(function() {}); }
+      else if (ov.webkitRequestFullscreen) { ov.webkitRequestFullscreen(); subtitleFullscreen = true; }
+    } catch(e) {}
   } else {
     ov.classList.remove('active');
     btn.classList.remove('on');
+    subtitleFullscreen = false;
     try { if (document.fullscreenElement) document.exitFullscreen(); } catch(e) {}
   }
 }
@@ -1156,7 +1161,7 @@ function updateSubtitle() {
   transEl.textContent = t || '翻譯中...';
 }
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && subtitleActive) toggleSubtitle(); });
-document.addEventListener('fullscreenchange', function() { if (!document.fullscreenElement && subtitleActive) { subtitleActive = false; getEl('subtitleOverlay').classList.remove('active'); getEl('btnSubtitle').classList.remove('on'); } });
+document.addEventListener('fullscreenchange', function() { if (!document.fullscreenElement && subtitleFullscreen && subtitleActive) { subtitleActive = false; subtitleFullscreen = false; getEl('subtitleOverlay').classList.remove('active'); getEl('btnSubtitle').classList.remove('on'); } });
 getEl('btnSubtitle').addEventListener('click', function(e) { e.stopPropagation(); toggleSubtitle(); });
 function scrollBottom() {
   if (getEl("autoScroll").checked) {
