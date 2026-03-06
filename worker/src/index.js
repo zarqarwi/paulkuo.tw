@@ -811,7 +811,7 @@ async function handleTranslateStream(request, env) {
   try { body = await request.json(); } catch (e) {
     return jsonResponse({ error: 'Invalid JSON' }, 400, request);
   }
-  const { text, sourceLang, targetLang, code: userCode } = body;
+  const { text, sourceLang, targetLang, code: userCode, glossary } = body;
   if (!text || !targetLang) {
     return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   }
