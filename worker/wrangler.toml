@@ -10,3 +10,9 @@ crons = ["0 0,6,12,18 * * *"]
 [[kv_namespaces]]
 binding = "TICKER_KV"
 id = "c066a2fd7942494c8ead37cc518b191b"
+
+# D1 binding — Auth database
+[[d1_databases]]
+binding = "AUTH_DB"
+database_name = "paulkuo-auth"
+database_id = "1cf40e96-b745-4b5b-9855-c8f5fbb1b3fb"

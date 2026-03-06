@@ -16,6 +16,13 @@
  *   POST /validate-code — 邀請碼驗證
  *   GET  /deepgram-token — Deepgram 臨時 token（需邀請碼）
  * 
+ * Auth:
+ *   GET  /auth/google/login    — 導向 Google OAuth
+ *   GET  /auth/google/callback — Google OAuth callback
+ *   GET  /auth/me              — 取得目前登入用戶
+ *   POST /auth/logout          — 登出
+ *   GET  /auth/admin/members   — 會員列表（admin only）
+ * 
  * Cron Trigger:
  *   每 6 小時 refresh Fitbit OAuth2 token
  * 
@@ -39,6 +46,13 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'null', // file:// protocol (local HTML)
 ];
+
+// === Auth Config ===
+const GOOGLE_CLIENT_ID = '220236417478-a3b13lfa6e4q1100bdmdhuc07o97cc1c.apps.googleusercontent.com';
+const GOOGLE_REDIRECT_URI = 'https://paulkuo-ticker.paul-4bf.workers.dev/auth/google/callback';
+const GOOGLE_SCOPES = 'openid email profile';
+const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
+const SITE_URL = 'https://paulkuo.tw';
 
 // === Invite Codes (hardcoded defaults + KV overrides) ===
 // Invite codes stored in KV (key: 'invite_codes') — no hardcoded defaults
@@ -76,6 +90,7 @@ function corsHeaders(request) {
     'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Max-Age': '86400',
   };
 }
@@ -1283,6 +1298,183 @@ async function handleLogCost(request, env) {
   return jsonResponse({ ok: true }, 200, request);
 }
 
+// ============================================================
+// AUTH MODULE — Google OAuth + D1 Sessions
+// ============================================================
+
+function nanoid(size = 21) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
+  const bytes = crypto.getRandomValues(new Uint8Array(size));
+  let id = '';
+  for (let i = 0; i < size; i++) id += alphabet[bytes[i] & 63];
+  return id;
+}
+
+function setSessionCookie(sessionId) {
+  // SameSite=None required for cross-origin Worker→site cookie
+  // When api.paulkuo.tw custom domain is set, can switch to SameSite=Lax + Domain=.paulkuo.tw
+  return `session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${SESSION_MAX_AGE}`;
+}
+function clearSessionCookie() {
+  return 'session=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0';
+}
+function getSessionFromCookie(request) {
+  const cookie = request.headers.get('Cookie') || '';
+  const match = cookie.match(/(?:^|;\s*)session=([^\s;]+)/);
+  return match ? match[1] : null;
+}
+
+// Google OAuth Step 1: redirect to Google
+function handleGoogleLogin(request) {
+  const state = nanoid(32);
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    scope: GOOGLE_SCOPES,
+    state,
+    access_type: 'online',
+    prompt: 'select_account',
+  });
+  const headers = new Headers({
+    Location: `https://accounts.google.com/o/oauth2/v2/auth?${params}`,
+    'Set-Cookie': `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
+  });
+  return new Response(null, { status: 302, headers });
+}
+
+// Google OAuth Step 2: handle callback
+async function handleGoogleCallback(request, env) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
+  const error = url.searchParams.get('error');
+
+  if (error) return Response.redirect(`${SITE_URL}?auth_error=${encodeURIComponent(error)}`, 302);
+  if (!code || !state) return Response.redirect(`${SITE_URL}?auth_error=missing_params`, 302);
+
+  // CSRF check
+  const cookie = request.headers.get('Cookie') || '';
+  const stateMatch = cookie.match(/(?:^|;\s*)oauth_state=([^\s;]+)/);
+  if (!stateMatch || stateMatch[1] !== state) {
+    return Response.redirect(`${SITE_URL}?auth_error=csrf_failed`, 302);
+  }
+
+  try {
+    // Exchange code for token
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code',
+      }),
+    });
+    if (!tokenRes.ok) {
+      console.error('Google token exchange failed:', await tokenRes.text());
+      return Response.redirect(`${SITE_URL}?auth_error=token_failed`, 302);
+    }
+    const tokens = await tokenRes.json();
+
+    // Get user profile
+    const profileRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokens.access_token}` },
+    });
+    if (!profileRes.ok) return Response.redirect(`${SITE_URL}?auth_error=profile_failed`, 302);
+    const profile = await profileRes.json();
+
+    // Upsert user in D1
+    const userId = await upsertUser(env.AUTH_DB, {
+      email: profile.email, name: profile.name,
+      avatar: profile.picture, provider: 'google', providerId: profile.id,
+    });
+
+    // Create session
+    const sessionId = nanoid(32);
+    const expiresAt = new Date(Date.now() + SESSION_MAX_AGE * 1000).toISOString();
+    await env.AUTH_DB.prepare(
+      'INSERT INTO sessions (id, user_id, expires_at, user_agent, ip) VALUES (?, ?, ?, ?, ?)'
+    ).bind(sessionId, userId, expiresAt,
+      (request.headers.get('User-Agent') || '').slice(0, 200),
+      request.headers.get('CF-Connecting-IP') || ''
+    ).run();
+
+    // Redirect with session cookie
+    const headers = new Headers({ Location: `${SITE_URL}?auth_success=1` });
+    headers.append('Set-Cookie', setSessionCookie(sessionId));
+    headers.append('Set-Cookie', 'oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+    return new Response(null, { status: 302, headers });
+
+  } catch (err) {
+    console.error('Google OAuth error:', err);
+    return Response.redirect(`${SITE_URL}?auth_error=server_error`, 302);
+  }
+}
+
+async function upsertUser(db, { email, name, avatar, provider, providerId }) {
+  const existing = await db.prepare(
+    'SELECT id FROM users WHERE provider = ? AND provider_id = ?'
+  ).bind(provider, providerId).first();
+  if (existing) {
+    await db.prepare(
+      "UPDATE users SET name = ?, avatar = ?, email = ?, last_login_at = datetime('now') WHERE id = ?"
+    ).bind(name, avatar, email, existing.id).run();
+    return existing.id;
+  }
+  const id = nanoid();
+  await db.prepare(
+    'INSERT INTO users (id, email, name, avatar, provider, provider_id, role) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).bind(id, email, name, avatar, provider, providerId, 'member').run();
+  return id;
+}
+
+async function getCurrentUser(request, env) {
+  const sessionId = getSessionFromCookie(request);
+  if (!sessionId) return null;
+  return await env.AUTH_DB.prepare(`
+    SELECT u.id, u.email, u.name, u.avatar, u.provider, u.role, u.created_at, s.expires_at
+    FROM sessions s JOIN users u ON s.user_id = u.id
+    WHERE s.id = ? AND s.expires_at > datetime('now')
+  `).bind(sessionId).first();
+}
+
+async function handleAuthMe(request, env) {
+  const user = await getCurrentUser(request, env);
+  if (!user) return jsonResponse({ authenticated: false }, 200, request);
+  return jsonResponse({
+    authenticated: true,
+    user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar, provider: user.provider, role: user.role, created_at: user.created_at },
+  }, 200, request);
+}
+
+async function handleLogout(request, env) {
+  const sessionId = getSessionFromCookie(request);
+  if (sessionId) {
+    await env.AUTH_DB.prepare('DELETE FROM sessions WHERE id = ?').bind(sessionId).run();
+  }
+  const headers = new Headers({ 'Content-Type': 'application/json', ...corsHeaders(request) });
+  headers.append('Set-Cookie', clearSessionCookie());
+  return new Response(JSON.stringify({ success: true }), { status: 200, headers });
+}
+
+async function handleAdminMembers(request, env) {
+  const user = await getCurrentUser(request, env);
+  if (!user || user.role !== 'admin') return jsonResponse({ error: 'Unauthorized' }, 403, request);
+  const url = new URL(request.url);
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
+  const offset = parseInt(url.searchParams.get('offset') || '0');
+  const { results } = await env.AUTH_DB.prepare(
+    'SELECT id, email, name, avatar, provider, role, created_at, last_login_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?'
+  ).bind(limit, offset).all();
+  const countRow = await env.AUTH_DB.prepare('SELECT COUNT(*) as total FROM users').first();
+  return jsonResponse({ members: results, total: countRow.total, limit, offset }, 200, request);
+}
+
+// ============================================================
+
 async function handleRequest(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -1442,8 +1634,25 @@ async function handleRequest(request, env) {
     return handleFeedPush(request, env);
   }
 
+  // Auth routes
+  if (path === '/auth/google/login' && request.method === 'GET') {
+    return handleGoogleLogin(request);
+  }
+  if (path === '/auth/google/callback' && request.method === 'GET') {
+    return handleGoogleCallback(request, env);
+  }
+  if (path === '/auth/me' && request.method === 'GET') {
+    return handleAuthMe(request, env);
+  }
+  if (path === '/auth/logout' && request.method === 'POST') {
+    return handleLogout(request, env);
+  }
+  if (path === '/auth/admin/members' && request.method === 'GET') {
+    return handleAdminMembers(request, env);
+  }
+
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/me', '/auth/logout', '/auth/admin/members'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
