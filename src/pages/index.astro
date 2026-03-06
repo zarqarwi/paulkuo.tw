@@ -2,10 +2,8 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
-import feedJson from '../data/feed.json';
 import CostAnalytics from '../components/CostAnalytics.astro';
 import { calcReadingTime } from '../utils/readingTime';
-const feedData = feedJson.items || [];
 
 // Always show latest 3 articles (no featured filter)
 const articles = (await getCollection('articles', ({ data, id }) => !data.draft && !id.startsWith('en/') && !id.startsWith('ja/') && !id.startsWith('zh-cn/')))
@@ -198,28 +196,73 @@ const homeSchema = JSON.stringify({
     </div>
     <!-- COST ANALYTICS -->
     <CostAnalytics />
-    <p style="color:var(--text-secondary); margin-bottom:32px;">來自 7 個平台的即時動態。</p>
-    <div class="feed-grid">
-      {feedData.length > 0 ? feedData.slice(0, 8).map((item) => {
-        const dtParts = item.datetime.replace(/[-:\/]/g, ' ').split(' ');
-        const isoDate = dtParts.length >= 5 
-          ? `${dtParts[0]}-${dtParts[1]}-${dtParts[2]}T${dtParts[3]}:${dtParts[4]}:00+08:00`
-          : item.datetime;
-        const displayDate = item.datetime.replace(/-/g, '.').substring(0, 16);
-        const excerpt = item.content.split('\n')[0].substring(0, 200);
-        return (
-          <article class="feed-item">
-            <header class="feed-header">
-              <span class="feed-platform" style={`color:${item.color}`}>{item.platform}</span>
-              <time class="feed-date" datetime={isoDate}>{displayDate}</time>
-            </header>
-            <div class="feed-excerpt"><p>{excerpt}</p></div>
-          </article>
-        );
-      }) : (
-        <p style="color:var(--text-secondary)">暫無動態。</p>
-      )}
+    <p id="feed-subtitle" style="color:var(--text-secondary); margin-bottom:32px;">載入動態中...</p>
+    <div class="feed-grid" id="feed-grid">
+      <!-- Skeleton loading -->
+      <div class="feed-item feed-skeleton"><div class="skeleton-line w60"></div><div class="skeleton-line w90"></div><div class="skeleton-line w75"></div></div>
+      <div class="feed-item feed-skeleton"><div class="skeleton-line w60"></div><div class="skeleton-line w90"></div><div class="skeleton-line w75"></div></div>
+      <div class="feed-item feed-skeleton"><div class="skeleton-line w60"></div><div class="skeleton-line w90"></div><div class="skeleton-line w75"></div></div>
+      <div class="feed-item feed-skeleton"><div class="skeleton-line w60"></div><div class="skeleton-line w90"></div><div class="skeleton-line w75"></div></div>
     </div>
+    <style>
+      .feed-skeleton { opacity: 0.5; }
+      .skeleton-line {
+        height: 14px;
+        background: linear-gradient(90deg, var(--bg-section) 25%, var(--bg-main,#f5f0eb) 50%, var(--bg-section) 75%);
+        background-size: 200% 100%;
+        animation: skeleton-shimmer 1.5s ease-in-out infinite;
+        border-radius: 4px;
+        margin-bottom: 10px;
+      }
+      .skeleton-line.w60 { width: 60%; }
+      .skeleton-line.w90 { width: 90%; }
+      .skeleton-line.w75 { width: 75%; }
+      @keyframes skeleton-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    </style>
+    <script>
+      (function() {
+        const FEED_API = 'https://paulkuo-ticker.paul-4bf.workers.dev/feed';
+        const grid = document.getElementById('feed-grid');
+        const subtitle = document.getElementById('feed-subtitle');
+        if (!grid) return;
+
+        fetch(FEED_API)
+          .then(r => r.json())
+          .then(data => {
+            const items = data.items || [];
+            if (items.length === 0) {
+              grid.innerHTML = '<p style="color:var(--text-secondary)">暫無動態。</p>';
+              subtitle.textContent = '社群動態';
+              return;
+            }
+            // Count unique platforms
+            const platforms = new Set(items.map(i => i.platform));
+            subtitle.textContent = '來自 ' + platforms.size + ' 個平台的最新動態。';
+
+            grid.innerHTML = items.map(item => {
+              const excerpt = (item.content || '').split('\n')[0].substring(0, 200);
+              const dt = (item.datetime || '').replace(/-/g, '.').substring(0, 16);
+              const linkOpen = item.url ? '<a href="' + item.url + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">' : '';
+              const linkClose = item.url ? '</a>' : '';
+              return '<article class="feed-item">' + linkOpen +
+                '<header class="feed-header">' +
+                '<span class="feed-platform" style="color:' + (item.color || '#666') + '">' + (item.platform || '') + '</span>' +
+                '<time class="feed-date">' + dt + '</time>' +
+                '</header>' +
+                '<div class="feed-excerpt"><p>' + excerpt.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p></div>' +
+                linkClose + '</article>';
+            }).join('');
+          })
+          .catch(err => {
+            console.error('Feed fetch failed:', err);
+            subtitle.textContent = '動態載入失敗，請稍後再試。';
+            grid.innerHTML = '';
+          });
+      })();
+    </script>
   </section>
 
   <!-- CONTACT -->

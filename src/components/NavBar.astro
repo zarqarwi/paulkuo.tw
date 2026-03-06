@@ -37,6 +37,12 @@ const { langPrefix, langSwitchLinks, currentLang } = Astro.props;
         <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
         <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
       </div>
+      <div class="mobile-font-group" aria-label="字級調整">
+        <span class="mobile-font-label">字級</span>
+        <button class="mobile-font-btn" data-size="small" aria-label="小字">A-</button>
+        <button class="mobile-font-btn" data-size="normal" aria-label="標準字級">A</button>
+        <button class="mobile-font-btn" data-size="large" aria-label="大字">A+</button>
+      </div>
     </div>
 
     <div class="lang-switcher">
@@ -78,6 +84,23 @@ const { langPrefix, langSwitchLinks, currentLang } = Astro.props;
     if (href === path || (href !== '/' && path.startsWith(href!))) {
       a.classList.add('active');
     }
+  });
+
+  // Mobile font size controls (mirrors FontToggle.astro logic)
+  document.querySelectorAll('.mobile-font-btn').forEach(btn => {
+    const sizes: Record<string, string> = { small: '15px', normal: '17px', large: '19px' };
+    const saved = localStorage.getItem('fontSize') || 'normal';
+    if ((btn as HTMLElement).dataset.size === saved) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      const size = (btn as HTMLElement).dataset.size || 'normal';
+      document.documentElement.style.fontSize = sizes[size] || sizes.normal;
+      localStorage.setItem('fontSize', size);
+      document.querySelectorAll('.mobile-font-btn').forEach(b => b.classList.toggle('active', b === btn));
+      // Sync desktop toggle if visible
+      document.querySelectorAll('.font-size-btn').forEach(b => {
+        (b as HTMLElement).classList.toggle('active', (b as HTMLElement).dataset.size === size);
+      });
+    });
   });
 
   // Nav scroll effect

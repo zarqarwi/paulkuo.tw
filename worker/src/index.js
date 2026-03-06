@@ -915,6 +915,71 @@ async function handleTranslateStream(request, env) {
   });
 }
 
+// === Social Feed (KV-backed, pushed by social-poster) ===
+// KV key: 'feed_items' — JSON array of latest posts (1 per platform, max 10)
+// Each item: { platform, icon, color, content, url, datetime, category }
+
+const FEED_CACHE_TTL = 60; // 1 minute client cache
+
+async function handleFeedGet(request, env) {
+  const raw = await env.TICKER_KV.get('feed_items');
+  const items = raw ? JSON.parse(raw) : [];
+  return new Response(JSON.stringify({ items, updatedAt: items[0]?.datetime || null }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': `public, max-age=${FEED_CACHE_TTL}`,
+      ...corsHeaders(request),
+    },
+  });
+}
+
+async function handleFeedPush(request, env) {
+  // Admin only
+  let body;
+  try { body = await request.json(); } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400, request);
+  }
+  const codeInfo = await validateCode(body.code || '', env.TICKER_KV);
+  if (!codeInfo || codeInfo.role !== 'admin') {
+    return jsonResponse({ error: 'Admin access required' }, 403, request);
+  }
+
+  const { platform, icon, color, content, url: postUrl, datetime, category } = body;
+  if (!platform || !content) {
+    return jsonResponse({ error: 'Missing platform or content' }, 400, request);
+  }
+
+  const newItem = {
+    platform: (icon ? icon + ' ' : '') + platform,
+    color: color || '#666',
+    content: content.slice(0, 500),
+    url: postUrl || '',
+    datetime: datetime || twISOString(),
+    category: category || 'general',
+  };
+
+  // Read existing, upsert by platform name, keep max 10
+  const raw = await env.TICKER_KV.get('feed_items');
+  let items = raw ? JSON.parse(raw) : [];
+
+  // Replace existing entry for same platform, or prepend
+  const basePlatform = platform.replace(/^[^\w]+/, '').trim();
+  const idx = items.findIndex(i => i.platform.includes(basePlatform));
+  if (idx >= 0) {
+    items[idx] = newItem;
+  } else {
+    items.unshift(newItem);
+  }
+
+  // Sort by datetime desc, keep max 10
+  items.sort((a, b) => (b.datetime || '').localeCompare(a.datetime || ''));
+  items = items.slice(0, 10);
+
+  await env.TICKER_KV.put('feed_items', JSON.stringify(items));
+  return jsonResponse({ ok: true, count: items.length }, 200, request);
+}
+
 // === Request Handler ===
 // === Meeting Summary via Claude Haiku ===
 async function handleSummarize(request, env) {
@@ -1291,8 +1356,16 @@ async function handleRequest(request, env) {
     return handleValidateCode(request, env);
   }
 
+  // === Social Feed ===
+  if (path === '/feed' && request.method === 'GET') {
+    return handleFeedGet(request, env);
+  }
+  if (path === '/feed/push' && request.method === 'POST') {
+    return handleFeedPush(request, env);
+  }
+
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===

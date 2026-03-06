@@ -229,6 +229,16 @@ const tickerData = JSON.stringify({
 
 })();
 
+// Mobile ticker toggle
+(function() {
+  var ticker = document.querySelector('.cost-ticker');
+  if (!ticker) return;
+  if (window.innerWidth > 768) return;
+  ticker.addEventListener('click', function(e) {
+    e.preventDefault();
+    ticker.classList.toggle('expanded');
+  });
+})();
 // Live Fitbit from Cloudflare Worker (replaces build-time static data)
 (function() {
   var el = document.getElementById('liveSteps');
@@ -336,15 +346,41 @@ const tickerData = JSON.stringify({
     background: rgba(255,255,255,0.12);
     flex-shrink: 0;
   }
+  /* === Mobile: collapsible ticker === */
   @media (max-width: 768px) {
+    .cost-ticker {
+      position: relative;
+    }
     .ticker-inner {
       padding: 0 12px;
-      height: 44px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      height: 40px;
+      overflow: hidden;
       scrollbar-width: none;
+      transition: height 0.3s ease, overflow 0.3s;
     }
     .ticker-inner::-webkit-scrollbar { display: none; }
     .ticker-item { padding: 0 10px; flex-shrink: 0; }
+    /* Collapsed: only show first few items + fade hint */
+    .cost-ticker::after {
+      content: '⋯';
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.5);
+      font-size: 1.2rem;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    /* Expanded state */
+    .cost-ticker.expanded .ticker-inner {
+      height: auto;
+      max-height: 200px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cost-ticker.expanded::after {
+      opacity: 0;
+    }
   }
 </style>

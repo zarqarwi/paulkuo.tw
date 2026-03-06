@@ -1416,3 +1416,59 @@ footer a:focus-visible,
   top: 0;
 }
 */
+
+/* ===== MOBILE UI PRESSURE RELIEF (2026-03-06) ===== */
+/* Hide floating font toggle and focus mode on mobile — controls moved to nav */
+@media (max-width: 768px) {
+  .font-size-toggle { display: none !important; }
+  .focus-mode-btn { display: none !important; }
+  /* ReadingTracker card: smaller on mobile */
+  #readingTracker {
+    bottom: 12px !important;
+    left: 12px !important;
+    max-width: 240px !important;
+    padding: 10px 14px !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Mobile font controls in hamburger menu */
+.mobile-font-group {
+  display: none;
+}
+@media (max-width: 768px) {
+  .mobile-font-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .mobile-font-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 4px;
+  }
+  .mobile-font-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .mobile-font-btn:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  .mobile-font-btn.active {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    border-color: rgba(255,255,255,0.4);
+  }
+}
