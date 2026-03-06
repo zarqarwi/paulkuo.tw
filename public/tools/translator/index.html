@@ -500,7 +500,21 @@ function renderLangs() {
     var btn = document.createElement("button");
     btn.className = "lang-btn" + (k === tgtLang ? " tgt-active" : "");
     btn.textContent = lang.flag + " " + lang.label;
-    btn.addEventListener("click", function() { tgtLang = k; renderLangs(); });
+    btn.addEventListener("click", function() {
+      if (tgtLang !== k) {
+        tgtLang = k;
+        // Clear accumulated translations to avoid mixing languages
+        _segmentTranslations = {};
+        // Finalize current live entry before switching
+        if (liveEntryId && liveText) {
+          var el = getEl('entry-' + liveEntryId);
+          if (el) el.classList.remove('entry-live');
+          finalizeEntry(liveEntryId, liveText);
+          liveEntryId = null; liveText = '';
+        }
+      }
+      renderLangs();
+    });
     tc.appendChild(btn);
   });
 }
