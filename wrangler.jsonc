@@ -1,8 +1,15 @@
 {
-  "name": "paulkuo-tw",
-  "compatibility_date": "2026-02-20",
-  "assets": {
-    "directory": "dist",
-    "not_found_handling": "none"
-  }
+	"name": "paulkuo-tw",
+	"compatibility_date": "2026-02-20",
+	"assets": {
+		"directory": "dist",
+		"not_found_handling": "none"
+	},
+	"d1_databases": [
+		{
+			"binding": "paulkuo_auth",
+			"database_name": "paulkuo-auth",
+			"database_id": "1cf40e96-b745-4b5b-9855-c8f5fbb1b3fb"
+		}
+	]
 }
