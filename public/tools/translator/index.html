@@ -710,7 +710,7 @@ function connectDgWebSocket(stream) {
       // Open Deepgram WebSocket
       var langParam = (srcInputLang && srcInputLang !== 'auto') ? 'language=' + srcInputLang : 'language=multi';
       var wsParams = [
-        'model=nova-2',
+        'model=nova-3',
         'interim_results=true',
         'utterance_end_ms=3000',
         'smart_format=true',
@@ -976,12 +976,12 @@ function finalizeEntry(id, text) {
 
   // Log Deepgram cost
   var durSec = dgUtteranceDuration || 1;
-  var dgCost = (durSec / 60) * 0.0077;
+  var dgCost = (durSec / 60) * 0.0069; // Nova-3 streaming rate
   fetch(WORKER_URL + '/log-cost', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-      service: 'deepgram', model: 'nova-2', action: 'stt-stream',
+      service: 'deepgram', model: 'nova-3', action: 'stt-stream',
       source: 'translator', code: inviteCode,
       durationSec: +durSec.toFixed(1), costUSD: +dgCost.toFixed(6),
       note: dgLang + ' ' + durSec.toFixed(1) + 's'
