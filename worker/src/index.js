@@ -915,6 +915,79 @@ async function handleTranslateStream(request, env) {
   });
 }
 
+// === Public Ticker Summary (one endpoint for all live data) ===
+const TICKER_CACHE_TTL = 300; // 5 minutes
+
+async function handleTicker(request, env) {
+  // Check cache
+  const cacheJson = await env.TICKER_KV.get('ticker_cache');
+  if (cacheJson) {
+    const cache = JSON.parse(cacheJson);
+    if (Date.now() - cache.cached_at < TICKER_CACHE_TTL * 1000) {
+      return new Response(JSON.stringify(cache.data), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60', ...corsHeaders(request) },
+      });
+    }
+  }
+
+  // Gather all data in parallel
+  const [fitbitData, stockData, costsData] = await Promise.allSettled([
+    fetchFitbitData(env.TICKER_KV).catch(e => null),
+    fetchStockData(env.TICKER_KV).catch(e => null),
+    (async () => {
+      // Aggregate costs from KV (last 30 days)
+      const now = new Date();
+      let totalUSD = 0, monthUSD = 0, totalCalls = 0, totalTokens = 0;
+      const twNow = new Date(now.getTime() + 8 * 3600 * 1000);
+      const thisMonth = twNow.toISOString().slice(0, 7);
+      const dailyMap = {};
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(now.getTime() - i * 86400000);
+        const dateStr = twDateStr(d);
+        const dateKey = `costs_${dateStr}`;
+        try {
+          const raw = await env.TICKER_KV.get(dateKey);
+          if (!raw) continue;
+          const entries = JSON.parse(raw);
+          entries.forEach(e => {
+            const cost = e.costUSD || 0;
+            totalUSD += cost;
+            totalCalls++;
+            totalTokens += (e.inputTokens || 0) + (e.outputTokens || 0);
+            if (dateStr.startsWith(thisMonth)) monthUSD += cost;
+            dailyMap[dateStr] = (dailyMap[dateStr] || 0) + cost;
+          });
+        } catch (e) {}
+      }
+      const sortedDays = Object.keys(dailyMap).sort().slice(-14);
+      const dailyValues = sortedDays.map(d => +(dailyMap[d] || 0).toFixed(4));
+      const avgPerDay = dailyValues.length > 0 ? dailyValues.reduce((a, b) => a + b, 0) / dailyValues.length : 0;
+      const last7 = sortedDays.slice(-7);
+      const prev7 = sortedDays.slice(-14, -7);
+      const last7Total = last7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
+      const prev7Total = prev7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
+      const changePercent = prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0;
+      return { totalUSD: +totalUSD.toFixed(4), monthUSD: +monthUSD.toFixed(4), totalCalls, totalTokens, avgPerDay: +avgPerDay.toFixed(4), changePercent: +changePercent.toFixed(1), dailyValues };
+    })()
+  ]);
+
+  const data = {
+    fitbit: fitbitData.status === 'fulfilled' && fitbitData.value ? { steps: fitbitData.value.today?.steps || 0, goal: fitbitData.value.today?.goal || 10000 } : null,
+    stock: stockData.status === 'fulfilled' && stockData.value ? { price: stockData.value.price, changePercent: stockData.value.changePercent, name: stockData.value.name, currency: stockData.value.currency } : null,
+    costs: costsData.status === 'fulfilled' ? costsData.value : null,
+    updated: twISOString(),
+  };
+
+  // Cache 5 min
+  await env.TICKER_KV.put('ticker_cache', JSON.stringify({ data, cached_at: Date.now() }));
+
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60', ...corsHeaders(request) },
+  });
+}
+
 // === Social Feed (KV-backed, pushed by social-poster) ===
 // KV key: 'feed_items' — JSON array of latest posts (1 per platform, max 10)
 // Each item: { platform, icon, color, content, url, datetime, category }
@@ -1356,6 +1429,11 @@ async function handleRequest(request, env) {
     return handleValidateCode(request, env);
   }
 
+  // === Public Ticker (combined live data) ===
+  if (path === '/ticker' && request.method === 'GET') {
+    return handleTicker(request, env);
+  }
+
   // === Social Feed ===
   if (path === '/feed' && request.method === 'GET') {
     return handleFeedGet(request, env);
@@ -1365,7 +1443,7 @@ async function handleRequest(request, env) {
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
