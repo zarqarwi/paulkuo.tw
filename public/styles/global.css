@@ -1590,3 +1590,32 @@ footer a:focus-visible,
   .nav-auth { display: none; }
   .nav-auth-mobile { display: block; }
 }
+/* Auth multi-provider dropdown */
+.nav-auth-login-wrap {
+  position: relative; display: flex; align-items: center;
+}
+.nav-auth-providers {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 10px; box-shadow: var(--shadow-md);
+  padding: 6px; min-width: 160px;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+  z-index: 1000;
+}
+.nav-auth-providers.open { opacity: 1; visibility: visible; }
+.nav-auth-provider {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; border-radius: 7px;
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--text-primary); text-decoration: none;
+  transition: background 0.12s;
+}
+.nav-auth-provider:hover { background: rgba(0,0,0,0.04); }
+.nav-auth-provider-line:hover { background: rgba(6,199,85,0.06); }
+
+/* Mobile provider links */
+.nav-auth-mobile-providers {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.nav-auth-login-mobile-line svg { margin-right: 2px; }
