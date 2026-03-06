@@ -327,7 +327,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 <div class="footer">
   <span id="countLabel">0 筆紀錄</span>
   <button class="help-btn" id="btnHelp">❓ 使用說明</button>
-  <label class="stt-toggle">STT <select id="sttMode"><option value="deepgram">串流</option><option value="whisper">批次</option></select></label>
+  <label class="stt-toggle" style="display:none">STT <select id="sttMode"><option value="deepgram">串流</option><option value="whisper">批次</option></select></label>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
 <div class="modal-overlay" id="summaryModal">
@@ -422,9 +422,8 @@ var LANGS = {
 var LANG_FLAGS = {"ja":"🇯🇵","en":"🇺🇸","zh-TW":"🇹🇼","zh-CN":"🇨🇳","ko":"🇰🇷","chinese":"🇨🇳","japanese":"🇯🇵","english":"🇺🇸","korean":"🇰🇷","vietnamese":"🇻🇳","vi":"🇻🇳","thai":"🇹🇭","th":"🇹🇭","indonesian":"🇮🇩","id":"🇮🇩","german":"🇩🇪","de":"🇩🇪","spanish":"🇪🇸","es":"🇪🇸","french":"🇫🇷","fr":"🇫🇷","portuguese":"🇧🇷","pt":"🇧🇷"};
 
 var tgtLang = "zh-TW";
-var srcInputLang = 'auto'; // 'auto' | 'en' | 'zh' | 'ja' | etc. — Deepgram language code
+var srcInputLang = 'en'; // Deepgram language code — default English
 var SRC_LANGS = [
-  {code:'auto', label:'自動', flag:'🌐'},
   {code:'en', label:'English', flag:'🇺🇸'},
   {code:'zh', label:'中文', flag:'🇹🇼'},
   {code:'ja', label:'日本語', flag:'🇯🇵'},
