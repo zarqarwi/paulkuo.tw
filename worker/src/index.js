@@ -66,6 +66,17 @@ const FB_SCOPES = 'public_profile,email';
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 const SITE_URL = 'https://paulkuo.tw';
 
+// Safe redirect path from OAuth cookie
+function getOAuthRedirect(request) {
+  const cookie = (request.headers.get('Cookie') || '').match(/(?:^|;\s*)oauth_redirect=([^\s;]+)/);
+  if (!cookie) return '';
+  try {
+    const path = decodeURIComponent(cookie[1]);
+    if (path.startsWith('/') && !path.startsWith('//') && !path.includes(':')) return path;
+  } catch (e) {}
+  return '';
+}
+
 // === Invite Codes (hardcoded defaults + KV overrides) ===
 // Invite codes stored in KV (key: 'invite_codes') — no hardcoded defaults
 async function validateCode(code, kv) {
@@ -81,6 +92,37 @@ async function validateCode(code, kv) {
   return null;
 }
 
+
+// === Unified Auth: OAuth session cookie OR invite code ===
+async function authenticateRequest(request, env, inviteCode) {
+  // Priority 1: OAuth session cookie
+  const user = await getCurrentUser(request, env);
+  if (user) {
+    return {
+      type: 'oauth',
+      name: user.name,
+      role: user.role,
+      userId: user.id,
+      code: 'oauth:' + user.id,
+      isAdmin: user.role === 'admin',
+    };
+  }
+  // Priority 2: Invite code
+  if (inviteCode) {
+    const codeInfo = await validateCode(inviteCode, env.TICKER_KV);
+    if (codeInfo) {
+      return {
+        type: 'invite',
+        name: codeInfo.name,
+        role: codeInfo.role,
+        userId: null,
+        code: inviteCode,
+        isAdmin: codeInfo.role === 'admin',
+      };
+    }
+  }
+  return null;
+}
 // === In-memory rate limiting (no KV writes) ===
 const rateLimitMap = new Map();
 function checkRateLimit(ip, limit) {
@@ -532,8 +574,8 @@ async function handleCosts(request, env) {
   const url = new URL(request.url);
   // Admin auth required
   const adminCode = url.searchParams.get('code') || '';
-  const codeInfo = await validateCode(adminCode, env.TICKER_KV);
-  if (!codeInfo || codeInfo.role !== 'admin') {
+  const auth = await authenticateRequest(request, env, adminCode);
+  if (!auth || !auth.isAdmin) {
     return jsonResponse({ error: 'Admin access required' }, 403, request);
   }
   // Flush buffer first so results are up-to-date
@@ -607,10 +649,10 @@ async function handleSTT(request, env) {
   const targetLang = formData.get('targetLang') || 'zh-TW';
   const userCode = formData.get('code') || '';
 
-  // === Invite code verification ===
-  const codeInfo = await validateCode(userCode, env.TICKER_KV);
-  if (!codeInfo) {
-    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  // === Auth verification (OAuth session or invite code) ===
+  const auth = await authenticateRequest(request, env, userCode);
+  if (!auth) {
+    return jsonResponse({ error: 'Authentication required' }, 401, request);
   }
 
   if (!audioFile) {
@@ -646,7 +688,7 @@ async function handleSTT(request, env) {
     const audioDuration = whisperData.duration || 5; // seconds
     const whisperCost = (audioDuration / 60) * PRICING['whisper-1'].perMinute;
     await logCost(env.TICKER_KV, {
-      service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator', code: userCode,
+      service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator', code: auth.code,
       costUSD: +whisperCost.toFixed(6), durationSec: audioDuration,
       note: `${detectedLang} ${audioDuration.toFixed(1)}s`
     });
@@ -716,7 +758,7 @@ async function handleSTT(request, env) {
       const hp = PRICING['claude-haiku-4-5-20251001'];
       const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: userCode,
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code,
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +claudeCost.toFixed(6),
         note: `${langCode}→${targetLang}`
@@ -755,10 +797,10 @@ async function handleTranslate(request, env) {
     return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   }
 
-  // === Invite code verification ===
-  const codeInfo = await validateCode(userCode || '', env.TICKER_KV);
-  if (!codeInfo) {
-    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  // === Auth verification (OAuth session or invite code) ===
+  const auth = await authenticateRequest(request, env, userCode || '');
+  if (!auth) {
+    return jsonResponse({ error: 'Authentication required' }, 401, request);
   }
 
   // Rate limit (in-memory, no KV writes)
@@ -811,7 +853,7 @@ async function handleTranslate(request, env) {
       const hp = PRICING['claude-haiku-4-5-20251001'];
       const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: userCode || '',
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code,
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +claudeCost.toFixed(6),
         note: (sourceLang || 'auto') + '>' + targetLang
@@ -842,9 +884,9 @@ async function handleTranslateStream(request, env) {
   if (!text || !targetLang) {
     return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   }
-  const codeInfo = await validateCode(userCode || '', env.TICKER_KV);
-  if (!codeInfo) {
-    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  const auth = await authenticateRequest(request, env, userCode || '');
+  if (!auth) {
+    return jsonResponse({ error: 'Authentication required' }, 401, request);
   }
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   if (!checkRateLimit(ip, TRANSLATE_RATE_LIMIT)) {
@@ -921,7 +963,7 @@ async function handleTranslateStream(request, env) {
       // Log cost
       await logCost(env.TICKER_KV, {
         service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate-stream',
-        source: 'translator', code: userCode || '',
+        source: 'translator', code: auth.code,
         inputTokens, outputTokens, costUSD: +cost.toFixed(6),
         note: (sourceLang || 'auto') + '>' + targetLang
       });
@@ -1040,8 +1082,8 @@ async function handleFeedPush(request, env) {
   try { body = await request.json(); } catch (e) {
     return jsonResponse({ error: 'Invalid JSON' }, 400, request);
   }
-  const codeInfo = await validateCode(body.code || '', env.TICKER_KV);
-  if (!codeInfo || codeInfo.role !== 'admin') {
+  const auth = await authenticateRequest(request, env, body.code || '');
+  if (!auth || !auth.isAdmin) {
     return jsonResponse({ error: 'Admin access required' }, 403, request);
   }
 
@@ -1100,9 +1142,9 @@ async function handleSummarize(request, env) {
   const { text, lang, glossary, code: sumCode } = body;
 
   // === Invite code verification ===
-  const sumCodeInfo = await validateCode(sumCode || '', env.TICKER_KV);
-  if (!sumCodeInfo) {
-    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  const auth = await authenticateRequest(request, env, sumCode || '');
+  if (!auth) {
+    return jsonResponse({ error: 'Authentication required' }, 401, request);
   }
 
   if (!text || text.trim().length < 20) {
@@ -1173,7 +1215,7 @@ ${truncated}`;
       const hp = PRICING['claude-haiku-4-5-20251001'];
       const cost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'summarize', source: 'translator', code: sumCode || '',
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'summarize', source: 'translator', code: auth.code,
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +cost.toFixed(6), note: langName
       });
@@ -1218,8 +1260,8 @@ async function handleUsage(request, env) {
   const adminCode = url.searchParams.get('code') || '';
   
   // Only admin can view usage
-  const codeInfo = await validateCode(adminCode, env.TICKER_KV);
-  if (!codeInfo || codeInfo.role !== 'admin') {
+  const auth = await authenticateRequest(request, env, adminCode);
+  if (!auth || !auth.isAdmin) {
     return jsonResponse({ error: 'Admin access required' }, 403, request);
   }
 
@@ -1286,9 +1328,9 @@ async function handleLogCost(request, env) {
     return jsonResponse({ error: 'Invalid JSON' }, 400, request);
   }
   const { service, model, action, source, durationSec, costUSD, note, code } = body;
-  const codeInfo = await validateCode(code || '', env.TICKER_KV);
-  if (!codeInfo) {
-    return jsonResponse({ error: 'Invalid invite code' }, 401, request);
+  const auth = await authenticateRequest(request, env, code || '');
+  if (!auth) {
+    return jsonResponse({ error: 'Authentication required' }, 401, request);
   }
   if (!service || !action || costUSD === undefined) {
     return jsonResponse({ error: 'Missing required fields: service, action, costUSD' }, 400, request);
@@ -1338,6 +1380,8 @@ function getSessionFromCookie(request) {
 
 // Google OAuth Step 1: redirect to Google
 function handleGoogleLogin(request) {
+  const url = new URL(request.url);
+  const redirect = url.searchParams.get('redirect') || '';
   const state = nanoid(32);
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
@@ -1350,8 +1394,9 @@ function handleGoogleLogin(request) {
   });
   const headers = new Headers({
     Location: `https://accounts.google.com/o/oauth2/v2/auth?${params}`,
-    'Set-Cookie': `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
   });
+  headers.append('Set-Cookie', `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
+  if (redirect) headers.append('Set-Cookie', `oauth_redirect=${encodeURIComponent(redirect)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
   return new Response(null, { status: 302, headers });
 }
 
@@ -1415,7 +1460,8 @@ async function handleGoogleCallback(request, env) {
     ).run();
 
     // Redirect with session cookie
-    const headers = new Headers({ Location: `${SITE_URL}?auth_success=1` });
+    const redir = getOAuthRedirect(request);
+    const headers = new Headers({ Location: `${SITE_URL}${redir}${redir.includes("?") ? "&" : "?"}auth_success=1` });
     headers.append('Set-Cookie', setSessionCookie(sessionId));
     headers.append('Set-Cookie', 'oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
     return new Response(null, { status: 302, headers });
@@ -1429,6 +1475,8 @@ async function handleGoogleCallback(request, env) {
 
 // LINE Login Step 1: redirect to LINE
 function handleLineLogin(request) {
+  const url = new URL(request.url);
+  const redirect = url.searchParams.get('redirect') || '';
   const state = nanoid(32);
   const params = new URLSearchParams({
     response_type: 'code',
@@ -1439,8 +1487,9 @@ function handleLineLogin(request) {
   });
   const headers = new Headers({
     Location: `https://access.line.me/oauth2/v2.1/authorize?${params}`,
-    'Set-Cookie': `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
   });
+  headers.append('Set-Cookie', `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
+  if (redirect) headers.append('Set-Cookie', `oauth_redirect=${encodeURIComponent(redirect)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
   return new Response(null, { status: 302, headers });
 }
 
@@ -1516,7 +1565,8 @@ async function handleLineCallback(request, env) {
     ).run();
 
     // Redirect with session cookie
-    const headers = new Headers({ Location: `${SITE_URL}?auth_success=1` });
+    const redir = getOAuthRedirect(request);
+    const headers = new Headers({ Location: `${SITE_URL}${redir}${redir.includes("?") ? "&" : "?"}auth_success=1` });
     headers.append('Set-Cookie', setSessionCookie(sessionId));
     headers.append('Set-Cookie', 'oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
     return new Response(null, { status: 302, headers });
@@ -1529,6 +1579,8 @@ async function handleLineCallback(request, env) {
 
 // Facebook Login Step 1: redirect to Facebook
 function handleFacebookLogin(request) {
+  const url = new URL(request.url);
+  const redirect = url.searchParams.get('redirect') || '';
   const state = nanoid(32);
   const params = new URLSearchParams({
     client_id: FB_APP_ID,
@@ -1539,8 +1591,9 @@ function handleFacebookLogin(request) {
   });
   const headers = new Headers({
     Location: `https://www.facebook.com/v19.0/dialog/oauth?${params}`,
-    'Set-Cookie': `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
   });
+  headers.append('Set-Cookie', `oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
+  if (redirect) headers.append('Set-Cookie', `oauth_redirect=${encodeURIComponent(redirect)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
   return new Response(null, { status: 302, headers });
 }
 
@@ -1603,7 +1656,8 @@ async function handleFacebookCallback(request, env) {
     ).run();
 
     // Redirect with session cookie
-    const headers = new Headers({ Location: `${SITE_URL}?auth_success=1` });
+    const redir = getOAuthRedirect(request);
+    const headers = new Headers({ Location: `${SITE_URL}${redir}${redir.includes("?") ? "&" : "?"}auth_success=1` });
     headers.append('Set-Cookie', setSessionCookie(sessionId));
     headers.append('Set-Cookie', 'oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
     return new Response(null, { status: 302, headers });
@@ -1794,9 +1848,9 @@ async function handleRequest(request, env) {
     }
     // Auth: code passed as query param
     const wsCode = url.searchParams.get('code') || '';
-    const wsCodeInfo = await validateCode(wsCode, env.TICKER_KV);
-    if (!wsCodeInfo) {
-      return jsonResponse({ error: 'Invalid invite code' }, 403, request);
+    const wsAuth = await authenticateRequest(request, env, wsCode);
+    if (!wsAuth) {
+      return jsonResponse({ error: 'Authentication required' }, 403, request);
     }
     const dgKey = env.DEEPGRAM_API_KEY;
     if (!dgKey) {
