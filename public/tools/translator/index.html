@@ -470,6 +470,7 @@ var dgTimings = {}; // per-utterance timing
 var dgPerfHistory = []; // all timings for averages
 var dgRetryCount = 0;
 var dgRetryTimer = null;
+var dgModel = 'nova-3'; // actual model used (nova-3 or nova-2 fallback)
 
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -709,8 +710,13 @@ function startDeepgramStreaming() {
 function connectDgWebSocket(stream) {
       // Open Deepgram WebSocket
       var langParam = (srcInputLang && srcInputLang !== 'auto') ? 'language=' + srcInputLang : 'language=multi';
+      // Nova-3 supports: en, es, fr, de, hi, ru, pt, ja, it, nl + multi
+      var nova3Langs = ['en','es','fr','de','hi','ru','pt','ja','it','nl','multi'];
+      var effectiveLang = (srcInputLang && srcInputLang !== 'auto') ? srcInputLang : 'multi';
+      dgModel = nova3Langs.indexOf(effectiveLang) >= 0 ? 'nova-3' : 'nova-2';
+      var model = dgModel;
       var wsParams = [
-        'model=nova-3',
+        'model=' + model,
         'interim_results=true',
         'utterance_end_ms=3000',
         'smart_format=true',
@@ -981,7 +987,7 @@ function finalizeEntry(id, text) {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-      service: 'deepgram', model: 'nova-3', action: 'stt-stream',
+      service: 'deepgram', model: dgModel, action: 'stt-stream',
       source: 'translator', code: inviteCode,
       durationSec: +durSec.toFixed(1), costUSD: +dgCost.toFixed(6),
       note: dgLang + ' ' + durSec.toFixed(1) + 's'
