@@ -538,11 +538,22 @@ function renderSrcLangs() {
       var prev = srcInputLang;
       srcInputLang = lang.code;
       renderSrcLangs();
-      // If recording, reconnect WebSocket with new language
-      if (recording && sttMode === 'deepgram' && prev !== srcInputLang) {
-        if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
-        if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
-        connectDgWebSocket(dgStream);
+      if (prev !== srcInputLang) {
+        // Clear translations to avoid mixing languages
+        _segmentTranslations = {};
+        // Finalize current live entry before switching
+        if (liveEntryId && liveText) {
+          var el = getEl('entry-' + liveEntryId);
+          if (el) el.classList.remove('entry-live');
+          finalizeEntry(liveEntryId, liveText);
+          liveEntryId = null; liveText = '';
+        }
+        // If recording, reconnect WebSocket with new language
+        if (recording && sttMode === 'deepgram') {
+          if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
+          if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
+          connectDgWebSocket(dgStream);
+        }
       }
     });
     sc.appendChild(btn);
@@ -723,7 +734,7 @@ function connectDgWebSocket(stream) {
       var wsParams = [
         'model=' + model,
         'interim_results=true',
-        'utterance_end_ms=3000',
+        'utterance_end_ms=1500',
         'smart_format=true',
         'punctuate=true',
         'diarize=true',
