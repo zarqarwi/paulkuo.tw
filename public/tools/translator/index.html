@@ -1498,7 +1498,7 @@ function handleDgMessage(evt) {
   }
 
   // Clear no-result timeout on first result
-  if (window._dgNoResultTimer) { clearTimeout(window._dgNoResultTimer); window._dgNoResultTimer = null; }
+  if (window._dgNoResultTimer) { clearTimeout(window._dgNoResultTimer); window._dgNoResultTimer = null; hideError(); }
 
   if (!liveEntryId) {
     // Create new live entry
