@@ -1305,6 +1305,11 @@ function connectQwenWebSocket(stream) {
             var interimText = getLiveTextOrInterim();
             if (interimText) {
               console.warn('[qwen] completed timeout — force finalizing with interim (' + interimText.length + ' chars)');
+              // Calculate duration before resetting (for accurate cost tracking)
+              if (_qwenUtteranceStartMs) {
+                dgUtteranceDuration = (performance.now() - _qwenUtteranceStartMs) / 1000;
+                console.log('[qwen] force-finalize duration: ' + dgUtteranceDuration.toFixed(1) + 's');
+              }
               _qwenUtteranceStartMs = 0;
               handleDgMessage({ data: JSON.stringify({
                 type: 'Results', is_final: true, speech_final: true,
@@ -1364,6 +1369,12 @@ function connectQwenWebSocket(stream) {
       return;
     }
     if (recording && _activeEngine === 'qwen') {
+      // Calculate utterance duration before finalize (for accurate cost tracking)
+      if (_qwenUtteranceStartMs) {
+        dgUtteranceDuration = (performance.now() - _qwenUtteranceStartMs) / 1000;
+        console.log('[qwen] onclose duration: ' + dgUtteranceDuration.toFixed(1) + 's');
+        _qwenUtteranceStartMs = 0;
+      }
       var _finalText = getLiveTextOrInterim();
       if (liveEntryId && _finalText) {
         var el = getEl('entry-' + liveEntryId);
