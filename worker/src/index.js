@@ -729,7 +729,7 @@ async function handleSTT(request, env) {
     max_tokens: 1024,
     messages: [{
       role: 'user',
-      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Fix any obvious speech recognition errors before translating. Output ONLY the translation, nothing else.${twHint}\n\n${transcript.slice(0, 2000)}`
+      content: `You are a professional real-time interpreter. Translate the following speech into ${targetName}. Fix any obvious speech recognition errors. Output ONLY the translated text, nothing else — no explanations, no questions, no commentary. Even if the input is a single word or particle, translate it directly. If the text is already in ${targetName}, output it as-is.${twHint}\n\n${transcript.slice(0, 2000)}`
     }]
   });
 
@@ -821,7 +821,7 @@ async function handleTranslate(request, env) {
     max_tokens: 1024,
     messages: [{
       role: 'user',
-      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Fix any obvious speech recognition errors before translating. Output ONLY the translation, nothing else. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
+      content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Fix any obvious speech recognition errors. Output ONLY the translated text, nothing else — no explanations, no questions, no commentary. Even if the input is a single word or particle, translate it directly. If the text is already in ${targetName}, output it as-is.${targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : ''}\n\n${trimmedText}`
     }]
   });
 
@@ -897,6 +897,20 @@ async function handleTranslateStream(request, env) {
   }
 
   const trimmedText = text.slice(0, 2000);
+
+  // Guard: text too short to translate meaningfully — return as-is (saves API cost + prevents hallucination)
+  if (trimmedText.length <= 2) {
+    const encoder = new TextEncoder();
+    const { readable, writable } = new TransformStream();
+    const writer = writable.getWriter();
+    (async () => {
+      await writer.write(encoder.encode('data: ' + JSON.stringify({ t: trimmedText }) + '\n\n'));
+      await writer.write(encoder.encode('data: ' + JSON.stringify({ done: true, costUSD: 0 }) + '\n\n'));
+      await writer.close();
+    })();
+    return new Response(readable, { status: 200, headers: { 'Content-Type': 'text/event-stream', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Credentials': 'true' } });
+  }
+
   const targetName = TNAMES[targetLang] || targetLang;
   const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese characters with Taiwanese vocabulary (e.g. 軟體 not 软件, 網路 not 网络, 影片 not 视频).' : '';
   const glossaryHint = (glossary && glossary.length > 0) ? '\nUse these terminology translations: ' + glossary.map(g => g.term + ' → ' + g.translation).join(', ') + '.' : '';
@@ -914,7 +928,7 @@ async function handleTranslateStream(request, env) {
       stream: true,
       messages: [{
         role: 'user',
-        content: 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Fix any obvious speech recognition errors before translating. Output ONLY the translation, nothing else.' + twHint + glossaryHint + '\n\n' + trimmedText
+        content: 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Fix any obvious speech recognition errors. Output ONLY the translated text, nothing else — no explanations, no questions, no commentary. Even if the input is a single word or particle, translate it directly. If the text is already in ' + targetName + ', output it as-is.' + twHint + glossaryHint + '\n\n' + trimmedText
       }]
     })
   });
@@ -1429,8 +1443,35 @@ async function handleGroqSTT(request, env) {
       }
 
       const data = await groqRes.json();
-      const transcript = (data.text || '').trim();
       const duration = data.duration || 0;
+
+      // Filter Whisper hallucinations: no_speech_prob > 0.7 segments
+      let transcript = '';
+      if (data.segments && data.segments.length > 0) {
+        const validSegments = data.segments.filter(seg => {
+          if ((seg.no_speech_prob || 0) > 0.7) {
+            console.log('Filtered high no_speech_prob segment:', seg.text?.slice(0, 50), 'prob:', seg.no_speech_prob);
+            return false;
+          }
+          return true;
+        });
+        transcript = validSegments.map(s => s.text || '').join('').trim();
+      } else {
+        transcript = (data.text || '').trim();
+      }
+
+      // Filter known Whisper hallucination patterns (silence → YouTube boilerplate)
+      const HALLUCINATION_PATTERNS = [
+        /^(ご視聴ありがとうございました|チャンネル登録お願いします|字幕|字幕を|最後まで|お疲れ様でした)[。．！]*$/,
+        /^(Thank you( for watching)?|Please subscribe|Subtitles by|Amara\.org)[.!]*$/i,
+        /^(감사합니다|구독|좋아요)[.!]*$/,
+        /^\.+$/,
+        /^[\s　]+$/,
+      ];
+      if (HALLUCINATION_PATTERNS.some(p => p.test(transcript))) {
+        console.log('Filtered hallucination pattern:', transcript.slice(0, 50));
+        transcript = '';
+      }
 
       // Log cost: $0.02/hr
       const costUSD = (duration / 3600) * PRICING['whisper-large-v3-turbo'].perHour;

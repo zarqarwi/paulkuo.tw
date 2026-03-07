@@ -1114,6 +1114,8 @@ function sendGroqChunk(blob) {
       }
       _groqFailCount = 0;
       if (!d.original || !d.original.trim()) return;
+      // Skip very short fragments (likely Whisper hallucination residue)
+      if (d.original.trim().length <= 1) { console.log('[groq] skipped too-short result:', d.original); return; }
       // Create entry
       var id = ++nextId;
       var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -1124,8 +1126,9 @@ function sendGroqChunk(blob) {
       var div = document.createElement('div');
       div.className = 'entry';
       div.id = 'entry-' + id;
-      div.innerHTML = '<div class="entry-meta">' + ts + ' \u00b7 \ud83c\uddfa\ud83c\uddf8 \u2192 ' + tgtFlag +
-        '<span class="entry-lang">en</span> <span style="font-size:10px;color:var(--accent-ai)">\u2022 Groq</span></div>' +
+      var srcFlag = (SRC_LANGS.find(function(l){return l.code===srcInputLang}) || {}).flag || '\ud83c\udf10';
+      div.innerHTML = '<div class="entry-meta">' + ts + ' \u00b7 ' + srcFlag + ' \u2192 ' + tgtFlag +
+        '<span class="entry-lang">' + srcInputLang + '</span> <span style="font-size:10px;color:var(--accent-ai)">\u2022 Groq</span></div>' +
         '<div class="entry-original" id="orig-' + id + '">' + escHtml(d.original) + '</div>' +
         '<div class="entry-translated" id="trans-' + id + '"><span class="shimmer">\u7ffb\u8b6f\u4e2d...</span></div>';
       getEl('content').appendChild(div);
