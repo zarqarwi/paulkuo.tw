@@ -1016,6 +1016,7 @@ function switchToGroq() {
   }
   cleanupQwenAudio();
   _activeEngine = 'groq';
+  _groqFailCount = 0;
   _qwenAutoSwitched = false;
   _qwenSwitchPending = false;
   connectGroqChunked(dgStream);
@@ -1039,7 +1040,8 @@ function connectGroqChunked(stream) {
     var pending = chunks.slice();
     chunks = [];
     if (pending.length > 0) {
-      var blob = new Blob(pending, { type: (groqMediaRecorder && groqMediaRecorder.mimeType) || 'audio/webm' });
+      var recMime = (groqMediaRecorder && groqMediaRecorder.mimeType) || 'audio/webm';
+      var blob = new Blob(pending, { type: recMime });
       if (blob.size > 1024) sendGroqChunk(blob);
     }
     // Restart if still recording with Groq
@@ -1055,6 +1057,7 @@ function connectGroqChunked(stream) {
     }
   }, 3000);
 }
+var _groqFailCount = 0;
 function sendGroqChunk(blob) {
   var form = new FormData();
   form.append('audio', blob, 'audio.webm');
@@ -1063,7 +1066,18 @@ function sendGroqChunk(blob) {
   fetch(WORKER_URL + '/stt-groq', { method: 'POST', body: form, credentials: 'include' })
     .then(function(r) { return r.json(); })
     .then(function(d) {
-      if (d.error) { console.warn('[groq] error:', d.error); return; }
+      if (d.error) {
+        console.warn('[groq] error:', d.error);
+        _groqFailCount++;
+        if (_groqFailCount >= 3 && recording) {
+          showError('Groq STT 連續失敗，切換至 Deepgram');
+          cleanupGroq();
+          _activeEngine = 'deepgram';
+          connectDgWebSocket(dgStream);
+        }
+        return;
+      }
+      _groqFailCount = 0;
       if (!d.original || !d.original.trim()) return;
       // Create entry
       var id = ++nextId;
@@ -1089,10 +1103,18 @@ function sendGroqChunk(blob) {
       translateSegmentStreaming(id, d.original);
       getEl('btnSummary').disabled = false;
       if (recording) setStatus('listening');
+      if (matrixActive) matrixPulse();
       scheduleStatsRefresh();
     })
     .catch(function(e) {
       console.warn('[groq] fetch error:', e.message);
+      _groqFailCount++;
+      if (_groqFailCount >= 3 && recording) {
+        showError('Groq 連線失敗，切換至 Deepgram');
+        cleanupGroq();
+        _activeEngine = 'deepgram';
+        connectDgWebSocket(dgStream);
+      }
       if (recording) setStatus('listening');
     });
 }
