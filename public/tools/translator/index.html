@@ -1881,7 +1881,7 @@ function renderAdminCodes() {
     html += '<div class="admin-code-item">' +
       '<div><span class="code-name">' + escHtml(c.name) + '</span><span class="code-key">' + escHtml(c.code) + '</span>' +
       '<span class="code-role ' + roleCls + '">' + c.role + '</span></div>' +
-      '<button class="code-del" onclick="deleteAdminCode('' + escHtml(c.code) + '')" title="刪除">🗑</button>' +
+      '<button class="code-del" onclick="deleteAdminCode(\'' + escHtml(c.code) + '\')" title="刪除">🗑</button>' +
       '</div>';
   });
   list.innerHTML = html;
