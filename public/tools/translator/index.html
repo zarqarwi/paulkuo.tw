@@ -533,6 +533,17 @@ var dgRetryCount = 0;
 var dgRetryTimer = null;
 var dgModel = 'nova-3'; // actual model used (nova-3 or nova-2 fallback)
 
+// Qwen3-ASR streaming state
+var qwenWs = null;
+var qwenAudioCtx = null;
+var qwenProcessor = null;
+var qwenSource = null;
+var qwenRetryCount = 0;
+var qwenRetryTimer = null;
+var _qwenAutoSwitched = false; // true after auto-switching to Qwen
+var _qwenSwitchPending = false; // true when Chinese detected, waiting for utterance end
+var _activeEngine = 'deepgram'; // 'deepgram' or 'qwen'
+
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
@@ -606,9 +617,17 @@ function renderSrcLangs() {
         }
         // If recording, reconnect WebSocket with new language
         if (recording && sttMode === 'deepgram') {
-          if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
-          if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
-          connectDgWebSocket(dgStream);
+          // Language changed — always restart with Deepgram for auto-detection
+          if (_activeEngine === 'qwen') {
+            switchToDeepgram();
+          } else {
+            // Reconnect Deepgram with new language param
+            if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
+            if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
+            _qwenAutoSwitched = false;
+            _qwenSwitchPending = false;
+            connectDgWebSocket(dgStream);
+          }
         }
       }
     });
@@ -723,6 +742,18 @@ function stopRecording() {
   // Deepgram cleanup
   if (dgRetryTimer) { clearTimeout(dgRetryTimer); dgRetryTimer = null; }
   dgRetryCount = 0;
+  // Qwen cleanup
+  if (qwenRetryTimer) { clearTimeout(qwenRetryTimer); qwenRetryTimer = null; }
+  qwenRetryCount = 0;
+  _qwenAutoSwitched = false;
+  _qwenSwitchPending = false;
+  _activeEngine = 'deepgram';
+  if (qwenWs) {
+    try { qwenWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
+    try { qwenWs.close(); } catch(e) {}
+    qwenWs = null;
+  }
+  cleanupQwenAudio();
   if (dgWs) {
     try { dgWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
     try { dgWs.close(); } catch(e) {}
@@ -771,6 +802,8 @@ function startDeepgramStreaming() {
     updateToggle();
     startMatrix();
     startVolumeMeter(stream);
+    // Always start with Deepgram (auto-detects language)
+    // If Chinese detected, auto-switches to Qwen3-ASR
     connectDgWebSocket(stream);
   })
   .catch(function(e) {
@@ -864,6 +897,159 @@ function connectDgWebSocket(stream) {
       };
 }
 
+// === Auto-switch between Deepgram and Qwen ===
+function switchToQwen() {
+  if (!dgStream || !recording) return;
+  console.log('[auto] Switching to Qwen3-ASR for Chinese');
+  showError('\u5075\u6e2c\u5230\u4e2d\u6587\uff0c\u5207\u63db\u81f3 Qwen ASR');
+  setTimeout(hideError, 3000);
+  // Disconnect Deepgram
+  if (dgWs) {
+    try { dgWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
+    try { dgWs.close(); } catch(e) {}
+    dgWs = null;
+  }
+  if (dgMediaRecorder) {
+    try { dgMediaRecorder.stop(); } catch(e) {}
+    dgMediaRecorder = null;
+  }
+  // Connect Qwen (reuse same mic stream)
+  _activeEngine = 'qwen';
+  _qwenAutoSwitched = true;
+  qwenRetryCount = 0;
+  connectQwenWebSocket(dgStream);
+}
+
+function switchToDeepgram() {
+  if (!dgStream || !recording) return;
+  console.log('[auto] Switching back to Deepgram');
+  showError('\u5207\u63db\u81f3 Deepgram');
+  setTimeout(hideError, 2000);
+  // Disconnect Qwen
+  if (qwenWs) {
+    try { qwenWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
+    try { qwenWs.close(); } catch(e) {}
+    qwenWs = null;
+  }
+  cleanupQwenAudio();
+  // Connect Deepgram
+  _activeEngine = 'deepgram';
+  _qwenAutoSwitched = false;
+  _qwenSwitchPending = false;
+  connectDgWebSocket(dgStream);
+}
+
+function cleanupQwenAudio() {
+  if (qwenProcessor) { try { qwenProcessor.disconnect(); } catch(e) {} qwenProcessor = null; }
+  if (qwenSource) { try { qwenSource.disconnect(); } catch(e) {} qwenSource = null; }
+  if (qwenAudioCtx) { try { qwenAudioCtx.close(); } catch(e) {} qwenAudioCtx = null; }
+}
+
+function connectQwenWebSocket(stream) {
+  var wsUrl = WORKER_URL.replace('https://', 'wss://') + '/ws/stt-qwen?code=' + encodeURIComponent(inviteCode) + '&language=zh';
+  qwenWs = new WebSocket(wsUrl);
+  qwenWs.binaryType = 'arraybuffer';
+
+  qwenWs.onopen = function() {
+    console.log('[qwen] WebSocket connected');
+    setStatus('listening');
+    dgLang = 'zh';
+
+    try {
+      qwenAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+    } catch (e) {
+      console.warn('[qwen] 16kHz AudioContext failed, using default + resample');
+      qwenAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    qwenSource = qwenAudioCtx.createMediaStreamSource(stream);
+    qwenProcessor = qwenAudioCtx.createScriptProcessor(4096, 1, 1);
+
+    var actualRate = qwenAudioCtx.sampleRate;
+    var needResample = Math.abs(actualRate - 16000) > 100;
+    console.log('[qwen] AudioContext sampleRate=' + actualRate + ' needResample=' + needResample);
+
+    var qwenChunkCount = 0;
+    qwenProcessor.onaudioprocess = function(e) {
+      if (!qwenWs || qwenWs.readyState !== WebSocket.OPEN) return;
+      var inputData = e.inputBuffer.getChannelData(0);
+      var pcmSamples;
+      if (needResample) {
+        var ratio = actualRate / 16000;
+        var newLen = Math.floor(inputData.length / ratio);
+        pcmSamples = new Int16Array(newLen);
+        for (var i = 0; i < newLen; i++) {
+          var srcIdx = Math.floor(i * ratio);
+          var s = Math.max(-1, Math.min(1, inputData[srcIdx]));
+          pcmSamples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+        }
+      } else {
+        pcmSamples = new Int16Array(inputData.length);
+        for (var i = 0; i < inputData.length; i++) {
+          var s = Math.max(-1, Math.min(1, inputData[i]));
+          pcmSamples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+        }
+      }
+      qwenWs.send(pcmSamples.buffer);
+      qwenChunkCount++;
+      if (qwenChunkCount <= 3) console.log('[qwen] sending PCM chunk #' + qwenChunkCount + ' samples=' + pcmSamples.length);
+    };
+
+    qwenSource.connect(qwenProcessor);
+    qwenProcessor.connect(qwenAudioCtx.destination);
+  };
+
+  qwenWs.onmessage = function(evt) {
+    handleDgMessage(evt);
+  };
+
+  qwenWs.onerror = function(e) {
+    console.error('[qwen] WebSocket error, attempt=' + qwenRetryCount);
+    if (qwenRetryCount < 2 && recording) {
+      qwenRetryCount++;
+      showError('Qwen ASR \u9023\u7dda\u4e2d\u2026\u7b2c ' + qwenRetryCount + ' \u6b21\u91cd\u8a66');
+      cleanupQwenAudio();
+      if (qwenWs) { try { qwenWs.close(); } catch(x) {} qwenWs = null; }
+      qwenRetryTimer = setTimeout(function() {
+        qwenRetryTimer = null;
+        if (!recording) return;
+        hideError();
+        connectQwenWebSocket(stream);
+      }, 1500 * qwenRetryCount);
+      return;
+    }
+    console.log('[qwen] Max retries, falling back to Deepgram');
+    showError('Qwen ASR \u9023\u7dda\u5931\u6557\uff0c\u5207\u63db\u81f3 Deepgram');
+    cleanupQwenAudio();
+    if (qwenWs) { try { qwenWs.close(); } catch(x) {} qwenWs = null; }
+    connectDgWebSocket(stream);
+  };
+
+  qwenWs.onclose = function(e) {
+    console.log('[qwen] WebSocket closed', e.code, e.reason);
+    cleanupQwenAudio();
+    qwenWs = null;
+    if (recording && _activeEngine === 'qwen') {
+      // Auto-reconnect: DashScope session max 30min, meetings can be 1hr+
+      // Finalize current live entry first
+      if (liveEntryId && liveText) {
+        var el = getEl('entry-' + liveEntryId);
+        if (el) el.classList.remove('entry-live');
+        finalizeEntry(liveEntryId, liveText);
+        liveEntryId = null; liveText = '';
+      }
+      console.log('[qwen] Auto-reconnecting (session timeout or disconnect)');
+      showError('Qwen ASR \u91cd\u65b0\u9023\u7dda\u4e2d\u2026');
+      setTimeout(function() {
+        if (!recording || _activeEngine !== 'qwen') return;
+        hideError();
+        qwenRetryCount = 0;
+        connectQwenWebSocket(dgStream);
+      }, 500);
+    }
+  };
+}
+
 function handleDgMessage(evt) {
   var data;
   try { data = JSON.parse(evt.data); } catch(e) { return; }
@@ -886,6 +1072,12 @@ function handleDgMessage(evt) {
   var text = (alt.transcript || '').trim();
   var lang = alt.detected_language || dgLang || '';
   if (lang) dgLang = lang;
+  // Auto-detect: Chinese -> switch to Qwen after utterance ends
+  var _isChinese = lang && (lang === 'zh' || lang === 'zh-TW' || lang === 'zh-CN' || lang === 'chinese');
+  if (_isChinese && !_qwenAutoSwitched && !_qwenSwitchPending && _activeEngine === 'deepgram' && data.is_final) {
+    _qwenSwitchPending = true;
+    console.log('[auto] Chinese detected, will switch to Qwen after utterance');
+  }
   // Extract speaker from diarization
   var speaker = -1;
   if (alt.words && alt.words.length > 0 && alt.words[0].speaker !== undefined) {
@@ -938,6 +1130,11 @@ function handleDgMessage(evt) {
       if (el) el.classList.remove('entry-live');
       finalizeEntry(liveEntryId, liveText);
       liveEntryId = null; liveText = '';
+      // Auto-switch to Qwen if Chinese detected
+      if (_qwenSwitchPending && recording) {
+        _qwenSwitchPending = false;
+        switchToQwen();
+      }
     }
   } else {
     // Interim — show gray preview
@@ -1057,23 +1254,26 @@ function finalizeEntry(id, text) {
   var metaEl = getEl('entry-' + id);
   if (metaEl) {
     metaEl.querySelector('.entry-meta').innerHTML = entry.ts + ' \u00b7 ' + flag + ' \u2192 ' + tgtFlag +
-      (dgLang ? '<span class="entry-lang">' + dgLang + '</span>' : '') + ' <span style="font-size:10px;color:var(--accent-ai)">\u2022 \u4e32\u6d41</span>' + (entry.speaker >= 0 ? ' · <span class="speaker-tag speaker-' + (entry.speaker % 4) + '">\ud83d\udde3 Speaker ' + (entry.speaker + 1) + '</span>' : '');
+      (dgLang ? '<span class="entry-lang">' + dgLang + '</span>' : '') + ' <span style="font-size:10px;color:var(--accent-ai)">\u2022 ' + (_activeEngine === 'qwen' ? 'Qwen' : '\u4e32\u6d41') + '</span>' + (entry.speaker >= 0 ? ' · <span class="speaker-tag speaker-' + (entry.speaker % 4) + '">\ud83d\udde3 Speaker ' + (entry.speaker + 1) + '</span>' : '');
   }
 
-  // Log Deepgram cost
+  // Log STT cost (Qwen or Deepgram)
   var durSec = dgUtteranceDuration || 1;
-  var dgCost = (durSec / 60) * 0.0077; // Nova-3 streaming rate (same as Nova-2)
+  var isQwenMode = (_activeEngine === 'qwen');
+  var sttService = isQwenMode ? 'qwen-asr' : 'deepgram';
+  var sttModelName = isQwenMode ? 'qwen3-asr-flash-realtime' : dgModel;
+  var sttCost = isQwenMode ? (durSec * 0.00011) : ((durSec / 60) * 0.0077);
   fetch(WORKER_URL + '/log-cost', {
     method: 'POST',
     credentials: 'include',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-      service: 'deepgram', model: dgModel, action: 'stt-stream',
+      service: sttService, model: sttModelName, action: 'stt-stream',
       source: 'translator', code: inviteCode,
-      durationSec: +durSec.toFixed(1), costUSD: +dgCost.toFixed(6),
+      durationSec: +durSec.toFixed(1), costUSD: +sttCost.toFixed(6),
       note: dgLang + ' ' + durSec.toFixed(1) + 's'
     })
-  }).catch(function(e) { console.warn('[dg] cost log failed:', e); });
+  }).catch(function(e) { console.warn('[stt] cost log failed:', e); });
   dgUtteranceDuration = 0;
 
   // Show perf badge after translation finishes (poll until translateDone exists)
