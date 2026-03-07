@@ -1420,8 +1420,11 @@ async function handleGroqSTT(request, env) {
         continue;
       }
       if (!groqRes.ok) {
-        const err = await groqRes.json().catch(() => ({}));
-        throw new Error(err.error?.message || 'Groq API ' + groqRes.status);
+        const errText = await groqRes.text().catch(() => '');
+        console.error('Groq API error:', groqRes.status, errText.slice(0, 500));
+        let errMsg = 'Groq API ' + groqRes.status;
+        try { const errJson = JSON.parse(errText); errMsg = errJson.error?.message || errMsg; } catch(e) {}
+        throw new Error(errMsg);
       }
 
       const data = await groqRes.json();

@@ -1070,6 +1070,7 @@ function sendGroqChunk(blob) {
     .then(function(d) {
       if (d.error) {
         console.warn('[groq] error:', d.error);
+        showError('Groq: ' + d.error);
         _groqFailCount++;
         if (_groqFailCount >= 3 && recording) {
           showError('Groq STT 連續失敗，切換至 Deepgram');
