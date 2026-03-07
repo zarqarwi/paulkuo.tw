@@ -965,6 +965,23 @@ function cleanupQwenAudio() {
 }
 
 function connectQwenWebSocket(stream) {
+  // Create AudioContext early (in user gesture chain) for iOS Safari compatibility
+  // iOS requires AudioContext to be created/resumed in synchronous user gesture context
+  if (!qwenAudioCtx) {
+    try {
+      qwenAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+    } catch (e) {
+      console.warn('[qwen] 16kHz AudioContext failed, using default + resample');
+      qwenAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    // iOS Safari: resume AudioContext immediately
+    if (qwenAudioCtx.state === 'suspended') {
+      qwenAudioCtx.resume().then(function() {
+        console.log('[qwen] AudioContext resumed (iOS fix)');
+      });
+    }
+    console.log('[qwen] AudioContext created early, sampleRate=' + qwenAudioCtx.sampleRate);
+  }
   // Transparent proxy: Worker proxies WebSocket, frontend speaks DashScope protocol directly
   var wsUrl = WORKER_URL.replace('https://', 'wss://') + '/ws/stt-qwen?code=' + encodeURIComponent(inviteCode);
   qwenWs = new WebSocket(wsUrl);
@@ -989,13 +1006,8 @@ function connectQwenWebSocket(stream) {
       },
     }));
 
-    // Create AudioContext at 16kHz for PCM recording
-    try {
-      qwenAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-    } catch (e) {
-      console.warn('[qwen] 16kHz AudioContext failed, using default + resample');
-      qwenAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    // AudioContext already created in connectQwenWebSocket (iOS compatibility)
+    if (qwenAudioCtx.state === 'suspended') { qwenAudioCtx.resume(); }
 
     qwenSource = qwenAudioCtx.createMediaStreamSource(stream);
     qwenProcessor = qwenAudioCtx.createScriptProcessor(2048, 1, 1); // ~128ms at 16kHz (must be power of 2)
