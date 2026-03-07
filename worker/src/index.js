@@ -2125,6 +2125,13 @@ async function handleScheduled(event, env) {
   } catch (e) {
     console.error('Cron: token refresh FAILED:', e.message);
   }
+  // Pre-fetch Fitbit data so cache is always fresh
+  try {
+    await fetchFitbitData(env.TICKER_KV, env);
+    console.log('Cron: Fitbit data cached');
+  } catch (e) {
+    console.error('Cron: Fitbit fetch FAILED:', e.message);
+  }
 }
 
 // === Export ===
