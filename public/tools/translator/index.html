@@ -1844,13 +1844,27 @@ function toggleSubtitle() {
 }
 function updateSubtitle() {
   if (!subtitleActive) return;
+  var origEl = getEl('subOriginal');
+  var transEl = getEl('subTranslated');
+
+  // Priority 1: live entry (currently speaking) — show interim text + interim translation
+  if (liveEntryId) {
+    var liveOrigEl = getEl('orig-' + liveEntryId);
+    var liveOrigText = liveOrigEl ? liveOrigEl.textContent.trim() : '';
+    if (liveOrigText) {
+      origEl.textContent = liveOrigText;
+      var t = _segmentTranslations[liveEntryId] || '';
+      transEl.textContent = t || '翻譯中...';
+      return;
+    }
+  }
+
+  // Priority 2: last finalized entry
   var last = null;
   for (var i = allEntries.length - 1; i >= 0; i--) {
     if (allEntries[i].original) { last = allEntries[i]; break; }
   }
   if (!last) return;
-  var origEl = getEl('subOriginal');
-  var transEl = getEl('subTranslated');
   origEl.textContent = last.original || '';
   var t = _segmentTranslations[last.id] || last.translated || '';
   transEl.textContent = t || '翻譯中...';
