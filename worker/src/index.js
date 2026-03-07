@@ -1896,7 +1896,7 @@ async function handleRequest(request, env) {
     return handleLogCost(request, env);
   }
 
-  // === WebSocket proxy to Qwen3-ASR (edge -> DashScope, protocol translation) ===
+  // === WebSocket proxy to Qwen3-ASR (edge -> DashScope, transparent proxy) ===
   if (path === '/ws/stt-qwen') {
     const upgradeHeader = request.headers.get('Upgrade');
     if (upgradeHeader !== 'websocket') {
@@ -1911,120 +1911,19 @@ async function handleRequest(request, env) {
     if (!dashscopeKey) {
       return jsonResponse({ error: 'DashScope not configured' }, 500, request);
     }
-    const qwenLang = url.searchParams.get('language') || 'zh';
-
-    // Create WebSocket pair for frontend connection
-    const pair = new WebSocketPair();
-    const [clientWs, serverWs] = Object.values(pair);
-
-    // Connect upstream to DashScope Realtime API
-    const dashscopeUrl = 'wss://dashscope-intl.aliyuncs.com/api-ws/v1/realtime?model=qwen3-asr-flash-realtime';
-    let upstreamResp;
-    try {
-      upstreamResp = await fetch(dashscopeUrl, {
-        headers: {
-          'Upgrade': 'websocket',
-          'Authorization': 'Bearer ' + dashscopeKey,
-          'OpenAI-Beta': 'realtime=v1',
-        },
-      });
-    } catch (e) {
-      return jsonResponse({ error: 'Failed to connect to DashScope: ' + e.message }, 502, request);
-    }
-    const upstream = upstreamResp.webSocket;
-    if (!upstream) {
-      return jsonResponse({ error: 'DashScope WebSocket upgrade failed' }, 502, request);
-    }
-
-    serverWs.accept();
-    upstream.accept();
-
-    // Send session.update to DashScope
-    upstream.send(JSON.stringify({
-      event_id: 'init_' + Date.now(),
-      type: 'session.update',
-      session: {
-        modalities: ['text'],
-        input_audio_format: 'pcm',
-        sample_rate: 16000,
-        input_audio_transcription: { language: qwenLang },
-        turn_detection: { type: 'server_vad', threshold: 0.0, silence_duration_ms: 400 },
+    // Transparent proxy: same pattern as Deepgram /ws/stt
+    // Frontend speaks DashScope protocol directly (session.update, input_audio_buffer.append, etc.)
+    const qwenModel = url.searchParams.get('model') || 'qwen3-asr-flash-realtime';
+    const dashscopeUrl = 'wss://dashscope-intl.aliyuncs.com/api-ws/v1/realtime?model=' + qwenModel;
+    return fetch(dashscopeUrl, {
+      headers: {
+        'Upgrade': 'websocket',
+        'Authorization': 'Bearer ' + dashscopeKey,
+        'OpenAI-Beta': 'realtime=v1',
       },
-    }));
-
-    // Helper: ArrayBuffer to base64
-    function ab2b64(buffer) {
-      const bytes = new Uint8Array(buffer);
-      let binary = '';
-      const chunk = 0x8000;
-      for (let i = 0; i < bytes.length; i += chunk) {
-        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-      }
-      return btoa(binary);
-    }
-
-    // Frontend -> DashScope: binary PCM16 -> base64 JSON
-    serverWs.addEventListener('message', (event) => {
-      try {
-        if (event.data instanceof ArrayBuffer) {
-          upstream.send(JSON.stringify({
-            event_id: 'a_' + Date.now(),
-            type: 'input_audio_buffer.append',
-            audio: ab2b64(event.data),
-          }));
-        } else if (typeof event.data === 'string') {
-          const msg = JSON.parse(event.data);
-          if (msg.type === 'CloseStream') {
-            upstream.send(JSON.stringify({ event_id: 'fin_' + Date.now(), type: 'session.finish' }));
-          }
-        }
-      } catch (e) { console.error('[qwen-ws] fwd error:', e.message); }
     });
-
-    // DashScope -> Frontend: transform to Deepgram-compatible format
-    upstream.addEventListener('message', (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        switch (data.type) {
-          case 'conversation.item.input_audio_transcription.text': {
-            const text = data.text || data.stash || '';
-            if (!text) break;
-            serverWs.send(JSON.stringify({
-              type: 'Results', is_final: false, speech_final: false,
-              channel: { alternatives: [{ transcript: text, detected_language: qwenLang }] },
-            }));
-            break;
-          }
-          case 'conversation.item.input_audio_transcription.completed': {
-            const transcript = data.transcript || '';
-            if (!transcript) break;
-            serverWs.send(JSON.stringify({
-              type: 'Results', is_final: true, speech_final: true,
-              channel: { alternatives: [{ transcript: transcript, detected_language: qwenLang }] },
-            }));
-            serverWs.send(JSON.stringify({ type: 'UtteranceEnd' }));
-            break;
-          }
-          case 'session.finished':
-            try { serverWs.close(1000, 'Session finished'); } catch (e) {}
-            break;
-          case 'error':
-            console.error('[qwen-ws] DashScope error:', JSON.stringify(data));
-            serverWs.send(JSON.stringify({ type: 'error', message: (data.error && data.error.message) || 'DashScope error' }));
-            break;
-        }
-      } catch (e) { console.error('[qwen-ws] parse error:', e.message); }
-    });
-
-    serverWs.addEventListener('close', () => {
-      try { upstream.send(JSON.stringify({ event_id: 'close_' + Date.now(), type: 'session.finish' })); } catch (e) {}
-      try { upstream.close(); } catch (e) {}
-    });
-    upstream.addEventListener('close', () => { try { serverWs.close(1000, 'Upstream closed'); } catch (e) {} });
-    upstream.addEventListener('error', () => { try { serverWs.close(1011, 'Upstream error'); } catch (e) {} });
-
-    return new Response(null, { status: 101, webSocket: clientWs });
   }
+
 
   // WebSocket proxy to Deepgram (edge → Deepgram, much faster than client direct)
   if (path === '/ws/stt') {

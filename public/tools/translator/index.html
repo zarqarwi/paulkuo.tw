@@ -749,7 +749,7 @@ function stopRecording() {
   _qwenSwitchPending = false;
   _activeEngine = 'deepgram';
   if (qwenWs) {
-    try { qwenWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
+    try { qwenWs.send(JSON.stringify({ event_id: 'fin_' + Date.now(), type: 'session.finish' })); } catch(e) {}
     try { qwenWs.close(); } catch(e) {}
     qwenWs = null;
   }
@@ -933,7 +933,7 @@ function switchToDeepgram() {
   setTimeout(hideError, 2000);
   // Disconnect Qwen
   if (qwenWs) {
-    try { qwenWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
+    try { qwenWs.send(JSON.stringify({ event_id: 'fin_' + Date.now(), type: 'session.finish' })); } catch(e) {}
     try { qwenWs.close(); } catch(e) {}
     qwenWs = null;
   }
@@ -952,15 +952,29 @@ function cleanupQwenAudio() {
 }
 
 function connectQwenWebSocket(stream) {
-  var wsUrl = WORKER_URL.replace('https://', 'wss://') + '/ws/stt-qwen?code=' + encodeURIComponent(inviteCode) + '&language=zh';
+  // Transparent proxy: Worker proxies WebSocket, frontend speaks DashScope protocol directly
+  var wsUrl = WORKER_URL.replace('https://', 'wss://') + '/ws/stt-qwen?code=' + encodeURIComponent(inviteCode);
   qwenWs = new WebSocket(wsUrl);
-  qwenWs.binaryType = 'arraybuffer';
 
   qwenWs.onopen = function() {
-    console.log('[qwen] WebSocket connected');
+    console.log('[qwen] WebSocket connected to DashScope proxy');
     setStatus('listening');
     dgLang = 'zh';
 
+    // Send session.update to configure DashScope ASR
+    qwenWs.send(JSON.stringify({
+      event_id: 'init_' + Date.now(),
+      type: 'session.update',
+      session: {
+        modalities: ['text'],
+        input_audio_format: 'pcm',
+        sample_rate: 16000,
+        input_audio_transcription: { language: 'zh' },
+        turn_detection: { type: 'server_vad', threshold: 0.0, silence_duration_ms: 400 },
+      },
+    }));
+
+    // Create AudioContext at 16kHz for PCM recording
     try {
       qwenAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
     } catch (e) {
@@ -996,17 +1010,76 @@ function connectQwenWebSocket(stream) {
           pcmSamples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
       }
-      qwenWs.send(pcmSamples.buffer);
+      // Convert PCM to base64 for DashScope protocol
+      var bytes = new Uint8Array(pcmSamples.buffer);
+      var binary = '';
+      var chunk = 0x8000;
+      for (var j = 0; j < bytes.length; j += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(j, j + chunk));
+      }
+      var b64 = btoa(binary);
+      qwenWs.send(JSON.stringify({
+        event_id: 'a_' + Date.now(),
+        type: 'input_audio_buffer.append',
+        audio: b64,
+      }));
       qwenChunkCount++;
-      if (qwenChunkCount <= 3) console.log('[qwen] sending PCM chunk #' + qwenChunkCount + ' samples=' + pcmSamples.length);
+      if (qwenChunkCount <= 3) console.log('[qwen] sending PCM chunk #' + qwenChunkCount + ' samples=' + pcmSamples.length + ' b64len=' + b64.length);
     };
 
     qwenSource.connect(qwenProcessor);
     qwenProcessor.connect(qwenAudioCtx.destination);
   };
 
+  // Parse DashScope events and feed into handleDgMessage (Deepgram-compatible format)
   qwenWs.onmessage = function(evt) {
-    handleDgMessage(evt);
+    try {
+      var data = JSON.parse(evt.data);
+      switch (data.type) {
+        case 'conversation.item.input_audio_transcription.text': {
+          var text = data.text || data.stash || '';
+          if (!text) break;
+          // Convert to Deepgram-compatible format
+          handleDgMessage({ data: JSON.stringify({
+            type: 'Results', is_final: false, speech_final: false,
+            channel: { alternatives: [{ transcript: text, detected_language: 'zh' }] },
+          }) });
+          break;
+        }
+        case 'conversation.item.input_audio_transcription.completed': {
+          var transcript = data.transcript || '';
+          if (!transcript) break;
+          handleDgMessage({ data: JSON.stringify({
+            type: 'Results', is_final: true, speech_final: true,
+            channel: { alternatives: [{ transcript: transcript, detected_language: 'zh' }] },
+          }) });
+          handleDgMessage({ data: JSON.stringify({ type: 'UtteranceEnd' }) });
+          break;
+        }
+        case 'session.created':
+          console.log('[qwen] Session created:', data.session && data.session.id);
+          break;
+        case 'session.updated':
+          console.log('[qwen] Session configured');
+          break;
+        case 'input_audio_buffer.speech_started':
+          console.log('[qwen] Speech started');
+          break;
+        case 'input_audio_buffer.speech_stopped':
+          console.log('[qwen] Speech stopped');
+          break;
+        case 'session.finished':
+          console.log('[qwen] Session finished');
+          break;
+        case 'error':
+          console.error('[qwen] DashScope error:', JSON.stringify(data));
+          break;
+        default:
+          console.log('[qwen] event:', data.type);
+      }
+    } catch (e) {
+      console.warn('[qwen] parse error:', e.message);
+    }
   };
 
   qwenWs.onerror = function(e) {
@@ -1028,6 +1101,7 @@ function connectQwenWebSocket(stream) {
     showError('Qwen ASR \u9023\u7dda\u5931\u6557\uff0c\u5207\u63db\u81f3 Deepgram');
     cleanupQwenAudio();
     if (qwenWs) { try { qwenWs.close(); } catch(x) {} qwenWs = null; }
+    _activeEngine = 'deepgram';
     connectDgWebSocket(stream);
   };
 
@@ -1036,8 +1110,6 @@ function connectQwenWebSocket(stream) {
     cleanupQwenAudio();
     qwenWs = null;
     if (recording && _activeEngine === 'qwen') {
-      // Auto-reconnect: DashScope session max 30min, meetings can be 1hr+
-      // Finalize current live entry first
       if (liveEntryId && liveText) {
         var el = getEl('entry-' + liveEntryId);
         if (el) el.classList.remove('entry-live');
