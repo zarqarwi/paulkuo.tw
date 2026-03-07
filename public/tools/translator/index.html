@@ -553,7 +553,11 @@ var qwenRetryCount = 0;
 var qwenRetryTimer = null;
 var _qwenAutoSwitched = false; // true after auto-switching to Qwen
 var _qwenSwitchPending = false; // true when Chinese detected, waiting for utterance end
-var _activeEngine = 'deepgram'; // 'deepgram' or 'qwen'
+var _activeEngine = 'deepgram'; // 'deepgram' or 'qwen' or 'groq'
+
+// Groq chunked HTTP state (English STT)
+var groqMediaRecorder = null;
+var groqChunkTimer = null;
 var _qwenReconnectCount = 0; // guard against infinite reconnect loops
 var _qwenRetrying = false; // prevent onerror+onclose double reconnect
 
@@ -630,26 +634,30 @@ function renderSrcLangs() {
         }
         // If recording, reconnect WebSocket with new language
         if (recording && sttMode === 'deepgram') {
-          // Language changed — route to correct engine
-          if (srcInputLang === 'zh' && _activeEngine !== 'qwen') {
-            // Switching TO Chinese → connect Qwen
-            if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
-            if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
-            _activeEngine = 'qwen';
-            qwenRetryCount = 0;
-            _qwenReconnectCount = 0;
-  _qwenRetrying = false;
-            connectQwenWebSocket(dgStream);
-          } else if (srcInputLang !== 'zh' && _activeEngine === 'qwen') {
-            // Switching FROM Chinese → connect Deepgram
-            switchToDeepgram();
-          } else {
-            // Same engine type, just reconnect with new language param
+          // Route to correct engine for new language
+          var targetEngine = srcInputLang === 'zh' ? 'qwen' : srcInputLang === 'en' ? 'groq' : 'deepgram';
+          if (targetEngine === _activeEngine && targetEngine === 'deepgram') {
+            // Same Deepgram engine, reconnect with new language param
             if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
             if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
             _qwenAutoSwitched = false;
             _qwenSwitchPending = false;
             connectDgWebSocket(dgStream);
+          } else if (targetEngine !== _activeEngine) {
+            // Engine switch needed
+            if (targetEngine === 'qwen') {
+              if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
+              if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
+              cleanupGroq();
+              _activeEngine = 'qwen';
+              qwenRetryCount = 0;
+              _qwenReconnectCount = 0;  _qwenRetrying = false;
+              connectQwenWebSocket(dgStream);
+            } else if (targetEngine === 'groq') {
+              switchToGroq();
+            } else {
+              switchToDeepgram();
+            }
           }
         }
       }
@@ -772,6 +780,7 @@ function stopRecording() {
   _qwenSwitchPending = false;
   _activeEngine = 'deepgram';
   _qwenReconnectCount = 0;
+  cleanupGroq();
   if (qwenWs) {
     try { qwenWs.send(JSON.stringify({ event_id: 'fin_' + Date.now(), type: 'session.finish' })); } catch(e) {}
     try { qwenWs.close(); } catch(e) {}
@@ -826,12 +835,14 @@ function startDeepgramStreaming() {
     updateToggle();
     startMatrix();
     startVolumeMeter(stream);
-    // Route: Chinese source → Qwen3-ASR, others → Deepgram
-    // (Deepgram Nova-3 multi doesn't support Chinese, auto-detect won't work)
+    // Route: Chinese → Qwen3-ASR, English → Groq chunked HTTP, others → Deepgram
     if (srcInputLang === 'zh') {
       _activeEngine = 'qwen';
       qwenRetryCount = 0;
       connectQwenWebSocket(stream);
+    } else if (srcInputLang === 'en') {
+      _activeEngine = 'groq';
+      connectGroqChunked(stream);
     } else {
       connectDgWebSocket(stream);
     }
@@ -931,6 +942,7 @@ function connectDgWebSocket(stream) {
 function switchToQwen() {
   if (!dgStream || !recording) return;
   console.log('[auto] Switching to Qwen3-ASR for Chinese');
+  cleanupGroq();
   showError('\u5075\u6e2c\u5230\u4e2d\u6587\uff0c\u5207\u63db\u81f3 Qwen ASR');
   setTimeout(hideError, 3000);
   // Disconnect Deepgram
@@ -962,6 +974,7 @@ function switchToDeepgram() {
     qwenWs = null;
   }
   cleanupQwenAudio();
+  cleanupGroq();
   // Connect Deepgram
   _activeEngine = 'deepgram';
   _qwenAutoSwitched = false;
@@ -973,6 +986,115 @@ function cleanupQwenAudio() {
   if (qwenProcessor) { try { qwenProcessor.disconnect(); } catch(e) {} qwenProcessor = null; }
   if (qwenSource) { try { qwenSource.disconnect(); } catch(e) {} qwenSource = null; }
   if (qwenAudioCtx) { try { qwenAudioCtx.close(); } catch(e) {} qwenAudioCtx = null; }
+}
+
+// === Groq Chunked HTTP STT (English) ===
+function cleanupGroq() {
+  if (groqChunkTimer) { clearInterval(groqChunkTimer); groqChunkTimer = null; }
+  if (groqMediaRecorder) {
+    if (groqMediaRecorder.state === 'recording') { try { groqMediaRecorder.stop(); } catch(e) {} }
+    groqMediaRecorder = null;
+  }
+}
+function switchToGroq() {
+  if (!dgStream || !recording) return;
+  console.log('[auto] Switching to Groq for English');
+  showError('英文偵測，切換至 Groq STT');
+  setTimeout(hideError, 2000);
+  // Disconnect Deepgram
+  if (dgWs) {
+    try { dgWs.send(JSON.stringify({ type: 'CloseStream' })); } catch(e) {}
+    try { dgWs.close(); } catch(e) {}
+    dgWs = null;
+  }
+  if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
+  // Disconnect Qwen
+  if (qwenWs) {
+    try { qwenWs.send(JSON.stringify({ event_id: 'fin_' + Date.now(), type: 'session.finish' })); } catch(e) {}
+    try { qwenWs.close(); } catch(e) {}
+    qwenWs = null;
+  }
+  cleanupQwenAudio();
+  _activeEngine = 'groq';
+  _qwenAutoSwitched = false;
+  _qwenSwitchPending = false;
+  connectGroqChunked(dgStream);
+}
+function connectGroqChunked(stream) {
+  console.log('[groq] Starting chunked HTTP STT for English');
+  setStatus('listening');
+  hideError();
+  var mimeType = 'audio/webm;codecs=opus';
+  if (!MediaRecorder.isTypeSupported(mimeType)) {
+    mimeType = 'audio/mp4';
+    if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
+  }
+  var opts = mimeType ? { mimeType: mimeType } : {};
+  var chunks = [];
+  groqMediaRecorder = new MediaRecorder(stream, opts);
+  groqMediaRecorder.ondataavailable = function(e) {
+    if (e.data && e.data.size > 0) chunks.push(e.data);
+  };
+  groqMediaRecorder.onstop = function() {
+    var pending = chunks.slice();
+    chunks = [];
+    if (pending.length > 0) {
+      var blob = new Blob(pending, { type: (groqMediaRecorder && groqMediaRecorder.mimeType) || 'audio/webm' });
+      if (blob.size > 1024) sendGroqChunk(blob);
+    }
+    // Restart if still recording with Groq
+    if (recording && _activeEngine === 'groq' && groqMediaRecorder) {
+      try { groqMediaRecorder.start(); } catch(e) { console.error('[groq] restart failed:', e); }
+    }
+  };
+  groqMediaRecorder.start();
+  // Stop and send every 3 seconds
+  groqChunkTimer = setInterval(function() {
+    if (groqMediaRecorder && groqMediaRecorder.state === 'recording') {
+      groqMediaRecorder.stop();
+    }
+  }, 3000);
+}
+function sendGroqChunk(blob) {
+  var form = new FormData();
+  form.append('audio', blob, 'audio.webm');
+  form.append('code', inviteCode);
+  setStatus('sending');
+  fetch(WORKER_URL + '/stt-groq', { method: 'POST', body: form, credentials: 'include' })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) { console.warn('[groq] error:', d.error); return; }
+      if (!d.original || !d.original.trim()) return;
+      // Create entry
+      var id = ++nextId;
+      var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      var entry = {id:id, original:d.original, translated:null, detectedLang:'en', ts:ts, tgt:tgtLang, _timings:{firstResult:performance.now()}};
+      allEntries.push(entry);
+      var emp = getEl('empty'); if (emp) emp.remove();
+      var tgtFlag = (LANGS[tgtLang] || {}).flag || '';
+      var div = document.createElement('div');
+      div.className = 'entry';
+      div.id = 'entry-' + id;
+      div.innerHTML = '<div class="entry-meta">' + ts + ' \u00b7 \ud83c\uddfa\ud83c\uddf8 \u2192 ' + tgtFlag +
+        '<span class="entry-lang">en</span> <span style="font-size:10px;color:var(--accent-ai)">\u2022 Groq</span></div>' +
+        '<div class="entry-original" id="orig-' + id + '">' + escHtml(d.original) + '</div>' +
+        '<div class="entry-translated" id="trans-' + id + '"><span class="shimmer">\u7ffb\u8b6f\u4e2d...</span></div>';
+      getEl('content').appendChild(div);
+      updateCount();
+      scrollBottom();
+      // Trigger streaming translation
+      dgLang = 'en';
+      _segmentTranslations[id] = '';
+      entry._timings.finalize = performance.now();
+      translateSegmentStreaming(id, d.original);
+      getEl('btnSummary').disabled = false;
+      if (recording) setStatus('listening');
+      scheduleStatsRefresh();
+    })
+    .catch(function(e) {
+      console.warn('[groq] fetch error:', e.message);
+      if (recording) setStatus('listening');
+    });
 }
 
 function connectQwenWebSocket(stream) {

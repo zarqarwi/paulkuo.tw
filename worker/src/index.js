@@ -11,6 +11,7 @@
  *   GET  /sleep     — 睡眠資料分析（?year=2025 或 ?start=...&end=...）
  *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
  *   POST /stt       — 語音辨識 + 翻譯（Whisper → Claude Haiku）
+ *   POST /stt-groq  — 英文語音辨識（Groq distil-whisper, chunked HTTP）
  *   GET  /costs     — API 費用追蹤（?days=30）
  *   GET  /usage         — 使用統計（admin only, ?days=30&code=xxx）
  *   POST /validate-code — 邀請碼驗證
@@ -512,6 +513,7 @@ async function fetchSleepData(kv, params) {
 const PRICING = {
   'whisper-1': { perMinute: 0.006 },
   'claude-haiku-4-5-20251001': { inputPerMTok: 1.00, outputPerMTok: 5.00 },
+  'distil-whisper-large-v3-en': { perHour: 0.02 }, // Groq: $0.02/hr
 };
 // Language display names (shared across translate/stt/summarize)
 const TNAMES = {
@@ -1353,6 +1355,102 @@ async function handleLogCost(request, env) {
   return jsonResponse({ ok: true }, 200, request);
 }
 
+// === Groq STT (chunked HTTP, English-optimized) ===
+const GROQ_STT_RATE_LIMIT = 30; // max requests per minute per IP
+
+async function handleGroqSTT(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+  if (!env.GROQ_API_KEY) {
+    return jsonResponse({ error: 'GROQ_API_KEY not configured' }, 500, request);
+  }
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (!checkRateLimit(ip, GROQ_STT_RATE_LIMIT)) {
+    return jsonResponse({ error: 'Rate limited. Max 30 requests/min.' }, 429, request);
+  }
+
+  let formData;
+  try {
+    formData = await request.formData();
+  } catch (e) {
+    return jsonResponse({ error: 'Expected multipart form data' }, 400, request);
+  }
+
+  const audioFile = formData.get('audio');
+  const userCode = formData.get('code') || '';
+
+  // Auth
+  const auth = await authenticateRequest(request, env, userCode);
+  if (!auth) {
+    return jsonResponse({ error: 'Authentication required' }, 401, request);
+  }
+
+  if (!audioFile) {
+    return jsonResponse({ error: 'Missing audio file' }, 400, request);
+  }
+  if (audioFile.size > 25 * 1024 * 1024) {
+    return jsonResponse({ error: 'Audio file too large (max 25MB)' }, 400, request);
+  }
+  // Reject tiny chunks that are likely silence (< 1KB)
+  if (audioFile.size < 1024) {
+    return jsonResponse({ original: '', detectedLang: 'en', duration: 0 }, 200, request);
+  }
+
+  // Forward to Groq Whisper API
+  const groqForm = new FormData();
+  groqForm.append('file', audioFile, audioFile.name || 'audio.webm');
+  groqForm.append('model', 'distil-whisper-large-v3-en');
+  groqForm.append('response_format', 'verbose_json');
+  groqForm.append('language', 'en');
+
+  const MAX_RETRIES = 2;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 500 * attempt));
+      const groqRes = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + env.GROQ_API_KEY },
+        body: groqForm,
+      });
+
+      if (groqRes.status === 429 && attempt < MAX_RETRIES - 1) {
+        console.log('Groq rate limited, retry ' + (attempt + 1));
+        continue;
+      }
+      if (!groqRes.ok) {
+        const err = await groqRes.json().catch(() => ({}));
+        throw new Error(err.error?.message || 'Groq API ' + groqRes.status);
+      }
+
+      const data = await groqRes.json();
+      const transcript = (data.text || '').trim();
+      const duration = data.duration || 0;
+
+      // Log cost: $0.02/hr
+      const costUSD = (duration / 3600) * PRICING['distil-whisper-large-v3-en'].perHour;
+      await logCost(env.TICKER_KV, {
+        service: 'groq', model: 'distil-whisper-large-v3-en', action: 'stt',
+        source: 'translator', code: auth.code,
+        costUSD: +costUSD.toFixed(8), durationSec: duration,
+        note: 'en ' + duration.toFixed(1) + 's',
+      });
+
+      return jsonResponse({
+        original: transcript,
+        detectedLang: 'en',
+        duration,
+        costUSD: +costUSD.toFixed(8),
+      }, 200, request);
+    } catch (e) {
+      if (attempt === MAX_RETRIES - 1) {
+        return jsonResponse({ error: 'Groq STT: ' + e.message }, 502, request);
+      }
+    }
+  }
+}
+
 // ============================================================
 // AUTH MODULE — Google OAuth + D1 Sessions
 // ============================================================
@@ -1896,6 +1994,11 @@ async function handleRequest(request, env) {
     return handleLogCost(request, env);
   }
 
+  // Groq STT (chunked HTTP for English)
+  if (path === '/stt-groq') {
+    return handleGroqSTT(request, env);
+  }
+
   // === WebSocket proxy to Qwen3-ASR (edge -> DashScope, transparent proxy) ===
   if (path === '/ws/stt-qwen') {
     const upgradeHeader = request.headers.get('Upgrade');
@@ -2011,7 +2114,7 @@ async function handleRequest(request, env) {
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/ws/stt-qwen', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/line/login', '/auth/facebook/login', '/auth/me', '/auth/logout', '/auth/admin/members', '/auth/admin/codes'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/ws/stt-qwen', '/stt-groq', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/line/login', '/auth/facebook/login', '/auth/me', '/auth/logout', '/auth/admin/members', '/auth/admin/codes'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
