@@ -802,9 +802,15 @@ function startDeepgramStreaming() {
     updateToggle();
     startMatrix();
     startVolumeMeter(stream);
-    // Always start with Deepgram (auto-detects language)
-    // If Chinese detected, auto-switches to Qwen3-ASR
-    connectDgWebSocket(stream);
+    // Route: Chinese source → Qwen3-ASR, others → Deepgram
+    // (Deepgram Nova-3 multi doesn't support Chinese, auto-detect won't work)
+    if (srcInputLang === 'zh') {
+      _activeEngine = 'qwen';
+      qwenRetryCount = 0;
+      connectQwenWebSocket(stream);
+    } else {
+      connectDgWebSocket(stream);
+    }
   })
   .catch(function(e) {
     showError('\u7121\u6cd5\u53d6\u5f97\u9ea5\u514b\u98a8: ' + e.message);
