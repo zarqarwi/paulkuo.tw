@@ -511,7 +511,7 @@ async function fetchSleepData(kv, params) {
 // Pricing (per Mar 2026)
 const PRICING = {
   'whisper-1': { perMinute: 0.006 },
-  'claude-haiku-4-5-20251001': { inputPerMTok: 0.80, outputPerMTok: 4.00 },
+  'claude-haiku-4-5-20251001': { inputPerMTok: 1.00, outputPerMTok: 5.00 },
 };
 // Language display names (shared across translate/stt/summarize)
 const TNAMES = {
