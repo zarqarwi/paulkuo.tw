@@ -1002,6 +1002,7 @@ function switchToDeepgram() {
 }
 
 function cleanupQwenAudio() {
+  resetInterimState();
   if (_qwenCommittedTimer) { clearTimeout(_qwenCommittedTimer); _qwenCommittedTimer = null; }
   if (_qwenKeepAliveTimer) { clearInterval(_qwenKeepAliveTimer); _qwenKeepAliveTimer = null; }
   if (qwenProcessor) { try { qwenProcessor.disconnect(); } catch(e) {} qwenProcessor = null; }
@@ -1267,10 +1268,33 @@ function connectQwenWebSocket(stream) {
             type: 'Results', is_final: false, speech_final: false,
             channel: { alternatives: [{ transcript: text, detected_language: 'zh' }] },
           }) });
+
+          // === Interim translation: don't wait for completed ===
+          if (liveEntryId && text.length > 5) {
+            _interimLatestText = text;
+            var newChars = text.length - _interimLastLen;
+            var newText = text.slice(Math.max(0, _interimLastLen));
+            var hasPunct = INTERIM_PUNCT.test(newText);
+
+            if (hasPunct && newChars >= 5) {
+              // Sentence-ending punctuation — translate immediately
+              triggerInterimTranslate(liveEntryId, text);
+            } else if (newChars >= INTERIM_MIN_CHARS && !_interimTimer) {
+              // Schedule time-based trigger
+              _interimTimer = setTimeout(function() {
+                _interimTimer = null;
+                if (liveEntryId && _interimLatestText.length > _interimLastLen + 10) {
+                  triggerInterimTranslate(liveEntryId, _interimLatestText);
+                }
+              }, INTERIM_INTERVAL);
+            }
+          }
           break;
         }
         case 'conversation.item.input_audio_transcription.completed': {
           if (_qwenCommittedTimer) { clearTimeout(_qwenCommittedTimer); _qwenCommittedTimer = null; }
+          // Cancel interim translate — completed has authoritative text
+          resetInterimState();
           var transcript = data.transcript || '';
           if (!transcript) break;
           // Calculate utterance duration from performance.now()
@@ -1279,6 +1303,8 @@ function connectQwenWebSocket(stream) {
             console.log('[qwen] utterance duration: ' + dgUtteranceDuration.toFixed(1) + 's (perf.now)');
           }
           _qwenUtteranceStartMs = 0;
+          // Reset accumulated translation for clean final translate
+          if (liveEntryId) _segmentTranslations[liveEntryId] = '';
           handleDgMessage({ data: JSON.stringify({
             type: 'Results', is_final: true, speech_final: true,
             channel: { alternatives: [{ transcript: transcript, detected_language: 'zh' }] },
@@ -1300,6 +1326,7 @@ function connectQwenWebSocket(stream) {
           break;
         case 'input_audio_buffer.committed':
           console.log('[qwen] Buffer committed — waiting for completed event');
+          resetInterimState(); // stop interim translates, completed should arrive soon
           // Safety net: if completed doesn't arrive within 3s, force finalize
           if (_qwenCommittedTimer) clearTimeout(_qwenCommittedTimer);
           _qwenCommittedTimer = setTimeout(function() {
@@ -1459,6 +1486,7 @@ function handleDgMessage(evt) {
 
   if (!liveEntryId) {
     // Create new live entry
+    resetInterimState();
     dgUtteranceDuration = 0;
     dgUtteranceStart = -1;
     _qwenUtteranceStartMs = 0;
@@ -1513,7 +1541,39 @@ function handleDgMessage(evt) {
 // === Translate each is_final segment immediately (no waiting for utterance_end) ===
 var _segmentTranslations = {}; // id -> accumulated translated text
 
-function translateSegmentStreaming(id, segmentText) {
+// === Interim translation state (Qwen: translate during speech, not after) ===
+var _interimAbort = null;           // AbortController for current interim translate
+var _interimTimer = null;           // debounce timer for time-based trigger
+var _interimLastLen = 0;            // text length at last interim translate
+var _interimLastTime = 0;           // performance.now() of last interim translate
+var _interimLatestText = '';        // latest Qwen interim text (for timer callback)
+var INTERIM_PUNCT = /[。！？；]/;  // 。！？；
+var INTERIM_INTERVAL = 4000;        // max ms between interim translates
+var INTERIM_MIN_CHARS = 15;         // min new chars to trigger
+
+function triggerInterimTranslate(id, text) {
+  if (!text || !text.trim() || !id) return;
+  // Abort previous in-flight interim translate
+  if (_interimAbort) { try { _interimAbort.abort(); } catch(e) {} _interimAbort = null; }
+  if (_interimTimer) { clearTimeout(_interimTimer); _interimTimer = null; }
+  _interimLastLen = text.length;
+  _interimLastTime = performance.now();
+  // Reset translation — interim sends full text, not delta
+  _segmentTranslations[id] = '';
+  console.log('[interim] translate id=' + id + ' len=' + text.length);
+  _interimAbort = new AbortController();
+  translateSegmentStreaming(id, text, _interimAbort.signal);
+}
+
+function resetInterimState() {
+  if (_interimAbort) { try { _interimAbort.abort(); } catch(e) {} _interimAbort = null; }
+  if (_interimTimer) { clearTimeout(_interimTimer); _interimTimer = null; }
+  _interimLastLen = 0;
+  _interimLastTime = 0;
+  _interimLatestText = '';
+}
+
+function translateSegmentStreaming(id, segmentText, abortSignal) {
   if (!segmentText || !segmentText.trim()) return;
 
   var entry = allEntries.find(function(e) { return e.id === id; });
@@ -1549,12 +1609,14 @@ function translateSegmentStreaming(id, segmentText) {
   if (cg.length > 0) payload.glossary = cg;
 
   console.log('[translate] fetch id=' + id + ' src=' + srcLang + ' tgt=' + tgtLang + ' len=' + segmentText.length);
-  fetch(WORKER_URL + '/translate-stream', {
+  var fetchOpts = {
     method: 'POST',
     credentials: 'include',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(payload)
-  })
+  };
+  if (abortSignal) fetchOpts.signal = abortSignal;
+  fetch(WORKER_URL + '/translate-stream', fetchOpts)
   .then(function(r) {
     console.log('[translate] response status=' + r.status + ' type=' + r.headers.get('content-type'));
     if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || r.status); });
@@ -1563,7 +1625,9 @@ function translateSegmentStreaming(id, segmentText) {
     var sseBuf = ''; // SSE buffer to handle chunk boundary splits
     var tokenCount = 0;
     function readChunk() {
+      if (abortSignal && abortSignal.aborted) { try { reader.cancel(); } catch(e) {} return; }
       reader.read().then(function(result) {
+        if (abortSignal && abortSignal.aborted) { try { reader.cancel(); } catch(e) {} return; }
         if (result.done) {
           // Stream ended — ensure UI is updated even if no tokens received
           if (!tokenCount && transEl) {
@@ -1627,6 +1691,7 @@ function translateSegmentStreaming(id, segmentText) {
     readChunk();
   })
   .catch(function(e) {
+    if (e.name === 'AbortError') { console.log('[translate] aborted (superseded)'); return; }
     console.error('[translate] fetch error:', e.message);
     if (transEl) transEl.textContent = '\u26a0 ' + e.message;
   });
