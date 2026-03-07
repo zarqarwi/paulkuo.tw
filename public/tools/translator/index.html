@@ -1482,6 +1482,7 @@ function translateSegmentStreaming(id, segmentText) {
   var payload = { text: segmentText, sourceLang: srcLang, targetLang: tgtLang, code: inviteCode };
   if (cg.length > 0) payload.glossary = cg;
 
+  console.log('[translate] fetch id=' + id + ' src=' + srcLang + ' tgt=' + tgtLang + ' len=' + segmentText.length);
   fetch(WORKER_URL + '/translate-stream', {
     method: 'POST',
     credentials: 'include',
@@ -1489,20 +1490,34 @@ function translateSegmentStreaming(id, segmentText) {
     body: JSON.stringify(payload)
   })
   .then(function(r) {
+    console.log('[translate] response status=' + r.status + ' type=' + r.headers.get('content-type'));
     if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || r.status); });
     var reader = r.body.getReader();
     var decoder = new TextDecoder();
+    var sseBuf = ''; // SSE buffer to handle chunk boundary splits
+    var tokenCount = 0;
     function readChunk() {
       reader.read().then(function(result) {
-        if (result.done) return;
-        var chunk = decoder.decode(result.value, { stream: true });
-        var lines = chunk.split('\n');
+        if (result.done) {
+          // Stream ended — ensure UI is updated even if no tokens received
+          if (!tokenCount && transEl) {
+            var fallback = _segmentTranslations[id] || '';
+            transEl.textContent = fallback || '\u26a0 \u7ffb\u8b6f\u7121\u56de\u61c9';
+          }
+          console.log('[translate] stream ended, tokens=' + tokenCount);
+          return;
+        }
+        sseBuf += decoder.decode(result.value, { stream: true });
+        // Process complete lines only (buffer incomplete lines)
+        var lines = sseBuf.split('\n');
+        sseBuf = lines.pop(); // keep incomplete last line in buffer
         for (var i = 0; i < lines.length; i++) {
-          var line = lines[i];
+          var line = lines[i].replace(/\r$/, ''); // handle \r\n
           if (line.indexOf('data: ') !== 0) continue;
           try {
             var evt = JSON.parse(line.slice(6));
             if (evt.t) {
+              tokenCount++;
               if (!firstTokenRecorded && entry._timings) {
                 entry._timings.ttft = performance.now();
                 firstTokenRecorded = true;
@@ -1519,17 +1534,34 @@ function translateSegmentStreaming(id, segmentText) {
               if (entry._timings && !entry._timings.translateDone) {
                 entry._timings.translateDone = performance.now();
               }
+              // Ensure UI reflects final state (fallback if no tokens received)
+              if (!tokenCount && transEl) {
+                transEl.textContent = '\u26a0 \u7ffb\u8b6f\u7121\u56de\u61c9';
+              }
+              console.log('[translate] done id=' + id + ' tokens=' + tokenCount + ' cost=$' + (evt.costUSD || 0));
               getEl('btnSummary').disabled = false;
               scheduleStatsRefresh();
             }
-          } catch(e) {}
+            if (evt.error) {
+              console.error('[translate] SSE error:', evt.error);
+              if (transEl) transEl.textContent = '\u26a0 ' + evt.error;
+            }
+          } catch(e) {
+            console.warn('[translate] SSE parse error on line: ' + line.slice(0, 80));
+          }
         }
         readChunk();
+      }).catch(function(e) {
+        console.error('[translate] stream read error:', e.message);
+        if (transEl && !tokenCount) {
+          transEl.textContent = '\u26a0 \u4e32\u6d41\u8b80\u53d6\u5931\u6557';
+        }
       });
     }
     readChunk();
   })
   .catch(function(e) {
+    console.error('[translate] fetch error:', e.message);
     if (transEl) transEl.textContent = '\u26a0 ' + e.message;
   });
 }
