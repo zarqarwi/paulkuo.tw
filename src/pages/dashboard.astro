@@ -57,7 +57,7 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
         <div class="quota-detail" id="qwenDetail">—</div>
       </div>
       <div class="quota-card" id="quotaClaude">
-        <div class="quota-header"><span class="quota-icon">🤖</span><span class="quota-name">Claude Haiku</span><span class="quota-pct" id="claudePct">—</span></div>
+        <div class="quota-header"><span class="quota-icon">🤖</span><span class="quota-name">Claude Haiku (付費)</span><span class="quota-pct" id="claudePct">—</span></div>
         <div class="quota-bar"><div class="quota-fill" id="claudeFill"></div></div>
         <div class="quota-detail" id="claudeDetail">—</div>
       </div>
@@ -228,18 +228,19 @@ function render(records) {
   // === Free Quota Monitoring ===
   var DG_FREE = 200.00;    // Deepgram $200 free credit
   var QWEN_FREE = 36000;   // Qwen 10 hours = 36,000 seconds
-  var CLAUDE_FREE = 5.00;  // Claude $5 free credit
+  // Claude: paid account with auto-reload ($10→$30), no quota limit
 
   var dgUsed = records.filter(function(r){ return r.service === 'deepgram'; }).reduce(function(s,r){ return s + r.costUSD; }, 0);
   var qwenSec = records.filter(function(r){ return r.service === 'qwen-asr'; }).reduce(function(s,r){ return s + (r.durationSec || 0); }, 0);
   var claudeUsed = records.filter(function(r){ return r.service === 'anthropic'; }).reduce(function(s,r){ return s + r.costUSD; }, 0);
+  var claudeThisMonth = records.filter(function(r){ return r.service === 'anthropic' && r.timestamp.startsWith(thisMonth); }).reduce(function(s,r){ return s + r.costUSD; }, 0);
 
   var dgRemain = Math.max(0, DG_FREE - dgUsed);
   var dgPctVal = (dgRemain / DG_FREE) * 100;
   var qwenRemain = Math.max(0, QWEN_FREE - qwenSec);
   var qwenPctVal = (qwenRemain / QWEN_FREE) * 100;
-  var claudeRemain = Math.max(0, CLAUDE_FREE - claudeUsed);
-  var claudePctVal = (claudeRemain / CLAUDE_FREE) * 100;
+  // Claude: no quota limit (auto-reload), show monthly spend instead
+  var claudePctVal = 100; // always green
 
   function quotaColor(pct) { return pct <= 20 ? '#dc2626' : pct <= 50 ? '#f59e0b' : '#059669'; }
   function quotaClass(pct) { return pct <= 20 ? 'quota-danger' : pct <= 50 ? 'quota-warn' : ''; }
@@ -258,11 +259,11 @@ function render(records) {
   var qwenHrs = (qwenRemain / 3600).toFixed(1);
   document.getElementById('qwenDetail').textContent = '剩餘 ' + qwenHrs + ' hr / 10 hr（已用 ' + (qwenSec / 60).toFixed(0) + ' 分鐘）';
 
-  document.getElementById('claudePct').textContent = claudePctVal.toFixed(0) + '%';
-  document.getElementById('claudePct').className = 'quota-pct ' + quotaClass(claudePctVal);
-  document.getElementById('claudeFill').style.width = claudePctVal + '%';
-  document.getElementById('claudeFill').style.background = quotaColor(claudePctVal);
-  document.getElementById('claudeDetail').textContent = '剩餘 $' + claudeRemain.toFixed(2) + ' / $' + CLAUDE_FREE + '（已用 ' + (claudeUsed / CLAUDE_FREE * 100).toFixed(1) + '%）';
+  document.getElementById('claudePct').textContent = '$' + claudeUsed.toFixed(2);
+  document.getElementById('claudePct').className = 'quota-pct';
+  document.getElementById('claudeFill').style.width = '100%';
+  document.getElementById('claudeFill').style.background = '#059669';
+  document.getElementById('claudeDetail').textContent = '本月 $' + claudeThisMonth.toFixed(2) + ' · 累計 $' + claudeUsed.toFixed(2) + '（auto-reload 已開）';
 
   // Destroy old charts
   Object.values(charts).forEach(c => c.destroy()); charts = {};

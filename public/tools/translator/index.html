@@ -367,7 +367,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
         <div class="quota-row" id="quotaRow" style="display:none">
           <span class="q-item" id="qDg" title="Deepgram 免費額度">🎙️ <span class="q-bar"><span class="q-fill" id="qDgFill"></span></span> <span class="q-txt" id="qDgTxt">—</span></span>
           <span class="q-item" id="qQwen" title="Qwen3-ASR 免費額度">🇨🇳 <span class="q-bar"><span class="q-fill" id="qQwenFill"></span></span> <span class="q-txt" id="qQwenTxt">—</span></span>
-          <span class="q-item" id="qClaude" title="Claude Haiku 免費額度">🤖 <span class="q-bar"><span class="q-fill" id="qClaudeFill"></span></span> <span class="q-txt" id="qClaudeTxt">—</span></span>
+          <span class="q-item" id="qClaude" title="Claude Haiku 本月費用">🤖 <span class="q-bar"><span class="q-fill" id="qClaudeFill"></span></span> <span class="q-txt" id="qClaudeTxt">—</span></span>
         </div>
     <div class="spacer"></div>
     <button class="btn-subtitle" id="btnSubtitle" title="字幕模式：全屏顯示翻譯">🖥<span class="btn-text"> 字幕</span></button>
@@ -2106,16 +2106,17 @@ function loadQuotaStatus() {
     .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(d) {
       var records = d.records || [];
-      var DG_FREE = 200, QWEN_FREE = 36000, CLAUDE_FREE = 5;
-      var dgUsed = 0, qwenSec = 0, claudeUsed = 0;
+      var DG_FREE = 200, QWEN_FREE = 36000;
+      var dgUsed = 0, qwenSec = 0, claudeUsed = 0, claudeMonth = 0;
       records.forEach(function(r) {
         if (r.service === 'deepgram') dgUsed += r.costUSD || 0;
         if (r.service === 'qwen-asr') qwenSec += r.durationSec || 0;
         if (r.service === 'anthropic') claudeUsed += r.costUSD || 0;
+        if (r.service === 'anthropic' && r.timestamp && r.timestamp.slice(0,7) === new Date().toISOString().slice(0,7)) claudeMonth += r.costUSD || 0;
       });
       var dgPct = Math.max(0, ((DG_FREE - dgUsed) / DG_FREE) * 100);
       var qwenPct = Math.max(0, ((QWEN_FREE - qwenSec) / QWEN_FREE) * 100);
-      var claudePct = Math.max(0, ((CLAUDE_FREE - claudeUsed) / CLAUDE_FREE) * 100);
+      var claudePct = 100; // paid account, always green
       function qColor(p) { return p <= 20 ? '#dc2626' : p <= 50 ? '#f59e0b' : '#059669'; }
       function qCls(p) { return p <= 20 ? 'q-txt q-danger' : 'q-txt'; }
       getEl('qDgFill').style.width = dgPct + '%';
@@ -2126,10 +2127,10 @@ function loadQuotaStatus() {
       getEl('qQwenFill').style.background = qColor(qwenPct);
       getEl('qQwenTxt').textContent = qwenPct.toFixed(0) + '%';
       getEl('qQwenTxt').className = qCls(qwenPct);
-      getEl('qClaudeFill').style.width = claudePct + '%';
-      getEl('qClaudeFill').style.background = qColor(claudePct);
-      getEl('qClaudeTxt').textContent = claudePct.toFixed(0) + '%';
-      getEl('qClaudeTxt').className = qCls(claudePct);
+      getEl('qClaudeFill').style.width = '100%';
+      getEl('qClaudeFill').style.background = '#059669';
+      getEl('qClaudeTxt').textContent = '$' + claudeMonth.toFixed(2);
+      getEl('qClaudeTxt').className = 'q-txt';
       getEl('quotaRow').style.display = 'flex';
     })
     .catch(function() { /* non-admin: hide */ });
