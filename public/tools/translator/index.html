@@ -820,6 +820,9 @@ function stopRecording() {
   if (liveEntryId && _finalText) {
     var el = getEl('entry-' + liveEntryId);
     if (el) el.classList.remove('entry-live');
+    // Trigger translation (user pressed stop before completed arrived)
+    console.log('[stop] triggering translate for id=' + liveEntryId + ' len=' + _finalText.length);
+    translateSegmentStreaming(liveEntryId, _finalText);
     finalizeEntry(liveEntryId, _finalText);
   }
   liveEntryId = null; liveText = '';
@@ -1379,6 +1382,9 @@ function connectQwenWebSocket(stream) {
       if (liveEntryId && _finalText) {
         var el = getEl('entry-' + liveEntryId);
         if (el) el.classList.remove('entry-live');
+        // Trigger translation before finalize (onclose may fire before committed timeout)
+        console.log('[qwen] onclose: triggering translate for id=' + liveEntryId + ' len=' + _finalText.length);
+        translateSegmentStreaming(liveEntryId, _finalText);
         finalizeEntry(liveEntryId, _finalText);
         liveEntryId = null; liveText = '';
       }
@@ -1417,6 +1423,11 @@ function handleDgMessage(evt) {
     if (liveEntryId && _finalText) {
       var el = getEl('entry-' + liveEntryId);
       if (el) el.classList.remove('entry-live');
+      // Translate if no translation was triggered yet (interim-only case)
+      if (!_segmentTranslations[liveEntryId]) {
+        console.log('[utterance-end] no prior translate, triggering for id=' + liveEntryId);
+        translateSegmentStreaming(liveEntryId, _finalText);
+      }
       finalizeEntry(liveEntryId, _finalText);
       liveEntryId = null; liveText = '';
     }
