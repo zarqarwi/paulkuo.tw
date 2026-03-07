@@ -93,21 +93,21 @@ async function validateCode(code, kv) {
 }
 
 
-// === Unified Auth: OAuth session cookie OR invite code ===
+// === Unified Auth: Admin OAuth direct access, everyone else needs invite code ===
 async function authenticateRequest(request, env, inviteCode) {
-  // Priority 1: OAuth session cookie
+  // Priority 1: Admin OAuth — direct access without invite code
   const user = await getCurrentUser(request, env);
-  if (user) {
+  if (user && user.role === 'admin') {
     return {
       type: 'oauth',
       name: user.name,
       role: user.role,
       userId: user.id,
       code: 'oauth:' + user.id,
-      isAdmin: user.role === 'admin',
+      isAdmin: true,
     };
   }
-  // Priority 2: Invite code
+  // Priority 2: Invite code (required for all non-admin users)
   if (inviteCode) {
     const codeInfo = await validateCode(inviteCode, env.TICKER_KV);
     if (codeInfo) {
@@ -115,12 +115,13 @@ async function authenticateRequest(request, env, inviteCode) {
         type: 'invite',
         name: codeInfo.name,
         role: codeInfo.role,
-        userId: null,
+        userId: user ? user.id : null,
         code: inviteCode,
         isAdmin: codeInfo.role === 'admin',
       };
     }
   }
+  // Non-admin OAuth without invite code → rejected
   return null;
 }
 // === In-memory rate limiting (no KV writes) ===
