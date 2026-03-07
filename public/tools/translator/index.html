@@ -1932,13 +1932,17 @@ function deleteAdminCode(code) {
   })
   .catch(function(e) { showAdminMsg('請求失敗: ' + e.message, false); });
 }
-// Admin panel event listeners
-getEl('btnAdmin').addEventListener('click', openAdminPanel);
-getEl('adminClose').addEventListener('click', closeAdminPanel);
-getEl('adminModal').addEventListener('click', function(e) { if (e.target === getEl('adminModal')) closeAdminPanel(); });
-getEl('adminAddBtn').addEventListener('click', addAdminCode);
-getEl('adminNewCode').addEventListener('keydown', function(e) { if (e.key === 'Enter') addAdminCode(); });
-getEl('adminNewName').addEventListener('keydown', function(e) { if (e.key === 'Enter') addAdminCode(); });
+// Admin panel event listeners (deferred — modal DOM is below script)
+window.addEventListener('DOMContentLoaded', function() {
+  if (getEl('adminClose')) {
+    getEl('btnAdmin').addEventListener('click', openAdminPanel);
+    getEl('adminClose').addEventListener('click', closeAdminPanel);
+    getEl('adminModal').addEventListener('click', function(e) { if (e.target === getEl('adminModal')) closeAdminPanel(); });
+    getEl('adminAddBtn').addEventListener('click', addAdminCode);
+    getEl('adminNewCode').addEventListener('keydown', function(e) { if (e.key === 'Enter') addAdminCode(); });
+    getEl('adminNewName').addEventListener('keydown', function(e) { if (e.key === 'Enter') addAdminCode(); });
+  }
+});
 
 </script>
 <div class="subtitle-overlay" id="subtitleOverlay" onclick="toggleSubtitle()">
