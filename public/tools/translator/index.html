@@ -483,10 +483,10 @@ var LANGS = {
 var LANG_FLAGS = {"ja":"🇯🇵","en":"🇺🇸","zh-TW":"🇹🇼","zh-CN":"🇨🇳","ko":"🇰🇷","chinese":"🇨🇳","japanese":"🇯🇵","english":"🇺🇸","korean":"🇰🇷","vietnamese":"🇻🇳","vi":"🇻🇳","thai":"🇹🇭","th":"🇹🇭","indonesian":"🇮🇩","id":"🇮🇩","german":"🇩🇪","de":"🇩🇪","spanish":"🇪🇸","es":"🇪🇸","french":"🇫🇷","fr":"🇫🇷","portuguese":"🇧🇷","pt":"🇧🇷"};
 
 var tgtLang = "zh-TW";
-var srcInputLang = 'en'; // Deepgram language code — default English
+var srcInputLang = 'zh'; // Default Chinese (Qwen3-ASR)
 var SRC_LANGS = [
-  {code:'en', label:'English', flag:'🇺🇸'},
   {code:'zh', label:'中文', flag:'🇹🇼'},
+  {code:'en', label:'English', flag:'🇺🇸'},
   {code:'ja', label:'日本語', flag:'🇯🇵'},
   {code:'ko', label:'한국어', flag:'🇰🇷'},
   {code:'vi', label:'Tiếng Việt', flag:'🇻🇳'},
@@ -543,6 +543,7 @@ var qwenRetryTimer = null;
 var _qwenAutoSwitched = false; // true after auto-switching to Qwen
 var _qwenSwitchPending = false; // true when Chinese detected, waiting for utterance end
 var _activeEngine = 'deepgram'; // 'deepgram' or 'qwen'
+var _qwenReconnectCount = 0; // guard against infinite reconnect loops
 
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -617,11 +618,20 @@ function renderSrcLangs() {
         }
         // If recording, reconnect WebSocket with new language
         if (recording && sttMode === 'deepgram') {
-          // Language changed — always restart with Deepgram for auto-detection
-          if (_activeEngine === 'qwen') {
+          // Language changed — route to correct engine
+          if (srcInputLang === 'zh' && _activeEngine !== 'qwen') {
+            // Switching TO Chinese → connect Qwen
+            if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
+            if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
+            _activeEngine = 'qwen';
+            qwenRetryCount = 0;
+            _qwenReconnectCount = 0;
+            connectQwenWebSocket(dgStream);
+          } else if (srcInputLang !== 'zh' && _activeEngine === 'qwen') {
+            // Switching FROM Chinese → connect Deepgram
             switchToDeepgram();
           } else {
-            // Reconnect Deepgram with new language param
+            // Same engine type, just reconnect with new language param
             if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
             if (dgMediaRecorder) { try { dgMediaRecorder.stop(); } catch(e) {} dgMediaRecorder = null; }
             _qwenAutoSwitched = false;
@@ -748,6 +758,7 @@ function stopRecording() {
   _qwenAutoSwitched = false;
   _qwenSwitchPending = false;
   _activeEngine = 'deepgram';
+  _qwenReconnectCount = 0;
   if (qwenWs) {
     try { qwenWs.send(JSON.stringify({ event_id: 'fin_' + Date.now(), type: 'session.finish' })); } catch(e) {}
     try { qwenWs.close(); } catch(e) {}
@@ -958,6 +969,7 @@ function connectQwenWebSocket(stream) {
 
   qwenWs.onopen = function() {
     console.log('[qwen] WebSocket connected to DashScope proxy');
+    _qwenReconnectCount = 0; // reset on successful connect
     setStatus('listening');
     dgLang = 'zh';
 
@@ -1025,6 +1037,9 @@ function connectQwenWebSocket(stream) {
       }));
       qwenChunkCount++;
       if (qwenChunkCount <= 3) console.log('[qwen] sending PCM chunk #' + qwenChunkCount + ' samples=' + pcmSamples.length + ' b64len=' + b64.length);
+      // Silence output to prevent echo (ScriptProcessorNode may not zero-init output)
+      var output = e.outputBuffer.getChannelData(0);
+      for (var k = 0; k < output.length; k++) output[k] = 0;
     };
 
     qwenSource.connect(qwenProcessor);
@@ -1116,14 +1131,23 @@ function connectQwenWebSocket(stream) {
         finalizeEntry(liveEntryId, liveText);
         liveEntryId = null; liveText = '';
       }
-      console.log('[qwen] Auto-reconnecting (session timeout or disconnect)');
-      showError('Qwen ASR \u91cd\u65b0\u9023\u7dda\u4e2d\u2026');
+      _qwenReconnectCount++;
+      if (_qwenReconnectCount > 5) {
+        console.log('[qwen] Max reconnects reached (' + _qwenReconnectCount + '), falling back to Deepgram');
+        showError('Qwen ASR \u91cd\u9023\u5931\u6557\uff0c\u5207\u63db\u81f3 Deepgram');
+        _activeEngine = 'deepgram';
+        _qwenReconnectCount = 0;
+        connectDgWebSocket(dgStream);
+        return;
+      }
+      console.log('[qwen] Auto-reconnecting (' + _qwenReconnectCount + '/5, session timeout or disconnect)');
+      showError('Qwen ASR \u91cd\u65b0\u9023\u7dda\u4e2d\u2026(' + _qwenReconnectCount + ')');
       setTimeout(function() {
         if (!recording || _activeEngine !== 'qwen') return;
         hideError();
         qwenRetryCount = 0;
         connectQwenWebSocket(dgStream);
-      }, 500);
+      }, 1000 * _qwenReconnectCount);
     }
   };
 }
