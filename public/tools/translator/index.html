@@ -657,7 +657,7 @@ function renderSrcLangs() {
         // If recording, reconnect WebSocket with new language
         if (recording && sttMode === 'deepgram') {
           // Route to correct engine for new language
-          var targetEngine = srcInputLang === 'zh' ? 'qwen' : srcInputLang === 'en' ? 'groq' : 'deepgram';
+          var targetEngine = srcInputLang === 'zh' ? 'qwen' : (srcInputLang === 'en' || srcInputLang === 'ja') ? 'groq' : 'deepgram';
           if (targetEngine === _activeEngine && targetEngine === 'deepgram') {
             // Same Deepgram engine, reconnect with new language param
             if (dgWs) { try { dgWs.close(); } catch(e) {} dgWs = null; }
@@ -862,7 +862,7 @@ function startDeepgramStreaming() {
       _activeEngine = 'qwen';
       qwenRetryCount = 0;
       connectQwenWebSocket(stream);
-    } else if (srcInputLang === 'en') {
+    } else if (srcInputLang === 'en' || srcInputLang === 'ja') {
       _activeEngine = 'groq';
       connectGroqChunked(stream);
     } else {
@@ -1095,6 +1095,7 @@ function sendGroqChunk(blob) {
   var form = new FormData();
   form.append('audio', blob, 'audio.webm');
   form.append('code', inviteCode);
+  form.append('lang', srcInputLang);
   setStatus('sending');
   fetch(WORKER_URL + '/stt-groq', { method: 'POST', body: form, credentials: 'include' })
     .then(function(r) { return r.json(); })
@@ -1116,7 +1117,7 @@ function sendGroqChunk(blob) {
       // Create entry
       var id = ++nextId;
       var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-      var entry = {id:id, original:d.original, translated:null, detectedLang:'en', ts:ts, tgt:tgtLang, _timings:{firstResult:performance.now()}};
+      var entry = {id:id, original:d.original, translated:null, detectedLang:srcInputLang, ts:ts, tgt:tgtLang, _timings:{firstResult:performance.now()}};
       allEntries.push(entry);
       var emp = getEl('empty'); if (emp) emp.remove();
       var tgtFlag = (LANGS[tgtLang] || {}).flag || '';
@@ -1131,7 +1132,7 @@ function sendGroqChunk(blob) {
       updateCount();
       scrollBottom();
       // Trigger streaming translation
-      dgLang = 'en';
+      dgLang = srcInputLang;
       _segmentTranslations[id] = '';
       entry._timings.finalize = performance.now();
       translateSegmentStreaming(id, d.original);

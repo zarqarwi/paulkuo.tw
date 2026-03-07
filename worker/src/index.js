@@ -11,7 +11,7 @@
  *   GET  /sleep     — 睡眠資料分析（?year=2025 或 ?start=...&end=...）
  *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
  *   POST /stt       — 語音辨識 + 翻譯（Whisper → Claude Haiku）
- *   POST /stt-groq  — 英文語音辨識（Groq whisper-large-v3-turbo, chunked HTTP）
+ *   POST /stt-groq  — 英文/日文語音辨識（Groq whisper-large-v3-turbo, chunked HTTP）
  *   GET  /costs     — API 費用追蹤（?days=30）
  *   GET  /usage         — 使用統計（admin only, ?days=30&code=xxx）
  *   POST /validate-code — 邀請碼驗證
@@ -1380,6 +1380,7 @@ async function handleGroqSTT(request, env) {
 
   const audioFile = formData.get('audio');
   const userCode = formData.get('code') || '';
+  const lang = formData.get('lang') || 'en';
 
   // Auth
   const auth = await authenticateRequest(request, env, userCode);
@@ -1395,7 +1396,7 @@ async function handleGroqSTT(request, env) {
   }
   // Reject tiny chunks that are likely silence (< 1KB)
   if (audioFile.size < 1024) {
-    return jsonResponse({ original: '', detectedLang: 'en', duration: 0 }, 200, request);
+    return jsonResponse({ original: '', detectedLang: lang, duration: 0 }, 200, request);
   }
 
   // Forward to Groq Whisper API
@@ -1403,7 +1404,7 @@ async function handleGroqSTT(request, env) {
   groqForm.append('file', audioFile, audioFile.name || 'audio.webm');
   groqForm.append('model', 'whisper-large-v3-turbo');
   groqForm.append('response_format', 'verbose_json');
-  groqForm.append('language', 'en');
+  groqForm.append('language', lang);
 
   const MAX_RETRIES = 2;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -1437,12 +1438,12 @@ async function handleGroqSTT(request, env) {
         service: 'groq', model: 'whisper-large-v3-turbo', action: 'stt',
         source: 'translator', code: auth.code,
         costUSD: +costUSD.toFixed(8), durationSec: duration,
-        note: 'en ' + duration.toFixed(1) + 's',
+        note: lang + ' ' + duration.toFixed(1) + 's',
       });
 
       return jsonResponse({
         original: transcript,
-        detectedLang: 'en',
+        detectedLang: lang,
         duration,
         costUSD: +costUSD.toFixed(8),
       }, 200, request);
