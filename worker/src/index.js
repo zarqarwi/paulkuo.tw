@@ -1914,7 +1914,7 @@ async function handleRequest(request, env) {
     // Transparent proxy: same pattern as Deepgram /ws/stt
     // Frontend speaks DashScope protocol directly (session.update, input_audio_buffer.append, etc.)
     const qwenModel = url.searchParams.get('model') || 'qwen3-asr-flash-realtime';
-    const dashscopeUrl = 'wss://dashscope-intl.aliyuncs.com/api-ws/v1/realtime?model=' + qwenModel;
+    const dashscopeUrl = 'https://dashscope-intl.aliyuncs.com/api-ws/v1/realtime?model=' + qwenModel;
     return fetch(dashscopeUrl, {
       headers: {
         'Upgrade': 'websocket',
