@@ -11,7 +11,7 @@
  *   GET  /sleep     — 睡眠資料分析（?year=2025 或 ?start=...&end=...）
  *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
  *   POST /stt       — 語音辨識 + 翻譯（Whisper → Claude Haiku）
- *   POST /stt-groq  — 英文語音辨識（Groq distil-whisper, chunked HTTP）
+ *   POST /stt-groq  — 英文語音辨識（Groq whisper-large-v3-turbo, chunked HTTP）
  *   GET  /costs     — API 費用追蹤（?days=30）
  *   GET  /usage         — 使用統計（admin only, ?days=30&code=xxx）
  *   POST /validate-code — 邀請碼驗證
