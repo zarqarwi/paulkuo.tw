@@ -162,15 +162,15 @@ function jsonResponse(data, status, request) {
 }
 
 // === Fitbit OAuth2 Token Refresh ===
-async function refreshToken(kv) {
+async function refreshToken(kv, env) {
   const tokenJson = await kv.get('fitbit_token');
   if (!tokenJson) {
     throw new Error('No token in KV');
   }
   const token = JSON.parse(tokenJson);
 
-  const creds = btoa(`${FITBIT_CLIENT_ID}:${env.FITBIT_CLIENT_SECRET || ""}`);
-    if (!env.FITBIT_CLIENT_SECRET) return jsonResponse({ error: "FITBIT_CLIENT_SECRET not configured" }, 500, request);
+  if (!env.FITBIT_CLIENT_SECRET) throw new Error('FITBIT_CLIENT_SECRET not configured');
+  const creds = btoa(`${FITBIT_CLIENT_ID}:${env.FITBIT_CLIENT_SECRET}`);
   const res = await fetch('https://api.fitbit.com/oauth2/token', {
     method: 'POST',
     headers: {
@@ -208,7 +208,7 @@ async function fitbitGet(path, token) {
 }
 
 // === Fetch Fitbit Data ===
-async function fetchFitbitData(kv) {
+async function fetchFitbitData(kv, env) {
   // Check cache first
   const cacheJson = await kv.get('fitbit_cache');
   if (cacheJson) {
@@ -229,7 +229,7 @@ async function fetchFitbitData(kv) {
   // Proactive refresh if < 2h remaining
   if (token.expires_at - Date.now() < 2 * 3600 * 1000) {
     try {
-      token = await refreshToken(kv);
+      token = await refreshToken(kv, env);
     } catch (e) {
       console.error('Proactive refresh failed:', e.message);
     }
@@ -251,7 +251,7 @@ async function fetchFitbitData(kv) {
   } catch (e) {
     if (e.message === 'TOKEN_EXPIRED') {
       // Try refresh and retry once
-      token = await refreshToken(kv);
+      token = await refreshToken(kv, env);
       [summary, stepsData] = await Promise.all([
         fitbitGet(`/1/user/-/activities/date/${today}.json`, token),
         fitbitGet(`/1/user/-/activities/steps/date/${weekStart}/${today}.json`, token),
@@ -371,7 +371,7 @@ async function fetchStockData(kv) {
 
 
 // === Fetch Sleep Data ===
-async function fetchSleepData(kv, params) {
+async function fetchSleepData(kv, params, env) {
   // Get token
   let tokenJson = await kv.get('fitbit_token');
   if (!tokenJson) throw new Error('No Fitbit token configured');
@@ -379,7 +379,7 @@ async function fetchSleepData(kv, params) {
 
   // Proactive refresh if < 2h remaining
   if (token.expires_at - Date.now() < 2 * 3600 * 1000) {
-    try { token = await refreshToken(kv); } catch (e) {
+    try { token = await refreshToken(kv, env); } catch (e) {
       console.error('Proactive refresh failed:', e.message);
     }
   }
@@ -398,7 +398,7 @@ async function fetchSleepData(kv, params) {
       data = await fitbitGet(`/1.2/user/-/sleep/date/${start}/${end}.json`, token);
     } catch (e) {
       if (e.message === 'TOKEN_EXPIRED') {
-        token = await refreshToken(kv);
+        token = await refreshToken(kv, env);
         data = await fitbitGet(`/1.2/user/-/sleep/date/${start}/${end}.json`, token);
       } else throw e;
     }
@@ -453,7 +453,7 @@ async function fetchSleepData(kv, params) {
         if (data.sleep) allLogs.push(...data.sleep);
       } catch (e) {
         if (e.message === 'TOKEN_EXPIRED') {
-          token = await refreshToken(kv);
+          token = await refreshToken(kv, env);
           const data = await fitbitGet(`/1.2/user/-/sleep/date/${start}/${end}.json`, token);
           if (data.sleep) allLogs.push(...data.sleep);
         } else {
@@ -1005,7 +1005,7 @@ async function handleTicker(request, env) {
 
   // Gather all data in parallel
   const [fitbitData, stockData, costsData] = await Promise.allSettled([
-    fetchFitbitData(env.TICKER_KV).catch(e => null),
+    fetchFitbitData(env.TICKER_KV, env).catch(e => null),
     fetchStockData(env.TICKER_KV).catch(e => null),
     (async () => {
       // Aggregate costs from KV (last 30 days)
@@ -1915,7 +1915,7 @@ async function handleRequest(request, env) {
   // Fitbit data
   if (path === '/fitbit') {
     try {
-      const data = await fetchFitbitData(env.TICKER_KV);
+      const data = await fetchFitbitData(env.TICKER_KV, env);
       return jsonResponse(data, 200, request);
     } catch (e) {
       return jsonResponse({
@@ -1934,7 +1934,7 @@ async function handleRequest(request, env) {
         year: url.searchParams.get('year'),
         month: url.searchParams.get('month'),
       };
-      const data = await fetchSleepData(env.TICKER_KV, params);
+      const data = await fetchSleepData(env.TICKER_KV, params, env);
       return jsonResponse(data, 200, request);
     } catch (e) {
       return jsonResponse({
@@ -2120,7 +2120,7 @@ async function handleRequest(request, env) {
 // === Cron Trigger (token refresh) ===
 async function handleScheduled(event, env) {
   try {
-    await refreshToken(env.TICKER_KV);
+    await refreshToken(env.TICKER_KV, env);
     console.log('Cron: token refresh success');
   } catch (e) {
     console.error('Cron: token refresh FAILED:', e.message);
