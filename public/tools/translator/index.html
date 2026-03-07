@@ -898,8 +898,16 @@ function connectDgWebSocket(stream) {
 
       dgWs.onopen = function() {
         dgRetryCount = 0;
-        console.log('[dg] WebSocket connected');
+        console.log('[dg] WebSocket connected, lang=' + srcInputLang + ' model=' + model);
         hideError();
+        // Warn if no STT results after 10 seconds
+        if (window._dgNoResultTimer) clearTimeout(window._dgNoResultTimer);
+        window._dgNoResultTimer = setTimeout(function() {
+          if (dgWs && recording && !liveEntryId) {
+            console.warn('[dg] WARNING: No results received after 10s');
+            showError('Deepgram 10秒無回應 — 請確認語言設定或嘗試切換來源語言');
+          }
+        }, 10000);
         setStatus('listening');
         // Step 4: Start MediaRecorder, send chunks to WS
         var mimeType = 'audio/webm;codecs=opus';
@@ -923,6 +931,11 @@ function connectDgWebSocket(stream) {
       };
 
       dgWs.onmessage = function(evt) {
+        // Debug: log all Deepgram message types (not just Results)
+        try {
+          var _raw = JSON.parse(evt.data);
+          if (_raw.type !== 'Results') console.log('[dg] msg type=' + _raw.type, _raw.error ? 'ERROR: ' + JSON.stringify(_raw) : '');
+        } catch(e) { console.log('[dg] binary msg', evt.data.byteLength || 0); }
         handleDgMessage(evt);
       };
 
@@ -1483,6 +1496,9 @@ function handleDgMessage(evt) {
     if (dgUtteranceStart < 0) dgUtteranceStart = data.start;
     dgUtteranceDuration = (data.start + data.duration) - dgUtteranceStart;
   }
+
+  // Clear no-result timeout on first result
+  if (window._dgNoResultTimer) { clearTimeout(window._dgNoResultTimer); window._dgNoResultTimer = null; }
 
   if (!liveEntryId) {
     // Create new live entry
