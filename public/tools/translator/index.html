@@ -1682,6 +1682,10 @@ function translateSegmentStreaming(id, segmentText, abortSignal) {
         }
         readChunk();
       }).catch(function(e) {
+        if (e.name === 'AbortError' || (e.message && e.message.indexOf('abort') >= 0)) {
+          console.log('[translate] stream aborted (superseded)');
+          return;
+        }
         console.error('[translate] stream read error:', e.message);
         if (transEl && !tokenCount) {
           transEl.textContent = '\u26a0 \u4e32\u6d41\u8b80\u53d6\u5931\u6557';
