@@ -283,6 +283,12 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .today-stats.visible{display:inline-flex}
 .today-stats .stat-val{font-weight:600;color:var(--text-secondary)}
 .today-stats .stat-cost{color:var(--accent-ai);font-weight:600}
+.quota-row{display:flex;gap:12px;align-items:center;font-size:10px;color:var(--text-muted);margin-top:4px;flex-wrap:wrap}
+.q-item{display:flex;align-items:center;gap:3px}
+.q-bar{display:inline-block;width:40px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;vertical-align:middle}
+.q-fill{display:block;height:100%;border-radius:2px;transition:width .4s}
+.q-txt{font-family:'DM Sans',sans-serif;font-size:9px;min-width:28px}
+.q-danger{color:#dc2626;font-weight:700}
 
 /* Export dropdown */
 .export-wrap{position:relative;display:inline-block}
@@ -358,6 +364,11 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   <div style="display:flex;align-items:center;gap:8px;width:100%">
     <button class="glossary-toggle" id="btnGlossary" title="術語表設定">📖<span class="btn-text"> 術語表</span></button>
     <span class="today-stats" id="todayStats"></span>
+        <div class="quota-row" id="quotaRow" style="display:none">
+          <span class="q-item" id="qDg" title="Deepgram 免費額度">🎙️ <span class="q-bar"><span class="q-fill" id="qDgFill"></span></span> <span class="q-txt" id="qDgTxt">—</span></span>
+          <span class="q-item" id="qQwen" title="Qwen3-ASR 免費額度">🇨🇳 <span class="q-bar"><span class="q-fill" id="qQwenFill"></span></span> <span class="q-txt" id="qQwenTxt">—</span></span>
+          <span class="q-item" id="qClaude" title="Claude Haiku 免費額度">🤖 <span class="q-bar"><span class="q-fill" id="qClaudeFill"></span></span> <span class="q-txt" id="qClaudeTxt">—</span></span>
+        </div>
     <div class="spacer"></div>
     <button class="btn-subtitle" id="btnSubtitle" title="字幕模式：全屏顯示翻譯">🖥<span class="btn-text"> 字幕</span></button>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
@@ -1982,7 +1993,7 @@ function tryEnter() {
       sessionStorage.setItem("userName", d.name);
       hideGate();
       showUserBadge();
-      if (_isAdmin) loadTodayStats();
+      if (_isAdmin) loadTodayStats(); loadQuotaStatus();
     } else {
       getEl("gateError").style.display = "block";
       getEl("gateInput").classList.add("error");
@@ -2086,6 +2097,42 @@ function loadTodayStats() {
       el.classList.add("visible");
     })
     .catch(function() { /* non-admin or error: hide silently */ });
+}
+
+// === Free Quota Monitor ===
+function loadQuotaStatus() {
+  if (!inviteCode && !_authUser) return;
+  fetch(WORKER_URL + "/costs?days=9999&code=" + encodeURIComponent(inviteCode), { credentials: 'include' })
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d) {
+      var records = d.records || [];
+      var DG_FREE = 200, QWEN_FREE = 36000, CLAUDE_FREE = 5;
+      var dgUsed = 0, qwenSec = 0, claudeUsed = 0;
+      records.forEach(function(r) {
+        if (r.service === 'deepgram') dgUsed += r.costUSD || 0;
+        if (r.service === 'qwen-asr') qwenSec += r.durationSec || 0;
+        if (r.service === 'anthropic') claudeUsed += r.costUSD || 0;
+      });
+      var dgPct = Math.max(0, ((DG_FREE - dgUsed) / DG_FREE) * 100);
+      var qwenPct = Math.max(0, ((QWEN_FREE - qwenSec) / QWEN_FREE) * 100);
+      var claudePct = Math.max(0, ((CLAUDE_FREE - claudeUsed) / CLAUDE_FREE) * 100);
+      function qColor(p) { return p <= 20 ? '#dc2626' : p <= 50 ? '#f59e0b' : '#059669'; }
+      function qCls(p) { return p <= 20 ? 'q-txt q-danger' : 'q-txt'; }
+      getEl('qDgFill').style.width = dgPct + '%';
+      getEl('qDgFill').style.background = qColor(dgPct);
+      getEl('qDgTxt').textContent = dgPct.toFixed(0) + '%';
+      getEl('qDgTxt').className = qCls(dgPct);
+      getEl('qQwenFill').style.width = qwenPct + '%';
+      getEl('qQwenFill').style.background = qColor(qwenPct);
+      getEl('qQwenTxt').textContent = qwenPct.toFixed(0) + '%';
+      getEl('qQwenTxt').className = qCls(qwenPct);
+      getEl('qClaudeFill').style.width = claudePct + '%';
+      getEl('qClaudeFill').style.background = qColor(claudePct);
+      getEl('qClaudeTxt').textContent = claudePct.toFixed(0) + '%';
+      getEl('qClaudeTxt').className = qCls(claudePct);
+      getEl('quotaRow').style.display = 'flex';
+    })
+    .catch(function() { /* non-admin: hide */ });
 }
 
 // Refresh stats after each STT request completes

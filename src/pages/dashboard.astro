@@ -43,6 +43,27 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
   <div id="kpiGrid" class="kpi-grid"></div>
 
+  <div id="quotaSection" class="quota-section" style="display:none">
+    <h3>免費額度監控</h3>
+    <div class="quota-grid">
+      <div class="quota-card" id="quotaDg">
+        <div class="quota-header"><span class="quota-icon">🎙️</span><span class="quota-name">Deepgram</span><span class="quota-pct" id="dgPct">—</span></div>
+        <div class="quota-bar"><div class="quota-fill" id="dgFill"></div></div>
+        <div class="quota-detail" id="dgDetail">—</div>
+      </div>
+      <div class="quota-card" id="quotaQwen">
+        <div class="quota-header"><span class="quota-icon">🇨🇳</span><span class="quota-name">Qwen3-ASR</span><span class="quota-pct" id="qwenPct">—</span></div>
+        <div class="quota-bar"><div class="quota-fill" id="qwenFill"></div></div>
+        <div class="quota-detail" id="qwenDetail">—</div>
+      </div>
+      <div class="quota-card" id="quotaClaude">
+        <div class="quota-header"><span class="quota-icon">🤖</span><span class="quota-name">Claude Haiku</span><span class="quota-pct" id="claudePct">—</span></div>
+        <div class="quota-bar"><div class="quota-fill" id="claudeFill"></div></div>
+        <div class="quota-detail" id="claudeDetail">—</div>
+      </div>
+    </div>
+  </div>
+
   <div class="charts-row">
     <div class="chart-panel full-width">
       <h3>每日費用趨勢</h3>
@@ -203,6 +224,45 @@ function render(records) {
     <div class="kpi"><span class="kpi-label">API 呼叫</span><span class="kpi-value kpi-cyan">${records.length}</span><span class="kpi-sub">${days.length} 天</span></div>
     <div class="kpi"><span class="kpi-label">Token 總量</span><span class="kpi-value kpi-purple">${(totalTokens/1000).toFixed(0)}K</span><span class="kpi-sub">input + output</span></div>
   `;
+
+  // === Free Quota Monitoring ===
+  var DG_FREE = 200.00;    // Deepgram $200 free credit
+  var QWEN_FREE = 36000;   // Qwen 10 hours = 36,000 seconds
+  var CLAUDE_FREE = 5.00;  // Claude $5 free credit
+
+  var dgUsed = records.filter(function(r){ return r.service === 'deepgram'; }).reduce(function(s,r){ return s + r.costUSD; }, 0);
+  var qwenSec = records.filter(function(r){ return r.service === 'qwen-asr'; }).reduce(function(s,r){ return s + (r.durationSec || 0); }, 0);
+  var claudeUsed = records.filter(function(r){ return r.service === 'anthropic'; }).reduce(function(s,r){ return s + r.costUSD; }, 0);
+
+  var dgRemain = Math.max(0, DG_FREE - dgUsed);
+  var dgPctVal = (dgRemain / DG_FREE) * 100;
+  var qwenRemain = Math.max(0, QWEN_FREE - qwenSec);
+  var qwenPctVal = (qwenRemain / QWEN_FREE) * 100;
+  var claudeRemain = Math.max(0, CLAUDE_FREE - claudeUsed);
+  var claudePctVal = (claudeRemain / CLAUDE_FREE) * 100;
+
+  function quotaColor(pct) { return pct <= 20 ? '#dc2626' : pct <= 50 ? '#f59e0b' : '#059669'; }
+  function quotaClass(pct) { return pct <= 20 ? 'quota-danger' : pct <= 50 ? 'quota-warn' : ''; }
+
+  document.getElementById('quotaSection').style.display = 'block';
+  document.getElementById('dgPct').textContent = dgPctVal.toFixed(0) + '%';
+  document.getElementById('dgPct').className = 'quota-pct ' + quotaClass(dgPctVal);
+  document.getElementById('dgFill').style.width = dgPctVal + '%';
+  document.getElementById('dgFill').style.background = quotaColor(dgPctVal);
+  document.getElementById('dgDetail').textContent = '剩餘 $' + dgRemain.toFixed(2) + ' / $' + DG_FREE + '（已用 ' + (dgUsed / DG_FREE * 100).toFixed(1) + '%）';
+
+  document.getElementById('qwenPct').textContent = qwenPctVal.toFixed(0) + '%';
+  document.getElementById('qwenPct').className = 'quota-pct ' + quotaClass(qwenPctVal);
+  document.getElementById('qwenFill').style.width = qwenPctVal + '%';
+  document.getElementById('qwenFill').style.background = quotaColor(qwenPctVal);
+  var qwenHrs = (qwenRemain / 3600).toFixed(1);
+  document.getElementById('qwenDetail').textContent = '剩餘 ' + qwenHrs + ' hr / 10 hr（已用 ' + (qwenSec / 60).toFixed(0) + ' 分鐘）';
+
+  document.getElementById('claudePct').textContent = claudePctVal.toFixed(0) + '%';
+  document.getElementById('claudePct').className = 'quota-pct ' + quotaClass(claudePctVal);
+  document.getElementById('claudeFill').style.width = claudePctVal + '%';
+  document.getElementById('claudeFill').style.background = quotaColor(claudePctVal);
+  document.getElementById('claudeDetail').textContent = '剩餘 $' + claudeRemain.toFixed(2) + ' / $' + CLAUDE_FREE + '（已用 ' + (claudeUsed / CLAUDE_FREE * 100).toFixed(1) + '%）';
 
   // Destroy old charts
   Object.values(charts).forEach(c => c.destroy()); charts = {};
@@ -402,9 +462,30 @@ function render(records) {
   .svc-perplexity { background: rgba(139,92,246,0.1); color: #8b5cf6; }
   .svc-deepgram { background: rgba(19,239,147,0.1); color: #059669; }
 
+  /* Quota Monitoring */
+  .quota-section {
+    margin-bottom: 2rem; padding: 1.5rem;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .quota-section h3 { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; font-weight: 500; }
+  .quota-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .quota-card { padding: 1rem; background: var(--bg-section); border-radius: 8px; border: 1px solid var(--border-light); }
+  .quota-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .quota-icon { font-size: 1.1rem; }
+  .quota-name { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); flex: 1; }
+  .quota-pct { font-weight: 700; font-size: 1.1rem; color: #059669; font-family: 'DM Sans', sans-serif; }
+  .quota-pct.quota-warn { color: #f59e0b; }
+  .quota-pct.quota-danger { color: #dc2626; animation: pulse-danger 1.5s ease-in-out infinite; }
+  @keyframes pulse-danger { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .quota-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem; }
+  .quota-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease, background 0.3s; }
+  .quota-detail { font-size: 0.72rem; color: var(--text-muted); }
+
   @media (max-width: 768px) {
     .dash-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
     .charts-row { grid-template-columns: 1fr; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .quota-grid { grid-template-columns: 1fr; }
   }
 </style>
