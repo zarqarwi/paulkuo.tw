@@ -323,12 +323,14 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   <div class="gate-box">
     <div class="gate-logo">🏛️</div>
     <div class="gate-title">阿哥拉廣場</div>
-    <div class="gate-desc">即時會議翻譯工具（測試版）<br>輸入邀請碼即可使用</div>
-    <input class="gate-input" id="gateInput" type="text" placeholder="邀請碼" autocomplete="off" spellcheck="false">
-    <button class="gate-btn" id="gateBtn">進入</button>
-    <div class="gate-error" id="gateError">邀請碼無效，請確認後重試</div>
-    <div style="margin-top:18px;text-align:center"><a href="#" id="gateAdminToggle" style="font-size:12px;color:var(--text-muted);text-decoration:none" onclick="var o=document.getElementById('gateOAuth');o.style.display=o.style.display==='none'?'flex':'none';this.textContent=o.style.display==='none'?'管理員登入 ▸':'收起 ▾';return false">管理員登入 ▸</a></div>
-    <div class="gate-oauth" id="gateOAuth" style="display:none;margin-top:8px">
+    <div class="gate-desc" id="gateDesc">即時會議翻譯工具（測試版）<br>請先登入帳號，再輸入邀請碼</div>
+    <div id="gateStep2" style="display:none">
+      <div style="font-size:13px;color:var(--accent-circular);margin-bottom:12px" id="gateWelcome"></div>
+      <input class="gate-input" id="gateInput" type="text" placeholder="邀請碼" autocomplete="off" spellcheck="false">
+      <button class="gate-btn" id="gateBtn">進入</button>
+      <div class="gate-error" id="gateError">邀請碼無效，請確認後重試</div>
+    </div>
+    <div class="gate-oauth" id="gateOAuth" style="margin-top:8px">
       <a class="gate-oauth-btn" id="gateGoogle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 001 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google 登入</a>
       <a class="gate-oauth-btn" id="gateLine"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 4.21 3.74 7.74 8.78 8.4.34.07.81.23.93.52.1.27.07.68.03.95l-.15.91c-.05.27-.21 1.06.93.58s6.18-3.64 8.43-6.23C22.83 13.47 22 11.42 22 10.5 22 5.82 17.52 2 12 2z" fill="#06C755"/></svg> LINE 登入</a>
       <a class="gate-oauth-btn" id="gateFacebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M24 12c0-6.627-5.373-12-12-12S0 5.373 0 12c0 5.99 4.388 10.954 10.125 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.668 4.533-4.668 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.385C19.612 22.954 24 17.99 24 12z" fill="#1877F2"/></svg> Facebook 登入</a>
@@ -2131,10 +2133,10 @@ function tryEnter() {
   .then(function(d) {
     if (d.valid) {
       inviteCode = code;
-      userName = d.name;
+      userName = (_authUser && _authUser.name) ? _authUser.name : d.name;
       _isAdmin = (d.role === 'admin');
       sessionStorage.setItem("inviteCode", code);
-      sessionStorage.setItem("userName", d.name);
+      sessionStorage.setItem("userName", userName);
       hideGate();
       showUserBadge();
       if (_isAdmin) loadTodayStats(); loadQuotaStatus();
@@ -2175,8 +2177,24 @@ getEl("userBadge").addEventListener("click", function() {
   }
 });
 
-// Check on load — OAuth first, then invite code fallback
+// Check on load — Two-step auth: OAuth login + invite code
 var _authUser = null;
+function showGateStep1() {
+  // Step 1: Show OAuth buttons, hide invite code input
+  getEl('gateOAuth').style.display = 'flex';
+  getEl('gateStep2').style.display = 'none';
+  getEl('gateDesc').innerHTML = '即時會議翻譯工具（測試版）<br>請先登入帳號，再輸入邀請碼';
+  showGate();
+}
+function showGateStep2(user) {
+  // Step 2: OAuth done, show invite code input
+  getEl('gateOAuth').style.display = 'none';
+  getEl('gateStep2').style.display = 'block';
+  var avatar = user.avatar ? '<img src="' + user.avatar + '" style="width:18px;height:18px;border-radius:50%;vertical-align:middle;margin-right:4px">' : '';
+  getEl('gateWelcome').innerHTML = avatar + '✅ 已登入為 ' + escHtml(user.name || user.email) + '，請輸入邀請碼';
+  getEl('gateDesc').innerHTML = '即時會議翻譯工具（測試版）';
+  showGate();
+}
 (function checkAuthOnLoad() {
   fetch(WORKER_URL + "/auth/me", { credentials: "include" })
   .then(function(r) { return r.json(); })
@@ -2185,41 +2203,49 @@ var _authUser = null;
       _authUser = d.user;
       userName = d.user.name || d.user.email || 'User';
       _isAdmin = (d.user.role === 'admin');
+      if (location.search.includes('auth_success')) {
+        history.replaceState(null, '', location.pathname);
+      }
       if (_isAdmin) {
+        // Admin: direct access, no invite code needed
         inviteCode = '';
         hideGate();
         showUserBadge();
         loadTodayStats();
-        if (location.search.includes('auth_success')) {
-          history.replaceState(null, '', location.pathname);
-        }
         return;
       }
-      // Non-admin OAuth: still need invite code
-      _authUser = null;
-    }
-    checkInviteCode();
-  })
-  .catch(function() { checkInviteCode(); });
-  
-  function checkInviteCode() {
-    if (inviteCode) {
-      fetch(WORKER_URL + "/validate-code", {
-        method: "POST",
-        credentials: "include",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ code: inviteCode })
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.valid) { hideGate(); userName = d.name; _isAdmin = (d.role === 'admin'); sessionStorage.setItem("userName", d.name); showUserBadge(); if (_isAdmin) loadTodayStats(); }
-        else { sessionStorage.removeItem("inviteCode"); showGate(); }
-      })
-      .catch(function() { hideGate(); showUserBadge(); });
+      // Non-admin OAuth: check if they have a saved invite code
+      if (inviteCode) {
+        fetch(WORKER_URL + "/validate-code", {
+          method: "POST", credentials: "include",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ code: inviteCode })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(dd) {
+          if (dd.valid) {
+            hideGate();
+            userName = _authUser.name || dd.name;
+            sessionStorage.setItem("userName", userName);
+            showUserBadge();
+            loadQuotaStatus();
+          } else {
+            sessionStorage.removeItem("inviteCode");
+            inviteCode = '';
+            showGateStep2(_authUser);
+          }
+        })
+        .catch(function() { showGateStep2(_authUser); });
+      } else {
+        // OAuth done but no invite code yet → show step 2
+        showGateStep2(_authUser);
+      }
     } else {
-      showGate();
+      // Not logged in → show step 1 (OAuth buttons)
+      showGateStep1();
     }
-  }
+  })
+  .catch(function() { showGateStep1(); });
 })();
 
 

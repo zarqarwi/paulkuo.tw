@@ -108,21 +108,21 @@ async function authenticateRequest(request, env, inviteCode) {
       isAdmin: true,
     };
   }
-  // Priority 2: Invite code (required for all non-admin users)
-  if (inviteCode) {
+  // Priority 2: Non-admin must have BOTH OAuth session + valid invite code
+  if (user && inviteCode) {
     const codeInfo = await validateCode(inviteCode, env.TICKER_KV);
     if (codeInfo) {
       return {
-        type: 'invite',
-        name: codeInfo.name,
+        type: 'oauth+invite',
+        name: user.name || codeInfo.name,
         role: codeInfo.role,
-        userId: user ? user.id : null,
+        userId: user.id,
         code: inviteCode,
         isAdmin: codeInfo.role === 'admin',
       };
     }
   }
-  // Non-admin OAuth without invite code → rejected
+  // Missing OAuth session, missing invite code, or invalid code → rejected
   return null;
 }
 // === In-memory rate limiting (no KV writes) ===
