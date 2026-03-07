@@ -513,7 +513,7 @@ async function fetchSleepData(kv, params, env) {
 const PRICING = {
   'whisper-1': { perMinute: 0.006 },
   'claude-haiku-4-5-20251001': { inputPerMTok: 1.00, outputPerMTok: 5.00 },
-  'distil-whisper-large-v3-en': { perHour: 0.02 }, // Groq: $0.02/hr
+  'whisper-large-v3-turbo': { perHour: 0.04 }, // Groq: $0.04/hr
 };
 // Language display names (shared across translate/stt/summarize)
 const TNAMES = {
@@ -1401,7 +1401,7 @@ async function handleGroqSTT(request, env) {
   // Forward to Groq Whisper API
   const groqForm = new FormData();
   groqForm.append('file', audioFile, audioFile.name || 'audio.webm');
-  groqForm.append('model', 'distil-whisper-large-v3-en');
+  groqForm.append('model', 'whisper-large-v3-turbo');
   groqForm.append('response_format', 'verbose_json');
   groqForm.append('language', 'en');
 
@@ -1432,9 +1432,9 @@ async function handleGroqSTT(request, env) {
       const duration = data.duration || 0;
 
       // Log cost: $0.02/hr
-      const costUSD = (duration / 3600) * PRICING['distil-whisper-large-v3-en'].perHour;
+      const costUSD = (duration / 3600) * PRICING['whisper-large-v3-turbo'].perHour;
       await logCost(env.TICKER_KV, {
-        service: 'groq', model: 'distil-whisper-large-v3-en', action: 'stt',
+        service: 'groq', model: 'whisper-large-v3-turbo', action: 'stt',
         source: 'translator', code: auth.code,
         costUSD: +costUSD.toFixed(8), durationSec: duration,
         note: 'en ' + duration.toFixed(1) + 's',
