@@ -535,6 +535,23 @@ var sttMode = 'deepgram'; // 'deepgram' | 'whisper'
 var dgWs = null;
 var liveEntryId = null;
 var liveText = '';
+
+// Helper: get best text for finalization (liveText or DOM interim text)
+function getLiveTextOrInterim() {
+  if (liveText) return liveText;
+  // Fallback: grab interim text from DOM (Qwen may only send is_final=false)
+  if (liveEntryId) {
+    var origEl = getEl('orig-' + liveEntryId);
+    if (origEl) {
+      var domText = origEl.textContent.trim();
+      if (domText) {
+        console.log('[finalize] using DOM interim text (' + domText.length + ' chars)');
+        return domText;
+      }
+    }
+  }
+  return '';
+}
 var dgMediaRecorder = null;
 var dgStream = null;
 var dgLang = '';
@@ -562,6 +579,7 @@ var groqChunkTimer = null;
 var _qwenReconnectCount = 0; // guard against infinite reconnect loops
 var _qwenKeepAliveTimer = null; // periodic keep-alive to prevent DashScope timeout
 var _qwenRetrying = false; // prevent onerror+onclose double reconnect
+var _qwenCommittedTimer = null; // timeout: if completed doesn't arrive after committed, force finalize
 
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -599,10 +617,11 @@ function renderLangs() {
         // Clear accumulated translations to avoid mixing languages
         _segmentTranslations = {};
         // Finalize current live entry before switching
-        if (liveEntryId && liveText) {
+        var _ft = getLiveTextOrInterim();
+        if (liveEntryId && _ft) {
           var el = getEl('entry-' + liveEntryId);
           if (el) el.classList.remove('entry-live');
-          finalizeEntry(liveEntryId, liveText);
+          finalizeEntry(liveEntryId, _ft);
           liveEntryId = null; liveText = '';
         }
       }
@@ -628,10 +647,11 @@ function renderSrcLangs() {
         // Clear translations to avoid mixing languages
         _segmentTranslations = {};
         // Finalize current live entry before switching
-        if (liveEntryId && liveText) {
+        var _ft = getLiveTextOrInterim();
+        if (liveEntryId && _ft) {
           var el = getEl('entry-' + liveEntryId);
           if (el) el.classList.remove('entry-live');
-          finalizeEntry(liveEntryId, liveText);
+          finalizeEntry(liveEntryId, _ft);
           liveEntryId = null; liveText = '';
         }
         // If recording, reconnect WebSocket with new language
@@ -796,10 +816,11 @@ function stopRecording() {
   }
   if (dgStream) { dgStream.getTracks().forEach(function(t) { t.stop(); }); dgStream = null; }
   // Finalize live entry if any
-  if (liveEntryId && liveText) {
+  var _finalText = getLiveTextOrInterim();
+  if (liveEntryId && _finalText) {
     var el = getEl('entry-' + liveEntryId);
     if (el) el.classList.remove('entry-live');
-    finalizeEntry(liveEntryId, liveText);
+    finalizeEntry(liveEntryId, _finalText);
   }
   liveEntryId = null; liveText = '';
   // Whisper cleanup
@@ -978,6 +999,7 @@ function switchToDeepgram() {
 }
 
 function cleanupQwenAudio() {
+  if (_qwenCommittedTimer) { clearTimeout(_qwenCommittedTimer); _qwenCommittedTimer = null; }
   if (_qwenKeepAliveTimer) { clearInterval(_qwenKeepAliveTimer); _qwenKeepAliveTimer = null; }
   if (qwenProcessor) { try { qwenProcessor.disconnect(); } catch(e) {} qwenProcessor = null; }
   if (qwenSource) { try { qwenSource.disconnect(); } catch(e) {} qwenSource = null; }
@@ -1245,6 +1267,7 @@ function connectQwenWebSocket(stream) {
           break;
         }
         case 'conversation.item.input_audio_transcription.completed': {
+          if (_qwenCommittedTimer) { clearTimeout(_qwenCommittedTimer); _qwenCommittedTimer = null; }
           var transcript = data.transcript || '';
           if (!transcript) break;
           // Calculate utterance duration from performance.now()
@@ -1271,6 +1294,25 @@ function connectQwenWebSocket(stream) {
           break;
         case 'input_audio_buffer.speech_stopped':
           console.log('[qwen] Speech stopped');
+          break;
+        case 'input_audio_buffer.committed':
+          console.log('[qwen] Buffer committed — waiting for completed event');
+          // Safety net: if completed doesn't arrive within 3s, force finalize
+          if (_qwenCommittedTimer) clearTimeout(_qwenCommittedTimer);
+          _qwenCommittedTimer = setTimeout(function() {
+            _qwenCommittedTimer = null;
+            if (!liveEntryId) return;
+            var interimText = getLiveTextOrInterim();
+            if (interimText) {
+              console.warn('[qwen] completed timeout — force finalizing with interim (' + interimText.length + ' chars)');
+              _qwenUtteranceStartMs = 0;
+              handleDgMessage({ data: JSON.stringify({
+                type: 'Results', is_final: true, speech_final: true,
+                channel: { alternatives: [{ transcript: interimText, detected_language: 'zh' }] },
+              }) });
+              handleDgMessage({ data: JSON.stringify({ type: 'UtteranceEnd' }) });
+            }
+          }, 3000);
           break;
         case 'session.finished':
           console.log('[qwen] Session finished');
@@ -1322,10 +1364,11 @@ function connectQwenWebSocket(stream) {
       return;
     }
     if (recording && _activeEngine === 'qwen') {
-      if (liveEntryId && liveText) {
+      var _finalText = getLiveTextOrInterim();
+      if (liveEntryId && _finalText) {
         var el = getEl('entry-' + liveEntryId);
         if (el) el.classList.remove('entry-live');
-        finalizeEntry(liveEntryId, liveText);
+        finalizeEntry(liveEntryId, _finalText);
         liveEntryId = null; liveText = '';
       }
       // Code 1005/1006: DashScope session timeout — reconnect immediately
@@ -1359,10 +1402,11 @@ function handleDgMessage(evt) {
 
   // Handle UtteranceEnd separately (finalize current utterance)
   if (data.type === 'UtteranceEnd') {
-    if (liveEntryId && liveText) {
+    var _finalText = getLiveTextOrInterim();
+    if (liveEntryId && _finalText) {
       var el = getEl('entry-' + liveEntryId);
       if (el) el.classList.remove('entry-live');
-      finalizeEntry(liveEntryId, liveText);
+      finalizeEntry(liveEntryId, _finalText);
       liveEntryId = null; liveText = '';
     }
     return;
