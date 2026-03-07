@@ -544,6 +544,7 @@ var _qwenAutoSwitched = false; // true after auto-switching to Qwen
 var _qwenSwitchPending = false; // true when Chinese detected, waiting for utterance end
 var _activeEngine = 'deepgram'; // 'deepgram' or 'qwen'
 var _qwenReconnectCount = 0; // guard against infinite reconnect loops
+var _qwenRetrying = false; // prevent onerror+onclose double reconnect
 
 function getEl(id) { return document.getElementById(id); }
 function escHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -626,6 +627,7 @@ function renderSrcLangs() {
             _activeEngine = 'qwen';
             qwenRetryCount = 0;
             _qwenReconnectCount = 0;
+  _qwenRetrying = false;
             connectQwenWebSocket(dgStream);
           } else if (srcInputLang !== 'zh' && _activeEngine === 'qwen') {
             // Switching FROM Chinese → connect Deepgram
@@ -970,6 +972,7 @@ function connectQwenWebSocket(stream) {
   qwenWs.onopen = function() {
     console.log('[qwen] WebSocket connected to DashScope proxy');
     _qwenReconnectCount = 0; // reset on successful connect
+    _qwenRetrying = false;
     setStatus('listening');
     dgLang = 'zh';
 
@@ -1101,11 +1104,13 @@ function connectQwenWebSocket(stream) {
     console.error('[qwen] WebSocket error, attempt=' + qwenRetryCount);
     if (qwenRetryCount < 2 && recording) {
       qwenRetryCount++;
+      _qwenRetrying = true; // prevent onclose from also triggering reconnect
       showError('Qwen ASR \u9023\u7dda\u4e2d\u2026\u7b2c ' + qwenRetryCount + ' \u6b21\u91cd\u8a66');
       cleanupQwenAudio();
       if (qwenWs) { try { qwenWs.close(); } catch(x) {} qwenWs = null; }
       qwenRetryTimer = setTimeout(function() {
         qwenRetryTimer = null;
+        _qwenRetrying = false;
         if (!recording) return;
         hideError();
         connectQwenWebSocket(stream);
@@ -1113,6 +1118,7 @@ function connectQwenWebSocket(stream) {
       return;
     }
     console.log('[qwen] Max retries, falling back to Deepgram');
+    _qwenRetrying = true; // prevent onclose from triggering reconnect
     showError('Qwen ASR \u9023\u7dda\u5931\u6557\uff0c\u5207\u63db\u81f3 Deepgram');
     cleanupQwenAudio();
     if (qwenWs) { try { qwenWs.close(); } catch(x) {} qwenWs = null; }
@@ -1124,6 +1130,11 @@ function connectQwenWebSocket(stream) {
     console.log('[qwen] WebSocket closed', e.code, e.reason);
     cleanupQwenAudio();
     qwenWs = null;
+    if (_qwenRetrying) {
+      // onerror already handling reconnect, skip
+      _qwenRetrying = false;
+      return;
+    }
     if (recording && _activeEngine === 'qwen') {
       if (liveEntryId && liveText) {
         var el = getEl('entry-' + liveEntryId);
