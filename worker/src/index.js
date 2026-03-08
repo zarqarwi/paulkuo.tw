@@ -1395,6 +1395,7 @@ async function handleGroqSTT(request, env) {
   const audioFile = formData.get('audio');
   const userCode = formData.get('code') || '';
   const lang = formData.get('lang') || 'en';
+  const mode = formData.get('mode') || 'normal';
 
   // Auth
   const auth = await authenticateRequest(request, env, userCode);
@@ -1414,11 +1415,21 @@ async function handleGroqSTT(request, env) {
   }
 
   // Forward to Groq Whisper API
+  const isBusiness = (mode === 'business');
+  const groqModel = isBusiness ? 'whisper-large-v3' : 'whisper-large-v3-turbo';
   const groqForm = new FormData();
   groqForm.append('file', audioFile, audioFile.name || 'audio.webm');
-  groqForm.append('model', 'whisper-large-v3-turbo');
+  groqForm.append('model', groqModel);
   groqForm.append('response_format', 'verbose_json');
   groqForm.append('language', lang);
+  if (isBusiness) {
+    groqForm.append('temperature', '0');
+    // Japanese business context prompt (max 224 tokens)
+    if (lang === 'ja') {
+      groqForm.append('prompt', 'ビジネス会議の議事録です。報告、クレーム対応、取引先、発注書、見積書、納期、請求書、部長、課長、担当者、御社、弊社、ご確認、ご検討、ご立腹、お見積り、打ち合わせ、議事録、決裁、稟議、前年比、売上高、営業利益、経常利益、予算、実績、計画、戦略、提案、交渉、契約、締結、解約、更新、イラク、イスラエル、当事者、作戦計画');
+    }
+  }
+  console.log('Groq STT: model=' + groqModel + ' lang=' + lang + ' mode=' + mode);
 
   const MAX_RETRIES = 2;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -1474,9 +1485,11 @@ async function handleGroqSTT(request, env) {
       }
 
       // Log cost: $0.02/hr
-      const costUSD = (duration / 3600) * PRICING['whisper-large-v3-turbo'].perHour;
+      const pricingModel = isBusiness ? 'whisper-large-v3' : 'whisper-large-v3-turbo';
+      const perHour = isBusiness ? 0.111 : (PRICING['whisper-large-v3-turbo']?.perHour || 0.04);
+      const costUSD = (duration / 3600) * perHour;
       await logCost(env.TICKER_KV, {
-        service: 'groq', model: 'whisper-large-v3-turbo', action: 'stt',
+        service: 'groq', model: groqModel, action: 'stt',
         source: 'translator', code: auth.code,
         costUSD: +costUSD.toFixed(8), durationSec: duration,
         note: lang + ' ' + duration.toFixed(1) + 's',

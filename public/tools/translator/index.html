@@ -262,6 +262,11 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 /* Help guide modal */
 .help-btn{padding:4px 12px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all .2s}
 .help-btn:hover{border-color:var(--accent-ai);color:var(--accent-ai)}
+.biz-toggle{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);cursor:pointer;padding:4px 12px;border-radius:100px;border:1.5px solid var(--border);background:transparent;font-family:var(--font-body);transition:all .2s;white-space:nowrap}
+.biz-toggle:hover{border-color:var(--accent-circular);color:var(--accent-circular)}
+.biz-toggle.active{background:rgba(5,150,105,.1);border-color:var(--accent-circular);color:var(--accent-circular);font-weight:600}
+.biz-toggle .biz-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);transition:background .2s}
+.biz-toggle.active .biz-dot{background:var(--accent-circular)}
 .help-section{margin-bottom:20px}
 .help-section h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--brand-navy)}
 .help-section p,.help-section li{font-size:13px;line-height:1.8;color:var(--text-secondary)}
@@ -373,6 +378,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
         </div>
     <div class="spacer"></div>
     <button class="btn-subtitle" id="btnSubtitle" title="字幕模式：全屏顯示翻譯">🖥<span class="btn-text"> 字幕</span></button>
+    <button class="biz-toggle" id="btnBizMode" title="商務模式：使用高精度 STT 引擎（日文）"><span class="biz-dot"></span><span class="btn-text"> 商務</span></button>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
     <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button></div></div>
     <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
@@ -513,6 +519,7 @@ var SRC_LANGS = [
 var inviteCode = sessionStorage.getItem("inviteCode") || "";
 var userName = sessionStorage.getItem("userName") || "";
 var _isAdmin = false; // set on login, controls perf badge + cost visibility
+var businessMode = false; // business mode: higher accuracy STT for Japanese
 var recording = false;
 var mediaRecorder = null;
 var audioContext = null;
@@ -1083,12 +1090,14 @@ function connectGroqChunked(stream) {
     }
   };
   groqMediaRecorder.start();
-  // Stop and send every 5 seconds (Groq free tier: 30 req/min)
+  // Dynamic chunk interval: business mode 10s (more context), normal 5s
+  var chunkMs = (businessMode && srcInputLang === 'ja') ? 10000 : 5000;
+  console.log('[groq] chunk interval: ' + chunkMs + 'ms' + (businessMode ? ' (business mode)' : ''));
   groqChunkTimer = setInterval(function() {
     if (groqMediaRecorder && groqMediaRecorder.state === 'recording') {
       groqMediaRecorder.stop();
     }
-  }, 5000);
+  }, chunkMs);
 }
 var _groqFailCount = 0;
 function sendGroqChunk(blob) {
@@ -1096,6 +1105,7 @@ function sendGroqChunk(blob) {
   form.append('audio', blob, 'audio.webm');
   form.append('code', inviteCode);
   form.append('lang', srcInputLang);
+  if (businessMode) form.append('mode', 'business');
   setStatus('sending');
   fetch(WORKER_URL + '/stt-groq', { method: 'POST', body: form, credentials: 'include' })
     .then(function(r) { return r.json(); })
@@ -1128,7 +1138,7 @@ function sendGroqChunk(blob) {
       div.id = 'entry-' + id;
       var srcFlag = (SRC_LANGS.find(function(l){return l.code===srcInputLang}) || {}).flag || '\ud83c\udf10';
       div.innerHTML = '<div class="entry-meta">' + ts + ' \u00b7 ' + srcFlag + ' \u2192 ' + tgtFlag +
-        '<span class="entry-lang">' + srcInputLang + '</span> <span style="font-size:10px;color:var(--accent-ai)">\u2022 Groq</span></div>' +
+        '<span class="entry-lang">' + srcInputLang + '</span> <span style="font-size:10px;color:var(--accent-ai)">\u2022 Groq' + (businessMode ? ' \ud83c\udfe2' : '') + '</span></div>' +
         '<div class="entry-original" id="orig-' + id + '">' + escHtml(d.original) + '</div>' +
         '<div class="entry-translated" id="trans-' + id + '"><span class="shimmer">\u7ffb\u8b6f\u4e2d...</span></div>';
       getEl('content').appendChild(div);
@@ -1892,6 +1902,17 @@ function updateSubtitle() {
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && subtitleActive) toggleSubtitle(); });
 document.addEventListener('fullscreenchange', function() { if (!document.fullscreenElement && subtitleFullscreen && subtitleActive) { subtitleActive = false; subtitleFullscreen = false; getEl('subtitleOverlay').classList.remove('active'); getEl('btnSubtitle').classList.remove('on'); } });
 getEl('btnSubtitle').addEventListener('click', function(e) { e.stopPropagation(); toggleSubtitle(); });
+getEl('btnBizMode').addEventListener('click', function() {
+  businessMode = !businessMode;
+  var btn = getEl('btnBizMode');
+  btn.classList.toggle('active', businessMode);
+  console.log('[biz] Business mode:', businessMode ? 'ON' : 'OFF');
+  // If currently recording Japanese, reconnect with new settings
+  if (recording && srcInputLang === 'ja' && _activeEngine === 'groq') {
+    cleanupGroq();
+    connectGroqChunked(dgStream);
+  }
+});
 function scrollBottom() {
   if (getEl("autoScroll").checked) {
     var c = getEl("content");
