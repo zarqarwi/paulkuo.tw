@@ -127,30 +127,32 @@ async function authenticateRequest(request, env, inviteCode) {
   return null;
 }
 // === Budget: $1 USD per invite code ===
-const INVITE_BUDGET_USD = 1.0;
+const INVITE_BUDGET_SEC = 10800; // 3 hours
 
-async function getCodeSpent(code, kv) {
+async function getCodeUsedTime(code, kv) {
   if (!code) return 0;
   try {
-    const raw = await kv.get('spent_' + code);
+    const raw = await kv.get('time_' + code);
     return raw ? parseFloat(raw) : 0;
   } catch (e) { return 0; }
 }
 
 async function checkBudget(auth, env) {
   // Admin has unlimited budget
-  if (auth.isAdmin) return { ok: true, spent: 0, budget: Infinity };
+  if (auth.isAdmin) return { ok: true, usedSec: 0, budgetSec: Infinity };
   const code = auth.code || '';
-  if (!code) return { ok: false, spent: 0, budget: INVITE_BUDGET_USD };
-  const spent = await getCodeSpent(code, env.TICKER_KV);
-  // Also count in-memory buffer for this code
-  const buffered = costBuffer.filter(e => e.code === code).reduce((s, e) => s + (e.costUSD || 0), 0);
-  const total = spent + buffered;
+  if (!code) return { ok: false, usedSec: 0, budgetSec: INVITE_BUDGET_SEC };
+  const used = await getCodeUsedTime(code, env.TICKER_KV);
+  // Also count in-memory buffer for this code (STT durations)
+  const buffered = costBuffer
+    .filter(e => e.code === code && e.durationSec > 0)
+    .reduce((s, e) => s + (e.durationSec || 0), 0);
+  const total = used + buffered;
   return {
-    ok: total < INVITE_BUDGET_USD,
-    spent: +total.toFixed(6),
-    budget: INVITE_BUDGET_USD,
-    remaining: +Math.max(0, INVITE_BUDGET_USD - total).toFixed(6),
+    ok: total < INVITE_BUDGET_SEC,
+    usedSec: +total.toFixed(1),
+    budgetSec: INVITE_BUDGET_SEC,
+    remainingSec: +Math.max(0, INVITE_BUDGET_SEC - total).toFixed(1),
   };
 }
 
@@ -601,21 +603,21 @@ async function flushCosts(kv) {
     } catch (e) {
       console.error('flushCosts failed:', e.message);
     }
-    // Accumulate per-code deltas
+    // Accumulate per-code time deltas (STT duration only)
     entries.forEach(e => {
-      if (e.code && e.source === 'translator') {
-        codeDeltas[e.code] = (codeDeltas[e.code] || 0) + (e.costUSD || 0);
+      if (e.code && e.source === 'translator' && e.durationSec > 0) {
+        codeDeltas[e.code] = (codeDeltas[e.code] || 0) + (e.durationSec || 0);
       }
     });
   }
-  // Update per-code spent KV keys
+  // Update per-code used time KV keys
   for (const [code, delta] of Object.entries(codeDeltas)) {
     if (!code || code.startsWith('oauth:')) continue; // skip admin OAuth codes
     try {
-      const prev = parseFloat(await kv.get('spent_' + code) || '0');
-      await kv.put('spent_' + code, (prev + delta).toFixed(6));
+      const prev = parseFloat(await kv.get('time_' + code) || '0');
+      await kv.put('time_' + code, (prev + delta).toFixed(1));
     } catch (e) {
-      console.error('spent update failed for', code, e.message);
+      console.error('time update failed for', code, e.message);
     }
   }
 }
@@ -708,7 +710,7 @@ async function handleSTT(request, env) {
   // Budget check
   const budgetSTT = await checkBudget(auth, env);
   if (!budgetSTT.ok) {
-    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', spent: budgetSTT.spent, budget: budgetSTT.budget }, 402, request);
+    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetSTT.usedSec, budgetSec: budgetSTT.budgetSec, remainingSec: budgetSTT.remainingSec }, 402, request);
   }
 
   if (!audioFile) {
@@ -868,7 +870,7 @@ async function handleTranslate(request, env) {
   // Budget check
   const budget = await checkBudget(auth, env);
   if (!budget.ok) {
-    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', spent: budget.spent, budget: budget.budget }, 402, request);
+    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budget.usedSec, budgetSec: budget.budgetSec, remainingSec: budget.remainingSec }, 402, request);
   }
 
   // Truncate to prevent abuse (max 2000 chars)
@@ -958,7 +960,7 @@ async function handleTranslateStream(request, env) {
   // Budget check
   const budgetS = await checkBudget(auth, env);
   if (!budgetS.ok) {
-    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', spent: budgetS.spent, budget: budgetS.budget }, 402, request);
+    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetS.usedSec, budgetSec: budgetS.budgetSec, remainingSec: budgetS.remainingSec }, 402, request);
   }
 
   const trimmedText = text.slice(0, 2000);
@@ -1232,7 +1234,7 @@ async function handleSummarize(request, env) {
   // Budget check
   const budgetSum = await checkBudget(auth, env);
   if (!budgetSum.ok) {
-    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', spent: budgetSum.spent, budget: budgetSum.budget }, 402, request);
+    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetSum.usedSec, budgetSec: budgetSum.budgetSec, remainingSec: budgetSum.remainingSec }, 402, request);
   }
 
   if (!text || text.trim().length < 20) {
@@ -1339,8 +1341,8 @@ async function handleValidateCode(request, env) {
     // Include budget info for non-admin codes
     let budgetInfo = {};
     if (result.role !== 'admin') {
-      const spent = await getCodeSpent(body.code.trim().toLowerCase(), env.TICKER_KV);
-      budgetInfo = { budgetUSD: INVITE_BUDGET_USD, spentUSD: +spent.toFixed(6), remainingUSD: +Math.max(0, INVITE_BUDGET_USD - spent).toFixed(6) };
+      const usedSec = await getCodeUsedTime(body.code.trim().toLowerCase(), env.TICKER_KV);
+      budgetInfo = { budgetSec: INVITE_BUDGET_SEC, usedSec: +usedSec.toFixed(1), remainingSec: +Math.max(0, INVITE_BUDGET_SEC - usedSec).toFixed(1) };
     }
     return jsonResponse({ valid: true, name: result.name, role: result.role, ...budgetInfo }, 200, request);
   }
@@ -1437,7 +1439,7 @@ async function handlePolishTranscript(request, env) {
   // Budget check
   const budgetP = await checkBudget(auth, env);
   if (!budgetP.ok) {
-    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', spent: budgetP.spent, budget: budgetP.budget }, 402, request);
+    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetP.usedSec, budgetSec: budgetP.budgetSec, remainingSec: budgetP.remainingSec }, 402, request);
   }
 
   if (!entries || !Array.isArray(entries) || entries.length === 0) {
@@ -1558,7 +1560,7 @@ async function handleLogCost(request, env) {
   // Budget check for non-admin
   const budgetLC = await checkBudget(auth, env);
   if (!budgetLC.ok) {
-    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', spent: budgetLC.spent, budget: budgetLC.budget }, 402, request);
+    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetLC.usedSec, budgetSec: budgetLC.budgetSec, remainingSec: budgetLC.remainingSec }, 402, request);
   }
   await logCost(env.TICKER_KV, {
     service: service || 'unknown',
@@ -1699,7 +1701,7 @@ async function handleGroqSTT(request, env) {
   // Budget check
   const budgetG = await checkBudget(auth, env);
   if (!budgetG.ok) {
-    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', spent: budgetG.spent, budget: budgetG.budget }, 402, request);
+    return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetG.usedSec, budgetSec: budgetG.budgetSec, remainingSec: budgetG.remainingSec }, 402, request);
   }
 
   if (!audioFile) {
