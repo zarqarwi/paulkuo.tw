@@ -767,6 +767,39 @@ html[lang="ja"] .about-content p {
   color: var(--accent-ai, #2563eb);
   background: rgba(37, 99, 235, 0.05);
 }
+.share-line {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.share-line:hover {
+  border-color: #06C755;
+  color: #06C755;
+  background: rgba(6, 199, 85, 0.05);
+}
+.share-fb {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.share-fb:hover {
+  border-color: #1877F2;
+  color: #1877F2;
+  background: rgba(24, 119, 242, 0.05);
+}
+.share-copy {
+  width: auto;
+  padding: 0 12px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  background: transparent;
+  font-family: inherit;
+}
+.share-copy:hover {
+  border-color: var(--accent-circular, #059669);
+  color: var(--accent-circular, #059669);
+  background: rgba(5, 150, 105, 0.05);
+}
 
 /* Article Prev/Next Navigation */
 .article-nav {
