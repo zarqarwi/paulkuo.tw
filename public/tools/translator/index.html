@@ -378,7 +378,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
         </div>
     <div class="spacer"></div>
     <button class="btn-subtitle" id="btnSubtitle" title="字幕模式：全屏顯示翻譯">🖥<span class="btn-text"> 字幕</span></button>
-    <button class="biz-toggle" id="btnBizMode" title="商務模式：使用高精度日文 STT（whisper-large-v3 + 商務術語）" style="display:none"><span class="biz-dot"></span><span class="btn-text"> 商務</span></button>
+    <button class="biz-toggle" id="btnBizMode" title="商務模式：使用 Google Chirp 3 高精度日文 STT + 1000 術語適應" style="display:none"><span class="biz-dot"></span><span class="btn-text"> 商務</span></button>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
     <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button></div></div>
     <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
@@ -1100,9 +1100,10 @@ function connectGroqChunked(stream) {
     }
   };
   groqMediaRecorder.start();
-  // Dynamic chunk interval: business mode 10s (more context), normal 5s
-  var chunkMs = (businessMode && srcInputLang === 'ja') ? 10000 : 5000;
-  console.log('[groq] chunk interval: ' + chunkMs + 'ms' + (businessMode ? ' (business mode)' : ''));
+  // Dynamic chunk interval: Google Chirp 3 business 15s (supports up to 8min), Groq business 10s, normal 5s
+  var useGoogleChirp = (businessMode && srcInputLang === 'ja');
+  var chunkMs = useGoogleChirp ? 15000 : (businessMode ? 10000 : 5000);
+  console.log('[groq] chunk interval: ' + chunkMs + 'ms' + (useGoogleChirp ? ' (Chirp3 business)' : businessMode ? ' (business mode)' : ''));
   groqChunkTimer = setInterval(function() {
     if (groqMediaRecorder && groqMediaRecorder.state === 'recording') {
       groqMediaRecorder.stop();
@@ -1115,9 +1116,20 @@ function sendGroqChunk(blob) {
   form.append('audio', blob, 'audio.webm');
   form.append('code', inviteCode);
   form.append('lang', srcInputLang);
-  if (businessMode) form.append('mode', 'business');
+  // Route: Japanese business → Google Chirp 3, otherwise → Groq
+  var useGoogle = (businessMode && srcInputLang === 'ja');
+  var sttUrl = useGoogle ? '/stt-google' : '/stt-groq';
+  if (useGoogle) {
+    var cg = getCleanGlossary();
+    if (cg.length > 0) {
+      var phraseTerms = cg.map(function(g) { return g.term; });
+      form.append('phrases', JSON.stringify(phraseTerms));
+    }
+  } else {
+    if (businessMode) form.append('mode', 'business');
+  }
   setStatus('sending');
-  fetch(WORKER_URL + '/stt-groq', { method: 'POST', body: form, credentials: 'include' })
+  fetch(WORKER_URL + sttUrl, { method: 'POST', body: form, credentials: 'include' })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.error) {
@@ -1148,7 +1160,7 @@ function sendGroqChunk(blob) {
       div.id = 'entry-' + id;
       var srcFlag = (SRC_LANGS.find(function(l){return l.code===srcInputLang}) || {}).flag || '\ud83c\udf10';
       div.innerHTML = '<div class="entry-meta">' + ts + ' \u00b7 ' + srcFlag + ' \u2192 ' + tgtFlag +
-        '<span class="entry-lang">' + srcInputLang + '</span> <span style="font-size:10px;color:var(--accent-ai)">\u2022 Groq' + (businessMode ? ' \ud83c\udfe2' : '') + '</span></div>' +
+        '<span class="entry-lang">' + srcInputLang + '</span> <span style="font-size:10px;color:var(--accent-ai)">\u2022 ' + (useGoogle ? 'Chirp3 \ud83c\udfe2' : 'Groq' + (businessMode ? ' \ud83c\udfe2' : '')) + '</span></div>' +
         '<div class="entry-original" id="orig-' + id + '">' + escHtml(d.original) + '</div>' +
         '<div class="entry-translated" id="trans-' + id + '"><span class="shimmer">\u7ffb\u8b6f\u4e2d...</span></div>';
       getEl('content').appendChild(div);
