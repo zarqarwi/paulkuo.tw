@@ -2644,6 +2644,11 @@ async function handleRequest(request, env) {
     if (!wsAuth) {
       return jsonResponse({ error: 'Authentication required' }, 403, request);
     }
+    // Budget check before WebSocket upgrade
+    const wsBudgetQ = await checkBudget(wsAuth, env);
+    if (!wsBudgetQ.ok) {
+      return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: wsBudgetQ.usedSec, budgetSec: wsBudgetQ.budgetSec, remainingSec: wsBudgetQ.remainingSec }, 402, request);
+    }
     const dashscopeKey = env.DASHSCOPE_API_KEY;
     if (!dashscopeKey) {
       return jsonResponse({ error: 'DashScope not configured' }, 500, request);
@@ -2673,6 +2678,11 @@ async function handleRequest(request, env) {
     const wsAuth = await authenticateRequest(request, env, wsCode);
     if (!wsAuth) {
       return jsonResponse({ error: 'Authentication required' }, 403, request);
+    }
+    // Budget check before WebSocket upgrade
+    const wsBudgetD = await checkBudget(wsAuth, env);
+    if (!wsBudgetD.ok) {
+      return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: wsBudgetD.usedSec, budgetSec: wsBudgetD.budgetSec, remainingSec: wsBudgetD.remainingSec }, 402, request);
     }
     const dgKey = env.DEEPGRAM_API_KEY;
     if (!dgKey) {
