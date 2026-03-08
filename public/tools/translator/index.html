@@ -284,6 +284,11 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .matrix-strip-right{left:auto;right:0}
 
 /* Today stats badge */
+.time-quota{font-size:12px;color:var(--text-muted);padding:4px 12px;border-radius:100px;border:1px solid var(--border-light);background:var(--bg-section);white-space:nowrap;display:none;align-items:center;gap:4px;font-family:var(--font-body);font-variant-numeric:tabular-nums}
+.time-quota.visible{display:inline-flex}
+.time-quota .tq-time{font-weight:600;color:var(--accent-circular)}
+.time-quota.low .tq-time{color:#f59e0b}
+.time-quota.critical .tq-time{color:#dc2626;font-weight:700}
 .today-stats{font-size:12px;color:var(--text-muted);padding:4px 12px;border-radius:100px;border:1px solid var(--border-light);background:var(--bg-section);white-space:nowrap;display:none;align-items:center;gap:6px;font-family:var(--font-body);font-variant-numeric:tabular-nums}
 .today-stats.visible{display:inline-flex}
 .today-stats .stat-val{font-weight:600;color:var(--text-secondary)}
@@ -370,6 +375,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   </div>
   <div style="display:flex;align-items:center;gap:8px;width:100%">
     <button class="glossary-toggle" id="btnGlossary" title="術語表設定">📖<span class="btn-text"> 術語表</span></button>
+    <span class="time-quota" id="timeQuota">⏱ 剩餘 <span class="tq-time" id="tqTime">--:--</span></span>
     <span class="today-stats" id="todayStats"></span>
         <div class="quota-row" id="quotaRow" style="display:none">
           <span class="q-item" id="qDg" title="Deepgram 免費額度">🎙️ <span class="q-bar"><span class="q-fill" id="qDgFill"></span></span> <span class="q-txt" id="qDgTxt">—</span></span>
@@ -1789,6 +1795,8 @@ function finalizeEntry(id, text) {
       note: dgLang + ' ' + durSec.toFixed(1) + 's'
     })
   }).catch(function(e) { console.warn('[stt] cost log failed:', e); });
+  // Deduct from local time quota
+  deductTimeQuota(durSec);
   dgUtteranceDuration = 0;
 
   // Show perf badge after translation finishes (poll until translateDone exists)
@@ -2360,6 +2368,35 @@ window.addEventListener("resize", function() {
   if (matrixActive) matrixStrips.forEach(function(s) { s.canvas.height = window.innerHeight; });
 });
 
+// === Time Quota Display ===
+var _remainingSec = -1; // -1 = not initialized, 0+ = seconds remaining
+
+function formatTimeQuota(sec) {
+  if (sec <= 0) return '0:00';
+  var h = Math.floor(sec / 3600);
+  var m = Math.floor((sec % 3600) / 60);
+  var s = Math.floor(sec % 60);
+  if (h > 0) return h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function updateTimeQuotaUI() {
+  var el = getEl('timeQuota');
+  if (!el || _isAdmin || _remainingSec < 0) return;
+  el.classList.add('visible');
+  getEl('tqTime').textContent = formatTimeQuota(_remainingSec);
+  el.classList.remove('low', 'critical');
+  if (_remainingSec <= 300) el.classList.add('critical');
+  else if (_remainingSec <= 900) el.classList.add('low');
+}
+
+function deductTimeQuota(sec) {
+  if (_isAdmin || _remainingSec < 0) return;
+  _remainingSec = Math.max(0, _remainingSec - sec);
+  updateTimeQuotaUI();
+  if (_remainingSec <= 0) handleBudgetExceeded();
+}
+
 // === Budget Exceeded Handler ===
 var _budgetExceeded = false;
 function handleBudgetExceeded() {
@@ -2425,6 +2462,11 @@ function tryEnter() {
       _isAdmin = (d.role === 'admin');
       sessionStorage.setItem("inviteCode", code);
       sessionStorage.setItem("userName", userName);
+      // Initialize time quota display
+      if (!_isAdmin && d.remainingSec !== undefined) {
+        _remainingSec = d.remainingSec;
+        updateTimeQuotaUI();
+      }
       // Check if budget is already exhausted (time-based)
       if (!_isAdmin && d.remainingSec !== undefined && d.remainingSec <= 0) {
         hideGate();
@@ -2518,10 +2560,15 @@ function showGateStep2(user) {
         .then(function(r) { return r.json(); })
         .then(function(dd) {
           if (dd.valid) {
+            if (!_isAdmin && dd.remainingSec !== undefined) {
+              _remainingSec = dd.remainingSec;
+              if (dd.remainingSec <= 0) { hideGate(); handleBudgetExceeded(); return; }
+            }
             hideGate();
             userName = _authUser.name || dd.name;
             sessionStorage.setItem("userName", userName);
             showUserBadge();
+            if (!_isAdmin) updateTimeQuotaUI();
             loadQuotaStatus();
           } else {
             sessionStorage.removeItem("inviteCode");
