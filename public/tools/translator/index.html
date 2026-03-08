@@ -2625,14 +2625,55 @@ function downloadFile(content, filename, mimeType) {
   getEl("exportMenu").classList.remove("visible");
 }
 
+// === AI Polish before export ===
+var _polished = false;
+function polishAndExport(buildFn, filename, mimeType) {
+  var jaEntries = allEntries.filter(function(e) { return e.original && (e.detectedLang === "ja" || srcInputLang === "ja"); });
+  if (_polished || jaEntries.length < 3) {
+    var d = new Date().toISOString().slice(0, 10);
+    downloadFile(buildFn(), filename.replace("{d}", d), mimeType);
+    return;
+  }
+  var btn = getEl("btnExport");
+  var origHTML = btn.innerHTML;
+  btn.innerHTML = "⏳ AI 校正中...";
+  btn.disabled = true;
+  getEl("exportMenu").classList.remove("visible");
+  var polishEntries = allEntries.map(function(e) { return { original: e.original || "", ts: e.ts || "" }; });
+  var cg = getCleanGlossary();
+  var glossaryTerms = cg.map(function(g) { return { term: g.term, translation: g.translation }; });
+  fetch(WORKER_URL + "/polish-transcript", {
+    method: "POST", credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ entries: polishEntries, glossary: glossaryTerms, code: inviteCode })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.polished && Array.isArray(data.polished)) {
+      data.polished.forEach(function(p, i) {
+        if (p.corrected && allEntries[i]) {
+          allEntries[i].originalRaw = allEntries[i].original;
+          allEntries[i].original = p.corrected;
+        }
+      });
+      _polished = true;
+      console.log("Polish: " + data.corrections + " corrections, $" + data.cost);
+    }
+  })
+  .catch(function(e) { console.warn("Polish failed, exporting raw:", e.message); })
+  .finally(function() {
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+    var d = new Date().toISOString().slice(0, 10);
+    downloadFile(buildFn(), filename.replace("{d}", d), mimeType);
+  });
+}
 getEl("exportTxt").addEventListener("click", function() {
-  var d = new Date().toISOString().slice(0, 10);
-  downloadFile(buildTranscriptTxt(), d + "_transcript.txt", "text/plain;charset=utf-8");
+  polishAndExport(buildTranscriptTxt, "{d}_transcript.txt", "text/plain;charset=utf-8");
 });
 
 getEl("exportCsv").addEventListener("click", function() {
-  var d = new Date().toISOString().slice(0, 10);
-  downloadFile(buildTranscriptCsv(), d + "_transcript.csv", "text/csv;charset=utf-8");
+  polishAndExport(buildTranscriptCsv, "{d}_transcript.csv", "text/csv;charset=utf-8");
 });
 
 // === Translated-only TXT export ===
@@ -2653,8 +2694,7 @@ function buildTranslatedTxt() {
 }
 
 getEl("exportTranslated").addEventListener("click", function() {
-  var d = new Date().toISOString().slice(0, 10);
-  downloadFile(buildTranslatedTxt(), d + "_translated.txt", "text/plain;charset=utf-8");
+  polishAndExport(buildTranslatedTxt, "{d}_translated.txt", "text/plain;charset=utf-8");
 });
 
 

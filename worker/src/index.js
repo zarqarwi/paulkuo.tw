@@ -1336,6 +1336,120 @@ async function handleUsage(request, env) {
 // handleDeepgramToken removed — /ws/stt proxy handles Deepgram auth
 
 
+// === Polish Transcript (AI correction on export) ===
+async function handlePolishTranscript(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+  if (!env.ANTHROPIC_API_KEY) {
+    return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
+  }
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400, request);
+  }
+  const { entries, glossary, code: polishCode } = body;
+  const auth = await authenticateRequest(request, env, polishCode || '');
+  if (!auth) {
+    return jsonResponse({ error: 'Authentication required' }, 401, request);
+  }
+  if (!entries || !Array.isArray(entries) || entries.length === 0) {
+    return jsonResponse({ error: 'No entries to polish' }, 400, request);
+  }
+  // Build glossary hint
+  let glossarySection = '';
+  if (glossary && glossary.length > 0) {
+    glossarySection = '\n## 術語庫\n' + glossary.map(function(g) { return '- ' + g.term + (g.translation ? ' (' + g.translation + ')' : ''); }).join('\n') + '\n';
+  }
+  // Build transcript lines
+  var transcriptLines = entries.map(function(e, i) {
+    return '[' + i + '] ' + (e.original || '');
+  }).join('\n');
+  // Truncate to ~80K chars to stay safe
+  if (transcriptLines.length > 80000) {
+    transcriptLines = transcriptLines.slice(0, 80000);
+  }
+  var prompt = 'あなたは日本語商務会議の逐字稿校正アシスタントです。\n\n'
+    + '## 校正ルール\n'
+    + '1. 音声認識の同音異字を術語庫の語彙に優先的に修正する\n'
+    + '2. ビジネス・製造業・半導体会議でよく使われる用語を優先する\n'
+    + '3. 話し言葉のニュアンスを保持し、過度に書き言葉にしない\n'
+    + '4. 明らかな誤認識のみ修正し、正しいテキストはそのまま残す\n'
+    + glossarySection
+    + '\n## 出力形式\n'
+    + 'JSON配列で返してください。各要素は {"i": 行番号, "t": "修正後テキスト"} です。\n'
+    + '修正が不要な行は含めないでください。修正があった行だけ返してください。\n'
+    + 'JSON配列のみ出力し、他のテキストは一切含めないでください。\n'
+    + '\n## 逐字稿\n'
+    + transcriptLines;
+  var claudeBody = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 8192,
+    messages: [{ role: 'user', content: prompt }]
+  });
+  var MAX_RETRIES = 3;
+  for (var attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(function(r) { setTimeout(r, 1500 * attempt); });
+      var res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: claudeBody
+      });
+      if (res.status === 529 && attempt < MAX_RETRIES - 1) {
+        continue;
+      }
+      if (!res.ok) {
+        var err = await res.json().catch(function() { return {}; });
+        throw new Error(err.error?.message || ('Claude API ' + res.status));
+      }
+      var data = await res.json();
+      var raw = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text.trim() : '[]';
+      var usage = data.usage || {};
+      var hp = PRICING['claude-haiku-4-5-20251001'];
+      var cost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
+      await logCost(env.TICKER_KV, {
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'polish-transcript', source: 'translator', code: auth.code,
+        inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
+        costUSD: +cost.toFixed(6), note: entries.length + ' entries'
+      });
+      // Parse corrections
+      var corrections;
+      try {
+        var jsonMatch = raw.match(/\[\s*\{[\s\S]*\}\s*\]/);
+        corrections = JSON.parse(jsonMatch ? jsonMatch[0] : raw);
+      } catch (e) {
+        corrections = [];
+      }
+      // Apply corrections to entries
+      var polished = entries.map(function(e) { return { original: e.original, ts: e.ts }; });
+      if (Array.isArray(corrections)) {
+        corrections.forEach(function(c) {
+          if (typeof c.i === 'number' && c.t && polished[c.i]) {
+            polished[c.i].corrected = c.t;
+          }
+        });
+      }
+      return jsonResponse({
+        polished: polished,
+        corrections: corrections.length,
+        cost: +cost.toFixed(6)
+      }, 200, request);
+    } catch (e) {
+      if (attempt === MAX_RETRIES - 1) {
+        return jsonResponse({ error: 'Polish failed: ' + e.message }, 500, request);
+      }
+    }
+  }
+  return jsonResponse({ error: 'Polish failed after retries' }, 500, request);
+}
+
 // === Log External Costs (e.g. Deepgram streaming from frontend) ===
 async function handleLogCost(request, env) {
   if (request.method !== 'POST') {
@@ -2359,6 +2473,9 @@ async function handleRequest(request, env) {
   // Google Chirp 3 STT (Japanese high-precision)
   if (path === '/stt-google') {
     return handleGoogleSTT(request, env);
+  }
+  if (path === '/polish-transcript') {
+    return handlePolishTranscript(request, env);
   }
 
   // === WebSocket proxy to Qwen3-ASR (edge -> DashScope, transparent proxy) ===
