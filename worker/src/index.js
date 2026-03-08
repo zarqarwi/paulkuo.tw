@@ -1567,7 +1567,7 @@ async function handleLogCost(request, env) {
     model: model || '',
     action: action || 'unknown',
     source: source || 'unknown',
-    code: code || '',
+    code: code || auth.code || '',
     costUSD: +Number(costUSD).toFixed(6),
     durationSec: durationSec || 0,
     note: (note || '').slice(0, 200),
