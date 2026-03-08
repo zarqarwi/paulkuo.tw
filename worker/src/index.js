@@ -1484,6 +1484,24 @@ async function handleGroqSTT(request, env) {
         transcript = '';
       }
 
+      // Filter prompt leakage: Whisper sometimes outputs the prompt itself during silence
+      // Detect by checking for repeated business terms (e.g. 課長、課長、課長...)
+      if (transcript && isBusiness) {
+        // Check for 3+ repeated terms (strong signal of prompt leakage)
+        const repeatMatch = transcript.match(/([一-鿿぀-ゟ゠-ヿ]{2,})[、,].*(\1[、,].*){2,}/);
+        if (repeatMatch) {
+          console.log('Filtered prompt leakage (repeated terms):', transcript.slice(0, 80));
+          transcript = '';
+        }
+        // Check if transcript is mostly prompt keywords (>60% overlap)
+        const promptKeywords = ['報告', 'クレーム', '取引先', '発注書', '見積書', '課長', '部長', '担当者', '納期', '稟議', '前年比'];
+        const matchCount = promptKeywords.filter(k => transcript.includes(k)).length;
+        if (matchCount >= 4 && transcript.length < 100) {
+          console.log('Filtered prompt leakage (keyword density):', transcript.slice(0, 80));
+          transcript = '';
+        }
+      }
+
       // Log cost: $0.02/hr
       const pricingModel = isBusiness ? 'whisper-large-v3' : 'whisper-large-v3-turbo';
       const perHour = isBusiness ? 0.111 : (PRICING['whisper-large-v3-turbo']?.perHour || 0.04);
