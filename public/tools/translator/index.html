@@ -653,7 +653,7 @@ function renderSrcLangs() {
       // Show business mode toggle only for Japanese
       var bizBtn = getEl('btnBizMode');
       if (bizBtn) {
-        if (srcInputLang === 'ja') {
+        if (srcInputLang === 'ja' && _isAdmin) {
           bizBtn.style.display = '';
         } else {
           bizBtn.style.display = 'none';
@@ -1133,6 +1133,7 @@ function sendGroqChunk(blob) {
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.error) {
+        if (checkBudgetResponse(d)) return;
         console.warn('[groq] error:', d.error);
         showError('Groq: ' + d.error);
         _groqFailCount++;
@@ -1671,7 +1672,7 @@ function translateSegmentStreaming(id, segmentText, abortSignal) {
   fetch(WORKER_URL + '/translate-stream', fetchOpts)
   .then(function(r) {
     console.log('[translate] response status=' + r.status + ' type=' + r.headers.get('content-type'));
-    if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || r.status); });
+    if (!r.ok) return r.json().then(function(d) { if (checkBudgetResponse(d)) return new Response(''); throw new Error(d.error || r.status); });
     var reader = r.body.getReader();
     var decoder = new TextDecoder();
     var sseBuf = ''; // SSE buffer to handle chunk boundary splits
@@ -2071,6 +2072,7 @@ function sendAudio(blob) {
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.error) {
+        if (checkBudgetResponse(d)) return;
         updateEntry(id, "\u26a0 " + d.error, "", "");
         return;
       }
@@ -2134,6 +2136,7 @@ getEl("btnSummary").addEventListener("click", function() {
   .then(function(r) { return r.json(); })
   .then(function(d) {
     if (d.error) {
+      if (checkBudgetResponse(d)) return;
       body.innerHTML = '<div style="color:#dc2626;padding:20px">\u26a0 ' + escHtml(d.error) + '</div>';
       return;
     }
@@ -2357,6 +2360,34 @@ window.addEventListener("resize", function() {
   if (matrixActive) matrixStrips.forEach(function(s) { s.canvas.height = window.innerHeight; });
 });
 
+// === Budget Exceeded Handler ===
+var _budgetExceeded = false;
+function handleBudgetExceeded() {
+  if (_budgetExceeded) return;
+  _budgetExceeded = true;
+  // Stop recording if active
+  if (recording) stopRecording();
+  // Show budget exceeded overlay
+  var overlay = document.createElement('div');
+  overlay.className = 'gate-overlay';
+  overlay.id = 'budgetGate';
+  overlay.innerHTML = '<div class="gate-box">' +
+    '<div class="gate-logo">\ud83d\udcb0</div>' +
+    '<div class="gate-title">\u9ad4\u9a57\u984d\u5ea6\u5df2\u7528\u5b8c</div>' +
+    '<div class="gate-desc" style="line-height:1.8">\u611f\u8b1d\u4f60\u7684\u4f7f\u7528\uff01<br>\u672c\u6b21\u9080\u8acb\u78bc\u7684\u514d\u8cbb\u984d\u5ea6\u5df2\u7528\u5b8c\u3002</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+}
+
+// Global fetch error interceptor for budget_exceeded
+function checkBudgetResponse(data) {
+  if (data && data.code === 'budget_exceeded') {
+    handleBudgetExceeded();
+    return true;
+  }
+  return false;
+}
+
 // === Invite Code Gate ===
 function showGate() { getEl("gate").style.display = "flex"; }
 function hideGate() { getEl("gate").style.display = "none"; }
@@ -2394,6 +2425,12 @@ function tryEnter() {
       _isAdmin = (d.role === 'admin');
       sessionStorage.setItem("inviteCode", code);
       sessionStorage.setItem("userName", userName);
+      // Check if budget is already exhausted
+      if (!_isAdmin && d.remainingUSD !== undefined && d.remainingUSD <= 0) {
+        hideGate();
+        handleBudgetExceeded();
+        return;
+      }
       hideGate();
       showUserBadge();
       if (_isAdmin) loadTodayStats(); loadQuotaStatus();
@@ -2649,6 +2686,7 @@ function polishAndExport(buildFn, filename, mimeType) {
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
+    if (checkBudgetResponse(data)) return;
     if (data.polished && Array.isArray(data.polished)) {
       data.polished.forEach(function(p, i) {
         if (p.corrected && allEntries[i]) {
