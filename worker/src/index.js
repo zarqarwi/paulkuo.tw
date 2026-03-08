@@ -1669,9 +1669,15 @@ async function handleGoogleSTT(request, env) {
     return jsonResponse({ error: 'Google auth: ' + e.message }, 500, request);
   }
 
-  // Read audio as base64
+  // Read audio as base64 (chunked to avoid spread operator RangeError on large files)
   const audioBytes = await audioFile.arrayBuffer();
-  const audioBase64 = btoa(String.fromCharCode(...new Uint8Array(audioBytes)));
+  const audioUint8 = new Uint8Array(audioBytes);
+  let audioBinary = '';
+  const CHUNK = 0x8000; // 32KB chunks
+  for (let i = 0; i < audioUint8.length; i += CHUNK) {
+    audioBinary += String.fromCharCode.apply(null, audioUint8.subarray(i, i + CHUNK));
+  }
+  const audioBase64 = btoa(audioBinary);
 
   // Build Speech Adaptation phrases
   const defaultJaPhrases = [
