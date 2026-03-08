@@ -1943,14 +1943,22 @@ async function handleRequest(request, env) {
     let tokenOk = false;
     if (hasToken) {
       const t = JSON.parse(tokenJson);
-      tokenOk = t.expires_at > Date.now();
+      tokenOk = (t.expires_at * 1000) > Date.now();
     }
     const stockCache = await env.TICKER_KV.get('stock_cache');
     const stockAge = stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null;
 
+    const fitbitLastRefresh = await env.TICKER_KV.get('fitbit_last_refresh');
+    const fitbitHoursAgo = fitbitLastRefresh
+      ? Math.round((Date.now() - new Date(fitbitLastRefresh).getTime()) / 3600000 * 10) / 10
+      : null;
+
     return jsonResponse({
       status: 'ok',
       fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing',
+      fitbit_last_refresh: fitbitLastRefresh || 'never',
+      fitbit_hours_ago: fitbitHoursAgo,
+      fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12,
       stock_cache_age_sec: stockAge,
       tse_trading: isTseTradingHours(),
       timestamp: new Date().toISOString(),
@@ -2166,6 +2174,7 @@ async function handleRequest(request, env) {
 async function handleScheduled(event, env) {
   try {
     await refreshToken(env.TICKER_KV, env);
+    await env.TICKER_KV.put('fitbit_last_token_refresh', new Date().toISOString());
     console.log('Cron: token refresh success');
   } catch (e) {
     console.error('Cron: token refresh FAILED:', e.message);
@@ -2173,6 +2182,7 @@ async function handleScheduled(event, env) {
   // Pre-fetch Fitbit data so cache is always fresh
   try {
     await fetchFitbitData(env.TICKER_KV, env);
+    await env.TICKER_KV.put('fitbit_last_refresh', new Date().toISOString());
     console.log('Cron: Fitbit data cached');
   } catch (e) {
     console.error('Cron: Fitbit fetch FAILED:', e.message);
