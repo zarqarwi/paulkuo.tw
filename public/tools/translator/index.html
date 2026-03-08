@@ -2824,9 +2824,19 @@ function renderAdminCodes() {
   var html = '';
   _adminCodes.forEach(function(c) {
     var roleCls = c.role === 'admin' ? 'admin' : 'user';
+    var statsHtml = '';
+    if (c.role !== 'admin') {
+      var usersStr = c.maxUsers ? (c.usersCount || 0) + '/' + c.maxUsers + '人' : (c.usersCount || 0) + '人';
+      var timeSec = c.timeUsedSec || 0;
+      var budgetSec = 7200;
+      var remainMin = Math.max(0, Math.floor((budgetSec - timeSec) / 60));
+      var timeStr = '剩 ' + remainMin + ' 分鐘';
+      if (remainMin <= 0) timeStr = '已用完';
+      statsHtml = '<div style="font-size:11px;color:var(--text-muted);margin-top:4px">👤 ' + usersStr + ' · ⏱ ' + timeStr + '</div>';
+    }
     html += '<div class="admin-code-item">' +
       '<div><span class="code-name">' + escHtml(c.name) + '</span><span class="code-key">' + escHtml(c.code) + '</span>' +
-      '<span class="code-role ' + roleCls + '">' + c.role + '</span></div>' +
+      '<span class="code-role ' + roleCls + '">' + c.role + '</span>' + statsHtml + '</div>' +
       '<button class="code-del" onclick="deleteAdminCode(\'' + escHtml(c.code) + '\')" title="刪除">🗑</button>' +
       '</div>';
   });

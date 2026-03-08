@@ -2416,7 +2416,14 @@ async function handleAdminGetCodes(request, env) {
   try {
     const raw = await env.TICKER_KV.get('invite_codes');
     const codes = raw ? JSON.parse(raw) : {};
-    const list = Object.entries(codes).map(([code, info]) => ({ code, ...info }));
+    // Enrich with usage stats (users count, time used)
+    const list = [];
+    for (const [code, info] of Object.entries(codes)) {
+      const usersRaw = await env.TICKER_KV.get('code_users_' + code);
+      const users = usersRaw ? JSON.parse(usersRaw) : [];
+      const timeUsed = parseFloat(await env.TICKER_KV.get('time_' + code) || '0');
+      list.push({ code, ...info, usersCount: users.length, timeUsedSec: +timeUsed.toFixed(1) });
+    }
     return jsonResponse({ codes: list, total: list.length }, 200, request);
   } catch (e) {
     return jsonResponse({ error: 'Failed to read codes: ' + e.message }, 500, request);
