@@ -1,0 +1,18 @@
+{
+  "slug": "google-chirp3-japanese-stt-benchmark",
+  "title": "6.4%：讓日文語音辨識的精準度，從「堪用」跳到「可商用」",
+  "url": "https://paulkuo.tw/articles/google-chirp3-japanese-stt-benchmark",
+  "pillar": "ai",
+  "summaries": {
+    "X": "免費的 Whisper vs 付費的 Google Chirp 3，日文語音辨識差距有多大？\n\n同一段 TSMC 技術影片：\n• Whisper 錯誤率 36.5%\n• Chirp 3 錯誤率 6.4%\n\n一個每三字錯一字，一個幾乎逐字正確。一小時商務會議成本不到一美元。免費工具在關鍵場景，真的是陷阱。\n\n#AI #語音辨識\nhttps://paulkuo.tw/articles/google-chirp3-japanese-stt-benchmark",
+    "LI": "最近在開發即時會議翻譯工具時，遇到一個關鍵問題：免費的語音辨識在商務場景夠用嗎？\n\n我用四種日文商務場景實測了 Groq Whisper 和 Google Chirp 3，結果讓我重新思考對「免費 AI 工具」的信任基礎。\n\n同一段 TSMC 半導體技術解說：\n• Whisper 字元錯誤率 36.5%（每三字錯一字）\n• Chirp 3 錯誤率 6.4%（幾乎逐字正確）\n\n四個場景平均下來，精準度提升了 71.7%。關鍵不只是模型更強，而是 Chirp 3 的 Speech Adaptation 功能，可以預先載入 5,000 個專業術語，讓系統「知道該聽什麼」。\n\n成本呢？一小時日文商務會議不到一美元。\n\n當「取引先」被聽成亂碼、「発注書」被吃掉一半時，那些節省的成本其實是更昂貴的代價。在關鍵場景，精準度就是一切。\n\n詳細測試數據和分析：https://paulkuo.tw/articles/google-chirp3-japanese-stt-benchmark",
+    "TH": "做即時會議翻譯工具時發現一個殘酷事實：免費的 Whisper 在日文商務場景根本不夠用。\n\n實測同一段影片：\n• Whisper 錯誤率 36.5%\n• Google Chirp 3 錯誤率 6.4%\n\n一個每三字錯一字，一個幾乎完美。成本差異？一小時會議不到一美元。\n\n「取引先」「発注書」這些關鍵術語被聽錯，會直接影響理解。免費工具在關鍵時刻，真的是陷阱。\n\nhttps://paulkuo.tw/articles/google-chirp3-japanese-stt-benchmark",
+    "BS": "6.4% vs 36.5%。\n\n這是 Google Chirp 3 和 Whisper 在辨識同一段日文商務影片的錯誤率。一個幾乎逐字正確，另一個每三字錯一字。\n\n成本差異？一小時會議不到一美元。\n\n當你在翻譯日本客戶的重要會議時，「勉強能用」就不夠了。免費工具的隱藏成本，可能比你想像的更昂貴。\n\nhttps://paulkuo.tw/articles/google-chirp3-japanese-stt-benchmark",
+    "YT": "剛完成一個有趣的實驗：用四種日文商務場景測試免費 vs 付費語音辨識的差距。\n\n結果超出預期。同一段 TSMC 技術解說影片，Whisper 錯誤率 36.5%，Google Chirp 3 只有 6.4%。一個每三字錯一字，另一個幾乎逐字正確。\n\n關鍵在於 Chirp 3 的 Speech Adaptation 功能，可以預先載入專業術語，讓系統知道「該聽什麼」。當「取引先」「発注書」這些商務關鍵詞被正確辨識時，整個理解品質就完全不同了。\n\n一小時會議成本不到一美元。在關鍵場景，精準度真的值得這個投資。\n\n完整測試數據在文章裡：https://paulkuo.tw/articles/google-chirp3-japanese-stt-benchmark",
+    "FB": "最近在測試日文語音辨識，發現一個有趣現象：我們對「免費 AI 工具」的信任，到底建立在什麼基礎上？\n\n用同一段商務影片測試，免費的 Whisper 錯誤率 36.5%，付費的 Google Chirp 3 只有 6.4%。差距大到讓我重新思考工具選擇的邏輯。\n\n問題不只是準確度，而是在關鍵場景的可靠性。當你正在翻譯一場關於設廠時程的會議，「取引先」被聽成亂碼時，那些節省的成本其實是更昂貴的代價。\n\n一小時會議成本不到一美元，但換來的是幾乎完美的辨識結果。有時候，「夠好」真的不夠好。\n\n詳細測試過程：https://paulkuo.tw/articles/google-chirp3-japanese-stt-benchmark",
+    "IG": "6.4% 🆚 36.5%\n\n這是付費 vs 免費日文語音辨識的錯誤率對比 📊\n\n同一段商務影片：\n✅ Google Chirp 3：幾乎逐字正確\n❌ Whisper：每三字錯一字\n\n成本差異？一小時會議不到一美元 💰\n\n在關鍵場景，「勉強能用」就是不夠用。當重要術語被聽錯時，免費工具的隱藏成本可能更高 🤔\n\n#AI #語音辨識 #日文 #商務 #科技實測\n\nhttps://paulkuo.tw/articles/google-chirp3-japanese-stt-benchmark"
+  },
+  "imageUrl": "https://iili.io/qIYMOB9.jpg",
+  "status": "pending_review",
+  "timestamp": "2026-03-08T07:20:08.332Z"
+}
