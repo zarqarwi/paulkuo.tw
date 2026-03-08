@@ -127,7 +127,7 @@ async function authenticateRequest(request, env, inviteCode) {
   return null;
 }
 // === Budget: $1 USD per invite code ===
-const INVITE_BUDGET_SEC = 10800; // 3 hours
+const INVITE_BUDGET_SEC = 7200; // 2 hours
 
 async function getCodeUsedTime(code, kv) {
   if (!code) return 0;
