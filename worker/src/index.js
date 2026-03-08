@@ -1338,10 +1338,27 @@ async function handleValidateCode(request, env) {
   }
   const result = await validateCode(body.code, env.TICKER_KV);
   if (result) {
+    const codeKey = body.code.trim().toLowerCase();
+    // Check maxUsers quota if set
+    if (result.maxUsers) {
+      const user = await getCurrentUser(request, env);
+      const usersRaw = await env.TICKER_KV.get('code_users_' + codeKey);
+      const users = usersRaw ? JSON.parse(usersRaw) : [];
+      const userId = user ? user.id : null;
+      const isExisting = userId && users.includes(userId);
+      if (!isExisting && users.length >= result.maxUsers) {
+        return jsonResponse({ valid: false, reason: 'quota_full', maxUsers: result.maxUsers }, 200, request);
+      }
+      // Register new user
+      if (userId && !isExisting) {
+        users.push(userId);
+        await env.TICKER_KV.put('code_users_' + codeKey, JSON.stringify(users));
+      }
+    }
     // Include budget info for non-admin codes
     let budgetInfo = {};
     if (result.role !== 'admin') {
-      const usedSec = await getCodeUsedTime(body.code.trim().toLowerCase(), env.TICKER_KV);
+      const usedSec = await getCodeUsedTime(codeKey, env.TICKER_KV);
       budgetInfo = { budgetSec: INVITE_BUDGET_SEC, usedSec: +usedSec.toFixed(1), remainingSec: +Math.max(0, INVITE_BUDGET_SEC - usedSec).toFixed(1) };
     }
     return jsonResponse({ valid: true, name: result.name, role: result.role, ...budgetInfo }, 200, request);

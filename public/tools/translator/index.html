@@ -2456,6 +2456,14 @@ function tryEnter() {
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
+    if (d.reason === 'quota_full') {
+      getEl('gateError').textContent = '\u9019\u7d44\u9080\u8acb\u78bc\u7684\u540d\u984d\u5df2\u6eff';
+      getEl('gateError').style.display = 'block';
+      getEl('gateInput').classList.add('error');
+      getEl('gateBtn').textContent = '\u9032\u5165';
+      getEl('gateBtn').disabled = false;
+      return;
+    }
     if (d.valid) {
       inviteCode = code;
       userName = (_authUser && _authUser.name) ? _authUser.name : d.name;
