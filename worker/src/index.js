@@ -2421,18 +2421,34 @@ async function handleAdminGetCodes(request, env) {
   try {
     const raw = await env.TICKER_KV.get('invite_codes');
     const codes = raw ? JSON.parse(raw) : {};
-    // Enrich with usage stats (users count, time used)
+    // Enrich with usage stats (users count, time used, per-user details)
     const list = [];
     for (const [code, info] of Object.entries(codes)) {
       const usersRaw = await env.TICKER_KV.get('code_users_' + code);
-      const users = usersRaw ? JSON.parse(usersRaw) : [];
-      // Sum time across all users for this code
+      const userIds = usersRaw ? JSON.parse(usersRaw) : [];
+      // Get per-user details from D1 + KV
       let totalTimeSec = 0;
-      for (const uid of users) {
+      const userDetails = [];
+      for (const uid of userIds) {
         const t = parseFloat(await env.TICKER_KV.get('time_' + code + '_' + uid) || '0');
         totalTimeSec += t;
+        // Look up user info from D1
+        const userRow = await env.AUTH_DB.prepare(
+          'SELECT name, email, avatar, provider, last_login_at FROM users WHERE id = ?'
+        ).bind(uid).first();
+        userDetails.push({
+          id: uid,
+          name: userRow ? userRow.name : 'Unknown',
+          email: userRow ? userRow.email : '',
+          provider: userRow ? userRow.provider : '',
+          usedSec: +t.toFixed(1),
+          remainingSec: info.role !== 'admin' ? +Math.max(0, INVITE_BUDGET_SEC - t).toFixed(1) : null,
+          lastLogin: userRow ? userRow.last_login_at : null,
+        });
       }
-      list.push({ code, ...info, usersCount: users.length, totalTimeSec: +totalTimeSec.toFixed(1) });
+      // Sort by usedSec desc
+      userDetails.sort((a, b) => b.usedSec - a.usedSec);
+      list.push({ code, ...info, usersCount: userIds.length, totalTimeSec: +totalTimeSec.toFixed(1), users: userDetails });
     }
     return jsonResponse({ codes: list, total: list.length }, 200, request);
   } catch (e) {

@@ -171,6 +171,14 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .admin-add-form select{padding:8px 10px;border:1px solid var(--border-light);border-radius:8px;font-size:14px}
 .admin-add-form button{padding:8px 16px;border:none;border-radius:8px;background:var(--accent-ai);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
 .admin-add-form button:hover{opacity:.85}
+.admin-users{margin-top:6px;padding:0;list-style:none}
+.admin-user-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:6px;background:var(--bg-section);margin-bottom:4px;font-size:12px}
+.admin-user-row .u-name{font-weight:600;color:var(--text-primary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-user-row .u-email{color:var(--text-muted);font-size:11px;margin-left:6px;flex-shrink:0}
+.admin-user-row .u-time{font-family:monospace;font-size:11px;color:var(--accent-ai);flex-shrink:0;margin-left:8px}
+.admin-user-row .u-time.exhausted{color:#dc2626}
+.admin-user-toggle{font-size:11px;color:var(--accent-ai);cursor:pointer;background:none;border:none;padding:2px 0;font-family:var(--font-body)}
+.admin-user-toggle:hover{text-decoration:underline}
 .admin-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);padding:4px 8px}
 .admin-close:hover{color:var(--text-primary)}
 .admin-msg{font-size:13px;margin-top:8px;padding:6px 10px;border-radius:6px}
@@ -2862,6 +2870,24 @@ function renderAdminCodes() {
       var totalMin = Math.floor((c.totalTimeSec || 0) / 60);
       var totalStr = totalMin > 60 ? Math.floor(totalMin / 60) + 'h' + (totalMin % 60) + 'm' : totalMin + '分鐘';
       statsHtml = '<div style="font-size:11px;color:var(--text-muted);margin-top:4px">👤 ' + usersStr + ' · ⏱ 累計 ' + totalStr + '</div>';
+      // Per-user details
+      if (c.users && c.users.length > 0) {
+        statsHtml += '<button class="admin-user-toggle" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">▸ 使用者明細</button>';
+        statsHtml += '<ul class="admin-users" style="display:none">';
+        c.users.forEach(function(u) {
+          var usedMin = Math.floor(u.usedSec / 60);
+          var usedStr = usedMin + '分' + Math.floor(u.usedSec % 60) + '秒';
+          var remainMin = u.remainingSec !== null ? Math.floor(u.remainingSec / 60) : null;
+          var timeClass = (remainMin !== null && remainMin <= 0) ? 'u-time exhausted' : 'u-time';
+          var remainStr = remainMin !== null ? (remainMin <= 0 ? '已用完' : '剩' + remainMin + '分') : '';
+          statsHtml += '<li class="admin-user-row">' +
+            '<span class="u-name">' + escHtml(u.name) + '</span>' +
+            '<span class="u-email">' + escHtml(u.email).split('@')[0] + '</span>' +
+            '<span class="' + timeClass + '">' + usedStr + (remainStr ? ' · ' + remainStr : '') + '</span>' +
+            '</li>';
+        });
+        statsHtml += '</ul>';
+      }
     }
     html += '<div class="admin-code-item">' +
       '<div><span class="code-name">' + escHtml(c.name) + '</span><span class="code-key">' + escHtml(c.code) + '</span>' +
