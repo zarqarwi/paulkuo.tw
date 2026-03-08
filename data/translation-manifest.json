@@ -1678,5 +1678,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "google-chirp3-japanese-stt-benchmark.md": {
+    "sourceHash": "671fc2218ff5",
+    "translations": {
+      "en": {
+        "hash": "c6656a8a4ef5",
+        "translatedAt": "2026-03-08T07:18:55.133Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "326b48f6db63",
+        "translatedAt": "2026-03-08T07:20:00.740Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "0dbea7f63222",
+        "translatedAt": "2026-03-08T07:20:31.821Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
