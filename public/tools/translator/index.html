@@ -378,7 +378,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
         </div>
     <div class="spacer"></div>
     <button class="btn-subtitle" id="btnSubtitle" title="字幕模式：全屏顯示翻譯">🖥<span class="btn-text"> 字幕</span></button>
-    <button class="biz-toggle" id="btnBizMode" title="商務模式：使用高精度 STT 引擎（日文）"><span class="biz-dot"></span><span class="btn-text"> 商務</span></button>
+    <button class="biz-toggle" id="btnBizMode" title="商務模式：使用高精度日文 STT（whisper-large-v3 + 商務術語）" style="display:none"><span class="biz-dot"></span><span class="btn-text"> 商務</span></button>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
     <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button></div></div>
     <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
@@ -650,6 +650,16 @@ function renderSrcLangs() {
       var prev = srcInputLang;
       srcInputLang = lang.code;
       renderSrcLangs();
+      // Show business mode toggle only for Japanese
+      var bizBtn = getEl('btnBizMode');
+      if (bizBtn) {
+        if (srcInputLang === 'ja') {
+          bizBtn.style.display = '';
+        } else {
+          bizBtn.style.display = 'none';
+          if (businessMode) { businessMode = false; bizBtn.classList.remove('active'); }
+        }
+      }
       if (prev !== srcInputLang) {
         // Clear translations to avoid mixing languages
         _segmentTranslations = {};
