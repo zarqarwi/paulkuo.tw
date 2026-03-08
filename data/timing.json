@@ -1,16 +1,16 @@
 {
-  "updated": "2026-03-08T02:30:06+08:00",
+  "updated": "2026-03-08T08:20:04+08:00",
   "source": "timing-sqlite-direct",
   "method": "SQLite DB + bundleIdentifier/path/title matching",
   "api_version": "v4",
   "month_summary": {
     "period": "2026-03",
-    "total_ai_hours": 32.2,
+    "total_ai_hours": 32.4,
     "active_days": 8,
-    "avg_daily": 4.0,
+    "avg_daily": 4.1,
     "platform_breakdown": {
-      "Claude": 28.85,
-      "ChatGPT": 2.46,
+      "Claude": 28.97,
+      "ChatGPT": 2.53,
       "Gemini": 0.91
     }
   },
@@ -35,27 +35,27 @@
     },
     {
       "date": "2026-03-03",
-      "ai_hours": 4.03,
+      "ai_hours": 4.09,
       "breakdown": {
         "Claude": 3.57,
-        "ChatGPT": 0.35,
+        "ChatGPT": 0.41,
         "Gemini": 0.1
       }
     },
     {
       "date": "2026-03-04",
-      "ai_hours": 3.73,
+      "ai_hours": 3.79,
       "breakdown": {
-        "Claude": 3.31,
+        "Claude": 3.36,
         "ChatGPT": 0.27,
         "Gemini": 0.15
       }
     },
     {
       "date": "2026-03-05",
-      "ai_hours": 4.4,
+      "ai_hours": 4.44,
       "breakdown": {
-        "Claude": 4.3,
+        "Claude": 4.33,
         "ChatGPT": 0.11
       }
     },
@@ -63,25 +63,25 @@
       "date": "2026-03-06",
       "ai_hours": 5.84,
       "breakdown": {
-        "Claude": 5.33,
+        "Claude": 5.34,
         "ChatGPT": 0.38,
         "Gemini": 0.12
       }
     },
     {
       "date": "2026-03-07",
-      "ai_hours": 6.76,
+      "ai_hours": 6.78,
       "breakdown": {
-        "Claude": 6.17,
-        "ChatGPT": 0.35,
+        "Claude": 6.19,
+        "ChatGPT": 0.36,
         "Gemini": 0.24
       }
     },
     {
       "date": "2026-03-08",
-      "ai_hours": 0.47,
+      "ai_hours": 0.48,
       "breakdown": {
-        "Claude": 0.47
+        "Claude": 0.48
       }
     }
   ]
