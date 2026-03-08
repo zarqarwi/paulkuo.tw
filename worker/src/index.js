@@ -1690,6 +1690,7 @@ async function handleGoogleSTT(request, env) {
     '決算', '四半期', '株主総会', '取締役会', '監査', '内部統制',
     'コンプライアンス', 'ガバナンス', 'サステナビリティ', 'DX推進',
     'KPI', 'ROI', 'PDCA', 'OKR', 'アジェンダ', 'マイルストーン',
+    'ご立腹', '先方', '異物', '納品', '検品', '不良品', '差し替え', '早急に',
   ];
   let allPhrases = [...defaultJaPhrases];
   if (phrases) {
