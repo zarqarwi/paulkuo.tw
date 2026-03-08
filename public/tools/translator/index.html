@@ -2827,12 +2827,9 @@ function renderAdminCodes() {
     var statsHtml = '';
     if (c.role !== 'admin') {
       var usersStr = c.maxUsers ? (c.usersCount || 0) + '/' + c.maxUsers + '人' : (c.usersCount || 0) + '人';
-      var timeSec = c.timeUsedSec || 0;
-      var budgetSec = 7200;
-      var remainMin = Math.max(0, Math.floor((budgetSec - timeSec) / 60));
-      var timeStr = '剩 ' + remainMin + ' 分鐘';
-      if (remainMin <= 0) timeStr = '已用完';
-      statsHtml = '<div style="font-size:11px;color:var(--text-muted);margin-top:4px">👤 ' + usersStr + ' · ⏱ ' + timeStr + '</div>';
+      var totalMin = Math.floor((c.totalTimeSec || 0) / 60);
+      var totalStr = totalMin > 60 ? Math.floor(totalMin / 60) + 'h' + (totalMin % 60) + 'm' : totalMin + '分鐘';
+      statsHtml = '<div style="font-size:11px;color:var(--text-muted);margin-top:4px">👤 ' + usersStr + ' · ⏱ 累計 ' + totalStr + '</div>';
     }
     html += '<div class="admin-code-item">' +
       '<div><span class="code-name">' + escHtml(c.name) + '</span><span class="code-key">' + escHtml(c.code) + '</span>' +

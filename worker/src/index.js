@@ -129,10 +129,10 @@ async function authenticateRequest(request, env, inviteCode) {
 // === Budget: $1 USD per invite code ===
 const INVITE_BUDGET_SEC = 7200; // 2 hours
 
-async function getCodeUsedTime(code, kv) {
-  if (!code) return 0;
+async function getCodeUsedTime(code, kv, userId) {
+  if (!code || !userId) return 0;
   try {
-    const raw = await kv.get('time_' + code);
+    const raw = await kv.get('time_' + code + '_' + userId);
     return raw ? parseFloat(raw) : 0;
   } catch (e) { return 0; }
 }
@@ -141,11 +141,12 @@ async function checkBudget(auth, env) {
   // Admin has unlimited budget
   if (auth.isAdmin) return { ok: true, usedSec: 0, budgetSec: Infinity };
   const code = auth.code || '';
-  if (!code) return { ok: false, usedSec: 0, budgetSec: INVITE_BUDGET_SEC };
-  const used = await getCodeUsedTime(code, env.TICKER_KV);
-  // Also count in-memory buffer for this code (STT durations)
+  const userId = auth.userId || '';
+  if (!code || !userId) return { ok: false, usedSec: 0, budgetSec: INVITE_BUDGET_SEC };
+  const used = await getCodeUsedTime(code, env.TICKER_KV, userId);
+  // Also count in-memory buffer for this user+code (STT durations)
   const buffered = costBuffer
-    .filter(e => e.code === code && e.durationSec > 0)
+    .filter(e => e.code === code && e._userId === userId && e.durationSec > 0)
     .reduce((s, e) => s + (e.durationSec || 0), 0);
   const total = used + buffered;
   return {
@@ -575,6 +576,7 @@ async function logCost(kv, record) {
     timestamp: twISOString(),
     ...record,
     costTWD: +(record.costUSD * 32.5).toFixed(4),
+    _userId: record._userId || '',
   });
   if (costBuffer.length >= COST_FLUSH_SIZE) {
     await flushCosts(kv);
@@ -603,21 +605,22 @@ async function flushCosts(kv) {
     } catch (e) {
       console.error('flushCosts failed:', e.message);
     }
-    // Accumulate per-code time deltas (STT duration only)
+    // Accumulate per-user-per-code time deltas (STT duration only)
     entries.forEach(e => {
-      if (e.code && e.source === 'translator' && e.durationSec > 0) {
-        codeDeltas[e.code] = (codeDeltas[e.code] || 0) + (e.durationSec || 0);
+      if (e.code && e._userId && e.source === 'translator' && e.durationSec > 0) {
+        const key = e.code + '_' + e._userId;
+        codeDeltas[key] = (codeDeltas[key] || 0) + (e.durationSec || 0);
       }
     });
   }
-  // Update per-code used time KV keys
-  for (const [code, delta] of Object.entries(codeDeltas)) {
-    if (!code || code.startsWith('oauth:')) continue; // skip admin OAuth codes
+  // Update per-user-per-code used time KV keys
+  for (const [key, delta] of Object.entries(codeDeltas)) {
+    if (key.startsWith('oauth:')) continue; // skip admin OAuth codes
     try {
-      const prev = parseFloat(await kv.get('time_' + code) || '0');
-      await kv.put('time_' + code, (prev + delta).toFixed(1));
+      const prev = parseFloat(await kv.get('time_' + key) || '0');
+      await kv.put('time_' + key, (prev + delta).toFixed(1));
     } catch (e) {
-      console.error('time update failed for', code, e.message);
+      console.error('time update failed for', key, e.message);
     }
   }
 }
@@ -746,7 +749,7 @@ async function handleSTT(request, env) {
     const audioDuration = whisperData.duration || 5; // seconds
     const whisperCost = (audioDuration / 60) * PRICING['whisper-1'].perMinute;
     await logCost(env.TICKER_KV, {
-      service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator', code: auth.code,
+      service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator', code: auth.code, _userId: auth.userId || '',
       costUSD: +whisperCost.toFixed(6), durationSec: audioDuration,
       note: `${detectedLang} ${audioDuration.toFixed(1)}s`
     });
@@ -816,7 +819,7 @@ async function handleSTT(request, env) {
       const hp = PRICING['claude-haiku-4-5-20251001'];
       const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code,
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code, _userId: auth.userId || '',
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +claudeCost.toFixed(6),
         note: `${langCode}→${targetLang}`
@@ -917,7 +920,7 @@ async function handleTranslate(request, env) {
       const hp = PRICING['claude-haiku-4-5-20251001'];
       const claudeCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code,
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code, _userId: auth.userId || '',
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +claudeCost.toFixed(6),
         note: (sourceLang || 'auto') + '>' + targetLang
@@ -1047,7 +1050,7 @@ async function handleTranslateStream(request, env) {
       // Log cost
       await logCost(env.TICKER_KV, {
         service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate-stream',
-        source: 'translator', code: auth.code,
+        source: 'translator', code: auth.code, _userId: auth.userId || '',
         inputTokens, outputTokens, costUSD: +cost.toFixed(6),
         note: (sourceLang || 'auto') + '>' + targetLang
       });
@@ -1305,7 +1308,7 @@ ${truncated}`;
       const hp = PRICING['claude-haiku-4-5-20251001'];
       const cost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'summarize', source: 'translator', code: auth.code,
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'summarize', source: 'translator', code: auth.code, _userId: auth.userId || '',
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +cost.toFixed(6), note: langName
       });
@@ -1358,7 +1361,8 @@ async function handleValidateCode(request, env) {
     // Include budget info for non-admin codes
     let budgetInfo = {};
     if (result.role !== 'admin') {
-      const usedSec = await getCodeUsedTime(codeKey, env.TICKER_KV);
+      const user = await getCurrentUser(request, env);
+      const usedSec = user ? await getCodeUsedTime(codeKey, env.TICKER_KV, user.id) : 0;
       budgetInfo = { budgetSec: INVITE_BUDGET_SEC, usedSec: +usedSec.toFixed(1), remainingSec: +Math.max(0, INVITE_BUDGET_SEC - usedSec).toFixed(1) };
     }
     return jsonResponse({ valid: true, name: result.name, role: result.role, ...budgetInfo }, 200, request);
@@ -1519,7 +1523,7 @@ async function handlePolishTranscript(request, env) {
       var hp = PRICING['claude-haiku-4-5-20251001'];
       var cost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
       await logCost(env.TICKER_KV, {
-        service: 'anthropic', model: 'claude-haiku-4.5', action: 'polish-transcript', source: 'translator', code: auth.code,
+        service: 'anthropic', model: 'claude-haiku-4.5', action: 'polish-transcript', source: 'translator', code: auth.code, _userId: auth.userId || '',
         inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0,
         costUSD: +cost.toFixed(6), note: entries.length + ' entries'
       });
@@ -1585,6 +1589,7 @@ async function handleLogCost(request, env) {
     action: action || 'unknown',
     source: source || 'unknown',
     code: code || auth.code || '',
+    _userId: auth.userId || '',
     costUSD: +Number(costUSD).toFixed(6),
     durationSec: durationSec || 0,
     note: (note || '').slice(0, 200),
@@ -1826,7 +1831,7 @@ async function handleGroqSTT(request, env) {
       const costUSD = (duration / 3600) * perHour;
       await logCost(env.TICKER_KV, {
         service: 'groq', model: groqModel, action: 'stt',
-        source: 'translator', code: auth.code,
+        source: 'translator', code: auth.code, _userId: auth.userId || '',
         costUSD: +costUSD.toFixed(8), durationSec: duration,
         note: lang + ' ' + duration.toFixed(1) + 's',
         sourceLang: lang,
@@ -2014,7 +2019,7 @@ async function handleGoogleSTT(request, env) {
       const billableSeconds = Math.ceil(totalDuration / 15) * 15;
       const costUSD = (billableSeconds / 60) * 0.016;
       await logCost(env.TICKER_KV, {
-        service: 'google', model: 'chirp_3', action: 'stt', source: 'translator', code: auth.code,
+        service: 'google', model: 'chirp_3', action: 'stt', source: 'translator', code: auth.code, _userId: auth.userId || '',
         costUSD: +costUSD.toFixed(6), durationSec: +totalDuration.toFixed(1),
         note: `${bcp47} ${totalDuration.toFixed(1)}s phrases:${allPhrases.length} elapsed:${elapsed.toFixed(1)}s`,
         sourceLang: lang,
@@ -2421,8 +2426,13 @@ async function handleAdminGetCodes(request, env) {
     for (const [code, info] of Object.entries(codes)) {
       const usersRaw = await env.TICKER_KV.get('code_users_' + code);
       const users = usersRaw ? JSON.parse(usersRaw) : [];
-      const timeUsed = parseFloat(await env.TICKER_KV.get('time_' + code) || '0');
-      list.push({ code, ...info, usersCount: users.length, timeUsedSec: +timeUsed.toFixed(1) });
+      // Sum time across all users for this code
+      let totalTimeSec = 0;
+      for (const uid of users) {
+        const t = parseFloat(await env.TICKER_KV.get('time_' + code + '_' + uid) || '0');
+        totalTimeSec += t;
+      }
+      list.push({ code, ...info, usersCount: users.length, totalTimeSec: +totalTimeSec.toFixed(1) });
     }
     return jsonResponse({ codes: list, total: list.length }, 200, request);
   } catch (e) {
