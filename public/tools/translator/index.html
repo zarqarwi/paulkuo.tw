@@ -1055,7 +1055,7 @@ function switchToGroq() {
   connectGroqChunked(dgStream);
 }
 function connectGroqChunked(stream) {
-  console.log('[groq] Starting chunked HTTP STT for English');
+  console.log('[groq] Starting chunked HTTP STT for ' + srcInputLang);
   setStatus('listening');
   hideError();
   var mimeType = 'audio/webm;codecs=opus';
