@@ -1083,12 +1083,12 @@ function connectGroqChunked(stream) {
     }
   };
   groqMediaRecorder.start();
-  // Stop and send every 3 seconds
+  // Stop and send every 5 seconds (Groq free tier: 30 req/min)
   groqChunkTimer = setInterval(function() {
     if (groqMediaRecorder && groqMediaRecorder.state === 'recording') {
       groqMediaRecorder.stop();
     }
-  }, 3000);
+  }, 5000);
 }
 var _groqFailCount = 0;
 function sendGroqChunk(blob) {

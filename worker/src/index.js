@@ -908,7 +908,7 @@ async function handleTranslateStream(request, env) {
       await writer.write(encoder.encode('data: ' + JSON.stringify({ done: true, costUSD: 0 }) + '\n\n'));
       await writer.close();
     })();
-    return new Response(readable, { status: 200, headers: { 'Content-Type': 'text/event-stream', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Credentials': 'true' } });
+    return new Response(readable, { status: 200, headers: { 'Content-Type': 'text/event-stream', ...corsHeaders(request) } });
   }
 
   const targetName = TNAMES[targetLang] || targetLang;
