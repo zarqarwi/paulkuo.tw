@@ -12,6 +12,7 @@
  *   POST /translate — 即時翻譯（Web Speech API 前端 → Claude Haiku）
  *   POST /stt       — 語音辨識 + 翻譯（Whisper → Claude Haiku）
  *   POST /stt-groq  — 英文/日文語音辨識（Groq whisper-large-v3-turbo, chunked HTTP）
+ *   POST /stt-google — 日文高精度語音辨識（Google Chirp 3, REST chunked）
  *   GET  /costs     — API 費用追蹤（?days=30）
  *   GET  /usage         — 使用統計（admin only, ?days=30&code=xxx）
  *   POST /validate-code — 邀請碼驗證
@@ -1369,6 +1370,94 @@ async function handleLogCost(request, env) {
   return jsonResponse({ ok: true }, 200, request);
 }
 
+// === Google Cloud STT Access Token (Service Account JWT → access_token) ===
+let googleAccessTokenCache = { token: null, expiresAt: 0 };
+
+async function getGoogleAccessToken(env) {
+  // Return cached token if still valid (with 5-min buffer)
+  if (googleAccessTokenCache.token && Date.now() < googleAccessTokenCache.expiresAt - 300000) {
+    return googleAccessTokenCache.token;
+  }
+
+  const saKeyJson = env.GOOGLE_SA_KEY;
+  if (!saKeyJson) throw new Error('GOOGLE_SA_KEY not configured');
+
+  let saKey;
+  try {
+    saKey = JSON.parse(saKeyJson);
+  } catch (e) {
+    throw new Error('GOOGLE_SA_KEY is not valid JSON');
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const header = { alg: 'RS256', typ: 'JWT' };
+  const payload = {
+    iss: saKey.client_email,
+    scope: 'https://www.googleapis.com/auth/cloud-platform',
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600,
+  };
+
+  // Base64url encode
+  const b64url = (obj) => btoa(JSON.stringify(obj)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+  const unsignedToken = b64url(header) + '.' + b64url(payload);
+
+  // Import RSA private key (PKCS8 PEM → CryptoKey)
+  const pemContent = saKey.private_key
+    .replace(/-----BEGIN PRIVATE KEY-----/g, '')
+    .replace(/-----END PRIVATE KEY-----/g, '')
+    .replace(/\s/g, '');
+  const binaryKey = Uint8Array.from(atob(pemContent), c => c.charCodeAt(0));
+
+  const cryptoKey = await crypto.subtle.importKey(
+    'pkcs8',
+    binaryKey.buffer,
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  // Sign
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    cryptoKey,
+    new TextEncoder().encode(unsignedToken)
+  );
+  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+    .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+  const jwt = unsignedToken + '.' + sigB64;
+
+  // Exchange JWT for access_token
+  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt,
+    }),
+  });
+
+  if (!tokenRes.ok) {
+    const errText = await tokenRes.text().catch(() => '');
+    throw new Error('Google token exchange failed: ' + tokenRes.status + ' ' + errText.slice(0, 200));
+  }
+
+  const tokenData = await tokenRes.json();
+  if (!tokenData.access_token) {
+    throw new Error('Google token response missing access_token');
+  }
+
+  // Cache (default 3600s)
+  googleAccessTokenCache = {
+    token: tokenData.access_token,
+    expiresAt: Date.now() + (tokenData.expires_in || 3600) * 1000,
+  };
+
+  console.log('Google access token obtained, expires in', tokenData.expires_in || 3600, 's');
+  return tokenData.access_token;
+}
+
 // === Groq STT (chunked HTTP, English-optimized) ===
 const GROQ_STT_RATE_LIMIT = 30; // max requests per minute per IP
 
@@ -1522,6 +1611,183 @@ async function handleGroqSTT(request, env) {
     } catch (e) {
       if (attempt === MAX_RETRIES - 1) {
         return jsonResponse({ error: 'Groq STT: ' + e.message }, 502, request);
+      }
+    }
+  }
+}
+
+// === Google Chirp 3 STT (REST, Japanese high-precision) ===
+const GOOGLE_STT_RATE_LIMIT = 30;
+const GOOGLE_STT_PROJECT = 'gen-lang-client-0807419728';
+const GOOGLE_STT_LOCATION = 'us';
+
+async function handleGoogleSTT(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'POST required' }, 405, request);
+  }
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (!checkRateLimit(ip, GOOGLE_STT_RATE_LIMIT)) {
+    return jsonResponse({ error: 'Rate limited. Max 30 requests/min.' }, 429, request);
+  }
+
+  let formData;
+  try {
+    formData = await request.formData();
+  } catch (e) {
+    return jsonResponse({ error: 'Expected multipart form data' }, 400, request);
+  }
+
+  const audioFile = formData.get('audio');
+  const userCode = formData.get('code') || '';
+  const lang = formData.get('lang') || 'ja';
+  const phrases = formData.get('phrases') || '';
+
+  // Auth
+  const auth = await authenticateRequest(request, env, userCode);
+  if (!auth) {
+    return jsonResponse({ error: 'Authentication required' }, 401, request);
+  }
+
+  if (!audioFile) {
+    return jsonResponse({ error: 'Missing audio file' }, 400, request);
+  }
+  if (audioFile.size > 25 * 1024 * 1024) {
+    return jsonResponse({ error: 'Audio file too large (max 25MB)' }, 400, request);
+  }
+  // Reject tiny chunks that are likely silence (< 1KB)
+  if (audioFile.size < 1024) {
+    return jsonResponse({ original: '', detectedLang: lang, duration: 0 }, 200, request);
+  }
+
+  // Get Google access token (JWT auth)
+  let accessToken;
+  try {
+    accessToken = await getGoogleAccessToken(env);
+  } catch (e) {
+    console.error('Google auth failed:', e.message);
+    return jsonResponse({ error: 'Google auth: ' + e.message }, 500, request);
+  }
+
+  // Read audio as base64
+  const audioBytes = await audioFile.arrayBuffer();
+  const audioBase64 = btoa(String.fromCharCode(...new Uint8Array(audioBytes)));
+
+  // Build Speech Adaptation phrases
+  const defaultJaPhrases = [
+    '報告', 'クレーム対応', '取引先', '発注書', '見積書', '納期', '請求書',
+    '部長', '課長', '担当者', '御社', '弊社', 'ご確認', 'ご検討',
+    '打ち合わせ', '議事録', '決裁', '稟議', '前年比', '売上高',
+    '営業利益', '経常利益', '予算', '実績', '戦略', '提案', '交渉',
+    '契約', '締結', '解約', '更新', 'お世話になっております',
+    'ご連絡いただき', 'お手数ですが', 'ご査収ください', 'ご承知おきください',
+    '決算', '四半期', '株主総会', '取締役会', '監査', '内部統制',
+    'コンプライアンス', 'ガバナンス', 'サステナビリティ', 'DX推進',
+    'KPI', 'ROI', 'PDCA', 'OKR', 'アジェンダ', 'マイルストーン',
+  ];
+  let allPhrases = [...defaultJaPhrases];
+  if (phrases) {
+    try {
+      const custom = JSON.parse(phrases);
+      if (Array.isArray(custom)) allPhrases = [...allPhrases, ...custom];
+    } catch (e) {
+      allPhrases = [...allPhrases, ...phrases.split(',').map(s => s.trim()).filter(Boolean)];
+    }
+  }
+  allPhrases = [...new Set(allPhrases)].slice(0, 1000);
+
+  // Map lang codes to BCP-47
+  const langMap = { 'ja': 'ja-JP', 'en': 'en-US', 'zh-TW': 'cmn-Hant-TW', 'zh-CN': 'cmn-Hans-CN', 'ko': 'ko-KR' };
+  const bcp47 = langMap[lang] || lang;
+
+  // Build Chirp 3 recognize request
+  const recognizeUrl = `https://${GOOGLE_STT_LOCATION}-speech.googleapis.com/v2/projects/${GOOGLE_STT_PROJECT}/locations/${GOOGLE_STT_LOCATION}/recognizers/_:recognize`;
+  const requestBody = {
+    config: {
+      auto_decoding_config: {},
+      language_codes: [bcp47],
+      model: 'chirp_3',
+      features: { enable_automatic_punctuation: true },
+      adaptation: {
+        phrase_sets: [{
+          inline_phrase_set: {
+            phrases: allPhrases.map(p => ({ value: p, boost: 10 })),
+          }
+        }]
+      },
+    },
+    content: audioBase64,
+  };
+
+  const startTime = Date.now();
+  const MAX_RETRIES = 2;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt));
+
+      const sttRes = await fetch(recognizeUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (sttRes.status === 401 && attempt < MAX_RETRIES - 1) {
+        console.log('Google STT 401, refreshing token...');
+        googleAccessTokenCache = { token: null, expiresAt: 0 };
+        accessToken = await getGoogleAccessToken(env);
+        continue;
+      }
+
+      if (!sttRes.ok) {
+        const errText = await sttRes.text().catch(() => '');
+        console.error('Google STT error:', sttRes.status, errText.slice(0, 500));
+        throw new Error('Google STT API ' + sttRes.status + ': ' + errText.slice(0, 200));
+      }
+
+      const data = await sttRes.json();
+      const elapsed = (Date.now() - startTime) / 1000;
+
+      let transcript = '';
+      let totalDuration = 0;
+      if (data.results && data.results.length > 0) {
+        transcript = data.results
+          .map(r => r.alternatives?.[0]?.transcript || '')
+          .join('')
+          .trim();
+        const lastResult = data.results[data.results.length - 1];
+        const endOffset = lastResult?.resultEndOffset;
+        if (endOffset) {
+          totalDuration = parseFloat(endOffset.replace('s', '')) || 0;
+        }
+      }
+
+      if (!totalDuration && audioFile.size > 0) {
+        totalDuration = audioFile.size / 4000;
+      }
+
+      // Log cost: Chirp 3 = $0.016/min (rounded up to nearest 15s)
+      const billableSeconds = Math.ceil(totalDuration / 15) * 15;
+      const costUSD = (billableSeconds / 60) * 0.016;
+      await logCost(env.TICKER_KV, {
+        service: 'google', model: 'chirp_3', action: 'stt', source: 'translator', code: auth.code,
+        costUSD: +costUSD.toFixed(6), durationSec: +totalDuration.toFixed(1),
+        note: `${bcp47} ${totalDuration.toFixed(1)}s phrases:${allPhrases.length} elapsed:${elapsed.toFixed(1)}s`
+      });
+
+      console.log(`Google STT: ${bcp47} ${totalDuration.toFixed(1)}s → ${transcript.length} chars, ${costUSD.toFixed(4)}, elapsed ${elapsed.toFixed(1)}s`);
+
+      return jsonResponse({
+        original: transcript,
+        detectedLang: lang,
+        duration: +totalDuration.toFixed(1),
+      }, 200, request);
+
+    } catch (e) {
+      if (attempt === MAX_RETRIES - 1) {
+        return jsonResponse({ error: 'Google STT: ' + e.message }, 502, request);
       }
     }
   }
@@ -2083,6 +2349,11 @@ async function handleRequest(request, env) {
     return handleGroqSTT(request, env);
   }
 
+  // Google Chirp 3 STT (Japanese high-precision)
+  if (path === '/stt-google') {
+    return handleGoogleSTT(request, env);
+  }
+
   // === WebSocket proxy to Qwen3-ASR (edge -> DashScope, transparent proxy) ===
   if (path === '/ws/stt-qwen') {
     const upgradeHeader = request.headers.get('Upgrade');
@@ -2198,7 +2469,7 @@ async function handleRequest(request, env) {
   }
 
   // 404
-  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/ws/stt-qwen', '/stt-groq', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/line/login', '/auth/facebook/login', '/auth/me', '/auth/logout', '/auth/admin/members', '/auth/admin/codes'] }, 404, request);
+  return jsonResponse({ error: 'Not found', endpoints: ['/ticker', '/ws/stt-qwen', '/stt-groq', '/stt-google', '/fitbit', '/stock', '/sleep', '/translate', '/translate-stream', '/stt', '/summarize', '/costs', '/usage', '/validate-code', '/log-cost', '/feed', '/health', '/auth/google/login', '/auth/line/login', '/auth/facebook/login', '/auth/me', '/auth/logout', '/auth/admin/members', '/auth/admin/codes'] }, 404, request);
 }
 
 // === Cron Trigger (token refresh) ===
