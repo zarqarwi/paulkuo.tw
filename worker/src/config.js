@@ -18,7 +18,6 @@ export const SESSION_MAX_AGE = 30 * 24 * 60 * 60;
 export const SITE_URL = 'https://paulkuo.tw';
 export const INVITE_BUDGET_SEC = 7200;
 export const PRICING = {
-  'whisper-1': { perMinute: 0.006 },
   'claude-haiku-4-5-20251001': { inputPerMTok: 1.00, outputPerMTok: 5.00 },
   'whisper-large-v3-turbo': { perHour: 0.04 },
 };

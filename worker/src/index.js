@@ -9,7 +9,7 @@ import { authenticateRequest, checkBudget } from './auth.js';
 import { costBuffer, flushCosts, handleCosts, handleUsage, handleLogCost } from './costs.js';
 import { refreshToken, fetchFitbitData, fetchSleepData } from './fitbit.js';
 import { isTseTradingHours, fetchStockData } from './stock.js';
-import { handleSTT, handleTranslate, handleTranslateStream, handleSummarize, handlePolishTranscript, handleGroqSTT, handleGoogleSTT } from './translator.js';
+import { handleTranslate, handleTranslateStream, handleSummarize, handlePolishTranscript, handleGroqSTT, handleGoogleSTT } from './translator.js';
 import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
@@ -47,7 +47,7 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/stt','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes'];
+const ENDPOINTS = ['/ticker','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes'];
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
@@ -60,7 +60,6 @@ async function handleRequest(request, env) {
   if (path === '/sleep') { try { return jsonResponse(await fetchSleepData(env.TICKER_KV, { year: url.searchParams.get('year'), month: url.searchParams.get('month') }, env), 200, request); } catch (e) { return jsonResponse({ error: e.message, usage: '/sleep?year=2025 or /sleep?month=2025-03' }, e.message.includes('Missing parameter') ? 400 : 500, request); } }
   if (path === '/translate') return handleTranslate(request, env);
   if (path === '/translate-stream') return handleTranslateStream(request, env);
-  if (path === '/stt') return handleSTT(request, env);
   if (path === '/stt-groq') return handleGroqSTT(request, env);
   if (path === '/stt-google') return handleGoogleSTT(request, env);
   if (path === '/summarize') return handleSummarize(request, env);

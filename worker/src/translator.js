@@ -31,7 +31,6 @@ async function claudeWithRetry(env, body, maxRetries = 3) {
   }
 }
 function haikuCost(usage) { const hp = PRICING['claude-haiku-4-5-20251001']; return ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok; }
-const WHISPER_TO_LANG = { 'japanese':'ja','english':'en','chinese':'zh-TW','korean':'ko','mandarin':'zh-TW','vietnamese':'vi','thai':'th','indonesian':'id','german':'de','spanish':'es','french':'fr','nynorsk':'ko','nn':'ko' };
 
 // --- Medical context detection & prompt builder ---
 const MEDICAL_TRIGGERS = ['治療','クリニック','薬剤','医療','診所','醫療','エクソソーム','幹細胞','MSC','自由診療','再生医療','点鼻薬','スプレー','外泌體','藥劑','噴霧','細胞','抗体','免疫','臨床','投与','処方'];
@@ -65,36 +64,6 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
   return base;
 }
 
-
-export async function handleSTT(request, env) {
-  if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
-  if (!env.OPENAI_API_KEY || !env.ANTHROPIC_API_KEY) return jsonResponse({ error: 'API keys not configured' }, 500, request);
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-  if (!checkRateLimit(ip, STT_RATE_LIMIT)) return jsonResponse({ error: 'Rate limited' }, 429, request);
-  let formData; try { formData = await request.formData(); } catch (e) { return jsonResponse({ error: 'Expected multipart form data' }, 400, request); }
-  const audioFile = formData.get('audio'), targetLang = formData.get('targetLang') || 'zh-TW', userCode = formData.get('code') || '';
-  const auth = await authenticateRequest(request, env, userCode); if (!auth) return jsonResponse({ error: 'Authentication required' }, 401, request);
-  const budget = await checkBudget(auth, env); if (!budget.ok) return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budget.usedSec, budgetSec: budget.budgetSec, remainingSec: budget.remainingSec }, 402, request);
-  if (!audioFile) return jsonResponse({ error: 'Missing audio file' }, 400, request);
-  if (audioFile.size > 10 * 1024 * 1024) return jsonResponse({ error: 'Audio file too large' }, 400, request);
-  const whisperForm = new FormData(); whisperForm.append('file', audioFile, 'audio.webm'); whisperForm.append('model', 'whisper-1'); whisperForm.append('response_format', 'verbose_json');
-  let transcript, detectedLang;
-  try {
-    const wr = await fetch('https://api.openai.com/v1/audio/transcriptions', { method: 'POST', headers: { 'Authorization': `Bearer ${env.OPENAI_API_KEY}` }, body: whisperForm });
-    if (!wr.ok) { const err = await wr.json().catch(() => ({})); throw new Error(err.error?.message || `Whisper ${wr.status}`); }
-    const wd = await wr.json(); transcript = (wd.text || '').trim(); detectedLang = wd.language || 'unknown';
-    await logCost(env.TICKER_KV, { service: 'openai', model: 'whisper-1', action: 'stt', source: 'translator', code: auth.code, _userId: auth.userId || '', costUSD: +((wd.duration || 5) / 60 * PRICING['whisper-1'].perMinute).toFixed(6), durationSec: wd.duration || 5, note: `${detectedLang} ${(wd.duration||5).toFixed(1)}s` });
-  } catch (e) { return jsonResponse({ error: 'Whisper: ' + e.message }, 502, request); }
-  if (!transcript) return jsonResponse({ original: '', detectedLang: 'unknown', translated: '' }, 200, request);
-  const langCode = WHISPER_TO_LANG[detectedLang] || detectedLang;
-  if (langCode === targetLang && targetLang !== 'zh-TW') return jsonResponse({ original: transcript, detectedLang: langCode, translated: transcript }, 200, request);
-  const targetName = TNAMES[targetLang] || targetLang; const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
-  const res = await claudeWithRetry(env, { model: 'claude-haiku-4-5-20251001', max_tokens: 1024, messages: [{ role: 'user', content: `You are a professional real-time interpreter. Translate the following speech into ${targetName}. Fix any obvious speech recognition errors. Output ONLY the translated text.${twHint}\n\n${transcript.slice(0, 2000)}` }] });
-  if (!res || !res.ok) { const err = res ? await res.json().catch(() => ({})) : {}; return jsonResponse({ original: transcript, detectedLang: langCode, translated: '⚠ ' + (err.error?.message || 'Claude failed') }, 200, request); }
-  const cd = await res.json(); const usage = cd.usage || {};
-  await logCost(env.TICKER_KV, { service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code, _userId: auth.userId || '', inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0, costUSD: +haikuCost(usage).toFixed(6), note: `${langCode}→${targetLang}` });
-  return jsonResponse({ original: transcript, detectedLang: langCode, translated: cd.content?.[0]?.text?.trim() || '' }, 200, request);
-}
 
 export async function handleTranslate(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);

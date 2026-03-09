@@ -423,7 +423,6 @@ body.matrix-on{padding-left:48px;padding-right:48px}
   <span id="countLabel">0 筆紀錄</span>
   <a class="help-btn" href="https://docs.google.com/forms/d/e/1FAIpQLScnteNRvlOnSma-CDEJ4ygQHx8uHzPjfBO-1PObtACFdEFLug/viewform" target="_blank" rel="noopener" style="text-decoration:none">💬 回饋意見</a>
   <button class="help-btn" id="btnHelp">❓ 使用說明</button>
-  <label class="stt-toggle" style="display:none">STT <select id="sttMode"><option value="deepgram">串流</option><option value="whisper">批次</option></select></label>
   <label><input type="checkbox" id="autoScroll" checked> 自動捲動</label>
 </div>
 <div class="modal-overlay" id="summaryModal">
@@ -567,24 +566,13 @@ var userName = sessionStorage.getItem("userName") || "";
 var _isAdmin = false; // set on login, controls perf badge + cost visibility
 var businessMode = false; // business mode: higher accuracy STT for Japanese
 var recording = false;
-var mediaRecorder = null;
 var audioContext = null;
 var analyser = null;
-var silenceTimer = null;
-var chunks = [];
 var nextId = 0;
 var allEntries = [];
 
-// Tuning
-var SILENCE_THRESHOLD = 0.015;  // RMS below this = silence
-var SILENCE_DURATION = 1500;    // ms of silence before sending
-var MIN_CHUNK_MS = 800;         // ignore chunks shorter than this
-var chunkStartTime = 0;
-var hasSound = false;
-var autoSendInterval = null;
 
 // Deepgram streaming state
-var sttMode = 'deepgram'; // 'deepgram' | 'whisper'
 var dgWs = null;
 var liveEntryId = null;
 var liveText = '';
@@ -655,7 +643,7 @@ function setStatus(type) {
 function showError(msg) { var b = getEl("errorBar"); b.textContent = "⚠ " + msg; b.classList.add("visible"); }
 function hideError() { getEl("errorBar").classList.remove("visible"); }
 
-// Target language buttons (no source selection needed — Whisper auto-detects)
+// Target language buttons
 function renderLangs() {
   var tc = getEl("tgtBtns");
   tc.innerHTML = "";
@@ -718,7 +706,7 @@ function renderSrcLangs() {
           liveEntryId = null; liveText = '';
         }
         // If recording, reconnect WebSocket with new language
-        if (recording && sttMode === 'deepgram') {
+        if (recording) {
           // Route to correct engine for new language
           var targetEngine = srcInputLang === 'zh' ? 'qwen' : (srcInputLang === 'en' || srcInputLang === 'ja') ? 'groq' : 'deepgram';
           if (targetEngine === _activeEngine && targetEngine === 'deepgram') {
@@ -766,16 +754,6 @@ function startVolumeMeter(stream) {
     for (var i = 0; i < dataArray.length; i++) sum += dataArray[i] * dataArray[i];
     var rms = Math.sqrt(sum / dataArray.length);
     volEl.style.width = Math.min(100, rms * 500) + "%";
-
-    // Silence detection
-    if (rms < SILENCE_THRESHOLD) {
-      if (!silenceTimer && (Date.now() - chunkStartTime) > MIN_CHUNK_MS) {
-        silenceTimer = setTimeout(function() { sendChunks(); }, SILENCE_DURATION);
-      }
-    } else {
-      if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
-      hasSound = true;
-    }
     requestAnimationFrame(tick);
   }
   tick();
@@ -783,76 +761,12 @@ function startVolumeMeter(stream) {
 
 // Recording
 function startRecording() {
-  if (sttMode === 'deepgram') { startDeepgramStreaming(); return; }
-  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-    recording = true;
-    updateToggle();
-    setStatus("listening");
-    hideError();
-    startMatrix();
-
-    // Use webm/opus if available, fallback to mp4/aac (iOS Safari)
-    var mimeType = "audio/webm;codecs=opus";
-    if (!MediaRecorder.isTypeSupported(mimeType)) {
-      mimeType = "audio/mp4";
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = ""; // let browser decide
-      }
-    }
-
-    var options = mimeType ? { mimeType: mimeType } : {};
-    mediaRecorder = new MediaRecorder(stream, options);
-    chunks = [];
-    chunkStartTime = Date.now();
-
-    mediaRecorder.ondataavailable = function(e) {
-      if (e.data && e.data.size > 0) chunks.push(e.data);
-    };
-
-    mediaRecorder.onstop = function() {
-      // Skip if no meaningful sound (prevents Whisper hallucination)
-      if (chunks.length > 0 && hasSound) {
-        var blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
-        sendAudio(blob);
-      }
-      chunks = [];
-      chunkStartTime = Date.now();
-      hasSound = false;
-
-      // Restart if still recording
-      if (recording) {
-        try { mediaRecorder.start(3000); } catch(e) { console.error('[translator] restart failed:', e); }
-      }
-    };
-
-    mediaRecorder.start(3000); // timeslice: fire ondataavailable every 3s
-    startVolumeMeter(stream);
-    // Keep reference to stream for cleanup
-    mediaRecorder._stream = stream;
-
-    // Fallback: auto-send every 5 seconds if silence detection doesn't trigger
-    autoSendInterval = setInterval(function() {
-      if (recording && chunks.length > 0 && mediaRecorder && mediaRecorder.state === 'recording') {
-        mediaRecorder.stop();
-      }
-    }, 5000);
-  }).catch(function(e) {
-    showError("無法取得麥克風: " + e.message);
-    setStatus("error");
-  });
+  startDeepgramStreaming(); return;
 }
 
-function sendChunks() {
-  silenceTimer = null;
-  if (mediaRecorder && mediaRecorder.state === "recording") {
-    mediaRecorder.stop(); // triggers onstop → sends audio → restarts
-  }
-}
 
 function stopRecording() {
   recording = false;
-  if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
-  if (autoSendInterval) { clearInterval(autoSendInterval); autoSendInterval = null; }
   // Deepgram cleanup
   if (dgRetryTimer) { clearTimeout(dgRetryTimer); dgRetryTimer = null; }
   dgRetryCount = 0;
@@ -889,16 +803,6 @@ function stopRecording() {
     finalizeEntry(liveEntryId, _finalText);
   }
   liveEntryId = null; liveText = '';
-  // Whisper cleanup
-  if (mediaRecorder) {
-    if (mediaRecorder.state === "recording") {
-      mediaRecorder.stop();
-    }
-    if (mediaRecorder._stream) {
-      mediaRecorder._stream.getTracks().forEach(function(t) { t.stop(); });
-    }
-    mediaRecorder = null;
-  }
   if (audioContext) { audioContext.close(); audioContext = null; }
   getEl("volFill").style.width = "0%";
   setStatus("ready");
@@ -1018,13 +922,12 @@ function connectDgWebSocket(stream) {
           }, 1500 * dgRetryCount);
           return;
         }
-        console.log('[dg] Max retries reached, falling back to Whisper');
-        showError('Deepgram 連線失敗，切換至批次模式');
-        sttMode = 'whisper';
-        getEl('sttMode').value = 'whisper';
-        stopRecording();
-        // Auto-start in Whisper mode
-        setTimeout(function() { startRecording(); }, 500);
+        console.log('[dg] Max retries reached, falling back to Qwen');
+        showError('Deepgram 連線失敗，切換至 Qwen ASR');
+        setTimeout(hideError, 3000);
+        _activeEngine = 'qwen';
+        qwenRetryCount = 0;
+        connectQwenWebSocket(dgStream);
       };
 
       dgWs.onclose = function(e) {
@@ -1194,7 +1097,7 @@ function sendGroqChunk(blob) {
       _groqFailCount = 0;
       if (!d.original || !d.original.trim()) return;
       d.original = deduplicateText(d.original);
-      // Skip very short fragments (likely Whisper hallucination residue)
+      // Skip very short fragments
       if (d.original.trim().length <= 1) { console.log('[groq] skipped too-short result:', d.original); return; }
       // Create entry
       var id = ++nextId;
@@ -2010,7 +1913,6 @@ function updatePerfAvg() {
   if (el) el.textContent = allEntries.length + ' 筆 · 平均 TTFT ' + avg('ttft') + 's · E2E ' + avg('e2e') + 's';
 }
 
-// sendAudio replaced by glossary-aware version below
 function updateEntry(id, original, translated, detectedLang) {
   var entry = allEntries.find(function(e) { return e.id === id; });
   if (entry) { entry.original = original; entry.translated = translated; entry.detectedLang = detectedLang; }
@@ -2127,14 +2029,6 @@ getEl("btnToggle").addEventListener("click", function() {
 });
 getEl("btnClear").addEventListener("click", clearAll);
 
-// STT mode binding
-getEl('sttMode').addEventListener('change', function() {
-  sttMode = this.value;
-  var sub = getEl('headerSub');
-  if (sub) sub.textContent = sttMode === 'deepgram'
-    ? 'AI 即時語音辨識 · 翻譯 · 會議紀錄'
-    : 'AI 語音辨識 · 翻譯 · 會議紀錄';
-});
 
 // Init
 renderLangs();
@@ -2209,64 +2103,6 @@ getEl("btnAddTerm").addEventListener("click", function() {
   var inputs = getEl("glossaryRows").querySelectorAll(".glossary-input");
   if (inputs.length > 0) inputs[inputs.length - 2].focus();
 });
-
-// === sendAudio (with glossary support) ===
-function sendAudio(blob) {
-  var id = ++nextId;
-  var ts = new Date().toLocaleTimeString("zh-TW", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
-  var entry = {id:id, original:"", translated:null, detectedLang:"", ts:ts, tgt:tgtLang};
-  allEntries.push(entry);
-
-  var emp = getEl("empty");
-  if (emp) emp.remove();
-
-  var div = document.createElement("div");
-  div.className = "entry";
-  div.id = "entry-" + id;
-  div.innerHTML = '<div class="entry-meta">' + ts + ' · <span class="shimmer">辨識中…</span></div>' +
-    '<div class="entry-original" id="orig-' + id + '"><span class="shimmer">語音辨識處理中</span></div>' +
-    '<div class="entry-translated" id="trans-' + id + '"><span class="shimmer">翻譯中...</span></div>';
-  getEl("content").appendChild(div);
-  updateCount();
-  scrollBottom();
-
-  setStatus("sending");
-  if (matrixActive) matrixPulse();
-
-  var form = new FormData();
-  form.append("audio", blob, "audio.webm");
-  form.append("targetLang", tgtLang);
-  var cg = getCleanGlossary();
-  if (cg.length > 0) form.append("glossary", JSON.stringify(cg));
-  form.append("code", inviteCode);
-
-  fetch(WORKER_URL + "/stt", { method: "POST", body: form, credentials: "include" })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.error) {
-        if (checkBudgetResponse(d)) return;
-        updateEntry(id, "\u26a0 " + d.error, "", "");
-        return;
-      }
-      if (!d.original) {
-        var el = getEl("entry-" + id);
-        if (el) el.remove();
-        allEntries = allEntries.filter(function(e) { return e.id !== id; });
-        updateCount();
-        return;
-      }
-      updateEntry(id, d.original, d.translated, d.detectedLang);
-      if (matrixActive) matrixPulse();
-      if (recording) setStatus("listening");
-      // Enable summary button when we have entries
-      getEl("btnSummary").disabled = false;
-      scheduleStatsRefresh();
-    })
-    .catch(function(e) {
-      updateEntry(id, "\u26a0 連線錯誤: " + e.message, "", "");
-      if (recording) setStatus("listening");
-    });
-};
 
 // === Summary ===
 getEl("btnSummary").addEventListener("click", function() {
