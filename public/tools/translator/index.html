@@ -2645,13 +2645,14 @@ function loadTodayStats() {
     .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(d) {
       var el = getEl("todayStats");
-      var reqs = d.totalRecords || 0;
+      var records = d.records || [];
+      var reqs = records.filter(function(r) { return r.action && r.action.indexOf('stt') === 0; }).length;
       var cost = d.totalUSD || 0;
       var twd = d.totalTWD || 0;
       if (reqs === 0) {
         el.innerHTML = "\u4eca\u65e5\uff1a\u5c1a\u672a\u4f7f\u7528";
       } else {
-        el.innerHTML = "\u4eca\u65e5 <span class=\"stat-val\">" + reqs + " \u7b46</span> \u00b7 <span class=\"stat-cost\">$" + cost.toFixed(4) + "</span> <span style=\"font-size:10px;opacity:.6\">\u2248NT$" + twd.toFixed(2) + "</span>";
+        el.innerHTML = "\u4eca\u65e5 <span class=\"stat-val\">" + reqs + " \u5247</span> \u00b7 <span class=\"stat-cost\">$" + cost.toFixed(4) + "</span> <span style=\"font-size:10px;opacity:.6\">\u2248NT$" + twd.toFixed(2) + "</span>";
       }
       el.classList.add("visible");
     })
