@@ -40,14 +40,16 @@ function isMedicalContext(glossary) {
   const all = glossary.map(g => (g.term || '') + ' ' + (g.translation || '')).join(' ');
   return MEDICAL_TRIGGERS.some(kw => all.includes(kw));
 }
-function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary) {
+function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang) {
   let base = 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translated text.' + twHint;
   if (isMedicalContext(glossary)) {
-    base += '\n\n[MEDICAL/CLINICAL CONTEXT] Apply these rules strictly:\n' +
-      '1. Register: Use formal medical register for colloquial Japanese:\n' +
-      '  やる→使用/施作/進行治療, 渡す→提供/交付, 持って帰る→帶回使用, できない→不允許/無法進行\n' +
-      '  隠れてやっている→私下進行, 見つかったら大変→被查到會很麻煩, 患者がやる→病人自行使用\n' +
-      '2. Key abbreviations (use full name on first mention):\n' +
+    base += '\n\n[MEDICAL/CLINICAL CONTEXT] Apply these rules strictly:\n';
+    if (!sourceLang || sourceLang === 'ja') {
+      base += '1. Register: Use formal medical register for colloquial Japanese:\n' +
+        '  やる→使用/施作/進行治療, 渡す→提供/交付, 持って帰る→帶回使用, できない→不允許/無法進行\n' +
+        '  隠れてやっている→私下進行, 見つかったら大変→被查到會很麻煩, 患者がやる→病人自行使用\n';
+    }
+    base += '2. Key abbreviations (use full name on first mention):\n' +
       '  MSC=間質幹細胞, HSC=造血幹細胞, iPSC=誘導型多能幹細胞, ESC=胚胎幹細胞, NSC=神經幹細胞, ASC=脂肪幹細胞\n' +
       '  Exosome/EV=外泌體/細胞外囊泡, sEV=小型細胞外囊泡, Secretome=幹細胞分泌體, CM=條件培養液\n' +
       '  p53=腫瘤抑制基因p53, CRISPR=基因編輯系統, mRNA=信使RNA, miRNA=微小RNA\n' +
@@ -101,7 +103,7 @@ export async function handleTranslate(request, env) {
   const targetName = TNAMES[targetLang] || targetLang;
   const htTwHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
   const htGlossaryHint = (trGlossary && trGlossary.length > 0) ? '\nUse these terminology translations: ' + trGlossary.map(g => g.term + ' \u2192 ' + g.translation).join(', ') + '.' : '';
-  const htPrompt = buildTranslatePrompt(targetName, htTwHint, htGlossaryHint, trGlossary);
+  const htPrompt = buildTranslatePrompt(targetName, htTwHint, htGlossaryHint, trGlossary, sourceLang);
   const res = await claudeWithRetry(env, { model: 'claude-haiku-4-5-20251001', max_tokens: 1024, messages: [{ role: 'user', content: htPrompt + '\n\n' + text.slice(0, 2000) }] });
   if (!res || !res.ok) { const err = res ? await res.json().catch(() => ({})) : {}; return jsonResponse({ error: err.error?.message || 'Claude failed' }, 502, request); }
   const data = await res.json(); const usage = data.usage || {};
@@ -121,7 +123,7 @@ export async function handleTranslateStream(request, env) {
   if (trimmedText.length <= 2) { const enc = new TextEncoder(); const { readable, writable } = new TransformStream(); const w = writable.getWriter(); (async () => { await w.write(enc.encode('data: ' + JSON.stringify({ t: trimmedText }) + '\n\n')); await w.write(enc.encode('data: ' + JSON.stringify({ done: true, costUSD: 0 }) + '\n\n')); await w.close(); })(); return new Response(readable, { status: 200, headers: { 'Content-Type': 'text/event-stream', ...corsHeaders(request) } }); }
   const targetName = TNAMES[targetLang] || targetLang; const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
   const glossaryHint = (glossary && glossary.length > 0) ? '\nUse these terminology translations: ' + glossary.map(g => g.term + ' → ' + g.translation).join(', ') + '.' : '';
-  const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary);
+  const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang);
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, stream: true, messages: [{ role: 'user', content: translatePrompt + '\n\n' + trimmedText }] }) });
   if (!claudeRes.ok) { const err = await claudeRes.json().catch(() => ({})); return jsonResponse({ error: err.error?.message || 'Claude API ' + claudeRes.status }, 502, request); }
   const { readable, writable } = new TransformStream(); const writer = writable.getWriter(); const encoder = new TextEncoder();
