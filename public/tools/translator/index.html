@@ -1713,10 +1713,25 @@ function stringSimilarity(a, b) {
   if (!a.length || !b.length) return 0;
   return 2 * lcsLength(a, b) / (a.length + b.length);
 }
+// Hard-coded medical STT corrections for known recognition errors
+var MEDICAL_STT_CORRECTIONS = [
+    ['エソソン', 'エクソソーム'],
+    ['エクソムチ', 'エクソソーム'],
+    ['エクストソーブン', 'エクソソーム']
+];
 function correctSTTWithGlossary(text) {
-  var cg = getCleanGlossary();
-  if (!cg.length || !text) return text;
-  var corrected = text;
+    if (!text) return text;
+    var corrected = text;
+    // Phase 0: apply hard-coded medical corrections first
+    for (var mi = 0; mi < MEDICAL_STT_CORRECTIONS.length; mi++) {
+        var wrong = MEDICAL_STT_CORRECTIONS[mi][0], right = MEDICAL_STT_CORRECTIONS[mi][1];
+        if (corrected.indexOf(wrong) >= 0) {
+            console.log('[stt-hardfix] "' + wrong + '" -> "' + right + '"');
+            corrected = corrected.split(wrong).join(right);
+        }
+    }
+    var cg = getCleanGlossary();
+    if (!cg.length) return corrected;
   for (var gi = 0; gi < cg.length; gi++) {
     var term = cg[gi].term.trim();
     if (!term || term.length < 2) continue;
