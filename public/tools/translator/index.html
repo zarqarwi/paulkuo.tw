@@ -1411,12 +1411,14 @@ function connectQwenWebSocket(stream) {
         }
         case 'session.created':
           console.log('[qwen] Session created:', data.session && data.session.id);
+          _qwenReconnectCount = 0;
           break;
         case 'session.updated':
           console.log('[qwen] Session configured');
           break;
         case 'input_audio_buffer.speech_started':
           console.log('[qwen] Speech started');
+          if (!_qwenUtteranceStartMs) _qwenUtteranceStartMs = performance.now();
           break;
         case 'input_audio_buffer.speech_stopped':
           console.log('[qwen] Speech stopped');
@@ -2891,10 +2893,10 @@ function polishAndExport(buildFn, filename, mimeType) {
         }
       });
       _polished = true;
-      console.log("Polish: " + data.corrections + " corrections, $" + data.cost);
+      console.log("[polish] " + data.corrections + " corrections, $" + data.cost);
     }
   })
-  .catch(function(e) { console.warn("Polish failed, exporting raw:", e.message); })
+  .catch(function(e) { console.warn("[polish] export failed, using raw:", e.message); })
   .finally(function() {
     btn.innerHTML = origHTML;
     btn.disabled = false;
