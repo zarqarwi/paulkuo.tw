@@ -33,6 +33,28 @@ async function claudeWithRetry(env, body, maxRetries = 3) {
 function haikuCost(usage) { const hp = PRICING['claude-haiku-4-5-20251001']; return ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok; }
 const WHISPER_TO_LANG = { 'japanese':'ja','english':'en','chinese':'zh-TW','korean':'ko','mandarin':'zh-TW','vietnamese':'vi','thai':'th','indonesian':'id','german':'de','spanish':'es','french':'fr','nynorsk':'ko','nn':'ko' };
 
+// --- Medical context detection & prompt builder ---
+const MEDICAL_TRIGGERS = ['治療','クリニック','薬剤','医療','診所','醫療','エクソソーム','幹細胞','MSC','自由診療','再生医療','点鼻薬','スプレー','外泌體','藥劑','噴霧','細胞','抗体','免疫','臨床','投与','処方'];
+function isMedicalContext(glossary) {
+  if (!glossary || !Array.isArray(glossary) || glossary.length === 0) return false;
+  const all = glossary.map(g => (g.term || '') + ' ' + (g.translation || '')).join(' ');
+  return MEDICAL_TRIGGERS.some(kw => all.includes(kw));
+}
+function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary) {
+  let base = 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translated text.' + twHint;
+  if (isMedicalContext(glossary)) {
+    base += '\n\n[MEDICAL/CLINICAL CONTEXT] This conversation involves medical, pharmaceutical, or clinical topics. Apply these rules:\n' +
+      '- Translate colloquial Japanese verbs with formal medical register:\n' +
+      '  やる→使用/進行(治療), 渡す→提供/交付, 持って帰る→帶回, できない→不允許進行\n' +
+      '  隠れてやっている→私下進行, 見つかったら大変→被查到會很麻煩\n' +
+      '- Use formal medical/pharmaceutical terminology, not casual equivalents.\n' +
+      '- Interpret ambiguous terms in clinical context (e.g. 製品=產品/製劑, 相談所=諮詢中心).';
+  }
+  base += glossaryHint;
+  return base;
+}
+
+
 export async function handleSTT(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
   if (!env.OPENAI_API_KEY || !env.ANTHROPIC_API_KEY) return jsonResponse({ error: 'API keys not configured' }, 500, request);
@@ -67,12 +89,15 @@ export async function handleTranslate(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
   if (!env.ANTHROPIC_API_KEY) return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
   let body; try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
-  const { text, sourceLang, targetLang, code: userCode } = body; if (!text || !targetLang) return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
+  const { text, sourceLang, targetLang, code: userCode, glossary: trGlossary } = body; if (!text || !targetLang) return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   const auth = await authenticateRequest(request, env, userCode || ''); if (!auth) return jsonResponse({ error: 'Authentication required' }, 401, request);
   if (!checkRateLimit(request.headers.get('CF-Connecting-IP') || 'unknown', TRANSLATE_RATE_LIMIT)) return jsonResponse({ error: 'Rate limited' }, 429, request);
   const budget = await checkBudget(auth, env); if (!budget.ok) return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budget.usedSec, budgetSec: budget.budgetSec, remainingSec: budget.remainingSec }, 402, request);
   const targetName = TNAMES[targetLang] || targetLang;
-  const res = await claudeWithRetry(env, { model: 'claude-haiku-4-5-20251001', max_tokens: 1024, messages: [{ role: 'user', content: `You are a professional real-time interpreter. Translate the following into ${targetName}. Output ONLY the translated text.${targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : ''}\n\n${text.slice(0, 2000)}` }] });
+  const htTwHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
+  const htGlossaryHint = (trGlossary && trGlossary.length > 0) ? '\nUse these terminology translations: ' + trGlossary.map(g => g.term + ' \u2192 ' + g.translation).join(', ') + '.' : '';
+  const htPrompt = buildTranslatePrompt(targetName, htTwHint, htGlossaryHint, trGlossary);
+  const res = await claudeWithRetry(env, { model: 'claude-haiku-4-5-20251001', max_tokens: 1024, messages: [{ role: 'user', content: htPrompt + '\n\n' + text.slice(0, 2000) }] });
   if (!res || !res.ok) { const err = res ? await res.json().catch(() => ({})) : {}; return jsonResponse({ error: err.error?.message || 'Claude failed' }, 502, request); }
   const data = await res.json(); const usage = data.usage || {};
   await logCost(env.TICKER_KV, { service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code, _userId: auth.userId || '', inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0, costUSD: +haikuCost(usage).toFixed(6), note: (sourceLang || 'auto') + '>' + targetLang });
@@ -91,7 +116,8 @@ export async function handleTranslateStream(request, env) {
   if (trimmedText.length <= 2) { const enc = new TextEncoder(); const { readable, writable } = new TransformStream(); const w = writable.getWriter(); (async () => { await w.write(enc.encode('data: ' + JSON.stringify({ t: trimmedText }) + '\n\n')); await w.write(enc.encode('data: ' + JSON.stringify({ done: true, costUSD: 0 }) + '\n\n')); await w.close(); })(); return new Response(readable, { status: 200, headers: { 'Content-Type': 'text/event-stream', ...corsHeaders(request) } }); }
   const targetName = TNAMES[targetLang] || targetLang; const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
   const glossaryHint = (glossary && glossary.length > 0) ? '\nUse these terminology translations: ' + glossary.map(g => g.term + ' → ' + g.translation).join(', ') + '.' : '';
-  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, stream: true, messages: [{ role: 'user', content: 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translated text.' + twHint + glossaryHint + '\n\n' + trimmedText }] }) });
+  const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary);
+  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, stream: true, messages: [{ role: 'user', content: translatePrompt + '\n\n' + trimmedText }] }) });
   if (!claudeRes.ok) { const err = await claudeRes.json().catch(() => ({})); return jsonResponse({ error: err.error?.message || 'Claude API ' + claudeRes.status }, 502, request); }
   const { readable, writable } = new TransformStream(); const writer = writable.getWriter(); const encoder = new TextEncoder();
   let inputTokens = 0, outputTokens = 0;

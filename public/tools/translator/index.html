@@ -1629,6 +1629,8 @@ function handleDgMessage(evt) {
 
   // Update live text
   if (data.is_final) {
+    // STT post-correction: fix recognition errors using glossary
+    text = correctSTTWithGlossary(text);
     // Accumulate final segments
     liveText += (liveText ? ' ' : '') + text;
     getEl('orig-' + liveEntryId).textContent = liveText;
@@ -1693,6 +1695,57 @@ function resetInterimState() {
   _interimLatestText = '';
 }
 
+// === STT Post-Correction: fix recognition errors using glossary (fuzzy LCS match) ===
+function lcsLength(a, b) {
+  var m = a.length, n = b.length;
+  var prev = new Array(n + 1).fill(0), curr = new Array(n + 1).fill(0);
+  for (var i = 1; i <= m; i++) {
+    for (var j = 1; j <= n; j++) {
+      curr[j] = a[i-1] === b[j-1] ? prev[j-1] + 1 : Math.max(prev[j], curr[j-1]);
+    }
+    var tmp = prev; prev = curr; curr = tmp;
+    curr.fill(0);
+  }
+  return prev[n];
+}
+function stringSimilarity(a, b) {
+  if (a === b) return 1;
+  if (!a.length || !b.length) return 0;
+  return 2 * lcsLength(a, b) / (a.length + b.length);
+}
+function correctSTTWithGlossary(text) {
+  var cg = getCleanGlossary();
+  if (!cg.length || !text) return text;
+  var corrected = text;
+  for (var gi = 0; gi < cg.length; gi++) {
+    var term = cg[gi].term.trim();
+    if (!term || term.length < 2) continue;
+    // Skip if term already present in text
+    if (corrected.indexOf(term) >= 0) continue;
+    // Sliding window: check substrings of similar length
+    var minWin = Math.max(2, term.length - 2);
+    var maxWin = term.length + 2;
+    var bestSim = 0, bestStart = -1, bestEnd = -1;
+    for (var winSize = minWin; winSize <= maxWin; winSize++) {
+      for (var i = 0; i <= corrected.length - winSize; i++) {
+        var sub = corrected.substring(i, i + winSize);
+        var sim = stringSimilarity(sub, term);
+        if (sim > bestSim) {
+          bestSim = sim;
+          bestStart = i;
+          bestEnd = i + winSize;
+        }
+      }
+    }
+    // Threshold 0.55: tuned for katakana STT errors (e.g. エソソン vs エクソソーム = 0.60)
+    if (bestSim >= 0.55 && bestStart >= 0) {
+      var oldSub = corrected.substring(bestStart, bestEnd);
+      console.log('[stt-correct] "' + oldSub + '" -> "' + term + '" (sim=' + bestSim.toFixed(2) + ')');
+      corrected = corrected.substring(0, bestStart) + term + corrected.substring(bestEnd);
+    }
+  }
+  return corrected;
+}
 function translateSegmentStreaming(id, segmentText, abortSignal) {
   if (!segmentText || !segmentText.trim()) return;
 
