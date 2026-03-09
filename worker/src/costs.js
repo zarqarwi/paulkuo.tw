@@ -2,7 +2,7 @@ import { twISOString, twDateStr, jsonResponse } from './utils.js';
 import { authenticateRequest, checkBudget } from './auth.js';
 
 export const costBuffer = [];
-const COST_FLUSH_SIZE = 50;
+const COST_FLUSH_SIZE = 1; // flush every record to prevent data loss on isolate recycle
 
 export async function logCost(kv, record) {
   costBuffer.push({ timestamp: twISOString(), ...record, costTWD: +(record.costUSD * 32.5).toFixed(4), _userId: record._userId || '' });
