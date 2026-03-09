@@ -49,6 +49,10 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
         '  やる→使用/施作/進行治療, 渡す→提供/交付, 持って帰る→帶回使用, できない→不允許/無法進行\n' +
         '  隠れてやっている→私下進行, 見つかったら大変→被查到會很麻煩, 患者がやる→病人自行使用\n';
     }
+    if (sourceLang === 'zh-TW' || sourceLang === 'zh') {
+      base += '1. Chinese ASR corrections: 生计→生技, 细干细胞→幹細胞, 西巴→細胞, 外泌体→外泌體, 战争医疗法→再生醫療法, 药证→藥證\n' +
+        '  Master Cell Bank→主細胞庫(MCB), CDMO→委託開發與製造, CRO→臨床研究機構\n';
+    }
     base += '2. Key abbreviations (use full name on first mention):\n' +
       '  MSC=間質幹細胞, HSC=造血幹細胞, iPSC=誘導型多能幹細胞, ESC=胚胎幹細胞, NSC=神經幹細胞, ASC=脂肪幹細胞\n' +
       '  Exosome/EV=外泌體/細胞外囊泡, sEV=小型細胞外囊泡, Secretome=幹細胞分泌體, CM=條件培養液\n' +
@@ -167,7 +171,7 @@ export async function handlePolishTranscript(request, env) {
   if (!entries || !Array.isArray(entries) || entries.length === 0) return jsonResponse({ error: 'No entries' }, 400, request);
   const glossarySection = glossary?.length > 0 ? '\n## 術語庫\n' + glossary.map(g => '- ' + g.term + (g.translation ? ' (' + g.translation + ')' : '')).join('\n') + '\n' : '';
   let transcriptLines = entries.map((e, i) => '[' + i + '] ' + (e.original || '')).join('\n'); if (transcriptLines.length > 80000) transcriptLines = transcriptLines.slice(0, 80000);
-  const res = await claudeWithRetry(env, { model: 'claude-haiku-4-5-20251001', max_tokens: 8192, messages: [{ role: 'user', content: 'あなたは日本語商務会議の逐字稿校正アシスタントです。\n\n## 校正ルール\n1. 音声認識の同音異字を術語庫の語彙に優先的に修正\n2. ビジネス用語を優先\n3. 話し言葉のニュアンスを保持\n4. 明らかな誤認識のみ修正' + glossarySection + '\n## 出力形式\nJSON配列: [{"i": 行番号, "t": "修正後テキスト"}]\n修正があった行だけ。JSON配列のみ。\n\n## 逐字稿\n' + transcriptLines }] });
+  const res = await claudeWithRetry(env, { model: 'claude-haiku-4-5-20251001', max_tokens: 8192, messages: [{ role: 'user', content: 'You are a medical/biotech meeting transcript correction assistant.\n\n## Processing Steps (apply in order)\n1. Fix ASR errors: correct homophones and misrecognitions using the glossary below. Common fixes: 生计→生技, 细干细胞→幹細胞, 西巴→細胞, 外泌体→外泌體, 战争医疗法→再生醫療法, 药证→藥證, CDM→CDMO\n2. Remove meaningless filler words (えーと, あのー, ええと, 那個, 就是說) but preserve speaker intent\n3. Standardize terminology: Master Cell Bank→主細胞庫(MCB), CDMO→委託開發與製造, CRO→臨床研究機構, 再生医疗制剂→再生醫療製劑\n4. Reconstruct broken sentences into natural, professional form without adding meaning not in the original\n5. If a proper noun is uncertain, append [需確認]' + glossarySection + '\n## 出力形式\nJSON配列: [{"i": 行番号, "t": "修正後テキスト"}]\n修正があった行だけ。JSON配列のみ。\n\n## 逐字稿\n' + transcriptLines }] });
   if (!res || !res.ok) { const err = res ? await res.json().catch(() => ({})) : {}; return jsonResponse({ error: 'Polish failed: ' + (err.error?.message || 'Unknown') }, 500, request); }
   const data = await res.json(); const raw = (data.content?.[0]?.text || '').trim(); const usage = data.usage || {}; const cost = haikuCost(usage);
   await logCost(env.TICKER_KV, { service: 'anthropic', model: 'claude-haiku-4.5', action: 'polish-transcript', source: 'translator', code: auth.code, _userId: auth.userId || '', inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0, costUSD: +cost.toFixed(6), note: entries.length + ' entries' });

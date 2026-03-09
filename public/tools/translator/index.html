@@ -1715,9 +1715,20 @@ function stringSimilarity(a, b) {
 }
 // Hard-coded medical STT corrections for known recognition errors
 var MEDICAL_STT_CORRECTIONS = [
+    // Japanese katakana errors
     ['エソソン', 'エクソソーム'],
     ['エクソムチ', 'エクソソーム'],
-    ['エクストソーブン', 'エクソソーム']
+    ['エクストソーブン', 'エクソソーム'],
+    // Chinese ASR misrecognitions (Qwen3-ASR common errors)
+    ['生计', '生技'],
+    ['细干细胞', '幹細胞'],
+    ['西巴', '細胞'],
+    ['外泌体', '外泌體'],
+    ['战争医疗法', '再生醫療法'],
+    ['药证', '藥證'],
+    ['临床二期', '二期臨床試驗'],
+    ['细胞药', '細胞藥'],
+    ['再生医疗制剂', '再生醫療製劑']
 ];
 function correctSTTWithGlossary(text) {
     if (!text) return text;
