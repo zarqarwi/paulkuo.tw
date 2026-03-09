@@ -1193,6 +1193,7 @@ function sendGroqChunk(blob) {
       }
       _groqFailCount = 0;
       if (!d.original || !d.original.trim()) return;
+      d.original = deduplicateText(d.original);
       // Skip very short fragments (likely Whisper hallucination residue)
       if (d.original.trim().length <= 1) { console.log('[groq] skipped too-short result:', d.original); return; }
       // Create entry
@@ -1391,7 +1392,7 @@ function connectQwenWebSocket(stream) {
           if (_qwenCommittedTimer) { clearTimeout(_qwenCommittedTimer); _qwenCommittedTimer = null; }
           // Cancel interim translate — completed has authoritative text
           resetInterimState();
-          var transcript = data.transcript || '';
+          var transcript = deduplicateText(data.transcript || '');
           if (!transcript) break;
           // Calculate utterance duration from performance.now()
           if (_qwenUtteranceStartMs) {
@@ -1534,6 +1535,26 @@ function connectQwenWebSocket(stream) {
       }, delay);
     }
   };
+}
+
+// === Qwen Hallucination Dedup ===
+function deduplicateText(text) {
+  if (!text || text.length < 10) return text;
+  var seps = /[，,、。！？；\s]+/;
+  var parts = text.split(seps).filter(function(p) { return p.trim().length > 0; });
+  if (parts.length < 4) return text;
+  var counts = {};
+  parts.forEach(function(p) { var k = p.trim(); counts[k] = (counts[k] || 0) + 1; });
+  var maxCount = 0, maxPhrase = '';
+  for (var k in counts) { if (counts[k] > maxCount) { maxCount = counts[k]; maxPhrase = k; } }
+  if (maxCount > 3 && maxCount / parts.length > 0.5) {
+    var seen = {};
+    var deduped = parts.filter(function(p) { var k = p.trim(); seen[k] = (seen[k] || 0) + 1; return seen[k] <= 2; });
+    var result = deduped.join(',');
+    console.log('[dedup] ' + parts.length + ' parts -> ' + deduped.length + ' (repeated ' + maxPhrase + ' x' + maxCount + ')');
+    return result;
+  }
+  return text;
 }
 
 function handleDgMessage(evt) {
