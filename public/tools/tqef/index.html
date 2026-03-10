@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TQEF — 翻譯精準度評估｜paulkuo.tw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0F1419;--bg-card:#1A2332;--bg-section:#151D28;--text-primary:#E8ECF1;--text-secondary:#8899AA;--text-muted:#5A6A7A;--accent-green:#10B981;--accent-amber:#F59E0B;--accent-red:#EF4444;--accent-blue:#3B82F6;--border:#1E2D3D;--border-light:#253545;--radius:12px;--font-body:'DM Sans','Noto Sans TC',sans-serif;--font-cjk:'Noto Sans TC',sans-serif;--font-mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.header{padding:16px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(15,20,25,0.95);backdrop-filter:blur(12px)}
+.header-left{display:flex;align-items:center;gap:14px}
+.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent-green),#059669);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff}
+.header-title{font-size:18px;font-weight:700;color:var(--text-primary)}
+.header-sub{font-size:12px;color:var(--text-muted);font-family:var(--font-mono)}
+.header-right{display:flex;align-items:center;gap:12px}
+.badge{padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600}
+.badge-admin{background:rgba(245,158,11,0.15);color:var(--accent-amber);border:1px solid rgba(245,158,11,0.25)}
+.badge-version{background:rgba(59,130,246,0.12);color:var(--accent-blue);border:1px solid rgba(59,130,246,0.2)}
+.gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.gate-box{text-align:center;color:var(--text-muted);font-size:15px}
+.gate-box .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent-green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.gate.hidden{display:none}
+.main{flex:1;overflow-y:auto;padding:24px 28px;display:flex;gap:24px}
+.panel-left{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px}
+.panel-right{width:340px;flex-shrink:0;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header h3{font-size:14px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:8px}
+.card-body{padding:16px 18px}
+.controls-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.api-key-input{flex:1;min-width:200px;padding:10px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-section);color:var(--text-primary);font-family:var(--font-mono);font-size:13px;outline:none;transition:border-color .2s}
+.api-key-input:focus{border-color:var(--accent-green)}
+.api-key-input::placeholder{color:var(--text-muted)}
+.btn{padding:10px 22px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-run{background:var(--accent-green);color:#fff;box-shadow:0 2px 12px rgba(16,185,129,0.25)}
+.btn-run:hover{background:#059669;transform:translateY(-1px)}
+.btn-run:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-export{background:transparent;color:var(--accent-blue);border:1.5px solid var(--accent-blue);padding:8px 16px;font-size:13px}
+.btn-export:hover{background:rgba(59,130,246,0.1)}
+.btn-export:disabled{opacity:.3;cursor:not-allowed}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:6px}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:12px 0 8px}
+.progress-fill{height:100%;background:var(--accent-green);border-radius:2px;transition:width .3s;width:0%}
+.progress-text{font-size:12px;color:var(--text-muted);font-family:var(--font-mono)}
+.results-scroll{max-height:calc(100vh - 340px);overflow-y:auto}
+.result-row{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px;gap:8px;animation:fadeIn .2s}
+.result-row:last-child{border-bottom:none}
+.result-id{width:80px;font-family:var(--font-mono);font-weight:600;color:var(--text-secondary);font-size:11px;flex-shrink:0}
+.result-industry{width:100px;font-size:11px;color:var(--text-muted);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-score{width:50px;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:14px;flex-shrink:0}
+.result-scores{flex:1;display:flex;gap:6px;font-family:var(--font-mono);font-size:11px;color:var(--text-muted)}
+.result-scores span{padding:2px 6px;border-radius:4px;background:var(--bg-section)}
+.score-high{color:var(--accent-green)}.score-mid{color:var(--accent-amber)}.score-low{color:var(--accent-red)}
+.result-marker{width:20px;font-size:14px;text-align:center;flex-shrink:0}
+.result-errs{width:30px;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-align:right;flex-shrink:0}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.score-tile{padding:14px;border-radius:10px;background:var(--bg-section);border:1px solid var(--border);text-align:center}
+.score-tile .label{font-size:11px;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.score-tile .value{font-size:28px;font-weight:700;font-family:var(--font-mono)}
+.score-tile .weight{font-size:10px;color:var(--text-muted);margin-top:2px}
+.score-tile.overall{grid-column:1/-1;background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(59,130,246,0.08));border-color:rgba(16,185,129,0.2)}
+.score-tile.overall .value{font-size:42px}
+.industry-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.industry-row:last-child{border-bottom:none}
+.industry-name{flex:1;color:var(--text-secondary)}
+.industry-score{width:50px;text-align:right;font-family:var(--font-mono);font-weight:600}
+.industry-term{width:50px;text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--text-muted)}
+.industry-bar{width:60px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-left:10px}
+.industry-bar-fill{height:100%;border-radius:3px}
+.error-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.6}
+.error-item:last-child{border-bottom:none}
+.error-sev{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;margin-right:6px}
+.error-sev.critical{background:rgba(239,68,68,0.15);color:var(--accent-red)}
+.error-sev.major{background:rgba(245,158,11,0.12);color:var(--accent-amber)}
+.error-type{font-family:var(--font-mono);color:var(--text-muted);font-size:11px}
+.error-detail{color:var(--text-secondary);margin-top:4px}
+.history-item{padding:10px 12px;border-radius:8px;background:var(--bg-section);margin-bottom:8px;border:1px solid transparent}
+.history-ts{font-size:11px;color:var(--text-muted);font-family:var(--font-mono)}
+.history-score{font-size:20px;font-weight:700;font-family:var(--font-mono)}
+.history-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+.status-bar{padding:8px 28px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);background:var(--bg-section)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--text-muted);gap:12px}
+.empty-state .icon{font-size:48px;opacity:.3}
+.empty-state p{font-size:14px;text-align:center;line-height:1.7}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:3px}
+@media(max-width:900px){.main{flex-direction:column}.panel-right{width:100%}.results-scroll{max-height:400px}}
+</style>
+</head>
+<body>
+<div class="gate" id="gate"><div class="gate-box"><div class="spinner"></div><div>驗證管理員權限中…</div></div></div>
+<div class="header">
+  <div class="header-left">
+    <a href="https://paulkuo.tw" style="text-decoration:none"><div class="logo">Q</div></a>
+    <div><div class="header-title">TQEF — 翻譯精準度評估</div><div class="header-sub">Translation Quality Evaluation Framework</div></div>
+  </div>
+  <div class="header-right"><span class="badge badge-version">v1.0</span><span class="badge badge-admin">🔒 Admin</span></div>
+</div>
+<div class="main">
+  <div class="panel-left">
+    <div class="card">
+      <div class="card-header"><h3>⚙️ 評估設定</h3><span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono)" id="corpusCount">29 句語料</span></div>
+      <div class="card-body">
+        <div class="controls-row">
+          <input class="api-key-input" id="apiKeyInput" type="password" placeholder="Anthropic API Key (sk-ant-...)" autocomplete="off">
+          <button class="btn btn-run" id="btnRun" disabled>▶ 開始評估</button>
+          <button class="btn btn-export btn-sm" id="btnExport" disabled>📥 Export</button>
+        </div>
+        <div class="progress-bar" id="progressBar" style="display:none"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText" style="display:none"></div>
+      </div>
+    </div>
+    <div class="card" style="flex:1;display:flex;flex-direction:column">
+      <div class="card-header"><h3>📊 評估結果</h3><span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono)" id="resultStatus"></span></div>
+      <div class="results-scroll" id="resultsArea">
+        <div class="empty-state" id="emptyState"><div class="icon">🔬</div><p>輸入 Anthropic API Key 後按「開始評估」<br><span style="font-size:12px;color:var(--text-muted)">Haiku 翻譯 + Sonnet 評分 · 含 OpenCC 台灣詞彙後處理</span></p></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel-right">
+    <div class="card" id="scoreCard" style="display:none">
+      <div class="card-header"><h3>🎯 分數總覽</h3><span id="statusBadge" style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px"></span></div>
+      <div class="card-body">
+        <div class="score-grid">
+          <div class="score-tile overall"><div class="label">Overall</div><div class="value" id="scoreOverall">—</div><div class="weight">Critical errors: <span id="critCount">0</span></div></div>
+          <div class="score-tile"><div class="label">術語</div><div class="value" id="scoreTerm">—</div><div class="weight">40%</div></div>
+          <div class="score-tile"><div class="label">忠實度</div><div class="value" id="scoreFid">—</div><div class="weight">30%</div></div>
+          <div class="score-tile"><div class="label">關鍵數據</div><div class="value" id="scoreData">—</div><div class="weight">20%</div></div>
+          <div class="score-tile"><div class="label">自然度</div><div class="value" id="scoreNat">—</div><div class="weight">10%</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="industryCard" style="display:none"><div class="card-header"><h3>🏭 產業分析</h3></div><div class="card-body" id="industryBody"></div></div>
+    <div class="card" id="errorsCard" style="display:none"><div class="card-header"><h3>⚠️ 嚴重錯誤</h3><span id="errorCount" style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono)"></span></div><div class="card-body" id="errorsBody" style="max-height:300px;overflow-y:auto"></div></div>
+    <div class="card"><div class="card-header"><h3>📈 歷史紀錄</h3><button class="btn btn-sm" style="background:transparent;color:var(--accent-red);border:1px solid var(--accent-red);font-size:11px;padding:3px 8px" id="btnClearHistory">清除</button></div><div class="card-body" id="historyBody"><div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px 0">尚無歷史紀錄</div></div></div>
+  </div>
+</div>
+<div class="status-bar"><span>TQEF v1.0 · 29 句語料 · Haiku翻譯 + Sonnet評分 + OpenCC後處理</span><span id="statusBarRight"></span></div>
+<script>
+var WORKER_URL="https://api.paulkuo.tw";
+(function(){fetch(WORKER_URL+"/auth/me",{credentials:"include"}).then(function(r){return r.json()}).then(function(d){if(d.authenticated&&d.user&&d.user.role==='admin'){document.getElementById('gate').classList.add('hidden')}else{document.getElementById('gate').querySelector('.gate-box').innerHTML='<div style="font-size:48px;margin-bottom:16px">🔒</div><div style="font-size:16px;color:var(--text-primary);margin-bottom:8px">僅限管理員</div><div style="font-size:13px">請先以管理員身份登入 <a href="/tools/translator/" style="color:var(--accent-green)">翻譯器</a></div>'}}).catch(function(){document.getElementById('gate').querySelector('.gate-box').innerHTML='<div style="font-size:48px;margin-bottom:16px">⚠️</div><div>無法驗證身份</div>'})})();
+var MEDICAL_TRIGGERS=['治療','クリニック','薬剤','医療','診所','醫療','エクソソーム','幹細胞','MSC','自由診療','再生医療','点鼻薬','スプレー','外泌體','藥劑','噴霧','細胞','抗体','免疫','臨床','投与','処方'];
+var TNAMES={'zh-TW':'Traditional Chinese (Taiwan)','en':'English','ja':'Japanese'};
+function isMedCtx(g){if(!g||!g.length)return false;var a=g.map(function(x){return(x.term||'')+' '+(x.translation||'')}).join(' ');return MEDICAL_TRIGGERS.some(function(k){return a.indexOf(k)>=0})}
+function buildPrompt(tgt,glossary,src){var tn=TNAMES[tgt]||tgt,tw=tgt==='zh-TW'?' Use Traditional Chinese with Taiwanese vocabulary.':'',gh='';if(glossary&&glossary.length>0)gh='\nUse these terminology translations: '+glossary.map(function(g){return g.term+' → '+g.translation}).join(', ')+'.';var b='You are a professional real-time interpreter. Translate the following into '+tn+'. Output ONLY the translated text.'+tw;if(isMedCtx(glossary)){b+='\n\n[MEDICAL/CLINICAL CONTEXT] Apply these rules strictly:\n';if(!src||src==='ja')b+='1. Register: Use formal medical register for colloquial Japanese:\n  やる→使用/施作/進行治療, 渡す→提供/交付, 持って帰る→帶回使用, できない→不允許/無法進行\n';if(src==='zh-TW'||src==='zh')b+='1. Chinese ASR corrections: 生计→生技, 细干细胞→幹細胞, 西巴→細胞, 外泌体→外泌體\n';b+='2. Key abbreviations: MSC=間質幹細胞, HSC=造血幹細胞, iPSC=誘導型多能幹細胞, Exosome/EV=外泌體/細胞外囊泡\n3. Terms: 自由診療=自費醫療, クリニック=診所, 薬剤=藥劑, 製品=產品, 製劑=製劑\n  スプレー=噴霧/噴劑, 点鼻薬=鼻噴劑, エクソソーム=外泌體\n4. Output: 繁體中文, maintain terminology consistency.'}return b+gh}
+var TW_PP=[['阿爾茲海默病','阿茲海默症'],['阿爾茲海默症','阿茲海默症'],['老年癡呆症','失智症'],['磁共振成像','磁振造影'],['磁共振','磁振造影'],['超聲波','超音波'],['線粒體','粒線體'],['氨基酸','胺基酸'],['間充質幹細胞','間質幹細胞'],['間充質','間質'],['細胞因子','細胞激素'],['單克隆抗體','單株抗體'],['多克隆抗體','多株抗體'],['透明質酸','玻尿酸'],['誘導多能幹細胞','誘導性多能幹細胞'],['隨訪','追蹤回診'],['標靶細胞','標的細胞'],['收量','產量'],['傳代次數','繼代數'],['傳代數','繼代數'],['藥物送達系統','藥物遞送系統'],['藥物送達','藥物遞送'],['電解精鍊','電解精煉'],['精鍊','精煉'],['空氣清淨度','空氣潔淨度'],['空氣清潔度','空氣潔淨度'],['成長因子','生長因子'],['阿司匹林','阿斯匹靈'],['維生素','維他命'],['極紫外光刻','EUV 微影'],['深紫外光刻','DUV 微影'],['光刻技術','微影技術'],['光刻機','微影機'],['光刻膠','光阻劑'],['光刻','微影'],['門全環繞結構','環繞式閘極結構'],['門全環繞','環繞式閘極'],['閘極全周圍','環繞式閘極'],['全閘極結構','環繞式閘極結構'],['全閘極','環繞式閘極'],['溝道長度','通道長度'],['芯片','晶片'],['集成電路','積體電路'],['CVD裝置','CVD 設備'],['預防性保全','預防性保養'],['預防保全','預防性保養'],['製造工程','製造製程'],['極紫外光微影','EUV 微影'],['腔室','腔體'],['濕法冶金','濕式精煉法'],['火法冶金','乾式精煉法'],['濕式冶煉法','濕式精煉法'],['濕式冶煉','濕式精煉'],['冶煉','精煉'],['城市礦山','都市礦山'],['碳信用額度','碳權'],['碳信用','碳權'],['透明化','可視化'],['可持續發展','永續發展'],['ESG評價','ESG 評估'],['ESG評等','ESG 評估']];
+function twPost(t){if(!t)return t;TW_PP.forEach(function(p){if(t.indexOf(p[0])>=0)t=t.split(p[0]).join(p[1])});return t}
+var CORPUS=[{"id":"MED-001","industry":"regenerative_medicine","difficulty":"hard","source_ja":"間葉系幹細胞の培養には、GMPグレードの無血清培地を使用し、継代数は5代以内に制限しています。","reference_zh_tw":"間質幹細胞的培養使用 GMP 等級的無血清培養基，繼代數限制在 5 代以內。","critical_terms":{"間葉系幹細胞":"間質幹細胞","無血清培地":"無血清培養基"},"critical_numbers":["5"],"glossary":[{"term":"間葉系幹細胞","translation":"間質幹細胞"},{"term":"培地","translation":"培養基"},{"term":"GMP","translation":"GMP"}]},{"id":"MED-002","industry":"regenerative_medicine","difficulty":"hard","source_ja":"エクソソームを用いた薬物送達システムは、従来のリポソーム製剤と比較して、標的細胞への取り込み効率が約3倍高いことが示されています。","reference_zh_tw":"使用外泌體的藥物遞送系統，與傳統的脂質體製劑相比，標的細胞的攝取效率約高出 3 倍。","critical_terms":{"エクソソーム":"外泌體","薬物送達システム":"藥物遞送系統"},"critical_numbers":["3"],"glossary":[{"term":"エクソソーム","translation":"外泌體"},{"term":"リポソーム","translation":"脂質體"}]},{"id":"MED-003","industry":"regenerative_medicine","difficulty":"medium","source_ja":"iPS細胞から分化誘導した心筋細胞を用いた再生医療の臨床試験が、来年度から開始される予定です。","reference_zh_tw":"利用 iPS 細胞分化誘導的心肌細胞進行再生醫療的臨床試驗，預計從下一年度開始。","critical_terms":{},"critical_numbers":[],"glossary":[{"term":"iPS細胞","translation":"iPS細胞"},{"term":"再生医療","translation":"再生醫療"}]},{"id":"MED-004","industry":"regenerative_medicine","difficulty":"hard","source_ja":"ヒアルロン酸とコラーゲンを組み合わせたスキャフォールドの引張強度は、従来品の1.8倍に達し、生体適合性試験でもISO 10993の基準を満たしました。","reference_zh_tw":"結合玻尿酸與膠原蛋白的支架，拉伸強度達到傳統產品的 1.8 倍，在生物相容性試驗中也符合 ISO 10993 的標準。","critical_terms":{"ヒアルロン酸":"玻尿酸","コラーゲン":"膠原蛋白"},"critical_numbers":["1.8","10993"],"glossary":[{"term":"ヒアルロン酸","translation":"玻尿酸"},{"term":"コラーゲン","translation":"膠原蛋白"}]},{"id":"MED-005","industry":"regenerative_medicine","difficulty":"medium","source_ja":"PRP療法では、患者自身の血液から血小板を濃縮し、成長因子を豊富に含む血漿を患部に注入します。","reference_zh_tw":"PRP 療法從患者自身的血液中濃縮血小板，將富含生長因子的血漿注入患部。","critical_terms":{"成長因子":"生長因子"},"critical_numbers":[],"glossary":[]},{"id":"MED-006","industry":"regenerative_medicine","difficulty":"hard","source_ja":"モノクローナル抗体の収量は、バイオリアクターの容量を500Lから2000Lにスケールアップすることで、月産20kgまで増加しました。","reference_zh_tw":"透過將生物反應器的容量從 500L 擴大到 2000L，單株抗體的產量已增加至每月 20 公斤。","critical_terms":{"モノクローナル抗体":"單株抗體","バイオリアクター":"生物反應器"},"critical_numbers":["500","2000","20"],"glossary":[{"term":"モノクローナル抗体","translation":"單株抗體"}]},{"id":"MED-007","industry":"regenerative_medicine","difficulty":"medium","source_ja":"アミノ酸配列の解析により、このタンパク質がミトコンドリア膜に局在することが確認されました。","reference_zh_tw":"透過胺基酸序列分析，確認該蛋白質定位於粒線體膜上。","critical_terms":{"アミノ酸":"胺基酸","ミトコンドリア":"粒線體"},"critical_numbers":[],"glossary":[{"term":"アミノ酸","translation":"胺基酸"}]},{"id":"MED-008","industry":"regenerative_medicine","difficulty":"easy","source_ja":"MRI検査の結果、腫瘍の縮小が確認されました。","reference_zh_tw":"磁振造影檢查結果確認腫瘤已縮小。","critical_terms":{"MRI検査":"磁振造影檢查"},"critical_numbers":[],"glossary":[{"term":"MRI","translation":"磁振造影"}]},{"id":"SEMI-001","industry":"semiconductor","difficulty":"hard","source_ja":"3nmプロセスのウェーハ歩留まりは現在78%で、量産開始時の目標は85%以上です。","reference_zh_tw":"3 奈米製程的晶圓良率目前為 78%，量產啟動時的目標是 85% 以上。","critical_terms":{"プロセス":"製程","ウェーハ":"晶圓","歩留まり":"良率"},"critical_numbers":["3","78","85"],"glossary":[]},{"id":"SEMI-002","industry":"semiconductor","difficulty":"hard","source_ja":"EUVリソグラフィーの露光回数を削減することで、ウェーハあたりのコストを15%低減できる見込みです。","reference_zh_tw":"透過減少 EUV 微影的曝光次數，預估可將每片晶圓的成本降低 15%。","critical_terms":{"EUVリソグラフィー":"EUV 微影"},"critical_numbers":["15"],"glossary":[]},{"id":"SEMI-003","industry":"semiconductor","difficulty":"medium","source_ja":"先端パッケージング技術としてCoWoSを採用し、HBMとロジックチップの高帯域接続を実現しています。","reference_zh_tw":"採用 CoWoS 作為先進封裝技術，實現 HBM 與邏輯晶片的高頻寬連接。","critical_terms":{"パッケージング":"封裝","ロジックチップ":"邏輯晶片"},"critical_numbers":[],"glossary":[]},{"id":"SEMI-004","industry":"semiconductor","difficulty":"hard","source_ja":"ゲートオールアラウンド構造のトランジスタは、FinFETと比較してリーク電流を約40%削減でき、消費電力の大幅な低減が期待されます。","reference_zh_tw":"環繞式閘極結構的電晶體與 FinFET 相比，可減少約 40% 的漏電流，預期能大幅降低功耗。","critical_terms":{"ゲートオールアラウンド":"環繞式閘極","トランジスタ":"電晶體"},"critical_numbers":["40"],"glossary":[]},{"id":"SEMI-005","industry":"semiconductor","difficulty":"medium","source_ja":"ウェットエッチング工程の薬液温度管理を±0.5℃以内に制御することで、均一性が大幅に改善しました。","reference_zh_tw":"將濕式蝕刻製程的藥液溫度控制在 ±0.5°C 以內，均勻性大幅改善。","critical_terms":{"ウェットエッチング":"濕式蝕刻"},"critical_numbers":["0.5"],"glossary":[]},{"id":"SEMI-006","industry":"semiconductor","difficulty":"medium","source_ja":"CVD装置のチャンバー内のパーティクル数が規格値を超えたため、予防保全を実施しました。","reference_zh_tw":"因 CVD 設備腔體內的微粒數超過規格值，已執行預防性保養。","critical_terms":{"CVD装置":"CVD 設備","チャンバー":"腔體","予防保全":"預防性保養"},"critical_numbers":[],"glossary":[]},{"id":"CIRC-001","industry":"circular_tech","difficulty":"hard","source_ja":"廃プリント基板からの金の回収率は98.5%を達成し、従来の湿式精錬法と比較してCO2排出量を60%削減しました。","reference_zh_tw":"從廢印刷電路板回收金的回收率達到 98.5%，與傳統的濕式精煉法相比，CO2 排放量減少了 60%。","critical_terms":{"湿式精錬法":"濕式精煉法"},"critical_numbers":["98.5","60"],"glossary":[]},{"id":"CIRC-002","industry":"circular_tech","difficulty":"medium","source_ja":"都市鉱山からのレアメタル回収は、天然鉱石の採掘と比較してエネルギー消費が大幅に少ないという利点があります。","reference_zh_tw":"從都市礦山回收稀有金屬，與開採天然礦石相比，具有能源消耗大幅降低的優勢。","critical_terms":{"都市鉱山":"都市礦山","レアメタル":"稀有金屬"},"critical_numbers":[],"glossary":[]},{"id":"CIRC-003","industry":"circular_tech","difficulty":"hard","source_ja":"カーボンクレジットの取引価格は現在1トンあたり45ユーロで、2030年までに100ユーロを超える見通しです。","reference_zh_tw":"碳權交易價格目前為每噸 45 歐元，預計到 2030 年將超過 100 歐元。","critical_terms":{"カーボンクレジット":"碳權"},"critical_numbers":["45","2030","100"],"glossary":[]},{"id":"CIRC-004","industry":"circular_tech","difficulty":"medium","source_ja":"ESG評価においてScope3の排出量算定が重要視されており、サプライチェーン全体の可視化が求められています。","reference_zh_tw":"在 ESG 評估中，Scope 3 的排放量計算日益受到重視，需要將整個供應鏈可視化。","critical_terms":{"ESG評価":"ESG 評估"},"critical_numbers":[],"glossary":[]},{"id":"CIRC-005","industry":"circular_tech","difficulty":"hard","source_ja":"銅の電解精錬工程では、電流密度を300A/m²に設定し、純度99.99%の電気銅を生産しています。","reference_zh_tw":"在銅的電解精煉製程中，將電流密度設定為 300A/m²，生產純度 99.99% 的電解銅。","critical_terms":{"電解精錬":"電解精煉","電気銅":"電解銅"},"critical_numbers":["300","99.99"],"glossary":[]},{"id":"CIRC-006","industry":"circular_tech","difficulty":"medium","source_ja":"ライフサイクルアセスメントの結果、リサイクル材料の使用により環境負荷が35%低減されることが判明しました。","reference_zh_tw":"生命週期評估的結果顯示，使用回收材料可將環境負荷降低 35%。","critical_terms":{"ライフサイクルアセスメント":"生命週期評估"},"critical_numbers":["35"],"glossary":[]},{"id":"BIZ-001","industry":"business_general","difficulty":"medium","source_ja":"今回のご提案について社内で検討させていただきたいのですが、来週の金曜日までにご回答いたします。","reference_zh_tw":"關於這次的提案，我們想在公司內部討論一下，將在下週五之前回覆您。","critical_terms":{},"critical_numbers":[],"glossary":[]},{"id":"BIZ-002","industry":"business_general","difficulty":"hard","source_ja":"初期ロットの単価は1個あたり850円でお見積もりしておりますが、年間10万個以上のご発注をいただける場合、680円まで引き下げが可能です。","reference_zh_tw":"初期批次的單價估價為每個 850 日圓，但若年訂購量達 10 萬個以上，可降至 680 日圓。","critical_terms":{"初期ロット":"初期批次"},"critical_numbers":["850","10","680"],"glossary":[]},{"id":"BIZ-003","industry":"business_general","difficulty":"easy","source_ja":"契約書のドラフトを添付いたしましたので、ご確認のほどよろしくお願いいたします。","reference_zh_tw":"已附上合約草稿，請您確認，謝謝。","critical_terms":{"契約書":"合約"},"critical_numbers":[],"glossary":[]},{"id":"BIZ-004","industry":"business_general","difficulty":"medium","source_ja":"大変恐縮ですが、納期を2週間ほど延長していただくことは可能でしょうか。","reference_zh_tw":"非常抱歉，請問是否有可能將交期延長約兩週？","critical_terms":{"納期":"交期"},"critical_numbers":["2"],"glossary":[]},{"id":"BIZ-005","industry":"business_general","difficulty":"hard","source_ja":"前回のお打ち合わせで合意したNDA条件に基づき、秘密保持期間は契約終了後3年間とさせていただきます。","reference_zh_tw":"根據上次會議中達成共識的 NDA 條件，保密期間為合約終止後 3 年。","critical_terms":{"NDA":"NDA","秘密保持期間":"保密期間"},"critical_numbers":["3"],"glossary":[]},{"id":"MIX-001","industry":"mixed","difficulty":"hard","source_ja":"幹細胞治療の薬事承認を取得するためには、Phase IIIの臨床試験で被験者300名以上のデータが必要となりますが、御社のご協力をいただければ、2027年度中の申請を目指せると考えております。","reference_zh_tw":"為取得幹細胞治療的藥事許可，Phase III 臨床試驗需要 300 名以上受試者的數據，若能獲得貴公司的協助，我們認為有望在 2027 年度內提出申請。","critical_terms":{"薬事承認":"藥事許可"},"critical_numbers":["300","2027"],"glossary":[{"term":"幹細胞","translation":"幹細胞"},{"term":"臨床試験","translation":"臨床試驗"},{"term":"薬事承認","translation":"藥事許可"}]},{"id":"MIX-002","industry":"mixed","difficulty":"hard","source_ja":"半導体製造工程から発生する廃液中のガリウムとインジウムの回収率を95%以上に引き上げる技術を開発しました。予算は5億円を見込んでおります。","reference_zh_tw":"我們已開發出將半導體製造製程產生的廢液中鎵和銦的回收率提升至 95% 以上的技術。預算預估為 5 億日圓。","critical_terms":{"半導体製造工程":"半導體製造製程"},"critical_numbers":["95","5"],"glossary":[]},{"id":"MIX-003","industry":"mixed","difficulty":"hard","source_ja":"再生医療製品のGMP製造において、クリーンルームの空気清浄度はISO Class 5以上が求められますが、弊社の設備は全てClass 4で運用しております。","reference_zh_tw":"在再生醫療產品的 GMP 製造中，無塵室的空氣潔淨度要求為 ISO Class 5 以上，而我們的設備全部以 Class 4 運作。","critical_terms":{"クリーンルーム":"無塵室","空気清浄度":"空氣潔淨度"},"critical_numbers":["5","4"],"glossary":[{"term":"再生医療","translation":"再生醫療"},{"term":"クリーンルーム","translation":"無塵室"},{"term":"GMP","translation":"GMP"}]},{"id":"MIX-004","industry":"mixed","difficulty":"medium","source_ja":"廃棄される半導体ウェーハから回収したシリコンを、太陽電池用の原料として再利用し、コストを30%削減しました。","reference_zh_tw":"將廢棄半導體晶圓回收的矽作為太陽能電池的原料再利用，成本降低了 30%。","critical_terms":{"半導体ウェーハ":"半導體晶圓","シリコン":"矽"},"critical_numbers":["30"],"glossary":[]}];
+function judgePrompt(item,actual){return 'Evaluate this Japanese→Traditional Chinese (Taiwan) translation.\n\n## Context\n- Industry: '+item.industry+'\n- Difficulty: '+item.difficulty+'\n\n## Texts\n- Source (JA): '+item.source_ja+'\n- Reference: '+item.reference_zh_tw+'\n- To evaluate: '+actual+'\n- Critical terms: '+JSON.stringify(item.critical_terms)+'\n- Critical numbers: '+JSON.stringify(item.critical_numbers||[])+'\n\n## Scoring (1-5)\n### terminology (40%): Domain terms → Taiwan-standard?\n5=all correct 4=mostly 3=1 error 2=2+ errors 1=critical\n### fidelity (30%): Complete meaning preserved?\n5=fully faithful 4=minor diff 3=one omission 2=multiple 1=severe\n### critical_data (20%): Numbers/amounts/dates correct?\n5=all correct 4=format diff 3=1 error 2=multiple 1=wrong\n### naturalness (10%): Reads like native Taiwanese Chinese?\n5=natural 4=occasional 3=noticeable 2=needs re-reading 1=machine\n\n## Output (JSON only):\n{"evaluation":"brief","scores":{"terminology":0,"fidelity":0,"critical_data":0,"naturalness":0},"weighted_total":0.0,"errors":[{"type":"TERM_ERR|CN_TERM|OMISSION|ADDITION|NUM_ERR|DISTORT|UNNATURAL","severity":"critical|major|minor","expected":"","actual":"","note":""}]}'}
+var _apiKey='';
+async function callClaude(model,system,user,mt){var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':_apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:model,max_tokens:mt||1024,system:system||'',messages:[{role:'user',content:user}]})});if(!r.ok){var e=await r.json().catch(function(){return{}});throw new Error(e.error?.message||'API '+r.status)}var d=await r.json();return d.content?.[0]?.text||''}
+async function translateHaiku(src,g){var p=buildPrompt('zh-TW',g,'ja');return twPost(await callClaude('claude-haiku-4-5-20251001','',p+'\n\n'+src.slice(0,2000),1024))}
+async function judgeSonnet(item,actual){var raw=await callClaude('claude-sonnet-4-20250514','You are a professional Japanese-Chinese translation quality evaluator. Output valid JSON only — no markdown, no backticks.',judgePrompt(item,actual),2000);var c=raw.trim();if(c.startsWith('```'))c=c.split('\n').slice(1).join('\n');if(c.endsWith('```'))c=c.replace(/```$/,'');var j=JSON.parse(c.trim());var s=j.scores||{};j.weighted_total=Math.round(((s.terminology||0)*0.4+(s.fidelity||0)*0.3+(s.critical_data||0)*0.2+(s.naturalness||0)*0.1)*100)/100;return j}
+function $(id){return document.getElementById(id)}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function scoreColor(v){return v>=4.0?'score-high':v>=3.5?'score-mid':'score-low'}
+function scoreMarker(v){return v>=4.0?'✓':v>=3.5?'△':'✗'}
+var _results=[],_running=false;
+async function runEval(){if(_running)return;_apiKey=$('apiKeyInput').value.trim();if(!_apiKey||!_apiKey.startsWith('sk-ant')){alert('請輸入有效的 Anthropic API Key');return}_running=true;_results=[];$('btnRun').disabled=true;$('btnRun').textContent='⏳ 評估中…';$('btnExport').disabled=true;$('progressBar').style.display='block';$('progressText').style.display='block';var es=$('emptyState');if(es)es.remove();$('resultsArea').innerHTML='';$('scoreCard').style.display='none';$('industryCard').style.display='none';$('errorsCard').style.display='none';var t0=performance.now();for(var i=0;i<CORPUS.length;i++){var item=CORPUS[i];$('progressFill').style.width=Math.round(((i+1)/CORPUS.length)*100)+'%';$('progressText').textContent='['+(i+1)+'/'+CORPUS.length+'] '+item.id;try{var tr=await translateHaiku(item.source_ja,item.glossary||[]);if(!tr)throw new Error('empty');var jg=await judgeSonnet(item,tr);var s=jg.scores,wt=jg.weighted_total,errs=jg.errors||[];_results.push({id:item.id,industry:item.industry,difficulty:item.difficulty,source_ja:item.source_ja,reference_zh_tw:item.reference_zh_tw,haiku_output:tr,judgment:jg});var row=document.createElement('div');row.className='result-row';row.innerHTML='<span class="result-marker">'+scoreMarker(wt)+'</span><span class="result-id">'+esc(item.id)+'</span><span class="result-industry">'+esc(item.industry.replace('_',' '))+'</span><span class="result-score '+scoreColor(wt)+'">'+wt.toFixed(2)+'</span><span class="result-scores"><span>T:'+s.terminology+'</span><span>F:'+s.fidelity+'</span><span>D:'+s.critical_data+'</span><span>N:'+s.naturalness+'</span></span><span class="result-errs">'+errs.length+'</span>';$('resultsArea').appendChild(row);$('resultsArea').scrollTop=$('resultsArea').scrollHeight}catch(e){var row=document.createElement('div');row.className='result-row';row.innerHTML='<span class="result-marker">✗</span><span class="result-id">'+esc(item.id)+'</span><span style="color:var(--accent-red);font-size:12px">'+esc(e.message)+'</span>';$('resultsArea').appendChild(row)}await new Promise(function(r){setTimeout(r,300)})}$('progressText').textContent='完成 · '+((performance.now()-t0)/1000).toFixed(1)+'s · '+_results.length+'/'+CORPUS.length;$('btnRun').textContent='▶ 重新評估';$('btnRun').disabled=false;$('btnExport').disabled=_results.length===0;_running=false;if(_results.length>0)renderReport()}
+function renderReport(){var all=_results.filter(function(r){return r.judgment});if(!all.length)return;var avg=function(a){return a.reduce(function(x,y){return x+y},0)/a.length};var wts=all.map(function(r){return r.judgment.weighted_total});var ts=all.map(function(r){return r.judgment.scores.terminology});var fs=all.map(function(r){return r.judgment.scores.fidelity});var ds=all.map(function(r){return r.judgment.scores.critical_data});var ns=all.map(function(r){return r.judgment.scores.naturalness});var crits=all.reduce(function(n,r){return n+(r.judgment.errors||[]).filter(function(e){return e.severity==='critical'}).length},0);var ow=avg(wts);$('scoreOverall').textContent=ow.toFixed(2);$('scoreOverall').className='value '+scoreColor(ow);$('scoreTerm').textContent=avg(ts).toFixed(2);$('scoreTerm').className='value '+scoreColor(avg(ts));$('scoreFid').textContent=avg(fs).toFixed(2);$('scoreData').textContent=avg(ds).toFixed(2);$('scoreNat').textContent=avg(ns).toFixed(2);$('critCount').textContent=crits;var st=ow>=4.0?'PASS ✅':'WARNING ⚠️';if(crits>0&&ow>=4.0)st='WARNING ⚠️';$('statusBadge').textContent=st;$('statusBadge').style.background=st.indexOf('PASS')>=0?'rgba(16,185,129,0.15)':'rgba(245,158,11,0.15)';$('statusBadge').style.color=st.indexOf('PASS')>=0?'var(--accent-green)':'var(--accent-amber)';$('resultStatus').textContent=st.replace(/[✅⚠️]/g,'').trim()+' · '+all.length+'/'+CORPUS.length;$('scoreCard').style.display='';var industries={};all.forEach(function(r){if(!industries[r.industry])industries[r.industry]={scores:[],terms:[]};industries[r.industry].scores.push(r.judgment.weighted_total);industries[r.industry].terms.push(r.judgment.scores.terminology)});var ih='';Object.keys(industries).sort().forEach(function(ind){var d=industries[ind],s=avg(d.scores),t=avg(d.terms),pct=Math.round((s/5)*100),bc=s>=4.0?'var(--accent-green)':s>=3.5?'var(--accent-amber)':'var(--accent-red)';ih+='<div class="industry-row"><span class="industry-name">'+esc(ind.replace(/_/g,' '))+'</span><span class="industry-score '+scoreColor(s)+'">'+s.toFixed(2)+'</span><span class="industry-term">T:'+t.toFixed(1)+'</span><div class="industry-bar"><div class="industry-bar-fill" style="width:'+pct+'%;background:'+bc+'"></div></div></div>'});$('industryBody').innerHTML=ih;$('industryCard').style.display='';var serious=[];all.forEach(function(r){(r.judgment.errors||[]).forEach(function(e){if(e.severity==='critical'||e.severity==='major')serious.push(e)})});if(serious.length>0){var eh='';serious.slice(0,15).forEach(function(e){eh+='<div class="error-item"><span class="error-sev '+e.severity+'">'+e.severity.toUpperCase()+'</span><span class="error-type">'+esc(e.type||'')+'</span><div class="error-detail">期望「'+esc(e.expected||'')+'」→ 實際「'+esc(e.actual||'')+'」'+(e.note?'<br><span style="color:var(--text-muted)">'+esc(e.note)+'</span>':'')+'</div></div>'});$('errorsBody').innerHTML=eh;$('errorCount').textContent=serious.length+' 項';$('errorsCard').style.display=''}saveHistory({timestamp:new Date().toISOString(),overall:Math.round(ow*100)/100,terminology:Math.round(avg(ts)*100)/100,criticals:crits,evaluated:all.length,status:st})}
+function getHistory(){try{return JSON.parse(localStorage.getItem('tqef_history')||'[]')}catch(e){return[]}}
+function saveHistory(e){var h=getHistory();h.unshift(e);if(h.length>20)h=h.slice(0,20);localStorage.setItem('tqef_history',JSON.stringify(h));renderHistory()}
+function renderHistory(){var h=getHistory();if(!h.length){$('historyBody').innerHTML='<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px 0">尚無歷史紀錄</div>';return}var html='';h.forEach(function(e){var ts=e.timestamp?new Date(e.timestamp).toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';html+='<div class="history-item"><div style="display:flex;justify-content:space-between;align-items:center"><span class="history-score '+scoreColor(e.overall)+'">'+e.overall.toFixed(2)+'</span><span class="history-ts">'+ts+'</span></div><div class="history-meta">T:'+e.terminology+' · Crit:'+e.criticals+' · '+e.evaluated+'/29</div></div>'});$('historyBody').innerHTML=html}
+function exportJSON(){if(!_results.length)return;var b=new Blob([JSON.stringify({timestamp:new Date().toISOString(),corpus_size:CORPUS.length,results:_results},null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tqef-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}
+$('apiKeyInput').addEventListener('input',function(){$('btnRun').disabled=!this.value.trim().startsWith('sk-ant')});
+$('btnRun').addEventListener('click',runEval);
+$('btnExport').addEventListener('click',exportJSON);
+$('btnClearHistory').addEventListener('click',function(){if(confirm('確定清除所有歷史紀錄？')){localStorage.removeItem('tqef_history');renderHistory()}});
+try{var sk=sessionStorage.getItem('tqef_api_key');if(sk){$('apiKeyInput').value=sk;$('btnRun').disabled=false}}catch(e){}
+$('apiKeyInput').addEventListener('change',function(){try{sessionStorage.setItem('tqef_api_key',this.value)}catch(e){}});
+renderHistory();
+</script>
+</body>
+</html>
