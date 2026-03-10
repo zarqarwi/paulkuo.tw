@@ -1763,6 +1763,73 @@ var MEDICAL_TW_DICT = [
 ];
 
 // ============================================================
+// 半導體產業台灣慣用詞詞典
+// ============================================================
+var SEMICONDUCTOR_TW_DICT = [
+  // 製程/設備
+  ['光刻', '微影'],             // lithography — TQEF SEMI-002 critical
+  ['光刻機', '微影機'],
+  ['光刻膨', '微影膨'],
+  ['光刻技術', '微影技術'],
+  ['極紫外光刻', 'EUV 微影'],
+  ['雙重曝光', '雙重曝光'],   // 確認一致
+  ['深紫外光刻', 'DUV 微影'],
+  // 電晶體結構
+  ['閘極全周圍', '環繞式閘極'],   // GAA — TQEF SEMI-004
+  ['鱍式場效電晶體', '鱍式場效電晶體'],  // FinFET 確認
+  ['溝道長度', '通道長度'],   // channel length
+  // 封裝/製程
+  ['封裝測試', '封裝測試'],   // 確認一致
+  ['先進封裝', '先進封裝'],
+  ['矽片', '晶圆'],             // wafer
+  ['矽基', '矽基'],
+  // 設備/機台
+  ['刻蚀機', '蝕刻機'],           // etcher
+  ['渾射機', '渾射機'],
+  ['沉積', '沉積'],
+  ['化學氣相沉積', '化學氣相沉積'],  // CVD
+  ['原子層沉積', '原子層沉積'],  // ALD
+  // 材料
+  ['光刻膠', '光阻劑'],           // photoresist
+  ['光敲膠', '光阻劑'],
+  // 產業用語
+  ['芯片', '晶片'],             // chip
+  ['集成電路', '積體電路'],       // IC
+  ['製程節點', '製程節點'],     // process node
+  ['良率', '良率'],             // yield
+  ['積體電路', '積體電路'],     // IC
+  ['系統单芯片', '系統单晶片'],   // SoC
+];
+
+// ============================================================
+// 循環科技產業台灣慣用詞詞典
+// ============================================================
+var CIRCULAR_TW_DICT = [
+  // 製程/技術
+  ['冶煉', '精煉'],             // smelting/refining — TQEF CIRC-001 critical
+  ['濕法冶金', '濕式精煉法'],     // hydrometallurgy
+  ['火法冶金', '乾式精煉法'],     // pyrometallurgy
+  ['城市礦山', '都市礦山'],       // urban mining
+  // 材料/廢棄物
+  ['废弃物', '廢棄物'],
+  ['回收利用', '回收再利用'],
+  ['再生资源', '再生資源'],
+  ['循環经济', '循環經濟'],
+  // PCB/貴金屬
+  ['印刷电路板', '印刷電路板'],   // PCB
+  ['贵金属', '貴金屬'],
+  ['稀有金属', '稀有金屬'],       // rare metals
+  ['稀土', '稀土'],
+  // ESG/碳
+  ['碳足跡', '碳足跡'],
+  ['碳中和', '碳中和'],
+  ['碳排放', '碳排放'],
+  ['碳交易', '碳交易'],
+  ['绿色金融', '綠色金融'],       // green finance
+  ['可持续发展', '永續發展'],     // sustainable dev
+];
+
+// ============================================================
 // OpenCC 簡繁轉換（替代舊 s2t 單字表）
 // ============================================================
 var openccConverter = null;
@@ -1773,12 +1840,14 @@ async function initOpenCC() {
   openccLoading = true;
   try {
     var OpenCC = await import('https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/esm/full.js');
-    var effectiveDict = MEDICAL_TW_DICT.filter(function(pair) { return pair[0] !== pair[1]; });
+    // 合併三個產業詞典
+    var allDicts = MEDICAL_TW_DICT.concat(SEMICONDUCTOR_TW_DICT).concat(CIRCULAR_TW_DICT);
+    var effectiveDict = allDicts.filter(function(pair) { return pair[0] !== pair[1]; });
     openccConverter = OpenCC.ConverterFactory(
       OpenCC.Locale.from.cn,
       OpenCC.Locale.to.twp.concat([effectiveDict])
     );
-    console.log('[OpenCC] Initialized with s2twp + medical dict (' + effectiveDict.length + ' entries)');
+    console.log('[OpenCC] Initialized with s2twp + 3 industry dicts (' + effectiveDict.length + ' entries)');
   } catch (e) {
     console.warn('[OpenCC] Load failed, falling back to s2t table:', e);
     openccConverter = null;
