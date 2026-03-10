@@ -36,13 +36,15 @@ function haikuCost(usage) { const hp = PRICING['claude-haiku-4-5-20251001']; ret
 const MEDICAL_TRIGGERS = ['治療','クリニック','薬剤','医療','診所','醫療','エクソソーム','幹細胞','MSC','自由診療','再生医療','点鼻薬','スプレー','外泌體','藥劑','噴霧','細胞','抗体','免疫','臨床','投与','処方'];
 const SEMICONDUCTOR_TRIGGERS = ['ウェーハ','半導体','半導體','リソグラフィー','エッチング','パッケージング','トランジスタ','FinFET','GAA','EUV','CVD','CoWoS','HBM','歩留まり','チャンバー','パーティクル','晶圓','製程','良率','微影','蝕刻','封裝','電晶體','ダイ','フォトマスク','配線','ドーピング','イオン注入','CMP','プラズマ','nm プロセス','nmプロセス','3nm','5nm','7nm','先端','ロジックチップ'];
 const CIRCULAR_TRIGGERS = ['リサイクル','回収率','精錬','精煉','廃棄','カーボン','碳權','ESG','都市鉱山','都市礦山','環境負荷','ライフサイクル','生命週期','廃プリント','廢印刷','レアメタル','稀有金屬','電解','スクラップ','Scope','サプライチェーン','供應鏈','循環','再利用'];
+const BUSINESS_TRIGGERS = ['契約','見積','納期','発注','請求','受注','商談','取引','単価','ロット','NDA','MOU','LOI','提案','打ち合わせ','議事録','稟議','決裁','予算','売上','営業','四半期','決算','株主','取締役','監査','コンプライアンス','御社','弊社','ご提案','ご検討','ご回答','ご確認','ドラフト','秘密保持','延長','解約'];
 function detectContext(glossary, sourceText) {
   const glossaryText = (glossary && Array.isArray(glossary) && glossary.length > 0) ? glossary.map(g => (g.term || '') + ' ' + (g.translation || '')).join(' ') : '';
   const all = glossaryText + ' ' + (sourceText || '');
   return {
     medical: MEDICAL_TRIGGERS.some(kw => all.includes(kw)) && glossary && glossary.length > 0,
     semiconductor: SEMICONDUCTOR_TRIGGERS.some(kw => all.includes(kw)),
-    circular: CIRCULAR_TRIGGERS.some(kw => all.includes(kw))
+    circular: CIRCULAR_TRIGGERS.some(kw => all.includes(kw)),
+    business: BUSINESS_TRIGGERS.some(kw => all.includes(kw))
   };
 }
 function isMedicalContext(glossary) {
@@ -51,7 +53,7 @@ function isMedicalContext(glossary) {
   return MEDICAL_TRIGGERS.some(kw => all.includes(kw));
 }
 function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang, sourceText) {
-  let base = 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translated text.' + twHint;
+  let base = 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translated text.' + twHint + '\nPreserve widely-used English abbreviations (NDA, MOU, LOI, IP, ROI, KPI, ESG, OEM, ODM) as-is without translating them.';
   if (isMedicalContext(glossary)) {
     base += '\n\n[MEDICAL/CLINICAL CONTEXT] Apply these rules strictly:\n';
     if (!sourceLang || sourceLang === 'ja') {
@@ -69,6 +71,7 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
       '  p53=腫瘤抑制基因p53, CRISPR=基因編輯系統, mRNA=信使RNA, miRNA=微小RNA\n' +
       '3. Terms: 自由診療=自費醫療, クリニック=診所, 相談所=諮詢中心, 薬剤=藥劑, 製品=產品, 製劑=製劑\n' +
       '  スプレー=噴霧/噴劑, 点鼻薬=鼻噴劑, エクソソーム=外泌體, MSC-CM=MSC條件培養液\n' +
+      '  薬物送達システム=藥物遞送系統, リポソーム製剤=脂質體製劑\n' +
       '4. Output: 繁體中文, maintain terminology consistency, preserve uncertain terms in brackets.';
   }
   // Semiconductor context detection (from source text, not just glossary)
@@ -91,6 +94,16 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
       '  カーボンクレジット=碳權, ライフサイクルアセスメント=生命週期評估\n' +
       '  リサイクル材料=回收材料, 環境負荷=環境負荷, サプライチェーン=供應鏈\n' +
       '  電気銅=電解銅, スクラップ=廢料\n';
+  }
+  // Business context
+  if (ctx.business && !isMedicalContext(glossary) && !ctx.semiconductor && !ctx.circular) {
+    base += '\n\n[BUSINESS CONTEXT] Use professional Taiwan business Chinese:\n' +
+      '  契約書/契約=合約, ドラフト=草稿, 納期=交期, 単価=單價, 初期ロット=初期批次\n' +
+      '  見積もり/お見積もり=報價/估價, 発注=訂購/下單, 受注=接單, 請求書=請款單\n' +
+      '  打ち合わせ=會議/討論, 商談=商務洽談, 取引先=客戶/往來廠商\n' +
+      '  秘密保持期間=保密期間, 稒議=簽呈, 決裁=核決\n' +
+      '  Japanese keigo: ご提案=提案, ご回答=回覆, ご確認=確認, ご検討=討議/研議\n' +
+      '  大変恐縮ですが=非常抱歉, お世話になっております=您好(greeting)\n';
   }
   base += glossaryHint;
   return base;
