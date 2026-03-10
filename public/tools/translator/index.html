@@ -1874,12 +1874,16 @@ function translateSegmentStreaming(id, segmentText, abortSignal) {
       var transEl = getEl('trans-' + id);
       if (transEl) { transEl.textContent = _segmentTranslations[id]; }
       console.log('[translate] s2t local id=' + id + ' len=' + segmentText.length);
+      getEl('btnSummary').disabled = false;
+      if (entry) entry.translated = _segmentTranslations[id];
       return;
     }
     if (!_segmentTranslations[id]) _segmentTranslations[id] = '';
     _segmentTranslations[id] += ((_segmentTranslations[id] ? ' ' : '') + segmentText);
     var transEl = getEl('trans-' + id);
     if (transEl) { transEl.textContent = '\u2713 \u540c\u8a9e\u8a00\u78ba\u8a8d'; transEl.classList.add('same-lang'); }
+    getEl('btnSummary').disabled = false;
+    if (entry) entry.translated = _segmentTranslations[id];
     return;
   }
 
