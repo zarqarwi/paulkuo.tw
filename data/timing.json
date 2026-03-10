@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-10T20:20:07+08:00",
+  "updated": "2026-03-10T20:30:09+08:00",
   "source": "timing-sqlite-direct",
   "method": "SQLite DB + bundleIdentifier/path/title matching",
   "api_version": "v4",
@@ -97,7 +97,7 @@
     },
     {
       "date": "2026-03-10",
-      "ai_hours": 4.5,
+      "ai_hours": 4.51,
       "breakdown": {
         "Claude": 4.06,
         "ChatGPT": 0.44
