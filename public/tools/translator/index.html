@@ -1207,7 +1207,7 @@ function connectQwenWebSocket(stream) {
         input_audio_format: 'pcm',
         sample_rate: 16000,
         input_audio_transcription: { language: 'zh' },
-        turn_detection: { type: 'server_vad', threshold: 0.0, silence_duration_ms: 800 },
+        turn_detection: { type: 'server_vad', threshold: 0.5, silence_duration_ms: 800 },
       },
     }));
 
@@ -1243,12 +1243,18 @@ function connectQwenWebSocket(stream) {
       var inputData = e.inputBuffer.getChannelData(0);
       var pcmSamples;
       if (needResample) {
+        // Box filter (averaging) downsampling — much better than nearest-neighbor
+        // Prevents aliasing artifacts that degrade STT accuracy, especially for tonal languages
         var ratio = actualRate / 16000;
         var newLen = Math.floor(inputData.length / ratio);
         pcmSamples = new Int16Array(newLen);
         for (var i = 0; i < newLen; i++) {
-          var srcIdx = Math.floor(i * ratio);
-          var s = Math.max(-1, Math.min(1, inputData[srcIdx]));
+          var start = Math.floor(i * ratio);
+          var end = Math.min(Math.floor((i + 1) * ratio), inputData.length);
+          var sum = 0;
+          for (var j = start; j < end; j++) sum += inputData[j];
+          var s = sum / (end - start);
+          s = Math.max(-1, Math.min(1, s));
           pcmSamples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
       } else {
