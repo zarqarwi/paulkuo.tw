@@ -34,12 +34,23 @@ function haikuCost(usage) { const hp = PRICING['claude-haiku-4-5-20251001']; ret
 
 // --- Medical context detection & prompt builder ---
 const MEDICAL_TRIGGERS = ['治療','クリニック','薬剤','医療','診所','醫療','エクソソーム','幹細胞','MSC','自由診療','再生医療','点鼻薬','スプレー','外泌體','藥劑','噴霧','細胞','抗体','免疫','臨床','投与','処方'];
+const SEMICONDUCTOR_TRIGGERS = ['ウェーハ','半導体','半導體','リソグラフィー','エッチング','パッケージング','トランジスタ','FinFET','GAA','EUV','CVD','CoWoS','HBM','歩留まり','チャンバー','パーティクル','晶圓','製程','良率','微影','蝕刻','封裝','電晶體','ダイ','フォトマスク','配線','ドーピング','イオン注入','CMP','プラズマ','nm プロセス','nmプロセス','3nm','5nm','7nm','先端','ロジックチップ'];
+const CIRCULAR_TRIGGERS = ['リサイクル','回収率','精錬','精煉','廃棄','カーボン','碳權','ESG','都市鉱山','都市礦山','環境負荷','ライフサイクル','生命週期','廃プリント','廢印刷','レアメタル','稀有金屬','電解','スクラップ','Scope','サプライチェーン','供應鏈','循環','再利用'];
+function detectContext(glossary, sourceText) {
+  const glossaryText = (glossary && Array.isArray(glossary) && glossary.length > 0) ? glossary.map(g => (g.term || '') + ' ' + (g.translation || '')).join(' ') : '';
+  const all = glossaryText + ' ' + (sourceText || '');
+  return {
+    medical: MEDICAL_TRIGGERS.some(kw => all.includes(kw)) && glossary && glossary.length > 0,
+    semiconductor: SEMICONDUCTOR_TRIGGERS.some(kw => all.includes(kw)),
+    circular: CIRCULAR_TRIGGERS.some(kw => all.includes(kw))
+  };
+}
 function isMedicalContext(glossary) {
   if (!glossary || !Array.isArray(glossary) || glossary.length === 0) return false;
   const all = glossary.map(g => (g.term || '') + ' ' + (g.translation || '')).join(' ');
   return MEDICAL_TRIGGERS.some(kw => all.includes(kw));
 }
-function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang) {
+function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang, sourceText) {
   let base = 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translated text.' + twHint;
   if (isMedicalContext(glossary)) {
     base += '\n\n[MEDICAL/CLINICAL CONTEXT] Apply these rules strictly:\n';
@@ -60,6 +71,27 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
       '  スプレー=噴霧/噴劑, 点鼻薬=鼻噴劑, エクソソーム=外泌體, MSC-CM=MSC條件培養液\n' +
       '4. Output: 繁體中文, maintain terminology consistency, preserve uncertain terms in brackets.';
   }
+  // Semiconductor context detection (from source text, not just glossary)
+  const ctx = detectContext(glossary, sourceText);
+  if (ctx.semiconductor && !isMedicalContext(glossary)) {
+    base += '\n\n[SEMICONDUCTOR CONTEXT] Use Taiwan semiconductor industry terminology strictly:\n' +
+      '  プロセス=製程, ウェーハ=晶圓, 歩留まり=良率, ダイ=晶粒\n' +
+      '  リソグラフィー=微影, 露光=曝光, フォトマスク=光罩, 光刻=微影, 光刻膠/光敲膠=光阻劑\n' +
+      '  エッチング=蝕刻, ウェットエッチング=濕式蝕刻, ドライエッチング=乾式蝕刻\n' +
+      '  パッケージング=封裝, トランジスタ=電晶體, ロジックチップ=邏輯晶片\n' +
+      '  ゲートオールアラウンド/GAA=環繞式閘極, リーク電流=漏電流, 消費電力=功耗\n' +
+      '  チャンバー=腔體, パーティクル=微粒, 予防保全=預防性保養\n' +
+      '  CVD装置=CVD 設備, 高帯域=高頻寬, 均一性=均勻性\n' +
+      '  集成電路→積體電路, 芯片→晶片 (use Taiwan terms, NEVER mainland terms)\n';
+  }
+  if (ctx.circular && !isMedicalContext(glossary) && !ctx.semiconductor) {
+    base += '\n\n[CIRCULAR ECONOMY / MATERIALS CONTEXT] Use Taiwan terminology:\n' +
+      '  精錬/精煉=精煉, 湿式精錬法=濕式精煉法, 火法冶金=乾式精煉法\n' +
+      '  廃プリント基板=廢印刷電路板, 都市鉱山=都市礦山, レアメタル=稀有金屬\n' +
+      '  カーボンクレジット=碳權, ライフサイクルアセスメント=生命週期評估\n' +
+      '  リサイクル材料=回收材料, 環境負荷=環境負荷, サプライチェーン=供應鏈\n' +
+      '  電気銅=電解銅, スクラップ=廢料\n';
+  }
   base += glossaryHint;
   return base;
 }
@@ -76,7 +108,7 @@ export async function handleTranslate(request, env) {
   const targetName = TNAMES[targetLang] || targetLang;
   const htTwHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
   const htGlossaryHint = (trGlossary && trGlossary.length > 0) ? '\nUse these terminology translations: ' + trGlossary.map(g => g.term + ' \u2192 ' + g.translation).join(', ') + '.' : '';
-  const htPrompt = buildTranslatePrompt(targetName, htTwHint, htGlossaryHint, trGlossary, sourceLang);
+  const htPrompt = buildTranslatePrompt(targetName, htTwHint, htGlossaryHint, trGlossary, sourceLang, text);
   const res = await claudeWithRetry(env, { model: 'claude-haiku-4-5-20251001', max_tokens: 1024, messages: [{ role: 'user', content: htPrompt + '\n\n' + text.slice(0, 2000) }] });
   if (!res || !res.ok) { const err = res ? await res.json().catch(() => ({})) : {}; return jsonResponse({ error: err.error?.message || 'Claude failed' }, 502, request); }
   const data = await res.json(); const usage = data.usage || {};
@@ -96,7 +128,7 @@ export async function handleTranslateStream(request, env) {
   if (trimmedText.length <= 2) { const enc = new TextEncoder(); const { readable, writable } = new TransformStream(); const w = writable.getWriter(); (async () => { await w.write(enc.encode('data: ' + JSON.stringify({ t: trimmedText }) + '\n\n')); await w.write(enc.encode('data: ' + JSON.stringify({ done: true, costUSD: 0 }) + '\n\n')); await w.close(); })(); return new Response(readable, { status: 200, headers: { 'Content-Type': 'text/event-stream', ...corsHeaders(request) } }); }
   const targetName = TNAMES[targetLang] || targetLang; const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
   const glossaryHint = (glossary && glossary.length > 0) ? '\nUse these terminology translations: ' + glossary.map(g => g.term + ' → ' + g.translation).join(', ') + '.' : '';
-  const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang);
+  const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang, text);
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, stream: true, messages: [{ role: 'user', content: translatePrompt + '\n\n' + trimmedText }] }) });
   if (!claudeRes.ok) { const err = await claudeRes.json().catch(() => ({})); return jsonResponse({ error: err.error?.message || 'Claude API ' + claudeRes.status }, 502, request); }
   const { readable, writable } = new TransformStream(); const writer = writable.getWriter(); const encoder = new TextEncoder();

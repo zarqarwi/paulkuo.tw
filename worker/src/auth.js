@@ -9,6 +9,8 @@ export async function authenticateRequest(request, env, inviteCode) {
   const user = await getCurrentUser(request, env);
   if (user && user.role === 'admin') return { type: 'oauth', name: user.name, role: user.role, userId: user.id, code: 'oauth:' + user.id, isAdmin: true };
   if (user && inviteCode) { const codeInfo = await validateCode(inviteCode, env.TICKER_KV); if (codeInfo) return { type: 'oauth+invite', name: user.name || codeInfo.name, role: codeInfo.role, userId: user.id, code: inviteCode, isAdmin: codeInfo.role === 'admin' }; }
+  // API-only auth: valid admin invite code without session cookie (for TQEF eval_runner etc.)
+  if (!user && inviteCode) { const codeInfo = await validateCode(inviteCode, env.TICKER_KV); if (codeInfo && codeInfo.role === 'admin') return { type: 'api-key', name: codeInfo.name, role: 'admin', userId: 'api:' + inviteCode, code: inviteCode, isAdmin: true }; }
   return null;
 }
 
