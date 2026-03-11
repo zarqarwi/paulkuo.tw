@@ -2478,6 +2478,7 @@ getEl("helpModal").addEventListener("click", function(e) {
 // === Summary export: last summary data ===
 var lastSummaryData = null;
 
+function _s(v) { return typeof v === 'string' ? v : (v.task || v.action || v.point || v.decision || v.description || JSON.stringify(v)); }
 function buildSummaryMarkdown(d) {
   var md = '# ' + (d.title || 'Meeting Summary') + '\n\n';
   var now = new Date();
@@ -2487,17 +2488,17 @@ function buildSummaryMarkdown(d) {
   }
   if (d.keyPoints && d.keyPoints.length > 0) {
     md += '## 重點\n\n';
-    d.keyPoints.forEach(function(p) { md += '- ' + p + '\n'; });
+    d.keyPoints.forEach(function(p) { md += '- ' + _s(p) + '\n'; });
     md += '\n';
   }
   if (d.actionItems && d.actionItems.length > 0) {
     md += '## 待辦事項\n\n';
-    d.actionItems.forEach(function(a) { md += '- [ ] ' + a + '\n'; });
+    d.actionItems.forEach(function(a) { md += '- [ ] ' + _s(a) + '\n'; });
     md += '\n';
   }
   if (d.decisions && d.decisions.length > 0) {
     md += '## 決議\n\n';
-    d.decisions.forEach(function(a) { md += '- ' + a + '\n'; });
+    d.decisions.forEach(function(a) { md += '- ' + _s(a) + '\n'; });
     md += '\n';
   }
   return md;
@@ -2509,17 +2510,17 @@ function buildSummaryPlainText(d) {
   if (d.summary) t += d.summary + '\n\n';
   if (d.keyPoints && d.keyPoints.length > 0) {
     t += '--- 重點 ---\n';
-    d.keyPoints.forEach(function(p) { t += '\u2022 ' + p + '\n'; });
+    d.keyPoints.forEach(function(p) { t += '\u2022 ' + _s(p) + '\n'; });
     t += '\n';
   }
   if (d.actionItems && d.actionItems.length > 0) {
     t += '--- 待辦事項 ---\n';
-    d.actionItems.forEach(function(a) { t += '\u2022 ' + a + '\n'; });
+    d.actionItems.forEach(function(a) { t += '\u2022 ' + _s(a) + '\n'; });
     t += '\n';
   }
   if (d.decisions && d.decisions.length > 0) {
     t += '--- 決議 ---\n';
-    d.decisions.forEach(function(a) { t += '\u2022 ' + a + '\n'; });
+    d.decisions.forEach(function(a) { t += '\u2022 ' + _s(a) + '\n'; });
     t += '\n';
   }
   return t;
