@@ -133,7 +133,7 @@ export async function handleTranslateStream(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
   if (!env.ANTHROPIC_API_KEY) return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
   let body; try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
-  const { text, sourceLang, targetLang, code: userCode, glossary } = body; if (!text || !targetLang) return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
+  const { text, sourceLang, targetLang, code: userCode, glossary, context } = body; if (!text || !targetLang) return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   const auth = await authenticateRequest(request, env, userCode || ''); if (!auth) return jsonResponse({ error: 'Authentication required' }, 401, request);
   if (!checkRateLimit(request.headers.get('CF-Connecting-IP') || 'unknown', TRANSLATE_RATE_LIMIT)) return jsonResponse({ error: 'Rate limited' }, 429, request);
   const budgetS = await checkBudget(auth, env); if (!budgetS.ok) return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetS.usedSec, budgetSec: budgetS.budgetSec, remainingSec: budgetS.remainingSec }, 402, request);
@@ -142,7 +142,7 @@ export async function handleTranslateStream(request, env) {
   const targetName = TNAMES[targetLang] || targetLang; const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary. Preserve original currency units exactly (円→日圓, ドル→美元, ユーロ→歐元).' : '';
   const glossaryHint = (glossary && glossary.length > 0) ? '\nUse these terminology translations: ' + glossary.map(g => g.term + ' → ' + g.translation).join(', ') + '.' : '';
   const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang, text);
-  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, stream: true, messages: [{ role: 'user', content: translatePrompt + '\n\n' + trimmedText }] }) });
+  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, stream: true, messages: [{ role: 'user', content: translatePrompt + (context && context.length > 0 ? '\n\n[Previous conversation for reference — maintain terminology consistency:]\n' + context.map(c => c.src + ' → ' + c.tgt).join('\n') : '') + '\n\n[Translate this:]\n' + trimmedText }] }) });
   if (!claudeRes.ok) { const err = await claudeRes.json().catch(() => ({})); return jsonResponse({ error: err.error?.message || 'Claude API ' + claudeRes.status }, 502, request); }
   const { readable, writable } = new TransformStream(); const writer = writable.getWriter(); const encoder = new TextEncoder();
   let inputTokens = 0, outputTokens = 0;

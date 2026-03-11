@@ -2022,7 +2022,17 @@ function translateSegmentStreaming(id, segmentText, abortSignal) {
   }
 
   var cg = getCleanGlossary();
+  // Build context from recent entries for coherent translation
+  var prevContext = [];
+  var currentIdx = allEntries.findIndex(function(e) { return e.id === id; });
+  for (var ci = Math.max(0, currentIdx - 3); ci < currentIdx; ci++) {
+    var pe = allEntries[ci];
+    if (pe && pe.original && pe.translated) {
+      prevContext.push({ src: pe.original.slice(0, 200), tgt: pe.translated.slice(0, 200) });
+    }
+  }
   var payload = { text: segmentText, sourceLang: srcLang, targetLang: tgtLang, code: inviteCode };
+  if (prevContext.length > 0) payload.context = prevContext;
   if (cg.length > 0) payload.glossary = cg;
 
   console.log('[translate] fetch id=' + id + ' src=' + srcLang + ' tgt=' + tgtLang + ' len=' + segmentText.length);
