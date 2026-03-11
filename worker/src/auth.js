@@ -8,7 +8,7 @@ export async function validateCode(code, kv) { if (!code) return null; const c =
 export async function authenticateRequest(request, env, inviteCode) {
   const user = await getCurrentUser(request, env);
   if (user && user.role === 'admin') return { type: 'oauth', name: user.name, role: user.role, userId: user.id, code: 'oauth:' + user.id, isAdmin: true };
-  if (user && inviteCode) { const codeInfo = await validateCode(inviteCode, env.TICKER_KV); if (codeInfo) return { type: 'oauth+invite', name: user.name || codeInfo.name, role: codeInfo.role, userId: user.id, code: inviteCode, isAdmin: codeInfo.role === 'admin' }; }
+  if (user && inviteCode) { const codeInfo = await validateCode(inviteCode, env.TICKER_KV); if (codeInfo) return { type: 'oauth+invite', name: user.name || codeInfo.name, role: codeInfo.role, userId: user.id, code: inviteCode, isAdmin: codeInfo.role === 'admin', noBudget: !!codeInfo.noBudget }; }
   // API-only auth: valid admin invite code without session cookie (for TQEF eval_runner etc.)
   if (!user && inviteCode) { const codeInfo = await validateCode(inviteCode, env.TICKER_KV); if (codeInfo && codeInfo.role === 'admin') return { type: 'api-key', name: codeInfo.name, role: 'admin', userId: 'api:' + inviteCode, code: inviteCode, isAdmin: true }; }
   return null;
@@ -17,7 +17,7 @@ export async function authenticateRequest(request, env, inviteCode) {
 async function getCodeUsedTime(code, kv, userId) { if (!code || !userId) return 0; try { const raw = await kv.get('time_' + code + '_' + userId); return raw ? parseFloat(raw) : 0; } catch (e) { return 0; } }
 
 export async function checkBudget(auth, env) {
-  if (auth.isAdmin) return { ok: true, usedSec: 0, budgetSec: Infinity };
+  if (auth.isAdmin || auth.noBudget) return { ok: true, usedSec: 0, budgetSec: Infinity };
   const code = auth.code || '', userId = auth.userId || '';
   if (!code || !userId) return { ok: false, usedSec: 0, budgetSec: INVITE_BUDGET_SEC };
   const used = await getCodeUsedTime(code, env.TICKER_KV, userId);
@@ -143,7 +143,7 @@ export async function handleValidateCode(request, env) {
     const codeKey = body.code.trim().toLowerCase();
     if (result.maxUsers) { const user = await getCurrentUser(request, env); const usersRaw = await env.TICKER_KV.get('code_users_' + codeKey); const users = usersRaw ? JSON.parse(usersRaw) : []; const userId = user ? user.id : null; if (!(userId && users.includes(userId)) && users.length >= result.maxUsers) return jsonResponse({ valid: false, reason: 'quota_full', maxUsers: result.maxUsers }, 200, request); if (userId && !users.includes(userId)) { users.push(userId); await env.TICKER_KV.put('code_users_' + codeKey, JSON.stringify(users)); } }
     let budgetInfo = {};
-    if (result.role !== 'admin') { const user = await getCurrentUser(request, env); const usedSec = user ? await getCodeUsedTime(codeKey, env.TICKER_KV, user.id) : 0; budgetInfo = { budgetSec: INVITE_BUDGET_SEC, usedSec: +usedSec.toFixed(1), remainingSec: +Math.max(0, INVITE_BUDGET_SEC - usedSec).toFixed(1) }; }
+    if (result.role !== 'admin' && !result.noBudget) { const user = await getCurrentUser(request, env); const usedSec = user ? await getCodeUsedTime(codeKey, env.TICKER_KV, user.id) : 0; budgetInfo = { budgetSec: INVITE_BUDGET_SEC, usedSec: +usedSec.toFixed(1), remainingSec: +Math.max(0, INVITE_BUDGET_SEC - usedSec).toFixed(1) }; }
     return jsonResponse({ valid: true, name: result.name, role: result.role, ...budgetInfo }, 200, request);
   }
   return jsonResponse({ valid: false }, 200, request);
