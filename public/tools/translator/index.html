@@ -344,6 +344,20 @@ body.matrix-on{padding-left:48px;padding-right:48px}
 .admin-usage-table tr:last-child td{border-bottom:none}
 .admin-usage-total{margin-top:8px;font-size:12px;color:var(--text-muted);text-align:right}
 .usage-bar{display:inline-block;height:6px;border-radius:3px;background:var(--accent-ai);opacity:.6;vertical-align:middle;margin-left:4px}
+
+.fb-btn{background:none;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:4px;opacity:.5;transition:all .2s;font-family:var(--font-body)}
+.fb-btn:hover{opacity:1;background:rgba(37,99,235,.08);color:var(--accent-ai)}
+.fb-form{display:none;margin-top:8px;padding:10px 12px;background:var(--bg-section);border-radius:8px;border:1px solid var(--border-light);animation:fadeIn .2s}
+.fb-form.visible{display:block}
+.fb-form textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font-cjk);background:var(--bg-card);color:var(--text-primary);resize:vertical;min-height:40px;outline:none}
+.fb-form textarea:focus{border-color:var(--accent-ai)}
+.fb-form textarea::placeholder{color:var(--text-muted)}
+.fb-actions{display:flex;gap:6px;margin-top:6px;align-items:center}
+.fb-submit{padding:5px 14px;border-radius:100px;border:none;background:var(--accent-ai);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
+.fb-submit:disabled{opacity:.4;cursor:not-allowed}
+.fb-cancel{padding:5px 10px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:var(--font-body)}
+.fb-hint{font-size:11px;color:var(--text-muted);flex:1}
+.fb-ok{color:var(--accent-circular);font-size:12px;font-weight:600}
 </style>
 </head>
 <body>
@@ -2154,6 +2168,23 @@ function finalizeEntry(id, text) {
   }, 300);
   // Safety: stop polling after 10s
   setTimeout(function() { clearInterval(_perfPoll); }, 10000);
+  // Add feedback button
+  (function(eid) {
+    var entryEl = getEl('entry-' + eid);
+    if (!entryEl) return;
+    var fbBtn = document.createElement('button');
+    fbBtn.className = 'fb-btn';
+    fbBtn.textContent = '\u270F \u5EFA\u8B70\u66F4\u597D\u7684\u7FFB\u8B6F';
+    var fbForm = document.createElement('div');
+    fbForm.className = 'fb-form';
+    fbForm.id = 'fb-form-' + eid;
+    fbForm.innerHTML = '<textarea placeholder="\u8ACB\u8F38\u5165\u4F60\u5EFA\u8B70\u7684\u7FFB\u8B6F" id="fb-text-' + eid + '"></textarea><div class=\"fb-actions\"><button class=\"fb-submit\" id=\"fb-send-' + eid + '\">\u9001\u51FA</button><button class=\"fb-cancel\" id=\"fb-cancel-' + eid + '\">\u53D6\u6D88</button><span class=\"fb-hint\">\u5E6B\u52A9\u6211\u5011\u512A\u5316\u7FFB\u8B6F</span></div>';
+    entryEl.appendChild(fbBtn);
+    entryEl.appendChild(fbForm);
+    fbBtn.addEventListener('click', function() { fbForm.classList.toggle('visible'); if (fbForm.classList.contains('visible')) { var ta = getEl('fb-text-' + eid); if (ta) ta.focus(); } });
+    getEl('fb-cancel-' + eid).addEventListener('click', function() { fbForm.classList.remove('visible'); });
+    getEl('fb-send-' + eid).addEventListener('click', function() { submitFeedback(eid); });
+  })(id);
 
   // Don't delete _segmentTranslations here — async translations may still be in flight
   // Cleanup happens naturally when a new entry starts
@@ -2919,6 +2950,40 @@ function showGateStep2(user) {
   .catch(function() { showGateStep1(); });
 })();
 
+
+// === Translation Feedback ===
+function submitFeedback(id) {
+  var entry = allEntries.find(function(e) { return e.id === id; });
+  if (!entry) return;
+  var ta = getEl('fb-text-' + id);
+  var text = ta ? ta.value.trim() : '';
+  if (!text) return;
+  var btn = getEl('fb-send-' + id);
+  btn.disabled = true; btn.textContent = '\u9001\u51FA\u4E2D...';
+  fetch(WORKER_URL + '/feedback', {
+    method: 'POST', credentials: 'include',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      original: entry.original || '',
+      machineTranslation: entry.translated || '',
+      suggestedTranslation: text,
+      sourceLang: entry.detectedLang || srcInputLang || '',
+      targetLang: entry.tgt || tgtLang || '',
+      code: inviteCode
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.ok) {
+      var form = getEl('fb-form-' + id);
+      form.innerHTML = '<span class="fb-ok">\u2705 \u611F\u8B1D\u4F60\u7684\u5EFA\u8B70\uFF01</span>';
+      setTimeout(function() { form.classList.remove('visible'); }, 2500);
+    } else {
+      btn.disabled = false; btn.textContent = '\u9001\u51FA';
+    }
+  })
+  .catch(function() { btn.disabled = false; btn.textContent = '\u9001\u51FA'; });
+}
 
 // === Today Stats ===
 var _statsRetryCount = 0;

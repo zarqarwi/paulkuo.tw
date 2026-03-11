@@ -264,3 +264,57 @@ export async function handleGoogleSTT(request, env) {
     } catch (e) { if (attempt === 1) return jsonResponse({ error: 'Google STT: ' + e.message }, 502, request); }
   }
 }
+
+
+// === Translation Feedback Collection ===
+export async function handleFeedbackPost(request, env) {
+  if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
+  const auth = await authenticateRequest(request, env, '');
+  if (!auth) {
+    let body; try { body = await request.json(); } catch(e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+    const codeAuth = await authenticateRequest(request, env, body.code || '');
+    if (!codeAuth) return jsonResponse({ error: 'Authentication required' }, 401, request);
+    return saveFeedback(request, env, body, codeAuth);
+  }
+  let body; try { body = await request.json(); } catch(e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+  return saveFeedback(request, env, body, auth);
+}
+
+async function saveFeedback(request, env, body, auth) {
+  const { original, machineTranslation, suggestedTranslation, sourceLang, targetLang, context } = body;
+  if (!original || !suggestedTranslation) return jsonResponse({ error: 'original and suggestedTranslation required' }, 400, request);
+  const entry = {
+    original: (original || '').slice(0, 500),
+    machineTranslation: (machineTranslation || '').slice(0, 500),
+    suggestedTranslation: (suggestedTranslation || '').slice(0, 500),
+    sourceLang: sourceLang || '',
+    targetLang: targetLang || '',
+    context: (context || '').slice(0, 200),
+    userName: auth.name || '',
+    userId: auth.userId || '',
+    timestamp: new Date(Date.now() + 8 * 3600000).toISOString().replace('Z', '+08:00'),
+  };
+  try {
+    const raw = await env.TICKER_KV.get('translator_feedback');
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(entry);
+    // Keep last 500 entries
+    const trimmed = arr.length > 500 ? arr.slice(-500) : arr;
+    await env.TICKER_KV.put('translator_feedback', JSON.stringify(trimmed));
+    return jsonResponse({ ok: true, total: trimmed.length }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: 'Save failed: ' + e.message }, 500, request);
+  }
+}
+
+export async function handleFeedbackGet(request, env) {
+  const auth = await authenticateRequest(request, env, new URL(request.url).searchParams.get('code') || '');
+  if (!auth || !auth.isAdmin) return jsonResponse({ error: 'Admin access required' }, 403, request);
+  try {
+    const raw = await env.TICKER_KV.get('translator_feedback');
+    const arr = raw ? JSON.parse(raw) : [];
+    return jsonResponse({ total: arr.length, feedback: arr.reverse() }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
