@@ -119,7 +119,7 @@ export async function handleTranslate(request, env) {
   if (!checkRateLimit(request.headers.get('CF-Connecting-IP') || 'unknown', TRANSLATE_RATE_LIMIT)) return jsonResponse({ error: 'Rate limited' }, 429, request);
   const budget = await checkBudget(auth, env); if (!budget.ok) return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budget.usedSec, budgetSec: budget.budgetSec, remainingSec: budget.remainingSec }, 402, request);
   const targetName = TNAMES[targetLang] || targetLang;
-  const htTwHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
+  const htTwHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary. Preserve original currency units exactly (円→日圓, ドル→美元, ユーロ→歐元).' : '';
   const htGlossaryHint = (trGlossary && trGlossary.length > 0) ? '\nUse these terminology translations: ' + trGlossary.map(g => g.term + ' \u2192 ' + g.translation).join(', ') + '.' : '';
   const htPrompt = buildTranslatePrompt(targetName, htTwHint, htGlossaryHint, trGlossary, sourceLang, text);
   const res = await claudeWithRetry(env, { model: 'claude-haiku-4-5-20251001', max_tokens: 1024, messages: [{ role: 'user', content: htPrompt + '\n\n' + text.slice(0, 2000) }] });
@@ -139,7 +139,7 @@ export async function handleTranslateStream(request, env) {
   const budgetS = await checkBudget(auth, env); if (!budgetS.ok) return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetS.usedSec, budgetSec: budgetS.budgetSec, remainingSec: budgetS.remainingSec }, 402, request);
   const trimmedText = text.slice(0, 2000);
   if (trimmedText.length <= 2) { const enc = new TextEncoder(); const { readable, writable } = new TransformStream(); const w = writable.getWriter(); (async () => { await w.write(enc.encode('data: ' + JSON.stringify({ t: trimmedText }) + '\n\n')); await w.write(enc.encode('data: ' + JSON.stringify({ done: true, costUSD: 0 }) + '\n\n')); await w.close(); })(); return new Response(readable, { status: 200, headers: { 'Content-Type': 'text/event-stream', ...corsHeaders(request) } }); }
-  const targetName = TNAMES[targetLang] || targetLang; const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary.' : '';
+  const targetName = TNAMES[targetLang] || targetLang; const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary. Preserve original currency units exactly (円→日圓, ドル→美元, ユーロ→歐元).' : '';
   const glossaryHint = (glossary && glossary.length > 0) ? '\nUse these terminology translations: ' + glossary.map(g => g.term + ' → ' + g.translation).join(', ') + '.' : '';
   const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang, text);
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, stream: true, messages: [{ role: 'user', content: translatePrompt + '\n\n' + trimmedText }] }) });
