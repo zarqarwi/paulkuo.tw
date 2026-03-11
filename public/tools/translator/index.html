@@ -2545,13 +2545,7 @@ getEl("btnDownloadMd").addEventListener("click", function() {
   var dateStr = new Date().toISOString().slice(0, 10);
   var safeTitle = (lastSummaryData.title || 'meeting').replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_').slice(0, 30);
   var filename = dateStr + '_' + safeTitle + '.md';
-  var blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  downloadFile(md, filename, 'text/markdown;charset=utf-8');
 });
 
 // Email via mailto
@@ -3041,12 +3035,24 @@ function buildTranscriptCsv() {
 
 function downloadFile(content, filename, mimeType) {
   var blob = new Blob([content], { type: mimeType });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement("a");
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  if (isIOS && navigator.share && typeof File !== 'undefined') {
+    try {
+      var file = new File([blob], filename, { type: mimeType });
+      navigator.share({ files: [file], title: filename }).catch(function() {
+        window.open(URL.createObjectURL(blob), '_blank');
+      });
+    } catch(e) {
+      window.open(URL.createObjectURL(blob), '_blank');
+    }
+  } else {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 3000);
+  }
   getEl("exportMenu").classList.remove("visible");
 }
 
