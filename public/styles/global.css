@@ -153,7 +153,7 @@ nav.nav-scrolled {
 /* Nav Dropdown */
 .nav-dropdown { position: relative; }
 .nav-dropdown-trigger { cursor: pointer; }
-.nav-dropdown-trigger::after { content: ' \u25BE'; font-size: 0.65em; opacity: 0.5; }
+.nav-dropdown-trigger::after { content: ' ▾'; font-size: 0.65em; opacity: 0.5; }
 .nav-dropdown-menu {
   position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
   background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
@@ -179,9 +179,12 @@ nav.nav-scrolled {
     position: static; opacity: 1; visibility: visible;
     background: none; border: none; box-shadow: none; padding: 0;
   }
+  /* P1: Fix dropdown link color on dark nav background */
   .nav-dropdown-menu a {
-    display: inline; padding: 0; font-size: 0.78rem;
-    color: var(--text-secondary); background: none;
+    display: block; padding: 12px 0; font-size: 0.78rem;
+    color: rgba(255,255,255,0.85); background: none;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
   }
 }
 .lang-switcher{display:flex;gap:4px;margin-left:16px;border-left:1px solid var(--border);padding-left:16px}
@@ -513,9 +516,20 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
   .hero { padding: 60px 24px; }
   .blog-filters { gap: 8px; }
   .filter-btn { padding: 6px 14px; font-size: 0.8rem; }
+  /* P2: About photo — prevent overflow on mobile */
+  .about-photo {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    margin: 0 auto;
+  }
+  /* P3: Project card — reduce padding on mobile */
+  .project-card { padding: 24px; }
+  /* P5: Hero pillar tags — compact on mobile */
+  .pillar-tag { padding: 6px 12px; font-size: 0.75rem; }
 }
 
-/* ===== ARTICLE PAGE \u2014 Base Structure ===== */
+/* ===== ARTICLE PAGE — Base Structure ===== */
 .article-page { max-width: 720px; margin: 0 auto; padding: 120px 24px 80px; }
 .article-back { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; margin-bottom: 40px; transition: color 0.2s; }
 .article-back:hover { color: var(--brand-navy); }
@@ -529,7 +543,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .article-info { display: flex; gap: 24px; align-items: center; font-size: 0.82rem; color: var(--text-muted); padding-top: 20px; border-top: 1px solid var(--border-light); }
 .article-info time { font-weight: 500; }
 
-/* Article body \u2014 shared across all languages */
+/* Article body — shared across all languages */
 .article-body { font-family: var(--font-cjk); }
 .article-body h2 { font-family: var(--font-cjk); font-size: 1.4rem; font-weight: 700; color: var(--brand-navy); margin: 56px 0 20px; padding-top: 20px; border-top: 1px solid var(--border-light); }
 .article-body h3 { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 40px 0 16px; }
@@ -540,7 +554,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .article-body strong { color: var(--brand-navy); }
 .article-body a { color: var(--accent-ai); text-decoration: underline; text-underline-offset: 3px; }
 .article-body a:hover { color: var(--brand-navy); }
-/* Article body images \u2014 unified aspect ratio */
+/* Article body images — unified aspect ratio */
 .article-body img {
   width: 100%;
   max-height: 500px;
@@ -558,7 +572,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .article-nav-bottom a { font-size: 0.88rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
 .article-nav-bottom a:hover { color: var(--brand-navy); }
 
-/* ===== ARTICLE \u2014 English Typography ===== */
+/* ===== ARTICLE — English Typography ===== */
 html[lang="en"] .article-body p {
   font-size: 1.05rem;
   line-height: 1.35;
@@ -570,11 +584,11 @@ html[lang="en"] .article-body li {
   line-height: 1.35;
 }
 
-/* ===== ARTICLE \u2014 Traditional Chinese Typography ===== */
+/* ===== ARTICLE — Traditional Chinese Typography ===== */
 html[lang="zh-Hant"] ,
 html[lang="zh-TW"] {
-  --font-cjk: ui-sans-serif, system-ui, 'PingFang TC', 'Heiti TC', '\u5FAE\u8EDF\u6B63\u9ED1\u9AD4', 'Noto Sans TC', sans-serif;
-  --font-body: 'DM Sans', ui-sans-serif, system-ui, 'PingFang TC', 'Heiti TC', '\u5FAE\u8EDF\u6B63\u9ED1\u9AD4', 'Noto Sans TC', sans-serif;
+  --font-cjk: ui-sans-serif, system-ui, 'PingFang TC', 'Heiti TC', '微軟正黑體', 'Noto Sans TC', sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, system-ui, 'PingFang TC', 'Heiti TC', '微軟正黑體', 'Noto Sans TC', sans-serif;
 }
 html[lang="zh-Hant"] .article-body,
 html[lang="zh-TW"] .article-body {
@@ -620,7 +634,7 @@ html[lang="zh-TW"] .about-content p {
   text-justify: inter-ideograph;
 }
 
-/* ===== ARTICLE \u2014 Simplified Chinese Typography ===== */
+/* ===== ARTICLE — Simplified Chinese Typography ===== */
 html[lang="zh-Hans"],
 html[lang="zh-CN"] {
   --font-cjk: ui-sans-serif, system-ui, 'PingFang SC', 'Heiti SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
@@ -657,7 +671,7 @@ html[lang="zh-CN"] .about-content p {
   text-justify: inter-ideograph;
 }
 
-/* ===== ARTICLE \u2014 Japanese Typography ===== */
+/* ===== ARTICLE — Japanese Typography ===== */
 html[lang="ja"] {
   --font-cjk: ui-sans-serif, system-ui, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
   --font-body: 'DM Sans', ui-sans-serif, system-ui, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
@@ -688,7 +702,7 @@ html[lang="ja"] .about-content p {
   font-feature-settings: "palt" 1;
 }
 
-/* ===== ARTICLE \u2014 Mobile Responsive ===== */
+/* ===== ARTICLE — Mobile Responsive ===== */
 @media (max-width: 768px) {
   .article-page { padding: 100px 20px 60px; }
   .article-meta h1 { font-size: 1.8rem; }
@@ -1128,9 +1142,14 @@ footer {
     gap: 6px;
     width: 100%;
   }
+  /* P4: Touch targets — increase tap area for lang buttons */
   .mobile-lang-group .lang-btn {
     font-size: 0.78rem;
-    padding: 4px 10px;
+    padding: 8px 14px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid rgba(255,255,255,0.2);
     border-radius: 4px;
     color: rgba(255,255,255,0.7);
@@ -1266,7 +1285,7 @@ body.focus-mode .article-page {
   border-color: var(--brand-navy, #1b2d4f);
 }
 /* =============================================
-   FOCUS-VISIBLE \u2014 WCAG 2.1 AA Keyboard Navigation
+   FOCUS-VISIBLE — WCAG 2.1 AA Keyboard Navigation
    paulkuo.tw accessibility patch
    ============================================= */
 
@@ -1378,7 +1397,7 @@ body.focus-mode .article-page {
 }
 
 /* === Dark Background Sections === */
-/* Manifesto, Contact, Footer \u2014 need light outlines to be visible */
+/* Manifesto, Contact, Footer — need light outlines to be visible */
 .manifesto a:focus-visible,
 .manifesto-cta:focus-visible {
   outline: 2px solid rgba(255,255,255,0.7);
@@ -1425,7 +1444,7 @@ footer a:focus-visible,
   outline-offset: 3px;
 }
 
-/* === Skip to Content (optional \u2014 add later if needed) === */
+/* === Skip to Content (optional — add later if needed) === */
 /*
 .skip-link {
   position: absolute;
@@ -1447,7 +1466,7 @@ footer a:focus-visible,
 */
 
 /* ===== MOBILE UI PRESSURE RELIEF (2026-03-06) ===== */
-/* Hide floating font toggle and focus mode on mobile \u2014 controls moved to nav */
+/* Hide floating font toggle and focus mode on mobile — controls moved to nav */
 @media (max-width: 768px) {
   .font-size-toggle { display: none !important; }
   .focus-mode-btn { display: none !important; }
@@ -1585,7 +1604,7 @@ footer a:focus-visible,
   background: #fef2f2; color: #dc2626;
 }
 
-/* Auth \u2014 mobile */
+/* Auth — mobile */
 .nav-auth-mobile { display: none; }
 .nav-auth-login-mobile {
   display: flex; align-items: center; gap: 6px;
