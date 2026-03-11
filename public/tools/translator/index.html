@@ -2904,8 +2904,8 @@ function showGateStep2(user) {
         history.replaceState(null, '', location.pathname);
       }
       if (_isAdmin) {
-        // Admin: direct access, no invite code needed
-        inviteCode = '';
+        // Admin: direct access, use admin code for cost tracking
+        inviteCode = 'agora2026';
         hideGate();
         showUserBadge();
         loadTodayStats();
