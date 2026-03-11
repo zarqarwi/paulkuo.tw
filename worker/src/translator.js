@@ -1,6 +1,6 @@
 import { PRICING, TNAMES, STT_RATE_LIMIT, TRANSLATE_RATE_LIMIT, GROQ_STT_RATE_LIMIT, GOOGLE_STT_RATE_LIMIT, GOOGLE_STT_PROJECT, GOOGLE_STT_LOCATION } from './config.js';
 import { corsHeaders, jsonResponse, checkRateLimit } from './utils.js';
-import { authenticateRequest, checkBudget } from './auth.js';
+import { authenticateRequest, checkBudget, validateCode } from './auth.js';
 import { logCost } from './costs.js';
 
 let googleAccessTokenCache = { token: null, expiresAt: 0 };
@@ -269,14 +269,14 @@ export async function handleGoogleSTT(request, env) {
 // === Translation Feedback Collection ===
 export async function handleFeedbackPost(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
-  const auth = await authenticateRequest(request, env, '');
-  if (!auth) {
-    let body; try { body = await request.json(); } catch(e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
-    const codeAuth = await authenticateRequest(request, env, body.code || '');
-    if (!codeAuth) return jsonResponse({ error: 'Authentication required' }, 401, request);
-    return saveFeedback(request, env, body, codeAuth);
-  }
   let body; try { body = await request.json(); } catch(e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+  // Try OAuth auth first, then invite code auth, then just validate the code
+  let auth = await authenticateRequest(request, env, body.code || '');
+  if (!auth && body.code) {
+    const codeInfo = await validateCode(body.code, env.TICKER_KV);
+    if (codeInfo) auth = { type: 'invite', name: codeInfo.name, role: codeInfo.role, userId: 'code:' + body.code, code: body.code, isAdmin: codeInfo.role === 'admin' };
+  }
+  if (!auth) return jsonResponse({ error: 'Authentication required' }, 401, request);
   return saveFeedback(request, env, body, auth);
 }
 
