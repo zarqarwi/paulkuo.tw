@@ -10,7 +10,7 @@ export type PillarKey = keyof typeof PILLAR_MAP;
 
 export const SITE = {
   title: 'Paul Kuo — Rebuilding Order in an Age of Intelligence',
-  description: '在技術與文明的交匯處，重建秩序、循環再利用、守護人性尊嚴。',
+  description: 'Paul Kuo（郭曜郎）— 在技術與文明的交匯處，以 AI 策略、循環經濟與人文視角重建秩序。深度文章涵蓋智能趨勢、廢棄物資源化與文明反思。',
   url: 'https://paulkuo.tw',
   author: 'Paul Kuo',
   authorAlt: '郭曜郎',
