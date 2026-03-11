@@ -2926,12 +2926,13 @@ function showGateStep2(user) {
 
 
 // === Today Stats ===
+var _statsRetryCount = 0;
 function loadTodayStats() {
   if (!inviteCode && !_authUser) return;
   fetch(WORKER_URL + "/costs?days=1&code=" + encodeURIComponent(inviteCode), { credentials: 'include' })
     .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(d) {
-      var el = getEl("todayStats");
+      _statsRetryCount = 0; var el = getEl("todayStats");
       var records = d.records || [];
       var reqs = records.filter(function(r) { return r.action && r.action.indexOf('stt') === 0; }).length;
       var cost = d.totalUSD || 0;
@@ -2943,7 +2944,10 @@ function loadTodayStats() {
       }
       el.classList.add("visible");
     })
-    .catch(function() { /* non-admin or error: hide silently */ });
+    .catch(function(err) {
+      console.warn('[costs] loadTodayStats failed:', err.message, 'retry', _statsRetryCount, '/3');
+      if (_statsRetryCount < 3) { _statsRetryCount++; setTimeout(loadTodayStats, _statsRetryCount * 2000); }
+    });
 }
 
 // === Free Quota Monitor ===

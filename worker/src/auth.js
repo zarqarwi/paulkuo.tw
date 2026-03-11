@@ -38,7 +38,7 @@ async function upsertUser(db, { email, name, avatar, provider, providerId }) {
 
 export async function getCurrentUser(request, env) {
   const sessionId = getSessionFromCookie(request); if (!sessionId) return null;
-  return await env.AUTH_DB.prepare('SELECT u.id, u.email, u.name, u.avatar, u.provider, u.role, u.created_at, s.expires_at FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.id = ? AND s.expires_at > datetime(\'now\')').bind(sessionId).first();
+  try { return await env.AUTH_DB.prepare('SELECT u.id, u.email, u.name, u.avatar, u.provider, u.role, u.created_at, s.expires_at FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.id = ? AND s.expires_at > datetime(\'now\')').bind(sessionId).first(); } catch (e) { console.error("getCurrentUser D1 error:", e.message); return null; }
 }
 
 async function createSessionAndRedirect(request, env, userId) {
