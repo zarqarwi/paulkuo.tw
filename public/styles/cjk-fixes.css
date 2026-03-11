@@ -53,3 +53,10 @@ html[lang="ja"] .content-card,
 html[lang="ja"] .feed-excerpt {
   font-feature-settings: "palt";
 }
+
+/* --- 5. Translator project card top gradient bar ---
+   Added 2026-03-11: match other project cards' ::before color bars
+   -------------------------------------------------------- */
+.project-card.translator::before {
+  background: linear-gradient(90deg, #1B2D4F, #2563EB);
+}
