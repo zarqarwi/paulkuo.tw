@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-11T23:10:06+08:00",
+  "updated": "2026-03-11T23:20:06+08:00",
   "source": "timing-sqlite-direct",
   "method": "SQLite DB + bundleIdentifier/path/title matching",
   "api_version": "v4",
@@ -9,7 +9,7 @@
     "active_days": 11,
     "avg_daily": 4.6,
     "platform_breakdown": {
-      "Claude": 44.68,
+      "Claude": 44.71,
       "ChatGPT": 4.78,
       "Gemini": 1.6
     }
@@ -105,9 +105,9 @@
     },
     {
       "date": "2026-03-11",
-      "ai_hours": 3.86,
+      "ai_hours": 3.88,
       "breakdown": {
-        "Claude": 3.03,
+        "Claude": 3.06,
         "ChatGPT": 0.53,
         "Gemini": 0.29
       }
