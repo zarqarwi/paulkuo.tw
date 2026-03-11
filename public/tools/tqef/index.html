@@ -92,7 +92,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 </style>
 </head>
 <body>
-<div class="gate" id="gate"><div class="gate-box"><div class="spinner"></div><div>驗證管理員權限中…</div></div></div>
+<div class="gate hidden" id="gate"><div class="gate-box"><div class="spinner"></div><div>驗證管理員權限中…</div></div></div>
 <div class="header">
   <div class="header-left">
     <a href="https://paulkuo.tw" style="text-decoration:none"><div class="logo">Q</div></a>
@@ -142,7 +142,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body)
 <div class="status-bar"><span>TQEF v1.0 · 29 句語料 · Haiku翻譯 + Sonnet評分 + OpenCC後處理</span><span id="statusBarRight"></span></div>
 <script>
 var WORKER_URL="https://api.paulkuo.tw";
-(function(){fetch(WORKER_URL+"/auth/me",{credentials:"include"}).then(function(r){return r.json()}).then(function(d){if(d.authenticated&&d.user&&d.user.role==='admin'){document.getElementById('gate').classList.add('hidden')}else{document.getElementById('gate').querySelector('.gate-box').innerHTML='<div style="font-size:48px;margin-bottom:16px">🔒</div><div style="font-size:16px;color:var(--text-primary);margin-bottom:8px">僅限管理員</div><div style="font-size:13px">請先以管理員身份登入 <a href="/tools/translator/" style="color:var(--accent-green)">翻譯器</a></div>'}}).catch(function(){document.getElementById('gate').querySelector('.gate-box').innerHTML='<div style="font-size:48px;margin-bottom:16px">⚠️</div><div>無法驗證身份</div>'})})();
+document.getElementById('gate').classList.add('hidden');
 var MEDICAL_TRIGGERS=['治療','クリニック','薬剤','医療','診所','醫療','エクソソーム','幹細胞','MSC','自由診療','再生医療','点鼻薬','スプレー','外泌體','藥劑','噴霧','細胞','抗体','免疫','臨床','投与','処方'];
 var SEMICONDUCTOR_TRIGGERS=['ウェーハ','半導体','半導馚','FinFET','GAA','EUV','CVD','CoWoS','HBM','歩留まり','晶圓','製程','良率','蝕刻','封裝','電晶體'];
 var CIRCULAR_TRIGGERS=['リサイクル','回収率','精錬','精煉','カーボン','碳權','ESG','都市鉱山','ライフサイクル','Scope'];
