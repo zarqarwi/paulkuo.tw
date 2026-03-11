@@ -40,13 +40,13 @@
           type: 'text',
           text: JSON.stringify({
             name: 'Paul Kuo 郭曜郎',
-            title: 'Commercial Integration & AI Digital Development Director',
+            title: 'Business Development Consultant, Circular Economy',
             organization: 'SDTI 佳龍科技',
             location: 'Taiwan',
             website: SITE_URL,
             email: 'paul@lasaas.com',
             tagline: 'Rebuilding Order in an Age of Intelligence',
-            summary: 'Cross-disciplinary professional with 15 years of theological training, over a decade in PCB manufacturing metal recovery, and deep expertise in AI systems development. Currently leading Taiwan-Japan semiconductor cooperation and circular economy initiatives at SDTI.',
+            summary: 'Cross-disciplinary professional with 15 years of theological training, over a decade in PCB manufacturing metal recovery, and deep expertise in AI systems development. Currently focused on circular economy waste information product recovery and CLGM green materials development at SDTI.',
             background: [
               '15 years theological training — systematic thinking, ethical reasoning, cross-cultural communication',
               '10+ years PCB manufacturing metal recovery — circular economy, urban mining, resource regeneration',
@@ -60,7 +60,7 @@
               'AI Systems & Agentic Workflows',
               'Circular Economy & Urban Mining',
               'Taiwan-Japan Cross-border Industry Integration',
-              'Semiconductor Supply Chain',
+              'Waste-to-Resource Systems',
               'Startup Ecosystem & Venture Building',
               'Theological & Ethical Reasoning',
               'Multi-Agent AI Collaboration',
@@ -127,7 +127,7 @@
           name: '創造與建構 — Creation & Enterprise',
           color: '#DC2626',
           description: 'Entrepreneurship, venture building, cross-border business development, and turning ideas into operational systems.',
-          experience: 'AppWorks accelerator alumnus, VP at 半畝塘 (sustainable architecture), founded 厚生市集 (local food systems). Currently leading Taiwan-Japan semiconductor cooperation at SDTI.',
+          experience: 'AppWorks accelerator alumnus, VP at 半畝塘 (sustainable architecture), founded 厚生市集 (local food systems). Currently a BD consultant at SDTI focusing on circular economy.',
           topics: ['Startup Strategy', 'Taiwan-Japan Business', 'Semiconductor Industry', 'Cross-border Commerce', 'Business Model Design'],
         },
         life: {
@@ -265,10 +265,10 @@
             current: [
               {
                 name: 'SDTI 佳龍科技',
-                role: 'Commercial Integration & AI Digital Development Director',
+                role: 'Business Development Consultant, Circular Economy',
                 period: 'Current',
-                description: 'Leading Taiwan-Japan semiconductor cooperation, circular economy initiatives, and AI systems development for cross-border industrial integration.',
-                technologies: ['AI/ML', 'Cross-border Commerce', 'Semiconductor Supply Chain'],
+                description: 'Business development for circular economy — waste information product recovery, CLGM green materials development, and Taiwan-Japan industry cooperation.',
+                technologies: ['AI/ML', 'Cross-border Commerce', 'Waste-to-Resource Systems'],
               },
               {
                 name: 'CircleFlow',

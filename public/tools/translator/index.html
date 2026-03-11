@@ -3382,5 +3382,124 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+
+<script>
+// === WebMCP Tool Registration for Agora Translator ===
+// Progressive enhancement: only registers if navigator.modelContext is available
+(function() {
+  if (!('modelContext' in navigator)) {
+    console.log('[WebMCP] navigator.modelContext not available. Skipping translator tools.');
+    return;
+  }
+
+  var WORKER = 'https://api.paulkuo.tw';
+
+  // Tool 1: translate_text — core translation capability
+  navigator.modelContext.registerTool({
+    name: 'translate_text',
+    description: 'Translate text between 12 languages using Claude Haiku AI. Supports Japanese, English, Traditional Chinese, Simplified Chinese, Korean, Vietnamese, Thai, Indonesian, German, Spanish, French, and Portuguese. Includes specialized terminology for medical, semiconductor, and circular economy domains with Taiwan-specific vocabulary.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Text to translate (max 2000 characters)' },
+        sourceLang: { type: 'string', description: 'Source language code', enum: ['ja','en','zh-TW','zh-CN','ko','vi','th','id','de','es','fr','pt'] },
+        targetLang: { type: 'string', description: 'Target language code', enum: ['zh-TW','en','ja','zh-CN','ko','vi','th','id','de','es','fr','pt'] },
+      },
+      required: ['text', 'targetLang'],
+    },
+    annotations: { readOnlyHint: true },
+    async execute(args) {
+      try {
+        var res = await fetch(WORKER + '/translate', {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: (args.text || '').slice(0, 2000),
+            sourceLang: args.sourceLang || 'auto',
+            targetLang: args.targetLang || 'zh-TW',
+            code: typeof inviteCode !== 'undefined' ? inviteCode : '',
+          })
+        });
+        var d = await res.json();
+        if (d.error) return { content: [{ type: 'text', text: JSON.stringify({ error: d.error }) }] };
+        return { content: [{ type: 'text', text: JSON.stringify({ translated: d.translated, model: d.model, sourceLang: args.sourceLang, targetLang: args.targetLang }) }] };
+      } catch (e) {
+        return { content: [{ type: 'text', text: JSON.stringify({ error: e.message }) }] };
+      }
+    }
+  });
+
+  // Tool 2: get_supported_languages — language capabilities
+  navigator.modelContext.registerTool({
+    name: 'get_supported_languages',
+    description: 'Get the list of languages supported by Agora Translator for real-time meeting translation and text translation.',
+    inputSchema: { type: 'object', properties: {} },
+    annotations: { readOnlyHint: true },
+    async execute() {
+      return { content: [{ type: 'text', text: JSON.stringify({
+        tool: 'Agora Translator (\u963f\u54e5\u62c9\u5ee3\u5834)',
+        totalLanguages: 12,
+        languages: [
+          { code: 'zh-TW', name: '\u7e41\u9ad4\u4e2d\u6587', sttEngine: 'Qwen3-ASR' },
+          { code: 'en', name: 'English', sttEngine: 'Groq Whisper' },
+          { code: 'ja', name: '\u65e5\u672c\u8a9e', sttEngine: 'Groq Whisper / Google Chirp 3 (business mode)' },
+          { code: 'ko', name: '\ud55c\uad6d\uc5b4', sttEngine: 'Deepgram Nova-3' },
+          { code: 'vi', name: 'Ti\u1ebfng Vi\u1ec7t', sttEngine: 'Deepgram Nova-2' },
+          { code: 'th', name: '\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22', sttEngine: 'Deepgram Nova-2' },
+          { code: 'id', name: 'Bahasa Indonesia', sttEngine: 'Deepgram Nova-2' },
+          { code: 'de', name: 'Deutsch', sttEngine: 'Deepgram Nova-3' },
+          { code: 'es', name: 'Espa\u00f1ol', sttEngine: 'Deepgram Nova-3' },
+          { code: 'fr', name: 'Fran\u00e7ais', sttEngine: 'Deepgram Nova-3' },
+          { code: 'pt', name: 'Portugu\u00eas', sttEngine: 'Deepgram Nova-3' },
+          { code: 'zh-CN', name: '\u7b80\u4f53\u4e2d\u6587', sttEngine: 'Qwen3-ASR' },
+        ],
+        specializations: [
+          'Medical / Regenerative Medicine terminology (\u518d\u751f\u91ab\u7642)',
+          'Semiconductor industry terminology (\u534a\u5c0e\u9ad4)',
+          'Circular economy terminology (\u5faa\u74b0\u7d93\u6fdf)',
+          'Taiwan-specific vocabulary via OpenCC + custom dictionaries',
+        ],
+        features: ['Real-time speech-to-text', 'Streaming translation', 'Meeting summary (AI)', 'Glossary support', 'Subtitle mode'],
+      }, null, 2) }] };
+    }
+  });
+
+  // Tool 3: get_translator_info — about this tool
+  navigator.modelContext.registerTool({
+    name: 'get_translator_info',
+    description: 'Get information about Agora Translator — a real-time multilingual meeting translation tool built by Paul Kuo. Includes architecture, capabilities, and how to use it.',
+    inputSchema: { type: 'object', properties: {} },
+    annotations: { readOnlyHint: true },
+    async execute() {
+      return { content: [{ type: 'text', text: JSON.stringify({
+        name: 'Agora Translator (\u963f\u54e5\u62c9\u5ee3\u5834)',
+        tagline: '\u8b93\u4e0d\u540c\u8a9e\u8a00\u7684\u4eba\uff0c\u80fd\u5728\u540c\u4e00\u500b\u5ee3\u5834\u5c0d\u8a71',
+        url: 'https://paulkuo.tw/tools/translator/',
+        author: 'Paul Kuo',
+        architecture: {
+          stt: 'Qwen3-ASR (Chinese), Groq Whisper (English/Japanese), Google Chirp 3 (Business Japanese), Deepgram Nova-3 (others)',
+          translation: 'Claude Haiku 4.5 with streaming + OpenCC post-processing',
+          summary: 'Claude Haiku 4.5',
+          hosting: 'Cloudflare Pages + Workers',
+          auth: 'OAuth (Google/LINE/Facebook) + invite code system',
+        },
+        keyFeatures: [
+          'Real-time streaming STT with auto language routing',
+          '12 language support with industry-specific dictionaries',
+          'Meeting summary with key points and action items',
+          'Export to TXT, CSV, Markdown',
+          'Subtitle mode for presentations',
+          'Custom glossary for domain terminology',
+          'Translation feedback collection for continuous improvement',
+          'WebMCP enabled for AI agent integration',
+        ],
+        access: 'Invite-only (request access from Paul Kuo)',
+      }, null, 2) }] };
+    }
+  });
+
+  console.log('[WebMCP] 3 translator tools registered: translate_text, get_supported_languages, get_translator_info');
+})();
+</script>
 </body>
 </html>
