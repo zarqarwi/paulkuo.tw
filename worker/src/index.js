@@ -9,7 +9,7 @@ import { authenticateRequest, checkBudget } from './auth.js';
 import { costBuffer, flushCosts, handleCosts, handleUsage, handleLogCost } from './costs.js';
 import { refreshToken, fetchFitbitData, fetchSleepData } from './fitbit.js';
 import { isTseTradingHours, fetchStockData } from './stock.js';
-import { handleTranslate, handleTranslateStream, handleSummarize, handlePolishTranscript, handleGroqSTT, handleGoogleSTT, handleFeedbackPost, handleFeedbackGet } from './translator.js';
+import { handleTranslate, handleTranslateStream, handleSummarize, handlePolishTranscript, handleGroqSTT, handleGoogleSTT, handleFeedbackPost, handleFeedbackGet, handleTqefClaude } from './translator.js';
 import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
@@ -68,6 +68,7 @@ async function handleRequest(request, env) {
   if (path === '/usage') return handleUsage(request, env);
   if (path === '/log-cost') return handleLogCost(request, env);
   if (path === '/feedback' && method === 'POST') return handleFeedbackPost(request, env);
+  if (path === '/tqef/claude' && method === 'POST') return handleTqefClaude(request, env);
   if (path === '/feedback' && method === 'GET') return handleFeedbackGet(request, env);
   if (path === '/feed/push' && method === 'POST') return handleFeedPush(request, env);
   if (path === '/validate-code') return handleValidateCode(request, env);

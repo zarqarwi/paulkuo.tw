@@ -318,3 +318,26 @@ export async function handleFeedbackGet(request, env) {
     return jsonResponse({ error: e.message }, 500, request);
   }
 }
+
+
+// === TQEF Claude Proxy (admin only, for eval without client-side API key) ===
+export async function handleTqefClaude(request, env) {
+  if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
+  const auth = await authenticateRequest(request, env, '');
+  if (!auth || !auth.isAdmin) return jsonResponse({ error: 'Admin access required' }, 403, request);
+  let body; try { body = await request.json(); } catch(e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+  const { model, system, user, max_tokens } = body;
+  if (!model || !user) return jsonResponse({ error: 'model and user required' }, 400, request);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model, max_tokens: Math.min(max_tokens || 1024, 4096), system: system || '', messages: [{ role: 'user', content: user }] })
+    });
+    if (!res.ok) { const e = await res.json().catch(() => ({})); return jsonResponse({ error: e.error?.message || 'API ' + res.status }, res.status, request); }
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+    const usage = data.usage || {};
+    return jsonResponse({ text, usage }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+}
