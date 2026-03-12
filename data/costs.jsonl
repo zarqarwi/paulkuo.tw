@@ -477,3 +477,4 @@
 {"timestamp":"2026-03-12T00:46:43.533Z","service":"anthropic","model":"claude-sonnet","action":"translate-ja","source":"translate-article","inputTokens":3002,"outputTokens":3058,"costUSD":0.054876,"costTWD":1.78,"note":"life-database-engineering"}
 {"timestamp":"2026-03-12T00:47:06.734Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":2983,"outputTokens":2614,"costUSD":0.048159,"costTWD":1.57,"note":"life-database-engineering"}
 {"timestamp":"2026-03-12T00:47:30.282Z","service":"openai","model":"dall-e-3","action":"cover-image","source":"generate-cover","inputTokens":0,"outputTokens":0,"costUSD":0.08,"costTWD":2.6,"note":"life-database-engineering"}
+{"timestamp":"2026-03-12T01:11:13.377Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":2951,"outputTokens":1905,"costUSD":0.037428,"costTWD":1.22,"note":"life-database-engineering"}
