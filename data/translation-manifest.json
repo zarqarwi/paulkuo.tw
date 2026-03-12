@@ -1720,11 +1720,11 @@
     }
   },
   "ai-collab-realtime-translator.md": {
-    "sourceHash": "3baca913eb36",
+    "sourceHash": "411e26e941c0",
     "translations": {
       "en": {
-        "hash": "9ee37dac3af7",
-        "translatedAt": "2026-03-12T15:31:41.477Z",
+        "hash": "a1b662e7b1a6",
+        "translatedAt": "2026-03-12T15:39:57.348Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
