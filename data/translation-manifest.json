@@ -1718,5 +1718,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "ai-collab-realtime-translator.md": {
+    "sourceHash": "d41d8cd98f00",
+    "translations": {
+      "en": {
+        "hash": "d41d8cd98f00",
+        "translatedAt": "2026-03-12T15:05:09.077Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "d41d8cd98f00",
+        "translatedAt": "2026-03-12T15:05:21.589Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "d41d8cd98f00",
+        "translatedAt": "2026-03-12T15:05:29.529Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
