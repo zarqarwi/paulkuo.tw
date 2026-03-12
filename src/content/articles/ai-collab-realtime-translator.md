@@ -75,6 +75,8 @@ reading_context: |
 
 語音辨識不是只挑一家 API 就好。不同語言有不同的最佳解。根據語言自動切換引擎：
 
+![三路語音辨識路由架構](/images/articles/ai-collab-realtime-translator-stt-routing.png)
+
 - 🇹🇼 **中文** → Qwen3-ASR（阿里雲 Qwen 團隊，WebSocket 串流）
 - 🇺🇸 **英文** → whisper-large-v3-turbo（LPU 硬體加速，200×+ 即時速度）
 - 🌐 **其他語言** → Deepgram Nova-3（WebSocket 串流）
