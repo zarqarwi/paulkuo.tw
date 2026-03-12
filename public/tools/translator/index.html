@@ -609,6 +609,9 @@ var userName = sessionStorage.getItem("userName") || "";
 var _isAdmin = false; // set on login, controls perf badge + cost visibility
 var businessMode = false; // business mode: higher accuracy STT for Japanese
 var recording = false;
+var _sessionDomain = null;
+var _sessionStartMs = 0;
+var SESSION_LOCK_WINDOW = 60000;
 var audioContext = null;
 var analyser = null;
 var nextId = 0;
@@ -864,6 +867,7 @@ function startDeepgramStreaming() {
   .then(function(stream) {
     dgStream = stream;
     recording = true;
+    if (!_sessionStartMs) _sessionStartMs = performance.now();
     updateToggle();
     startMatrix();
     startVolumeMeter(stream);
@@ -2034,6 +2038,7 @@ function translateSegmentStreaming(id, segmentText, abortSignal) {
   var payload = { text: segmentText, sourceLang: srcLang, targetLang: tgtLang, code: inviteCode };
   if (prevContext.length > 0) payload.context = prevContext;
   if (cg.length > 0) payload.glossary = cg;
+  if (_sessionDomain) payload.sessionDomain = _sessionDomain;
 
   console.log('[translate] fetch id=' + id + ' src=' + srcLang + ' tgt=' + tgtLang + ' len=' + segmentText.length);
   var fetchOpts = {
@@ -2087,6 +2092,10 @@ function translateSegmentStreaming(id, segmentText, abortSignal) {
               scrollBottom();
             }
             if (evt.done) {
+              if (evt.detectedDomain && !_sessionDomain && _sessionStartMs && (performance.now() - _sessionStartMs < SESSION_LOCK_WINDOW)) {
+                _sessionDomain = evt.detectedDomain;
+                console.log('[session] Domain locked: ' + _sessionDomain);
+              }
               // OpenCC 淨化：防止 LLM 輸出大陸用語（目標語言為中文時）
               if (tgtLang === 'zh-TW' && openccConverter && _segmentTranslations[id]) {
                 _segmentTranslations[id] = openccConverter(_segmentTranslations[id]);
@@ -2265,6 +2274,8 @@ function updateEntry(id, original, translated, detectedLang) {
 // UI helpers
 function clearAll() {
   allEntries = []; nextId = 0;
+  _sessionDomain = null;
+  _sessionStartMs = 0;
   getEl("btnSummary").disabled = true;
   getEl("content").innerHTML = '<div class="empty" id="empty"><div style="font-size:48px;opacity:.25">🎙️</div><div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">按「開始」後對著麥克風說話<br><span style="font-size:12px">自動偵測 12 種語言 · 支援所有瀏覽器</span><br><a href="#" onclick="getEl(\'helpModal\').classList.add(\'visible\');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none">第一次使用？看使用說明 →</a></div></div>';
   updateCount();

@@ -133,7 +133,7 @@ export async function handleTranslateStream(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
   if (!env.ANTHROPIC_API_KEY) return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
   let body; try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
-  const { text, sourceLang, targetLang, code: userCode, glossary, context } = body; if (!text || !targetLang) return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
+  const { text, sourceLang, targetLang, code: userCode, glossary, context, sessionDomain } = body; if (!text || !targetLang) return jsonResponse({ error: 'Missing text or targetLang' }, 400, request);
   const auth = await authenticateRequest(request, env, userCode || ''); if (!auth) return jsonResponse({ error: 'Authentication required' }, 401, request);
   if (!checkRateLimit(request.headers.get('CF-Connecting-IP') || 'unknown', TRANSLATE_RATE_LIMIT)) return jsonResponse({ error: 'Rate limited' }, 429, request);
   const budgetS = await checkBudget(auth, env); if (!budgetS.ok) return jsonResponse({ error: 'Budget exceeded', code: 'budget_exceeded', usedSec: budgetS.usedSec, budgetSec: budgetS.budgetSec, remainingSec: budgetS.remainingSec }, 402, request);
@@ -141,7 +141,12 @@ export async function handleTranslateStream(request, env) {
   if (trimmedText.length <= 2) { const enc = new TextEncoder(); const { readable, writable } = new TransformStream(); const w = writable.getWriter(); (async () => { await w.write(enc.encode('data: ' + JSON.stringify({ t: trimmedText }) + '\n\n')); await w.write(enc.encode('data: ' + JSON.stringify({ done: true, costUSD: 0 }) + '\n\n')); await w.close(); })(); return new Response(readable, { status: 200, headers: { 'Content-Type': 'text/event-stream', ...corsHeaders(request) } }); }
   const targetName = TNAMES[targetLang] || targetLang; const twHint = targetLang === 'zh-TW' ? ' Use Traditional Chinese with Taiwanese vocabulary. Preserve original currency units exactly (円→日圓, ドル→美元, ユーロ→歐元).' : '';
   const glossaryHint = (glossary && glossary.length > 0) ? '\nUse these terminology translations: ' + glossary.map(g => g.term + ' → ' + g.translation).join(', ') + '.' : '';
-  const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang, text);
+  let effectiveText = text;
+  if (sessionDomain && ['medical','semiconductor','circular','business'].includes(sessionDomain)) {
+    const DOMAIN_TRIGGERS = { medical: '醫療', semiconductor: '半導體', circular: '循環', business: '契約' };
+    effectiveText = (DOMAIN_TRIGGERS[sessionDomain] || '') + ' ' + text;
+  }
+  const translatePrompt = buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang, effectiveText);
   const claudeRes = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1024, stream: true, messages: [{ role: 'user', content: translatePrompt + (context && context.length > 0 ? '\n\n[Previous conversation for reference — maintain terminology consistency:]\n' + context.map(c => c.src + ' → ' + c.tgt).join('\n') : '') + '\n\n[Translate this:]\n' + trimmedText }] }) });
   if (!claudeRes.ok) { const err = await claudeRes.json().catch(() => ({})); return jsonResponse({ error: err.error?.message || 'Claude API ' + claudeRes.status }, 502, request); }
   const { readable, writable } = new TransformStream(); const writer = writable.getWriter(); const encoder = new TextEncoder();
@@ -149,7 +154,10 @@ export async function handleTranslateStream(request, env) {
   (async () => {
     const reader = claudeRes.body.getReader(); const decoder = new TextDecoder(); let buffer = '';
     try { while (true) { const { done, value } = await reader.read(); if (done) break; buffer += decoder.decode(value, { stream: true }); const lines = buffer.split('\n'); buffer = lines.pop(); for (const line of lines) { if (!line.startsWith('data: ')) continue; const d = line.slice(6); if (d === '[DONE]') continue; try { const evt = JSON.parse(d); if (evt.type === 'content_block_delta' && evt.delta?.text) await writer.write(encoder.encode('data: ' + JSON.stringify({ t: evt.delta.text }) + '\n\n')); if (evt.type === 'message_delta' && evt.usage) outputTokens = evt.usage.output_tokens || 0; if (evt.type === 'message_start' && evt.message?.usage) inputTokens = evt.message.usage.input_tokens || 0; } catch (e) {} } }
-      const cost = haikuCost({ input_tokens: inputTokens, output_tokens: outputTokens }); await writer.write(encoder.encode('data: ' + JSON.stringify({ done: true, costUSD: +cost.toFixed(6) }) + '\n\n'));
+      const cost = haikuCost({ input_tokens: inputTokens, output_tokens: outputTokens });
+      const detectedCtx = detectContext(glossary, text);
+      const detectedDomain = detectedCtx.medical ? 'medical' : detectedCtx.semiconductor ? 'semiconductor' : detectedCtx.circular ? 'circular' : detectedCtx.business ? 'business' : null;
+      await writer.write(encoder.encode('data: ' + JSON.stringify({ done: true, costUSD: +cost.toFixed(6), detectedDomain }) + '\n\n'));
       await logCost(env.TICKER_KV, { service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate-stream', source: 'translator', code: auth.code, _userId: auth.userId || '', inputTokens, outputTokens, costUSD: +cost.toFixed(6), note: (sourceLang || 'auto') + '>' + targetLang });
     } catch (e) { await writer.write(encoder.encode('data: ' + JSON.stringify({ error: e.message }) + '\n\n')); } finally { await writer.close(); }
   })();
@@ -338,6 +346,9 @@ export async function handleTqefClaude(request, env) {
     const data = await res.json();
     const text = data.content?.[0]?.text || '';
     const usage = data.usage || {};
+    const hp = PRICING[model] || PRICING['claude-haiku-4-5-20251001'];
+    const tqefCost = ((usage.input_tokens || 0) / 1e6) * hp.inputPerMTok + ((usage.output_tokens || 0) / 1e6) * hp.outputPerMTok;
+    await logCost(env.TICKER_KV, { service: 'anthropic', model, action: 'tqef-eval', source: 'tqef', code: auth.code || '', _userId: auth.userId || '', inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0, costUSD: +tqefCost.toFixed(6) });
     return jsonResponse({ text, usage }, 200, request);
   } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
 }
