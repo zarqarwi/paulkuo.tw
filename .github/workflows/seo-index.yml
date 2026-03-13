@@ -1,0 +1,48 @@
+name: SEO Index Submit
+
+on:
+  workflow_run:
+    workflows: ["Build & Deploy"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  index-submit:
+    runs-on: ubuntu-latest
+    # Only run if Build & Deploy succeeded (or manual trigger)
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install google-auth requests
+
+      - name: Submit new URLs to Google Indexing API
+        env:
+          GOOGLE_INDEXING_KEY: ${{ secrets.GOOGLE_INDEXING_KEY }}
+        run: python scripts/seo-index-submit.py
+
+      - name: Commit updated indexed URLs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .seo/indexed-urls.txt
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(seo): update indexed URLs list"
+            git push
+          fi
