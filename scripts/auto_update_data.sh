@@ -64,6 +64,20 @@ fi
 log "Timing..."
 python3 scripts/timing_fetch_local.py >> "$LOG" 2>&1 || log "WARN: Timing failed"
 
+# --- 1.5 Push timing to Cloudflare KV (for /ticker live updates) ---
+if [ -f data/timing.json ]; then
+    TIMING_JSON=$(cat data/timing.json)
+    npx wrangler kv:key put --config worker/wrangler.toml --namespace-id=c066a2fd7942494c8ead37cc518b191b "timing_cache" "$TIMING_JSON" >> "$LOG" 2>&1 \
+        && log "✅ Timing → KV" \
+        || log "WARN: Timing KV push failed"
+fi
+
+# --- 1.6 Sync costs.jsonl → KV (merge with Worker costs, dedup by timestamp) ---
+log "Costs → KV..."
+python3 scripts/sync_costs_to_kv.py --days 7 >> "$LOG" 2>&1 \
+    && log "✅ Costs → KV" \
+    || log "WARN: Costs KV sync failed"
+
 # --- 2. Stock price ---
 log "Stock..."
 python3 scripts/stock_fetch.py >> "$LOG" 2>&1 || log "WARN: Stock fetch failed"

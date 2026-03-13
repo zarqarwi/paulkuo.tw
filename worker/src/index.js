@@ -21,13 +21,19 @@ async function handleTicker(request, env) {
   const [fitbitData, stockData, costsData] = await Promise.allSettled([
     fetchFitbitData(env.TICKER_KV, env).catch(() => null), fetchStockData(env.TICKER_KV).catch(() => null),
     (async () => {
-      const now = new Date(); let totalUSD = 0, monthUSD = 0, totalCalls = 0, totalTokens = 0;
+      const now = new Date(); let monthUSD = 0, totalCalls = 0, totalTokens = 0;
       const twNow = new Date(now.getTime() + 8 * 3600 * 1000); const thisMonth = twNow.toISOString().slice(0, 7); const dailyMap = {};
-      for (let i = 0; i < 30; i++) { const dateStr = twDateStr(new Date(now.getTime() - i * 86400000)); try { const raw = await env.TICKER_KV.get(`costs_${dateStr}`); if (!raw) continue; JSON.parse(raw).forEach(e => { const cost = e.costUSD || 0; totalUSD += cost; totalCalls++; totalTokens += (e.inputTokens || 0) + (e.outputTokens || 0); if (dateStr.startsWith(thisMonth)) monthUSD += cost; dailyMap[dateStr] = (dailyMap[dateStr] || 0) + cost; }); } catch (e) {} }
+      // Scan last 14 days for sparkline + current month
+      for (let i = 0; i < 14; i++) { const dateStr = twDateStr(new Date(now.getTime() - i * 86400000)); try { const raw = await env.TICKER_KV.get(`costs_${dateStr}`); if (!raw) continue; JSON.parse(raw).forEach(e => { const cost = e.costUSD || 0; if (dateStr.startsWith(thisMonth)) { monthUSD += cost; totalCalls++; totalTokens += (e.inputTokens || 0) + (e.outputTokens || 0); } dailyMap[dateStr] = (dailyMap[dateStr] || 0) + cost; }); } catch (e) {} }
+      // Read cumulative summary (written by sync_costs_to_kv.py)
+      let totalUSD = 0, summaryTokens = 0, summaryCalls = 0;
+      try { const sumRaw = await env.TICKER_KV.get('costs_summary'); if (sumRaw) { const s = JSON.parse(sumRaw); totalUSD = s.totalUSD || 0; summaryTokens = s.totalTokens || 0; summaryCalls = s.totalCalls || 0; } } catch (e) {}
+      // If no summary yet, fall back to month values
+      if (totalUSD === 0) { totalUSD = monthUSD; summaryTokens = totalTokens; summaryCalls = totalCalls; }
       const sortedDays = Object.keys(dailyMap).sort().slice(-14); const dailyValues = sortedDays.map(d => +(dailyMap[d] || 0).toFixed(4));
       const avgPerDay = dailyValues.length > 0 ? dailyValues.reduce((a, b) => a + b, 0) / dailyValues.length : 0;
       const last7Total = sortedDays.slice(-7).reduce((s, d) => s + (dailyMap[d] || 0), 0); const prev7Total = sortedDays.slice(-14, -7).reduce((s, d) => s + (dailyMap[d] || 0), 0);
-      return { totalUSD: +totalUSD.toFixed(4), monthUSD: +monthUSD.toFixed(4), totalCalls, totalTokens, avgPerDay: +avgPerDay.toFixed(4), changePercent: +(prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0).toFixed(1), dailyValues };
+      return { totalUSD: +totalUSD.toFixed(4), monthUSD: +monthUSD.toFixed(4), totalCalls: summaryCalls, totalTokens: summaryTokens, avgPerDay: +avgPerDay.toFixed(4), changePercent: +(prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0).toFixed(1), dailyValues };
     })()
   ]);
   const data = {
@@ -35,6 +41,22 @@ async function handleTicker(request, env) {
     stock: stockData.status === 'fulfilled' && stockData.value ? { price: stockData.value.price, changePercent: stockData.value.changePercent, name: stockData.value.name, currency: stockData.value.currency } : null,
     costs: costsData.status === 'fulfilled' ? costsData.value : null, updated: twISOString(),
   };
+  // 附加 timing 數據（from cron → KV）
+  try {
+    const timingRaw = await env.TICKER_KV.get('timing_cache');
+    if (timingRaw) {
+      const t = JSON.parse(timingRaw);
+      const twNow = new Date(Date.now() + 8 * 3600 * 1000);
+      const todayStr = twNow.toISOString().slice(0, 10);
+      const todayEntry = (t.daily || []).find(d => d.date === todayStr);
+      data.timing = {
+        todayHours: todayEntry ? Math.round(todayEntry.ai_hours * 10) / 10 : 0,
+        monthHours: Math.round(t.month_summary?.total_ai_hours || 0),
+        activeDays: t.month_summary?.active_days || 0,
+        updated: t.updated || null
+      };
+    }
+  } catch (e) {}
   // 附加訪客數據
   const visitorsRaw = await env.TICKER_KV.get('site_visitors');
   if (visitorsRaw) data.visitors = JSON.parse(visitorsRaw);
