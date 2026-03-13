@@ -95,4 +95,4 @@ To all the business owners, entrepreneurs, Chief Digital Officers, and departmen
 
 ---
 
-*Original source: "There Are Levels to This: AI Adoption in 2026" by John Crowley, published on Thayer Method.*
+*Original source: ["There Are Levels to This: AI Adoption in 2026"](https://www.thayermethod.ai/p/there-are-levels-to-this) by John Crowley, published on Thayer Method.*

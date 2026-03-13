@@ -95,4 +95,4 @@ COVID 后，「K 型复苏」这个概念开始被广泛讨论——经济冲击
 
 ---
 
-*原始资料来源："There Are Levels to This: AI Adoption in 2026"，作者 John Crowley，刊载于 Thayer Method。*
+*原始资料来源：["There Are Levels to This: AI Adoption in 2026"](https://www.thayermethod.ai/p/there-are-levels-to-this)，作者 John Crowley，刊载于 Thayer Method。*

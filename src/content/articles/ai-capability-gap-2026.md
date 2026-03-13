@@ -95,4 +95,4 @@ COVID 後，「K 型復甦」這個概念開始被廣泛討論——經濟衝擊
 
 ---
 
-*原始資料來源："There Are Levels to This: AI Adoption in 2026"，作者 John Crowley，刊載於 Thayer Method。*
+*原始資料來源：["There Are Levels to This: AI Adoption in 2026"](https://www.thayermethod.ai/p/there-are-levels-to-this)，作者 John Crowley，刊載於 Thayer Method。*
