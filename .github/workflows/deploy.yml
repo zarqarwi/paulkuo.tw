@@ -45,3 +45,14 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=paulkuo-tw --commit-dirty=true
+
+      - name: Ping Google Sitemap
+        if: success()
+        run: |
+          echo "Pinging Google with sitemap..."
+          curl -s -o /dev/null -w "%{http_code}" "https://www.google.com/ping?sitemap=https://paulkuo.tw/sitemap-index.xml"
+          echo ""
+          echo "Pinging Bing with IndexNow..."
+          curl -s -o /dev/null -w "%{http_code}" "https://www.bing.com/ping?sitemap=https://paulkuo.tw/sitemap-index.xml"
+          echo ""
+          echo "✅ Search engine sitemap ping complete"
