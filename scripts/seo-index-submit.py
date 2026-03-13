@@ -111,19 +111,25 @@ def save_indexed(urls: set[str]) -> None:
 # Indexing API
 # ---------------------------------------------------------------------------
 
-def submit_url(session: requests.Session, url: str) -> bool:
-    """Submit a single URL to Google Indexing API. Returns True on success."""
+def submit_url(session: requests.Session, url: str) -> tuple[bool, bool]:
+    """Submit a single URL to Google Indexing API.
+
+    Returns (success: bool, quota_hit: bool).
+    """
     payload = {"url": url, "type": "URL_UPDATED"}
     resp = session.post(INDEXING_ENDPOINT, json=payload)
     if resp.status_code == 200:
-        return True
+        return True, False
+    elif resp.status_code == 429:
+        print(f"  QUOTA HIT (429): {url}")
+        return False, True
     else:
         print(f"  FAIL [{resp.status_code}]: {url}")
         try:
             print(f"    {resp.json()}")
         except Exception:
             print(f"    {resp.text[:200]}")
-        return False
+        return False, False
 
 
 # ---------------------------------------------------------------------------
@@ -161,26 +167,37 @@ def main():
     # 4. Submit
     success_count = 0
     fail_count = 0
+    quota_exhausted = False
 
     for url in batch:
-        ok = submit_url(session, url)
+        ok, quota_hit = submit_url(session, url)
         if ok:
             print(f"  OK: {url}")
             indexed.add(url)
             success_count += 1
         else:
             fail_count += 1
+            if quota_hit:
+                quota_exhausted = True
+                print(f"\n⚠️  Daily quota exhausted. Stopping early to save progress.")
+                print(f"   Remaining {len(batch) - success_count - fail_count} URLs will be submitted next run.")
+                break
 
-    # 5. Save
+    # 5. Always save progress (even on failures)
     save_indexed(indexed)
 
     # 6. Summary
     print(f"\n{'='*60}")
     print(f"Submitted: {success_count} OK / {fail_count} failed")
     print(f"Total indexed URLs: {len(indexed)}")
+    remaining = len(all_urls) - len(indexed)
+    if remaining > 0:
+        print(f"Remaining to index: {remaining}")
     print(f"{'='*60}")
 
-    if fail_count > 0:
+    # Exit 0 if quota exhausted (partial success is OK, we saved progress)
+    # Exit 1 only for non-quota failures
+    if fail_count > 0 and not quota_exhausted:
         sys.exit(1)
 
 
