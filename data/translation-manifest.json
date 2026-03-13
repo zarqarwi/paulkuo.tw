@@ -1740,11 +1740,11 @@
     }
   },
   "ai-capability-gap-2026.md": {
-    "sourceHash": "d82a7e496316",
+    "sourceHash": "54fb3884c1af",
     "translations": {
       "en": {
-        "hash": "615fbf7f369b",
-        "translatedAt": "2026-03-13T13:38:20.187Z",
+        "hash": "53f42265470e",
+        "translatedAt": "2026-03-13T13:49:53.322Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
