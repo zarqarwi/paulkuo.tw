@@ -200,3 +200,4 @@ https://paulkuo.tw/ja/articles/ai-social-intelligence-psychologist/
 https://paulkuo.tw/ja/articles/ai-surpass-human-intelligence-six-years/
 https://paulkuo.tw/ja/articles/algorithm-as-judge/
 https://paulkuo.tw/ja/articles/algorithm-cannot-replace-decisions/
+https://paulkuo.tw/ja/articles/breaking-silo-effect/
