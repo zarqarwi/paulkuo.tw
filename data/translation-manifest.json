@@ -1738,5 +1738,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "ai-capability-gap-2026.md": {
+    "sourceHash": "d82a7e496316",
+    "translations": {
+      "en": {
+        "hash": "615fbf7f369b",
+        "translatedAt": "2026-03-13T13:38:20.187Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "b9d3e2f7cc0e",
+        "translatedAt": "2026-03-13T13:39:42.933Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "7c9e92559f4a",
+        "translatedAt": "2026-03-13T13:40:14.388Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
