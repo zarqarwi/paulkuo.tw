@@ -13,6 +13,7 @@ import { handleTranslate, handleTranslateStream, handleSummarize, handlePolishTr
 import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
+import { fetchDailyVisitors, handleVisitors } from './visitors.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -34,6 +35,9 @@ async function handleTicker(request, env) {
     stock: stockData.status === 'fulfilled' && stockData.value ? { price: stockData.value.price, changePercent: stockData.value.changePercent, name: stockData.value.name, currency: stockData.value.currency } : null,
     costs: costsData.status === 'fulfilled' ? costsData.value : null, updated: twISOString(),
   };
+  // 附加訪客數據
+  const visitorsRaw = await env.TICKER_KV.get('site_visitors');
+  if (visitorsRaw) data.visitors = JSON.parse(visitorsRaw);
   await env.TICKER_KV.put('ticker_cache', JSON.stringify({ data, cached_at: Date.now() }));
   return new Response(JSON.stringify(data), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60', ...corsHeaders(request) } });
 }
@@ -47,13 +51,14 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback'];
+const ENDPOINTS = ['/ticker','/visitors','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback'];
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
   if (method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   if (path === '/health') return handleHealth(request, env);
   if (path === '/ticker' && method === 'GET') return handleTicker(request, env);
+  if (path === '/visitors' && method === 'GET') return handleVisitors(request, env, corsHeaders);
   if (path === '/feed' && method === 'GET') return handleFeedGet(request, env);
   if (path === '/fitbit') { try { return jsonResponse(await fetchFitbitData(env.TICKER_KV, env), 200, request); } catch (e) { return jsonResponse({ error: e.message }, 500, request); } }
   if (path === '/stock') { try { return jsonResponse(await fetchStockData(env.TICKER_KV), 200, request); } catch (e) { return jsonResponse({ error: e.message }, 500, request); } }
@@ -103,6 +108,7 @@ async function handleRequest(request, env) {
 async function handleScheduled(event, env) {
   try { await refreshToken(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_token_refresh', new Date().toISOString()); console.log('Cron: token refresh success'); } catch (e) { console.error('Cron: token refresh FAILED:', e.message); }
   try { await fetchFitbitData(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_refresh', new Date().toISOString()); console.log('Cron: Fitbit data cached'); } catch (e) { console.error('Cron: Fitbit fetch FAILED:', e.message); }
+  try { await fetchDailyVisitors(env); } catch (e) { console.error('Cron: visitors fetch FAILED:', e.message); }
 }
 
 export default {

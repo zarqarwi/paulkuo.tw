@@ -128,6 +128,11 @@ const tickerData = JSON.stringify({ dailyValues, hasData });
           </div>
         </>
       )}
+      <div class="ticker-sep" id="tickerVisitorsSep" style="display:none"></div>
+      <div class="ticker-item" id="tickerVisitorsItem" title="昨日訪客數（Cloudflare Analytics）" style="display:none">
+        <span class="ticker-label">{'\ud83d\udc65'} 訪客</span>
+        <span class="ticker-value" id="liveVisitors">--</span>
+      </div>
     </div>
   ) : (
     <div class="ticker-inner ticker-empty">
@@ -218,6 +223,15 @@ function drawSparkline(vals) {
           chg.className = 'ticker-change ' + (up ? 'up' : 'down');
         }
         if (c.dailyValues && c.dailyValues.length >= 2) drawSparkline(c.dailyValues);
+      }
+      // Visitors
+      if (d.visitors && d.visitors.uniqueVisitors != null) {
+        var ve = document.getElementById('liveVisitors');
+        if (ve) ve.textContent = d.visitors.uniqueVisitors.toLocaleString() + '/日';
+        var vs = document.getElementById('tickerVisitorsSep');
+        var vi = document.getElementById('tickerVisitorsItem');
+        if (vs) vs.style.display = '';
+        if (vi) vi.style.display = '';
       }
     })
     .catch(function() {}); // silent fail - keep build-time fallback
