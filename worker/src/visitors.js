@@ -209,6 +209,183 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
   return { overview: { daily, total7d, total30d }, countries: { top15 }, updatedAt };
 }
 
+// ── RUM Analytics (account-level) ──
+
+const SEARCH_EXACT = ['bing.com','yahoo.com','search.yahoo.com','duckduckgo.com','baidu.com','yandex.com','ecosia.org'];
+const SOCIAL_HOSTS = ['twitter.com','x.com','t.co','facebook.com','l.facebook.com','lm.facebook.com','m.facebook.com','threads.net','l.threads.com','linkedin.com','reddit.com'];
+const INTERNAL_HOST = 'paulkuo.tw';
+
+function isGoogle(h) {
+  // google.com, google.co.jp, google.com.hk, google.de, etc.
+  // but NOT accounts.google.com (那是 OAuth 回跳)
+  if (h.startsWith('accounts.google')) return false;
+  return h === 'google.com' || /\.google\./.test(h) || /^google\.[a-z]/.test(h);
+}
+
+function classifyReferer(host) {
+  if (!host || host === '') return 'direct';
+  const h = host.toLowerCase().replace(/^www\./, '');
+  if (h === INTERNAL_HOST) return 'internal';
+  if (isGoogle(h)) return 'search';
+  if (SEARCH_EXACT.some(s => h === s || h === 'www.' + s)) return 'search';
+  if (SOCIAL_HOSTS.some(s => h === s || h === 'www.' + s)) return 'social';
+  return 'other';
+}
+
+/**
+ * 從 Cloudflare RUM Analytics (account-level) 撈 30 天數據
+ * 寫入 KV: analytics:referers, analytics:top-pages, analytics:devices
+ * 節流：共用 analytics:lastFetch
+ */
+export async function fetchRumAnalytics(env) {
+  const token = env.CF_ANALYTICS_TOKEN;
+  const accountId = env.CF_ACCOUNT_ID;
+  if (!token || !accountId) {
+    console.error('rum: missing CF_ANALYTICS_TOKEN or CF_ACCOUNT_ID');
+    return null;
+  }
+
+  const now = new Date();
+  const since = new Date(now);
+  since.setUTCDate(since.getUTCDate() - 31);
+  const sinceStr = since.toISOString().split('T')[0];
+
+  // Query 1: referers
+  const refererQuery = `
+    query RumReferers($accountTag: string!, $since: string!) {
+      viewer {
+        accounts(filter: { accountTag: $accountTag }) {
+          rumPageloadEventsAdaptiveGroups(
+            limit: 200,
+            filter: { date_gt: $since },
+            orderBy: [count_DESC]
+          ) {
+            dimensions { refererHost }
+            count
+          }
+        }
+      }
+    }
+  `;
+
+  // Query 2: top pages
+  const pagesQuery = `
+    query RumTopPages($accountTag: string!, $since: string!) {
+      viewer {
+        accounts(filter: { accountTag: $accountTag }) {
+          rumPageloadEventsAdaptiveGroups(
+            limit: 200,
+            filter: { date_gt: $since },
+            orderBy: [count_DESC]
+          ) {
+            dimensions { requestPath }
+            count
+          }
+        }
+      }
+    }
+  `;
+
+  // Query 3: devices
+  const devicesQuery = `
+    query RumDevices($accountTag: string!, $since: string!) {
+      viewer {
+        accounts(filter: { accountTag: $accountTag }) {
+          rumPageloadEventsAdaptiveGroups(
+            limit: 10,
+            filter: { date_gt: $since },
+            orderBy: [count_DESC]
+          ) {
+            dimensions { deviceType }
+            count
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = { accountTag: accountId, since: sinceStr };
+  const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+  const [refResp, pageResp, devResp] = await Promise.all([
+    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: refererQuery, variables }) }),
+    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: pagesQuery, variables }) }),
+    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: devicesQuery, variables }) }),
+  ]);
+
+  if (!refResp.ok || !pageResp.ok || !devResp.ok) {
+    console.error('rum: GraphQL API error', refResp.status, pageResp.status, devResp.status);
+    return null;
+  }
+
+  const [refJson, pageJson, devJson] = await Promise.all([refResp.json(), pageResp.json(), devResp.json()]);
+
+  for (const j of [refJson, pageJson, devJson]) {
+    if (j.errors) {
+      console.error('rum: GraphQL errors', JSON.stringify(j.errors));
+      return null;
+    }
+  }
+
+  // ── Referers ──
+  const refGroups = refJson?.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups || [];
+  const refAgg = {};
+  for (const g of refGroups) {
+    const host = g.dimensions.refererHost || '';
+    const cat = classifyReferer(host);
+    const key = cat === 'direct' ? '(direct)' : host;
+    if (!refAgg[key]) refAgg[key] = { host: key, count: 0, category: cat };
+    refAgg[key].count += g.count;
+  }
+  // Separate internal, compute totals excluding internal
+  const allRefs = Object.values(refAgg);
+  const externalRefs = allRefs.filter(r => r.category !== 'internal');
+  const totalRefCount = externalRefs.reduce((s, r) => s + r.count, 0);
+  const sources = externalRefs
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 20)
+    .map(r => ({ host: r.host, count: r.count, percent: totalRefCount > 0 ? +(r.count / totalRefCount * 100).toFixed(1) : 0, category: r.category }));
+
+  // ── Top Pages ──
+  const pageGroups = pageJson?.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups || [];
+  const pageAgg = {};
+  for (const g of pageGroups) {
+    const path = g.dimensions.requestPath || '/';
+    pageAgg[path] = (pageAgg[path] || 0) + g.count;
+  }
+  const totalPageCount = Object.values(pageAgg).reduce((s, v) => s + v, 0);
+  const pages = Object.entries(pageAgg)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15)
+    .map(([path, count]) => ({
+      path,
+      count,
+      percent: totalPageCount > 0 ? +(count / totalPageCount * 100).toFixed(1) : 0,
+      type: path.startsWith('/articles/') ? 'article' : path === '/' ? 'home' : 'other',
+    }));
+
+  // ── Devices ──
+  const devGroups = devJson?.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups || [];
+  const devices = { desktop: 0, mobile: 0, tablet: 0, total: 0 };
+  for (const g of devGroups) {
+    const dt = (g.dimensions.deviceType || 'desktop').toLowerCase();
+    if (dt === 'desktop') devices.desktop += g.count;
+    else if (dt === 'mobile') devices.mobile += g.count;
+    else if (dt === 'tablet') devices.tablet += g.count;
+    devices.total += g.count;
+  }
+
+  // ── Write KV ──
+  await Promise.all([
+    env.TICKER_KV.put('analytics:referers', JSON.stringify({ sources })),
+    env.TICKER_KV.put('analytics:top-pages', JSON.stringify({ pages })),
+    env.TICKER_KV.put('analytics:devices', JSON.stringify(devices)),
+  ]);
+
+  console.log(`rum: updated, ${sources.length} referers, ${pages.length} pages, total=${devices.total}`);
+  return { referers: { sources }, topPages: { pages }, devices };
+}
+
 /**
  * GET /analytics — 回傳 KV 裡的流量分析數據
  */
@@ -218,18 +395,25 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
 
   // ?refresh=1 → 強制拉最新數據（跳過節流）
   if (refresh) {
-    const fresh = await fetchAnalyticsOverview(env, { force: true });
+    const [fresh, rum] = await Promise.all([
+      fetchAnalyticsOverview(env, { force: true }),
+      fetchRumAnalytics(env),
+    ]);
     if (fresh) {
-      return new Response(JSON.stringify(fresh), {
+      const merged = { ...fresh, ...(rum || {}) };
+      return new Response(JSON.stringify(merged), {
         headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) },
       });
     }
   }
 
-  const [overviewRaw, countriesRaw, lastFetch] = await Promise.all([
+  const [overviewRaw, countriesRaw, lastFetch, referersRaw, topPagesRaw, devicesRaw] = await Promise.all([
     env.TICKER_KV.get('analytics:overview'),
     env.TICKER_KV.get('analytics:countries'),
     env.TICKER_KV.get('analytics:lastFetch'),
+    env.TICKER_KV.get('analytics:referers'),
+    env.TICKER_KV.get('analytics:top-pages'),
+    env.TICKER_KV.get('analytics:devices'),
   ]);
 
   if (!overviewRaw) {
@@ -243,6 +427,9 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
     overview: JSON.parse(overviewRaw),
     countries: JSON.parse(countriesRaw || '{"top15":[]}'),
     updatedAt: lastFetch || null,
+    referers: JSON.parse(referersRaw || '{"sources":[]}'),
+    topPages: JSON.parse(topPagesRaw || '{"pages":[]}'),
+    devices: devicesRaw ? JSON.parse(devicesRaw) : null,
   };
 
   return new Response(JSON.stringify(result), {
