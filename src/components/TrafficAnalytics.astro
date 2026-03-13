@@ -1,0 +1,386 @@
+---
+/**
+ * TrafficAnalytics.astro — 流量分析區塊
+ * 純 SVG 折線圖 + CSS 橫條 bar，無外部 library
+ * 資料來源：client-side fetch /analytics endpoint
+ */
+---
+
+<div class="traffic-analytics" id="trafficAnalytics">
+  <!-- Loading skeleton -->
+  <div class="ta-loading" id="taLoading">
+    <div class="ta-header">
+      <div>
+        <h3 class="ta-title">網站流量分析</h3>
+        <p class="ta-subtitle">Cloudflare Analytics · 載入中...</p>
+      </div>
+    </div>
+    <div class="ta-kpis">
+      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">7d 訪客</span></div>
+      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">30d 訪客</span></div>
+      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">7d 瀏覽</span></div>
+      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">30d 請求</span></div>
+    </div>
+  </div>
+
+  <!-- Content (hidden until data loads) -->
+  <div class="ta-content" id="taContent" style="display:none">
+    <div class="ta-header">
+      <div>
+        <h3 class="ta-title">網站流量分析</h3>
+        <p class="ta-subtitle" id="taSubtitle">Cloudflare Analytics</p>
+      </div>
+      <div class="ta-toggle" id="taToggle">
+        <button class="ta-btn active" data-range="7">7d</button>
+        <button class="ta-btn" data-range="30">30d</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="ta-kpis" id="taKpis"></div>
+
+    <!-- Chart + Countries grid -->
+    <div class="ta-grid">
+      <div class="ta-chart-wrap">
+        <svg id="taChart" viewBox="0 0 600 200" preserveAspectRatio="none" class="ta-chart"></svg>
+        <div class="ta-legend" id="taLegend"></div>
+      </div>
+      <div class="ta-countries" id="taCountries"></div>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div class="ta-error" id="taError" style="display:none">
+    <div class="ta-header">
+      <div>
+        <h3 class="ta-title">網站流量分析</h3>
+        <p class="ta-subtitle">暫無數據</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+(function() {
+  var el = document.getElementById('trafficAnalytics');
+  if (!el) return;
+
+  var loaded = false;
+  function init() {
+    if (loaded) return;
+    loaded = true;
+
+    fetch('https://api.paulkuo.tw/analytics')
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function(data) { render(data); })
+      .catch(function() {
+        document.getElementById('taLoading').style.display = 'none';
+        document.getElementById('taError').style.display = '';
+      });
+  }
+
+  // IntersectionObserver lazy-load
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) { init(); obs.disconnect(); }
+      });
+    }, { rootMargin: '200px' });
+    obs.observe(el);
+  } else { init(); }
+
+  // Country code → flag emoji
+  function flag(cc) {
+    if (!cc || cc.length !== 2) return '';
+    return String.fromCodePoint(
+      cc.charCodeAt(0) - 65 + 0x1F1E6,
+      cc.charCodeAt(1) - 65 + 0x1F1E6
+    );
+  }
+
+  // Format number with comma separators
+  function fmt(n) { return n.toLocaleString(); }
+
+  // SVG line chart
+  function drawChart(daily, svgEl) {
+    if (!daily || daily.length < 2) return;
+    var W = 600, H = 200, padT = 10, padB = 30, padL = 5, padR = 5;
+    var chartH = H - padT - padB;
+    var chartW = W - padL - padR;
+
+    // Find max for each series
+    var maxR = 0, maxP = 0, maxU = 0;
+    daily.forEach(function(d) {
+      if (d.requests > maxR) maxR = d.requests;
+      if (d.pageViews > maxP) maxP = d.pageViews;
+      if (d.uniques > maxU) maxU = d.uniques;
+    });
+    var maxVal = Math.max(maxR, maxP, maxU) || 1;
+
+    function points(key) {
+      return daily.map(function(d, i) {
+        var x = padL + (i / (daily.length - 1)) * chartW;
+        var y = padT + chartH - (d[key] / maxVal) * chartH;
+        return x.toFixed(1) + ',' + y.toFixed(1);
+      }).join(' ');
+    }
+
+    // X-axis labels (show ~6 labels max)
+    var step = Math.max(1, Math.floor(daily.length / 6));
+    var labels = '';
+    for (var i = 0; i < daily.length; i += step) {
+      var x = padL + (i / (daily.length - 1)) * chartW;
+      var dt = daily[i].date.slice(5).replace('-', '/');
+      labels += '<text x="' + x.toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle" fill="#8A8A8A" font-size="10" font-family="var(--font-body, sans-serif)">' + dt + '</text>';
+    }
+    // Always show last label
+    if ((daily.length - 1) % step !== 0) {
+      var lx = padL + chartW;
+      var ldt = daily[daily.length - 1].date.slice(5).replace('-', '/');
+      labels += '<text x="' + lx.toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle" fill="#8A8A8A" font-size="10" font-family="var(--font-body, sans-serif)">' + ldt + '</text>';
+    }
+
+    // Grid lines (3 horizontal)
+    var grid = '';
+    for (var g = 1; g <= 3; g++) {
+      var gy = padT + (g / 4) * chartH;
+      grid += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + gy.toFixed(1) + '" stroke="#E8E6E1" stroke-width="0.5"/>';
+    }
+
+    svgEl.innerHTML =
+      grid +
+      // Area fills
+      '<polyline points="' + points('requests') + ' ' + (W - padR) + ',' + (padT + chartH) + ' ' + padL + ',' + (padT + chartH) + '" fill="rgba(27,45,79,0.06)" stroke="none"/>' +
+      '<polyline points="' + points('pageViews') + ' ' + (W - padR) + ',' + (padT + chartH) + ' ' + padL + ',' + (padT + chartH) + '" fill="rgba(99,102,241,0.06)" stroke="none"/>' +
+      '<polyline points="' + points('uniques') + ' ' + (W - padR) + ',' + (padT + chartH) + ' ' + padL + ',' + (padT + chartH) + '" fill="rgba(16,185,129,0.08)" stroke="none"/>' +
+      // Lines
+      '<polyline points="' + points('requests') + '" fill="none" stroke="#1b2d4f" stroke-width="1.5" stroke-opacity="0.4"/>' +
+      '<polyline points="' + points('pageViews') + '" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-opacity="0.6"/>' +
+      '<polyline points="' + points('uniques') + '" fill="none" stroke="#10b981" stroke-width="2"/>' +
+      labels;
+  }
+
+  function render(data) {
+    var ov = data.overview;
+    var countries = data.countries;
+
+    // KPIs
+    document.getElementById('taKpis').innerHTML =
+      '<div class="ak"><span class="ak-v" style="color:#10b981">' + fmt(ov.total7d.uniques) + '</span><span class="ak-l">7d 訪客</span></div>' +
+      '<div class="ak"><span class="ak-v" style="color:var(--brand-navy,#1b2d4f)">' + fmt(ov.total30d.uniques) + '</span><span class="ak-l">30d 訪客</span></div>' +
+      '<div class="ak"><span class="ak-v" style="color:#6366f1">' + fmt(ov.total7d.pageViews) + '</span><span class="ak-l">7d 瀏覽</span></div>' +
+      '<div class="ak"><span class="ak-v" style="color:#8A8A8A">' + fmt(ov.total30d.requests) + '</span><span class="ak-l">30d 請求</span></div>';
+
+    // Subtitle
+    var updated = data.updatedAt ? new Date(data.updatedAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    document.getElementById('taSubtitle').textContent = 'Cloudflare Analytics' + (updated ? ' · 更新於 ' + updated : '');
+
+    // Legend
+    document.getElementById('taLegend').innerHTML =
+      '<span class="ta-legend-item"><span class="ta-dot" style="background:#10b981"></span>訪客</span>' +
+      '<span class="ta-legend-item"><span class="ta-dot" style="background:#6366f1"></span>瀏覽</span>' +
+      '<span class="ta-legend-item"><span class="ta-dot" style="background:rgba(27,45,79,0.4)"></span>請求</span>';
+
+    // Initial chart (7d)
+    var daily = ov.daily;
+    var svgEl = document.getElementById('taChart');
+    drawChart(daily.slice(-7), svgEl);
+
+    // Toggle buttons
+    var toggle = document.getElementById('taToggle');
+    toggle.addEventListener('click', function(e) {
+      var btn = e.target.closest('.ta-btn');
+      if (!btn) return;
+      toggle.querySelectorAll('.ta-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var range = parseInt(btn.dataset.range);
+      drawChart(range === 7 ? daily.slice(-7) : daily, svgEl);
+    });
+
+    // Countries
+    var top = countries.top15 || [];
+    var maxPct = top.length > 0 ? top[0].percent : 1;
+    document.getElementById('taCountries').innerHTML =
+      '<h4 class="ta-countries-title">訪客來源國家</h4>' +
+      top.slice(0, 10).map(function(c) {
+        var barW = (c.percent / maxPct * 100).toFixed(1);
+        return '<div class="ta-country-row">' +
+          '<span class="ta-country-flag">' + flag(c.country) + '</span>' +
+          '<span class="ta-country-code">' + c.country + '</span>' +
+          '<div class="ta-country-bar-bg"><div class="ta-country-bar" style="width:' + barW + '%"></div></div>' +
+          '<span class="ta-country-pct">' + c.percent + '%</span>' +
+        '</div>';
+      }).join('');
+
+    // Show content, hide loading
+    document.getElementById('taLoading').style.display = 'none';
+    document.getElementById('taContent').style.display = '';
+  }
+})();
+</script>
+
+<style>
+  .traffic-analytics {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .ta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+  }
+  .ta-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--brand-navy, #1b2d4f);
+    margin: 0;
+  }
+  .ta-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Toggle buttons */
+  .ta-toggle {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .ta-btn {
+    padding: 4px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .ta-btn:hover { background: var(--bg-section, #f5f0eb); }
+  .ta-btn.active {
+    background: var(--brand-navy, #1b2d4f);
+    color: #fff;
+  }
+
+  /* KPIs — reuse .ak from CostAnalytics */
+  .ta-kpis {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  /* Skeleton for loading */
+  .ta-skel-v {
+    display: inline-block;
+    width: 60px;
+    height: 1.35rem;
+    background: linear-gradient(90deg, var(--bg-section, #f5f0eb) 25%, var(--bg-main, #faf8f5) 50%, var(--bg-section, #f5f0eb) 75%);
+    background-size: 200% 100%;
+    animation: ta-shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+  }
+  @keyframes ta-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Grid: chart + countries */
+  .ta-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Chart */
+  .ta-chart-wrap { position: relative; }
+  .ta-chart {
+    width: 100%;
+    height: 200px;
+  }
+  .ta-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .ta-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+  .ta-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* Countries */
+  .ta-countries-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--brand-navy, #1b2d4f);
+    margin: 0 0 12px 0;
+  }
+  .ta-country-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+  }
+  .ta-country-flag { font-size: 1rem; width: 24px; text-align: center; flex-shrink: 0; }
+  .ta-country-code {
+    width: 24px;
+    font-weight: 600;
+    color: var(--text-secondary, #5a5a5a);
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+  .ta-country-bar-bg {
+    flex: 1;
+    height: 14px;
+    background: var(--bg-section, #f5f0eb);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .ta-country-bar {
+    height: 100%;
+    background: var(--brand-navy, #1b2d4f);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .ta-country-pct {
+    width: 42px;
+    text-align: right;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* Error state */
+  .ta-error .ta-subtitle { color: var(--text-muted); }
+
+  @media (max-width: 768px) {
+    .traffic-analytics { padding: 1.25rem; }
+    .ta-kpis { gap: 1rem; flex-wrap: wrap; }
+    .ta-grid { grid-template-columns: 1fr; }
+    .ta-chart { height: 160px; }
+    .ta-header { flex-direction: column; gap: 0.5rem; }
+    .ta-toggle { align-self: flex-start; }
+  }
+</style>

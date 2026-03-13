@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import CostAnalytics from '../components/CostAnalytics.astro';
+import TrafficAnalytics from '../components/TrafficAnalytics.astro';
 import { calcReadingTime } from '../utils/readingTime';
 
 // Always show latest 3 articles (no featured filter)
@@ -197,6 +198,7 @@ const homeSchema = JSON.stringify({
     </div>
     <!-- COST ANALYTICS -->
     <CostAnalytics />
+    <TrafficAnalytics />
     <p id="feed-subtitle" style="color:var(--text-secondary); margin-bottom:32px;">載入動態中...</p>
     <div class="feed-grid" id="feed-grid">
       <!-- Skeleton loading -->
