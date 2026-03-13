@@ -53,7 +53,8 @@ function isMedicalContext(glossary) {
   return MEDICAL_TRIGGERS.some(kw => all.includes(kw));
 }
 function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, sourceLang, sourceText) {
-  let base = 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translated text.' + twHint + '\nPreserve widely-used English abbreviations (NDA, MOU, LOI, IP, ROI, KPI, ESG, OEM, ODM) as-is without translating them.';
+  let base = 'You are a professional real-time interpreter. Translate the following into ' + targetName + '. Output ONLY the translated text.' + twHint + '\nPreserve widely-used English abbreviations (NDA, MOU, LOI, IP, ROI, KPI, ESG, OEM, ODM) as-is without translating them.' +
+    '\n⚠️ Disambiguation: 製品=產品(product, NOT pharmaceutical preparation); 製劑=製劑(pharmaceutical preparation only).';
   if (isMedicalContext(glossary)) {
     base += '\n\n[MEDICAL/CLINICAL CONTEXT] Apply these rules strictly:\n';
     if (!sourceLang || sourceLang === 'ja') {
@@ -69,7 +70,8 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
       '  MSC=間質幹細胞, HSC=造血幹細胞, iPSC=誘導型多能幹細胞, ESC=胚胎幹細胞, NSC=神經幹細胞, ASC=脂肪幹細胞\n' +
       '  Exosome/EV=外泌體/細胞外囊泡, sEV=小型細胞外囊泡, Secretome=幹細胞分泌體, CM=條件培養液\n' +
       '  p53=腫瘤抑制基因p53, CRISPR=基因編輯系統, mRNA=信使RNA, miRNA=微小RNA\n' +
-      '3. Terms: 自由診療=自費醫療, クリニック=診所, 相談所=諮詢中心, 薬剤=藥劑, 製品=產品, 製劑=製劑\n' +
+      '3. Terms: 自由診療=自費醫療, クリニック=診所, 相談所=諮詢中心, 薬剤=藥劑\n' +
+      '  ⚠️ 製品=產品【product，絕非製劑(preparation)】, 製劑=製劑【pharmaceutical preparation】\n' +
       '  スプレー=噴霧/噴劑, 点鼻薬=鼻噴劑, エクソソーム=外泌體, MSC-CM=MSC條件培養液\n' +
       '  薬物送達システム=藥物遞送系統, リポソーム製剤=脂質體製劑\n' +
       '4. Output: 繁體中文, maintain terminology consistency, preserve uncertain terms in brackets.';
