@@ -47,6 +47,11 @@
       </div>
       <div class="ta-countries" id="taCountries"></div>
     </div>
+
+    <!-- Phase 2: Referers / Top Pages / Devices -->
+    <div class="ta-referers" id="taReferers"></div>
+    <div class="ta-pages" id="taPages"></div>
+    <div class="ta-devices" id="taDevices"></div>
   </div>
 
   <!-- Error state -->
@@ -212,6 +217,120 @@
         '</div>';
       }).join('');
 
+    // --- Phase 2: Referers ---
+    var referers = data.referers;
+    if (referers && referers.sources) {
+      var cats = { direct: 0, search: 0, social: 0, other: 0 };
+      referers.sources.forEach(function(s) { cats[s.category] = (cats[s.category] || 0) + s.count; });
+      var catTotal = cats.direct + cats.search + cats.social + cats.other || 1;
+      var catPcts = {
+        direct: (cats.direct / catTotal * 100).toFixed(1),
+        search: (cats.search / catTotal * 100).toFixed(1),
+        social: (cats.social / catTotal * 100).toFixed(1),
+        other:  (cats.other / catTotal * 100).toFixed(1)
+      };
+      var catColors = { direct: '#1b2d4f', search: '#10b981', social: '#6366f1', other: '#8A8A8A' };
+      var catLabels = { direct: '直接', search: '搜尋', social: '社群', other: '其他' };
+
+      var barSegs = '';
+      ['direct','search','social','other'].forEach(function(k) {
+        var pct = parseFloat(catPcts[k]);
+        if (pct > 0) {
+          barSegs += '<div class="ta-ref-seg" style="width:' + pct + '%;background:' + catColors[k] + '">' +
+            (pct >= 5 ? '<span class="ta-ref-seg-label">' + catLabels[k] + ' ' + pct + '%</span>' : '') +
+          '</div>';
+        }
+      });
+
+      var refLegend = ['direct','search','social','other'].map(function(k) {
+        return '<span class="ta-ref-legend-item"><span class="ta-dot" style="background:' + catColors[k] + '"></span>' + catLabels[k] + ' ' + catPcts[k] + '%</span>';
+      }).join('');
+
+      // Top 5 sources (excluding direct)
+      var topSources = referers.sources.filter(function(s) { return s.category !== 'direct'; }).slice(0, 5);
+      var maxSrcPct = topSources.length > 0 ? topSources[0].percent : 1;
+      var srcRows = topSources.map(function(s) {
+        var barW = (s.percent / maxSrcPct * 100).toFixed(1);
+        return '<div class="ta-src-row">' +
+          '<span class="ta-ref-cat-dot" style="background:' + catColors[s.category] + '"></span>' +
+          '<span class="ta-page-name">' + s.host + '</span>' +
+          '<div class="ta-country-bar-bg"><div class="ta-country-bar" style="width:' + barW + '%"></div></div>' +
+          '<span class="ta-country-pct">' + s.percent + '%</span>' +
+        '</div>';
+      }).join('');
+
+      document.getElementById('taReferers').innerHTML =
+        '<h4 class="ta-section-title">訪客來源</h4>' +
+        '<div class="ta-ref-bar">' + barSegs + '</div>' +
+        '<div class="ta-ref-legend">' + refLegend + '</div>' +
+        (srcRows ? '<div class="ta-ref-details">' + srcRows + '</div>' : '');
+    }
+
+    // --- Phase 2: Top Pages ---
+    var topPages = data.topPages;
+    if (topPages && topPages.pages) {
+      var nameMap = {
+        '/': '首頁',
+        '/blog/': '文章列表',
+        '/tools/translator/': '翻譯工具',
+        '/about/': '關於',
+        '/projects/': '作品集',
+        '/tags-graph/': '標籤圖譜',
+        '/dashboard/': '儀表板',
+        '/en/': 'English'
+      };
+      function pageName(path) {
+        if (nameMap[path]) return nameMap[path];
+        if (path.startsWith('/articles/')) {
+          var slug = path.replace('/articles/', '').replace(/\/$/, '');
+          return '\u{1F4C4} ' + slug.replace(/-/g, ' ');
+        }
+        return path;
+      }
+
+      var pages10 = topPages.pages.slice(0, 10);
+      var maxPagePct = pages10.length > 0 ? pages10[0].percent : 1;
+      var pageRows = pages10.map(function(p, i) {
+        var barW = (p.percent / maxPagePct * 100).toFixed(1);
+        var name = pageName(p.path);
+        var isArticle = p.path.startsWith('/articles/');
+        return '<div class="ta-page-row">' +
+          '<span class="ta-page-rank">' + (i + 1) + '</span>' +
+          '<span class="ta-page-name' + (isArticle ? ' ta-page-article' : '') + '">' + name + '</span>' +
+          '<div class="ta-country-bar-bg"><div class="ta-country-bar" style="width:' + barW + '%"></div></div>' +
+          '<span class="ta-country-pct">' + p.percent + '%</span>' +
+        '</div>';
+      }).join('');
+
+      document.getElementById('taPages').innerHTML =
+        '<h4 class="ta-section-title">熱門頁面</h4>' + pageRows;
+    }
+
+    // --- Phase 2: Devices ---
+    var devices = data.devices;
+    if (devices) {
+      var devTotal = devices.total || 1;
+      var devData = [
+        { icon: '\u{1F5A5}\uFE0F', label: 'Desktop', count: devices.desktop },
+        { icon: '\u{1F4F1}', label: 'Mobile', count: devices.mobile },
+        { icon: '\u2B1C', label: 'Tablet', count: devices.tablet }
+      ];
+      var maxDev = Math.max(devices.desktop, devices.mobile, devices.tablet) || 1;
+      var devRows = devData.map(function(d) {
+        var pct = (d.count / devTotal * 100).toFixed(1);
+        var barW = (d.count / maxDev * 100).toFixed(1);
+        return '<div class="ta-dev-row">' +
+          '<span class="ta-dev-icon">' + d.icon + '</span>' +
+          '<span class="ta-dev-label">' + d.label + '</span>' +
+          '<div class="ta-country-bar-bg"><div class="ta-country-bar" style="width:' + barW + '%"></div></div>' +
+          '<span class="ta-country-pct">' + pct + '%</span>' +
+        '</div>';
+      }).join('');
+
+      document.getElementById('taDevices').innerHTML =
+        '<h4 class="ta-section-title">裝置分佈</h4>' + devRows;
+    }
+
     // Show content, hide loading
     document.getElementById('taLoading').style.display = 'none';
     document.getElementById('taContent').style.display = '';
@@ -371,6 +490,187 @@
     font-weight: 600;
     color: var(--text-muted);
     flex-shrink: 0;
+  }
+
+  /* Phase 2: Section titles (shared) */
+  .ta-referers :global(.ta-section-title),
+  .ta-pages :global(.ta-section-title),
+  .ta-devices :global(.ta-section-title) {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--brand-navy, #1b2d4f);
+    margin: 0 0 12px 0;
+  }
+  .ta-referers, .ta-pages, .ta-devices {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-light, #e8e6e1);
+  }
+
+  /* Referers: stacked bar */
+  .ta-referers :global(.ta-ref-bar) {
+    display: flex;
+    height: 24px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .ta-referers :global(.ta-ref-seg) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2px;
+    transition: width 0.4s ease;
+  }
+  .ta-referers :global(.ta-ref-seg-label) {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 4px;
+  }
+  .ta-referers :global(.ta-ref-legend) {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .ta-referers :global(.ta-ref-legend-item) {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+  .ta-referers :global(.ta-dot) {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  /* Referer detail rows */
+  .ta-referers :global(.ta-src-row) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+  }
+  .ta-referers :global(.ta-ref-cat-dot) {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .ta-referers :global(.ta-page-name) {
+    width: 140px;
+    font-size: 0.75rem;
+    color: var(--text-secondary, #5a5a5a);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .ta-referers :global(.ta-country-bar-bg) {
+    flex: 1; height: 14px;
+    background: var(--bg-section, #f5f0eb);
+    border-radius: 3px; overflow: hidden;
+  }
+  .ta-referers :global(.ta-country-bar) {
+    height: 100%;
+    background: var(--brand-navy, #1b2d4f);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .ta-referers :global(.ta-country-pct) {
+    width: 42px; text-align: right;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--text-muted); flex-shrink: 0;
+  }
+
+  /* Top Pages */
+  .ta-pages :global(.ta-page-row) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+  }
+  .ta-pages :global(.ta-page-rank) {
+    width: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .ta-pages :global(.ta-page-name) {
+    width: 140px;
+    font-size: 0.75rem;
+    color: var(--text-secondary, #5a5a5a);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .ta-pages :global(.ta-page-article) {
+    font-weight: 600;
+  }
+  .ta-pages :global(.ta-country-bar-bg) {
+    flex: 1; height: 14px;
+    background: var(--bg-section, #f5f0eb);
+    border-radius: 3px; overflow: hidden;
+  }
+  .ta-pages :global(.ta-country-bar) {
+    height: 100%;
+    background: var(--brand-navy, #1b2d4f);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .ta-pages :global(.ta-country-pct) {
+    width: 42px; text-align: right;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--text-muted); flex-shrink: 0;
+  }
+
+  /* Devices */
+  .ta-devices :global(.ta-dev-row) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+  }
+  .ta-devices :global(.ta-dev-icon) {
+    font-size: 1rem;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .ta-devices :global(.ta-dev-label) {
+    width: 60px;
+    font-weight: 600;
+    color: var(--text-secondary, #5a5a5a);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+  .ta-devices :global(.ta-country-bar-bg) {
+    flex: 1; height: 14px;
+    background: var(--bg-section, #f5f0eb);
+    border-radius: 3px; overflow: hidden;
+  }
+  .ta-devices :global(.ta-country-bar) {
+    height: 100%;
+    background: var(--brand-navy, #1b2d4f);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .ta-devices :global(.ta-country-pct) {
+    width: 42px; text-align: right;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--text-muted); flex-shrink: 0;
   }
 
   /* Error state */
