@@ -152,9 +152,7 @@ def main():
     creds = get_credentials()
     session = requests.Session()
 
-    # Manually set auth header using token
-    creds.refresh(requests.Request())  # type: ignore[arg-type]
-    # Use google.auth.transport.requests for proper token refresh
+    # Refresh token using google-auth transport
     from google.auth.transport.requests import Request as AuthRequest
     creds.refresh(AuthRequest())
     session.headers["Authorization"] = f"Bearer {creds.token}"
