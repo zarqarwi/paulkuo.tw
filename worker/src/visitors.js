@@ -407,13 +407,14 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
     }
   }
 
-  const [overviewRaw, countriesRaw, lastFetch, referersRaw, topPagesRaw, devicesRaw] = await Promise.all([
+  const [overviewRaw, countriesRaw, lastFetch, referersRaw, topPagesRaw, devicesRaw, durationRaw] = await Promise.all([
     env.TICKER_KV.get('analytics:overview'),
     env.TICKER_KV.get('analytics:countries'),
     env.TICKER_KV.get('analytics:lastFetch'),
     env.TICKER_KV.get('analytics:referers'),
     env.TICKER_KV.get('analytics:top-pages'),
     env.TICKER_KV.get('analytics:devices'),
+    env.TICKER_KV.get('analytics:duration'),
   ]);
 
   if (!overviewRaw) {
@@ -430,6 +431,7 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
     referers: JSON.parse(referersRaw || '{"sources":[]}'),
     topPages: JSON.parse(topPagesRaw || '{"pages":[]}'),
     devices: devicesRaw ? JSON.parse(devicesRaw) : null,
+    duration: durationRaw ? JSON.parse(durationRaw) : null,
   };
 
   return new Response(JSON.stringify(result), {
@@ -439,6 +441,95 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
       ...corsHeadersFn(request),
     },
   });
+}
+
+// ── Duration Beacon (停留時間) ──
+
+/**
+ * POST /analytics/beacon — 接收前端停留時間回報
+ * Body: { path: string, duration: number } (秒)
+ * sendBeacon 的 Content-Type 可能是 text/plain，需要兼容處理
+ */
+export async function handleAnalyticsBeacon(request, env, corsHeadersFn) {
+  if (request.method !== 'POST') {
+    return new Response(null, { status: 405, headers: corsHeadersFn(request) });
+  }
+
+  let body;
+  try {
+    const text = await request.text();
+    body = JSON.parse(text);
+  } catch {
+    return new Response(null, { status: 400, headers: corsHeadersFn(request) });
+  }
+
+  const { path, duration } = body;
+
+  // 驗證
+  if (typeof path !== 'string' || !path.startsWith('/')) {
+    return new Response(null, { status: 400, headers: corsHeadersFn(request) });
+  }
+  if (typeof duration !== 'number' || duration <= 1 || duration >= 1800) {
+    return new Response(null, { status: 400, headers: corsHeadersFn(request) });
+  }
+
+  const key = `analytics:duration:${path}`;
+  let data = { totalSeconds: 0, count: 0 };
+  try {
+    const raw = await env.TICKER_KV.get(key);
+    if (raw) data = JSON.parse(raw);
+  } catch {}
+
+  data.totalSeconds += Math.round(duration);
+  data.count += 1;
+
+  await env.TICKER_KV.put(key, JSON.stringify(data));
+
+  return new Response(null, { status: 204, headers: corsHeadersFn(request) });
+}
+
+/**
+ * Cron: 彙整停留時間 → analytics:duration (Top 15 排名)
+ * List 所有 analytics:duration:* keys，算平均，存排名
+ */
+export async function fetchDurationAnalytics(env) {
+  const prefix = 'analytics:duration:';
+  const pages = [];
+
+  // KV list 用 prefix 過濾
+  let cursor = undefined;
+  let iterations = 0;
+  do {
+    const listResult = await env.TICKER_KV.list({ prefix, cursor, limit: 100 });
+    for (const key of listResult.keys) {
+      try {
+        const raw = await env.TICKER_KV.get(key.name);
+        if (!raw) continue;
+        const { totalSeconds, count } = JSON.parse(raw);
+        if (count > 0) {
+          pages.push({
+            path: key.name.slice(prefix.length),
+            avgSeconds: Math.round(totalSeconds / count),
+            views: count,
+          });
+        }
+      } catch {}
+    }
+    cursor = listResult.list_complete ? undefined : listResult.cursor;
+    iterations++;
+  } while (cursor && iterations < 20);
+
+  // Top 15 by avgSeconds (descending)
+  pages.sort((a, b) => b.avgSeconds - a.avgSeconds);
+  const top15 = pages.slice(0, 15);
+
+  await env.TICKER_KV.put('analytics:duration', JSON.stringify({
+    pages: top15,
+    updatedAt: new Date().toISOString(),
+  }));
+
+  console.log(`duration: aggregated ${pages.length} paths, top15 saved`);
+  return { pages: top15 };
 }
 
 /**

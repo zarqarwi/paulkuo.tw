@@ -145,5 +145,21 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   <script is:inline>
   (function() { var indicator = document.getElementById('agentIndicator'); if (!indicator) return; if ('modelContext' in navigator) { indicator.style.display = 'inline'; setTimeout(function() { indicator.style.opacity = '1'; }, 100); } })();
   </script>
+  <script is:inline>
+  (function() {
+    var start = performance.now();
+    var sent = false;
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState !== 'hidden' || sent) return;
+      sent = true;
+      var sec = Math.round((performance.now() - start) / 1000);
+      if (sec <= 1 || sec >= 1800) return;
+      var payload = JSON.stringify({ path: location.pathname, duration: sec });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('https://api.paulkuo.tw/analytics/beacon', payload);
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
