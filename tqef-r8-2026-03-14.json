@@ -1,0 +1,817 @@
+{
+  "timestamp": "2026-03-14T12:40:11",
+  "mode": "full",
+  "corpus_size": 29,
+  "evaluated": 29,
+  "summary": {
+    "overall": 4.81,
+    "terminology": 4.83,
+    "fidelity": 4.83,
+    "critical_data": 5.0,
+    "naturalness": 4.28,
+    "critical_errors": 0,
+    "status": "PASS ✅"
+  },
+  "industry_breakdown": {
+    "business_general": {
+      "overall": 4.52,
+      "terminology": 4.4,
+      "count": 5
+    },
+    "circular_tech": {
+      "overall": 4.95,
+      "terminology": 5.0,
+      "count": 6
+    },
+    "mixed": {
+      "overall": 4.75,
+      "terminology": 4.75,
+      "count": 4
+    },
+    "regenerative_medicine": {
+      "overall": 4.88,
+      "terminology": 5.0,
+      "count": 8
+    },
+    "semiconductor": {
+      "overall": 4.85,
+      "terminology": 4.83,
+      "count": 6
+    }
+  },
+  "results": [
+    {
+      "id": "MED-001",
+      "industry": "regenerative_medicine",
+      "difficulty": "hard",
+      "source_ja": "間葉系幹細胞の培養には、GMPグレードの無血清培地を使用し、継代数は5代以内に制限しています。",
+      "reference_zh_tw": "間質幹細胞的培養使用 GMP 等級的無血清培養基，繼代數限制在 5 代以內。",
+      "haiku_output": "間質幹細胞的培養採用GMP等級的無血清培養基，並將繼代數限制在5代以內。",
+      "judgment": {
+        "evaluation": "High-quality translation with excellent terminology and fidelity. The evaluated translation improves upon the reference by using more natural connective phrasing while maintaining all critical medical and technical accuracy.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "MED-002",
+      "industry": "regenerative_medicine",
+      "difficulty": "hard",
+      "source_ja": "エクソソームを用いた薬物送達システムは、従来のリポソーム製剤と比較して、標的細胞への取り込み効率が約3倍高いことが示されています。",
+      "reference_zh_tw": "使用外泌體的藥物遞送系統，與傳統的脂質體製劑相比，標的細胞的攝取效率約高出 3 倍。",
+      "haiku_output": "使用外泌體的藥物遞送系統相比於傳統脂質體製劑，對標的細胞的攝取效率高約3倍，這已被證實。",
+      "judgment": {
+        "evaluation": "The evaluated translation preserves all critical terms and the numerical data correctly, but introduces stylistic changes that slightly alter the original flow and emphasis. The reference translation is more concise and direct, while the evaluated version adds interpretive elements ('這已被證實') and reorders the sentence structure.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 4,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.6,
+        "errors": [
+          {
+            "type": "DISTORT",
+            "severity": "minor",
+            "expected": "使用外泌體的藥物遞送系統，與傳統的脂質體製劑相比，標的細胞的攝取效率約高出 3 倍。",
+            "actual": "使用外泌體的藥物遞送系統相比於傳統脂質體製劑，對標的細胞的攝取效率高約3倍，這已被證實。",
+            "note": "Added phrase '這已被證實' not present in original. While the original states 'is shown/demonstrated' (示されています), the evaluated version makes this more explicit. The reference translation better captures the original's passive descriptive tone."
+          },
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "約高出 3 倍",
+            "actual": "高約3倍",
+            "note": "Word order reversal. The reference's '約高出' is more natural in Taiwan Chinese. Evaluated version's '高約' is acceptable but slightly less fluent. Also, reference includes space before '3' which is proper typographical convention."
+          }
+        ]
+      }
+    },
+    {
+      "id": "MED-003",
+      "industry": "regenerative_medicine",
+      "difficulty": "medium",
+      "source_ja": "iPS細胞から分化誘導した心筋細胞を用いた再生医療の臨床試験が、来年度から開始される予定です。",
+      "reference_zh_tw": "利用 iPS 細胞分化誘導的心肌細胞進行再生醫療的臨床試驗，預計從下一年度開始。",
+      "haiku_output": "iPS細胞分化誘導的心肌細胞用於再生醫療的臨床試驗預計將於明年度開始進行。",
+      "judgment": {
+        "evaluation": "The translation is highly accurate with proper Taiwan-standard terminology and natural phrasing. All critical terms are correctly rendered, meaning is fully preserved, and the temporal reference is appropriately localized.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "MED-004",
+      "industry": "regenerative_medicine",
+      "difficulty": "hard",
+      "source_ja": "ヒアルロン酸とコラーゲンを組み合わせたスキャフォールドの引張強度は、従来品の1.8倍に達し、生体適合性試験でもISO 10993の基準を満たしました。",
+      "reference_zh_tw": "結合玻尿酸與膠原蛋白的支架，拉伸強度達到傳統產品的 1.8 倍，在生物相容性試驗中也符合 ISO 10993 的標準。",
+      "haiku_output": "玻尿酸與膠原蛋白組合的支架其拉伸強度達到傳統產品的1.8倍，生物相容性試驗也符合ISO 10993的標準。",
+      "judgment": {
+        "evaluation": "The evaluation translation is highly accurate with excellent terminology, complete fidelity, and correct critical data. Minor stylistic differences from the reference are acceptable and demonstrate natural Taiwan Chinese phrasing.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "玻尿酸與膠原蛋白組合的支架其拉伸強度...",
+            "actual": "玻尿酸與膠原蛋白組合的支架其拉伸強度...",
+            "note": "The use of '其' (its) is grammatically correct but slightly less smooth than the reference's '結合玻尿酸與膠原蛋白的支架' construction. However, both are acceptable Taiwan Chinese expressions. The evaluation version's structure is equally valid, just different."
+          }
+        ]
+      }
+    },
+    {
+      "id": "MED-005",
+      "industry": "regenerative_medicine",
+      "difficulty": "medium",
+      "source_ja": "PRP療法では、患者自身の血液から血小板を濃縮し、成長因子を豊富に含む血漿を患部に注入します。",
+      "reference_zh_tw": "PRP 療法從患者自身的血液中濃縮血小板，將富含生長因子的血漿注入患部。",
+      "haiku_output": "在PRP療法中，從患者自身的血液中濃縮血小板，並將富含生長因子的血漿注射到患部。",
+      "judgment": {
+        "evaluation": "The translation is accurate and well-executed. It correctly uses Taiwan-standard terminology, preserves the complete meaning of the source text, and reads naturally. The use of 「注射到」instead of 「注入」in the reference is a stylistic choice that is equally valid and perhaps slightly more natural in medical contexts.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "MED-006",
+      "industry": "regenerative_medicine",
+      "difficulty": "hard",
+      "source_ja": "モノクローナル抗体の収量は、バイオリアクターの容量を500Lから2000Lにスケールアップすることで、月産20kgまで増加しました。",
+      "reference_zh_tw": "透過將生物反應器的容量從 500L 擴大到 2000L，單株抗體的產量已增加至每月 20 公斤。",
+      "haiku_output": "單株抗體的產量藉由將生物反應器的容量從500L擴大到2000L，月產能已增加至20kg。",
+      "judgment": {
+        "evaluation": "The evaluation translation has good terminology accuracy and preserves critical numbers correctly, but exhibits a notable structural/naturalness issue that affects readability compared to the reference translation.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 4,
+          "critical_data": 5,
+          "naturalness": 3
+        },
+        "weighted_total": 4.5,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "major",
+            "expected": "透過將生物反應器的容量從500L擴大到2000L，單株抗體的產量已增加至每月20公斤",
+            "actual": "單株抗體的產量藉由將生物反應器的容量從500L擴大到2000L，月產能已增加至20kg",
+            "note": "The evaluation translation's word order (placing outcome before the scaling action) is awkward and less natural than the reference. The phrase '月產能' (monthly production capacity) is also less precise than '每月20公斤' (20kg per month). Additionally, mixing Chinese '20kg' with the unit prefix instead of using '20公斤' is inconsistent with Taiwan standard."
+          },
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "已增加至每月20公斤",
+            "actual": "已增加至20kg",
+            "note": "Use of 'kg' instead of traditional Chinese unit '公斤' is less natural for Taiwan standard technical writing, though not incorrect."
+          }
+        ]
+      }
+    },
+    {
+      "id": "MED-007",
+      "industry": "regenerative_medicine",
+      "difficulty": "medium",
+      "source_ja": "アミノ酸配列の解析により、このタンパク質がミトコンドリア膜に局在することが確認されました。",
+      "reference_zh_tw": "透過胺基酸序列分析，確認該蛋白質定位於粒線體膜上。",
+      "haiku_output": "透過胺基酸序列的分析，已確認此蛋白質定位於粒線體膜。",
+      "judgment": {
+        "evaluation": "The translation is accurate and faithful to the source. All critical domain terminology is correctly rendered in Taiwan-standard Traditional Chinese. The sentence structure is natural and idiomatic. Minor stylistic differences exist between the reference and evaluated versions, but both are valid and convey the same meaning effectively.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "MED-008",
+      "industry": "regenerative_medicine",
+      "difficulty": "easy",
+      "source_ja": "MRI検査の結果、腫瘍の縮小が確認されました。",
+      "reference_zh_tw": "磁振造影檢查結果確認腫瘤已縮小。",
+      "haiku_output": "磁振造影檢查的結果確認腫瘤縮小。",
+      "judgment": {
+        "evaluation": "The translation is accurate and appropriate for Taiwan Standard Chinese. Both the reference and evaluated translations correctly convey the medical meaning. The evaluated version uses a slightly different grammatical structure (particle 的 + 結果) which is equally natural and acceptable.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "SEMI-001",
+      "industry": "semiconductor",
+      "difficulty": "hard",
+      "source_ja": "3nmプロセスのウェーハ歩留まりは現在78%で、量産開始時の目標は85%以上です。",
+      "reference_zh_tw": "3 奈米製程的晶圓良率目前為 78%，量產啟動時的目標是 85% 以上。",
+      "haiku_output": "3nm製程的晶圓良率目前是78%，量產開始時的目標是85%以上。",
+      "judgment": {
+        "evaluation": "Near-perfect translation with one minor stylistic variation. All critical terminology is correctly rendered using Taiwan-standard terms. All numbers are accurate. The only difference from the reference is the use of '是' instead of '為' in the predicate, which is a valid stylistic choice in Taiwan Chinese.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "為",
+            "actual": "是",
+            "note": "用 'ist' (是) 替代 'is' (為) 在現代台灣中文中可接受但較口語化；參考譯文使用 '為' 更顯正式。兩者均為有效用法，但在技術文件中 '為' 更常見。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "SEMI-002",
+      "industry": "semiconductor",
+      "difficulty": "hard",
+      "source_ja": "EUVリソグラフィーの露光回数を削減することで、ウェーハあたりのコストを15%低減できる見込みです。",
+      "reference_zh_tw": "透過減少 EUV 微影的曝光次數，預估可將每片晶圓的成本降低 15%。",
+      "haiku_output": "透過減少EUV微影的曝光次數，預期可將每片晶圓的成本降低15%。",
+      "judgment": {
+        "evaluation": "The translation is accurate and appropriate for Taiwan Standard Chinese. Both the reference and evaluated versions are semantically equivalent and correctly convey the source meaning with proper technical terminology.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": [
+          {
+            "type": "TERM_EQUIVALENCE",
+            "severity": "minor",
+            "expected": "曝光次數 (reference) vs 曝光次數 (evaluated)",
+            "actual": "Both versions identical for this term",
+            "note": "No difference between reference and evaluated text regarding critical terminology. Both correctly translate 露光回数 as 曝光次數."
+          },
+          {
+            "type": "STYLISTIC_VARIANCE",
+            "severity": "minor",
+            "expected": "預估 (reference) vs 預期 (evaluated)",
+            "actual": "預估 vs 預期",
+            "note": "Both are acceptable in Taiwan Chinese. 預估 emphasizes estimation/calculation; 預期 emphasizes expectation. In semiconductor context, both work, though 預估 (reference) may be marginally more precise for engineering contexts. This is stylistic, not an error."
+          }
+        ],
+        "notes": "The evaluated translation is virtually identical to the reference with only a minor stylistic variant (預估→預期). Both versions correctly: (1) translate EUVリソグラフィー as EUV微影, (2) translate 露光回数 as 曝光次數, (3) preserve the 15% figure, (4) maintain complete semantic fidelity to the source. Both read naturally in Taiwan Standard Chinese. No critical or major errors detected."
+      }
+    },
+    {
+      "id": "SEMI-003",
+      "industry": "semiconductor",
+      "difficulty": "medium",
+      "source_ja": "先端パッケージング技術としてCoWoSを採用し、HBMとロジックチップの高帯域接続を実現しています。",
+      "reference_zh_tw": "採用 CoWoS 作為先進封裝技術，實現 HBM 與邏輯晶片的高頻寬連接。",
+      "haiku_output": "採用先進封裝技術 CoWoS，實現 HBM 與邏輯晶片的高頻寬連接。",
+      "judgment": {
+        "evaluation": "Both translations are accurate and convey the original meaning well. The to_evaluate version reorders the phrase structure slightly but maintains equivalent meaning and terminology. All critical semiconductor terms are correctly rendered in Taiwan-standard Traditional Chinese.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "採用 CoWoS 作為先進封裝技術",
+            "actual": "採用先進封裝技術 CoWoS",
+            "note": "The to_evaluate version places CoWoS after the noun phrase, which is grammatically correct but slightly less natural than the reference version that uses '作為' (as) to introduce CoWoS as the example of advanced packaging technology. The reference structure is more idiomatic in Taiwan Chinese."
+          }
+        ]
+      }
+    },
+    {
+      "id": "SEMI-004",
+      "industry": "semiconductor",
+      "difficulty": "hard",
+      "source_ja": "ゲートオールアラウンド構造のトランジスタは、FinFETと比較してリーク電流を約40%削減でき、消費電力の大幅な低減が期待されます。",
+      "reference_zh_tw": "環繞式閘極結構的電晶體與 FinFET 相比，可減少約 40% 的漏電流，預期能大幅降低功耗。",
+      "haiku_output": "Gate-All-Around 結構的電晶體相比 FinFET 能夠減少約 40% 的漏電流，預期可大幅降低消費功率。",
+      "judgment": {
+        "evaluation": "The evaluated translation is generally accurate but contains one terminology deviation from the reference standard. The term '消費功率' (power consumption in wattage terms) differs from the reference's '功耗' (general power consumption), which is the preferred Taiwan standard in semiconductor contexts. All critical numbers, structural elements, and core meanings are correctly preserved. The translation reads naturally in Traditional Chinese.",
+        "scores": {
+          "terminology": 4,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.5,
+        "errors": [
+          {
+            "type": "TERM_ERR",
+            "severity": "minor",
+            "expected": "功耗",
+            "actual": "消費功率",
+            "note": "While both terms relate to power consumption, '功耗' is the standard Taiwan semiconductor term and matches the reference translation. '消費功率' emphasizes wattage measurement rather than general power consumption efficiency, making it less ideal for this context where energy reduction is the focus."
+          },
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "相比 FinFET 能夠減少",
+            "actual": "相比 FinFET 能夠減少",
+            "note": "The sentence structure is clear but slightly less elegant than reference's '與 FinFET 相比，可減少' which flows more naturally. The word order '相比...能夠' is acceptable but slightly less conventional in Taiwan Mandarin."
+          }
+        ]
+      }
+    },
+    {
+      "id": "SEMI-005",
+      "industry": "semiconductor",
+      "difficulty": "medium",
+      "source_ja": "ウェットエッチング工程の薬液温度管理を±0.5℃以内に制御することで、均一性が大幅に改善しました。",
+      "reference_zh_tw": "將濕式蝕刻製程的藥液溫度控制在 ±0.5°C 以內，均勻性大幅改善。",
+      "haiku_output": "濕式蝕刻製程的藥液溫度管理控制在±0.5℃以內，均勻性大幅改善。",
+      "judgment": {
+        "evaluation": "The evaluation translation is nearly identical to the reference with only minor stylistic variation. Both preserve the meaning accurately with correct terminology and critical data.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "將濕式蝕刻製程的藥液溫度控制在 ±0.5°C 以內",
+            "actual": "濕式蝕刻製程的藥液溫度管理控制在±0.5℃以內",
+            "note": "The evaluation version omits the introductory verb '將' (presenting/setting) and uses redundant '管理控制' (management control) instead of the cleaner '控制' (control). The reference's grammatical structure flows more naturally in Taiwanese Chinese. Additionally, the symbol format differs (°C vs ℃), though both are acceptable in Taiwan."
+          }
+        ]
+      }
+    },
+    {
+      "id": "SEMI-006",
+      "industry": "semiconductor",
+      "difficulty": "medium",
+      "source_ja": "CVD装置のチャンバー内のパーティクル数が規格値を超えたため、予防保全を実施しました。",
+      "reference_zh_tw": "因 CVD 設備腔體內的微粒數超過規格值，已執行預防性保養。",
+      "haiku_output": "CVD 設備的腔體內微粒數超過規格值，因此實施了預防性維護保養。",
+      "judgment": {
+        "evaluation": "The evaluated translation is highly accurate with correct terminology and faithful meaning preservation. Minor stylistic differences exist compared to the reference, but the sentence reads naturally in Taiwan Traditional Chinese.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "因 CVD 設備腔體內的微粒數超過規格值，已執行預防性保養。",
+            "actual": "CVD 設備的腔體內微粒數超過規格值，因此實施了預防性維護保養。",
+            "note": "The evaluated version uses 「因此實施了」(thus implemented) instead of 「已執行」(has executed). While both are correct, the reference's structure with 「因...，已...」is slightly more concise and formal. The addition of 「維護」alongside 「保養」is redundant in Taiwan standard Chinese; 「預防性保養」alone is preferred. Minor stylistic variation rather than error."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CIRC-001",
+      "industry": "circular_tech",
+      "difficulty": "hard",
+      "source_ja": "廃プリント基板からの金の回収率は98.5%を達成し、従来の湿式精錬法と比較してCO2排出量を60%削減しました。",
+      "reference_zh_tw": "從廢印刷電路板回收金的回收率達到 98.5%，與傳統的濕式精煉法相比，CO2 排放量減少了 60%。",
+      "haiku_output": "從廢棄印刷電路板回收黃金的回收率達到98.5%，相比傳統濕式精煉法，CO2排放量減少了60%。",
+      "judgment": {
+        "evaluation": "The translation is highly accurate with excellent terminology and data preservation. The main difference from the reference is the use of '黃金' instead of '金', which is actually more explicit and equally valid in Taiwan Chinese. All critical numbers are correct, and the meaning is fully preserved with natural phrasing.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "CIRC-002",
+      "industry": "circular_tech",
+      "difficulty": "medium",
+      "source_ja": "都市鉱山からのレアメタル回収は、天然鉱石の採掘と比較してエネルギー消費が大幅に少ないという利点があります。",
+      "reference_zh_tw": "從都市礦山回收稀有金屬，與開採天然礦石相比，具有能源消耗大幅降低的優勢。",
+      "haiku_output": "都市礦山中的稀有金屬回收相比於天然礦石的開採，具有能源消耗大幅減少的優勢。",
+      "judgment": {
+        "evaluation": "Good translation with minor stylistic differences. Both reference and evaluated translations are accurate and convey the original meaning effectively. The evaluated version uses a slightly different sentence structure that is equally valid in Traditional Chinese.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "從都市礦山回收稀有金屬，與開採天然礦石相比",
+            "actual": "都市礦山中的稀有金屬回收相比於天然礦石的開採",
+            "note": "The evaluated version uses '中的...回收相比於...的開採' which is grammatically correct but slightly less natural than the reference's '從...回收...與...相比'. The reference structure flows more smoothly in Taiwanese usage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CIRC-003",
+      "industry": "circular_tech",
+      "difficulty": "hard",
+      "source_ja": "カーボンクレジットの取引価格は現在1トンあたり45ユーロで、2030年までに100ユーロを超える見通しです。",
+      "reference_zh_tw": "碳權交易價格目前為每噸 45 歐元，預計到 2030 年將超過 100 歐元。",
+      "haiku_output": "碳權的交易價格目前為每噸45歐元，預估到2030年將超過100歐元。",
+      "judgment": {
+        "evaluation": "The translation is accurate and natural. Both reference and evaluated versions are nearly identical and both correctly render the source Japanese into proper Taiwan Traditional Chinese. The critical term '碳權' (carbon credits) is correct, all numbers (45, 2030, 100) are preserved accurately, and the meaning is fully conveyed. The only minor stylistic difference is the use of '預計' vs '預估' for the forecast, both acceptable in Taiwan Chinese.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "CIRC-004",
+      "industry": "circular_tech",
+      "difficulty": "medium",
+      "source_ja": "ESG評価においてScope3の排出量算定が重要視されており、サプライチェーン全体の可視化が求められています。",
+      "reference_zh_tw": "在 ESG 評估中，Scope 3 的排放量計算日益受到重視，需要將整個供應鏈可視化。",
+      "haiku_output": "ESG 評估中，Scope 3的排放量計算受到重視，需要供應鏈全體的可視化。",
+      "judgment": {
+        "evaluation": "The evaluation translation is very close to the reference, with minor stylistic differences. Both versions accurately convey the source meaning using correct terminology for Taiwan standard Chinese.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "在 ESG 評估中，Scope 3 的排放量計算日益受到重視，需要將整個供應鏈可視化。",
+            "actual": "ESG 評估中，Scope 3的排放量計算受到重視，需要供應鏈全體的可視化。",
+            "note": "The evaluated version omits '在' at the beginning and removes '日益' (increasingly), which are present in the reference. The phrase '供應鏈全體的可視化' is grammatically correct but less natural than '將整個供應鏈可視化' (reference). Minor stylistic difference rather than error."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CIRC-005",
+      "industry": "circular_tech",
+      "difficulty": "hard",
+      "source_ja": "銅の電解精錬工程では、電流密度を300A/m²に設定し、純度99.99%の電気銅を生産しています。",
+      "reference_zh_tw": "在銅的電解精煉製程中，將電流密度設定為 300A/m²，生產純度 99.99% 的電解銅。",
+      "haiku_output": "在銅的電解精煉工程中，我們將電流密度設定為300A/m²，生產純度99.99%的電解銅。",
+      "judgment": {
+        "evaluation": "The evaluated translation is highly accurate with minor stylistic differences from the reference. All critical terminology and numerical data are correctly rendered. The addition of '我們' (we) is a natural localization choice for Taiwan Chinese, making the sentence more direct and agentive without compromising fidelity.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "在銅的電解精煉製程中，將電流密度設定為 300A/m²，生產純度 99.99% 的電解銅。",
+            "actual": "在銅的電解精煉工程中，我們將電流密度設定為300A/m²，生產純度99.99%的電解銅。",
+            "note": "The evaluated version adds '我們' (we) and uses '工程' instead of '製程', which are acceptable variations. The omission of spaces around numerical units (300A/m² vs 300A/m²) is stylistically inconsistent with the reference but does not affect comprehension. This represents natural Taiwan Chinese usage rather than an error."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CIRC-006",
+      "industry": "circular_tech",
+      "difficulty": "medium",
+      "source_ja": "ライフサイクルアセスメントの結果、リサイクル材料の使用により環境負荷が35%低減されることが判明しました。",
+      "reference_zh_tw": "生命週期評估的結果顯示，使用回收材料可將環境負荷降低 35%。",
+      "haiku_output": "根據生命週期評估的結果，使用回收材料可使環境負荷降低35%。",
+      "judgment": {
+        "evaluation": "The translation is accurate and well-executed with proper Taiwan-standard terminology. Both the reference and evaluated translations are high-quality, with only minor stylistic differences.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "BIZ-001",
+      "industry": "business_general",
+      "difficulty": "medium",
+      "source_ja": "今回のご提案について社内で検討させていただきたいのですが、来週の金曜日までにご回答いたします。",
+      "reference_zh_tw": "關於這次的提案，我們想在公司內部討論一下，將在下週五之前回覆您。",
+      "haiku_output": "關於這次的提案，我想在公司內部進行討論，將在下週五之前給您答覆。",
+      "judgment": {
+        "evaluation": "The translation is competent but has notable issues. The reference version uses more formal/polite phrasing (社內 + 討論 + 回覆) appropriate for business communication, while the evaluated version shifts to first-person singular (我想) rather than the more formal collective voice (我們), and uses the slightly less formal 答覆 instead of 回覆. The core meaning is preserved but the register is less appropriately pitched for formal business communication.",
+        "scores": {
+          "terminology": 4,
+          "fidelity": 4,
+          "critical_data": 5,
+          "naturalness": 3
+        },
+        "weighted_total": 4.1,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "major",
+            "expected": "我們想在公司內部討論一下",
+            "actual": "我想在公司內部進行討論",
+            "note": "Shift from plural (我們) to singular (我想) reduces formality and collectivity appropriate for business proposals. Original Japanese uses passive/collective voice (検討させていただきたい) which better matches 我們想... than 我想... Also, 進行討論 is slightly more formal/stiff than 討論一下 for this context."
+          },
+          {
+            "type": "TERM_ERR",
+            "severity": "minor",
+            "expected": "回覆",
+            "actual": "答覆",
+            "note": "Both terms are acceptable in Taiwan Chinese, but 回覆 is more standard in modern business communication. 答覆 is slightly more formal/older register."
+          }
+        ]
+      }
+    },
+    {
+      "id": "BIZ-002",
+      "industry": "business_general",
+      "difficulty": "hard",
+      "source_ja": "初期ロットの単価は1個あたり850円でお見積もりしておりますが、年間10万個以上のご発注をいただける場合、680円まで引き下げが可能です。",
+      "reference_zh_tw": "初期批次的單價估價為每個 850 日圓，但若年訂購量達 10 萬個以上，可降至 680 日圓。",
+      "haiku_output": "初期批次的單價是每個850日圓的報價,但如果貴公司年間訂購數量達到10萬個以上,我們可以將價格下調至680日圓。",
+      "judgment": {
+        "evaluation": "The translation is functionally accurate and preserves the core meaning, but contains terminology inconsistencies and awkward phrasing that detract from naturalness in Taiwan business context.",
+        "scores": {
+          "terminology": 3,
+          "fidelity": 4,
+          "critical_data": 5,
+          "naturalness": 3
+        },
+        "weighted_total": 3.7,
+        "errors": [
+          {
+            "type": "TERM_ERR",
+            "severity": "major",
+            "expected": "初期批次",
+            "actual": "初期批次的單價是每個850日圓的報價",
+            "note": "While 'initial batch' is correctly identified as 初期批次, the phrase structure uses 報價 (quotation) redundantly. The reference uses simpler construction '初期批次的單價估價為' which is more standard Taiwan business Chinese. The evaluation's addition of '的報價' is unnecessary formality."
+          },
+          {
+            "type": "UNNATURAL",
+            "severity": "major",
+            "expected": "初期批次的單價估價為每個850日圓，但若年訂購量達10萬個以上，可降至680日圓",
+            "actual": "初期批次的單價是每個850日圓的報價,但如果貴公司年間訂購數量達到10萬個以上,我們可以將價格下調至680日圓",
+            "note": "The evaluated translation is overly formal and verbose with 'If your company' (貴公司), 'we can' (我們可以), and 'reduce price to' (將價格下調至). Taiwan business Chinese would use the more concise reference phrasing. The addition of 貴公司 and 我們可以 makes it sound like a formal proposal rather than a natural estimate statement."
+          },
+          {
+            "type": "TERM_ERR",
+            "severity": "minor",
+            "expected": "可降至 or 可下調至",
+            "actual": "可以將價格下調至",
+            "note": "The evaluated version uses 可以將價格下調至 which is correct but verbose. Reference uses simpler 可降至 which is more standard Taiwan business terminology for price reductions."
+          },
+          {
+            "type": "ADDITION",
+            "severity": "minor",
+            "expected": "minimal additions",
+            "actual": "貴公司, 我們可以",
+            "note": "Addition of 'your company' and 'we can' adds unnecessary formality and perspective shifting. Original Japanese doesn't explicitly include these subjects in this way."
+          }
+        ]
+      }
+    },
+    {
+      "id": "BIZ-003",
+      "industry": "business_general",
+      "difficulty": "easy",
+      "source_ja": "契約書のドラフトを添付いたしましたので、ご確認のほどよろしくお願いいたします。",
+      "reference_zh_tw": "已附上合約草稿，請您確認，謝謝。",
+      "haiku_output": "合約的草稿已附件，敬請確認，謝謝。",
+      "judgment": {
+        "evaluation": "The translation accurately conveys the source meaning with correct terminology. However, it has a minor phrasing issue that affects naturalness.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "合約草稿已如附件",
+            "actual": "合約的草稿已附件",
+            "note": "The phrase '已附件' is grammatically awkward in Taiwan Mandarin. Better phrasing would be '已如附件' (already as attached) or simply '已附上' (already attached above). The insertion of '的' after '合約' is acceptable but slightly awkward before '草稿'; more natural would be '合約草稿' as a compound noun."
+          }
+        ]
+      }
+    },
+    {
+      "id": "BIZ-004",
+      "industry": "business_general",
+      "difficulty": "medium",
+      "source_ja": "大変恐縮ですが、納期を2週間ほど延長していただくことは可能でしょうか。",
+      "reference_zh_tw": "非常抱歉，請問是否有可能將交期延長約兩週？",
+      "haiku_output": "不好意思，請問能否將交期延長約2週呢？",
+      "judgment": {
+        "evaluation": "The translation is accurate and natural. The target uses proper Taiwan-standard terminology (交期 is correct for 納期), preserves the complete meaning with appropriate politeness markers, and handles the critical number correctly. Minor stylistic differences exist compared to the reference, but are not errors.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "BIZ-005",
+      "industry": "business_general",
+      "difficulty": "hard",
+      "source_ja": "前回のお打ち合わせで合意したNDA条件に基づき、秘密保持期間は契約終了後3年間とさせていただきます。",
+      "reference_zh_tw": "根據上次會議中達成共識的 NDA 條件，保密期間為合約終止後 3 年。",
+      "haiku_output": "根據前次會議中所同意的NDA條件，保密期間為合約終止後3年。",
+      "judgment": {
+        "evaluation": "The translation is accurate and well-adapted for Taiwan Standard Chinese. It successfully conveys all key meaning from the source, uses appropriate business terminology, and maintains natural phrasing. Minor differences in word choice (所同意 vs 達成共識) represent acceptable stylistic variation rather than errors.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "根據前次會議中所同意的NDA條件",
+            "actual": "根據上次會議中達成共識的NDA條件",
+            "note": "Reference uses 達成共識 (reached consensus) which is slightly more formal, while evaluated version uses 所同意 (agreed to) which is more direct and equally valid in Taiwan business Chinese. Both are acceptable; this is stylistic preference, not an error."
+          }
+        ]
+      }
+    },
+    {
+      "id": "MIX-001",
+      "industry": "mixed",
+      "difficulty": "hard",
+      "source_ja": "幹細胞治療の薬事承認を取得するためには、Phase IIIの臨床試験で被験者300名以上のデータが必要となりますが、御社のご協力をいただければ、2027年度中の申請を目指せると考えております。",
+      "reference_zh_tw": "為取得幹細胞治療的藥事許可，Phase III 臨床試驗需要 300 名以上受試者的數據，若能獲得貴公司的協助，我們認為有望在 2027 年度內提出申請。",
+      "haiku_output": "取得幹細胞治療的藥事許可需要在第三期臨床試驗中蒐集300名以上受試者的數據，若能獲得貴公司的協力，我們認為可以在2027年度內完成申請。",
+      "judgment": {
+        "evaluation": "The evaluation translation demonstrates good overall quality with accurate terminology and data preservation, but contains subtle issues in phrasing and term consistency that prevent it from reaching excellence.",
+        "scores": {
+          "terminology": 4,
+          "fidelity": 4,
+          "critical_data": 5,
+          "naturalness": 3
+        },
+        "weighted_total": 4.1,
+        "errors": [
+          {
+            "type": "CN_TERM",
+            "severity": "major",
+            "expected": "藥事許可",
+            "actual": "藥事許可",
+            "note": "Term is correctly translated, but the evaluation uses '取得...需要' while reference uses '為取得...需要'. The evaluation's structure is more natural in Taiwan Chinese but creates a different logical flow."
+          },
+          {
+            "type": "TERM_ERR",
+            "severity": "major",
+            "expected": "有望在...提出申請",
+            "actual": "可以在...完成申請",
+            "note": "The evaluation changes '提出申請' (submit application) to '完成申請' (complete application). While both are acceptable, '提出申請' is more precise for regulatory context and matches the source intent of 申請を目指せる."
+          },
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "Phase III 臨床試驗",
+            "actual": "第三期臨床試驗",
+            "note": "The evaluation uses '第三期' instead of 'Phase III'. While both are valid, in Taiwan pharmaceutical/medical contexts, 'Phase III' is the standard term used in professional settings. The reference correctly preserves 'Phase III'."
+          },
+          {
+            "type": "DISTORT",
+            "severity": "minor",
+            "expected": "在...年度內提出申請",
+            "actual": "在...年度內完成申請",
+            "note": "Subtle meaning shift: '完成申請' suggests the entire approval process would be complete by 2027, whereas the source only aims for submission (申請を目指せる) within 2027. This overstates the commitment."
+          }
+        ]
+      }
+    },
+    {
+      "id": "MIX-002",
+      "industry": "mixed",
+      "difficulty": "hard",
+      "source_ja": "半導体製造工程から発生する廃液中のガリウムとインジウムの回収率を95%以上に引き上げる技術を開発しました。予算は5億円を見込んでおります。",
+      "reference_zh_tw": "我們已開發出將半導體製造製程產生的廢液中鎵和銦的回收率提升至 95% 以上的技術。預算預估為 5 億日圓。",
+      "haiku_output": "半導體製造製程所產生廢液中的鎵和銦的回收率提升至95%以上的技術已開發完成。預算預估約5億日圓。",
+      "judgment": {
+        "evaluation": "The translation is accurate and natural. All critical terms are correctly rendered in Taiwan-standard Traditional Chinese. The meaning is fully preserved with appropriate sentence restructuring. Critical numbers (95%, 5 billion yen) are correctly conveyed. The phrasing reads naturally in Taiwanese Chinese.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "MIX-003",
+      "industry": "mixed",
+      "difficulty": "hard",
+      "source_ja": "再生医療製品のGMP製造において、クリーンルームの空気清浄度はISO Class 5以上が求められますが、弊社の設備は全てClass 4で運用しております。",
+      "reference_zh_tw": "在再生醫療產品的 GMP 製造中，無塵室的空氣潔淨度要求為 ISO Class 5 以上，而我們的設備全部以 Class 4 運作。",
+      "haiku_output": "在再生醫療產品的GMP製造中，無塵室的空氣潔淨度要求ISO Class 5以上，但本公司的設備全部以Class 4運作。",
+      "judgment": {
+        "evaluation": "The evaluation translation is excellent and nearly equivalent to the reference. Both translations are highly accurate and appropriate for Taiwan Traditional Chinese in the pharmaceutical/medical device domain. The only minor stylistic difference is the conjunction choice ('而' vs '但'), both valid in context.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "MIX-004",
+      "industry": "mixed",
+      "difficulty": "medium",
+      "source_ja": "廃棄される半導体ウェーハから回収したシリコンを、太陽電池用の原料として再利用し、コストを30%削減しました。",
+      "reference_zh_tw": "將廢棄半導體晶圓回收的矽作為太陽能電池的原料再利用，成本降低了 30%。",
+      "haiku_output": "從報廢的半導體晶圓回收矽材，重新利用作為太陽電池的原料，成功將成本降低30%。",
+      "judgment": {
+        "evaluation": "The translation is accurate and natural, with proper Taiwan terminology. All critical terms are correctly rendered, and the meaning is fully preserved. The sentence structure is slightly more elaborate than the reference but maintains fidelity to the source.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "將廢棄半導體晶圓回收的矽作為太陽能電池的原料再利用，成本降低了30%",
+            "actual": "從報廢的半導體晶圓回收矽材，重新利用作為太陽電池的原料，成功將成本降低30%",
+            "note": "The evaluation uses 'from discarded' (從...回收) structure which is grammatically correct but slightly more verbose than reference. Adds '成功' which is an interpretive addition not in source. 'Re-utilize' (重新利用) is acceptable but reference's 再利用 is more concise. Overall still natural and fluent."
+          }
+        ]
+      }
+    }
+  ]
+}
