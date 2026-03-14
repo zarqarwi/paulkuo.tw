@@ -36,7 +36,7 @@ function haikuCost(usage) { const hp = PRICING['claude-haiku-4-5-20251001']; ret
 const MEDICAL_TRIGGERS = ['治療','クリニック','薬剤','医療','診所','醫療','エクソソーム','幹細胞','MSC','自由診療','再生医療','点鼻薬','スプレー','外泌體','藥劑','噴霧','細胞','抗体','免疫','臨床','投与','処方'];
 const SEMICONDUCTOR_TRIGGERS = ['ウェーハ','半導体','半導體','リソグラフィー','エッチング','パッケージング','トランジスタ','FinFET','GAA','EUV','CVD','CoWoS','HBM','歩留まり','チャンバー','パーティクル','晶圓','製程','良率','微影','蝕刻','封裝','電晶體','ダイ','フォトマスク','配線','ドーピング','イオン注入','CMP','プラズマ','nm プロセス','nmプロセス','3nm','5nm','7nm','先端','ロジックチップ'];
 const CIRCULAR_TRIGGERS = ['リサイクル','回収率','精錬','精煉','廃棄','カーボン','碳權','ESG','都市鉱山','都市礦山','環境負荷','ライフサイクル','生命週期','廃プリント','廢印刷','レアメタル','稀有金屬','電解','スクラップ','Scope','サプライチェーン','供應鏈','循環','再利用'];
-const BUSINESS_TRIGGERS = ['契約','見積','納期','発注','請求','受注','商談','取引','単価','ロット','NDA','MOU','LOI','提案','打ち合わせ','議事録','稟議','決裁','予算','売上','営業','四半期','決算','株主','取締役','監査','コンプライアンス','御社','弊社','ご提案','ご検討','ご回答','ご確認','ドラフト','秘密保持','延長','解約'];
+const BUSINESS_TRIGGERS = ['契約','見積','納期','発注','請求','受注','商談','取引','単価','ロット','NDA','MOU','LOI','提案','打ち合わせ','議事録','稟議','決裁','予算','売上','営業','四半期','決算','株主','取締役','監査','コンプライアンス','御社','弊社','ご提案','ご検討','ご回答','ご確認','ドラフト','秘密保持','延長','解約','恐縮','恐れ入り','お手数','させていただ','ご連絡','ご報告','ご準備','何卒','よろしくお願い','会議資料','会議'];
 function detectContext(glossary, sourceText) {
   const glossaryText = (glossary && Array.isArray(glossary) && glossary.length > 0) ? glossary.map(g => (g.term || '') + ' ' + (g.translation || '')).join(' ') : '';
   const all = glossaryText + ' ' + (sourceText || '');
@@ -74,6 +74,8 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
       '  ⚠️ 製品=產品【product，絕非製劑(preparation)】, 製劑=製劑【pharmaceutical preparation】\n' +
       '  スプレー=噴霧/噴劑, 点鼻薬=鼻噴劑, エクソソーム=外泌體, MSC-CM=MSC條件培養液\n' +
       '  薬物送達システム=藥物遞送系統, リポソーム製剤=脂質體製劑\n' +
+      '  注入する=注入（非「注射」；注入為涵蓋性用語，PRP等療法中更精準）\n' +
+      '  GMPグレード=GMP 等級（勿用「GMP級」）, 収量=產量（非「收率」）\n' +
       '4. Output: 繁體中文, maintain terminology consistency, preserve uncertain terms in brackets.';
   }
   // Semiconductor context detection (from source text, not just glossary)
@@ -84,9 +86,9 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
       '  リソグラフィー=微影, 露光=曝光, フォトマスク=光罩, 光刻=微影, 光刻膠/光敲膠=光阻劑\n' +
       '  エッチング=蝕刻, ウェットエッチング=濕式蝕刻, ドライエッチング=乾式蝕刻\n' +
       '  パッケージング=封裝, トランジスタ=電晶體, ロジックチップ=邏輯晶片\n' +
-      '  ゲートオールアラウンド/GAA=環繞式閘極, リーク電流=漏電流, 消費電力=功耗\n' +
-      '  チャンバー=腔體, パーティクル=微粒, 予防保全=預防性保養\n' +
-      '  CVD装置=CVD 設備, 高帯域=高頻寬, 均一性=均勻性\n' +
+      '  ゲートオールアラウンド/GAA=環繞式閘極（勿用 gate-all-around）, リーク電流=漏電流, 消費電力=功耗\n' +
+      '  チャンバー=腔體（勿用「反應腔」「腔室」）, パーティクル=微粒, 予防保全=預防性保養\n' +
+      '  CVD装置=CVD 設備（勿用「CVD 裝置」）, 高帯域=高頻寬, 均一性=均勻性\n' +
       '  集成電路→積體電路, 芯片→晶片 (use Taiwan terms, NEVER mainland terms)\n';
   }
   if (ctx.circular && !isMedicalContext(glossary) && !ctx.semiconductor) {
@@ -105,12 +107,51 @@ function buildTranslatePrompt(targetName, twHint, glossaryHint, glossary, source
       '  打ち合わせ=會議/討論, 商談=商務洽談, 取引先=客戶/往來廠商\n' +
       '  秘密保持期間=保密期間, 稒議=簽呈, 決裁=核決\n' +
       '  Japanese keigo: ご提案=提案, ご回答=回覆, ご確認=確認, ご検討=討議/研議\n' +
-      '  大変恐縮ですが=非常抱歉, お世話になっております=您好(greeting)\n';
+      '  大変恐縮ですが=非常抱歉, お世話になっております=您好(greeting)\n' +
+      '\n## 商務語域規則\n' +
+      'Translation output MUST use professional written register. Even if the source is spoken/colloquial, output must maintain formal written standard, as translations serve as official meeting records.\n' +
+      '\n### 謙讓語 → 中文書面商務語\n' +
+      '  「〜させていただく」→「我方將…」「我們希望能…」「容我…」。NEVER translate as「我想要…」「我要…」\n' +
+      '  「検討させていただく」→「我方希望能進行內部評估」「容我們先行內部討論」。NEVER translate as「我想要討論」「我想討論看看」\n' +
+      '  「ご報告させていただきます」→「謹向您報告」「容我向您說明」\n' +
+      '\n### 道歉/緩衝表達 → 中文書面委婉語\n' +
+      '  「大変恐縮ですが」→「非常抱歉」「深感不便」。NEVER translate as「不好意思」\n' +
+      '  「恐れ入りますが」→「冒昧打擾」「不好意思打擾您」\n' +
+      '  「お手数をおかけしますが」→「有勞您」「麻煩您了」。NEVER omit「您」or「了」\n' +
+      '  「何卒よろしくお願いいたします」→「敬請惠予協助」「懇請撥冗處理」。NEVER translate as「拜託了」「請多多指教」\n' +
+      '\n### 主語規範\n' +
+      '  First person: use「我方」「我們」「敝司」in business context. NEVER use「我」(unless source explicitly uses 私は for personal stance, not 弊社は)\n' +
+      '  Second person: use「貴方」「貴司」「您」. NEVER use「你」\n' +
+      '\n### 集體語氣規範\n' +
+      '  當日文原文主語為組織（弊社／社内／当社／我々），中文翻譯一律使用「我方」「敝司」作為主語開頭，避免使用「我們希望能…」「我們想要…」等偏口語的集體語氣。\n' +
+      '  例：「弊社で検討させていただきたい」→「我方希望就此進行內部評估」（非「我們希望能討論看看」）\n' +
+      '\n### 精簡原則\n' +
+      '  商務翻譯應簡潔有力：一個意思只表達一次，刪除重複修飾詞，避免同義疊加。若中文譯文明顯長於原文，主動精簡。\n' +
+      '  精簡針對重複修飾，不是禮貌用語。「非常抱歉」等禮貌程度必須保留，不得降為「不好意思」。\n' +
+      '  例：避免「進行仔細且詳盡的評估與檢討」→ 應為「進行評估」\n' +
+      '\n### ⚠️ 翻譯前最終檢查（違反即為錯誤）\n' +
+      '  1. 主語：商務語境禁止「我想」「我要」開頭 → 必須用「我方」「我們」「敝司」\n' +
+      '  2. 道歉：「大変恐縮ですが」禁止譯為「不好意思」→ 必須用「非常抱歉」\n' +
+      '  3. 敬稱：禁止「你」→ 必須用「您」\n';
   }
   base += glossaryHint;
   return base;
 }
 
+
+// Business context post-processing: regex fallback for rules Haiku tends to ignore
+function businessPostProcess(translated, sourceText) {
+  // BIZ-004: 「大変恐縮ですが」must be「非常抱歉」not「不好意思」
+  if (sourceText.includes('恐縮')) {
+    translated = translated.replace(/不好意思/g, '非常抱歉');
+  }
+  // BIZ-001: org subject (社内/弊社/当社/させていただ) → never「我想」, use「我方希望」
+  const orgSubject = ['弊社', '社内', '社內', '当社', '當社', '我々'].some(p => sourceText.includes(p)) || sourceText.includes('させていただ');
+  if (orgSubject) {
+    translated = translated.replace(/(?:^|[，,。])我想/g, (m) => m.replace('我想', '我方希望'));
+  }
+  return translated;
+}
 
 export async function handleTranslate(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
@@ -128,7 +169,10 @@ export async function handleTranslate(request, env) {
   if (!res || !res.ok) { const err = res ? await res.json().catch(() => ({})) : {}; return jsonResponse({ error: err.error?.message || 'Claude failed' }, 502, request); }
   const data = await res.json(); const usage = data.usage || {};
   await logCost(env.TICKER_KV, { service: 'anthropic', model: 'claude-haiku-4.5', action: 'translate', source: 'translator', code: auth.code, _userId: auth.userId || '', inputTokens: usage.input_tokens || 0, outputTokens: usage.output_tokens || 0, costUSD: +haikuCost(usage).toFixed(6), note: (sourceLang || 'auto') + '>' + targetLang });
-  return jsonResponse({ translated: data.content?.[0]?.text?.trim() || '', model: 'claude-haiku-4-5' }, 200, request);
+  let translated = data.content?.[0]?.text?.trim() || '';
+  const postCtx = detectContext(trGlossary, text);
+  if (postCtx.business) translated = businessPostProcess(translated, text);
+  return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
 }
 
 export async function handleTranslateStream(request, env) {
@@ -333,7 +377,8 @@ export async function handleFeedbackGet(request, env) {
 // === TQEF Claude Proxy (admin only, for eval without client-side API key) ===
 export async function handleTqefClaude(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
-  const auth = await authenticateRequest(request, env, '');
+  const url = new URL(request.url);
+  const auth = await authenticateRequest(request, env, url.searchParams.get('code') || '');
   if (!auth || !auth.isAdmin) return jsonResponse({ error: 'Admin access required' }, 403, request);
   let body; try { body = await request.json(); } catch(e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
   const { model, system, user, max_tokens } = body;
