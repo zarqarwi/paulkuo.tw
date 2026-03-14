@@ -220,6 +220,92 @@ function semiPostProcess(text) {
   return text;
 }
 
+// Circular economy / environmental CN→TW post-processing dictionary
+function circularPostProcess(text) {
+  const replacements = [
+    // 長詞優先
+    ['城市生活垃圾', '都市一般廢棄物'],
+    ['环境影响评价', '環境影響評估'],
+    ['可持续发展', '永續發展'],
+    ['排污许可证', '排放許可證'],
+    ['印刷电路板', '印刷電路板'],
+    ['中水回用', '中水回收再利用'],
+    ['生物降解', '生物可分解'],
+    ['固体废弃物', '固體廢棄物'],
+    ['固体废物', '固體廢棄物'],
+    ['危险废物', '有害事業廢棄物'],
+    ['工业固废', '事業廢棄物'],
+    ['生活垃圾', '一般廢棄物'],
+    ['资源化利用', '資源化處理'],
+    ['废水处理', '廢水處理'],
+    ['污水处理', '污水處理'],
+    ['达标排放', '達標排放'],
+    ['排放标准', '排放標準'],
+    ['点源污染', '點源污染'],
+    ['面源污染', '面源污染'],
+    ['温室气体', '溫室氣體'],
+    ['节能减排', '節能減碳'],
+    ['清洁生产', '清潔生產'],
+    ['绿色制造', '綠色製造'],
+    ['绿色建筑', '綠色建築'],
+    ['绿色金融', '綠色金融'],
+    ['复合材料', '複合材料'],
+    ['湿法冶金', '濕法冶金'],
+    ['火法冶金', '火法冶金'],
+    ['生态环境部', '環境部'],
+    ['环境保护法', '環境保護法'],
+    ['环境监测', '環境監測'],
+    ['在线监测', '線上監測'],
+    ['应急预案', '緊急應變計畫'],
+    ['排污许可', '排放許可'],
+    ['电子废弃物', '電子廢棄物'],
+    ['废旧电池', '廢電池'],
+    ['废旧家电', '廢家電'],
+    ['报废汽车', '報廢車輛'],
+    ['贵金属回收', '貴金屬回收'],
+    ['稀有金属', '稀有金屬'],
+    ['回收利用', '回收再利用'],
+    ['循环利用', '循環再利用'],
+    ['综合利用', '綜合利用'],
+    ['废品回收', '資源回收'],
+    ['再生资源', '再生資源'],
+    ['垃圾焚烧', '垃圾焚化'],
+    ['垃圾填埋', '垃圾掩埋'],
+    ['卫生填埋', '衛生掩埋'],
+    ['环保部门', '環保機關'],
+    ['光伏', '太陽能光電'],
+    ['风电', '風力發電'],
+    ['可持续', '永續'],
+    ['填埋场', '掩埋場'],
+    ['焚烧厂', '焚化廠'],
+    ['焚烧炉', '焚化爐'],
+    ['粉煤灰', '飛灰'],
+    ['危废', '有害廢棄物'],
+    ['固废', '固廢'],
+    ['冶炼', '冶煉'],
+    ['精炼', '精煉'],
+    ['提炼', '提煉'],
+    ['尾矿', '尾礦'],
+    ['矿渣', '礦渣'],
+    ['炉渣', '爐渣'],
+    ['废渣', '廢渣'],
+    ['塑料', '塑膠'],
+    ['橡胶', '橡膠'],
+    ['纤维', '纖維'],
+    ['可降解', '可分解'],
+    ['再制造', '再製造'],
+    ['以旧换新', '以舊換新'],
+    ['线路板', '電路板'],
+    ['分拣', '分選'],
+    ['碳足迹', '碳足跡'],
+    ['环评', '環評'],
+  ];
+  for (const [cn, tw] of replacements) {
+    text = text.replaceAll(cn, tw);
+  }
+  return text;
+}
+
 // General CN→TW post-processing (applies to all domains)
 function generalPostProcess(text) {
   const replacements = [
@@ -258,6 +344,7 @@ export async function handleTranslate(request, env) {
   const postCtx = detectContext(trGlossary, text);
   if (postCtx.business) translated = businessPostProcess(translated, text);
   if (postCtx.semiconductor) translated = semiPostProcess(translated);
+  if (postCtx.circular) translated = circularPostProcess(translated);
   translated = generalPostProcess(translated);
   return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
 }
