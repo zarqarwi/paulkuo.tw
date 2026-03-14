@@ -153,6 +153,91 @@ function businessPostProcess(translated, sourceText) {
   return translated;
 }
 
+// Semiconductor CN→TW post-processing dictionary
+// Sources: Wikipedia CGroup/Electronics, 痞客邦IC設計用語對照, 百度文庫兩岸半導體照明術語
+function semiPostProcess(text) {
+  const replacements = [
+    // 進階製程 (長詞優先)
+    ['混合信号集成电路', '混合訊號積體電路'],
+    ['模拟数字转换器', '類比數位轉換器'],
+    ['閘極全環繞結構', '環繞式閘極結構'],
+    ['闸极全环绕', '環繞式閘極'],
+    ['gate-all-around', '環繞式閘極'],
+    ['数据选择器', '數據多工器'],
+    ['封装内系统', '封裝體系'],
+    ['单片系统', '單晶片系統'],
+    ['集成电路', '積體電路'],
+    ['雪崩击穿', '突崩潰'],
+    ['制程能力', '製程能力'],
+    ['场效应管', '場效電晶體'],
+    ['前道工序', '前段製程'],
+    ['后道工序', '後段製程'],
+    // 核心元件/製程
+    ['光刻机', '曝光機'],
+    ['反应腔', '腔體'],
+    ['外延片', '磊晶片'],
+    ['传输门', '傳輸閘'],
+    ['触发器', '正反器'],
+    ['与非门', '反及閘'],
+    ['或非门', '反或閘'],
+    ['晶体管', '電晶體'],
+    ['寄存器', '暫存器'],
+    ['芯片', '晶片'],
+    ['光刻', '微影'],
+    ['流片', '下線'],
+    ['衬底', '基板'],
+    ['掺杂', '摻雜'],
+    ['工艺', '製程'],
+    ['硅片', '矽晶圓'],
+    ['模拟', '類比'],
+    ['数字', '數位'],
+    ['仿真', '模擬'],
+    ['默认', '預設'],
+    ['版图', '佈局'],
+    ['综合', '合成'],
+    ['管脚', '腳位'],
+    ['框图', '方塊圖'],
+    ['网表', '網表'],
+    ['复位', '重啟'],
+    ['与门', '及閘'],
+    ['或门', '或閘'],
+    ['有源', '主動'],
+    ['无源', '被動'],
+    ['偏置', '偏壓'],
+    ['纹波', '漣波'],
+    ['采样', '取樣'],
+    ['调制', '調變'],
+    ['受主', '受體'],
+    ['标量', '純量'],
+    ['肖特基', '蕭特基'],
+    ['二极管', '二極體'],
+    ['装置', '設備'],
+    ['硅', '矽'],
+  ];
+  for (const [cn, tw] of replacements) {
+    text = text.replaceAll(cn, tw);
+  }
+  return text;
+}
+
+// General CN→TW post-processing (applies to all domains)
+function generalPostProcess(text) {
+  const replacements = [
+    ['传感器', '感測器'],
+    ['分辨率', '解析度'],
+    ['固件', '韌體'],
+    ['硬件', '硬體'],
+    ['软件', '軟體'],
+    ['屏幕', '螢幕'],
+    ['接口', '介面'],
+    ['纳米', '奈米'],
+  ];
+  for (const [cn, tw] of replacements) {
+    text = text.replaceAll(cn, tw);
+  }
+  return text;
+}
+
 export async function handleTranslate(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
   if (!env.ANTHROPIC_API_KEY) return jsonResponse({ error: 'ANTHROPIC_API_KEY not configured' }, 500, request);
@@ -172,6 +257,8 @@ export async function handleTranslate(request, env) {
   let translated = data.content?.[0]?.text?.trim() || '';
   const postCtx = detectContext(trGlossary, text);
   if (postCtx.business) translated = businessPostProcess(translated, text);
+  if (postCtx.semiconductor) translated = semiPostProcess(translated);
+  translated = generalPostProcess(translated);
   return jsonResponse({ translated, model: 'claude-haiku-4-5' }, 200, request);
 }
 
