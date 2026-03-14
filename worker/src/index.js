@@ -15,7 +15,7 @@ import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
-import { handleTqefCorpus, handleTqefCorpusImport, handleTqefRounds, handleTqefRoundDetail, handleTqefEvalUpload } from './tqef-api.js';
+import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload } from './tqef-api.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -75,7 +75,7 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/tqef/corpus','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload'];
+const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload'];
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
@@ -104,14 +104,25 @@ async function handleRequest(request, env) {
   if (path === '/feed/push' && method === 'POST') return handleFeedPush(request, env);
   if (path === '/validate-code') return handleValidateCode(request, env);
   // ── TQEF Admin API ──
+  if (path === '/api/tqef/dashboard' && method === 'GET') return handleTqefDashboard(request, env);
   if (path === '/api/tqef/corpus' && method === 'GET') return handleTqefCorpus(request, env);
+  if (path === '/api/tqef/corpus' && method === 'POST') return handleTqefCorpusCreate(request, env);
   if (path === '/api/tqef/corpus/import' && method === 'POST') return handleTqefCorpusImport(request, env);
   if (path === '/api/tqef/rounds' && method === 'GET') return handleTqefRounds(request, env);
   if (path === '/api/tqef/eval/upload' && method === 'POST') return handleTqefEvalUpload(request, env);
-  // Dynamic route: /api/tqef/rounds/:id
+  // Dynamic TQEF routes: /api/tqef/rounds/:id, /api/tqef/rounds/:id/compare/:id2, /api/tqef/corpus/:id
   if (path.startsWith('/api/tqef/rounds/') && method === 'GET') {
-    const roundId = decodeURIComponent(path.split('/api/tqef/rounds/')[1]);
-    if (roundId) return handleTqefRoundDetail(request, env, roundId);
+    const parts = path.replace('/api/tqef/rounds/', '').split('/');
+    if (parts.length === 3 && parts[1] === 'compare') return handleTqefRoundCompare(request, env, decodeURIComponent(parts[0]), decodeURIComponent(parts[2]));
+    if (parts.length === 1 && parts[0]) return handleTqefRoundDetail(request, env, decodeURIComponent(parts[0]));
+  }
+  if (path.startsWith('/api/tqef/corpus/') && method === 'PUT') {
+    const corpusId = decodeURIComponent(path.split('/api/tqef/corpus/')[1]);
+    if (corpusId) return handleTqefCorpusUpdate(request, env, corpusId);
+  }
+  if (path.startsWith('/api/tqef/corpus/') && method === 'DELETE') {
+    const corpusId = decodeURIComponent(path.split('/api/tqef/corpus/')[1]);
+    if (corpusId) return handleTqefCorpusDelete(request, env, corpusId);
   }
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
