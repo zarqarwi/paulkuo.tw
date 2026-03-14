@@ -52,6 +52,7 @@
     <div class="ta-referers" id="taReferers"></div>
     <div class="ta-pages" id="taPages"></div>
     <div class="ta-devices" id="taDevices"></div>
+    <div class="ta-duration" id="taDuration"></div>
   </div>
 
   <!-- Error state -->
@@ -266,8 +267,31 @@
         (srcRows ? '<div class="ta-ref-details">' + srcRows + '</div>' : '');
     }
 
-    // --- Phase 2: Top Pages ---
+    // --- Phase 2: Top Pages (with duration badges) ---
     var topPages = data.topPages;
+    // Build duration lookup map: path → avgSeconds
+    var durMap = {};
+    var durData = data.duration;
+    if (durData && durData.pages) {
+      durData.pages.forEach(function(d) { durMap[d.path] = d.avgSeconds; });
+    }
+    // DEV_MODE: 假資料（上線後刪除此區塊）
+    if (!durData || !durData.pages || durData.pages.length === 0) {
+      durMap = {
+        '/': 25,
+        '/articles/ai-collab-realtime-translator/': 185,
+        '/articles/circular-economy-digital-transformation/': 142,
+        '/articles/super-individual-ai-workflow/': 98,
+        '/about/': 45,
+        '/tools/translator/': 67,
+        '/articles/esg-reporting-automation/': 120,
+        '/blog/': 18,
+        '/projects/': 35,
+        '/dashboard/': 52
+      };
+    }
+    // END DEV_MODE
+
     if (topPages && topPages.pages) {
       var nameMap = {
         '/': '首頁',
@@ -287,18 +311,34 @@
         }
         return path;
       }
+      function fmtDur(sec) {
+        if (sec >= 60) return Math.floor(sec / 60) + 'm' + (sec % 60 > 0 ? sec % 60 + 's' : '');
+        return sec + 's';
+      }
+      function durClass(sec) {
+        if (sec > 60) return 'ta-dur-green';
+        if (sec >= 30) return 'ta-dur-yellow';
+        return 'ta-dur-gray';
+      }
 
+      var hasDur = Object.keys(durMap).length > 0;
       var pages10 = topPages.pages.slice(0, 10);
       var maxPagePct = pages10.length > 0 ? pages10[0].percent : 1;
       var pageRows = pages10.map(function(p, i) {
         var barW = (p.percent / maxPagePct * 100).toFixed(1);
         var name = pageName(p.path);
         var isArticle = p.path.startsWith('/articles/');
+        var durBadge = '';
+        if (hasDur && durMap[p.path] !== undefined) {
+          var sec = durMap[p.path];
+          durBadge = '<span class="ta-dur-badge ' + durClass(sec) + '">' + fmtDur(sec) + '</span>';
+        }
         return '<div class="ta-page-row">' +
           '<span class="ta-page-rank">' + (i + 1) + '</span>' +
           '<span class="ta-page-name' + (isArticle ? ' ta-page-article' : '') + '">' + name + '</span>' +
           '<div class="ta-country-bar-bg"><div class="ta-country-bar" style="width:' + barW + '%"></div></div>' +
           '<span class="ta-country-pct">' + p.percent + '%</span>' +
+          durBadge +
         '</div>';
       }).join('');
 
@@ -329,6 +369,53 @@
 
       document.getElementById('taDevices').innerHTML =
         '<h4 class="ta-section-title">裝置分佈</h4>' + devRows;
+    }
+
+    // --- Phase 3: Duration (停留時間) ---
+    var durPages = [];
+    if (durData && durData.pages && durData.pages.length > 0) {
+      durPages = durData.pages;
+    } else {
+      // DEV_MODE: 假資料（上線後刪除此區塊）
+      durPages = [
+        { path: '/articles/ai-collab-realtime-translator/', avgSeconds: 185, views: 42 },
+        { path: '/articles/circular-economy-digital-transformation/', avgSeconds: 142, views: 28 },
+        { path: '/articles/esg-reporting-automation/', avgSeconds: 120, views: 19 },
+        { path: '/articles/super-individual-ai-workflow/', avgSeconds: 98, views: 35 },
+        { path: '/tools/translator/', avgSeconds: 67, views: 56 },
+        { path: '/dashboard/', avgSeconds: 52, views: 15 },
+        { path: '/about/', avgSeconds: 45, views: 31 },
+        { path: '/projects/', avgSeconds: 35, views: 22 },
+        { path: '/', avgSeconds: 25, views: 120 },
+        { path: '/blog/', avgSeconds: 18, views: 88 }
+      ];
+      // END DEV_MODE
+    }
+    if (durPages.length > 0) {
+      var maxDurSec = durPages[0].avgSeconds || 1;
+      var durRows = durPages.slice(0, 10).map(function(d, i) {
+        var barW = (d.avgSeconds / maxDurSec * 100).toFixed(1);
+        var name = (typeof pageName === 'function') ? pageName(d.path) : d.path;
+        var cls = durClass(d.avgSeconds);
+        var barColor = d.avgSeconds > 60 ? '#10b981' : (d.avgSeconds >= 30 ? '#eab308' : '#9ca3af');
+        return '<div class="ta-dur-row">' +
+          '<span class="ta-page-rank">' + (i + 1) + '</span>' +
+          '<span class="ta-dur-name">' + name + '</span>' +
+          '<div class="ta-dur-bar-bg"><div class="ta-dur-bar" style="width:' + barW + '%;background:' + barColor + '"></div></div>' +
+          '<span class="ta-dur-badge ' + cls + '">' + fmtDur(d.avgSeconds) + '</span>' +
+          '<span class="ta-dur-views">' + d.views + ' 次</span>' +
+        '</div>';
+      }).join('');
+
+      var durLegend = '<div class="ta-dur-legend">' +
+        '<span class="ta-dur-legend-item"><span class="ta-dot" style="background:#10b981"></span>&gt; 60s 深度閱讀</span>' +
+        '<span class="ta-dur-legend-item"><span class="ta-dot" style="background:#eab308"></span>30-60s 瀏覽</span>' +
+        '<span class="ta-dur-legend-item"><span class="ta-dot" style="background:#9ca3af"></span>&lt; 30s 快速掃過</span>' +
+      '</div>';
+
+      document.getElementById('taDuration').innerHTML =
+        '<h4 class="ta-section-title">平均停留時間</h4>' +
+        durLegend + durRows;
     }
 
     // Show content, hide loading
@@ -671,6 +758,128 @@
     width: 42px; text-align: right;
     font-size: 0.7rem; font-weight: 600;
     color: var(--text-muted); flex-shrink: 0;
+  }
+
+  /* Duration badges (in Top Pages rows) */
+  .ta-pages :global(.ta-dur-badge) {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    min-width: 38px;
+    text-align: center;
+  }
+  .ta-pages :global(.ta-dur-green) {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+  }
+  .ta-pages :global(.ta-dur-yellow) {
+    background: rgba(234, 179, 8, 0.12);
+    color: #a16207;
+  }
+  .ta-pages :global(.ta-dur-gray) {
+    background: rgba(156, 163, 175, 0.12);
+    color: #6b7280;
+  }
+
+  /* Duration section */
+  .ta-duration {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-light, #e8e6e1);
+  }
+  .ta-duration :global(.ta-section-title) {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--brand-navy, #1b2d4f);
+    margin: 0 0 12px 0;
+  }
+  .ta-duration :global(.ta-dur-legend) {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .ta-duration :global(.ta-dur-legend-item) {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+  .ta-duration :global(.ta-dot) {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .ta-duration :global(.ta-dur-row) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+  }
+  .ta-duration :global(.ta-page-rank) {
+    width: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .ta-duration :global(.ta-dur-name) {
+    width: 140px;
+    font-size: 0.75rem;
+    color: var(--text-secondary, #5a5a5a);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .ta-duration :global(.ta-dur-bar-bg) {
+    flex: 1;
+    height: 14px;
+    background: var(--bg-section, #f5f0eb);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .ta-duration :global(.ta-dur-bar) {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .ta-duration :global(.ta-dur-badge) {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 38px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .ta-duration :global(.ta-dur-green) {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+  }
+  .ta-duration :global(.ta-dur-yellow) {
+    background: rgba(234, 179, 8, 0.12);
+    color: #a16207;
+  }
+  .ta-duration :global(.ta-dur-gray) {
+    background: rgba(156, 163, 175, 0.12);
+    color: #6b7280;
+  }
+  .ta-duration :global(.ta-dur-views) {
+    width: 40px;
+    text-align: right;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
   }
 
   /* Error state */
