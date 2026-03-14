@@ -2,6 +2,7 @@
  * paulkuo-ticker Worker — Entry Point & Router
  * Modularized: 2026-03-08
  * Social API added: 2026-03-08
+ * TQEF Admin API added: 2026-03-14
  */
 import { TICKER_CACHE_TTL } from './config.js';
 import { corsHeaders, jsonResponse, twISOString, twDateStr } from './utils.js';
@@ -14,6 +15,7 @@ import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
+import { handleTqefCorpus, handleTqefCorpusImport, handleTqefRounds, handleTqefRoundDetail, handleTqefEvalUpload } from './tqef-api.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -73,7 +75,7 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback'];
+const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/tqef/corpus','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload'];
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
@@ -101,6 +103,16 @@ async function handleRequest(request, env) {
   if (path === '/feedback' && method === 'GET') return handleFeedbackGet(request, env);
   if (path === '/feed/push' && method === 'POST') return handleFeedPush(request, env);
   if (path === '/validate-code') return handleValidateCode(request, env);
+  // ── TQEF Admin API ──
+  if (path === '/api/tqef/corpus' && method === 'GET') return handleTqefCorpus(request, env);
+  if (path === '/api/tqef/corpus/import' && method === 'POST') return handleTqefCorpusImport(request, env);
+  if (path === '/api/tqef/rounds' && method === 'GET') return handleTqefRounds(request, env);
+  if (path === '/api/tqef/eval/upload' && method === 'POST') return handleTqefEvalUpload(request, env);
+  // Dynamic route: /api/tqef/rounds/:id
+  if (path.startsWith('/api/tqef/rounds/') && method === 'GET') {
+    const roundId = decodeURIComponent(path.split('/api/tqef/rounds/')[1]);
+    if (roundId) return handleTqefRoundDetail(request, env, roundId);
+  }
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
   if (path === '/social/status') return handleSocialStatus(request, env);

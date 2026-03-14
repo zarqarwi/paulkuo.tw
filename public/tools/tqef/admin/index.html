@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TQEF Admin Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    header h1 { font-size: 24px; font-weight: 700; }
+    header h1 span { color: #38bdf8; }
+    .auth-msg { font-size: 14px; color: #94a3b8; }
+    .auth-msg a { color: #38bdf8; text-decoration: none; }
+
+    /* Score cards */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .card { background: #1e293b; border-radius: 12px; padding: 20px; text-align: center; }
+    .card .label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .card .value { font-size: 32px; font-weight: 700; }
+    .card .value.good { color: #4ade80; }
+    .card .value.warn { color: #fbbf24; }
+    .card .value.bad { color: #f87171; }
+    .card .sub { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+    /* Chart */
+    .chart-section { background: #1e293b; border-radius: 12px; padding: 24px; margin-bottom: 32px; }
+    .chart-section h2 { font-size: 16px; margin-bottom: 16px; color: #cbd5e1; }
+    .chart-container { position: relative; height: 300px; }
+
+    /* Round table */
+    .table-section { background: #1e293b; border-radius: 12px; padding: 24px; }
+    .table-section h2 { font-size: 16px; margin-bottom: 16px; color: #cbd5e1; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { text-align: left; padding: 10px 12px; color: #94a3b8; border-bottom: 1px solid #334155; font-weight: 500; }
+    td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
+    tr:hover td { background: #334155; }
+    td a { color: #38bdf8; text-decoration: none; }
+    td a:hover { text-decoration: underline; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+    .badge-pass { background: #166534; color: #4ade80; }
+    .badge-warn { background: #713f12; color: #fbbf24; }
+
+    /* Industry breakdown */
+    .industry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 32px; }
+    .industry-card { background: #1e293b; border-radius: 10px; padding: 16px; }
+    .industry-card .name { font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+    .industry-card .score { font-size: 24px; font-weight: 700; }
+
+    .loading { text-align: center; padding: 60px; color: #64748b; font-size: 16px; }
+    .error { text-align: center; padding: 60px; color: #f87171; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span>TQEF</span> Admin Dashboard</h1>
+      <div class="auth-msg" id="authMsg">載入中…</div>
+    </header>
+    <div id="content"><div class="loading">載入數據中…</div></div>
+  </div>
+
+<script>
+const API = 'https://api.paulkuo.tw';
+
+async function checkAuth() {
+  try {
+    const res = await fetch(`${API}/auth/me`, { credentials: 'include' });
+    const data = await res.json();
+    if (data.authenticated && data.user.role === 'admin') {
+      document.getElementById('authMsg').textContent = `${data.user.name} (admin)`;
+      return true;
+    }
+  } catch (e) {}
+  document.getElementById('authMsg').innerHTML = '<a href="' + API + '/auth/google/login?redirect=/tools/tqef/admin/">登入</a>';
+  document.getElementById('content').innerHTML = '<div class="error">需要 Admin 權限。請先登入。</div>';
+  return false;
+}
+
+function scoreColor(v) {
+  if (v >= 4.5) return 'good';
+  if (v >= 4.0) return 'warn';
+  return 'bad';
+}
+
+function industryLabel(key) {
+  const map = {
+    regenerative_medicine: '再生醫療',
+    semiconductor: '半導體',
+    circular_tech: '循環科技',
+    business_general: '商務',
+    mixed: '跨領域'
+  };
+  return map[key] || key;
+}
+
+async function loadDashboard() {
+  const ok = await checkAuth();
+  if (!ok) return;
+
+  try {
+    const res = await fetch(`${API}/api/tqef/rounds`, { credentials: 'include' });
+    const data = await res.json();
+    if (!data.rounds || !data.rounds.length) {
+      document.getElementById('content').innerHTML = '<div class="loading">尚無評估數據。請先執行 migration。</div>';
+      return;
+    }
+
+    const rounds = data.rounds.sort((a, b) => a.round_id.localeCompare(b.round_id, undefined, { numeric: true }));
+    const latest = rounds[rounds.length - 1];
+
+    let html = '';
+
+    // Score cards
+    html += '<div class="cards">';
+    html += `<div class="card"><div class="label">Overall</div><div class="value ${scoreColor(latest.l2_overall)}">${latest.l2_overall?.toFixed(2) || '—'}</div><div class="sub">${latest.round_id}</div></div>`;
+    html += `<div class="card"><div class="label">術語</div><div class="value ${scoreColor(latest.l2_term)}">${latest.l2_term?.toFixed(2) || '—'}</div></div>`;
+    html += `<div class="card"><div class="label">流暢度</div><div class="value ${scoreColor(latest.l2_fluency)}">${latest.l2_fluency?.toFixed(2) || '—'}</div></div>`;
+    html += `<div class="card"><div class="label">語境保留</div><div class="value ${scoreColor(latest.l2_context)}">${latest.l2_context?.toFixed(2) || '—'}</div></div>`;
+    html += `<div class="card"><div class="label">格式正確</div><div class="value ${scoreColor(latest.l2_format)}">${latest.l2_format?.toFixed(2) || '—'}</div></div>`;
+    html += `<div class="card"><div class="label">嚴重錯誤</div><div class="value ${latest.l2_critical_errors === 0 ? 'good' : 'bad'}">${latest.l2_critical_errors ?? '—'}</div></div>`;
+    html += `<div class="card"><div class="label">Rounds</div><div class="value" style="color:#38bdf8">${rounds.length}</div></div>`;
+    html += '</div>';
+
+    // Industry breakdown (latest round)
+    if (latest.industry_breakdown) {
+      html += '<div class="industry-grid">';
+      for (const [key, val] of Object.entries(latest.industry_breakdown)) {
+        const score = typeof val === 'object' ? (val.overall || val.avg) : val;
+        const count = typeof val === 'object' ? (val.count || val.n || '') : '';
+        html += `<div class="industry-card"><div class="name">${industryLabel(key)}${count ? ' (' + count + '句)' : ''}</div><div class="score ${scoreColor(score)}">${typeof score === 'number' ? score.toFixed(2) : '—'}</div></div>`;
+      }
+      html += '</div>';
+    }
+
+    // Trend chart
+    html += '<div class="chart-section"><h2>趨勢折線圖</h2><div class="chart-container"><canvas id="trendChart"></canvas></div></div>';
+
+    // Round table
+    html += '<div class="table-section"><h2>評估歷史</h2><table><thead><tr>';
+    html += '<th>Round</th><th>日期</th><th>Overall</th><th>Term</th><th>Fluency</th><th>Context</th><th>Format</th><th>Critical</th><th>句數</th>';
+    html += '</tr></thead><tbody>';
+    for (const r of [...rounds].reverse()) {
+      const date = r.completed_at ? r.completed_at.slice(0, 10) : '—';
+      html += `<tr>
+        <td><a href="results/?round=${r.round_id}">${r.round_id}</a></td>
+        <td>${date}</td>
+        <td class="${scoreColor(r.l2_overall)}">${r.l2_overall?.toFixed(2) || '—'}</td>
+        <td>${r.l2_term?.toFixed(2) || '—'}</td>
+        <td>${r.l2_fluency?.toFixed(2) || '—'}</td>
+        <td>${r.l2_context?.toFixed(2) || '—'}</td>
+        <td>${r.l2_format?.toFixed(2) || '—'}</td>
+        <td>${r.l2_critical_errors ?? '—'}</td>
+        <td>${r.evaluated_count || r.corpus_size || '—'}</td>
+      </tr>`;
+    }
+    html += '</tbody></table></div>';
+
+    document.getElementById('content').innerHTML = html;
+
+    // Render trend chart
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: rounds.map(r => r.round_id),
+        datasets: [
+          { label: 'Overall', data: rounds.map(r => r.l2_overall), borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.1)', tension: 0.3, fill: true },
+          { label: 'Term', data: rounds.map(r => r.l2_term), borderColor: '#4ade80', tension: 0.3 },
+          { label: 'Fluency', data: rounds.map(r => r.l2_fluency), borderColor: '#fbbf24', tension: 0.3 },
+          { label: 'Context', data: rounds.map(r => r.l2_context), borderColor: '#a78bfa', tension: 0.3 },
+          { label: 'Format', data: rounds.map(r => r.l2_format), borderColor: '#fb923c', tension: 0.3 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { min: 3.5, max: 5.1, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+          x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+        },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', usePointStyle: true, pointStyle: 'circle' } }
+        }
+      }
+    });
+  } catch (e) {
+    document.getElementById('content').innerHTML = `<div class="error">載入失敗：${e.message}</div>`;
+  }
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

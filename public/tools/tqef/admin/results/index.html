@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TQEF Results Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    header h1 { font-size: 20px; font-weight: 700; }
+    header h1 span { color: #38bdf8; }
+    header a { color: #38bdf8; text-decoration: none; font-size: 14px; }
+    header a:hover { text-decoration: underline; }
+
+    .round-header { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 24px; display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+    .round-header .round-id { font-size: 28px; font-weight: 700; color: #38bdf8; }
+    .round-header .meta { font-size: 13px; color: #94a3b8; }
+    .round-header .scores { display: flex; gap: 16px; flex-wrap: wrap; margin-left: auto; }
+    .round-header .score-item { text-align: center; }
+    .round-header .score-item .label { font-size: 11px; color: #64748b; }
+    .round-header .score-item .val { font-size: 20px; font-weight: 700; }
+    .val.good { color: #4ade80; }
+    .val.warn { color: #fbbf24; }
+    .val.bad { color: #f87171; }
+
+    .filters { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filters select, .filters input { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+    .filters select:focus, .filters input:focus { outline: none; border-color: #38bdf8; }
+
+    .table-wrap { background: #1e293b; border-radius: 12px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 10px 12px; color: #94a3b8; border-bottom: 1px solid #334155; font-weight: 500; white-space: nowrap; position: sticky; top: 0; background: #1e293b; }
+    td { padding: 10px 12px; border-bottom: 1px solid #0f172a; vertical-align: top; }
+    tr:hover td { background: #334155; }
+    .cell-text { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+    .cell-text.expanded { white-space: normal; }
+    .cell-score { text-align: center; font-weight: 600; }
+    .error-tag { display: inline-block; background: #7f1d1d; color: #fca5a5; padding: 1px 6px; border-radius: 4px; font-size: 11px; margin: 1px; }
+    .minor-tag { background: #713f12; color: #fde68a; }
+    .domain-tag { display: inline-block; background: #1e3a5f; color: #7dd3fc; padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+
+    .loading { text-align: center; padding: 60px; color: #64748b; }
+    .error { text-align: center; padding: 60px; color: #f87171; }
+
+    .round-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .round-card { background: #1e293b; border-radius: 10px; padding: 16px; cursor: pointer; transition: background 0.15s; text-decoration: none; color: inherit; display: block; }
+    .round-card:hover { background: #334155; }
+    .round-card .rc-id { font-size: 18px; font-weight: 700; color: #38bdf8; }
+    .round-card .rc-date { font-size: 12px; color: #64748b; margin-top: 2px; }
+    .round-card .rc-overall { font-size: 24px; font-weight: 700; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span>TQEF</span> Results Viewer</h1>
+      <a href="/tools/tqef/admin/">← Dashboard</a>
+    </header>
+    <div id="content"><div class="loading">載入中…</div></div>
+  </div>
+
+<script>
+const API = 'https://api.paulkuo.tw';
+
+function scoreColor(v) {
+  if (v >= 4.5) return 'good';
+  if (v >= 4.0) return 'warn';
+  return 'bad';
+}
+
+function industryLabel(key) {
+  const map = { regenerative_medicine: '再生醫療', semiconductor: '半導體', circular_tech: '循環科技', business_general: '商務', mixed: '跨領域' };
+  return map[key] || key;
+}
+
+function getSelectedRound() {
+  return new URLSearchParams(location.search).get('round');
+}
+
+async function fetchJSON(path) {
+  const res = await fetch(`${API}${path}`, { credentials: 'include' });
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  return res.json();
+}
+
+async function renderRoundList() {
+  const data = await fetchJSON('/api/tqef/rounds');
+  if (!data.rounds?.length) {
+    document.getElementById('content').innerHTML = '<div class="loading">尚無評估數據。</div>';
+    return;
+  }
+  const rounds = data.rounds.sort((a, b) => a.round_id.localeCompare(b.round_id, undefined, { numeric: true }));
+
+  let html = '<div class="round-list">';
+  for (const r of [...rounds].reverse()) {
+    const date = r.completed_at ? r.completed_at.slice(0, 10) : '';
+    html += `<a class="round-card" href="?round=${r.round_id}">
+      <div class="rc-id">${r.round_id}</div>
+      <div class="rc-date">${date} · ${r.evaluated_count || r.corpus_size || '?'} 句</div>
+      <div class="rc-overall ${scoreColor(r.l2_overall)}">${r.l2_overall?.toFixed(2) || '—'}</div>
+    </a>`;
+  }
+  html += '</div>';
+  document.getElementById('content').innerHTML = html;
+}
+
+async function renderRoundDetail(roundId) {
+  const data = await fetchJSON(`/api/tqef/rounds/${roundId}`);
+  const round = data.round;
+  const results = data.results || [];
+
+  let html = '';
+
+  html += `<div class="round-header">
+    <div>
+      <div class="round-id">${round.round_id}</div>
+      <div class="meta">${round.completed_at?.slice(0, 10) || ''} · ${round.eval_mode || ''} · ${round.evaluated_count || results.length} 句</div>
+    </div>
+    <div class="scores">
+      <div class="score-item"><div class="label">Overall</div><div class="val ${scoreColor(round.l2_overall)}">${round.l2_overall?.toFixed(2) || '—'}</div></div>
+      <div class="score-item"><div class="label">Term</div><div class="val ${scoreColor(round.l2_term)}">${round.l2_term?.toFixed(2) || '—'}</div></div>
+      <div class="score-item"><div class="label">Fluency</div><div class="val ${scoreColor(round.l2_fluency)}">${round.l2_fluency?.toFixed(2) || '—'}</div></div>
+      <div class="score-item"><div class="label">Context</div><div class="val ${scoreColor(round.l2_context)}">${round.l2_context?.toFixed(2) || '—'}</div></div>
+      <div class="score-item"><div class="label">Format</div><div class="val ${scoreColor(round.l2_format)}">${round.l2_format?.toFixed(2) || '—'}</div></div>
+      <div class="score-item"><div class="label">Critical</div><div class="val ${round.l2_critical_errors === 0 ? 'good' : 'bad'}">${round.l2_critical_errors ?? '—'}</div></div>
+    </div>
+  </div>`;
+
+  const domains = [...new Set(results.map(r => r.domain).filter(Boolean))];
+  html += `<div class="filters">
+    <select id="filterDomain"><option value="">全部領域</option>${domains.map(d => `<option value="${d}">${industryLabel(d)}</option>`).join('')}</select>
+    <select id="filterSort">
+      <option value="id">依 ID</option>
+      <option value="score-asc">分數低→高</option>
+      <option value="score-desc">分數高→低</option>
+    </select>
+    <input type="text" id="filterSearch" placeholder="搜尋…">
+  </div>`;
+
+  html += `<div class="table-wrap"><table>
+    <thead><tr>
+      <th>ID</th><th>領域</th><th>原文</th><th>譯文</th>
+      <th>Term</th><th>Flu</th><th>Ctx</th><th>Fmt</th><th>Total</th><th>錯誤</th>
+    </tr></thead>
+    <tbody id="resultRows">`;
+
+  for (const r of results) {
+    const errors = r.errors || [];
+    const errHtml = errors.map(e => `<span class="${e.severity === 'critical' ? 'error-tag' : 'error-tag minor-tag'}">${e.type || e.category || 'err'}</span>`).join(' ');
+
+    html += `<tr data-domain="${r.domain || ''}" data-score="${r.weighted_total || 0}" data-text="${(r.source_text||'') + (r.translation||'')}">
+      <td><strong>${r.sentence_id}</strong></td>
+      <td><span class="domain-tag">${industryLabel(r.domain || '')}</span></td>
+      <td><div class="cell-text" onclick="this.classList.toggle('expanded')">${r.source_text || '—'}</div></td>
+      <td><div class="cell-text" onclick="this.classList.toggle('expanded')">${r.translation || '—'}</div></td>
+      <td class="cell-score ${scoreColor(r.l2_term)}">${r.l2_term ?? '—'}</td>
+      <td class="cell-score ${scoreColor(r.l2_fluency)}">${r.l2_fluency ?? '—'}</td>
+      <td class="cell-score ${scoreColor(r.l2_context)}">${r.l2_context ?? '—'}</td>
+      <td class="cell-score ${scoreColor(r.l2_format)}">${r.l2_format ?? '—'}</td>
+      <td class="cell-score ${scoreColor(r.weighted_total)}">${r.weighted_total?.toFixed(1) || '—'}</td>
+      <td>${errHtml || '✓'}</td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+
+  document.getElementById('content').innerHTML = html;
+
+  const rows = document.querySelectorAll('#resultRows tr');
+  function applyFilters() {
+    const domain = document.getElementById('filterDomain').value;
+    const search = document.getElementById('filterSearch').value.toLowerCase();
+    rows.forEach(row => {
+      const matchDomain = !domain || row.dataset.domain === domain;
+      const matchSearch = !search || row.dataset.text.toLowerCase().includes(search);
+      row.style.display = (matchDomain && matchSearch) ? '' : 'none';
+    });
+  }
+  document.getElementById('filterDomain').addEventListener('change', applyFilters);
+  document.getElementById('filterSearch').addEventListener('input', applyFilters);
+  document.getElementById('filterSort').addEventListener('change', function() {
+    const tbody = document.getElementById('resultRows');
+    const sorted = [...rows].sort((a, b) => {
+      if (this.value === 'score-asc') return parseFloat(a.dataset.score) - parseFloat(b.dataset.score);
+      if (this.value === 'score-desc') return parseFloat(b.dataset.score) - parseFloat(a.dataset.score);
+      return 0;
+    });
+    sorted.forEach(r => tbody.appendChild(r));
+  });
+}
+
+async function init() {
+  try {
+    const res = await fetch(`${API}/auth/me`, { credentials: 'include' });
+    const data = await res.json();
+    if (!data.authenticated || data.user.role !== 'admin') {
+      document.getElementById('content').innerHTML = `<div class="error">需要 Admin 權限。<a href="${API}/auth/google/login?redirect=/tools/tqef/admin/results/" style="color:#38bdf8">登入</a></div>`;
+      return;
+    }
+  } catch (e) {
+    document.getElementById('content').innerHTML = `<div class="error">無法連線 API</div>`;
+    return;
+  }
+
+  const roundId = getSelectedRound();
+  try {
+    if (roundId) {
+      await renderRoundDetail(roundId);
+    } else {
+      await renderRoundList();
+    }
+  } catch (e) {
+    document.getElementById('content').innerHTML = `<div class="error">載入失敗：${e.message}</div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
