@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import TrafficAnalytics from '../components/TrafficAnalytics.astro';
 
 // Build time: 讀取 costs.jsonl
 import { readFileSync, existsSync } from 'fs';
@@ -95,6 +96,8 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
     <h3>明細記錄</h3>
     <div id="tableBody" style="overflow-x:auto"></div>
   </div>
+
+  <TrafficAnalytics />
 </div>
 
 </BaseLayout>
