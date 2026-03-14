@@ -67,7 +67,7 @@ python3 scripts/timing_fetch_local.py >> "$LOG" 2>&1 || log "WARN: Timing failed
 # --- 1.5 Push timing to Cloudflare KV (for /ticker live updates) ---
 if [ -f data/timing.json ]; then
     TIMING_JSON=$(cat data/timing.json)
-    npx wrangler kv:key put --config worker/wrangler.toml --namespace-id=c066a2fd7942494c8ead37cc518b191b "timing_cache" "$TIMING_JSON" >> "$LOG" 2>&1 \
+    npx wrangler kv key put --config worker/wrangler.toml --namespace-id=c066a2fd7942494c8ead37cc518b191b --remote "timing_cache" "$TIMING_JSON" >> "$LOG" 2>&1 \
         && log "✅ Timing → KV" \
         || log "WARN: Timing KV push failed"
 fi

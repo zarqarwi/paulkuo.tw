@@ -94,9 +94,10 @@ def kv_get(key: str) -> str | None:
     try:
         result = subprocess.run(
             [
-                "npx", "wrangler", "kv:key", "get",
+                "npx", "wrangler", "kv", "key", "get",
                 "--config", WRANGLER_CONFIG,
                 "--namespace-id", KV_NAMESPACE_ID,
+                "--remote",
                 key,
             ],
             capture_output=True, text=True, timeout=15,
@@ -119,22 +120,36 @@ def kv_get(key: str) -> str | None:
 
 
 def kv_put(key: str, value: str) -> bool:
-    """寫入一個 KV key"""
+    """寫入一個 KV key（用 --path 避免 shell 轉義問題）"""
+    import tempfile
+    tmp_path = None
     try:
+        # 寫到暫存檔，用 --path 餵給 wrangler
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmp:
+            tmp.write(value)
+            tmp_path = tmp.name
+
         result = subprocess.run(
             [
-                "npx", "wrangler", "kv:key", "put",
+                "npx", "wrangler", "kv", "key", "put",
                 "--config", WRANGLER_CONFIG,
                 "--namespace-id", KV_NAMESPACE_ID,
-                key, value,
+                "--remote",
+                key, "--path", tmp_path,
             ],
-            capture_output=True, text=True, timeout=15,
+            capture_output=True, text=True, timeout=30,
             cwd=str(REPO_ROOT),
         )
         return result.returncode == 0
     except Exception as e:
         print(f"  WARN: kv_put({key}) failed: {e}")
         return False
+    finally:
+        if tmp_path:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
 
 
 def merge_records(existing: list[dict], new_records: list[dict]) -> tuple[list[dict], int]:
