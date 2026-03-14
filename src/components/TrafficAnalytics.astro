@@ -76,7 +76,7 @@
     if (loaded) return;
     loaded = true;
 
-    fetch('https://api.paulkuo.tw/analytics')
+    fetch('https://api.paulkuo.tw/analytics', { cache: 'no-store' })
       .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function(data) { render(data); })
       .catch(function() {
