@@ -5,11 +5,32 @@
 import { corsHeaders, jsonResponse } from './utils.js';
 import { getCurrentUser } from './auth.js';
 
-// ── Admin guard ──
+// ── Admin guard (session only) ──
 async function requireAdmin(request, env) {
   const user = await getCurrentUser(request, env);
   if (!user || user.role !== 'admin') return null;
   return user;
+}
+
+// ── Dual auth: session cookie OR invite code ──
+async function requireAdminOrCode(request, env) {
+  const user = await getCurrentUser(request, env);
+  if (user && user.role === 'admin') return true;
+
+  const url = new URL(request.url);
+  const inviteCode = url.searchParams.get('code') || '';
+  if (inviteCode) {
+    try {
+      const kvCodes = await env.TICKER_KV.get('invite_codes');
+      if (kvCodes) {
+        const parsed = JSON.parse(kvCodes);
+        const codeKey = inviteCode.trim().toLowerCase();
+        if (parsed[codeKey] && parsed[codeKey].role === 'admin') return true;
+      }
+    } catch (e) {}
+  }
+
+  return false;
 }
 
 // ── GET /api/tqef/corpus ──
@@ -38,8 +59,9 @@ export async function handleTqefCorpus(request, env) {
 
 // ── POST /api/tqef/corpus/import ── (bulk import from corpus.json)
 export async function handleTqefCorpusImport(request, env) {
-  const user = await requireAdmin(request, env);
-  if (!user) return jsonResponse({ error: 'Unauthorized' }, 401, request);
+  // Dual auth: admin session OR invite code (for migration script)
+  const isAuthorized = await requireAdminOrCode(request, env);
+  if (!isAuthorized) return jsonResponse({ error: 'Unauthorized' }, 401, request);
 
   let body;
   try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
@@ -130,26 +152,8 @@ export async function handleTqefRoundDetail(request, env, roundId) {
 
 // ── POST /api/tqef/eval/upload ── (upload evaluation results from eval_runner)
 export async function handleTqefEvalUpload(request, env) {
-  // Support both admin session and API key (invite code) auth
-  const user = await getCurrentUser(request, env);
-  const url = new URL(request.url);
-  const inviteCode = url.searchParams.get('code') || '';
-
-  let isAuthorized = false;
-  if (user && user.role === 'admin') {
-    isAuthorized = true;
-  } else if (inviteCode) {
-    // Check invite code via KV
-    try {
-      const kvCodes = await env.TICKER_KV.get('invite_codes');
-      if (kvCodes) {
-        const parsed = JSON.parse(kvCodes);
-        const codeKey = inviteCode.trim().toLowerCase();
-        if (parsed[codeKey] && parsed[codeKey].role === 'admin') isAuthorized = true;
-      }
-    } catch (e) {}
-  }
-
+  // Dual auth: admin session OR invite code
+  const isAuthorized = await requireAdminOrCode(request, env);
   if (!isAuthorized) return jsonResponse({ error: 'Unauthorized' }, 401, request);
 
   let body;
