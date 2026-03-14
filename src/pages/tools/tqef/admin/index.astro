@@ -1,0 +1,220 @@
+---
+// TQEF Admin Dashboard
+---
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TQEF Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
+  <style is:global>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .auth-gate { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .auth-card { background: #1e293b; padding: 2rem; border-radius: 12px; text-align: center; }
+    .auth-card h2 { margin-bottom: 1rem; font-size: 1.25rem; }
+    .auth-card input { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; padding: 0.5rem 1rem; border-radius: 6px; margin-right: 0.5rem; }
+    .auth-card button { background: #3b82f6; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .header h1 { font-size: 1.5rem; }
+    .header-actions a { color: #93c5fd; text-decoration: none; margin-left: 1rem; font-size: 0.875rem; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .kpi-card { background: #1e293b; border-radius: 10px; padding: 1.25rem; }
+    .kpi-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi-value { font-size: 2rem; font-weight: 700; margin: 0.25rem 0; }
+    .kpi-sub { font-size: 0.75rem; color: #64748b; }
+    .kpi-good { color: #4ade80; }
+    .kpi-ok { color: #facc15; }
+    .kpi-bad { color: #f87171; }
+    .chart-container { background: #1e293b; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; }
+    .chart-container h3 { font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.75rem; }
+    .rounds-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .rounds-table th { text-align: left; padding: 0.75rem; border-bottom: 1px solid #334155; color: #94a3b8; font-weight: 500; font-size: 0.75rem; text-transform: uppercase; }
+    .rounds-table td { padding: 0.75rem; border-bottom: 1px solid #1e293b; }
+    .rounds-table tr:hover { background: #1e293b; }
+    .rounds-table a { color: #93c5fd; text-decoration: none; }
+    .delta-up { color: #4ade80; }
+    .delta-down { color: #f87171; }
+    .delta-flat { color: #64748b; }
+    .industry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .ind-card { background: #1e293b; border-radius: 8px; padding: 1rem; }
+    .ind-name { font-size: 0.75rem; color: #94a3b8; }
+    .ind-score { font-size: 1.5rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<div id="authGate" class="auth-gate">
+  <div class="auth-card">
+    <h2>TQEF Admin</h2>
+    <p style="color:#94a3b8;margin-bottom:1rem;font-size:0.875rem;">輸入 Admin 密碼</p>
+    <input type="password" id="authInput" placeholder="Password" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+<div id="main" class="container" style="display:none">
+  <div class="header">
+    <h1>TQEF Dashboard</h1>
+    <div class="header-actions">
+      <a href="/tools/tqef/admin/results/">評估結果</a>
+    </div>
+  </div>
+
+  <div id="kpiGrid" class="kpi-grid"></div>
+
+  <div id="industryGrid" class="industry-grid"></div>
+
+  <div class="chart-container">
+    <h3>評估趨勢 — L2 各維度走勢</h3>
+    <canvas id="trendChart" height="250"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>最近 Rounds</h3>
+    <table class="rounds-table">
+      <thead><tr><th>Round</th><th>日期</th><th>Overall</th><th>Term</th><th>Fluency</th><th>Context</th><th>Format</th><th>Critical</th><th>Δ</th></tr></thead>
+      <tbody id="roundsBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script is:inline>
+const API = 'https://api.paulkuo.tw';
+
+// Auth
+const authGate = document.getElementById('authGate');
+const main = document.getElementById('main');
+let code = sessionStorage.getItem('tqef_code') || '';
+
+async function verifyCode(c) {
+  try {
+    const res = await fetch(API + '/validate-code', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code: c }) });
+    const d = await res.json();
+    return d.valid && d.role === 'admin';
+  } catch(e) { return false; }
+}
+
+async function checkAuth() {
+  const urlKey = new URLSearchParams(window.location.search).get('key');
+  const c = urlKey || code;
+  if (c && await verifyCode(c)) {
+    code = c;
+    sessionStorage.setItem('tqef_code', c);
+    authGate.style.display = 'none';
+    main.style.display = 'block';
+    loadDashboard();
+    return;
+  }
+  authGate.style.display = 'flex';
+}
+
+document.getElementById('authBtn').onclick = async () => {
+  const c = document.getElementById('authInput').value.trim();
+  if (c && await verifyCode(c)) {
+    code = c;
+    sessionStorage.setItem('tqef_code', c);
+    authGate.style.display = 'none';
+    main.style.display = 'block';
+    loadDashboard();
+  } else { alert('密碼錯誤'); }
+};
+document.getElementById('authInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('authBtn').click(); });
+
+function scoreColor(v) { return v >= 4.5 ? 'kpi-good' : v >= 4.0 ? 'kpi-ok' : 'kpi-bad'; }
+function delta(cur, prev) {
+  if (prev == null) return '<span class="delta-flat">—</span>';
+  const d = cur - prev;
+  if (Math.abs(d) < 0.005) return '<span class="delta-flat">—</span>';
+  return d > 0 ? `<span class="delta-up">+${d.toFixed(2)}</span>` : `<span class="delta-down">${d.toFixed(2)}</span>`;
+}
+
+async function loadDashboard() {
+  const res = await fetch(API + '/api/tqef/dashboard?code=' + encodeURIComponent(code));
+  const data = await res.json();
+  if (!data.latest) { main.innerHTML = '<p>尚無資料</p>'; return; }
+
+  const l = data.latest;
+  const kpiGrid = document.getElementById('kpiGrid');
+  const metrics = [
+    { label: 'Overall', value: l.l2_overall, key: 'l2_overall' },
+    { label: 'Terminology', value: l.l2_term, key: 'l2_term' },
+    { label: 'Fluency', value: l.l2_fluency, key: 'l2_fluency' },
+    { label: 'Context', value: l.l2_context, key: 'l2_context' },
+    { label: 'Format', value: l.l2_format, key: 'l2_format' },
+    { label: 'Critical Errors', value: l.l2_critical_errors, key: 'l2_critical_errors' },
+    { label: 'Corpus', value: data.corpus_count, key: 'corpus' },
+  ];
+  kpiGrid.innerHTML = metrics.map(m => {
+    const isCritical = m.key === 'l2_critical_errors';
+    const isCorpus = m.key === 'corpus';
+    const cls = isCritical ? (m.value === 0 ? 'kpi-good' : 'kpi-bad') : isCorpus ? '' : scoreColor(m.value);
+    const display = isCorpus ? m.value + ' 句' : isCritical ? m.value : (m.value?.toFixed(2) || '—');
+    return `<div class="kpi-card"><div class="kpi-label">${m.label}</div><div class="kpi-value ${cls}">${display}</div><div class="kpi-sub">${l.round_id} · ${(l.completed_at||'').slice(0,10)}</div></div>`;
+  }).join('');
+
+  // Industry breakdown from metadata
+  try {
+    const meta = typeof l.metadata === 'string' ? JSON.parse(l.metadata) : l.metadata;
+    const pi = meta?.per_industry;
+    if (pi) {
+      const grid = document.getElementById('industryGrid');
+      const entries = typeof pi === 'object' ? Object.entries(pi) : [];
+      grid.innerHTML = entries.map(([name, val]) => {
+        const score = typeof val === 'object' ? val.overall : val;
+        return `<div class="ind-card"><div class="ind-name">${name.replace(/_/g, ' ')}</div><div class="ind-score ${scoreColor(score)}">${score?.toFixed(2) || '—'}</div></div>`;
+      }).join('');
+    }
+  } catch(e) {}
+
+  // Trend chart
+  const rounds = data.rounds || [];
+  const labels = rounds.map(r => r.round_id);
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Overall', data: rounds.map(r => r.l2_overall), borderColor: '#3b82f6', tension: 0.3, pointRadius: 4 },
+        { label: 'Terminology', data: rounds.map(r => r.l2_term), borderColor: '#22d3ee', tension: 0.3, pointRadius: 3, borderDash: [5,5] },
+        { label: 'Fluency', data: rounds.map(r => r.l2_fluency), borderColor: '#a78bfa', tension: 0.3, pointRadius: 3, borderDash: [5,5] },
+        { label: 'Context', data: rounds.map(r => r.l2_context), borderColor: '#4ade80', tension: 0.3, pointRadius: 3, borderDash: [5,5] },
+        { label: 'Format', data: rounds.map(r => r.l2_format), borderColor: '#facc15', tension: 0.3, pointRadius: 3, borderDash: [5,5] },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { min: 3.5, max: 5.1, ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+        x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+      },
+      plugins: { legend: { labels: { color: '#94a3b8', boxWidth: 12 } } },
+    },
+  });
+
+  // Rounds table
+  const tbody = document.getElementById('roundsBody');
+  tbody.innerHTML = rounds.slice().reverse().map((r, i, arr) => {
+    const prev = arr[i + 1];
+    return `<tr>
+      <td><a href="/tools/tqef/admin/results/detail/?id=${encodeURIComponent(r.round_id)}">${r.round_id}</a></td>
+      <td>${(r.completed_at||'').slice(0,10)}</td>
+      <td class="${scoreColor(r.l2_overall)}">${r.l2_overall?.toFixed(2) || '—'}</td>
+      <td>${r.l2_term?.toFixed(2) || '—'}</td>
+      <td>${r.l2_fluency?.toFixed(2) || '—'}</td>
+      <td>${r.l2_context?.toFixed(2) || '—'}</td>
+      <td>${r.l2_format?.toFixed(2) || '—'}</td>
+      <td>${r.l2_critical_errors || 0}</td>
+      <td>${delta(r.l2_overall, prev?.l2_overall)}</td>
+    </tr>`;
+  }).join('');
+}
+
+checkAuth();
+</script>
+
+</body>
+</html>

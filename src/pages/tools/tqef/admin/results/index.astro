@@ -1,0 +1,74 @@
+---
+// TQEF Results — Round List
+---
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TQEF Results</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style is:global>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 1.5rem; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .header h1 { font-size: 1.5rem; }
+    .header a { color: #93c5fd; text-decoration: none; font-size: 0.875rem; }
+    .round-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .round-card { background: #1e293b; border-radius: 10px; padding: 1.25rem; text-decoration: none; color: inherit; transition: transform 0.1s; cursor: pointer; }
+    .round-card:hover { transform: translateY(-2px); background: #263548; }
+    .round-id { font-size: 1.25rem; font-weight: 700; color: #93c5fd; }
+    .round-date { font-size: 0.75rem; color: #64748b; margin-bottom: 0.75rem; }
+    .round-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; font-size: 0.813rem; }
+    .score-row { display: flex; justify-content: space-between; }
+    .score-label { color: #94a3b8; }
+    .score-good { color: #4ade80; }
+    .score-ok { color: #facc15; }
+    .score-bad { color: #f87171; }
+    .overall-big { font-size: 2rem; font-weight: 700; text-align: center; margin: 0.5rem 0; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="main" style="display:none">
+  <div class="header">
+    <h1>評估結果</h1>
+    <a href="/tools/tqef/admin/">← Dashboard</a>
+  </div>
+  <div id="roundGrid" class="round-grid"></div>
+</div>
+
+<script is:inline>
+const API = 'https://api.paulkuo.tw';
+const code = sessionStorage.getItem('tqef_code') || new URLSearchParams(window.location.search).get('key') || '';
+if (!code) { window.location.href = '/tools/tqef/admin/?redirect=results'; }
+
+function sc(v) { return v >= 4.5 ? 'score-good' : v >= 4.0 ? 'score-ok' : 'score-bad'; }
+
+(async () => {
+  const res = await fetch(API + '/api/tqef/rounds?code=' + encodeURIComponent(code));
+  if (res.status === 403) { window.location.href = '/tools/tqef/admin/'; return; }
+  const data = await res.json();
+  const rounds = data.rounds || [];
+
+  document.getElementById('main').style.display = 'block';
+  document.getElementById('roundGrid').innerHTML = rounds.map(r => {
+    const o = r.l2_overall?.toFixed(2) || '—';
+    return `<a class="round-card" href="/tools/tqef/admin/results/detail/?id=${encodeURIComponent(r.round_id)}">
+      <div class="round-id">${r.round_id}</div>
+      <div class="round-date">${(r.completed_at||'').slice(0,16).replace('T',' ')}</div>
+      <div class="overall-big ${sc(r.l2_overall)}">${o}</div>
+      <div class="round-scores">
+        <div class="score-row"><span class="score-label">Term</span> <span class="${sc(r.l2_term)}">${r.l2_term?.toFixed(2)||'—'}</span></div>
+        <div class="score-row"><span class="score-label">Fluency</span> <span class="${sc(r.l2_fluency)}">${r.l2_fluency?.toFixed(2)||'—'}</span></div>
+        <div class="score-row"><span class="score-label">Context</span> <span class="${sc(r.l2_context)}">${r.l2_context?.toFixed(2)||'—'}</span></div>
+        <div class="score-row"><span class="score-label">Format</span> <span class="${sc(r.l2_format)}">${r.l2_format?.toFixed(2)||'—'}</span></div>
+      </div>
+      <div style="margin-top:0.5rem;font-size:0.75rem;color:${r.l2_critical_errors?'#f87171':'#4ade80'}">Critical: ${r.l2_critical_errors||0}</div>
+    </a>`;
+  }).join('');
+})();
+</script>
+
+</body>
+</html>
