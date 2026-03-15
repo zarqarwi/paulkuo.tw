@@ -371,6 +371,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
       <input class="gate-input" id="gateInput" type="text" placeholder="邀請碼" autocomplete="off" spellcheck="false">
       <button class="gate-btn" id="gateBtn">進入</button>
       <div class="gate-error" id="gateError">邀請碼無效，請確認後重試</div>
+      <div id="gateSwitchAccount" style="display:none;margin-top:12px"><a href="#" id="gateSwitchBtn" style="font-size:12px;color:var(--text-muted);text-decoration:underline">切換帳號 / 重新登入</a></div>
     </div>
     <div class="gate-webview-notice" id="gateWebviewNotice">
       <p>⚠️ <strong>偵測到你正在 App 內建瀏覽器中開啟</strong></p>
@@ -383,6 +384,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
       <a class="gate-oauth-btn" id="gateLine"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 4.21 3.74 7.74 8.78 8.4.34.07.81.23.93.52.1.27.07.68.03.95l-.15.91c-.05.27-.21 1.06.93.58s6.18-3.64 8.43-6.23C22.83 13.47 22 11.42 22 10.5 22 5.82 17.52 2 12 2z" fill="#06C755"/></svg> LINE 登入</a>
       <a class="gate-oauth-btn" id="gateFacebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M24 12c0-6.627-5.373-12-12-12S0 5.373 0 12c0 5.99 4.388 10.954 10.125 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.668 4.533-4.668 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.385C19.612 22.954 24 17.99 24 12z" fill="#1877F2"/></svg> Facebook 登入</a>
     </div>
+    <div id="gateDebug" style="margin-top:16px;padding:12px;background:rgba(0,0,0,.03);border-radius:8px;font-size:11px;color:var(--text-muted);text-align:left;line-height:1.8;word-break:break-all;display:none"></div>
   </div>
 </div>
 <div class="header">
@@ -607,6 +609,7 @@ var _inAppBrowser = detectInAppBrowser();
 var inviteCode = sessionStorage.getItem("inviteCode") || "";
 var userName = sessionStorage.getItem("userName") || "";
 var _isAdmin = false; // set on login, controls perf badge + cost visibility
+var _isPartner = false; // partner role: no budget, has business mode, no admin panel
 var businessMode = false; // business mode: higher accuracy STT for Japanese
 var recording = false;
 var _sessionDomain = null;
@@ -733,7 +736,7 @@ function renderSrcLangs() {
       // Show business mode toggle only for Japanese
       var bizBtn = getEl('btnBizMode');
       if (bizBtn) {
-        if (srcInputLang === 'ja' && _isAdmin) {
+        if (srcInputLang === 'ja' && (_isAdmin || _isPartner)) {
           bizBtn.style.display = '';
         } else {
           bizBtn.style.display = 'none';
@@ -2803,6 +2806,7 @@ function tryEnter() {
       inviteCode = code;
       userName = (_authUser && _authUser.name) ? _authUser.name : d.name;
       _isAdmin = (d.role === 'admin');
+      _isPartner = (d.role === 'partner');
       sessionStorage.setItem("inviteCode", code);
       sessionStorage.setItem("userName", userName);
       // Initialize time quota display
@@ -2841,6 +2845,13 @@ var _oauthRedirect = encodeURIComponent('/tools/translator/');
 getEl('gateGoogle').addEventListener('click', function() { window.location.href = WORKER_URL + '/auth/google/login?redirect=' + _oauthRedirect; });
 getEl('gateLine').addEventListener('click', function() { window.location.href = WORKER_URL + '/auth/line/login?redirect=' + _oauthRedirect; });
 getEl('gateFacebook').addEventListener('click', function() { window.location.href = WORKER_URL + '/auth/facebook/login?redirect=' + _oauthRedirect; });
+// Switch account: logout + back to step 1
+getEl('gateSwitchBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  fetch(WORKER_URL + '/auth/logout', { method: 'POST', credentials: 'include' })
+  .then(function() { sessionStorage.clear(); location.reload(); })
+  .catch(function() { sessionStorage.clear(); location.reload(); });
+});
 getEl("userBadge").addEventListener("click", function() {
   if (!confirm("確定要登出嗎？")) return;
   if (_authUser) {
@@ -2862,7 +2873,14 @@ function showGateStep1() {
   // Step 1: Show OAuth buttons, hide invite code input
   getEl('gateOAuth').style.display = 'flex';
   getEl('gateStep2').style.display = 'none';
+  getEl('gateSwitchAccount').style.display = 'none';
   getEl('gateDesc').innerHTML = '即時會議翻譯工具（測試版）<br>請先登入帳號，再輸入邀請碼';
+
+  // Non-WebView: also show invite code as alternative entry
+  if (!_inAppBrowser) {
+    getEl('gateStep2').style.display = 'block';
+    getEl('gateWelcome').innerHTML = '或直接輸入邀請碼';
+  }
 
   // WebView detection: adjust available login options
   if (_inAppBrowser) {
@@ -2920,12 +2938,20 @@ function showGateStep2(user) {
   var avatar = user.avatar ? '<img src="' + user.avatar + '" style="width:18px;height:18px;border-radius:50%;vertical-align:middle;margin-right:4px">' : '';
   getEl('gateWelcome').innerHTML = avatar + '✅ 已登入為 ' + escHtml(user.name || user.email) + '，請輸入邀請碼';
   getEl('gateDesc').innerHTML = '即時會議翻譯工具（測試版）';
+  // Show switch account link
+  getEl('gateSwitchAccount').style.display = 'block';
   showGate();
 }
 (function checkAuthOnLoad() {
+  var dbg = getEl('gateDebug');
+  var dbgLines = ['🔍 Debug (v' + new Date().toISOString().slice(5,16) + ')'];
+  dbgLines.push('inAppBrowser: ' + (_inAppBrowser || 'false'));
+  dbgLines.push('sessionStorage.inviteCode: ' + (sessionStorage.getItem('inviteCode') || '(empty)'));
+  function showDbg() { dbg.innerHTML = dbgLines.join('<br>'); dbg.style.display = 'block'; }
   fetch(WORKER_URL + "/auth/me", { credentials: "include" })
-  .then(function(r) { return r.json(); })
+  .then(function(r) { dbgLines.push('/auth/me status: ' + r.status); return r.json(); })
   .then(function(d) {
+    dbgLines.push('/auth/me: auth=' + d.authenticated + ', user=' + (d.user ? d.user.name + ' (' + d.user.role + ')' : 'null'));
     if (d.authenticated && d.user) {
       _authUser = d.user;
       userName = d.user.name || d.user.email || 'User';
@@ -2935,6 +2961,8 @@ function showGateStep2(user) {
       }
       if (_isAdmin) {
         // Admin: direct access, use admin code for cost tracking
+        dbgLines.push('→ isAdmin=true, hideGate()');
+        showDbg();
         inviteCode = 'agora2026';
         hideGate();
         showUserBadge();
@@ -2943,6 +2971,8 @@ function showGateStep2(user) {
       }
       // Non-admin OAuth: check if they have a saved invite code
       if (inviteCode) {
+        dbgLines.push('→ non-admin, has inviteCode: ' + inviteCode + ', validating...');
+        showDbg();
         fetch(WORKER_URL + "/validate-code", {
           method: "POST", credentials: "include",
           headers: {"Content-Type": "application/json"},
@@ -2950,7 +2980,10 @@ function showGateStep2(user) {
         })
         .then(function(r) { return r.json(); })
         .then(function(dd) {
+          dbgLines.push('validate-code result: ' + JSON.stringify(dd));
+          showDbg();
           if (dd.valid) {
+            if (dd.role === 'partner') _isPartner = true;
             if (!_isAdmin && dd.remainingSec !== undefined) {
               _remainingSec = dd.remainingSec;
               if (dd.remainingSec <= 0) { hideGate(); handleBudgetExceeded(); return; }
@@ -2970,14 +3003,22 @@ function showGateStep2(user) {
         .catch(function() { showGateStep2(_authUser); });
       } else {
         // OAuth done but no invite code yet → show step 2
+        dbgLines.push('→ non-admin, no inviteCode → showGateStep2');
+        showDbg();
         showGateStep2(_authUser);
       }
     } else {
       // Not logged in → show step 1 (OAuth buttons)
+      dbgLines.push('→ not authenticated → showGateStep1');
+      showDbg();
       showGateStep1();
     }
   })
-  .catch(function() { showGateStep1(); });
+  .catch(function(err) {
+    dbgLines.push('→ /auth/me FAILED: ' + err.message + ' → showGateStep1');
+    showDbg();
+    showGateStep1();
+  });
 })();
 
 
