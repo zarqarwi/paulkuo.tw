@@ -170,7 +170,7 @@ function renderList() {
       '<div class="export-head" onclick="toggleEntries(\'' + ex.id + '\')">' +
         '<div class="export-meta">' +
           '<span>' + time + '</span>' +
-          '<span class="tag">' + esc(ex.stt_provider || 'unknown') + '</span>' +
+          (ex.stt_provider || 'unknown').split(',').map(p => '<span class="tag">' + esc(p.trim()) + '</span>').join('') +
           '<span class="tag">' + langPair + '</span>' +
           (ex.default_domain ? '<span class="tag">' + esc(ex.default_domain) + '</span>' : '') +
           '<span class="status-badge ' + ex.status + '">' + ex.status + '</span>' +

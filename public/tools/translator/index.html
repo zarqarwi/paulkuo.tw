@@ -3294,7 +3294,7 @@ function exportToTqef() {
   }
   var payload = {
     session_id: _sessionId,
-    stt_provider: _activeEngine + (dgModel ? '/' + dgModel : ''),
+    stt_provider: allEntries.filter(function(e) { return e.original; }).reduce(function(acc, e) { var eng = e.sttEngine || _activeEngine; var label = e.sttModel ? eng + '/' + e.sttModel : eng; if (acc.indexOf(label) === -1) acc.push(label); return acc; }, []).join(',') || _activeEngine,
     source_lang: srcInputLang,
     target_lang: tgtLang,
     default_domain: _sessionDomain,
