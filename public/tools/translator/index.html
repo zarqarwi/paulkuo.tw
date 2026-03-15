@@ -2876,36 +2876,33 @@ function showGateStep1() {
   getEl('gateSwitchAccount').style.display = 'none';
   getEl('gateDesc').innerHTML = '即時會議翻譯工具（測試版）<br>請先登入帳號，再輸入邀請碼';
 
-  // Non-WebView: also show invite code as alternative entry
-  if (!_inAppBrowser) {
-    getEl('gateStep2').style.display = 'block';
-    getEl('gateWelcome').innerHTML = '或直接輸入邀請碼';
-  }
-
-  // WebView detection: adjust available login options
+  // WebView detection: show only the relevant login option
   if (_inAppBrowser) {
     var notice = getEl('gateWebviewNotice');
     var gGoogle = getEl('gateGoogle');
     var gLine = getEl('gateLine');
     var gFb = getEl('gateFacebook');
     var msgEl = getEl('gateWebviewMsg');
-    // Always hide Google in WebView (403 disallowed_useragent)
-    gGoogle.style.display = 'none';
     var openBtn = getEl('webviewOpenBtn');
     var howto = getEl('webviewHowto');
+    // Always hide Google in WebView (403 disallowed_useragent)
+    gGoogle.style.display = 'none';
     if (_inAppBrowser === 'line') {
-      // LINE WebView: LINE login works natively, hide Google
-      msgEl.textContent = '你正在 LINE 內開啟，可以直接用 LINE 登入。';
+      // LINE WebView: only show LINE login
+      gFb.style.display = 'none';
+      getEl('gateDesc').innerHTML = '即時會議翻譯工具（測試版）<br>請用 LINE 帳號登入';
+      msgEl.textContent = '使用其他登入方式？請用外部瀏覽器開啟此頁面。';
       notice.classList.add('visible');
-      // "Open in browser" button: show how-to guide for LINE
       openBtn.addEventListener('click', function() {
         howto.innerHTML = '👆 請點選 LINE 瀏覽器的選單 <strong>⋯</strong> → 選擇<strong>「在預設瀏覽器中開啟」</strong>';
         howto.style.display = 'block';
         openBtn.style.display = 'none';
       });
     } else if (_inAppBrowser === 'facebook' || _inAppBrowser === 'instagram') {
-      // Facebook/IG WebView: FB login works, hide Google
-      msgEl.textContent = '你正在 Facebook 內開啟，可以直接用 Facebook 登入。';
+      // Facebook/IG WebView: only show Facebook login
+      gLine.style.display = 'none';
+      getEl('gateDesc').innerHTML = '即時會議翻譯工具（測試版）<br>請用 Facebook 帳號登入';
+      msgEl.textContent = '使用其他登入方式？請用外部瀏覽器開啟此頁面。';
       notice.classList.add('visible');
       openBtn.addEventListener('click', function() {
         howto.innerHTML = '👆 請點右下角 <strong>⋯</strong> → 選擇<strong>「在瀏覽器中開啟」</strong>';
@@ -2913,19 +2910,21 @@ function showGateStep1() {
         openBtn.style.display = 'none';
       });
     } else {
-      // Other WebView (WeChat, Twitter, generic)
+      // Other WebView (WeChat, Twitter, Claude, generic): no OAuth works
       gLine.style.display = 'none';
       gFb.style.display = 'none';
-      msgEl.textContent = '目前的瀏覽器不支援社群登入，請用外部瀏覽器開啟此頁面。';
+      getEl('gateOAuth').style.display = 'none';
+      getEl('gateDesc').innerHTML = '即時會議翻譯工具（測試版）';
+      msgEl.textContent = '目前的瀏覽器不支援社群登入，請用外部瀏覽器開啟，或直接輸入邀請碼。';
       notice.classList.add('visible');
       openBtn.addEventListener('click', function() {
         howto.innerHTML = '請複製網址後，貼到 Safari 或 Chrome 開啟：<br><code style="user-select:all;background:rgba(0,0,0,.05);padding:4px 8px;border-radius:4px;font-size:11px;word-break:break-all">' + location.href + '</code>';
         howto.style.display = 'block';
         openBtn.style.display = 'none';
       });
-      // Also show invite code as fallback
+      // Show invite code as fallback
       getEl('gateStep2').style.display = 'block';
-      getEl('gateWelcome').innerHTML = '或直接輸入邀請碼（無需登入）';
+      getEl('gateWelcome').innerHTML = '直接輸入邀請碼';
     }
   }
 
