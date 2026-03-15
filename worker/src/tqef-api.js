@@ -898,9 +898,7 @@ async function pollQwenTask(env, taskId) {
   if (!res.ok) throw new Error(`Qwen poll failed (${res.status})`);
   const data = await res.json();
   // Attach full raw response for debug — stored to stt_raw on both success and failure
-  const output = data.output || {};
-  output._raw = data;
-  return output;
+  return { ...(data.output || {}), _raw: JSON.stringify(data) };
 }
 
 // Fetch transcript from Qwen filetrans transcription_url
