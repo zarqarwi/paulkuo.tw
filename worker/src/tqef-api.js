@@ -739,12 +739,16 @@ export async function handleTqefSttStatus(request, env, uploadId) {
 
   // If already done or failed, return immediately
   if (record.stt_status === 'done' || record.stt_status === 'failed') {
-    return jsonResponse({
+    const resp = {
       upload_id: uploadId,
       stt_status: record.stt_status,
       transcript: record.stt_raw,
       engine: record.stt_engine,
-    }, 200, request);
+    };
+    if (record.stt_status === 'failed' && record.stt_raw) {
+      try { resp.error_detail = JSON.parse(record.stt_raw); } catch (e) { resp.error_detail = record.stt_raw; }
+    }
+    return jsonResponse(resp, 200, request);
   }
 
   // For Qwen async: poll the task
@@ -759,10 +763,11 @@ export async function handleTqefSttStatus(request, env, uploadId) {
         return jsonResponse({ upload_id: uploadId, stt_status: 'done', transcript, engine: 'qwen' }, 200, request);
       }
       if (result.task_status === 'FAILED') {
+        const rawJson = JSON.stringify(result._raw || result);
         await env.AUTH_DB.prepare(
-          'UPDATE tqef_intake_audio SET stt_status = ? WHERE id = ?'
-        ).bind('failed', uploadId).run();
-        return jsonResponse({ upload_id: uploadId, stt_status: 'failed', engine: 'qwen' }, 200, request);
+          'UPDATE tqef_intake_audio SET stt_status = ?, stt_raw = ? WHERE id = ?'
+        ).bind('failed', rawJson, uploadId).run();
+        return jsonResponse({ upload_id: uploadId, stt_status: 'failed', engine: 'qwen', error_detail: result._raw || result }, 200, request);
       }
       // Still running (PENDING / RUNNING / UNKNOWN)
       return jsonResponse({ upload_id: uploadId, stt_status: 'processing', engine: 'qwen' }, 200, request);
@@ -863,6 +868,7 @@ async function callDeepgram(env, audioBuffer, language) {
 
 // Qwen filetrans — async submission
 async function submitQwenFiletrans(env, fileUrl) {
+  console.log('[Qwen filetrans] submitting file_url:', fileUrl);
   const res = await fetch('https://dashscope-intl.aliyuncs.com/api/v1/services/audio/asr/transcription', {
     method: 'POST',
     headers: {
@@ -891,7 +897,10 @@ async function pollQwenTask(env, taskId) {
   });
   if (!res.ok) throw new Error(`Qwen poll failed (${res.status})`);
   const data = await res.json();
-  return data.output || {};
+  // Attach full raw response for debug — stored to stt_raw on both success and failure
+  const output = data.output || {};
+  output._raw = data;
+  return output;
 }
 
 // Fetch transcript from Qwen filetrans transcription_url
