@@ -303,15 +303,17 @@ export async function handleTqefMeetingExport(request, env) {
       env.AUTH_DB.prepare(`
         INSERT INTO tqef_meeting_entries (
           export_id, entry_index, timestamp, source_lang,
-          stt_output, translation
-        ) VALUES (?, ?, ?, ?, ?, ?)
+          stt_output, translation, stt_engine, stt_model
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         exportId,
         entry.entry_index ?? i,
         entry.timestamp || null,
         entry.source_lang || null,
         entry.stt_output || '',
-        entry.translation || ''
+        entry.translation || '',
+        entry.stt_engine || null,
+        entry.stt_model || null
       )
     );
   }

@@ -1154,7 +1154,7 @@ function sendGroqChunk(blob) {
       // Create entry
       var id = ++nextId;
       var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-      var entry = {id:id, original:d.original, translated:null, detectedLang:srcInputLang, ts:ts, tgt:tgtLang, _timings:{firstResult:performance.now()}};
+      var entry = {id:id, original:d.original, translated:null, detectedLang:srcInputLang, ts:ts, tgt:tgtLang, sttEngine:_activeEngine, sttModel:_activeEngine === 'deepgram' ? dgModel : null, _timings:{firstResult:performance.now()}};
       allEntries.push(entry);
       var emp = getEl('empty'); if (emp) emp.remove();
       var tgtFlag = (LANGS[tgtLang] || {}).flag || '';
@@ -1576,7 +1576,7 @@ function handleDgMessage(evt) {
     dgTimings = { firstResult: performance.now() };
     liveEntryId = ++nextId;
     var ts = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    var entry = {id:liveEntryId, original:'', translated:null, detectedLang:'', ts:ts, tgt:tgtLang, speaker:speaker, _timings: { firstResult: performance.now() }};
+    var entry = {id:liveEntryId, original:'', translated:null, detectedLang:'', ts:ts, tgt:tgtLang, speaker:speaker, sttEngine:_activeEngine, sttModel:_activeEngine === 'deepgram' ? dgModel : null, _timings: { firstResult: performance.now() }};
     allEntries.push(entry);
     var emp = getEl('empty'); if (emp) emp.remove();
     var div = document.createElement('div');
@@ -3043,7 +3043,7 @@ function submitFeedback(id) {
       machineTranslation: entry.translated || '',
       suggestedTranslation: text,
       session_id: _sessionId,
-      stt_provider: _activeEngine + (dgModel ? '/' + dgModel : ''),
+      stt_provider: (entry.sttEngine || _activeEngine) + (entry.sttModel ? '/' + entry.sttModel : ''),
       error_type: errorType || null,
       domain: _sessionDomain,
       sourceLang: entry.detectedLang || srcInputLang || '',
@@ -3305,7 +3305,9 @@ function exportToTqef() {
         stt_output: e.original,
         translation: e.translated || '',
         source_lang: e.detectedLang || srcInputLang || '',
-        timestamp: e.ts || null
+        timestamp: e.ts || null,
+        stt_engine: e.sttEngine || _activeEngine,
+        stt_model: e.sttModel || (e.sttEngine === 'deepgram' ? dgModel : null)
       };
     })
   };

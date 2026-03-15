@@ -165,6 +165,8 @@ CREATE TABLE IF NOT EXISTS tqef_meeting_entries (
   source_lang TEXT,
   stt_output TEXT NOT NULL,
   translation TEXT NOT NULL,
+  stt_engine TEXT,
+  stt_model TEXT,
   l1_lite_errors TEXT,
   corrected_text TEXT,
   is_selected INTEGER DEFAULT 0,
