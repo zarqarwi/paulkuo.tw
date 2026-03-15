@@ -751,20 +751,20 @@ export async function handleTqefSttStatus(request, env, uploadId) {
   if (record.stt_engine === 'qwen' && record.stt_task_id) {
     try {
       const result = await pollQwenTask(env, record.stt_task_id);
-      if (result.status === 'SUCCEEDED') {
-        const transcript = extractQwenTranscript(result);
+      if (result.task_status === 'SUCCEEDED') {
+        const transcript = await fetchQwenTranscript(result);
         await env.AUTH_DB.prepare(
           'UPDATE tqef_intake_audio SET stt_status = ?, stt_raw = ? WHERE id = ?'
         ).bind('done', transcript, uploadId).run();
         return jsonResponse({ upload_id: uploadId, stt_status: 'done', transcript, engine: 'qwen' }, 200, request);
       }
-      if (result.status === 'FAILED') {
+      if (result.task_status === 'FAILED') {
         await env.AUTH_DB.prepare(
           'UPDATE tqef_intake_audio SET stt_status = ? WHERE id = ?'
         ).bind('failed', uploadId).run();
         return jsonResponse({ upload_id: uploadId, stt_status: 'failed', engine: 'qwen' }, 200, request);
       }
-      // Still running
+      // Still running (PENDING / RUNNING / UNKNOWN)
       return jsonResponse({ upload_id: uploadId, stt_status: 'processing', engine: 'qwen' }, 200, request);
     } catch (e) {
       return jsonResponse({ upload_id: uploadId, stt_status: 'processing', error: e.message, engine: 'qwen' }, 200, request);
@@ -894,14 +894,25 @@ async function pollQwenTask(env, taskId) {
   return data.output || {};
 }
 
-// Extract transcript text from Qwen filetrans result
-function extractQwenTranscript(output) {
-  // Qwen filetrans returns results in output.results[]
+// Fetch transcript from Qwen filetrans transcription_url
+async function fetchQwenTranscript(output) {
+  // Qwen filetrans returns a transcription_url that must be fetched separately
+  const url = output.result?.transcription_url || output.results?.[0]?.transcription_url;
+  if (!url) return JSON.stringify(output);
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch transcription_url (${res.status})`);
+  const data = await res.json();
+
+  // transcription_url JSON contains transcripts array with sentences
   try {
-    const results = output.results || [];
-    return results.map(r => r.text || r.sentence?.text || '').join('').trim();
+    const transcripts = data.transcripts || [];
+    return transcripts
+      .map(t => (t.sentences || []).map(s => s.text || '').join(''))
+      .join('')
+      .trim() || JSON.stringify(data);
   } catch (e) {
-    return JSON.stringify(output);
+    return JSON.stringify(data);
   }
 }
 
