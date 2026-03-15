@@ -612,6 +612,7 @@ var _isAdmin = false; // set on login, controls perf badge + cost visibility
 var _isPartner = false; // partner role: no budget, has business mode, no admin panel
 var businessMode = false; // business mode: higher accuracy STT for Japanese
 var recording = false;
+var _sessionId = null;
 var _sessionDomain = null;
 var _sessionStartMs = 0;
 var SESSION_LOCK_WINDOW = 60000;
@@ -870,6 +871,7 @@ function startDeepgramStreaming() {
   .then(function(stream) {
     dgStream = stream;
     recording = true;
+    if (!_sessionId) _sessionId = crypto.randomUUID();
     if (!_sessionStartMs) _sessionStartMs = performance.now();
     updateToggle();
     startMatrix();
@@ -2209,7 +2211,7 @@ function finalizeEntry(id, text) {
     var fbForm = document.createElement('div');
     fbForm.className = 'fb-form';
     fbForm.id = 'fb-form-' + eid;
-    fbForm.innerHTML = '<textarea placeholder="\u8ACB\u8F38\u5165\u4F60\u5EFA\u8B70\u7684\u7FFB\u8B6F" id="fb-text-' + eid + '"></textarea><div class=\"fb-actions\"><button class=\"fb-submit\" id=\"fb-send-' + eid + '\">\u9001\u51FA</button><button class=\"fb-cancel\" id=\"fb-cancel-' + eid + '\">\u53D6\u6D88</button><span class=\"fb-hint\">\u5E6B\u52A9\u6211\u5011\u512A\u5316\u7FFB\u8B6F</span></div>';
+    fbForm.innerHTML = '<textarea placeholder="\u8ACB\u8F38\u5165\u4F60\u5EFA\u8B70\u7684\u7FFB\u8B6F" id="fb-text-' + eid + '"></textarea><select id="fb-error-type-' + eid + '" class="fb-error-type" style="width:100%;padding:6px 8px;margin:6px 0;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg-card);color:var(--text-primary)"><option value="">錯誤類型（選填）</option><option value="stt_error">語音辨識錯誤</option><option value="translation_error">翻譯錯誤</option><option value="terminology_error">術語錯誤</option><option value="other">其他</option></select><div class=\"fb-actions\"><button class=\"fb-submit\" id=\"fb-send-' + eid + '\">\u9001\u51FA</button><button class=\"fb-cancel\" id=\"fb-cancel-' + eid + '\">\u53D6\u6D88</button><span class=\"fb-hint\">\u5E6B\u52A9\u6211\u5011\u512A\u5316\u7FFB\u8B6F</span></div>';
     entryEl.appendChild(fbBtn);
     entryEl.appendChild(fbForm);
     fbBtn.addEventListener('click', function() { fbForm.classList.toggle('visible'); if (fbForm.classList.contains('visible')) { var ta = getEl('fb-text-' + eid); if (ta) ta.focus(); } });
@@ -2283,6 +2285,7 @@ function updateEntry(id, original, translated, detectedLang) {
 // UI helpers
 function clearAll() {
   allEntries = []; nextId = 0;
+  _sessionId = null;
   _sessionDomain = null;
   _sessionStartMs = 0;
   getEl("btnSummary").disabled = true;
@@ -3030,16 +3033,21 @@ function submitFeedback(id) {
   if (!text) return;
   var btn = getEl('fb-send-' + id);
   btn.disabled = true; btn.textContent = '\u9001\u51FA\u4E2D...';
-  fetch(WORKER_URL + '/feedback', {
+  var errorTypeEl = getEl('fb-error-type-' + id);
+  var errorType = errorTypeEl ? errorTypeEl.value : '';
+  fetch(WORKER_URL + '/api/tqef/feedback', {
     method: 'POST', credentials: 'include',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
       original: entry.original || '',
       machineTranslation: entry.translated || '',
       suggestedTranslation: text,
+      session_id: _sessionId,
+      stt_provider: _activeEngine + (dgModel ? '/' + dgModel : ''),
+      error_type: errorType || null,
+      domain: _sessionDomain,
       sourceLang: entry.detectedLang || srcInputLang || '',
-      targetLang: entry.tgt || tgtLang || '',
-      code: inviteCode
+      targetLang: entry.tgt || tgtLang || ''
     })
   })
   .then(function(r) { return r.json(); })

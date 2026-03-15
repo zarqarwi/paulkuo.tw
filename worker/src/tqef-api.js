@@ -251,3 +251,139 @@ export async function handleTqefEvalUpload(request, env) {
 
   return jsonResponse({ success: true, round_id, inserted }, 201, request);
 }
+
+// ── POST /api/tqef/feedback (public, no admin auth required) ──
+export async function handleTqefFeedbackCreate(request, env) {
+  let body;
+  try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+
+  const { original, machineTranslation, suggestedTranslation } = body;
+  if (!original || !machineTranslation || !suggestedTranslation) {
+    return jsonResponse({ error: 'Missing required fields: original, machineTranslation, suggestedTranslation' }, 400, request);
+  }
+
+  // Optional auth — capture user_id if logged in
+  let userId = null;
+  try {
+    const auth = await authenticateRequest(request, env, '');
+    if (auth) userId = auth.userId || null;
+  } catch (e) {}
+
+  const feedbackId = crypto.randomUUID();
+  const now = new Date(Date.now() + 8 * 3600000).toISOString().replace('Z', '+08:00');
+
+  try {
+    await env.AUTH_DB.prepare(`
+      INSERT INTO tqef_feedback (
+        id, session_id, timestamp, source_text, original_translation,
+        suggested_correction, error_type, stt_provider,
+        domain_detected, user_id, status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+    `).bind(
+      feedbackId,
+      body.session_id || null,
+      now,
+      (original || '').slice(0, 500),
+      (machineTranslation || '').slice(0, 500),
+      (suggestedTranslation || '').slice(0, 500),
+      body.error_type || null,
+      body.stt_provider || null,
+      body.domain || null,
+      userId,
+      now
+    ).run();
+
+    return jsonResponse({ ok: true, feedback_id: feedbackId }, 201, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── POST /api/tqef/feedback/:id/adopt (admin only) ──
+export async function handleTqefFeedbackAdopt(request, env, feedbackId) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  try {
+    const feedback = await env.AUTH_DB.prepare(
+      'SELECT * FROM tqef_feedback WHERE id = ?'
+    ).bind(feedbackId).first();
+
+    if (!feedback) return jsonResponse({ error: 'Feedback not found' }, 404, request);
+
+    const corpusId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    const batch = [
+      env.AUTH_DB.prepare(
+        'UPDATE tqef_feedback SET status = ?, reviewed_at = ?, corpus_id = ? WHERE id = ?'
+      ).bind('adopted', now, corpusId, feedbackId),
+
+      env.AUTH_DB.prepare(`
+        INSERT INTO tqef_corpus (
+          id, source_text, reference_translation, source_origin,
+          source_ref, domain, created_at
+        ) VALUES (?, ?, ?, 'user_feedback', ?, ?, ?)
+      `).bind(
+        corpusId,
+        feedback.source_text,
+        feedback.suggested_correction,
+        feedbackId,
+        feedback.domain_detected || 'general',
+        now
+      )
+    ];
+
+    await env.AUTH_DB.batch(batch);
+
+    return jsonResponse({ ok: true, corpus_id: corpusId }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── GET /api/tqef/feedback?status=pending (admin only) ──
+export async function handleTqefFeedbackList(request, env) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  const url = new URL(request.url);
+  const status = url.searchParams.get('status');
+  let sql = 'SELECT * FROM tqef_feedback';
+  const params = [];
+
+  if (status) { sql += ' WHERE status = ?'; params.push(status); }
+  sql += ' ORDER BY created_at DESC';
+
+  const stmt = params.length > 0 ? env.AUTH_DB.prepare(sql).bind(...params) : env.AUTH_DB.prepare(sql);
+  const { results } = await stmt.all();
+  return jsonResponse({ feedback: results, total: results.length }, 200, request);
+}
+
+// ── POST /api/tqef/feedback/:id/reject (admin only) ──
+export async function handleTqefFeedbackReject(request, env, feedbackId) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  let note = null;
+  try { const body = await request.json(); note = body.note || null; } catch (e) {}
+
+  const now = new Date().toISOString();
+  await env.AUTH_DB.prepare(
+    'UPDATE tqef_feedback SET status = ?, review_note = ?, reviewed_at = ? WHERE id = ?'
+  ).bind('rejected', note, now, feedbackId).run();
+
+  return jsonResponse({ ok: true }, 200, request);
+}
+
+// ── POST /api/tqef/feedback/:id/defer (admin only) ──
+export async function handleTqefFeedbackDefer(request, env, feedbackId) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  let note = null;
+  try { const body = await request.json(); note = body.note || null; } catch (e) {}
+
+  const now = new Date().toISOString();
+  await env.AUTH_DB.prepare(
+    'UPDATE tqef_feedback SET status = ?, review_note = ?, reviewed_at = ? WHERE id = ?'
+  ).bind('deferred', note, now, feedbackId).run();
+
+  return jsonResponse({ ok: true }, 200, request);
+}

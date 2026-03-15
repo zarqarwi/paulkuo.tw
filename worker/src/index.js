@@ -15,7 +15,7 @@ import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
-import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload } from './tqef-api.js';
+import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer } from './tqef-api.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -110,6 +110,18 @@ async function handleRequest(request, env) {
   if (path === '/api/tqef/corpus/import' && method === 'POST') return handleTqefCorpusImport(request, env);
   if (path === '/api/tqef/rounds' && method === 'GET') return handleTqefRounds(request, env);
   if (path === '/api/tqef/eval/upload' && method === 'POST') return handleTqefEvalUpload(request, env);
+  if (path === '/api/tqef/feedback' && method === 'POST') return handleTqefFeedbackCreate(request, env);
+  if (path === '/api/tqef/feedback' && method === 'GET') return handleTqefFeedbackList(request, env);
+  // Dynamic TQEF feedback routes: /api/tqef/feedback/:id/adopt|reject|defer
+  if (path.startsWith('/api/tqef/feedback/') && method === 'POST') {
+    const fbParts = path.replace('/api/tqef/feedback/', '').split('/');
+    if (fbParts.length === 2 && fbParts[0]) {
+      const fbId = decodeURIComponent(fbParts[0]);
+      if (fbParts[1] === 'adopt') return handleTqefFeedbackAdopt(request, env, fbId);
+      if (fbParts[1] === 'reject') return handleTqefFeedbackReject(request, env, fbId);
+      if (fbParts[1] === 'defer') return handleTqefFeedbackDefer(request, env, fbId);
+    }
+  }
   // Dynamic TQEF routes: /api/tqef/rounds/:id, /api/tqef/rounds/:id/compare/:id2, /api/tqef/corpus/:id
   if (path.startsWith('/api/tqef/rounds/') && method === 'GET') {
     const parts = path.replace('/api/tqef/rounds/', '').split('/');

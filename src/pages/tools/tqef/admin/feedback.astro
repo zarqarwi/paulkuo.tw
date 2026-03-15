@@ -1,0 +1,221 @@
+---
+// TQEF Admin — Feedback Review Queue
+---
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TQEF 回饋審核</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style is:global>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .auth-gate { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .auth-card { background: #1e293b; padding: 2rem; border-radius: 12px; text-align: center; }
+    .auth-card h2 { margin-bottom: 1rem; font-size: 1.25rem; }
+    .auth-card input { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; padding: 0.5rem 1rem; border-radius: 6px; margin-right: 0.5rem; }
+    .auth-card button { background: #3b82f6; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem; }
+    .header h1 { font-size: 1.5rem; }
+    .header-actions a { color: #93c5fd; text-decoration: none; margin-left: 1rem; font-size: 0.875rem; }
+    .filters { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .filter-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    .filter-btn.active { background: #3b82f6; border-color: #3b82f6; color: white; }
+    .filter-btn .count { margin-left: 0.25rem; opacity: 0.7; }
+    .fb-list { display: flex; flex-direction: column; gap: 1rem; }
+    .fb-card { background: #1e293b; border-radius: 10px; padding: 1.25rem; border-left: 4px solid #334155; }
+    .fb-card.pending { border-left-color: #facc15; }
+    .fb-card.adopted { border-left-color: #4ade80; }
+    .fb-card.rejected { border-left-color: #f87171; }
+    .fb-card.deferred { border-left-color: #94a3b8; }
+    .fb-meta { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.75rem; color: #64748b; margin-bottom: 0.75rem; }
+    .fb-meta span { display: inline-flex; align-items: center; gap: 0.25rem; }
+    .fb-tag { background: #334155; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; color: #94a3b8; }
+    .fb-texts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+    @media (max-width: 768px) { .fb-texts { grid-template-columns: 1fr; } }
+    .fb-text-block label { display: block; font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-bottom: 0.25rem; }
+    .fb-text-block p { font-size: 0.875rem; line-height: 1.5; word-break: break-word; }
+    .fb-text-block.suggested p { color: #4ade80; }
+    .fb-actions { display: flex; gap: 0.5rem; }
+    .fb-actions button { border: none; padding: 0.4rem 0.75rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 500; }
+    .btn-adopt { background: #166534; color: #4ade80; }
+    .btn-adopt:hover { background: #15803d; }
+    .btn-reject { background: #7f1d1d; color: #fca5a5; }
+    .btn-reject:hover { background: #991b1b; }
+    .btn-defer { background: #334155; color: #94a3b8; }
+    .btn-defer:hover { background: #475569; }
+    .btn-adopt:disabled, .btn-reject:disabled, .btn-defer:disabled { opacity: 0.4; cursor: not-allowed; }
+    .fb-status { font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 500; }
+    .fb-status.adopted { background: #166534; color: #4ade80; }
+    .fb-status.rejected { background: #7f1d1d; color: #fca5a5; }
+    .fb-status.deferred { background: #334155; color: #94a3b8; }
+    .empty-state { text-align: center; padding: 3rem; color: #64748b; }
+    .loading { text-align: center; padding: 2rem; color: #64748b; }
+  </style>
+</head>
+<body>
+
+<div id="authGate" class="auth-gate">
+  <div class="auth-card">
+    <h2>TQEF 回饋審核</h2>
+    <p style="color:#94a3b8;margin-bottom:1rem;font-size:0.875rem;">輸入 Admin 密碼</p>
+    <input type="password" id="authInput" placeholder="Password" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+<div id="main" class="container" style="display:none">
+  <div class="header">
+    <h1>回饋審核佇列</h1>
+    <div class="header-actions">
+      <a href="/tools/tqef/admin/">Dashboard</a>
+      <a href="/tools/tqef/admin/results/">評估結果</a>
+    </div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+
+  <div id="fbList" class="fb-list">
+    <div class="loading">載入中...</div>
+  </div>
+</div>
+
+<script is:inline>
+const API = 'https://api.paulkuo.tw';
+
+// Auth
+const authGate = document.getElementById('authGate');
+const main = document.getElementById('main');
+let code = sessionStorage.getItem('tqef_code') || '';
+
+async function verifyCode(c) {
+  try {
+    const res = await fetch(API + '/validate-code', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code: c }) });
+    const d = await res.json();
+    return d.valid && d.role === 'admin';
+  } catch(e) { return false; }
+}
+
+async function checkAuth() {
+  const urlKey = new URLSearchParams(window.location.search).get('key');
+  const c = urlKey || code;
+  if (c && await verifyCode(c)) {
+    code = c;
+    sessionStorage.setItem('tqef_code', c);
+    authGate.style.display = 'none';
+    main.style.display = 'block';
+    loadFeedback();
+    return;
+  }
+  authGate.style.display = 'flex';
+  main.style.display = 'none';
+}
+
+document.getElementById('authBtn').addEventListener('click', async () => {
+  const val = document.getElementById('authInput').value.trim();
+  if (val) { code = val; await checkAuth(); }
+});
+document.getElementById('authInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('authBtn').click();
+});
+
+// Data
+let allFeedback = [];
+let currentFilter = 'pending';
+
+const ERROR_LABELS = {
+  stt_error: '語音辨識',
+  translation_error: '翻譯',
+  terminology_error: '術語',
+  other: '其他'
+};
+
+async function loadFeedback() {
+  try {
+    const res = await fetch(API + '/api/tqef/feedback?code=' + encodeURIComponent(code));
+    const d = await res.json();
+    allFeedback = d.feedback || [];
+    renderFilters();
+    renderList();
+  } catch(e) {
+    document.getElementById('fbList').innerHTML = '<div class="empty-state">載入失敗：' + e.message + '</div>';
+  }
+}
+
+function renderFilters() {
+  const counts = { all: allFeedback.length, pending: 0, adopted: 0, rejected: 0, deferred: 0 };
+  allFeedback.forEach(f => { if (counts[f.status] !== undefined) counts[f.status]++; });
+  const labels = { all: '全部', pending: '待審', adopted: '已採納', rejected: '已駁回', deferred: '待議' };
+  const el = document.getElementById('filters');
+  el.innerHTML = Object.keys(labels).map(k =>
+    '<button class="filter-btn' + (currentFilter === k ? ' active' : '') + '" data-filter="' + k + '">' +
+    labels[k] + '<span class="count">(' + counts[k] + ')</span></button>'
+  ).join('');
+  el.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => { currentFilter = btn.dataset.filter; renderFilters(); renderList(); });
+  });
+}
+
+function renderList() {
+  const filtered = currentFilter === 'all' ? allFeedback : allFeedback.filter(f => f.status === currentFilter);
+  const el = document.getElementById('fbList');
+  if (filtered.length === 0) {
+    el.innerHTML = '<div class="empty-state">沒有' + (currentFilter === 'all' ? '' : '符合篩選的') + '回饋紀錄</div>';
+    return;
+  }
+  el.innerHTML = filtered.map(f => {
+    const isPending = f.status === 'pending';
+    const errorLabel = f.error_type ? (ERROR_LABELS[f.error_type] || f.error_type) : '';
+    const time = f.created_at ? new Date(f.created_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }) : '';
+    return '<div class="fb-card ' + f.status + '" data-id="' + f.id + '">' +
+      '<div class="fb-meta">' +
+        '<span>' + time + '</span>' +
+        (f.stt_provider ? '<span class="fb-tag">' + f.stt_provider + '</span>' : '') +
+        (errorLabel ? '<span class="fb-tag">' + errorLabel + '</span>' : '') +
+        (f.domain_detected ? '<span class="fb-tag">' + f.domain_detected + '</span>' : '') +
+        (f.session_id ? '<span style="font-size:0.65rem;opacity:0.5">sid:' + f.session_id.slice(0,8) + '</span>' : '') +
+        (!isPending ? '<span class="fb-status ' + f.status + '">' + f.status + '</span>' : '') +
+      '</div>' +
+      '<div class="fb-texts">' +
+        '<div class="fb-text-block"><label>原文</label><p>' + esc(f.source_text) + '</p></div>' +
+        '<div class="fb-text-block"><label>機器翻譯</label><p>' + esc(f.original_translation) + '</p></div>' +
+        '<div class="fb-text-block suggested"><label>建議翻譯</label><p>' + esc(f.suggested_correction) + '</p></div>' +
+      '</div>' +
+      (isPending ? '<div class="fb-actions">' +
+        '<button class="btn-adopt" onclick="doAction(\'' + f.id + '\',\'adopt\')">✅ 採納</button>' +
+        '<button class="btn-reject" onclick="doAction(\'' + f.id + '\',\'reject\')">❌ 駁回</button>' +
+        '<button class="btn-defer" onclick="doAction(\'' + f.id + '\',\'defer\')">🔖 待議</button>' +
+      '</div>' : (f.review_note ? '<div style="font-size:0.75rem;color:#64748b;margin-top:0.5rem">備註：' + esc(f.review_note) + '</div>' : '')) +
+    '</div>';
+  }).join('');
+}
+
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+async function doAction(id, action) {
+  const card = document.querySelector('[data-id="' + id + '"]');
+  const btns = card ? card.querySelectorAll('button') : [];
+  btns.forEach(b => b.disabled = true);
+
+  try {
+    const res = await fetch(API + '/api/tqef/feedback/' + id + '/' + action + '?code=' + encodeURIComponent(code), {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}'
+    });
+    const d = await res.json();
+    if (d.ok || d.corpus_id) {
+      await loadFeedback();
+    } else {
+      alert('操作失敗：' + (d.error || 'Unknown'));
+      btns.forEach(b => b.disabled = false);
+    }
+  } catch(e) {
+    alert('錯誤：' + e.message);
+    btns.forEach(b => b.disabled = false);
+  }
+}
+
+checkAuth();
+</script>
+</body>
+</html>
