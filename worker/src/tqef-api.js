@@ -928,7 +928,7 @@ async function generateR2PresignedUrl(env, r2Key) {
   // Fallback: serve through worker with a time-limited token
   // This requires the worker to have a /api/tqef/audio-proxy/:token route
   const token = crypto.randomUUID();
-  const expiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+  const expiry = Date.now() + 60 * 60 * 1000; // 1 hour — Qwen filetrans is async and may queue
   await env.AUTH_DB.prepare(
     `INSERT OR REPLACE INTO tqef_intake_audio_tokens (token, r2_key, expires_at) VALUES (?, ?, ?)`
   ).bind(token, r2Key, expiry).run();
@@ -951,8 +951,8 @@ export async function handleTqefAudioProxy(request, env, token) {
   const object = await env.TQEF_AUDIO.get(record.r2_key);
   if (!object) return new Response('Object not found', { status: 404 });
 
-  // Clean up used token
-  await env.AUTH_DB.prepare('DELETE FROM tqef_intake_audio_tokens WHERE token = ?').bind(token).run();
+  // Do NOT delete the token here — Qwen filetrans may retry the fetch.
+  // Tokens expire naturally via expires_at check above.
 
   return new Response(object.body, {
     headers: {
