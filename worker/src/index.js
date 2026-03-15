@@ -15,7 +15,7 @@ import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
-import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer } from './tqef-api.js';
+import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive } from './tqef-api.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -120,6 +120,21 @@ async function handleRequest(request, env) {
       if (fbParts[1] === 'adopt') return handleTqefFeedbackAdopt(request, env, fbId);
       if (fbParts[1] === 'reject') return handleTqefFeedbackReject(request, env, fbId);
       if (fbParts[1] === 'defer') return handleTqefFeedbackDefer(request, env, fbId);
+    }
+  }
+  // Channel A: Meeting Export routes
+  if (path === '/api/tqef/meeting-export' && method === 'POST') return handleTqefMeetingExport(request, env);
+  if (path === '/api/tqef/meeting-exports' && method === 'GET') return handleTqefMeetingExportsList(request, env);
+  if (path.startsWith('/api/tqef/meeting-exports/') && method === 'GET') {
+    const meParts = path.replace('/api/tqef/meeting-exports/', '').split('/');
+    if (meParts.length === 2 && meParts[1] === 'entries') return handleTqefMeetingExportEntries(request, env, decodeURIComponent(meParts[0]));
+  }
+  if (path.startsWith('/api/tqef/meeting-exports/') && method === 'POST') {
+    const meParts = path.replace('/api/tqef/meeting-exports/', '').split('/');
+    if (meParts.length === 2 && meParts[0]) {
+      const meId = decodeURIComponent(meParts[0]);
+      if (meParts[1] === 'adopt-entry') return handleTqefMeetingAdoptEntry(request, env, meId);
+      if (meParts[1] === 'archive') return handleTqefMeetingArchive(request, env, meId);
     }
   }
   // Dynamic TQEF routes: /api/tqef/rounds/:id, /api/tqef/rounds/:id/compare/:id2, /api/tqef/corpus/:id

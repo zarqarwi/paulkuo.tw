@@ -1,0 +1,296 @@
+---
+// TQEF Admin — Meeting Export Review
+---
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TQEF 會議匯出審核</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style is:global>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .auth-gate { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .auth-card { background: #1e293b; padding: 2rem; border-radius: 12px; text-align: center; }
+    .auth-card h2 { margin-bottom: 1rem; font-size: 1.25rem; }
+    .auth-card input { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; padding: 0.5rem 1rem; border-radius: 6px; margin-right: 0.5rem; }
+    .auth-card button { background: #3b82f6; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; cursor: pointer; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem; }
+    .header h1 { font-size: 1.5rem; }
+    .header-actions a { color: #93c5fd; text-decoration: none; margin-left: 1rem; font-size: 0.875rem; }
+    .filters { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .filter-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    .filter-btn.active { background: #3b82f6; border-color: #3b82f6; color: white; }
+    .filter-btn .count { margin-left: 0.25rem; opacity: 0.7; }
+    .export-list { display: flex; flex-direction: column; gap: 1rem; }
+    .export-card { background: #1e293b; border-radius: 10px; border-left: 4px solid #334155; overflow: hidden; }
+    .export-card.pending { border-left-color: #facc15; }
+    .export-card.archived { border-left-color: #4ade80; }
+    .export-head { padding: 1.25rem; cursor: pointer; }
+    .export-head:hover { background: #1a2744; }
+    .export-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem; }
+    .export-meta span { display: inline-flex; align-items: center; gap: 0.25rem; }
+    .tag { background: #334155; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; color: #94a3b8; }
+    .export-summary { font-size: 0.875rem; color: #cbd5e1; }
+    .status-badge { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 500; }
+    .status-badge.pending { background: #854d0e; color: #fde68a; }
+    .status-badge.archived { background: #166534; color: #4ade80; }
+    .entries-panel { display: none; border-top: 1px solid #334155; padding: 1rem 1.25rem; }
+    .entries-panel.visible { display: block; }
+    .entry-row { display: grid; grid-template-columns: 40px 1fr 1fr auto; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid #1e293b; align-items: start; font-size: 0.85rem; }
+    @media (max-width: 768px) { .entry-row { grid-template-columns: 1fr; } }
+    .entry-idx { color: #64748b; font-size: 0.75rem; text-align: center; padding-top: 0.2rem; }
+    .entry-src { color: #e2e8f0; line-height: 1.5; word-break: break-word; }
+    .entry-tgt { color: #93c5fd; line-height: 1.5; word-break: break-word; }
+    .entry-actions { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
+    .btn-adopt { background: #166534; color: #4ade80; border: none; padding: 0.3rem 0.6rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem; }
+    .btn-adopt:hover { background: #15803d; }
+    .btn-adopt:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-adopted { background: transparent; color: #4ade80; border: 1px solid #166534; padding: 0.3rem 0.6rem; border-radius: 5px; font-size: 0.75rem; cursor: default; }
+    .archive-bar { padding: 0.75rem 1.25rem; border-top: 1px solid #334155; display: flex; justify-content: flex-end; gap: 0.5rem; }
+    .btn-archive { background: #334155; color: #94a3b8; border: none; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    .btn-archive:hover { background: #475569; }
+    .btn-archive:disabled { opacity: 0.4; cursor: not-allowed; }
+    .industry-select { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.7rem; }
+    .empty-state { text-align: center; padding: 3rem; color: #64748b; }
+    .loading { text-align: center; padding: 2rem; color: #64748b; }
+  </style>
+</head>
+<body>
+
+<div id="authGate" class="auth-gate">
+  <div class="auth-card">
+    <h2>TQEF 會議匯出審核</h2>
+    <p style="color:#94a3b8;margin-bottom:1rem;font-size:0.875rem;">輸入 Admin 密碼</p>
+    <input type="password" id="authInput" placeholder="Password" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+<div id="main" class="container" style="display:none">
+  <div class="header">
+    <h1>會議匯出審核</h1>
+    <div class="header-actions">
+      <a href="/tools/tqef/admin/">Dashboard</a>
+      <a href="/tools/tqef/admin/feedback/">回饋審核</a>
+      <a href="/tools/tqef/admin/results/">評估結果</a>
+    </div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+
+  <div id="exportList" class="export-list">
+    <div class="loading">載入中...</div>
+  </div>
+</div>
+
+<script is:inline>
+const API = 'https://api.paulkuo.tw';
+const INDUSTRIES = ['general','legal','medical','finance','it','manufacturing','retail','logistics','education','government'];
+
+const authGate = document.getElementById('authGate');
+const main = document.getElementById('main');
+let code = sessionStorage.getItem('tqef_code') || '';
+
+async function verifyCode(c) {
+  try {
+    const res = await fetch(API + '/validate-code', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code: c }) });
+    const d = await res.json();
+    return d.valid && d.role === 'admin';
+  } catch(e) { return false; }
+}
+
+async function checkAuth() {
+  const urlKey = new URLSearchParams(window.location.search).get('key');
+  const c = urlKey || code;
+  if (c && await verifyCode(c)) {
+    code = c;
+    sessionStorage.setItem('tqef_code', c);
+    authGate.style.display = 'none';
+    main.style.display = 'block';
+    loadExports();
+    return;
+  }
+  authGate.style.display = 'flex';
+  main.style.display = 'none';
+}
+
+document.getElementById('authBtn').addEventListener('click', async () => {
+  const val = document.getElementById('authInput').value.trim();
+  if (val) { code = val; await checkAuth(); }
+});
+document.getElementById('authInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('authBtn').click();
+});
+
+let allExports = [];
+let currentFilter = 'pending';
+let loadedEntries = {}; // exportId -> entries[]
+
+async function loadExports() {
+  try {
+    const res = await fetch(API + '/api/tqef/meeting-exports?code=' + encodeURIComponent(code));
+    const d = await res.json();
+    allExports = d.exports || [];
+    renderFilters();
+    renderList();
+  } catch(e) {
+    document.getElementById('exportList').innerHTML = '<div class="empty-state">載入失敗：' + e.message + '</div>';
+  }
+}
+
+function renderFilters() {
+  const counts = { all: allExports.length, pending: 0, archived: 0 };
+  allExports.forEach(ex => { if (counts[ex.status] !== undefined) counts[ex.status]++; });
+  const labels = { all: '全部', pending: '待審', archived: '已歸檔' };
+  const el = document.getElementById('filters');
+  el.innerHTML = Object.keys(labels).map(k =>
+    '<button class="filter-btn' + (currentFilter === k ? ' active' : '') + '" data-filter="' + k + '">' +
+    labels[k] + '<span class="count">(' + counts[k] + ')</span></button>'
+  ).join('');
+  el.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => { currentFilter = btn.dataset.filter; renderFilters(); renderList(); });
+  });
+}
+
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function renderList() {
+  const filtered = currentFilter === 'all' ? allExports : allExports.filter(ex => ex.status === currentFilter);
+  const el = document.getElementById('exportList');
+  if (filtered.length === 0) {
+    el.innerHTML = '<div class="empty-state">沒有' + (currentFilter === 'all' ? '' : '符合篩選的') + '匯出紀錄</div>';
+    return;
+  }
+  el.innerHTML = filtered.map(ex => {
+    const time = ex.created_at ? new Date(ex.created_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }) : '';
+    const langPair = (ex.source_lang || '?') + ' → ' + (ex.target_lang || '?');
+    return '<div class="export-card ' + ex.status + '" data-export-id="' + ex.id + '">' +
+      '<div class="export-head" onclick="toggleEntries(\'' + ex.id + '\')">' +
+        '<div class="export-meta">' +
+          '<span>' + time + '</span>' +
+          '<span class="tag">' + esc(ex.stt_provider || 'unknown') + '</span>' +
+          '<span class="tag">' + langPair + '</span>' +
+          (ex.default_domain ? '<span class="tag">' + esc(ex.default_domain) + '</span>' : '') +
+          '<span class="status-badge ' + ex.status + '">' + ex.status + '</span>' +
+          (ex.session_id ? '<span style="font-size:0.65rem;opacity:0.5">sid:' + ex.session_id.slice(0, 8) + '</span>' : '') +
+        '</div>' +
+        '<div class="export-summary">' + (ex.total_entries || 0) + ' 筆' +
+          (ex.selected_entries ? ' · 已採納 ' + ex.selected_entries + ' 筆' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="entries-panel" id="entries-' + ex.id + '"><div class="loading">載入逐句...</div></div>' +
+    '</div>';
+  }).join('');
+}
+
+async function toggleEntries(exportId) {
+  const panel = document.getElementById('entries-' + exportId);
+  if (panel.classList.contains('visible')) {
+    panel.classList.remove('visible');
+    return;
+  }
+  panel.classList.add('visible');
+
+  if (loadedEntries[exportId]) {
+    renderEntries(exportId);
+    return;
+  }
+
+  try {
+    const res = await fetch(API + '/api/tqef/meeting-exports/' + exportId + '/entries?code=' + encodeURIComponent(code));
+    const d = await res.json();
+    loadedEntries[exportId] = d.entries || [];
+    renderEntries(exportId);
+  } catch(e) {
+    panel.innerHTML = '<div class="empty-state">載入失敗：' + e.message + '</div>';
+  }
+}
+
+function renderEntries(exportId) {
+  const entries = loadedEntries[exportId] || [];
+  const panel = document.getElementById('entries-' + exportId);
+  const ex = allExports.find(e => e.id === exportId);
+  const isPending = ex && ex.status === 'pending';
+
+  let html = entries.map(entry => {
+    const adopted = entry.is_selected === 1;
+    return '<div class="entry-row" data-entry-id="' + entry.id + '">' +
+      '<div class="entry-idx">#' + entry.entry_index + '</div>' +
+      '<div class="entry-src">' + esc(entry.stt_output) + '</div>' +
+      '<div class="entry-tgt">' + esc(entry.translation) + '</div>' +
+      '<div class="entry-actions">' +
+        (adopted
+          ? '<span class="btn-adopted">已採納</span>'
+          : (isPending
+            ? '<select class="industry-select" id="ind-' + entry.id + '">' +
+                INDUSTRIES.map(i => '<option value="' + i + '">' + i + '</option>').join('') +
+              '</select>' +
+              '<button class="btn-adopt" onclick="adoptEntry(\'' + exportId + '\',' + entry.id + ')">採納</button>'
+            : '')) +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  if (isPending) {
+    html += '<div class="archive-bar">' +
+      '<button class="btn-archive" onclick="archiveExport(\'' + exportId + '\')">歸檔此場會議</button>' +
+    '</div>';
+  }
+
+  panel.innerHTML = html;
+}
+
+async function adoptEntry(exportId, entryId) {
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '處理中...';
+  const indSel = document.getElementById('ind-' + entryId);
+  const industry = indSel ? indSel.value : 'general';
+
+  try {
+    const res = await fetch(API + '/api/tqef/meeting-exports/' + exportId + '/adopt-entry?code=' + encodeURIComponent(code), {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ entry_id: entryId, industry: industry })
+    });
+    const d = await res.json();
+    if (d.ok || d.corpus_id) {
+      // Update local state
+      const entry = (loadedEntries[exportId] || []).find(e => e.id === entryId);
+      if (entry) { entry.is_selected = 1; entry.domain = industry; entry.corpus_id = d.corpus_id; }
+      renderEntries(exportId);
+      // Refresh export data for selected_entries count
+      await loadExports();
+    } else {
+      alert('採納失敗：' + (d.error || 'Unknown'));
+      btn.disabled = false; btn.textContent = '採納';
+    }
+  } catch(e) {
+    alert('錯誤：' + e.message);
+    btn.disabled = false; btn.textContent = '採納';
+  }
+}
+
+async function archiveExport(exportId) {
+  if (!confirm('確定要歸檔這場會議嗎？')) return;
+
+  try {
+    const res = await fetch(API + '/api/tqef/meeting-exports/' + exportId + '/archive?code=' + encodeURIComponent(code), {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}'
+    });
+    const d = await res.json();
+    if (d.ok) {
+      await loadExports();
+    } else {
+      alert('歸檔失敗：' + (d.error || 'Unknown'));
+    }
+  } catch(e) {
+    alert('錯誤：' + e.message);
+  }
+}
+
+checkAuth();
+</script>
+</body>
+</html>

@@ -426,7 +426,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
     <button class="btn-subtitle" id="btnSubtitle" title="字幕模式：全屏顯示翻譯">🖥<span class="btn-text"> 字幕</span></button>
     <button class="biz-toggle" id="btnBizMode" title="商務模式：使用 Google Chirp 3 高精度日文 STT + 1000 術語適應" style="display:none"><span class="biz-dot"></span><span class="btn-text"> 商務</span></button>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
-    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button></div></div>
+    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button><button class="export-item" id="exportTqef">📊 匯出到 TQEF<span>送入翻譯品質語料庫</span></button></div></div>
     <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
     <button class="btn-main btn-start" id="btnToggle">🎙 開始</button>
   </div>
@@ -3279,6 +3279,55 @@ getEl("exportTranslated").addEventListener("click", function() {
   polishAndExport(buildTranslatedTxt, "{d}_translated.txt", "text/plain;charset=utf-8");
 });
 
+// === Export to TQEF (meeting export) ===
+getEl("exportTqef").addEventListener("click", function() {
+  exportToTqef();
+});
+
+function exportToTqef() {
+  if (!allEntries || allEntries.length === 0) {
+    alert('沒有翻譯紀錄可匯出');
+    return;
+  }
+  if (document.body.dataset.tqefExported === _sessionId) {
+    if (!confirm('這場會議已匯出過，確定要再匯出一次嗎？')) return;
+  }
+  var payload = {
+    session_id: _sessionId,
+    stt_provider: _activeEngine + (dgModel ? '/' + dgModel : ''),
+    source_lang: srcInputLang,
+    target_lang: tgtLang,
+    default_domain: _sessionDomain,
+    total_entries: allEntries.length,
+    entries: allEntries.filter(function(e) { return e.original; }).map(function(e, i) {
+      return {
+        entry_index: i,
+        stt_output: e.original,
+        translation: e.translated || '',
+        source_lang: e.detectedLang || srcInputLang || '',
+        timestamp: e.ts || null
+      };
+    })
+  };
+  fetch(WORKER_URL + '/api/tqef/meeting-export', {
+    method: 'POST', credentials: 'include',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+  .then(function(res) {
+    if (res.ok && res.data.ok) {
+      document.body.dataset.tqefExported = _sessionId;
+      alert('已匯出 ' + res.data.entry_count + ' 筆紀錄到 TQEF（ID: ' + (res.data.export_id || '').slice(0, 8) + '…）');
+    } else {
+      alert('匯出失敗：' + (res.data.error || '未知錯誤'));
+    }
+  })
+  .catch(function(err) {
+    alert('匯出失敗：' + err.message);
+  });
+  getEl("exportMenu").classList.remove("visible");
+}
 
 // === Admin Panel: Invite Code Management ===
 var _adminCodes = [];

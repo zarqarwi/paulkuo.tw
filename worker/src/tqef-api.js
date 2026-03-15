@@ -252,6 +252,176 @@ export async function handleTqefEvalUpload(request, env) {
   return jsonResponse({ success: true, round_id, inserted }, 201, request);
 }
 
+// ── POST /api/tqef/meeting-export (logged-in user) ──
+export async function handleTqefMeetingExport(request, env) {
+  // Optional auth — capture user_id if logged in
+  let userId = null;
+  try {
+    const auth = await authenticateRequest(request, env, '');
+    if (auth) userId = auth.userId || null;
+  } catch (e) {}
+
+  let body;
+  try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+
+  if (!body.entries || !Array.isArray(body.entries) || body.entries.length === 0) {
+    return jsonResponse({ error: 'entries array is required and must not be empty' }, 400, request);
+  }
+  if (body.entries.length > 90) {
+    return jsonResponse({ error: 'Too many entries, max 90 per export' }, 400, request);
+  }
+
+  const exportId = crypto.randomUUID();
+  const now = new Date().toISOString();
+  const statements = [];
+
+  // Main table
+  statements.push(
+    env.AUTH_DB.prepare(`
+      INSERT INTO tqef_meeting_exports (
+        id, session_id, meeting_date, stt_provider,
+        source_lang, target_lang, default_domain,
+        total_entries, status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+    `).bind(
+      exportId,
+      body.session_id || null,
+      now.slice(0, 10),
+      body.stt_provider || null,
+      body.source_lang || null,
+      body.target_lang || null,
+      body.default_domain || null,
+      body.entries.length,
+      now
+    )
+  );
+
+  // Per-entry inserts (id is INTEGER autoincrement, omit it)
+  for (let i = 0; i < body.entries.length; i++) {
+    const entry = body.entries[i];
+    statements.push(
+      env.AUTH_DB.prepare(`
+        INSERT INTO tqef_meeting_entries (
+          export_id, entry_index, timestamp, source_lang,
+          stt_output, translation
+        ) VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(
+        exportId,
+        entry.entry_index ?? i,
+        entry.timestamp || null,
+        entry.source_lang || null,
+        entry.stt_output || '',
+        entry.translation || ''
+      )
+    );
+  }
+
+  try {
+    await env.AUTH_DB.batch(statements);
+    return jsonResponse({ ok: true, export_id: exportId, entry_count: body.entries.length }, 201, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── GET /api/tqef/meeting-exports?status=pending (admin only) ──
+export async function handleTqefMeetingExportsList(request, env) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  const url = new URL(request.url);
+  const status = url.searchParams.get('status');
+  let sql = 'SELECT * FROM tqef_meeting_exports';
+  const params = [];
+  if (status) { sql += ' WHERE status = ?'; params.push(status); }
+  sql += ' ORDER BY created_at DESC';
+
+  const stmt = params.length > 0 ? env.AUTH_DB.prepare(sql).bind(...params) : env.AUTH_DB.prepare(sql);
+  const { results } = await stmt.all();
+  return jsonResponse({ exports: results, total: results.length }, 200, request);
+}
+
+// ── GET /api/tqef/meeting-exports/:id/entries (admin only) ──
+export async function handleTqefMeetingExportEntries(request, env, exportId) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  const exp = await env.AUTH_DB.prepare('SELECT * FROM tqef_meeting_exports WHERE id = ?').bind(exportId).first();
+  if (!exp) return jsonResponse({ error: 'Export not found' }, 404, request);
+
+  const { results } = await env.AUTH_DB.prepare(
+    'SELECT * FROM tqef_meeting_entries WHERE export_id = ? ORDER BY entry_index'
+  ).bind(exportId).all();
+
+  return jsonResponse({ export: exp, entries: results, total: results.length }, 200, request);
+}
+
+// ── POST /api/tqef/meeting-exports/:id/adopt-entry (admin only) ──
+export async function handleTqefMeetingAdoptEntry(request, env, exportId) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  let body;
+  try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+
+  const { entry_id, industry } = body;
+  if (!entry_id) return jsonResponse({ error: 'entry_id is required' }, 400, request);
+
+  const entry = await env.AUTH_DB.prepare(
+    'SELECT * FROM tqef_meeting_entries WHERE id = ? AND export_id = ?'
+  ).bind(entry_id, exportId).first();
+  if (!entry) return jsonResponse({ error: 'Entry not found' }, 404, request);
+
+  const corpusId = crypto.randomUUID();
+  const now = new Date().toISOString();
+
+  const batch = [
+    env.AUTH_DB.prepare(
+      'UPDATE tqef_meeting_entries SET is_selected = 1, domain = ?, corpus_id = ? WHERE id = ?'
+    ).bind(industry || 'general', corpusId, entry_id),
+
+    env.AUTH_DB.prepare(`
+      INSERT INTO tqef_corpus (
+        id, source_text, reference_translation, source_origin,
+        source_ref, domain, source_lang, target_lang, created_at
+      ) VALUES (?, ?, ?, 'meeting_export', ?, ?, ?, ?, ?)
+    `).bind(
+      corpusId,
+      entry.stt_output,
+      entry.translation,
+      exportId,
+      industry || 'general',
+      entry.source_lang || 'ja',
+      'zh-TW',
+      now
+    )
+  ];
+
+  try {
+    await env.AUTH_DB.batch(batch);
+    // Update selected_entries count
+    const count = await env.AUTH_DB.prepare(
+      'SELECT count(*) as cnt FROM tqef_meeting_entries WHERE export_id = ? AND is_selected = 1'
+    ).bind(exportId).first();
+    await env.AUTH_DB.prepare(
+      'UPDATE tqef_meeting_exports SET selected_entries = ? WHERE id = ?'
+    ).bind(count?.cnt || 0, exportId).run();
+
+    return jsonResponse({ ok: true, corpus_id: corpusId }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── POST /api/tqef/meeting-exports/:id/archive (admin only) ──
+export async function handleTqefMeetingArchive(request, env, exportId) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  const now = new Date().toISOString();
+  await env.AUTH_DB.prepare(
+    'UPDATE tqef_meeting_exports SET status = ?, reviewed_at = ? WHERE id = ?'
+  ).bind('archived', now, exportId).run();
+
+  return jsonResponse({ ok: true }, 200, request);
+}
+
 // ── POST /api/tqef/feedback (public, no admin auth required) ──
 export async function handleTqefFeedbackCreate(request, env) {
   let body;
