@@ -217,7 +217,7 @@ function renderEntries(exportId) {
   let html = entries.map(entry => {
     const adopted = entry.is_selected === 1;
     return '<div class="entry-row" data-entry-id="' + entry.id + '">' +
-      '<div class="entry-idx">#' + entry.entry_index + '</div>' +
+      '<div class="entry-idx">#' + entry.entry_index + (entry.stt_engine ? ' <span style="font-size:11px;opacity:0.7">' + esc(entry.stt_engine) + (entry.stt_model ? '/' + esc(entry.stt_model) : '') + '</span>' : '') + '</div>' +
       '<div class="entry-src">' + esc(entry.stt_output) + '</div>' +
       '<div class="entry-tgt">' + esc(entry.translation) + '</div>' +
       '<div class="entry-actions">' +
