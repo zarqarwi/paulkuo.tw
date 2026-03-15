@@ -284,6 +284,7 @@ https://paulkuo.tw/tags-graph/
 https://paulkuo.tw/tags/
 https://paulkuo.tw/tools/tqef/admin/
 https://paulkuo.tw/tools/tqef/admin/feedback/
+https://paulkuo.tw/tools/tqef/admin/meetings/
 https://paulkuo.tw/tools/tqef/admin/results/
 https://paulkuo.tw/tools/tqef/admin/results/detail/
 https://paulkuo.tw/zh-cn/
