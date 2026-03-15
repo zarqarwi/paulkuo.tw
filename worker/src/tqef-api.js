@@ -559,3 +559,395 @@ export async function handleTqefFeedbackDefer(request, env, feedbackId) {
 
   return jsonResponse({ ok: true }, 200, request);
 }
+
+// ═══════════════════════════════════════════════════════════
+// Channel C: Corpus Intake (audio + text)
+// ═══════════════════════════════════════════════════════════
+
+const AUDIO_MIME_TYPES = new Set([
+  'audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/wav',
+  'audio/webm', 'audio/ogg', 'video/mp4',
+]);
+
+// STT engine routing by language
+function getSttEngine(language) {
+  if (language === 'zh') return { engine: 'qwen', mode: 'async' };
+  if (language === 'en') return { engine: 'groq', mode: 'sync' };
+  return { engine: 'deepgram', mode: 'sync' };
+}
+
+// ── POST /api/tqef/upload-text ── (parse txt → split sentences)
+export async function handleTqefUploadText(request, env) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  const contentType = request.headers.get('Content-Type') || '';
+  let text = '';
+
+  if (contentType.includes('multipart/form-data')) {
+    const formData = await request.formData();
+    const file = formData.get('file');
+    if (!file) return jsonResponse({ error: 'No file uploaded' }, 400, request);
+    text = await file.text();
+  } else {
+    try {
+      const body = await request.json();
+      text = body.text || '';
+    } catch (e) {
+      return jsonResponse({ error: 'Invalid request' }, 400, request);
+    }
+  }
+
+  if (!text.trim()) return jsonResponse({ error: 'Empty text' }, 400, request);
+
+  // Split by newlines, trim, filter empty
+  const sentences = text.split(/\r?\n/)
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+
+  return jsonResponse({ sentences, total: sentences.length }, 200, request);
+}
+
+// ── POST /api/tqef/corpus/batch ── (batch write confirmed sentences)
+export async function handleTqefCorpusBatch(request, env) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  let body;
+  try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+
+  const { sentences, domain, language } = body;
+  if (!sentences || !Array.isArray(sentences) || sentences.length === 0) {
+    return jsonResponse({ error: 'sentences array required' }, 400, request);
+  }
+  if (!domain) return jsonResponse({ error: 'domain required' }, 400, request);
+
+  const lang = language || 'zh';
+  const statements = [];
+  const ids = [];
+
+  for (const text of sentences) {
+    if (!text || typeof text !== 'string' || !text.trim()) continue;
+    const id = crypto.randomUUID();
+    ids.push(id);
+    statements.push(
+      env.AUTH_DB.prepare(`
+        INSERT INTO tqef_corpus (id, domain, source_lang, source_text, source_origin, created_at)
+        VALUES (?, ?, ?, ?, 'intake_text', datetime('now'))
+      `).bind(id, domain, lang, text.trim())
+    );
+  }
+
+  if (statements.length === 0) return jsonResponse({ error: 'No valid sentences' }, 400, request);
+
+  try {
+    await env.AUTH_DB.batch(statements);
+    return jsonResponse({ ok: true, inserted: statements.length, ids }, 201, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── POST /api/tqef/upload-audio ── (multipart: file + language + domain)
+export async function handleTqefUploadAudio(request, env) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  const formData = await request.formData();
+  const file = formData.get('file');
+  const language = formData.get('language') || 'zh';
+  const domain = formData.get('domain') || 'general';
+
+  if (!file) return jsonResponse({ error: 'No file uploaded' }, 400, request);
+
+  const mime = file.type || '';
+  if (!AUDIO_MIME_TYPES.has(mime)) {
+    return jsonResponse({ error: `Unsupported audio type: ${mime}` }, 400, request);
+  }
+
+  const id = crypto.randomUUID();
+  const ext = file.name?.split('.').pop() || 'bin';
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const r2Key = `uploads/${dateStr}/${id}.${ext}`;
+
+  // Upload to R2
+  const arrayBuffer = await file.arrayBuffer();
+  await env.TQEF_AUDIO.put(r2Key, arrayBuffer, {
+    httpMetadata: { contentType: mime },
+    customMetadata: { originalName: file.name || 'unknown', language, domain },
+  });
+
+  // Determine STT engine
+  const { engine, mode } = getSttEngine(language);
+
+  // Create DB record
+  await env.AUTH_DB.prepare(`
+    INSERT INTO tqef_intake_audio (id, filename, r2_key, file_size, mime_type, language, domain, stt_engine, stt_status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(id, file.name || 'unknown', r2Key, arrayBuffer.byteLength, mime, language, domain, engine, 'processing').run();
+
+  // For sync engines, run STT immediately
+  if (mode === 'sync') {
+    try {
+      let transcript = '';
+      if (engine === 'groq') {
+        transcript = await callGroqWhisper(env, arrayBuffer, file.name || 'audio.mp3');
+      } else {
+        transcript = await callDeepgram(env, arrayBuffer, language);
+      }
+      await env.AUTH_DB.prepare(
+        'UPDATE tqef_intake_audio SET stt_status = ?, stt_raw = ? WHERE id = ?'
+      ).bind('done', transcript, id).run();
+
+      return jsonResponse({ ok: true, upload_id: id, stt_status: 'done', transcript, engine }, 201, request);
+    } catch (e) {
+      await env.AUTH_DB.prepare(
+        'UPDATE tqef_intake_audio SET stt_status = ? WHERE id = ?'
+      ).bind('failed', id).run();
+      return jsonResponse({ ok: true, upload_id: id, stt_status: 'failed', error: e.message, engine }, 201, request);
+    }
+  }
+
+  // For async engine (Qwen filetrans), generate presigned-like URL and submit
+  if (engine === 'qwen') {
+    try {
+      // Generate a presigned URL for Qwen to fetch
+      // Cloudflare Worker R2 binding doesn't natively support presigned URLs,
+      // so we use a signed custom header approach via a temp public URL
+      const presignedUrl = await generateR2PresignedUrl(env, r2Key);
+      const taskId = await submitQwenFiletrans(env, presignedUrl);
+
+      await env.AUTH_DB.prepare(
+        'UPDATE tqef_intake_audio SET stt_task_id = ? WHERE id = ?'
+      ).bind(taskId, id).run();
+
+      return jsonResponse({ ok: true, upload_id: id, stt_status: 'processing', task_id: taskId, engine }, 201, request);
+    } catch (e) {
+      await env.AUTH_DB.prepare(
+        'UPDATE tqef_intake_audio SET stt_status = ? WHERE id = ?'
+      ).bind('failed', id).run();
+      return jsonResponse({ ok: true, upload_id: id, stt_status: 'failed', error: e.message, engine }, 201, request);
+    }
+  }
+
+  return jsonResponse({ ok: true, upload_id: id, stt_status: 'processing', engine }, 201, request);
+}
+
+// ── GET /api/tqef/stt-status/:id ── (poll STT progress)
+export async function handleTqefSttStatus(request, env, uploadId) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  const record = await env.AUTH_DB.prepare('SELECT * FROM tqef_intake_audio WHERE id = ?').bind(uploadId).first();
+  if (!record) return jsonResponse({ error: 'Upload not found' }, 404, request);
+
+  // If already done or failed, return immediately
+  if (record.stt_status === 'done' || record.stt_status === 'failed') {
+    return jsonResponse({
+      upload_id: uploadId,
+      stt_status: record.stt_status,
+      transcript: record.stt_raw,
+      engine: record.stt_engine,
+    }, 200, request);
+  }
+
+  // For Qwen async: poll the task
+  if (record.stt_engine === 'qwen' && record.stt_task_id) {
+    try {
+      const result = await pollQwenTask(env, record.stt_task_id);
+      if (result.status === 'SUCCEEDED') {
+        const transcript = extractQwenTranscript(result);
+        await env.AUTH_DB.prepare(
+          'UPDATE tqef_intake_audio SET stt_status = ?, stt_raw = ? WHERE id = ?'
+        ).bind('done', transcript, uploadId).run();
+        return jsonResponse({ upload_id: uploadId, stt_status: 'done', transcript, engine: 'qwen' }, 200, request);
+      }
+      if (result.status === 'FAILED') {
+        await env.AUTH_DB.prepare(
+          'UPDATE tqef_intake_audio SET stt_status = ? WHERE id = ?'
+        ).bind('failed', uploadId).run();
+        return jsonResponse({ upload_id: uploadId, stt_status: 'failed', engine: 'qwen' }, 200, request);
+      }
+      // Still running
+      return jsonResponse({ upload_id: uploadId, stt_status: 'processing', engine: 'qwen' }, 200, request);
+    } catch (e) {
+      return jsonResponse({ upload_id: uploadId, stt_status: 'processing', error: e.message, engine: 'qwen' }, 200, request);
+    }
+  }
+
+  return jsonResponse({ upload_id: uploadId, stt_status: record.stt_status, engine: record.stt_engine }, 200, request);
+}
+
+// ── POST /api/tqef/audio/:id/correct ── (submit corrected transcript → write corpus)
+export async function handleTqefAudioCorrect(request, env, uploadId) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  let body;
+  try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+
+  const { corrected_text } = body;
+  if (!corrected_text || !corrected_text.trim()) {
+    return jsonResponse({ error: 'corrected_text required' }, 400, request);
+  }
+
+  const record = await env.AUTH_DB.prepare('SELECT * FROM tqef_intake_audio WHERE id = ?').bind(uploadId).first();
+  if (!record) return jsonResponse({ error: 'Upload not found' }, 404, request);
+
+  const corpusId = crypto.randomUUID();
+
+  const batch = [
+    env.AUTH_DB.prepare(`
+      INSERT INTO tqef_corpus (
+        id, domain, source_lang, source_text, ground_truth_transcript,
+        stt_raw_output, stt_provider, has_audio, audio_r2_key, source_origin, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, 'intake_audio', datetime('now'))
+    `).bind(
+      corpusId, record.domain, record.language,
+      corrected_text.trim(), corrected_text.trim(),
+      record.stt_raw, record.stt_engine, record.r2_key
+    ),
+  ];
+
+  try {
+    await env.AUTH_DB.batch(batch);
+    return jsonResponse({ ok: true, corpus_id: corpusId, upload_id: uploadId }, 201, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// STT Engine Helpers
+// ═══════════════════════════════════════════════════════════
+
+// Groq Whisper — sync file upload
+async function callGroqWhisper(env, audioBuffer, filename) {
+  const formData = new FormData();
+  formData.append('file', new Blob([audioBuffer]), filename);
+  formData.append('model', 'whisper-large-v3-turbo');
+
+  const res = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${env.GROQ_API_KEY}` },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Groq STT failed (${res.status}): ${errText}`);
+  }
+  const data = await res.json();
+  return data.text || '';
+}
+
+// Deepgram Nova-3 — sync file upload
+async function callDeepgram(env, audioBuffer, language) {
+  const params = new URLSearchParams({
+    model: 'nova-3',
+    language: language || 'ja',
+    punctuate: 'true',
+  });
+
+  const res = await fetch(`https://api.deepgram.com/v1/listen?${params}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Token ${env.DEEPGRAM_API_KEY}`,
+      'Content-Type': 'audio/mpeg',
+    },
+    body: audioBuffer,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Deepgram STT failed (${res.status}): ${errText}`);
+  }
+  const data = await res.json();
+  return data.results?.channels?.[0]?.alternatives?.[0]?.transcript || '';
+}
+
+// Qwen filetrans — async submission
+async function submitQwenFiletrans(env, fileUrl) {
+  const res = await fetch('https://dashscope-intl.aliyuncs.com/api/v1/services/audio/asr/transcription', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${env.DASHSCOPE_API_KEY}`,
+      'X-DashScope-Async': 'enable',
+    },
+    body: JSON.stringify({
+      model: 'qwen3-asr-flash-filetrans',
+      input: { file_url: fileUrl },
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Qwen filetrans submit failed (${res.status}): ${errText}`);
+  }
+  const data = await res.json();
+  return data.output?.task_id || '';
+}
+
+// Qwen filetrans — poll task status
+async function pollQwenTask(env, taskId) {
+  const res = await fetch(`https://dashscope-intl.aliyuncs.com/api/v1/tasks/${taskId}`, {
+    headers: { 'Authorization': `Bearer ${env.DASHSCOPE_API_KEY}` },
+  });
+  if (!res.ok) throw new Error(`Qwen poll failed (${res.status})`);
+  const data = await res.json();
+  return data.output || {};
+}
+
+// Extract transcript text from Qwen filetrans result
+function extractQwenTranscript(output) {
+  // Qwen filetrans returns results in output.results[]
+  try {
+    const results = output.results || [];
+    return results.map(r => r.text || r.sentence?.text || '').join('').trim();
+  } catch (e) {
+    return JSON.stringify(output);
+  }
+}
+
+// Generate a temporary accessible URL for R2 object (for Qwen server-to-server fetch)
+// Cloudflare Worker R2 binding doesn't support native presigned URLs,
+// so we create a short-lived signed URL using the Worker itself as proxy,
+// or use R2's createSignedUrl if available on the binding
+async function generateR2PresignedUrl(env, r2Key) {
+  // Try the newer R2 binding method first
+  if (env.TQEF_AUDIO.createSignedUrl) {
+    return await env.TQEF_AUDIO.createSignedUrl(r2Key, { expiresIn: 900 });
+  }
+  // Fallback: serve through worker with a time-limited token
+  // This requires the worker to have a /api/tqef/audio-proxy/:token route
+  const token = crypto.randomUUID();
+  const expiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+  await env.AUTH_DB.prepare(
+    `INSERT OR REPLACE INTO tqef_intake_audio_tokens (token, r2_key, expires_at) VALUES (?, ?, ?)`
+  ).bind(token, r2Key, expiry).run();
+  // Return a URL that Qwen can fetch
+  return `https://api.paulkuo.tw/api/tqef/audio-proxy/${token}`;
+}
+
+// ── GET /api/tqef/audio-proxy/:token ── (serve R2 audio for Qwen)
+export async function handleTqefAudioProxy(request, env, token) {
+  // Look up token
+  const record = await env.AUTH_DB.prepare(
+    'SELECT * FROM tqef_intake_audio_tokens WHERE token = ?'
+  ).bind(token).first();
+
+  if (!record || record.expires_at < Date.now()) {
+    return new Response('Not found or expired', { status: 404 });
+  }
+
+  // Fetch from R2 and stream
+  const object = await env.TQEF_AUDIO.get(record.r2_key);
+  if (!object) return new Response('Object not found', { status: 404 });
+
+  // Clean up used token
+  await env.AUTH_DB.prepare('DELETE FROM tqef_intake_audio_tokens WHERE token = ?').bind(token).run();
+
+  return new Response(object.body, {
+    headers: {
+      'Content-Type': object.httpMetadata?.contentType || 'audio/mpeg',
+      'Content-Length': object.size?.toString() || '',
+      'Cache-Control': 'no-store',
+    },
+  });
+}

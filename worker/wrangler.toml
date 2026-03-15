@@ -20,3 +20,8 @@ CF_ACCOUNT_ID = "4bf7e4b38d30ab7d4a191eefbf393133"
 binding = "AUTH_DB"
 database_name = "paulkuo-auth"
 database_id = "1cf40e96-b745-4b5b-9855-c8f5fbb1b3fb"
+
+# R2 binding — TQEF audio storage (Channel C)
+[[r2_buckets]]
+binding = "TQEF_AUDIO"
+bucket_name = "tqef-audio"

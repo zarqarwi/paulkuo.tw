@@ -15,7 +15,7 @@ import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
-import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive } from './tqef-api.js';
+import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy } from './tqef-api.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -150,6 +150,22 @@ async function handleRequest(request, env) {
   if (path.startsWith('/api/tqef/corpus/') && method === 'DELETE') {
     const corpusId = decodeURIComponent(path.split('/api/tqef/corpus/')[1]);
     if (corpusId) return handleTqefCorpusDelete(request, env, corpusId);
+  }
+  // Channel C: Corpus Intake routes
+  if (path === '/api/tqef/upload-text' && method === 'POST') return handleTqefUploadText(request, env);
+  if (path === '/api/tqef/corpus/batch' && method === 'POST') return handleTqefCorpusBatch(request, env);
+  if (path === '/api/tqef/upload-audio' && method === 'POST') return handleTqefUploadAudio(request, env);
+  if (path.startsWith('/api/tqef/stt-status/') && method === 'GET') {
+    const uploadId = decodeURIComponent(path.split('/api/tqef/stt-status/')[1]);
+    if (uploadId) return handleTqefSttStatus(request, env, uploadId);
+  }
+  if (path.startsWith('/api/tqef/audio/') && path.endsWith('/correct') && method === 'POST') {
+    const audioId = decodeURIComponent(path.replace('/api/tqef/audio/', '').replace('/correct', ''));
+    if (audioId) return handleTqefAudioCorrect(request, env, audioId);
+  }
+  if (path.startsWith('/api/tqef/audio-proxy/') && method === 'GET') {
+    const token = decodeURIComponent(path.split('/api/tqef/audio-proxy/')[1]);
+    if (token) return handleTqefAudioProxy(request, env, token);
   }
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
