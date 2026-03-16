@@ -799,13 +799,12 @@ export async function handleTqefAudioCorrect(request, env, uploadId) {
   const batch = [
     env.AUTH_DB.prepare(`
       INSERT INTO tqef_corpus (
-        id, domain, source_lang, source_text, ground_truth_transcript,
-        stt_raw_output, stt_provider, has_audio, audio_r2_key, source_origin, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, 'intake_audio', datetime('now'))
+        id, domain, source_lang, source_text,
+        has_audio, source_origin, source_ref, created_at
+      ) VALUES (?, ?, ?, ?, 1, 'intake_audio', ?, datetime('now'))
     `).bind(
       corpusId, record.domain, record.language,
-      corrected_text.trim(), corrected_text.trim(),
-      record.stt_raw, record.stt_engine, record.r2_key
+      corrected_text.trim(), record.r2_key
     ),
   ];
 
