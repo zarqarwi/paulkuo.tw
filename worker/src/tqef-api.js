@@ -983,3 +983,242 @@ export async function handleTqefAudioProxy(request, env, token) {
     },
   });
 }
+
+// ══════════════════════════════════════════════════════════════
+// Channel D: YouTube 字幕進件
+// ══════════════════════════════════════════════════════════════
+
+function extractVideoId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([^&#]+)/,
+    /(?:youtu\.be\/)([^?&#]+)/,
+    /(?:youtube\.com\/embed\/)([^?&#]+)/,
+    /(?:youtube\.com\/shorts\/)([^?&#]+)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function decodeXmlEntities(str) {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n/g, ' ')
+    .trim();
+}
+
+function parseTranscriptXml(xml) {
+  const segments = [];
+  const regex = /<text start="([^"]+)" dur="([^"]+)"[^>]*>([\s\S]*?)<\/text>/g;
+  let match;
+  while ((match = regex.exec(xml)) !== null) {
+    const text = decodeXmlEntities(match[3]);
+    if (!text) continue;
+    segments.push({
+      start: parseFloat(match[1]),
+      duration: parseFloat(match[2]),
+      text,
+    });
+  }
+  return segments;
+}
+
+/**
+ * 合併過短 segment，以標點斷句
+ * - 太短 segment（< 5 字）向下合併
+ * - 以標點符號（。！？.!?）為優先斷點
+ * - 合併後超過 100 字則在最近標點處切分
+ */
+function mergeSegments(segments) {
+  if (segments.length === 0) return [];
+
+  const merged = [];
+  let buffer = '';
+  let bufStart = segments[0]?.start || 0;
+
+  for (const seg of segments) {
+    if (buffer === '') bufStart = seg.start;
+    buffer += (buffer ? ' ' : '') + seg.text;
+
+    // Check if buffer ends with sentence-ending punctuation and is long enough
+    const endsWithPunct = /[。！？.!?]$/.test(buffer.trim());
+    if (endsWithPunct && buffer.length >= 5) {
+      merged.push({ start: bufStart, text: buffer.trim() });
+      buffer = '';
+    }
+  }
+
+  // Flush remaining buffer
+  if (buffer.trim()) {
+    merged.push({ start: bufStart, text: buffer.trim() });
+  }
+
+  // Post-pass: split any segment > 100 chars at nearest punctuation
+  const result = [];
+  for (const seg of merged) {
+    if (seg.text.length <= 100) {
+      result.push(seg);
+      continue;
+    }
+    let remaining = seg.text;
+    let start = seg.start;
+    while (remaining.length > 100) {
+      // Find nearest punctuation within first 100 chars
+      let splitIdx = -1;
+      for (let i = Math.min(99, remaining.length - 1); i >= 20; i--) {
+        if (/[。！？.!?，,；;]/.test(remaining[i])) {
+          splitIdx = i;
+          break;
+        }
+      }
+      if (splitIdx === -1) splitIdx = 99; // hard split at 100
+      result.push({ start, text: remaining.slice(0, splitIdx + 1).trim() });
+      remaining = remaining.slice(splitIdx + 1).trim();
+      start = seg.start; // approximate
+    }
+    if (remaining) result.push({ start, text: remaining });
+  }
+
+  // Post-pass: merge short segments (< 5 chars) with next
+  const final = [];
+  for (let i = 0; i < result.length; i++) {
+    if (result[i].text.length < 5 && i + 1 < result.length) {
+      result[i + 1] = {
+        start: result[i].start,
+        text: result[i].text + ' ' + result[i + 1].text,
+      };
+    } else {
+      final.push(result[i]);
+    }
+  }
+
+  return final;
+}
+
+// ── POST /api/tqef/youtube-transcript ──
+// Request: { videoUrl: string, lang?: string }
+// Response: { videoId, tracks[], segments[] }
+export async function handleTqefYoutubeTranscript(request, env) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  let body;
+  try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+
+  const { videoUrl, lang } = body;
+  if (!videoUrl) return jsonResponse({ error: 'videoUrl required' }, 400, request);
+
+  const videoId = extractVideoId(videoUrl);
+  if (!videoId) return jsonResponse({ error: 'Cannot parse video ID from URL' }, 400, request);
+
+  try {
+    // 1. Hit YouTube Innertube API for caption tracks
+    const playerResp = await fetch('https://www.youtube.com/youtubei/v1/player', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        videoId,
+        context: {
+          client: { clientName: 'WEB', clientVersion: '2.20260316.00.00' }
+        }
+      })
+    });
+
+    if (!playerResp.ok) {
+      return jsonResponse({ error: `YouTube API error: ${playerResp.status}` }, 502, request);
+    }
+
+    const playerData = await playerResp.json();
+    const title = playerData?.videoDetails?.title || '';
+    const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+
+    if (captionTracks.length === 0) {
+      return jsonResponse({ error: 'No captions available for this video', videoId, title }, 404, request);
+    }
+
+    // 2. Build tracks list for frontend
+    const tracks = captionTracks.map(t => ({
+      lang: t.languageCode,
+      name: t.name?.simpleText || t.languageCode,
+      kind: t.kind || 'standard',
+      baseUrl: t.baseUrl,
+    }));
+
+    // 3. Pick track: prefer requested lang, else first
+    let selectedTrack = captionTracks[0];
+    if (lang) {
+      const match = captionTracks.find(t => t.languageCode === lang);
+      if (match) selectedTrack = match;
+    }
+
+    // 4. Fetch transcript XML
+    const transcriptResp = await fetch(selectedTrack.baseUrl);
+    if (!transcriptResp.ok) {
+      return jsonResponse({ error: `Transcript fetch error: ${transcriptResp.status}` }, 502, request);
+    }
+    const xml = await transcriptResp.text();
+
+    // 5. Parse + merge segments
+    const rawSegments = parseTranscriptXml(xml);
+    const segments = mergeSegments(rawSegments);
+
+    return jsonResponse({
+      videoId,
+      title,
+      selectedLang: selectedTrack.languageCode,
+      tracks: tracks.map(t => ({ lang: t.lang, name: t.name, kind: t.kind })),
+      rawCount: rawSegments.length,
+      segments,
+    }, 200, request);
+
+  } catch (e) {
+    return jsonResponse({ error: 'Failed to fetch transcript: ' + e.message }, 500, request);
+  }
+}
+
+// ── POST /api/tqef/youtube-corpus ──
+// Batch write YouTube segments to corpus
+// Request: { videoUrl, videoId, sentences: string[], domain, language }
+export async function handleTqefYoutubeCorpus(request, env) {
+  if (!await requireAdmin(request, env)) return jsonResponse({ error: 'Unauthorized' }, 403, request);
+
+  let body;
+  try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
+
+  const { videoUrl, videoId, sentences, domain, language } = body;
+  if (!sentences || !Array.isArray(sentences) || sentences.length === 0) {
+    return jsonResponse({ error: 'sentences array required' }, 400, request);
+  }
+  if (!domain) return jsonResponse({ error: 'domain required' }, 400, request);
+
+  const lang = language || 'zh';
+  const sourceUrl = videoUrl || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : null);
+  const statements = [];
+  const ids = [];
+
+  for (const text of sentences) {
+    if (!text || typeof text !== 'string' || !text.trim()) continue;
+    const id = crypto.randomUUID();
+    ids.push(id);
+    statements.push(
+      env.AUTH_DB.prepare(`
+        INSERT INTO tqef_corpus (id, domain, source_lang, source_text, source_origin, source_url, created_at)
+        VALUES (?, ?, ?, ?, 'youtube', ?, datetime('now'))
+      `).bind(id, domain, lang, text.trim(), sourceUrl)
+    );
+  }
+
+  if (statements.length === 0) return jsonResponse({ error: 'No valid sentences' }, 400, request);
+
+  try {
+    await env.AUTH_DB.batch(statements);
+    return jsonResponse({ ok: true, inserted: statements.length, ids }, 201, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}

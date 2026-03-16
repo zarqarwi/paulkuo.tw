@@ -15,7 +15,7 @@ import { handleFeedGet, handleFeedPush } from './feed.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
-import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy } from './tqef-api.js';
+import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -167,6 +167,9 @@ async function handleRequest(request, env) {
     const token = decodeURIComponent(path.split('/api/tqef/audio-proxy/')[1]);
     if (token) return handleTqefAudioProxy(request, env, token);
   }
+  // Channel D: YouTube 字幕進件
+  if (path === '/api/tqef/youtube-transcript' && method === 'POST') return handleTqefYoutubeTranscript(request, env);
+  if (path === '/api/tqef/youtube-corpus' && method === 'POST') return handleTqefYoutubeCorpus(request, env);
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
   if (path === '/social/status') return handleSocialStatus(request, env);

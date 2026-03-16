@@ -75,6 +75,7 @@
     .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
     .badge-audio { background: rgba(59,130,246,0.15); color: #93c5fd; }
     .badge-text { background: rgba(74,222,128,0.15); color: #4ade80; }
+    .badge-youtube { background: rgba(239,68,68,0.15); color: #fca5a5; }
     .badge-domain { background: rgba(148,163,184,0.1); color: #94a3b8; }
 
     .hidden { display: none !important; }
@@ -169,6 +170,31 @@
     </div>
   </div>
 
+  <!-- YouTube 字幕進件 -->
+  <div class="card">
+    <h3>YouTube 字幕進件</h3>
+    <div style="display:flex; gap:0.75rem; align-items:flex-end; flex-wrap:wrap;">
+      <div style="flex:1; min-width:240px;">
+        <label style="font-size:0.75rem;color:#94a3b8;display:block;margin-bottom:0.25rem;">YouTube URL</label>
+        <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..." style="width:100%; background:#0f172a; border:1px solid #334155; color:#e2e8f0; padding:0.5rem 0.75rem; border-radius:6px; font-size:0.875rem;" />
+      </div>
+      <button id="btnFetchYt" class="btn btn-primary">抓取字幕</button>
+    </div>
+    <div id="ytStatus" style="font-size:0.8rem; color:#64748b; margin-top:0.5rem;"></div>
+  </div>
+
+  <!-- YouTube 預覽 section -->
+  <div id="ytSection" class="card hidden">
+    <h3 id="ytTitle">字幕預覽</h3>
+    <div id="ytLangRow" style="display:flex; gap:0.75rem; margin-bottom:0.75rem; flex-wrap:wrap; align-items:center;"></div>
+    <div id="ytSegCount" style="font-size:0.75rem; color:#64748b; margin-bottom:0.5rem;"></div>
+    <ul id="ytSegList" class="sentence-list"></ul>
+    <div class="actions">
+      <button id="btnImportYt" class="btn btn-success" disabled>匯入選取 → 寫入 Corpus</button>
+      <button id="btnClearYt" class="btn btn-ghost">清除</button>
+    </div>
+  </div>
+
   <!-- Recent corpus entries -->
   <div class="card">
     <h3>最近 Corpus 項目</h3>
@@ -186,6 +212,7 @@
         <option value="manual">手動</option>
         <option value="intake_text">文字進件</option>
         <option value="intake_audio">音檔進件</option>
+        <option value="youtube">YouTube 字幕</option>
       </select>
       <button onclick="loadCorpusList()" style="padding:0.3rem 0.75rem; background:#334155; color:#e2e8f0; border:none; border-radius:4px; cursor:pointer; font-size:0.8rem;">篩選</button>
     </div>
@@ -500,8 +527,9 @@ async function loadCorpusList() {
     tbody.innerHTML = corpus.map(c => {
       const origin = c.source_origin || 'manual';
       const isAudio = origin.includes('audio') || c.has_audio;
-      const badgeCls = isAudio ? 'badge-audio' : 'badge-text';
-      const badgeText = isAudio ? '音檔' : '文字';
+      const isYoutube = origin === 'youtube';
+      const badgeCls = isYoutube ? 'badge-youtube' : isAudio ? 'badge-audio' : 'badge-text';
+      const badgeText = isYoutube ? 'YT' : isAudio ? '音檔' : '文字';
       const text = (c.source_text || c.ground_truth_transcript || '').slice(0, 60);
       return `<tr>
         <td style="font-family:monospace;font-size:0.7rem;color:#64748b;">${(c.id || '').slice(0, 8)}</td>
@@ -529,6 +557,178 @@ async function deleteCorpus(id) {
     showMsg('刪除失敗: ' + e.message, 'error');
   }
 }
+
+// ─── YouTube 字幕進件 ───
+let ytSegments = [];
+let ytVideoUrl = '';
+let ytVideoId = '';
+let ytTracks = [];
+
+document.getElementById('btnFetchYt').addEventListener('click', async () => {
+  const url = document.getElementById('ytUrl').value.trim();
+  if (!url) return;
+
+  const btn = document.getElementById('btnFetchYt');
+  const status = document.getElementById('ytStatus');
+  btn.disabled = true;
+  btn.textContent = '抓取中...';
+  status.textContent = '正在從 YouTube 抓取字幕...';
+  status.style.color = '#94a3b8';
+
+  try {
+    const res = await fetch(apiUrl('/api/tqef/youtube-transcript'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ videoUrl: url }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      status.textContent = data.error || '抓取失敗';
+      status.style.color = '#f87171';
+      return;
+    }
+
+    ytVideoUrl = url;
+    ytVideoId = data.videoId;
+    ytTracks = data.tracks || [];
+    ytSegments = (data.segments || []).map(s => ({ ...s, checked: true }));
+
+    status.textContent = `成功：${data.title || data.videoId}（${data.rawCount} 段 → 合併為 ${ytSegments.length} 句）`;
+    status.style.color = '#4ade80';
+
+    // Show title
+    document.getElementById('ytTitle').textContent = data.title ? `字幕預覽：${data.title}` : '字幕預覽';
+
+    // Render language selector
+    const langRow = document.getElementById('ytLangRow');
+    if (ytTracks.length > 1) {
+      langRow.innerHTML = '<span style="font-size:0.75rem;color:#94a3b8;">語言：</span>' +
+        ytTracks.map(t =>
+          `<label style="font-size:0.8rem;cursor:pointer;display:flex;align-items:center;gap:0.25rem;">
+            <input type="radio" name="ytLang" value="${t.lang}" ${t.lang === data.selectedLang ? 'checked' : ''} />
+            ${t.name}
+          </label>`
+        ).join('');
+      // Language switch handler
+      langRow.querySelectorAll('input[name="ytLang"]').forEach(radio => {
+        radio.addEventListener('change', async (e) => {
+          const newLang = e.target.value;
+          if (newLang === data.selectedLang) return;
+          btn.disabled = true;
+          status.textContent = '切換語言中...';
+          try {
+            const r2 = await fetch(apiUrl('/api/tqef/youtube-transcript'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ videoUrl: url, lang: newLang }),
+            });
+            const d2 = await r2.json();
+            if (r2.ok) {
+              ytSegments = (d2.segments || []).map(s => ({ ...s, checked: true }));
+              renderYtSegments();
+              status.textContent = `語言切換為 ${newLang}（${d2.rawCount} 段 → ${ytSegments.length} 句）`;
+              status.style.color = '#4ade80';
+            }
+          } catch (e2) { status.textContent = '切換失敗'; status.style.color = '#f87171'; }
+          btn.disabled = false;
+        });
+      });
+    } else {
+      langRow.innerHTML = ytTracks.length === 1
+        ? `<span style="font-size:0.8rem;color:#94a3b8;">語言：${ytTracks[0].name}</span>` : '';
+    }
+
+    renderYtSegments();
+    document.getElementById('ytSection').classList.remove('hidden');
+  } catch (e) {
+    status.textContent = '抓取失敗: ' + e.message;
+    status.style.color = '#f87171';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '抓取字幕';
+  }
+});
+
+function renderYtSegments() {
+  const ul = document.getElementById('ytSegList');
+  const checkedCount = ytSegments.filter(s => s.checked).length;
+  document.getElementById('ytSegCount').textContent = `共 ${ytSegments.length} 句，已選 ${checkedCount} 句`;
+  ul.innerHTML = ytSegments.map((s, i) =>
+    `<li class="sentence-item">
+      <input type="checkbox" ${s.checked ? 'checked' : ''} data-yt-idx="${i}" style="margin-top:0.15rem;" />
+      <span class="sentence-num">${i + 1}</span>
+      <span class="sentence-text"><input type="text" value="${s.text.replace(/"/g, '&quot;')}" data-yt-text="${i}" /></span>
+      <span style="font-size:0.65rem;color:#475569;min-width:3rem;">${formatTime(s.start)}</span>
+    </li>`
+  ).join('');
+
+  ul.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', e => {
+      ytSegments[parseInt(e.target.dataset.ytIdx)].checked = e.target.checked;
+      const cnt = ytSegments.filter(s => s.checked).length;
+      document.getElementById('ytSegCount').textContent = `共 ${ytSegments.length} 句，已選 ${cnt} 句`;
+      document.getElementById('btnImportYt').disabled = cnt === 0;
+    });
+  });
+  ul.querySelectorAll('input[type="text"]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      ytSegments[parseInt(e.target.dataset.ytText)].text = e.target.value;
+    });
+  });
+
+  document.getElementById('btnImportYt').disabled = checkedCount === 0;
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+document.getElementById('btnImportYt').addEventListener('click', async () => {
+  const selected = ytSegments.filter(s => s.checked && s.text.trim());
+  if (selected.length === 0) return;
+
+  const domain = document.getElementById('selDomain').value;
+  const language = document.getElementById('selLang').value;
+  const btn = document.getElementById('btnImportYt');
+  btn.disabled = true;
+  btn.textContent = '寫入中...';
+
+  try {
+    const res = await fetch(apiUrl('/api/tqef/youtube-corpus'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        videoUrl: ytVideoUrl,
+        videoId: ytVideoId,
+        sentences: selected.map(s => s.text.trim()),
+        domain,
+        language,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) { showMsg(data.error || '寫入失敗', 'error'); return; }
+
+    showMsg(`成功寫入 ${data.inserted} 筆 YouTube 字幕 corpus 項目`);
+    document.getElementById('ytSection').classList.add('hidden');
+    document.getElementById('ytUrl').value = '';
+    document.getElementById('ytStatus').textContent = '';
+    ytSegments = [];
+    loadCorpusList();
+  } catch (e) {
+    showMsg('寫入失敗: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '匯入選取 → 寫入 Corpus';
+  }
+});
+
+document.getElementById('btnClearYt').addEventListener('click', () => {
+  ytSegments = [];
+  document.getElementById('ytSection').classList.add('hidden');
+  document.getElementById('ytStatus').textContent = '';
+});
 
 checkAuth();
 </script>
