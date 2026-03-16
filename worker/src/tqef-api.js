@@ -1186,24 +1186,36 @@ export async function handleTqefYoutubeTranscript(request, env) {
       if (match) selectedTrack = match;
     }
 
-    // 4. Fetch transcript as JSON3 format
-    let trackUrl = selectedTrack.baseUrl;
-    if (!trackUrl) {
-      return jsonResponse({ error: 'selectedTrack.baseUrl is empty', videoId, title }, 200, request);
-    }
-    trackUrl += '&fmt=json3';
+    // 4. Fetch transcript — try self-built URL first, then baseUrl as fallback
+    const selectedLang = selectedTrack.languageCode || 'en';
+    const fetchHeaders = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept-Language': 'en-US,en;q=0.9',
+    };
 
-    const transcriptResp = await fetch(trackUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-      }
-    });
+    // Strategy A: self-built URL (most reliable)
+    const builtUrl = `https://www.youtube.com/api/timedtext?v=${videoId}&lang=${selectedLang}&fmt=json3`;
+    // Strategy B: baseUrl + fmt param
+    const baseUrlWithFmt = selectedTrack.baseUrl ? selectedTrack.baseUrl + '&fmt=json3' : null;
 
-    const transcriptBody = await transcriptResp.text();
+    let transcriptBody = '';
+    let usedUrl = '';
+    let debugStatus = 0;
 
-    if (!transcriptResp.ok) {
-      return jsonResponse({ error: `Transcript fetch error: ${transcriptResp.status}`, videoId, title }, 502, request);
+    // Try strategy A
+    const respA = await fetch(builtUrl, { headers: fetchHeaders });
+    const bodyA = await respA.text();
+    if (respA.ok && bodyA.length > 0) {
+      transcriptBody = bodyA;
+      usedUrl = builtUrl;
+      debugStatus = respA.status;
+    } else if (baseUrlWithFmt) {
+      // Try strategy B
+      const respB = await fetch(baseUrlWithFmt, { headers: fetchHeaders });
+      const bodyB = await respB.text();
+      transcriptBody = bodyB;
+      usedUrl = baseUrlWithFmt;
+      debugStatus = respB.status;
     }
 
     // 5. Parse JSON3, fallback to XML
@@ -1216,10 +1228,15 @@ export async function handleTqefYoutubeTranscript(request, env) {
     return jsonResponse({
       videoId,
       title,
-      selectedLang: selectedTrack.languageCode,
+      selectedLang,
       tracks: tracks.map(t => ({ lang: t.lang, name: t.name, kind: t.kind })),
       rawCount: rawSegments.length,
       segments,
+      debugUsedUrl: usedUrl.substring(0, 300),
+      debugStatus,
+      debugBodyLen: transcriptBody.length,
+      debugBodyPreview: transcriptBody.substring(0, 500),
+      debugOriginalBaseUrl: (selectedTrack.baseUrl || '').substring(0, 300),
     }, 200, request);
 
   } catch (e) {
