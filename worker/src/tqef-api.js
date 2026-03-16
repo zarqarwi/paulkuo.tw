@@ -1030,6 +1030,31 @@ function parseTranscriptXml(xml) {
 }
 
 /**
+ * Parse YouTube JSON3 transcript format (newer format YouTube may return)
+ * Format: {"events":[{"tStartMs":0,"dDurationMs":5000,"segs":[{"utf8":"text"}]},...],...}
+ */
+function parseTranscriptJson(jsonStr) {
+  try {
+    const data = JSON.parse(jsonStr);
+    if (!data.events) return [];
+    const segments = [];
+    for (const ev of data.events) {
+      if (!ev.segs) continue;
+      const text = ev.segs.map(s => s.utf8 || '').join('').trim();
+      if (!text || text === '\n') continue;
+      segments.push({
+        start: (ev.tStartMs || 0) / 1000,
+        duration: (ev.dDurationMs || 0) / 1000,
+        text,
+      });
+    }
+    return segments;
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
  * 合併過短 segment，以標點斷句
  * - 太短 segment（< 5 字）向下合併
  * - 以標點符號（。！？.!?）為優先斷點
@@ -1161,15 +1186,21 @@ export async function handleTqefYoutubeTranscript(request, env) {
       if (match) selectedTrack = match;
     }
 
-    // 4. Fetch transcript XML
-    const transcriptResp = await fetch(selectedTrack.baseUrl);
-    if (!transcriptResp.ok) {
-      return jsonResponse({ error: `Transcript fetch error: ${transcriptResp.status}` }, 502, request);
-    }
-    const xml = await transcriptResp.text();
+    // 4. Fetch transcript XML — decode \u0026 that may survive JSON.parse in edge cases
+    let trackUrl = selectedTrack.baseUrl;
+    trackUrl = trackUrl.replace(/\\u0026/g, '&');
 
-    // 5. Parse + merge segments
-    const rawSegments = parseTranscriptXml(xml);
+    const transcriptResp = await fetch(trackUrl);
+    if (!transcriptResp.ok) {
+      return jsonResponse({ error: `Transcript fetch error: ${transcriptResp.status}`, debugUrl: trackUrl }, 502, request);
+    }
+    const transcriptBody = await transcriptResp.text();
+
+    // 5. Parse: try XML first, then JSON3 format
+    let rawSegments = parseTranscriptXml(transcriptBody);
+    if (rawSegments.length === 0) {
+      rawSegments = parseTranscriptJson(transcriptBody);
+    }
     const segments = mergeSegments(rawSegments);
 
     return jsonResponse({
@@ -1179,6 +1210,8 @@ export async function handleTqefYoutubeTranscript(request, env) {
       tracks: tracks.map(t => ({ lang: t.lang, name: t.name, kind: t.kind })),
       rawCount: rawSegments.length,
       segments,
+      debugTranscriptFormat: transcriptBody.trimStart().startsWith('<') ? 'xml' : 'json_or_other',
+      debugTranscriptPreview: transcriptBody.substring(0, 300),
     }, 200, request);
 
   } catch (e) {
