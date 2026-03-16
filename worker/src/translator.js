@@ -155,7 +155,7 @@ function businessPostProcess(translated, sourceText) {
 
 // Semiconductor CN→TW post-processing dictionary
 // Sources: Wikipedia CGroup/Electronics, 痞客邦IC設計用語對照, 百度文庫兩岸半導體照明術語
-function semiPostProcess(text) {
+export function semiPostProcess(text) {
   const replacements = [
     // 進階製程 (長詞優先)
     ['混合信号集成电路', '混合訊號積體電路'],
@@ -221,7 +221,7 @@ function semiPostProcess(text) {
 }
 
 // Circular economy / environmental CN→TW post-processing dictionary
-function circularPostProcess(text) {
+export function circularPostProcess(text) {
   const replacements = [
     // 長詞優先
     ['城市生活垃圾', '都市一般廢棄物'],
@@ -307,7 +307,7 @@ function circularPostProcess(text) {
 }
 
 // General CN→TW post-processing (applies to all domains)
-function generalPostProcess(text) {
+export function generalPostProcess(text) {
   const replacements = [
     ['传感器', '感測器'],
     ['分辨率', '解析度'],

@@ -4,6 +4,16 @@
  */
 import { corsHeaders, jsonResponse } from './utils.js';
 import { authenticateRequest } from './auth.js';
+import { semiPostProcess, circularPostProcess, generalPostProcess } from './translator.js';
+
+// CN→TW post-processing: apply domain-specific + general dictionaries
+function cnToTw(text, domain) {
+  if (!text) return text;
+  if (domain === 'semiconductor') text = semiPostProcess(text);
+  if (domain === 'circular') text = circularPostProcess(text);
+  text = generalPostProcess(text);
+  return text;
+}
 
 // ── Admin guard (session or invite code) ──
 async function requireAdmin(request, env) {
@@ -696,7 +706,7 @@ export async function handleTqefUploadAudio(request, env) {
         'UPDATE tqef_intake_audio SET stt_status = ?, stt_raw = ? WHERE id = ?'
       ).bind('done', transcript, id).run();
 
-      return jsonResponse({ ok: true, upload_id: id, stt_status: 'done', transcript, engine }, 201, request);
+      return jsonResponse({ ok: true, upload_id: id, stt_status: 'done', transcript: cnToTw(transcript, domain), engine }, 201, request);
     } catch (e) {
       await env.AUTH_DB.prepare(
         'UPDATE tqef_intake_audio SET stt_status = ? WHERE id = ?'
@@ -742,7 +752,7 @@ export async function handleTqefSttStatus(request, env, uploadId) {
     const resp = {
       upload_id: uploadId,
       stt_status: record.stt_status,
-      transcript: record.stt_raw,
+      transcript: record.stt_status === 'done' ? cnToTw(record.stt_raw, record.domain) : record.stt_raw,
       engine: record.stt_engine,
     };
     if (record.stt_status === 'failed' && record.stt_raw) {
@@ -760,7 +770,7 @@ export async function handleTqefSttStatus(request, env, uploadId) {
         await env.AUTH_DB.prepare(
           'UPDATE tqef_intake_audio SET stt_status = ?, stt_raw = ? WHERE id = ?'
         ).bind('done', transcript, uploadId).run();
-        return jsonResponse({ upload_id: uploadId, stt_status: 'done', transcript, engine: 'qwen' }, 200, request);
+        return jsonResponse({ upload_id: uploadId, stt_status: 'done', transcript: cnToTw(transcript, record.domain), engine: 'qwen' }, 200, request);
       }
       if (result.task_status === 'FAILED') {
         const rawJson = JSON.stringify(result._raw || result);
