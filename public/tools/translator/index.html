@@ -598,7 +598,7 @@ function detectInAppBrowser() {
   if (/\bLine\/|\bLINE\//i.test(ua)) return 'line';
   if (/\bFBAN|FBAV\b/i.test(ua)) return 'facebook';
   if (/\bInstagram\b/i.test(ua)) return 'instagram';
-  if (/\bTwitter|\bX\b.*Safari/i.test(ua) && !/Chrome/.test(ua)) return 'twitter';
+  if (/\bTwitter\b/i.test(ua) && !/Chrome/.test(ua)) return 'twitter';
   if (/\bMicroMessenger\b/i.test(ua)) return 'wechat';
   // Generic WebView detection (Android)
   if (/; wv\)|WebView/i.test(ua)) return 'webview';
