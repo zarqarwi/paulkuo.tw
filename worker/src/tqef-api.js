@@ -1186,37 +1186,17 @@ export async function handleTqefYoutubeTranscript(request, env) {
       if (match) selectedTrack = match;
     }
 
-    // 4. Fetch transcript — try self-built URL first, then baseUrl as fallback
+    // 4. Fetch transcript — baseUrl has signature/expire params, append lang + fmt
     const selectedLang = selectedTrack.languageCode || 'en';
-    const fetchHeaders = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept-Language': 'en-US,en;q=0.9',
-    };
+    const trackUrl = selectedTrack.baseUrl + '&lang=' + selectedLang + '&fmt=json3';
 
-    // Strategy A: self-built URL (most reliable)
-    const builtUrl = `https://www.youtube.com/api/timedtext?v=${videoId}&lang=${selectedLang}&fmt=json3`;
-    // Strategy B: baseUrl + fmt param
-    const baseUrlWithFmt = selectedTrack.baseUrl ? selectedTrack.baseUrl + '&fmt=json3' : null;
-
-    let transcriptBody = '';
-    let usedUrl = '';
-    let debugStatus = 0;
-
-    // Try strategy A
-    const respA = await fetch(builtUrl, { headers: fetchHeaders });
-    const bodyA = await respA.text();
-    if (respA.ok && bodyA.length > 0) {
-      transcriptBody = bodyA;
-      usedUrl = builtUrl;
-      debugStatus = respA.status;
-    } else if (baseUrlWithFmt) {
-      // Try strategy B
-      const respB = await fetch(baseUrlWithFmt, { headers: fetchHeaders });
-      const bodyB = await respB.text();
-      transcriptBody = bodyB;
-      usedUrl = baseUrlWithFmt;
-      debugStatus = respB.status;
-    }
+    const transcriptResp = await fetch(trackUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    });
+    const transcriptBody = await transcriptResp.text();
 
     // 5. Parse JSON3, fallback to XML
     let rawSegments = parseTranscriptJson(transcriptBody);
@@ -1232,11 +1212,10 @@ export async function handleTqefYoutubeTranscript(request, env) {
       tracks: tracks.map(t => ({ lang: t.lang, name: t.name, kind: t.kind })),
       rawCount: rawSegments.length,
       segments,
-      debugUsedUrl: usedUrl.substring(0, 300),
-      debugStatus,
+      debugUrl: trackUrl.substring(0, 300),
+      debugStatus: transcriptResp.status,
       debugBodyLen: transcriptBody.length,
       debugBodyPreview: transcriptBody.substring(0, 500),
-      debugOriginalBaseUrl: (selectedTrack.baseUrl || '').substring(0, 300),
     }, 200, request);
 
   } catch (e) {
