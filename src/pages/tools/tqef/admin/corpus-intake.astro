@@ -172,8 +172,25 @@
   <!-- Recent corpus entries -->
   <div class="card">
     <h3>最近 Corpus 項目</h3>
+    <div style="display:flex; gap:0.75rem; margin-bottom:0.75rem; align-items:center;">
+      <select id="filterDomain" style="padding:0.3rem 0.5rem; background:#1e293b; color:#e2e8f0; border:1px solid #334155; border-radius:4px; font-size:0.8rem;">
+        <option value="">全部 Domain</option>
+        <option value="general">通用</option>
+        <option value="semiconductor">半導體</option>
+        <option value="circular">循環科技</option>
+        <option value="medical">醫療</option>
+        <option value="business">商業</option>
+      </select>
+      <select id="filterOrigin" style="padding:0.3rem 0.5rem; background:#1e293b; color:#e2e8f0; border:1px solid #334155; border-radius:4px; font-size:0.8rem;">
+        <option value="">全部來源</option>
+        <option value="manual">手動</option>
+        <option value="intake_text">文字進件</option>
+        <option value="intake_audio">音檔進件</option>
+      </select>
+      <button onclick="loadCorpusList()" style="padding:0.3rem 0.75rem; background:#334155; color:#e2e8f0; border:none; border-radius:4px; cursor:pointer; font-size:0.8rem;">篩選</button>
+    </div>
     <table class="corpus-table">
-      <thead><tr><th>ID</th><th>來源</th><th>Domain</th><th>語言</th><th>內容</th><th>建立時間</th></tr></thead>
+      <thead><tr><th>ID</th><th>來源</th><th>Domain</th><th>語言</th><th>內容</th><th>建立時間</th><th></th></tr></thead>
       <tbody id="corpusBody"><tr><td colspan="6" style="color:#64748b;text-align:center;">載入中...</td></tr></tbody>
     </table>
   </div>
@@ -464,13 +481,19 @@ document.getElementById('btnCorrect').addEventListener('click', async () => {
 // ─── Corpus List ───
 async function loadCorpusList() {
   try {
-    const res = await fetch(apiUrl('/api/tqef/corpus'));
+    const params = new URLSearchParams();
+    const domain = document.getElementById('filterDomain')?.value;
+    const origin = document.getElementById('filterOrigin')?.value;
+    if (domain) params.set('domain', domain);
+    if (origin) params.set('source_origin', origin);
+    const qs = params.toString();
+    const res = await fetch(apiUrl('/api/tqef/corpus' + (qs ? '?' + qs : '')));
     const data = await res.json();
-    const corpus = (data.corpus || []).slice(-20).reverse(); // Last 20, newest first
+    const corpus = (data.corpus || []).slice(0, 20);
     const tbody = document.getElementById('corpusBody');
 
     if (corpus.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="color:#64748b;text-align:center;">尚無資料</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="color:#64748b;text-align:center;">尚無資料</td></tr>';
       return;
     }
 
@@ -487,10 +510,23 @@ async function loadCorpusList() {
         <td>${c.source_lang || '—'}</td>
         <td title="${(text || '').replace(/"/g, '&quot;')}">${text || '—'}</td>
         <td style="font-size:0.75rem;color:#64748b;">${(c.created_at || '').slice(0, 16)}</td>
+        <td><button onclick="deleteCorpus('${c.id}')" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:0.75rem;" title="刪除">✕</button></td>
       </tr>`;
     }).join('');
   } catch (e) {
-    document.getElementById('corpusBody').innerHTML = '<tr><td colspan="6" style="color:#f87171;">載入失敗</td></tr>';
+    document.getElementById('corpusBody').innerHTML = '<tr><td colspan="7" style="color:#f87171;">載入失敗</td></tr>';
+  }
+}
+
+async function deleteCorpus(id) {
+  if (!confirm('確定刪除此 corpus 項目？')) return;
+  try {
+    const res = await fetch(apiUrl(`/api/tqef/corpus/${id}`), { method: 'DELETE' });
+    if (!res.ok) throw new Error('Delete failed');
+    showMsg('已刪除');
+    loadCorpusList();
+  } catch (e) {
+    showMsg('刪除失敗: ' + e.message, 'error');
   }
 }
 

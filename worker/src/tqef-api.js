@@ -62,7 +62,7 @@ export async function handleTqefCorpus(request, env) {
   const hasAudio = url.searchParams.get('has_audio');
   if (hasAudio !== null && hasAudio !== '') { sql += ' AND has_audio = ?'; params.push(parseInt(hasAudio)); }
 
-  sql += ' ORDER BY id';
+  sql += ' ORDER BY created_at DESC';
 
   const stmt = params.length > 0 ? env.AUTH_DB.prepare(sql).bind(...params) : env.AUTH_DB.prepare(sql);
   const { results } = await stmt.all();

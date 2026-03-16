@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-03-15T14:43:48",
+  "mode": "dry-run",
+  "corpus_size": 29,
+  "evaluated": 3,
+  "summary": {
+    "overall": 4.97,
+    "terminology": 5.0,
+    "fidelity": 5.0,
+    "critical_data": 5.0,
+    "naturalness": 4.67,
+    "critical_errors": 0,
+    "status": "PASS ✅"
+  },
+  "industry_breakdown": {
+    "regenerative_medicine": {
+      "overall": 4.97,
+      "terminology": 5.0,
+      "count": 3
+    }
+  },
+  "results": [
+    {
+      "id": "MED-001",
+      "industry": "regenerative_medicine",
+      "difficulty": "hard",
+      "source_ja": "間葉系幹細胞の培養には、GMPグレードの無血清培地を使用し、継代数は5代以内に制限しています。",
+      "reference_zh_tw": "間質幹細胞的培養使用 GMP 等級的無血清培養基，繼代數限制在 5 代以內。",
+      "haiku_output": "間質幹細胞的培養採用GMP等級的無血清培養基，且將繼代數限制在5代以內。",
+      "judgment": {
+        "evaluation": "高品質翻譯。術語準確，語義完整，數字正確，表達自然流暢。",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    },
+    {
+      "id": "MED-002",
+      "industry": "regenerative_medicine",
+      "difficulty": "hard",
+      "source_ja": "エクソソームを用いた薬物送達システムは、従来のリポソーム製剤と比較して、標的細胞への取り込み効率が約3倍高いことが示されています。",
+      "reference_zh_tw": "使用外泌體的藥物遞送系統，與傳統的脂質體製劑相比，標的細胞的攝取效率約高出 3 倍。",
+      "haiku_output": "使用外泌體的藥物遞送系統相比傳統脂質體製劑，對標的細胞的攝取效率高出約3倍。",
+      "judgment": {
+        "evaluation": "The evaluated translation is accurate and faithful to the source material. All critical terminology is correctly rendered, the numerical data is preserved, and the sentence structure is natural for Taiwan-standard Chinese. Minor stylistic differences from the reference exist but do not constitute errors.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 4
+        },
+        "weighted_total": 4.9,
+        "errors": [
+          {
+            "type": "UNNATURAL",
+            "severity": "minor",
+            "expected": "使用外泌體的藥物遞送系統，與傳統的脂質體製劑相比，標的細胞的攝取效率約高出3倍。",
+            "actual": "使用外泌體的藥物遞送系統相比傳統脂質體製劑，對標的細胞的攝取效率高出約3倍。",
+            "note": "The evaluated version omits '的' before 脂質體製劑 (creating a shorter noun phrase) and rearranges '約' and '高出', which reads slightly less naturally than the reference. The reference's structure with '與...相比' is more idiomatic for academic comparisons in Taiwan Chinese. However, the evaluated version is still grammatically correct and comprehensible, representing a valid stylistic variant."
+          }
+        ]
+      }
+    },
+    {
+      "id": "MED-003",
+      "industry": "regenerative_medicine",
+      "difficulty": "medium",
+      "source_ja": "iPS細胞から分化誘導した心筋細胞を用いた再生医療の臨床試験が、来年度から開始される予定です。",
+      "reference_zh_tw": "利用 iPS 細胞分化誘導的心肌細胞進行再生醫療的臨床試驗，預計從下一年度開始。",
+      "haiku_output": "從 iPS 細胞分化誘導而來的心肌細胞用於再生醫療的臨床試驗預計將從明年度開始進行。",
+      "judgment": {
+        "evaluation": "The translation is accurate and well-rendered. All critical terminology is correct per Taiwan standards. The meaning is fully preserved with appropriate structural choices. No numerical data to evaluate. The phrasing reads naturally in Taiwanese Chinese.",
+        "scores": {
+          "terminology": 5,
+          "fidelity": 5,
+          "critical_data": 5,
+          "naturalness": 5
+        },
+        "weighted_total": 5.0,
+        "errors": []
+      }
+    }
+  ]
+}
