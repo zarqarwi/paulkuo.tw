@@ -182,6 +182,7 @@ https://paulkuo.tw/en/articles/work-trend-index-2025-taiwan/
 https://paulkuo.tw/en/articles/world-outlook-2030/
 https://paulkuo.tw/en/blog/
 https://paulkuo.tw/en/projects/
+https://paulkuo.tw/en/tags-graph/
 https://paulkuo.tw/health/
 https://paulkuo.tw/health/dual/
 https://paulkuo.tw/health/fitbit/
