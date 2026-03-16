@@ -46,7 +46,7 @@ const currentLang = Object.entries(langMap).find(([prefix]) => pathname.startsWi
 const basePath = pathname.replace(/^\/(en|ja|zh-cn)\//, '/');
 
 // Pages that only exist in zh-Hant (no translation pages created)
-const zhOnlyPrefixes = ['/dashboard', '/health', '/search', '/tags', '/tags-graph'];
+const zhOnlyPrefixes = ['/dashboard', '/health', '/search', '/tags'];
 const isZhOnly = zhOnlyPrefixes.some(p => basePath === p || basePath.startsWith(p + '/'));
 
 const hreflangs = isZhOnly
@@ -66,9 +66,9 @@ const hreflangs = isZhOnly
 const isHome = basePath === '/' || basePath === '';
 const langSwitchLinks = {
   'zh-Hant': isHome ? '/' : basePath,
-  'en': isHome ? '/?lang=en' : `/en${basePath}`,
-  'ja': isHome ? '/?lang=ja' : `/ja${basePath}`,
-  'zh-CN': isHome ? '/?lang=zh-CN' : `/zh-cn${basePath}`,
+  'en': isHome ? '/en/' : `/en${basePath}`,
+  'ja': isHome ? '/ja/' : `/ja${basePath}`,
+  'zh-CN': isHome ? '/zh-cn/' : `/zh-cn${basePath}`,
 };
 
 const isArticlePage = pathname.includes('/articles/');

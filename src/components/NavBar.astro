@@ -79,7 +79,7 @@ const n = navI18n[currentLang] || navI18n['zh-Hant'];
         </div>
       </div>
       <div class="nav-auth-user" id="authUser" style="display:none">
-        <img class="nav-auth-avatar" id="authAvatar" src="" alt="" width="28" height="28" />
+        <img class="nav-auth-avatar" id="authAvatar" src="" alt="" width="28" height="28" style="display:none" />
         <span class="nav-auth-name" id="authName"></span>
         <div class="nav-auth-dropdown" id="authDropdown">
           <div class="nav-auth-dropdown-info" id="authEmail"></div>
@@ -214,13 +214,16 @@ const n = navI18n[currentLang] || navI18n['zh-Hant'];
     function showUser(user: { name: string; avatar: string; email: string }) {
       if (loginBtn) loginBtn.style.display = 'none';
       if (userEl) userEl.style.display = 'flex';
-      if (avatarEl) { avatarEl.src = user.avatar || ''; avatarEl.alt = user.name || ''; }
+      if (avatarEl) {
+        if (user.avatar) { avatarEl.src = user.avatar; avatarEl.alt = user.name || ''; avatarEl.style.display = ''; }
+        else { avatarEl.style.display = 'none'; }
+      }
       if (nameEl) nameEl.textContent = user.name || '';
       if (emailEl) emailEl.textContent = user.email || '';
       // Mobile: show avatar
       if (mobileAuth) {
         mobileAuth.innerHTML = `<div class="nav-auth-user-mobile">
-          <img src="${user.avatar || ''}" alt="${user.name || ''}" width="24" height="24" class="nav-auth-avatar" />
+          ${user.avatar ? `<img src="${user.avatar}" alt="${user.name || ''}" width="24" height="24" class="nav-auth-avatar" />` : ''}
           <span>${user.name || ''}</span>
           <button class="nav-auth-logout-mobile" id="authLogoutMobileBtn">${_i18n.logout || '登出'}</button></div>`;
         document.getElementById('authLogoutMobileBtn')?.addEventListener('click', doLogout);
