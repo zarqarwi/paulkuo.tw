@@ -1117,25 +1117,30 @@ export async function handleTqefYoutubeTranscript(request, env) {
   if (!videoId) return jsonResponse({ error: 'Cannot parse video ID from URL' }, 400, request);
 
   try {
-    // 1. Hit YouTube Innertube API for caption tracks
-    const playerResp = await fetch('https://www.youtube.com/youtubei/v1/player', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        videoId,
-        context: {
-          client: { clientName: 'WEB', clientVersion: '2.20260316.00.00' }
-        }
-      })
+    // 1. Fetch YouTube watch page HTML to extract caption tracks
+    const watchResp = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
     });
 
-    if (!playerResp.ok) {
-      return jsonResponse({ error: `YouTube API error: ${playerResp.status}` }, 502, request);
+    if (!watchResp.ok) {
+      return jsonResponse({ error: `YouTube page fetch error: ${watchResp.status}` }, 502, request);
     }
 
-    const playerData = await playerResp.json();
-    const title = playerData?.videoDetails?.title || '';
-    const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+    const html = await watchResp.text();
+
+    // Extract title
+    const titleMatch = html.match(/"title":"(.*?)"/);
+    const title = titleMatch ? titleMatch[1].replace(/\\u0026/g, '&').replace(/\\"/g, '"') : '';
+
+    // Extract captionTracks from ytInitialPlayerResponse
+    let captionTracks = [];
+    const captionMatch = html.match(/"captionTracks":(\[.*?\])/);
+    if (captionMatch) {
+      try { captionTracks = JSON.parse(captionMatch[1]); } catch (e) { captionTracks = []; }
+    }
 
     if (captionTracks.length === 0) {
       return jsonResponse({ error: 'No captions available for this video', videoId, title }, 404, request);
