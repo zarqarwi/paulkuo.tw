@@ -1186,15 +1186,35 @@ export async function handleTqefYoutubeTranscript(request, env) {
       if (match) selectedTrack = match;
     }
 
-    // 4. Fetch transcript XML — decode \u0026 that may survive JSON.parse in edge cases
-    let trackUrl = selectedTrack.baseUrl;
-    trackUrl = trackUrl.replace(/\\u0026/g, '&');
+    // 4. Fetch transcript
+    const trackUrl = selectedTrack.baseUrl;
 
-    const transcriptResp = await fetch(trackUrl);
-    if (!transcriptResp.ok) {
-      return jsonResponse({ error: `Transcript fetch error: ${transcriptResp.status}`, debugUrl: trackUrl }, 502, request);
+    // Debug: if baseUrl is missing, bail early with diagnostic info
+    if (!trackUrl) {
+      return jsonResponse({
+        error: 'selectedTrack.baseUrl is empty',
+        videoId, title,
+        debugSelectedTrack: JSON.stringify(selectedTrack).substring(0, 500),
+        debugFirstTrackKeys: Object.keys(captionTracks[0] || {}),
+      }, 200, request);
     }
+
+    const transcriptResp = await fetch(trackUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    });
+
     const transcriptBody = await transcriptResp.text();
+
+    if (!transcriptResp.ok) {
+      return jsonResponse({
+        error: `Transcript fetch error: ${transcriptResp.status}`,
+        debugUrl: trackUrl.substring(0, 200),
+        debugBody: transcriptBody.substring(0, 300),
+      }, 502, request);
+    }
 
     // 5. Parse: try XML first, then JSON3 format
     let rawSegments = parseTranscriptXml(transcriptBody);
@@ -1210,8 +1230,11 @@ export async function handleTqefYoutubeTranscript(request, env) {
       tracks: tracks.map(t => ({ lang: t.lang, name: t.name, kind: t.kind })),
       rawCount: rawSegments.length,
       segments,
-      debugTranscriptFormat: transcriptBody.trimStart().startsWith('<') ? 'xml' : 'json_or_other',
-      debugTranscriptPreview: transcriptBody.substring(0, 300),
+      debugUrl: trackUrl.substring(0, 200),
+      debugStatus: transcriptResp.status,
+      debugContentType: transcriptResp.headers.get('content-type'),
+      debugBodyLen: transcriptBody.length,
+      debugBodyPreview: transcriptBody.substring(0, 500),
     }, 200, request);
 
   } catch (e) {
