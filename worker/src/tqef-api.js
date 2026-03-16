@@ -1142,7 +1142,7 @@ export async function handleTqefYoutubeTranscript(request, env) {
   if (!videoId) return jsonResponse({ error: 'Cannot parse video ID from URL' }, 400, request);
 
   try {
-    // 1. Fetch YouTube watch page HTML to extract caption tracks
+    // 1. Fetch YouTube watch page to extract INNERTUBE_API_KEY and title
     const watchResp = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -1160,35 +1160,50 @@ export async function handleTqefYoutubeTranscript(request, env) {
     const titleMatch = html.match(/"title":"(.*?)"/);
     const title = titleMatch ? titleMatch[1].replace(/\\u0026/g, '&').replace(/\\"/g, '"') : '';
 
-    // Extract captionTracks from ytInitialPlayerResponse
-    let captionTracks = [];
-    const captionMatch = html.match(/"captionTracks":(\[.*?\])/);
-    if (captionMatch) {
-      try { captionTracks = JSON.parse(captionMatch[1]); } catch (e) { captionTracks = []; }
+    // Extract INNERTUBE_API_KEY from page
+    const apiKeyMatch = html.match(/"INNERTUBE_API_KEY":\s*"([a-zA-Z0-9_-]+)"/);
+    const apiKey = apiKeyMatch ? apiKeyMatch[1] : 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
+
+    // 2. Call Innertube /player with ANDROID client to get captionTracks
+    //    ANDROID client returns baseUrls without exp=xpe (no PoToken required)
+    const innertubeResp = await fetch(`https://www.youtube.com/youtubei/v1/player?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        context: { client: { clientName: 'ANDROID', clientVersion: '20.10.38' } },
+        videoId,
+      }),
+    });
+
+    if (!innertubeResp.ok) {
+      return jsonResponse({ error: `Innertube API error: ${innertubeResp.status}` }, 502, request);
     }
+
+    const innertubeData = await innertubeResp.json();
+    const captionsRenderer = innertubeData?.captions?.playerCaptionsTracklistRenderer;
+    const captionTracks = captionsRenderer?.captionTracks || [];
 
     if (captionTracks.length === 0) {
       return jsonResponse({ error: 'No captions available for this video', videoId, title }, 404, request);
     }
 
-    // 2. Build tracks list for frontend
+    // 3. Build tracks list for frontend
     const tracks = captionTracks.map(t => ({
       lang: t.languageCode,
-      name: t.name?.simpleText || t.languageCode,
+      name: t.name?.runs?.[0]?.text || t.name?.simpleText || t.languageCode,
       kind: t.kind || 'standard',
-      baseUrl: t.baseUrl,
     }));
 
-    // 3. Pick track: prefer requested lang, else first
+    // 4. Pick track: prefer requested lang, else first
     let selectedTrack = captionTracks[0];
     if (lang) {
       const match = captionTracks.find(t => t.languageCode === lang);
       if (match) selectedTrack = match;
     }
 
-    // 4. Fetch transcript — baseUrl has signature/expire params, append lang + fmt
+    // 5. Fetch transcript body from baseUrl (ANDROID URLs work without PoToken)
     const selectedLang = selectedTrack.languageCode || 'en';
-    const trackUrl = selectedTrack.baseUrl + '&lang=' + selectedLang + '&fmt=json3';
+    const trackUrl = selectedTrack.baseUrl.replace('&fmt=srv3', '');
 
     const transcriptResp = await fetch(trackUrl, {
       headers: {
@@ -1198,10 +1213,10 @@ export async function handleTqefYoutubeTranscript(request, env) {
     });
     const transcriptBody = await transcriptResp.text();
 
-    // 5. Parse JSON3, fallback to XML
-    let rawSegments = parseTranscriptJson(transcriptBody);
+    // 6. Parse XML (ANDROID endpoint returns XML by default), fallback to JSON3
+    let rawSegments = parseTranscriptXml(transcriptBody);
     if (rawSegments.length === 0) {
-      rawSegments = parseTranscriptXml(transcriptBody);
+      rawSegments = parseTranscriptJson(transcriptBody);
     }
     const segments = mergeSegments(rawSegments);
 
@@ -1212,10 +1227,6 @@ export async function handleTqefYoutubeTranscript(request, env) {
       tracks: tracks.map(t => ({ lang: t.lang, name: t.name, kind: t.kind })),
       rawCount: rawSegments.length,
       segments,
-      debugUrl: trackUrl.substring(0, 300),
-      debugStatus: transcriptResp.status,
-      debugBodyLen: transcriptBody.length,
-      debugBodyPreview: transcriptBody.substring(0, 500),
     }, 200, request);
 
   } catch (e) {
