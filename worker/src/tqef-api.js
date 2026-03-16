@@ -4,14 +4,19 @@
  */
 import { corsHeaders, jsonResponse } from './utils.js';
 import { authenticateRequest } from './auth.js';
-import { semiPostProcess, circularPostProcess, generalPostProcess } from './translator.js';
+import * as OpenCC from 'opencc-js/cn2t';
+import { semiPostProcess, circularPostProcess } from './translator.js';
 
-// CN→TW post-processing: apply domain-specific + general dictionaries
+// CN→TW conversion: opencc-js (TWP = Taiwan with Phrases) + domain-specific dictionaries
+const ocConverter = OpenCC.ConverterFactory(OpenCC.Locale.from.cn, OpenCC.Locale.to.twp);
+
 function cnToTw(text, domain) {
   if (!text) return text;
+  // Step 1: opencc-js 做字級 + 通用詞彙的簡繁轉換
+  text = ocConverter(text);
+  // Step 2: domain-specific 術語字典（在 opencc 之後套用，覆蓋更精確的翻譯）
   if (domain === 'semiconductor') text = semiPostProcess(text);
   if (domain === 'circular') text = circularPostProcess(text);
-  text = generalPostProcess(text);
   return text;
 }
 
