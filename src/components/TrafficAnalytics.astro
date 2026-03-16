@@ -275,22 +275,6 @@
     if (durData && durData.pages) {
       durData.pages.forEach(function(d) { durMap[d.path] = d.avgSeconds; });
     }
-    // DEV_MODE: 假資料（上線後刪除此區塊）
-    if (!durData || !durData.pages || durData.pages.length === 0) {
-      durMap = {
-        '/': 25,
-        '/articles/ai-collab-realtime-translator/': 185,
-        '/articles/circular-economy-digital-transformation/': 142,
-        '/articles/super-individual-ai-workflow/': 98,
-        '/about/': 45,
-        '/tools/translator/': 67,
-        '/articles/esg-reporting-automation/': 120,
-        '/blog/': 18,
-        '/projects/': 35,
-        '/dashboard/': 52
-      };
-    }
-    // END DEV_MODE
 
     if (topPages && topPages.pages) {
       var nameMap = {
@@ -375,21 +359,6 @@
     var durPages = [];
     if (durData && durData.pages && durData.pages.length > 0) {
       durPages = durData.pages;
-    } else {
-      // DEV_MODE: 假資料（上線後刪除此區塊）
-      durPages = [
-        { path: '/articles/ai-collab-realtime-translator/', avgSeconds: 185, views: 42 },
-        { path: '/articles/circular-economy-digital-transformation/', avgSeconds: 142, views: 28 },
-        { path: '/articles/esg-reporting-automation/', avgSeconds: 120, views: 19 },
-        { path: '/articles/super-individual-ai-workflow/', avgSeconds: 98, views: 35 },
-        { path: '/tools/translator/', avgSeconds: 67, views: 56 },
-        { path: '/dashboard/', avgSeconds: 52, views: 15 },
-        { path: '/about/', avgSeconds: 45, views: 31 },
-        { path: '/projects/', avgSeconds: 35, views: 22 },
-        { path: '/', avgSeconds: 25, views: 120 },
-        { path: '/blog/', avgSeconds: 18, views: 88 }
-      ];
-      // END DEV_MODE
     }
     if (durPages.length > 0) {
       var maxDurSec = durPages[0].avgSeconds || 1;
