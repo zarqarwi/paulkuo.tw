@@ -2168,12 +2168,12 @@ function finalizeEntry(id, text) {
   var metaEl = getEl('entry-' + id);
   if (metaEl) {
     metaEl.querySelector('.entry-meta').innerHTML = entry.ts + ' \u00b7 ' + flag + ' \u2192 ' + tgtFlag +
-      (dgLang ? '<span class="entry-lang">' + dgLang + '</span>' : '') + ' <span style="font-size:10px;color:var(--accent-ai)">\u2022 ' + (_activeEngine === 'qwen' ? 'Qwen' : '\u4e32\u6d41') + '</span>' + (entry.speaker >= 0 ? ' · <span class="speaker-tag speaker-' + (entry.speaker % 4) + '">\ud83d\udde3 Speaker ' + (entry.speaker + 1) + '</span>' : '');
+      (dgLang ? '<span class="entry-lang">' + dgLang + '</span>' : '') + ' <span style="font-size:10px;color:var(--accent-ai)">\u2022 ' + (entry.sttEngine === 'qwen' ? 'Qwen' : entry.sttEngine === 'groq' ? 'Groq' : '\u4e32\u6d41') + '</span>' + (entry.speaker >= 0 ? ' · <span class="speaker-tag speaker-' + (entry.speaker % 4) + '">\ud83d\udde3 Speaker ' + (entry.speaker + 1) + '</span>' : '');
   }
 
   // Log STT cost (Qwen or Deepgram)
   var durSec = dgUtteranceDuration || 1;
-  var isQwenMode = (_activeEngine === 'qwen');
+  var isQwenMode = (entry.sttEngine === 'qwen' || _activeEngine === 'qwen');
   var sttService = isQwenMode ? 'qwen-asr' : 'deepgram';
   var sttModelName = isQwenMode ? 'qwen3-asr-flash-realtime' : dgModel;
   var sttCost = isQwenMode ? (durSec * 0.00011) : ((durSec / 60) * 0.0077);
