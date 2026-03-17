@@ -64,6 +64,15 @@ const articleEntities = getArticleEntities(tags || [], rawBody, pillar);
 // Cover image alt text: prefer explicit coverAlt, fallback to title
 const coverAltText = article.data.coverAlt || title;
 
+// Mobile language bar links (same logic as BaseLayout langSwitchLinks)
+const articlePath = `/articles/${slug}`;
+const mobileLangLinks = {
+  'zh-Hant': articlePath,
+  'en': `/en${articlePath}`,
+  'ja': `/ja${articlePath}`,
+  'zh-CN': `/zh-cn${articlePath}`,
+};
+
 const schemaJson = JSON.stringify({
   "@context": "https://schema.org",
   "@graph": [
@@ -175,6 +184,14 @@ const i = {
 
   <article class="article-page" itemscope itemtype="https://schema.org/BlogPosting">
     <!-- Breadcrumb: visual hidden, schema JSON preserved for SEO -->
+
+    {/* Mobile-only language switcher bar */}
+    <div class="article-mobile-lang-bar" aria-label={lang === 'en' ? 'Language' : lang === 'ja' ? '言語切替' : '語系切換'}>
+      <a href={mobileLangLinks['zh-Hant']} class:list={['lang-btn', { active: lang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
+      <a href={mobileLangLinks['zh-CN']} class:list={['lang-btn', { active: lang === 'zh-CN' }]} aria-label="简体中文">简</a>
+      <a href={mobileLangLinks['en']} class:list={['lang-btn', { active: lang === 'en' }]} aria-label="English">EN</a>
+      <a href={mobileLangLinks['ja']} class:list={['lang-btn', { active: lang === 'ja' }]} aria-label="日本語">日</a>
+    </div>
 
     {article.data.cover && (
       <div class="article-cover">
