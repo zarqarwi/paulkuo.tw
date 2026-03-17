@@ -129,7 +129,7 @@ const tickerData = JSON.stringify({ dailyValues, hasData });
         </>
       )}
       <div class="ticker-sep" id="tickerVisitorsSep" style="display:none"></div>
-      <div class="ticker-item" id="tickerVisitorsItem" title="昨日訪客數（Cloudflare Analytics）" style="display:none">
+      <div class="ticker-item" id="tickerVisitorsItem" title="昨日訪客數（與流量分析同源）" style="display:none">
         <span class="ticker-label">{'\ud83d\udc65'} 訪客</span>
         <span class="ticker-value" id="liveVisitors">--</span>
       </div>
@@ -224,17 +224,24 @@ function drawSparkline(vals) {
         }
         if (c.dailyValues && c.dailyValues.length >= 2) drawSparkline(c.dailyValues);
       }
-      // Visitors
-      if (d.visitors && d.visitors.uniqueVisitors != null) {
+    })
+    .catch(function() {}); // silent fail - keep build-time fallback
+
+  // Visitors: fetch from /analytics (same source as TrafficAnalytics)
+  fetch('https://api.paulkuo.tw/analytics', { cache: 'no-store' })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var visits = d && d.overview && d.overview.total1d && d.overview.total1d.visits;
+      if (visits != null) {
         var ve = document.getElementById('liveVisitors');
-        if (ve) ve.textContent = d.visitors.uniqueVisitors.toLocaleString() + '/日';
+        if (ve) ve.textContent = visits.toLocaleString() + '/日';
         var vs = document.getElementById('tickerVisitorsSep');
         var vi = document.getElementById('tickerVisitorsItem');
         if (vs) vs.style.display = '';
         if (vi) vi.style.display = '';
       }
     })
-    .catch(function() {}); // silent fail - keep build-time fallback
+    .catch(function() {});
 })();
 </script>
 
