@@ -404,12 +404,14 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
 
   // ?refresh=1 → 強制拉最新數據（跳過節流）
   if (refresh) {
-    const [fresh, rum] = await Promise.all([
+    const [fresh, rum, dur] = await Promise.all([
       fetchAnalyticsOverview(env, { force: true }),
       fetchRumAnalytics(env),
+      fetchDurationAnalytics(env),
     ]);
     if (fresh) {
       const merged = { ...fresh, ...(rum || {}) };
+      if (dur) merged.duration = dur;
       return new Response(JSON.stringify(merged), {
         headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) },
       });
@@ -556,7 +558,7 @@ export async function fetchDurationAnalytics(env) {
   }));
 
   console.log(`duration: aggregated ${pages.length} paths, top15 saved, bounce=${bounceRate}%, human=${totalHuman}`);
-  return { pages: top15, bounceRate, humanVisits: totalHuman };
+  return { pages: top15, bounceRate, totalBounce, totalCount, humanVisits: totalHuman, updatedAt: new Date().toISOString() };
 }
 
 /**
