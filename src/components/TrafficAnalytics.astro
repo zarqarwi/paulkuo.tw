@@ -176,12 +176,32 @@
       }, { visits: 0, pageViews: 0 });
     }
 
+    // Bounce rate + human visits from duration data
+    var durData = data.duration;
+    var bounceRate = (durData && durData.bounceRate != null) ? durData.bounceRate : null;
+    var humanVisits = (durData && durData.humanVisits != null) ? durData.humanVisits : null;
+    var durationTotalCount = (durData && durData.totalCount) ? durData.totalCount : 0;
+
+    function bounceColor(rate) {
+      if (rate < 40) return '#10b981';
+      if (rate <= 60) return '#eab308';
+      return '#ef4444';
+    }
+
     function updateView(range) {
       var sliced = range === 1 ? daily.slice(-1) : range === 7 ? daily.slice(-7) : daily;
       var totals = sumRange(sliced);
-      document.getElementById('taKpis').innerHTML =
+      var kpiHtml =
         '<div class="ak"><span class="ak-v" style="color:#10b981">' + fmt(totals.visits) + '</span><span class="ak-l">訪客</span></div>' +
         '<div class="ak"><span class="ak-v" style="color:#6366f1">' + fmt(totals.pageViews) + '</span><span class="ak-l">瀏覽</span></div>';
+      if (bounceRate !== null) {
+        kpiHtml += '<div class="ak"><span class="ak-v" style="color:' + bounceColor(bounceRate) + '">' + bounceRate + '%</span><span class="ak-l">跳出率</span></div>';
+      }
+      if (humanVisits !== null && durationTotalCount > 0) {
+        var humanPct = Math.round(humanVisits / durationTotalCount * 1000) / 10;
+        kpiHtml += '<div class="ak"><span class="ak-v" style="color:#8b5cf6">' + fmt(humanVisits) + '</span><span class="ak-l">真人訪客 (' + humanPct + '%)</span></div>';
+      }
+      document.getElementById('taKpis').innerHTML = kpiHtml;
       drawChart(sliced, svgEl);
     }
 
@@ -275,7 +295,6 @@
     var topPages = data.topPages;
     // Build duration lookup map: path → avgSeconds
     var durMap = {};
-    var durData = data.duration;
     if (durData && durData.pages) {
       durData.pages.forEach(function(d) { durMap[d.path] = d.avgSeconds; });
     }

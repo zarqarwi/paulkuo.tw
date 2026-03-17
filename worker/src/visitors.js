@@ -472,7 +472,7 @@ export async function handleAnalyticsBeacon(request, env, corsHeadersFn) {
     return new Response(null, { status: 400, headers: corsHeadersFn(request) });
   }
 
-  const { path, duration } = body;
+  const { path, duration, hasInteraction } = body;
 
   // 驗證
   if (typeof path !== 'string' || !path.startsWith('/')) {
@@ -483,14 +483,19 @@ export async function handleAnalyticsBeacon(request, env, corsHeadersFn) {
   }
 
   const key = `analytics:duration:${path}`;
-  let data = { totalSeconds: 0, count: 0 };
+  let data = { totalSeconds: 0, count: 0, bounceCount: 0, humanCount: 0 };
   try {
     const raw = await env.TICKER_KV.get(key);
-    if (raw) data = JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      data = { totalSeconds: parsed.totalSeconds || 0, count: parsed.count || 0, bounceCount: parsed.bounceCount || 0, humanCount: parsed.humanCount || 0 };
+    }
   } catch {}
 
   data.totalSeconds += Math.round(duration);
   data.count += 1;
+  if (duration < 10) data.bounceCount += 1;
+  if (hasInteraction === true) data.humanCount += 1;
 
   await env.TICKER_KV.put(key, JSON.stringify(data));
 
@@ -504,6 +509,7 @@ export async function handleAnalyticsBeacon(request, env, corsHeadersFn) {
 export async function fetchDurationAnalytics(env) {
   const prefix = 'analytics:duration:';
   const pages = [];
+  let totalBounce = 0, totalCount = 0, totalHuman = 0;
 
   // KV list 用 prefix 過濾
   let cursor = undefined;
@@ -514,13 +520,19 @@ export async function fetchDurationAnalytics(env) {
       try {
         const raw = await env.TICKER_KV.get(key.name);
         if (!raw) continue;
-        const { totalSeconds, count } = JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        const { totalSeconds, count } = parsed;
+        const bounceCount = parsed.bounceCount || 0;
+        const humanCount = parsed.humanCount || 0;
         if (count > 0) {
           pages.push({
             path: key.name.slice(prefix.length),
             avgSeconds: Math.round(totalSeconds / count),
             views: count,
           });
+          totalBounce += bounceCount;
+          totalCount += count;
+          totalHuman += humanCount;
         }
       } catch {}
     }
@@ -532,13 +544,19 @@ export async function fetchDurationAnalytics(env) {
   pages.sort((a, b) => b.avgSeconds - a.avgSeconds);
   const top15 = pages.slice(0, 15);
 
+  const bounceRate = totalCount > 0 ? Math.round(totalBounce / totalCount * 1000) / 10 : 0;
+
   await env.TICKER_KV.put('analytics:duration', JSON.stringify({
     pages: top15,
+    bounceRate,
+    totalBounce,
+    totalCount,
+    humanVisits: totalHuman,
     updatedAt: new Date().toISOString(),
   }));
 
-  console.log(`duration: aggregated ${pages.length} paths, top15 saved`);
-  return { pages: top15 };
+  console.log(`duration: aggregated ${pages.length} paths, top15 saved, bounce=${bounceRate}%, human=${totalHuman}`);
+  return { pages: top15, bounceRate, humanVisits: totalHuman };
 }
 
 /**

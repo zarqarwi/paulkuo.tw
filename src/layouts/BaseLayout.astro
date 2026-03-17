@@ -149,12 +149,18 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   (function() {
     var start = performance.now();
     var sent = false;
+    var hadInteraction = false;
+    function markInteraction() { hadInteraction = true; }
+    document.addEventListener('mousemove', markInteraction, { once: true, passive: true });
+    document.addEventListener('touchstart', markInteraction, { once: true, passive: true });
+    document.addEventListener('scroll', markInteraction, { once: true, passive: true });
+    document.addEventListener('keydown', markInteraction, { once: true, passive: true });
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState !== 'hidden' || sent) return;
       sent = true;
       var sec = Math.round((performance.now() - start) / 1000);
       if (sec <= 1 || sec >= 1800) return;
-      var payload = JSON.stringify({ path: location.pathname, duration: sec });
+      var payload = JSON.stringify({ path: location.pathname, duration: sec, hasInteraction: hadInteraction });
       if (navigator.sendBeacon) {
         navigator.sendBeacon('https://api.paulkuo.tw/analytics/beacon', payload);
       }
