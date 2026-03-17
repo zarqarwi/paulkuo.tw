@@ -534,7 +534,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .article-back { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; margin-bottom: 40px; transition: color 0.2s; }
 .article-back:hover { color: var(--brand-navy); }
 /* Article cover hero */
-.article-cover { margin: -40px -24px 32px; border-radius: var(--radius); overflow: hidden; }
+.article-cover { margin: -40px -24px 32px; width: calc(100% + 48px); border-radius: var(--radius); overflow: hidden; }
 .article-cover img { width: 100%; height: auto; display: block; aspect-ratio: 16/9; object-fit: cover; }
 .article-meta { margin-bottom: 48px; }
 .article-pillar { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
