@@ -495,7 +495,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
     box-shadow: var(--shadow-lg);
     z-index: 101;
   }
-  .nav-links.mobile-open { display: flex; }
+  .nav-links.mobile-open { display: flex; max-height: calc(100vh - var(--nav-height)); overflow-y: auto; }
   .nav-links a {
     padding: 12px 0;
     font-size: 0.9rem;
@@ -503,6 +503,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
     border-bottom: 1px solid rgba(255,255,255,0.1);
     width: 100%;
   }
+  .nav-links a.active { color: #fff; }
   .nav-links a:last-of-type { border-bottom: none; }
   .nav-links .nav-cta {
     margin-top: 8px;
