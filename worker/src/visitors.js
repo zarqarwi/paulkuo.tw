@@ -78,15 +78,17 @@ export async function fetchDailyVisitors(env) {
 }
 
 /**
- * 從 Cloudflare Analytics 撈過去 30 天的流量概覽 + 國家分佈
+ * 從 Cloudflare Web Analytics (RUM) 撈過去 30 天的流量概覽 + 國家分佈
+ * 資料來源：rumPageloadEventsAdaptiveGroups（beacon-based，過濾 bot，比 Zone Analytics 精準）
  * 寫入 KV keys: analytics:overview, analytics:countries
  * 節流：analytics:lastFetch 記錄上次時間，間隔 < 6hr skip
  */
 export async function fetchAnalyticsOverview(env, { force = false } = {}) {
   const token = env.CF_ANALYTICS_TOKEN;
-  const zoneId = env.CF_ZONE_ID;
-  if (!token || !zoneId) {
-    console.error('analytics: missing CF_ANALYTICS_TOKEN or CF_ZONE_ID');
+  const accountId = env.CF_ACCOUNT_ID;
+  const siteTag = env.CF_WEB_ANALYTICS_SITE_TAG;
+  if (!token || !accountId || !siteTag) {
+    console.error('analytics: missing CF_ANALYTICS_TOKEN, CF_ACCOUNT_ID, or CF_WEB_ANALYTICS_SITE_TAG');
     return null;
   }
 
@@ -102,111 +104,118 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
     }
   }
 
-  // 30 天前的日期
+  // 31 天前的日期
   const now = new Date();
   const since = new Date(now);
   since.setUTCDate(since.getUTCDate() - 31);
   const sinceStr = since.toISOString().split('T')[0];
 
-  const query = `
-    query GetAnalyticsOverview($zoneTag: string!, $since: string!) {
+  // Web Analytics: 每日瀏覽量 + 訪客數
+  const dailyQuery = `
+    query WebAnalyticsDaily($accountTag: string!, $siteTag: string!, $since: string!) {
       viewer {
-        zones(filter: { zoneTag: $zoneTag }) {
-          httpRequests1dGroups(
-            limit: 30,
-            orderBy: [date_DESC],
-            filter: { date_gt: $since }
+        accounts(filter: { accountTag: $accountTag }) {
+          rumPageloadEventsAdaptiveGroups(
+            filter: { siteTag: $siteTag, date_gt: $since }
+            limit: 31
+            orderBy: [date_ASC]
           ) {
+            count
+            sum { visits }
             dimensions { date }
-            sum {
-              requests
-              pageViews
-              countryMap { clientCountryName requests }
-            }
-            uniq { uniques }
           }
         }
       }
     }
   `;
 
-  const resp = await fetch(CF_GRAPHQL_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query,
-      variables: { zoneTag: zoneId, since: sinceStr },
-    }),
-  });
+  // Web Analytics: 國家分佈
+  const countryQuery = `
+    query WebAnalyticsCountries($accountTag: string!, $siteTag: string!, $since: string!) {
+      viewer {
+        accounts(filter: { accountTag: $accountTag }) {
+          rumPageloadEventsAdaptiveGroups(
+            filter: { siteTag: $siteTag, date_gt: $since }
+            limit: 50
+            orderBy: [count_DESC]
+          ) {
+            count
+            dimensions { countryName }
+          }
+        }
+      }
+    }
+  `;
 
-  if (!resp.ok) {
-    console.error('analytics: GraphQL API error', resp.status);
+  const variables = { accountTag: accountId, siteTag, since: sinceStr };
+  const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+
+  const [dailyResp, countryResp] = await Promise.all([
+    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: dailyQuery, variables }) }),
+    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: countryQuery, variables }) }),
+  ]);
+
+  if (!dailyResp.ok || !countryResp.ok) {
+    console.error('analytics: GraphQL API error', dailyResp.status, countryResp.status);
     return null;
   }
 
-  const json = await resp.json();
-  if (json.errors) {
-    console.error('analytics: GraphQL errors', JSON.stringify(json.errors));
-    return null;
+  const [dailyJson, countryJson] = await Promise.all([dailyResp.json(), countryResp.json()]);
+
+  for (const j of [dailyJson, countryJson]) {
+    if (j.errors) {
+      console.error('analytics: GraphQL errors', JSON.stringify(j.errors));
+      return null;
+    }
   }
 
-  const groups = json?.data?.viewer?.zones?.[0]?.httpRequests1dGroups;
-  if (!groups || groups.length === 0) {
+  // 每日數據
+  const dailyGroups = dailyJson?.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups;
+  if (!dailyGroups || dailyGroups.length === 0) {
     console.log('analytics: no data');
     return null;
   }
 
-  // 按日期升序排列
-  const daily = groups
+  const daily = dailyGroups
     .map(g => ({
       date: g.dimensions.date,
-      requests: g.sum.requests,
-      pageViews: g.sum.pageViews,
-      uniques: g.uniq.uniques,
+      visits: g.sum.visits,
+      pageViews: g.count,
     }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  // 7 天 / 30 天加總
-  const sum = (arr) => arr.reduce((acc, d) => ({
-    requests: acc.requests + d.requests,
+  // 1d / 7d / 30d 加總
+  const sumFn = (arr) => arr.reduce((acc, d) => ({
+    visits: acc.visits + d.visits,
     pageViews: acc.pageViews + d.pageViews,
-    uniques: acc.uniques + d.uniques,
-  }), { requests: 0, pageViews: 0, uniques: 0 });
+  }), { visits: 0, pageViews: 0 });
 
-  const total30d = sum(daily);
-  const total7d = sum(daily.slice(-7));
+  const total30d = sumFn(daily);
+  const total7d = sumFn(daily.slice(-7));
+  const total1d = sumFn(daily.slice(-1));
 
-  // 國家分佈聚合
-  const countryAgg = {};
-  for (const g of groups) {
-    for (const c of g.sum.countryMap) {
-      countryAgg[c.clientCountryName] = (countryAgg[c.clientCountryName] || 0) + c.requests;
-    }
-  }
-  const totalRequests = Object.values(countryAgg).reduce((a, b) => a + b, 0);
-  const top15 = Object.entries(countryAgg)
-    .sort((a, b) => b[1] - a[1])
+  // 國家分佈
+  const countryGroups = countryJson?.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups || [];
+  const totalCountryCount = countryGroups.reduce((s, g) => s + g.count, 0);
+  const top15 = countryGroups
     .slice(0, 15)
-    .map(([country, requests]) => ({
-      country,
-      requests,
-      percent: totalRequests > 0 ? +(requests / totalRequests * 100).toFixed(1) : 0,
+    .map(g => ({
+      country: g.dimensions.countryName,
+      count: g.count,
+      percent: totalCountryCount > 0 ? +(g.count / totalCountryCount * 100).toFixed(1) : 0,
     }));
 
   const updatedAt = new Date().toISOString();
 
   // 寫入 KV
   await Promise.all([
-    env.TICKER_KV.put('analytics:overview', JSON.stringify({ daily, total7d, total30d })),
+    env.TICKER_KV.put('analytics:overview', JSON.stringify({ daily, total1d, total7d, total30d })),
     env.TICKER_KV.put('analytics:countries', JSON.stringify({ top15 })),
     env.TICKER_KV.put('analytics:lastFetch', updatedAt),
   ]);
 
-  console.log(`analytics: updated, ${daily.length} days, ${top15.length} countries`);
-  return { overview: { daily, total7d, total30d }, countries: { top15 }, updatedAt };
+  console.log(`analytics: updated (Web Analytics), ${daily.length} days, ${top15.length} countries`);
+  return { overview: { daily, total1d, total7d, total30d }, countries: { top15 }, updatedAt };
 }
 
 // ── RUM Analytics (account-level) ──

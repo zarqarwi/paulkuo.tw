@@ -16,10 +16,8 @@
       </div>
     </div>
     <div class="ta-kpis">
-      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">7d 訪客</span></div>
-      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">30d 訪客</span></div>
-      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">7d 瀏覽</span></div>
-      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">30d 請求</span></div>
+      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">訪客</span></div>
+      <div class="ak"><span class="ak-v ta-skel-v">&nbsp;</span><span class="ak-l">瀏覽</span></div>
     </div>
   </div>
 
@@ -31,6 +29,7 @@
         <p class="ta-subtitle" id="taSubtitle">Cloudflare Analytics</p>
       </div>
       <div class="ta-toggle" id="taToggle">
+        <button class="ta-btn" data-range="1">1d</button>
         <button class="ta-btn active" data-range="7">7d</button>
         <button class="ta-btn" data-range="30">30d</button>
       </div>
@@ -107,42 +106,41 @@
   // Format number with comma separators
   function fmt(n) { return n.toLocaleString(); }
 
-  // SVG line chart
+  // SVG line chart (visits + pageViews)
   function drawChart(daily, svgEl) {
-    if (!daily || daily.length < 2) return;
+    if (!daily || daily.length < 1) return;
+    // 1d 單點：複製一份畫平線
+    var data = daily.length === 1 ? [daily[0], daily[0]] : daily;
     var W = 600, H = 200, padT = 10, padB = 30, padL = 5, padR = 5;
     var chartH = H - padT - padB;
     var chartW = W - padL - padR;
 
-    // Find max for each series
-    var maxR = 0, maxP = 0, maxU = 0;
-    daily.forEach(function(d) {
-      if (d.requests > maxR) maxR = d.requests;
+    var maxP = 0, maxV = 0;
+    data.forEach(function(d) {
       if (d.pageViews > maxP) maxP = d.pageViews;
-      if (d.uniques > maxU) maxU = d.uniques;
+      if (d.visits > maxV) maxV = d.visits;
     });
-    var maxVal = Math.max(maxR, maxP, maxU) || 1;
+    var maxVal = Math.max(maxP, maxV) || 1;
 
     function points(key) {
-      return daily.map(function(d, i) {
-        var x = padL + (i / (daily.length - 1)) * chartW;
+      return data.map(function(d, i) {
+        var x = padL + (i / (data.length - 1)) * chartW;
         var y = padT + chartH - (d[key] / maxVal) * chartH;
         return x.toFixed(1) + ',' + y.toFixed(1);
       }).join(' ');
     }
 
     // X-axis labels (show ~6 labels max)
-    var step = Math.max(1, Math.floor(daily.length / 6));
+    var step = Math.max(1, Math.floor(data.length / 6));
     var labels = '';
-    for (var i = 0; i < daily.length; i += step) {
-      var x = padL + (i / (daily.length - 1)) * chartW;
-      var dt = daily[i].date.slice(5).replace('-', '/');
+    for (var i = 0; i < data.length; i += step) {
+      var x = padL + (i / (data.length - 1)) * chartW;
+      var dt = data[i].date.slice(5).replace('-', '/');
       labels += '<text x="' + x.toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle" fill="#8A8A8A" font-size="10" font-family="var(--font-body, sans-serif)">' + dt + '</text>';
     }
-    // Always show last label
-    if ((daily.length - 1) % step !== 0) {
+    if (data.length > 1 && (data.length - 1) % step !== 0) {
       var lx = padL + chartW;
-      var ldt = daily[daily.length - 1].date.slice(5).replace('-', '/');
+      var ldt = data[data.length - 1].date.slice(5).replace('-', '/');
       labels += '<text x="' + lx.toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle" fill="#8A8A8A" font-size="10" font-family="var(--font-body, sans-serif)">' + ldt + '</text>';
     }
 
@@ -156,13 +154,11 @@
     svgEl.innerHTML =
       grid +
       // Area fills
-      '<polyline points="' + points('requests') + ' ' + (W - padR) + ',' + (padT + chartH) + ' ' + padL + ',' + (padT + chartH) + '" fill="rgba(27,45,79,0.06)" stroke="none"/>' +
       '<polyline points="' + points('pageViews') + ' ' + (W - padR) + ',' + (padT + chartH) + ' ' + padL + ',' + (padT + chartH) + '" fill="rgba(99,102,241,0.06)" stroke="none"/>' +
-      '<polyline points="' + points('uniques') + ' ' + (W - padR) + ',' + (padT + chartH) + ' ' + padL + ',' + (padT + chartH) + '" fill="rgba(16,185,129,0.08)" stroke="none"/>' +
+      '<polyline points="' + points('visits') + ' ' + (W - padR) + ',' + (padT + chartH) + ' ' + padL + ',' + (padT + chartH) + '" fill="rgba(16,185,129,0.08)" stroke="none"/>' +
       // Lines
-      '<polyline points="' + points('requests') + '" fill="none" stroke="#1b2d4f" stroke-width="1.5" stroke-opacity="0.4"/>' +
       '<polyline points="' + points('pageViews') + '" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-opacity="0.6"/>' +
-      '<polyline points="' + points('uniques') + '" fill="none" stroke="#10b981" stroke-width="2"/>' +
+      '<polyline points="' + points('visits') + '" fill="none" stroke="#10b981" stroke-width="2"/>' +
       labels;
   }
 
@@ -170,27 +166,36 @@
     var ov = data.overview;
     var countries = data.countries;
 
-    // KPIs
-    document.getElementById('taKpis').innerHTML =
-      '<div class="ak"><span class="ak-v" style="color:#10b981">' + fmt(ov.total7d.uniques) + '</span><span class="ak-l">7d 訪客</span></div>' +
-      '<div class="ak"><span class="ak-v" style="color:var(--brand-navy,#1b2d4f)">' + fmt(ov.total30d.uniques) + '</span><span class="ak-l">30d 訪客</span></div>' +
-      '<div class="ak"><span class="ak-v" style="color:#6366f1">' + fmt(ov.total7d.pageViews) + '</span><span class="ak-l">7d 瀏覽</span></div>' +
-      '<div class="ak"><span class="ak-v" style="color:#8A8A8A">' + fmt(ov.total30d.requests) + '</span><span class="ak-l">30d 請求</span></div>';
+    // KPIs + Chart: 根據選擇的範圍動態渲染
+    var daily = ov.daily;
+    var svgEl = document.getElementById('taChart');
+
+    function sumRange(arr) {
+      return arr.reduce(function(acc, d) {
+        return { visits: acc.visits + d.visits, pageViews: acc.pageViews + d.pageViews };
+      }, { visits: 0, pageViews: 0 });
+    }
+
+    function updateView(range) {
+      var sliced = range === 1 ? daily.slice(-1) : range === 7 ? daily.slice(-7) : daily;
+      var totals = sumRange(sliced);
+      document.getElementById('taKpis').innerHTML =
+        '<div class="ak"><span class="ak-v" style="color:#10b981">' + fmt(totals.visits) + '</span><span class="ak-l">訪客</span></div>' +
+        '<div class="ak"><span class="ak-v" style="color:#6366f1">' + fmt(totals.pageViews) + '</span><span class="ak-l">瀏覽</span></div>';
+      drawChart(sliced, svgEl);
+    }
 
     // Subtitle
     var updated = data.updatedAt ? new Date(data.updatedAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-    document.getElementById('taSubtitle').textContent = 'Cloudflare Analytics' + (updated ? ' · 更新於 ' + updated : '');
+    document.getElementById('taSubtitle').textContent = 'Cloudflare Web Analytics' + (updated ? ' · 更新於 ' + updated : '');
 
     // Legend
     document.getElementById('taLegend').innerHTML =
       '<span class="ta-legend-item"><span class="ta-dot" style="background:#10b981"></span>訪客</span>' +
-      '<span class="ta-legend-item"><span class="ta-dot" style="background:#6366f1"></span>瀏覽</span>' +
-      '<span class="ta-legend-item"><span class="ta-dot" style="background:rgba(27,45,79,0.4)"></span>請求</span>';
+      '<span class="ta-legend-item"><span class="ta-dot" style="background:#6366f1"></span>瀏覽</span>';
 
-    // Initial chart (7d)
-    var daily = ov.daily;
-    var svgEl = document.getElementById('taChart');
-    drawChart(daily.slice(-7), svgEl);
+    // Initial render (7d)
+    updateView(7);
 
     // Toggle buttons
     var toggle = document.getElementById('taToggle');
@@ -199,8 +204,7 @@
       if (!btn) return;
       toggle.querySelectorAll('.ta-btn').forEach(function(b) { b.classList.remove('active'); });
       btn.classList.add('active');
-      var range = parseInt(btn.dataset.range);
-      drawChart(range === 7 ? daily.slice(-7) : daily, svgEl);
+      updateView(parseInt(btn.dataset.range));
     });
 
     // Countries
