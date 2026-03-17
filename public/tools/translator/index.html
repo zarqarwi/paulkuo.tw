@@ -426,7 +426,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
     <button class="btn-subtitle" id="btnSubtitle" title="字幕模式：全屏顯示翻譯">🖥<span class="btn-text"> 字幕</span></button>
     <button class="biz-toggle" id="btnBizMode" title="商務模式：使用 Google Chirp 3 高精度日文 STT + 1000 術語適應" style="display:none"><span class="biz-dot"></span><span class="btn-text"> 商務</span></button>
     <button class="btn-summary" id="btnSummary" disabled title="產生會議摘要">📋<span class="btn-text"> 摘要</span></button>
-    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button><button class="export-item" id="exportTqef">📊 匯出到 TQEF<span>送入翻譯品質語料庫</span></button></div></div>
+    <div class="export-wrap"><button class="export-btn" id="btnExport" disabled>⬇️<span class="btn-text"> 匯出</span></button><div class="export-menu" id="exportMenu"><button class="export-item" id="exportTxt">📄 全文 TXT<span>含時間戳·原文·翻譯</span></button><button class="export-item" id="exportTranslated">📝 翻譯全文<span>僅翻譯結果</span></button><button class="export-item" id="exportCsv">📊 CSV 表格<span>可匯入 Excel / Sheets</span></button><button class="export-item" id="exportTqef" style="display:none">📊 匯出到 TQEF<span>送入翻譯品質語料庫</span></button></div></div>
     <button class="btn-clear" id="btnClear"><span class="btn-text">清除</span><span class="btn-icon" style="display:none">🗑</span></button>
     <button class="btn-main btn-start" id="btnToggle">🎙 開始</button>
   </div>
@@ -446,7 +446,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
     <div style="font-size:48px;opacity:.25">🎙️</div>
     <div style="font-size:16px;text-align:center;line-height:1.8;color:var(--text-muted)">
       按「開始」後對著麥克風說話<br>
-      <span style="font-size:12px">支援 12 種語言 · Deepgram 串流辨識 + Claude Haiku 翻譯 · 支援所有瀏覽器</span><br><a href="#" onclick="getEl('helpModal').classList.add('visible');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none;margin-top:4px;display:inline-block">第一次使用？看使用說明 →</a>
+      <span style="font-size:12px">支援 12 種語言 · 三引擎 STT（中文 Qwen3-ASR + 英文 Groq Whisper + 多語 Deepgram Nova-3）+ Claude Haiku 翻譯</span><br><a href="#" onclick="getEl('helpModal').classList.add('visible');return false" style="font-size:12px;color:var(--accent-ai);text-decoration:none;margin-top:4px;display:inline-block">第一次使用？看使用說明 →</a>
     </div>
   </div>
 </div>
@@ -496,7 +496,7 @@ body.matrix-on{padding-left:48px;padding-right:48px}
         <div class="help-step"><span class="step-num">1</span><span class="step-text">點選「開始」，瀏覽器會要求<strong>麥克風授權</strong>，請允許</span></div>
         <div class="help-step"><span class="step-num">2</span><span class="step-text">選擇<strong>輸出語言</strong>（上方語言列），系統會自動偵測你說的語言並翻譯</span></div>
         <div class="help-step"><span class="step-num">3</span><span class="step-text">對著麥克風說話，翻譯結果會即時顯示在畫面上</span></div>
-        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">💡 支援 12 種語言自動偵測，適用所有主流瀏覽器（含 iOS Safari）</p>
+        <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">💡 支援 12 種語言自動偵測 · 三引擎語音辨識：中文用 Qwen3-ASR、英文用 Groq Whisper、其他語言用 Deepgram Nova-3 · 適用所有主流瀏覽器（含 iOS Safari）</p>
       </div>
 
       <div class="help-divider"></div>
@@ -2780,6 +2780,8 @@ function showUserBadge() {
   // Show admin button for admin users
   var ab = getEl("btnAdmin");
   if (ab) ab.style.display = _isAdmin ? "inline-block" : "none";
+  var tqefBtn = getEl("exportTqef");
+  if (tqefBtn) tqefBtn.style.display = _isAdmin ? "" : "none";
 }
 
 function tryEnter() {

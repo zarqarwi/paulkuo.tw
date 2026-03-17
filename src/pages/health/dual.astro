@@ -18,7 +18,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <header class="health-header">
     <div>
       <h1>🏥 Paul 雙裝置健康分析</h1>
-      <p class="health-subtitle">Fitbit (2023/05–2026/02, 883晚) + Apple Watch (2023/09–2025/12, 537晚) · HRV / 靜止心率 / 血氧</p>
+      <p class="health-subtitle" id="dualSubtitle">載入中…</p>
     </div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap">
       <a href="/health/fitbit" style="color:#60a5fa;text-decoration:none;font-size:.85rem;padding:.4rem .8rem;border:1px solid #374151;border-radius:.5rem">← Fitbit 單源</a>
@@ -38,8 +38,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <!-- Tab 0: Overview -->
   <div class="tab-content active" data-tab="0">
     <div class="kpi-grid kpi-4col">
-      <div class="kpi"><span class="kpi-label">Fitbit 全期平均</span><span class="kpi-value" style="color:var(--c-fb)" id="kpi-fb-avg"></span><span class="kpi-sub">883 晚</span></div>
-      <div class="kpi"><span class="kpi-label">Apple Watch 全期平均</span><span class="kpi-value" style="color:var(--c-aw)" id="kpi-aw-avg"></span><span class="kpi-sub">537 晚</span></div>
+      <div class="kpi"><span class="kpi-label">Fitbit 全期平均</span><span class="kpi-value" style="color:var(--c-fb)" id="kpi-fb-avg"></span><span class="kpi-sub" id="kpi-fb-nights"></span></div>
+      <div class="kpi"><span class="kpi-label">Apple Watch 全期平均</span><span class="kpi-value" style="color:var(--c-aw)" id="kpi-aw-avg"></span><span class="kpi-sub" id="kpi-aw-nights"></span></div>
       <div class="kpi"><span class="kpi-label">平均 HRV</span><span class="kpi-value" style="color:var(--c-hrv)" id="kpi-hrv"></span><span class="kpi-sub">心率變異</span></div>
       <div class="kpi"><span class="kpi-label">平均靜止心率</span><span class="kpi-value" style="color:var(--c-rhr)" id="kpi-rhr"></span><span class="kpi-sub">休息心率</span></div>
     </div>
@@ -224,6 +224,24 @@ function initDashboard() {
 
   const fbData = DATA.filter(d => d.fb_avg_sleep);
   const awData = DATA.filter(d => d.aw_avg_sleep && d.aw_nights >= 5);
+
+  // Dynamic subtitle & KPI nights
+  {
+    const fbAll = DATA.filter(d => d.fb_nights);
+    const awAll = DATA.filter(d => d.aw_nights);
+    const fbNights = fbAll.reduce((s,d) => s + d.fb_nights, 0);
+    const awNights = awAll.reduce((s,d) => s + d.aw_nights, 0);
+    const fbFirst = fbAll[0].month.replace('-','/');
+    const fbLast = fbAll[fbAll.length-1].month.replace('-','/');
+    const awFirst = awAll[0].month.replace('-','/');
+    const awLast = awAll[awAll.length-1].month.replace('-','/');
+    const el = document.getElementById('dualSubtitle');
+    if (el) el.textContent = 'Fitbit (' + fbFirst + '–' + fbLast + ', ' + fbNights + '晚) + Apple Watch (' + awFirst + '–' + awLast + ', ' + awNights + '晚) · HRV / 靜止心率 / 血氧';
+    const fbNEl = document.getElementById('kpi-fb-nights');
+    if (fbNEl) fbNEl.textContent = fbNights + ' 晚';
+    const awNEl = document.getElementById('kpi-aw-nights');
+    if (awNEl) awNEl.textContent = awNights + ' 晚';
+  }
   const hrvData = DATA.filter(d => d.avg_hrv);
   const fbAvg = fbData.reduce((s,d) => s+d.fb_avg_sleep, 0) / fbData.length;
   const awAvg = awData.reduce((s,d) => s+d.aw_avg_sleep, 0) / awData.length;

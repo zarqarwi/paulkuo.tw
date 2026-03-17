@@ -19,6 +19,8 @@ articles.forEach(a => {
   });
 });
 const sortedTags = Object.entries(tagCount).sort((a, b) => b[1] - a[1]);
+const mainTags = sortedTags.filter(([, c]) => c >= 2);
+const minorTags = sortedTags.filter(([, c]) => c < 2);
 
 // Years
 const years = [...new Set(articles.map(a => a.data.date.getFullYear()))].sort((a, b) => b - a);
@@ -46,8 +48,18 @@ const pillars = Object.entries(PILLAR_MAP);
     <!-- Tag cloud -->
     <div class="tag-cloud" id="tagCloud">
       <button class="tag-pill active" data-tag="all">全部標籤</button>
-      {sortedTags.map(([tag, count]) => (
+      {mainTags.map(([tag, count]) => (
         <button class="tag-pill" data-tag={tag}>
+          {tag} <span class="tag-count">{count}</span>
+        </button>
+      ))}
+      {minorTags.length > 0 && (
+        <button class="tag-pill tag-toggle" id="tagToggle" type="button">
+          顯示全部 <span class="tag-count">+{minorTags.length}</span>
+        </button>
+      )}
+      {minorTags.map(([tag, count]) => (
+        <button class="tag-pill minor-tag" data-tag={tag} style="display:none">
           {tag} <span class="tag-count">{count}</span>
         </button>
       ))}
@@ -146,11 +158,26 @@ const pillars = Object.entries(PILLAR_MAP);
       });
     });
 
+    // Toggle minor tags (1-article tags)
+    var toggleBtn = document.getElementById('tagToggle');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        var minors = document.querySelectorAll('.minor-tag');
+        var showing = minors[0] && minors[0].style.display !== 'none';
+        minors.forEach(function(t) { t.style.display = showing ? 'none' : ''; });
+        toggleBtn.textContent = showing ? '顯示全部 +' + minors.length : '收合';
+      });
+    }
+
     // URL hash support: /tags#AI
     var hash = window.location.hash.replace('#', '');
     if (hash) {
       var tagBtn = document.querySelector('.tag-pill[data-tag="' + decodeURIComponent(hash) + '"]');
-      if (tagBtn) { tagBtn.click(); }
+      if (tagBtn) {
+        // If it's a minor tag, expand first
+        if (tagBtn.classList.contains('minor-tag') && toggleBtn) { toggleBtn.click(); }
+        tagBtn.click();
+      }
     }
   })();
   </script>

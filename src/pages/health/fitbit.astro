@@ -18,7 +18,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <header class="health-header">
     <div>
       <h1>🛏️ Paul 睡眠健康報告</h1>
-      <p class="health-subtitle">Fitbit 單裝置 · 2023/05–2026/02 · 883 天紀錄 · 約 33 個月</p>
+      <p class="health-subtitle" id="fitbitSubtitle">Fitbit 單裝置 · 載入中…</p>
     </div>
     <a href="/health/dual" class="health-nav-link">→ 雙裝置整合分析</a>
   </header>
@@ -183,6 +183,15 @@ const MONTHLY = [
   {month:"2026-01",days:31,avgSleep:357,avgInBed:480,eff:74,deep:56,rem:76},
   {month:"2026-02",days:19,avgSleep:299,avgInBed:400,eff:75,deep:53,rem:65},
 ];
+
+// Dynamic subtitle from data
+{
+  const first = MONTHLY[0].month.replace('-','/');
+  const last = MONTHLY[MONTHLY.length-1].month.replace('-','/');
+  const totalDays = MONTHLY.reduce((s,m) => s + m.days, 0);
+  const el = document.getElementById('fitbitSubtitle');
+  if (el) el.textContent = 'Fitbit 單裝置 · ' + first + '–' + last + ' · ' + totalDays + ' 天紀錄 · 約 ' + MONTHLY.length + ' 個月';
+}
 
 const YEARLY = [
   {year:"2023",avgSleep:363,eff:83,days:232},
