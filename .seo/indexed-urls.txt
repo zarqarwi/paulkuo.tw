@@ -284,6 +284,7 @@ https://paulkuo.tw/search/
 https://paulkuo.tw/tags-graph/
 https://paulkuo.tw/tags/
 https://paulkuo.tw/tools/builders-scorecard/
+https://paulkuo.tw/tools/builders-scorecard/eval/index/
 https://paulkuo.tw/tools/tqef/admin/
 https://paulkuo.tw/tools/tqef/admin/corpus-intake/
 https://paulkuo.tw/tools/tqef/admin/feedback/
