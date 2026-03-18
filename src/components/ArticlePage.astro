@@ -29,7 +29,7 @@ const readingTime = calcReadingTime(article.body || '');
 const p = PILLAR_MAP[pillar];
 const dateStr = date.toLocaleDateString(L.dateLocale, L.dateOptions);
 const slug = article.id.replace(/\.md$/, '');
-const articleUrl = `${SITE.url}${basePath}/articles/${slug}`;
+const articleUrl = `${SITE.url}${basePath}/articles/${slug}/`;
 const ogImageUrl = article.data.cover ? `${SITE.url}${article.data.cover}` : `${SITE.url}/og/${slug}.png`;
 
 // Fixed: proper language-based pillar label selection
