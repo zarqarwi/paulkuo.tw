@@ -531,7 +531,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 }
 
 /* ===== ARTICLE PAGE — Base Structure ===== */
-.article-page { max-width: 840px; margin: 0 auto; padding: 120px 24px 80px; }
+.article-page { max-width: 840px; margin: 0 auto; padding: 24px 24px 80px; }
 .article-back { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; margin-bottom: 40px; transition: color 0.2s; }
 .article-back:hover { color: var(--brand-navy); }
 /* Article cover hero */
@@ -733,7 +733,7 @@ html[lang="ja"] .about-content p {
 
 /* ===== ARTICLE — Mobile Responsive ===== */
 @media (max-width: 768px) {
-  .article-page { padding: 100px 20px 60px; }
+  .article-page { padding: 16px 20px 60px; }
   .article-meta h1 { font-size: 1.8rem; }
   .article-body p { font-size: 1rem; }
   .article-info { flex-wrap: wrap; gap: 12px; }
