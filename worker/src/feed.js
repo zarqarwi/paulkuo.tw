@@ -3,8 +3,60 @@ import { corsHeaders, jsonResponse, twISOString } from './utils.js';
 import { authenticateRequest } from './auth.js';
 
 export async function handleFeedGet(request, env) {
-  const raw = await env.TICKER_KV.get('feed_items'); const items = raw ? JSON.parse(raw) : [];
-  return new Response(JSON.stringify({ items, updatedAt: items[0]?.datetime || null }), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${FEED_CACHE_TTL}`, ...corsHeaders(request) } });
+  const raw = await env.TICKER_KV.get('feed_items'); const socialItems = raw ? JSON.parse(raw) : [];
+
+  // 最近留言活動（混入動態 feed）
+  let commentItems = [];
+  try {
+    const { results: recentComments } = await env.AUTH_DB.prepare(`
+      SELECT
+        c.id, c.article_slug, c.content, c.created_at, c.parent_id,
+        u.name as user_name,
+        p.id as parent_comment_id,
+        pu.name as parent_user_name
+      FROM comments c
+      JOIN users u ON c.user_id = u.id
+      LEFT JOIN comments p ON c.parent_id = p.id
+      LEFT JOIN users pu ON p.user_id = pu.id
+      WHERE c.is_deleted = 0
+      ORDER BY c.created_at DESC
+      LIMIT 5
+    `).all();
+
+    commentItems = recentComments.map(c => {
+      const readableSlug = c.article_slug
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+
+      let content;
+      if (c.parent_id && c.parent_user_name) {
+        content = `${c.user_name} 回覆了 ${c.parent_user_name} 在「${readableSlug}」的留言`;
+      } else {
+        const excerpt = c.content.length > 80
+          ? c.content.slice(0, 80) + '…'
+          : c.content;
+        content = `${c.user_name} 在「${readableSlug}」留言：「${excerpt}」`;
+      }
+
+      return {
+        platform: '💬 paulkuo.tw',
+        color: 'var(--accent-ai)',
+        content,
+        url: `/articles/${c.article_slug}#comment-${c.id}`,
+        datetime: c.created_at,
+        category: 'comment',
+      };
+    });
+  } catch (e) {
+    // comments table 不存在時不要炸掉整個 feed
+    console.error('Feed: comment query failed:', e.message);
+  }
+
+  const allItems = [...socialItems, ...commentItems]
+    .sort((a, b) => (b.datetime || '').localeCompare(a.datetime || ''))
+    .slice(0, 12);
+
+  return new Response(JSON.stringify({ items: allItems, updatedAt: allItems[0]?.datetime || null }), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${FEED_CACHE_TTL}`, ...corsHeaders(request) } });
 }
 
 export async function handleFeedPush(request, env) {

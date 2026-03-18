@@ -12,6 +12,7 @@ import { refreshToken, fetchFitbitData, fetchSleepData } from './fitbit.js';
 import { isTseTradingHours, fetchStockData } from './stock.js';
 import { handleTranslate, handleTranslateStream, handleSummarize, handlePolishTranscript, handleGroqSTT, handleGoogleSTT, handleFeedbackPost, handleFeedbackGet, handleTqefClaude } from './translator.js';
 import { handleFeedGet, handleFeedPush } from './feed.js';
+import { handleCommentsGet, handleCommentCreate, handleCommentUpdate, handleCommentDelete, handleCommentLike, handleCommentsAdminRecent } from './comments.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
@@ -75,7 +76,7 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
+const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
@@ -103,6 +104,22 @@ async function handleRequest(request, env) {
   if (path === '/feedback' && method === 'GET') return handleFeedbackGet(request, env);
   if (path === '/feed/push' && method === 'POST') return handleFeedPush(request, env);
   if (path === '/validate-code') return handleValidateCode(request, env);
+  // ── Comments API ──
+  if (path === '/api/comments' && method === 'GET') return handleCommentsGet(request, env);
+  if (path === '/api/comments' && method === 'POST') return handleCommentCreate(request, env);
+  if (path === '/api/comments/admin/recent' && method === 'GET') return handleCommentsAdminRecent(request, env);
+  if (path.startsWith('/api/comments/') && path.endsWith('/like') && method === 'POST') {
+    const commentId = decodeURIComponent(path.replace('/api/comments/', '').replace('/like', ''));
+    if (commentId) return handleCommentLike(request, env, commentId);
+  }
+  if (path.startsWith('/api/comments/') && method === 'PATCH') {
+    const commentId = decodeURIComponent(path.split('/api/comments/')[1]);
+    if (commentId && !commentId.includes('/')) return handleCommentUpdate(request, env, commentId);
+  }
+  if (path.startsWith('/api/comments/') && method === 'DELETE') {
+    const commentId = decodeURIComponent(path.split('/api/comments/')[1]);
+    if (commentId && !commentId.includes('/')) return handleCommentDelete(request, env, commentId);
+  }
   // ── TQEF Admin API ──
   if (path === '/api/tqef/dashboard' && method === 'GET') return handleTqefDashboard(request, env);
   if (path === '/api/tqef/corpus' && method === 'GET') return handleTqefCorpus(request, env);
