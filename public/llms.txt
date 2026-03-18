@@ -20,6 +20,7 @@ This site organizes all content under five thematic pillars:
 
 - **CircleFlow**: AI-driven circular economy platform for resource tracking and governance
 - **Multi-Model Cognitive Collaboration Framework**: Multi-agent debate engine using Claude, GPT-4o, Gemini, and Grok for structured analysis
+- **Builder's Scorecard**: Product self-assessment framework with five dimensions (Problem-Solution Fit, Market Validation, Technical Moat, Commercialisation Path, Sustainability). AI-powered quick mode and manual full mode. Available at /tools/builders-scorecard
 
 ## Site Structure
 

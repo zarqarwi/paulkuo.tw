@@ -1,0 +1,283 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const schemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Builder's Scorecard 方法論",
+  "description": "五維度加權評分框架的設計邏輯與計分方式",
+  "author": { "@type": "Person", "name": "Paul Kuo", "url": "https://paulkuo.tw" },
+  "datePublished": "2026-03-18",
+  "publisher": { "@type": "Person", "name": "Paul Kuo" }
+});
+---
+<BaseLayout
+  title="Builder's Scorecard 方法論 — 五維度評估框架"
+  description="了解 Builder's Scorecard 的五個評估維度：問題解決力、市場驗證、技術護城河、商業化路徑、長線可持續性。每個維度的評估邏輯與計分方式。"
+  ogUrl="https://paulkuo.tw/tools/builders-scorecard/methodology"
+  schemaJson={`<script type="application/ld+json">${schemaJson}</script>`}
+>
+  <style>
+    .methodology {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+      color: var(--text-primary, #1a1a2e);
+      line-height: 1.8;
+    }
+    .methodology h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    .methodology .lead {
+      font-size: 1.1rem;
+      color: var(--text-secondary, #555);
+      margin-bottom: 48px;
+      line-height: 1.9;
+    }
+    .methodology h2 {
+      font-size: 1.4rem;
+      margin-top: 48px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid rgba(37,99,235,0.15);
+    }
+    .methodology h3 {
+      font-size: 1.15rem;
+      margin-top: 32px;
+      margin-bottom: 8px;
+    }
+    .methodology p {
+      margin-bottom: 16px;
+    }
+    .dim-card {
+      background: rgba(37,99,235,0.04);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .dim-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .dim-icon {
+      font-size: 1.4rem;
+    }
+    .dim-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .dim-weight {
+      font-size: 0.85rem;
+      color: var(--text-secondary, #666);
+      background: rgba(37,99,235,0.08);
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: auto;
+    }
+    .dim-principle {
+      font-style: italic;
+      color: var(--text-secondary, #555);
+      margin-bottom: 8px;
+    }
+    .dim-desc {
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    .formula-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 20px 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+    .cta-box {
+      text-align: center;
+      margin-top: 56px;
+      padding: 32px;
+      background: rgba(37,99,235,0.06);
+      border-radius: 14px;
+    }
+    .cta-box a {
+      display: inline-block;
+      background: #2563eb;
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: background 0.2s;
+    }
+    .cta-box a:hover {
+      background: #1d4ed8;
+    }
+    .credit {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.9rem;
+      color: var(--text-secondary, #666);
+    }
+    @media (prefers-color-scheme: dark) {
+      .dim-card { background: rgba(37,99,235,0.08); }
+      .formula-box { background: rgba(30,41,59,0.5); border-color: rgba(100,116,139,0.3); }
+      .cta-box { background: rgba(37,99,235,0.12); }
+    }
+  </style>
+
+  <div class="methodology">
+    <h1>Builder's Scorecard 方法論</h1>
+    <p class="lead">
+      在後 AI 社會裡，當每個人都可能成為 Builder，創造工具不再是少數人的能力，而是一種越來越普遍的日常行為。
+      但問題也隨之而來——我們做出的工具，真的適合人用嗎？真的解決問題嗎？
+      Builder's Scorecard 提供一套結構化的自評框架，幫助你從五個核心維度系統性地檢視自己的產品，
+      形成一張直觀、可溝通的工具體檢報告。
+    </p>
+
+    <h2>五個評估維度</h2>
+
+    <div class="dim-card">
+      <div class="dim-header">
+        <span class="dim-icon">🎯</span>
+        <span class="dim-name">問題解決力 Problem-Solution Fit</span>
+        <span class="dim-weight">權重 25%</span>
+      </div>
+      <p class="dim-principle">「你解決的問題夠痛嗎？你的解法夠好嗎？」</p>
+      <p class="dim-desc">
+        評估產品所解決問題的真實性與痛感程度、現有替代方案的狀況、解法與問題的匹配度、
+        相較現有方案的改善幅度、目標用戶的清晰度，以及問題發生的頻率。
+        這是所有維度中權重最高的——因為如果問題本身不成立，其他一切都是空中樓閣。
+        包含 6 個訊號：問題真實性、現有替代方案、解法匹配度、10x 改善、目標用戶清晰度、問題頻率。
+      </p>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-header">
+        <span class="dim-icon">📊</span>
+        <span class="dim-name">市場驗證 Market Validation</span>
+        <span class="dim-weight">權重 20%</span>
+      </div>
+      <p class="dim-principle">「市場有沒有用行動告訴你『我要這個』？」</p>
+      <p class="dim-desc">
+        評估市場對你的產品的實際反應——不是朋友的禮貌性稱讚，而是用行動投票的真實訊號。
+        包含 6 個訊號：活躍使用者數量、回訪行為比例、使用深度、口碑傳播、
+        外部反饋品質、付費意願訊號。每一個都指向同一個問題：有人真的需要這個嗎？
+      </p>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-header">
+        <span class="dim-icon">🏰</span>
+        <span class="dim-name">技術護城河 Technical Moat</span>
+        <span class="dim-weight">權重 20%</span>
+      </div>
+      <p class="dim-principle">「別人要花多少力氣才能做出一樣的東西？」</p>
+      <p class="dim-desc">
+        評估你的產品在技術層面的可防守性。在 AI 時代，一個週末就能複製的產品沒有護城河。
+        包含 6 個訊號：技術層級（從新演算法到無護城河四級）、可複製門檻、
+        數據與知識壁壘、量化驗證、敘事一致性、利基定位。
+        護城河不一定來自技術本身——獨特的數據、深度的領域知識、精準的定位都算。
+      </p>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-header">
+        <span class="dim-icon">💰</span>
+        <span class="dim-name">商業化路徑 Commercialisation Path</span>
+        <span class="dim-weight">權重 20%</span>
+      </div>
+      <p class="dim-principle">「這個產品能養活自己嗎？什麼時候？」</p>
+      <p class="dim-desc">
+        這是唯一會根據產品階段動態調整訊號的維度。概念期問的是「你想過怎麼賺錢嗎」，
+        已上線問的是「定價策略和獲客管道」，有用戶問的是「轉換率和成本回收」，
+        有收入問的是「MRR 和毛利率」。每個階段 4 個訊號，共 16 個。
+        不要求每個產品都有完美的商業模式，但至少要有清楚的思考。
+      </p>
+    </div>
+
+    <div class="dim-card">
+      <div class="dim-header">
+        <span class="dim-icon">🔮</span>
+        <span class="dim-name">長線可持續性 Sustainability</span>
+        <span class="dim-weight">權重 15%</span>
+      </div>
+      <p class="dim-principle">「一年後這個產品還活著嗎？三年後呢？」</p>
+      <p class="dim-desc">
+        評估產品的長期存活能力。許多獨立開發者的產品死於維護倦怠而非市場失敗。
+        包含 6 個訊號：供應鏈韌性（第三方依賴的備援）、大廠威脅、維運負擔、
+        文件化程度、演化路徑、法規合規。權重最低但影響深遠——
+        一個可持續性低的高分產品，很可能只是曇花一現。
+      </p>
+    </div>
+
+    <h2>計分方式</h2>
+
+    <h3>加權公式</h3>
+    <p>
+      每個維度的訊號以 1–10 分評分，維度分數為該維度所有訊號的平均。
+      總分是五個維度分數按權重加總：
+    </p>
+    <div class="formula-box">
+      總分 = A × 25% + B × 20% + C × 20% + D × 20% + E × 15%
+    </div>
+
+    <h3>一票否決機制</h3>
+    <p>
+      五個否決條件，任何一個成立就觸發「暫停或轉向」判定，無論總分多高：
+    </p>
+    <ul>
+      <li><strong>零用戶</strong>——上線超過 60 天但沒有任何外部用戶實際使用</li>
+      <li><strong>零差異化</strong>——跟免費替代方案相比無法說出任何具體優勢</li>
+      <li><strong>成本失控</strong>——月營運成本 >$100 但收入 = $0 且無收費計畫</li>
+      <li><strong>單點故障</strong>——核心功能 100% 依賴單一第三方服務，無任何 fallback</li>
+      <li><strong>三次轉向</strong>——核心定位在 12 個月內改變三次以上</li>
+    </ul>
+
+    <h3>落差警告</h3>
+    <p>
+      當最高與最低維度的分數差距超過 4 分時，會觸發「維度落差警告」。
+      極端不均勻比整體偏低更危險——一個 6.0 分但五角均勻的產品，
+      比一個 7.0 分但某個維度是 1 的產品更健康。
+    </p>
+
+    <h3>判定等級</h3>
+    <ul>
+      <li>🟢 <strong>全力推進</strong>（≥ 8.5）——各維度表現優秀，值得全力投入</li>
+      <li>🟡 <strong>有條件推進</strong>（7.0–8.4）——核心面向強勁，1-2 個缺口需要補強</li>
+      <li>🟠 <strong>觀望補強</strong>（5.5–6.9）——有潛力但不成熟，先補最弱的維度</li>
+      <li>🔴 <strong>暫停或轉向</strong>（< 5.5 或觸發否決）——多個維度有根本問題</li>
+    </ul>
+
+    <h2>適用對象</h2>
+    <p>
+      Builder's Scorecard 適用於所有階段的產品創造者——從概念期到有收入階段。
+      不論你是獨立開發者、side project 創作者、還是小團隊的技術負責人，
+      只要你在做一個「給人用的工具」，這個框架都能幫你系統性地檢視盲點。
+    </p>
+    <p>
+      快速模式讓你在 30 秒內得到 AI 自動評估結果，適合初步篩選。
+      完整模式讓你為 30 個訊號逐一打分，適合深度自省。
+    </p>
+
+    <div class="credit">
+      <p>
+        靈感來自 <strong>OSS Investment Scorecard</strong>（Lucy Chen / Zoo Capital）——
+        一套用於評估開源軟體投資價值的框架。Builder's Scorecard 將類似的結構化思維
+        從投資視角轉向創造者視角，幫助 Builder 用投資人的標準檢視自己的產品。
+      </p>
+    </div>
+
+    <div class="cta-box">
+      <p style="margin-bottom:16px; font-size:1.1rem; font-weight:600;">
+        準備好了嗎？
+      </p>
+      <a href="/tools/builders-scorecard/">立即評估你的產品 →</a>
+    </div>
+  </div>
+</BaseLayout>

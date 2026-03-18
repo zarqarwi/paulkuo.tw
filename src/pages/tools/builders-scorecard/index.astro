@@ -2,11 +2,55 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ScorecardApp from '../../../components/scorecard/ScorecardApp';
 import ScorecardFeed from '../../../components/scorecard/ScorecardFeed';
+
+const schemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Builder's Scorecard",
+  "description": "產品自評計分卡——透過五個核心維度，幫助 Builder 有系統地理解工具的實際價值與使用條件。",
+  "url": "https://paulkuo.tw/tools/builders-scorecard",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TWD" },
+  "author": { "@type": "Person", "name": "Paul Kuo", "url": "https://paulkuo.tw" }
+});
+
+const faqSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Builder's Scorecard 的分數怎麼解讀？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "分數不是考試成績。低分代表某些維度還沒準備好，不代表產品不好。真正重要的是雷達圖的形狀——五角均勻比總分高更健康。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "什麼是五維度評估？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Builder's Scorecard 從五個核心維度評估產品：問題解決力（25%）、市場驗證（20%）、技術護城河（20%）、商業化路徑（20%）、長線可持續性（15%）。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "快速模式和完整模式有什麼差別？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "快速模式貼上產品描述或 GitHub URL，AI 自動評估五個維度，約 30 秒出結果。完整模式讓你手動為 30 個訊號逐一打分，更精確但需要 10-15 分鐘。"
+      }
+    }
+  ]
+});
 ---
 <BaseLayout
   title="Builder's Scorecard — 產品自評計分卡"
   description="在後 AI 社會裡，當每個人都可能成為 Builder，我設計了一套評估工具適用度的模組，透過五個核心維度，幫助大家有系統地理解工具的實際價值與使用條件，形成一張直觀、可溝通的工具體檢報告。"
   ogUrl="https://paulkuo.tw/tools/builders-scorecard"
+  schemaJson={`<script type="application/ld+json">${schemaJson}</script><script type="application/ld+json">${faqSchema}</script>`}
 >
   <ScorecardApp client:load />
   <div style="max-width: 640px; margin: 0 auto; padding: 0 16px;">
