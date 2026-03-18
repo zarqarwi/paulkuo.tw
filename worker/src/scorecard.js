@@ -606,8 +606,7 @@ export async function handleScorecardSubmit(request, env) {
     if (user) userId = user.id;
   } catch {}
 
-  // Only logged-in users can make evaluations public
-  const isPublic = (body.isPublic && userId) ? 1 : 0;
+  const isPublic = (body.isPublic === true || body.isPublic === 1) ? 1 : 0;
 
   await env.AUTH_DB.prepare(`
     INSERT INTO scorecard_evaluations
