@@ -733,7 +733,7 @@ html[lang="ja"] .about-content p {
 
 /* ===== ARTICLE — Mobile Responsive ===== */
 @media (max-width: 768px) {
-  .article-page { padding: 100px 20px 60px; }
+  .article-page { padding: 8px 20px 60px; }
   .article-meta h1 { font-size: 1.8rem; }
   .article-body p { font-size: 1rem; }
   .article-info { flex-wrap: wrap; gap: 12px; }
