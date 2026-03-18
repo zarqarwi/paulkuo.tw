@@ -138,7 +138,7 @@ export default function ScorecardApp() {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 60000);
-      const resp = await fetch('/api/scorecard/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName: projectName || '', projectDesc: projectDesc || '', stage: stage || undefined, inputContent: input, lang }), signal: controller.signal });
+      const resp = await fetch('https://api.paulkuo.tw/api/scorecard/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName: projectName || '', projectDesc: projectDesc || '', stage: stage || undefined, inputContent: input, lang }), signal: controller.signal });
       clearTimeout(timeout);
       if (!resp.ok) { const err = await resp.json().catch(() => ({ message: 'AI 評估暫時無法完成' })); throw new Error(err.message || `API error ${resp.status}`); }
       const result = await resp.json();
@@ -162,7 +162,7 @@ export default function ScorecardApp() {
     try {
       const vetoList = VETOES.filter(v => v.stages.includes(stage as Stage) && vetoes[v.id]).map(v => i(v.label));
       const gateList = GATE_QUESTIONS.map(g => `${g.id}: ${gates[g.id] ? '✓' : '✗'}`).join(', ');
-      const resp = await fetch('/api/scorecard/advise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName, projectDesc, stage, lang, builderProfile, totalScore: +weightedTotal.toFixed(2), verdict: i(verdict.label), dimScores, vetoesTriggered: vetoList.length > 0 ? vetoList.join('、') : '無', gatesSummary: gateList }) });
+      const resp = await fetch('https://api.paulkuo.tw/api/scorecard/advise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName, projectDesc, stage, lang, builderProfile, totalScore: +weightedTotal.toFixed(2), verdict: i(verdict.label), dimScores, vetoesTriggered: vetoList.length > 0 ? vetoList.join('、') : '無', gatesSummary: gateList }) });
       if (!resp.ok) throw new Error('fail');
       const data = await resp.json();
       setAdvice(data.advice || '');
