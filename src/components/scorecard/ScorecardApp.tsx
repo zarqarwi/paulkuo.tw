@@ -51,6 +51,9 @@ export default function ScorecardApp() {
   const [aiConfidence, setAiConfidence] = useState<{ level: string; note: string } | null>(null);
   const [adviceLoading, setAdviceLoading] = useState(false);
   const [advice, setAdvice] = useState('');
+  const [githubMeta, setGithubMeta] = useState<Record<string, any> | null>(null);
+  const [detectedType, setDetectedType] = useState<'text' | 'github_url' | 'website_url'>('text');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { topRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [step, mode]);
@@ -130,18 +133,53 @@ export default function ScorecardApp() {
     URL.revokeObjectURL(a.href);
   };
 
+  /* ── Input type detection ── */
+  const detectType = (val: string): 'text' | 'github_url' | 'website_url' => {
+    const trimmed = val.trim();
+    if (/^https?:\/\/github\.com\//i.test(trimmed)) return 'github_url';
+    if (/^https?:\/\//i.test(trimmed)) return 'website_url';
+    return 'text';
+  };
+
+  const onQuickInputChange = (val: string) => {
+    setQuickInput(val);
+    setDetectedType(detectType(val));
+  };
+
+  const onReadmeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.match(/\.(md|txt|markdown)$/i)) {
+      setAiError(lang === 'zh-TW' ? '請上傳 .md 或 .txt 檔案' : 'Please upload a .md or .txt file');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const content = ev.target?.result as string;
+      setQuickInput(content);
+      setDetectedType('text');
+      // Auto-trigger
+      onQuickStartWith(content, 'readme_upload');
+    };
+    reader.readAsText(file);
+    // Reset file input
+    e.target.value = '';
+  };
+
   /* ── Quick Mode handler — AI evaluate ── */
-  const onQuickStart = async () => {
-    const input = quickInput.trim();
+  const onQuickStartWith = async (inputOverride?: string, typeOverride?: string) => {
+    const input = (inputOverride || quickInput).trim();
     if (!input) return;
     setAiLoading(true); setAiError('');
+    const inputType = typeOverride || detectType(input);
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 60000);
-      const resp = await fetch('https://api.paulkuo.tw/api/scorecard/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName: projectName || '', projectDesc: projectDesc || '', stage: stage || undefined, inputContent: input, lang }), signal: controller.signal });
+      const timeout = setTimeout(() => controller.abort(), 90000);
+      const resp = await fetch('https://api.paulkuo.tw/api/scorecard/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName: projectName || '', projectDesc: projectDesc || '', stage: stage || undefined, inputContent: input, inputType, lang }), signal: controller.signal });
       clearTimeout(timeout);
       if (!resp.ok) { const err = await resp.json().catch(() => ({ message: 'AI 評估暫時無法完成' })); throw new Error(err.message || `API error ${resp.status}`); }
       const result = await resp.json();
+      if (result.githubMeta) setGithubMeta(result.githubMeta);
       const detectedStage = result.stage_detected || stage || 'concept';
       if (!stage) setStage(detectedStage as Stage);
       const newScores: Record<string, number> = {}; const newNotes: Record<string, string> = {};
@@ -155,6 +193,8 @@ export default function ScorecardApp() {
       setAiError(e.name === 'AbortError' ? (lang === 'zh-TW' ? 'AI 評估超時，請切換到完整模式手動評估' : 'AI evaluation timed out.') : (e.message || 'Unknown error'));
     } finally { setAiLoading(false); }
   };
+
+  const onQuickStart = () => onQuickStartWith();
 
   /* ── AI Advisor ── */
   const onRequestAdvice = async () => {
@@ -214,15 +254,41 @@ export default function ScorecardApp() {
               <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 14, color: '#1a1a1a' }}>{t('quickTitle', lang)}</h2>
               <textarea
                 value={quickInput}
-                onChange={e => setQuickInput(e.target.value)}
+                onChange={e => onQuickInputChange(e.target.value)}
                 placeholder={t('quickPlaceholder', lang)}
                 rows={4}
-                style={{ ...S.input, resize: 'vertical', fontSize: 14, marginBottom: 12 }}
+                style={{ ...S.input, resize: 'vertical', fontSize: 14, marginBottom: 8 }}
               />
+              {/* Input type indicator */}
+              {quickInput.trim() && detectedType !== 'text' && (
+                <div style={{ fontSize: 12, color: detectedType === 'github_url' ? '#059669' : '#2563eb', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {detectedType === 'github_url' ? '🔗 GitHub URL — 將自動抓取結構化數據 + README' : '🌐 Website URL — 將自動擷取網頁內容'}
+                </div>
+              )}
               {aiError && <p style={{ fontSize: 13, color: '#dc2626', marginBottom: 12 }}>{aiError}</p>}
-              <button style={{ ...S.btnP, opacity: (!quickInput.trim() || aiLoading) ? 0.5 : 1 }} disabled={!quickInput.trim() || aiLoading} onClick={onQuickStart}>
-                {aiLoading ? (lang === 'zh-TW' ? 'AI 正在分析你的產品⋯' : 'AI is analyzing...') : t('quickBtn', lang)}
-              </button>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <button style={{ ...S.btnP, opacity: (!quickInput.trim() || aiLoading) ? 0.5 : 1 }} disabled={!quickInput.trim() || aiLoading} onClick={onQuickStart}>
+                  {aiLoading
+                    ? (detectedType === 'github_url'
+                      ? (lang === 'zh-TW' ? '正在抓取 GitHub 數據並分析⋯' : 'Fetching GitHub data & analyzing...')
+                      : (lang === 'zh-TW' ? 'AI 正在分析你的產品⋯' : 'AI is analyzing...'))
+                    : t('quickBtn', lang)}
+                </button>
+                <button
+                  style={{ ...S.btnG, fontSize: 13 }}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={aiLoading}
+                >
+                  {lang === 'zh-TW' ? '📄 上傳 README' : '📄 Upload README'}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".md,.txt,.markdown"
+                  style={{ display: 'none' }}
+                  onChange={onReadmeUpload}
+                />
+              </div>
             </div>
             <div style={{ textAlign: 'center', marginTop: 12 }}>
               <button
@@ -499,6 +565,33 @@ export default function ScorecardApp() {
                     </div>
                   )}
                 </div>
+
+                {/* GitHub Metadata */}
+                {githubMeta && (
+                  <div style={{ ...S.card, borderColor: 'rgba(5,150,105,0.2)', background: 'rgba(5,150,105,0.03)' }}>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10, color: '#1a1a1a' }}>
+                      {lang === 'zh-TW' ? '📊 GitHub 數據' : '📊 GitHub Data'}
+                    </h3>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 14, color: '#374151' }}>
+                      <span>⭐ {githubMeta.stars?.toLocaleString()} Stars</span>
+                      <span>👥 {githubMeta.contributors?.toLocaleString()} Contributors</span>
+                      <span>🔀 {githubMeta.forks?.toLocaleString()} Forks</span>
+                      <span>📋 {githubMeta.openIssues?.toLocaleString()} Issues</span>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 13, color: '#6b7280', marginTop: 8 }}>
+                      {githubMeta.language && <span>🔤 {githubMeta.language}</span>}
+                      <span>📜 {githubMeta.license}</span>
+                      {githubMeta.lastPush && <span>📅 {lang === 'zh-TW' ? '最後更新' : 'Last push'}: {new Date(githubMeta.lastPush).toLocaleDateString()}</span>}
+                    </div>
+                    {githubMeta.topics?.length > 0 && (
+                      <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        {githubMeta.topics.map((topic: string) => (
+                          <span key={topic} style={{ padding: '2px 8px', background: 'rgba(37,99,235,0.08)', color: '#2563eb', borderRadius: 4, fontSize: 11 }}>{topic}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Score Interpretation */}
                 <div style={{ ...S.card, borderColor: 'rgba(234,179,8,0.2)', background: 'rgba(234,179,8,0.03)' }}>
