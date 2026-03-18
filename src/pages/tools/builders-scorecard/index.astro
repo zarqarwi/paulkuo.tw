@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ScorecardApp from '../../../components/scorecard/ScorecardApp';
+---
+<BaseLayout
+  title="Builder's Scorecard — 五個維度，一張體檢報告"
+  description="一把通用的尺，讓任何 builder 能客觀評估自己做的工具值不值得繼續投入。五維度加權評分框架：問題解決力、市場驗證、技術護城河、商業化路徑、長線可持續性。"
+  ogUrl="https://paulkuo.tw/tools/builders-scorecard"
+>
+  <ScorecardApp client:load />
+</BaseLayout>
