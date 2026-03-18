@@ -308,9 +308,8 @@ export default function ScorecardApp() {
           <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>
             {t('credit', lang)}{' '}
             <a href="https://github.com/el09xccxy-stack/oss-investment-scorecard" target="_blank" rel="noopener" style={{ color: '#2563eb', textDecoration: 'none' }}>OSS Investment Scorecard</a>
-            </p>
-          <p style={{ fontSize: 11, color: '#bcbcbc', marginTop: 2 }}>v2.1
           </p>
+          <p style={{ fontSize: 11, color: '#bcbcbc', marginTop: 2 }}>v2.1</p>
         </div>
 
         {/* ═══════ Quick Mode ═══════ */}

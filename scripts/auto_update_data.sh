@@ -1,10 +1,10 @@
 #!/bin/bash
-# auto_update_data.sh v5 — Timing + Stock only
+# auto_update_data.sh v6 — Timing + Stock only
 #
-# v5 改動（vs v4）：
-#   - 移除 Fitbit（改由 Cloudflare Worker 獨立處理 token + 資料）
-#   - cron 只負責 Timing App + Stock price → git push
+# v6 改動（vs v5）：
+#   - 加 mutex lock（mkdir-based）防止 cron 和手動 git 操作 race condition
 #
+# v5 改動：移除 Fitbit（改由 Cloudflare Worker 獨立處理 token + 資料）
 # v4 改動：移除 CHAIN_STATUS 短路邏輯
 # v3 改動：新增長時間睡眠偵測
 # v2 改動：push 最小間隔 30 分鐘，顯著變化才 push
@@ -22,6 +22,24 @@ log() { echo "[$TS] $1" >> "$LOG"; }
 
 log "=== Start ==="
 cd "$REPO" || { log "ERROR: cd failed"; exit 1; }
+
+# --- Guard: mutex lock (mkdir is atomic on POSIX) ---
+LOCKDIR="$REPO/.git/paulkuo-auto-update.lock"
+if ! mkdir "$LOCKDIR" 2>/dev/null; then
+    # Check for stale lock (older than 10 minutes = stuck)
+    if [ -d "$LOCKDIR" ]; then
+        LOCK_AGE=$(( $(date +%s) - $(stat -f %m "$LOCKDIR") ))
+        if [ "$LOCK_AGE" -gt 600 ]; then
+            log "WARN: removing stale lock (${LOCK_AGE}s old)"
+            rmdir "$LOCKDIR" 2>/dev/null
+            mkdir "$LOCKDIR" 2>/dev/null || { log "⏸️ Skip: lock contention"; exit 0; }
+        else
+            log "⏸️ Skip: another git operation in progress (lock age: ${LOCK_AGE}s)"
+            exit 0
+        fi
+    fi
+fi
+trap 'rmdir "$LOCKDIR" 2>/dev/null' EXIT
 
 # --- Guard: skip if manual git operation in progress ---
 if [ -f ".git/index.lock" ]; then
