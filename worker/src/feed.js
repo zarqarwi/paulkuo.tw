@@ -63,14 +63,27 @@ export async function handleFeedGet(request, env) {
       LIMIT 3
     `).all();
 
-    const VERDICT_EMOJI = { '🚀 強力推薦': '🚀', '✅ 值得投入': '✅', '⚠️ 需要調整': '⚠️', '❌ 建議轉向': '❌', '🔥 極具潛力': '🔥' };
+    const VERDICT_MAP = {
+      go: { emoji: '🚀', label: '全力推進' },
+      conditional: { emoji: '✅', label: '有條件推進' },
+      watch: { emoji: '⚠️', label: '觀望補強' },
+      pause: { emoji: '❌', label: '暫停或轉向' },
+    };
+    function matchVerdict(v) {
+      if (!v) return VERDICT_MAP.watch;
+      const lower = v.toLowerCase();
+      if (lower.includes('推薦') || lower.includes('潛力') || lower.includes('go')) return VERDICT_MAP.go;
+      if (lower.includes('值得') || lower.includes('conditional')) return VERDICT_MAP.conditional;
+      if (lower.includes('轉向') || lower.includes('pause') || lower.includes('stop')) return VERDICT_MAP.pause;
+      return VERDICT_MAP.watch;
+    }
     scorecardItems = recentEvals.map(e => {
-      const emoji = Object.entries(VERDICT_EMOJI).find(([k]) => (e.verdict || '').includes(k.slice(2)))?.[1] || '🎯';
+      const v = matchVerdict(e.verdict);
       return {
         platform: '🎯 SCORECARD',
         color: '#2563eb',
-        content: `${e.project_name} 被評估 → ${Number(e.total_score).toFixed(1)}/10 ${emoji}`,
-        url: `/tools/builders-scorecard/eval/${e.id}`,
+        content: `📊 Builder's Scorecard 產品體檢：${e.project_name} 獲得 ${Number(e.total_score).toFixed(1)}/10 分 ${v.emoji}（${v.label}）— 五維度 AI 自動評估`,
+        url: `https://paulkuo.tw/tools/builders-scorecard/eval/${e.id}`,
         datetime: e.created_at,
         category: 'scorecard',
       };
