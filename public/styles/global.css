@@ -531,7 +531,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 }
 
 /* ===== ARTICLE PAGE — Base Structure ===== */
-.article-page { max-width: 720px; margin: 0 auto; padding: 120px 24px 80px; }
+.article-page { max-width: 840px; margin: 0 auto; padding: 120px 24px 80px; }
 .article-back { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; margin-bottom: 40px; transition: color 0.2s; }
 .article-back:hover { color: var(--brand-navy); }
 /* Article cover hero */
@@ -543,7 +543,9 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
   .article-mobile-lang-bar {
     display: flex;
     gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 48px;
+    position: relative;
+    z-index: 1;
   }
   .article-mobile-lang-bar .lang-btn {
     font-size: 0.75rem;
