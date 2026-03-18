@@ -304,11 +304,12 @@ export default function ScorecardApp() {
             {t('title', lang)}
           </h1>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#6b7280', margin: 0 }}>{t('subtitle', lang)}</p>
-          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 6, fontStyle: 'italic' }}>{t('tagline', lang)}</p>
+          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 12, lineHeight: 1.8, textAlign: 'left', maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>{t('tagline', lang)}</p>
           <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>
             {t('credit', lang)}{' '}
             <a href="https://github.com/el09xccxy-stack/oss-investment-scorecard" target="_blank" rel="noopener" style={{ color: '#2563eb', textDecoration: 'none' }}>OSS Investment Scorecard</a>
-            {' '}· v2.1
+            </p>
+          <p style={{ fontSize: 11, color: '#bcbcbc', marginTop: 2 }}>v2.1
           </p>
         </div>
 

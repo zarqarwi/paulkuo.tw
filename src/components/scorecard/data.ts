@@ -140,8 +140,8 @@ export function calcWeightedTotal(dimScores: Record<string, number>): number {
 // UI strings
 export const UI: Record<string, { 'zh-TW': string; en: string }> = {
   title: { 'zh-TW': "Builder's Scorecard", en: "Builder's Scorecard" },
-  subtitle: { 'zh-TW': '產品長線自評計分卡', en: 'Product Longevity Self-Assessment' },
-  tagline: { 'zh-TW': '五個維度，一張體檢報告。', en: 'Five dimensions. One diagnostic report.' },
+  subtitle: { 'zh-TW': '產品自評計分卡', en: 'Product Self-Assessment Scorecard' },
+  tagline: { 'zh-TW': '在後 AI 社會裡，當每個人都可能成為 Builder，創造工具不再是少數人的能力，而是一種越來越普遍的日常行為。但問題也隨之而來：我們做出的工具，真的適合人用嗎？真的解決問題嗎？因此，我設計了一套評估工具適用度的模組，透過五個核心維度，幫助大家有系統地理解工具的實際價值與使用條件，形成一張直觀、可溝通的工具體檢報告。', en: 'In the post-AI era, everyone can be a Builder — creating tools is no longer a rare skill, but an increasingly common act. Yet the question follows: are the tools we build truly usable? Do they actually solve problems? That'''s why I designed this assessment module. Through five core dimensions, it helps you systematically understand a tool'''s real value and conditions of use, forming an intuitive, communicable diagnostic report.' },
   quickTitle: { 'zh-TW': '快速評估', en: 'Quick Assessment' },
   quickPlaceholder: { 'zh-TW': '貼上產品描述、GitHub URL、或網站 URL⋯', en: 'Paste a product description, GitHub URL, or website URL...' },
   quickBtn: { 'zh-TW': '開始評估', en: 'Start Assessment' },
@@ -184,7 +184,7 @@ export const UI: Record<string, { 'zh-TW': string; en: string }> = {
   scoreInterpret2: { 'zh-TW': '低分不代表你的產品「不好」——它代表你的產品在五個維度中，有些準備好了，有些還沒開始。', en: 'A low score doesn\'t mean your product is "bad" — it means some dimensions are ready while others haven\'t started.' },
   scoreInterpret3: { 'zh-TW': '真正重要的不是總分，而是雷達圖的形狀。一個 6.0 分但五角均勻的產品，比一個 7.0 分但某個維度是 1 的產品更健康。', en: 'What truly matters is not the total score, but the shape of the radar chart. A 6.0 with even pentagon is healthier than a 7.0 with one dimension at 1.' },
   gapWarning: { 'zh-TW': '維度落差警告：最高與最低維度差距超過 4 分。極端不均勻比整體偏低更危險——優先補強最弱的維度。', en: 'Dimension Gap Warning: Difference between highest and lowest dimension exceeds 4 points. Extreme imbalance is more dangerous than overall low scores — prioritize strengthening the weakest dimension.' },
-  credit: { 'zh-TW': '改編自', en: 'Adapted from' },
+  credit: { 'zh-TW': '靈感來自', en: 'Inspired by' },
   switchToFull: { 'zh-TW': '想要更精確？切換到完整模式', en: 'Want more precision? Switch to full mode' },
   backToQuick: { 'zh-TW': '← 回到快速模式', en: '← Back to quick mode' },
 };
