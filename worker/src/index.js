@@ -17,6 +17,7 @@ import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCal
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
+import { handleScorecardEvaluate, handleScorecardAdvise } from './scorecard.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -76,7 +77,7 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
+const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
@@ -120,6 +121,9 @@ async function handleRequest(request, env) {
     const commentId = decodeURIComponent(path.split('/api/comments/')[1]);
     if (commentId && !commentId.includes('/')) return handleCommentDelete(request, env, commentId);
   }
+  // ── Scorecard AI API ──
+  if (path === '/api/scorecard/evaluate' && method === 'POST') return handleScorecardEvaluate(request, env);
+  if (path === '/api/scorecard/advise' && method === 'POST') return handleScorecardAdvise(request, env);
   // ── TQEF Admin API ──
   if (path === '/api/tqef/dashboard' && method === 'GET') return handleTqefDashboard(request, env);
   if (path === '/api/tqef/corpus' && method === 'GET') return handleTqefCorpus(request, env);

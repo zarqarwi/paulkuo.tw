@@ -45,10 +45,15 @@ export default function ScorecardApp() {
   const [vetoes, setVetoes] = useState<Record<string, boolean>>({});
   const [activeDim, setActiveDim] = useState('A');
   const [quickInput, setQuickInput] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
+  const [isQuickResult, setIsQuickResult] = useState(false);
+  const [aiConfidence, setAiConfidence] = useState<{ level: string; note: string } | null>(null);
+  const [adviceLoading, setAdviceLoading] = useState(false);
+  const [advice, setAdvice] = useState('');
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { topRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [step, mode]);
-
 
   const i = (obj: { 'zh-TW': string; en: string }) => obj[lang];
 
@@ -125,10 +130,44 @@ export default function ScorecardApp() {
     URL.revokeObjectURL(a.href);
   };
 
-  /* ── Quick Mode handler (Phase 1: redirect to full mode) ── */
-  const onQuickStart = () => {
-    setMode('full');
-    setStep(0);
+  /* ── Quick Mode handler — AI evaluate ── */
+  const onQuickStart = async () => {
+    const input = quickInput.trim();
+    if (!input) return;
+    setAiLoading(true); setAiError('');
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+      const resp = await fetch('/api/scorecard/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName: projectName || '', projectDesc: projectDesc || '', stage: stage || undefined, inputContent: input, lang }), signal: controller.signal });
+      clearTimeout(timeout);
+      if (!resp.ok) { const err = await resp.json().catch(() => ({ message: 'AI 評估暫時無法完成' })); throw new Error(err.message || `API error ${resp.status}`); }
+      const result = await resp.json();
+      const detectedStage = result.stage_detected || stage || 'concept';
+      if (!stage) setStage(detectedStage as Stage);
+      const newScores: Record<string, number> = {}; const newNotes: Record<string, string> = {};
+      if (result.signals) { for (const [id, sig] of Object.entries(result.signals) as [string, { score: number; reason: string }][]) { newScores[id] = sig.score; newNotes[id] = sig.reason || ''; } }
+      setScores(newScores); setNotes(newNotes);
+      if (result.gates) { const newGates: Record<string, boolean> = {}; for (const [id, g] of Object.entries(result.gates) as [string, { pass: boolean; reason: string }][]) { newGates[id] = g.pass; } setGates(newGates); }
+      if (result.vetoes) { const newVetoes: Record<string, boolean> = {}; for (const [id, val] of Object.entries(result.vetoes)) { newVetoes[id] = val as boolean; } setVetoes(newVetoes); }
+      if (result.confidence) { setAiConfidence({ level: result.confidence, note: result.confidence_note || '' }); }
+      setIsQuickResult(true); setAdvice(''); setMode('full'); setStep(4);
+    } catch (e: any) {
+      setAiError(e.name === 'AbortError' ? (lang === 'zh-TW' ? 'AI 評估超時，請切換到完整模式手動評估' : 'AI evaluation timed out.') : (e.message || 'Unknown error'));
+    } finally { setAiLoading(false); }
+  };
+
+  /* ── AI Advisor ── */
+  const onRequestAdvice = async () => {
+    setAdviceLoading(true); setAdvice('');
+    try {
+      const vetoList = VETOES.filter(v => v.stages.includes(stage as Stage) && vetoes[v.id]).map(v => i(v.label));
+      const gateList = GATE_QUESTIONS.map(g => `${g.id}: ${gates[g.id] ? '✓' : '✗'}`).join(', ');
+      const resp = await fetch('/api/scorecard/advise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName, projectDesc, stage, lang, builderProfile, totalScore: +weightedTotal.toFixed(2), verdict: i(verdict.label), dimScores, vetoesTriggered: vetoList.length > 0 ? vetoList.join('、') : '無', gatesSummary: gateList }) });
+      if (!resp.ok) throw new Error('fail');
+      const data = await resp.json();
+      setAdvice(data.advice || '');
+    } catch { setAdvice(lang === 'zh-TW' ? '⚠️ AI 顧問暫時無法回應，請稍後再試。' : '⚠️ AI advisor temporarily unavailable.'); }
+    finally { setAdviceLoading(false); }
   };
 
   return (
@@ -180,9 +219,9 @@ export default function ScorecardApp() {
                 rows={4}
                 style={{ ...S.input, resize: 'vertical', fontSize: 14, marginBottom: 12 }}
               />
-              <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 14 }}>{t('quickNote', lang)}</p>
-              <button style={S.btnP} onClick={onQuickStart}>
-                {t('quickBtn', lang)}
+              {aiError && <p style={{ fontSize: 13, color: '#dc2626', marginBottom: 12 }}>{aiError}</p>}
+              <button style={{ ...S.btnP, opacity: (!quickInput.trim() || aiLoading) ? 0.5 : 1 }} disabled={!quickInput.trim() || aiLoading} onClick={onQuickStart}>
+                {aiLoading ? (lang === 'zh-TW' ? 'AI 正在分析你的產品⋯' : 'AI is analyzing...') : t('quickBtn', lang)}
               </button>
             </div>
             <div style={{ textAlign: 'center', marginTop: 12 }}>
@@ -452,7 +491,13 @@ export default function ScorecardApp() {
                   {projectName && <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 10 }}>{projectName}{projectDesc ? ` — ${projectDesc}` : ''}</div>}
                   <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>
                     {STAGES.find(s => s.id === stage) ? i(STAGES.find(s => s.id === stage)!.label) : ''} · {new Date().toISOString().slice(0, 10)}
+                    {isQuickResult && <span style={{ marginLeft: 8, padding: '2px 8px', background: 'rgba(37,99,235,0.1)', color: '#2563eb', borderRadius: 4, fontSize: 10, fontWeight: 600 }}>{lang === 'zh-TW' ? '快速模式' : 'Quick Mode'}</span>}
                   </div>
+                  {isQuickResult && aiConfidence && (
+                    <div style={{ marginTop: 10, padding: '6px 12px', background: aiConfidence.level === 'low' ? 'rgba(234,179,8,0.1)' : 'rgba(5,150,105,0.06)', borderRadius: 6, fontSize: 12, color: aiConfidence.level === 'low' ? '#ca8a04' : '#6b7280' }}>
+                      {aiConfidence.level === 'low' ? (lang === 'zh-TW' ? '⚠️ 資訊有限，建議提供更多細節以獲得更精確的評估' : '⚠️ Limited info — provide more details for accuracy') : aiConfidence.note}
+                    </div>
+                  )}
                 </div>
 
                 {/* Score Interpretation */}
@@ -496,9 +541,25 @@ export default function ScorecardApp() {
                   </div>
                 </div>
 
+                {/* Quick mode: switch to full */}
+                {isQuickResult && (
+                  <div style={{ ...S.card, textAlign: 'center', borderColor: 'rgba(37,99,235,0.2)', background: 'rgba(37,99,235,0.03)' }}>
+                    <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>{lang === 'zh-TW' ? '想要更精確？' : 'Want more precision?'}</p>
+                    <button onClick={() => { setIsQuickResult(false); setStep(0); }} style={{ ...S.btnP, marginTop: 8, fontSize: 13, padding: '8px 20px' }}>{t('switchToFull', lang)}</button>
+                  </div>
+                )}
+
+                {/* AI Advisor */}
+                <div style={S.card}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10, color: '#1a1a1a' }}>{lang === 'zh-TW' ? '🤖 AI 策略顧問' : '🤖 AI Strategy Advisor'}</h3>
+                  {!advice && !adviceLoading && <button style={{ ...S.btnP, background: '#7c3aed', fontSize: 13 }} onClick={onRequestAdvice}>{lang === 'zh-TW' ? '生成改善建議' : 'Generate Advice'}</button>}
+                  {adviceLoading && <p style={{ fontSize: 13, color: '#6b7280' }}>{lang === 'zh-TW' ? 'AI 顧問正在分析⋯' : 'AI advisor analyzing...'}</p>}
+                  {advice && <div style={{ fontSize: 14, lineHeight: 1.8, color: '#374151', whiteSpace: 'pre-wrap' }}>{advice}</div>}
+                </div>
+
                 {/* Actions */}
                 <div style={{ display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap' }}>
-                  <button style={S.btnG} onClick={() => setStep(2)}>{t('modify', lang)}</button>
+                  <button style={S.btnG} onClick={() => { setStep(2); setIsQuickResult(false); }}>{t('modify', lang)}</button>
                   <button style={S.btnP} onClick={exportMd}>{t('exportMd', lang)}</button>
                   <button style={{ ...S.btnP, background: '#059669' }} onClick={exportJson}>{t('exportJson', lang)}</button>
                 </div>

@@ -145,7 +145,7 @@ export const UI: Record<string, { 'zh-TW': string; en: string }> = {
   quickTitle: { 'zh-TW': '快速評估', en: 'Quick Assessment' },
   quickPlaceholder: { 'zh-TW': '貼上產品描述、GitHub URL、或網站 URL⋯', en: 'Paste a product description, GitHub URL, or website URL...' },
   quickBtn: { 'zh-TW': '開始評估', en: 'Start Assessment' },
-  quickNote: { 'zh-TW': 'AI 自動評估功能即將上線（Phase 2）。目前按下後將進入完整模式手動評估。', en: 'AI auto-assessment coming soon (Phase 2). Currently redirects to full manual mode.' },
+  quickNote: { 'zh-TW': '貼上產品描述或 README，AI 自動評估五個維度。', en: 'Paste a product description or README. AI will auto-assess all five dimensions.' },
   orFull: { 'zh-TW': '或直接進入完整模式 →', en: 'Or enter full mode directly →' },
   step0: { 'zh-TW': '基本資料', en: 'Basic Info' },
   step1: { 'zh-TW': '前提檢查', en: 'Gate Check' },
