@@ -50,8 +50,9 @@ const faqSchema = JSON.stringify({
   title="Builder's Scorecard — 產品自評計分卡"
   description="在後 AI 社會裡，當每個人都可能成為 Builder，我設計了一套評估工具適用度的模組，透過五個核心維度，幫助大家有系統地理解工具的實際價值與使用條件，形成一張直觀、可溝通的工具體檢報告。"
   ogUrl="https://paulkuo.tw/tools/builders-scorecard"
-  schemaJson={`<script type="application/ld+json">${schemaJson}</script><script type="application/ld+json">${faqSchema}</script>`}
+  schemaJson={schemaJson}
 >
+  <script type="application/ld+json" set:html={faqSchema} slot="head" />
   <ScorecardApp client:load />
   <div style="max-width: 640px; margin: 0 auto; padding: 0 16px;">
     <ScorecardFeed client:load />
