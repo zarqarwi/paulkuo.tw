@@ -52,7 +52,34 @@ export async function handleFeedGet(request, env) {
     console.error('Feed: comment query failed:', e.message);
   }
 
-  const allItems = [...socialItems, ...commentItems]
+  // 最近公開 Scorecard 評估
+  let scorecardItems = [];
+  try {
+    const { results: recentEvals } = await env.AUTH_DB.prepare(`
+      SELECT id, project_name, total_score, verdict, created_at
+      FROM scorecard_evaluations
+      WHERE is_public = 1
+      ORDER BY created_at DESC
+      LIMIT 3
+    `).all();
+
+    const VERDICT_EMOJI = { '🚀 強力推薦': '🚀', '✅ 值得投入': '✅', '⚠️ 需要調整': '⚠️', '❌ 建議轉向': '❌', '🔥 極具潛力': '🔥' };
+    scorecardItems = recentEvals.map(e => {
+      const emoji = Object.entries(VERDICT_EMOJI).find(([k]) => (e.verdict || '').includes(k.slice(2)))?.[1] || '🎯';
+      return {
+        platform: '🎯 SCORECARD',
+        color: '#2563eb',
+        content: `${e.project_name} 被評估 → ${Number(e.total_score).toFixed(1)}/10 ${emoji}`,
+        url: `/tools/builders-scorecard/eval/${e.id}`,
+        datetime: e.created_at,
+        category: 'scorecard',
+      };
+    });
+  } catch (e) {
+    console.error('Feed: scorecard query failed:', e.message);
+  }
+
+  const allItems = [...socialItems, ...commentItems, ...scorecardItems]
     .sort((a, b) => (b.datetime || '').localeCompare(a.datetime || ''))
     .slice(0, 12);
 
