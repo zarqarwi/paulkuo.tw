@@ -29,13 +29,8 @@ const n = navI18n[currentLang] || navI18n['zh-Hant'];
       <a href={langPrefix + '/'} id="nav-home">{n.home}</a>
       <a href={langPrefix + '/blog'} id="nav-blog">{n.blog}</a>
       <a href={langPrefix + '/projects'} id="nav-projects">{n.projects}</a>
-      <div class="nav-dropdown">
-        <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-feed" class="nav-dropdown-trigger">{n.feed}</a>
-        <div class="nav-dropdown-menu">
-          <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-dd-feed">{n.feedWall}</a>
-          <a href={langPrefix + '/tags-graph'} id="nav-dd-graph">{n.graph}</a>
-        </div>
-      </div>
+      <a href={langPrefix ? langPrefix + '/' : '/#feed'} id="nav-feed">{n.feedWall}</a>
+      <a href={langPrefix + '/tags-graph'} id="nav-graph">{n.graph}</a>
       <a href={langPrefix + '/about'} id="nav-about">{n.about}</a>
       <a href="/search" id="nav-search" title={n.search} aria-label={n.search} style="font-size:1.1rem;line-height:1">🔍</a>
       <a href="/#contact" class="nav-cta">{n.contact}</a>

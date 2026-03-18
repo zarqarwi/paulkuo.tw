@@ -497,7 +497,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
   }
   .nav-links.mobile-open { display: flex; max-height: calc(100vh - var(--nav-height)); overflow-y: auto; }
   .nav-links a {
-    padding: 12px 0;
+    padding: 6px 0;
     font-size: 0.9rem;
     color: rgba(255,255,255,0.85);
     border-bottom: 1px solid rgba(255,255,255,0.1);
