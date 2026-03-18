@@ -13,6 +13,7 @@ import { LANGUAGES, type LangKey } from '../i18n';
 import { calcReadingTime } from '../utils/readingTime';
 import { getArticleEntities } from '../utils/entities';
 import ArticleCost from '../components/ArticleCost.astro';
+import ArticleComments from '../components/ArticleComments.tsx';
 
 interface Props {
   article: any;
@@ -263,6 +264,16 @@ const i = {
         });
       });
     </script>
+
+    {/* === Comments Section === */}
+    <section class="article-comments-section" aria-label={lang === 'en' ? 'Comments' : lang === 'ja' ? 'コメント' : '留言討論'}>
+      <ArticleComments
+        client:load
+        slug={currentSlug}
+        apiBase="https://api.paulkuo.tw"
+        lang={lang}
+      />
+    </section>
 
     {/* === Prev / Next Navigation === */}
     <div class="article-nav" aria-label={lang === 'en' ? 'Article navigation' : lang === 'ja' ? '記事ナビゲーション' : '文章導航'}>
