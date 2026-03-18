@@ -324,4 +324,29 @@ const i = {
       </div>
     </div>
   </article>
+
+  <script>
+    // Facebook iOS Safari sharer.php workaround
+    // sharer.php 從 2025-10 起在 iOS Safari 壞掉，改用 Web Share API
+    // 桌面版維持原本的 sharer.php（桌面版正常）
+    (function() {
+      const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if (!isMobile || !navigator.share) return;
+
+      const fbShareLink = document.querySelector('a[href*="facebook.com/sharer"]');
+      if (!fbShareLink) return;
+
+      fbShareLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        navigator.share({
+          title: document.querySelector('meta[property="og:title"]')?.content || document.title,
+          url: document.querySelector('meta[property="og:url"]')?.content || window.location.href
+        }).catch(function(err) {
+          if (err.name !== 'AbortError') {
+            console.warn('Share failed:', err);
+          }
+        });
+      });
+    })();
+  </script>
 </BaseLayout>
