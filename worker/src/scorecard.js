@@ -1,8 +1,49 @@
 /**
  * Builder's Scorecard — AI Evaluate + Advise endpoints
- * Phase 2: 2026-03-18 · Phase 3: 2026-03-18
+ * Phase 2: 2026-03-18 · Phase 3: 2026-03-18 · Phase 4: 2026-03-18
  */
 import { corsHeaders, jsonResponse, checkRateLimit } from './utils.js';
+import { getCurrentUser } from './auth.js';
+
+// ── Phase 4: Protection Layer Helpers ──
+
+async function checkDailyRateLimit(ip, env) {
+  const key = `ratelimit:${ip}:${new Date().toISOString().slice(0, 10)}`;
+  const current = parseInt(await env.TICKER_KV.get(key) || '0');
+  if (current >= 5) return { allowed: false, remaining: 0 };
+  await env.TICKER_KV.put(key, String(current + 1), { expirationTtl: 86400 });
+  return { allowed: true, remaining: 5 - current - 1 };
+}
+
+async function checkDailyCostCap(env) {
+  const key = `cost:daily:sc:${new Date().toISOString().slice(0, 10)}`;
+  const count = parseInt(await env.TICKER_KV.get(key) || '0');
+  if (count >= 150) return false;
+  await env.TICKER_KV.put(key, String(count + 1), { expirationTtl: 86400 });
+  return true;
+}
+
+function hashInput(inputType, inputContent) {
+  const raw = `${inputType}:${(inputContent || '').slice(0, 500)}`;
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+async function getCachedResult(inputHash, env) {
+  const key = `scorecard:cache:${inputHash}`;
+  const cached = await env.TICKER_KV.get(key);
+  if (cached) return JSON.parse(cached);
+  return null;
+}
+
+async function setCacheResult(inputHash, result, env) {
+  const key = `scorecard:cache:${inputHash}`;
+  await env.TICKER_KV.put(key, JSON.stringify(result), { expirationTtl: 604800 }); // 7 days
+}
 
 // ── System Prompts ──
 
@@ -341,14 +382,22 @@ export async function handleScorecardEvaluate(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed' }, 405, request);
 
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+
+  // Layer 1: Per-minute burst protection (in-memory)
   if (!checkRateLimit(ip + '_sc_eval', 3)) {
     return jsonResponse({ error: 'rate_limited', message: '請稍等一分鐘再試' }, 429, request);
+  }
+
+  // Layer 1b: Daily IP rate limit (KV-based, 5/day)
+  const dailyCheck = await checkDailyRateLimit(ip, env);
+  if (!dailyCheck.allowed) {
+    return jsonResponse({ error: 'rate_limited', message: '每日評估次數已達上限（5次），請明天再試。', remaining: 0 }, 429, request);
   }
 
   let body;
   try { body = await request.json(); } catch { return jsonResponse({ error: 'invalid_json' }, 400, request); }
 
-  const { projectName, projectDesc, stage, inputContent, inputType: clientInputType, lang } = body;
+  const { projectName, projectDesc, stage, inputContent, inputType: clientInputType, lang, forceRefresh } = body;
 
   if (!inputContent || inputContent.trim().length === 0) {
     return jsonResponse({ error: 'empty_input', message: '請提供產品描述' }, 400, request);
@@ -359,6 +408,13 @@ export async function handleScorecardEvaluate(request, env) {
 
   // Detect input type (client hint or auto-detect)
   const inputType = clientInputType || detectInputType(inputContent);
+
+  // Layer 3: Result Cache (before API call)
+  const inputHash = hashInput(inputType, inputContent);
+  if (!forceRefresh) {
+    const cached = await getCachedResult(inputHash, env);
+    if (cached) return jsonResponse({ ...cached, cached: true, remaining: dailyCheck.remaining }, 200, request);
+  }
   let userMsg;
   let githubMeta = null;
 
@@ -409,6 +465,12 @@ ${inputContent.slice(0, 8000)}
     return jsonResponse({ error: 'fetch_failed', message: '無法取得外部內容：' + msg }, 502, request);
   }
 
+  // Layer 4: Daily Cost Cap (before API call)
+  const costOk = await checkDailyCostCap(env);
+  if (!costOk) {
+    return jsonResponse({ error: 'cost_cap', message: '今日評估量已達上限，請稍後再試或使用完整模式手動評估。' }, 503, request);
+  }
+
   let result;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
@@ -441,7 +503,10 @@ ${inputContent.slice(0, 8000)}
   // Attach githubMeta to response if available
   if (githubMeta) result.githubMeta = githubMeta;
 
-  return jsonResponse(result, 200, request);
+  // Layer 3: Write to cache
+  await setCacheResult(inputHash, result, env);
+
+  return jsonResponse({ ...result, remaining: dailyCheck.remaining }, 200, request);
 }
 
 // ── Advise Handler ──
@@ -516,4 +581,73 @@ E. 長線可持續性：${dimScores?.E ?? 0}/10`;
   } catch (e) {
     return jsonResponse({ error: 'ai_failed', message: 'AI 顧問暫時無法回應，請稍後再試' }, 502, request);
   }
+}
+
+// ── Phase 4: Social — Submit / Feed / Get Eval ──
+
+function errorResponse(status, code, message, request) {
+  return jsonResponse({ error: code, message }, status, request);
+}
+
+export async function handleScorecardSubmit(request, env) {
+  if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed' }, 405, request);
+
+  let body;
+  try { body = await request.json(); } catch { return jsonResponse({ error: 'invalid_json' }, 400, request); }
+
+  if (!body.projectName) return errorResponse(400, 'missing_field', '請提供專案名稱', request);
+
+  const id = 'eval_' + crypto.randomUUID().slice(0, 8);
+
+  // Check auth for is_public
+  let userId = null;
+  try {
+    const user = await getCurrentUser(request, env);
+    if (user) userId = user.id;
+  } catch {}
+
+  // Only logged-in users can make evaluations public
+  const isPublic = (body.isPublic && userId) ? 1 : 0;
+
+  await env.AUTH_DB.prepare(`
+    INSERT INTO scorecard_evaluations
+    (id, user_id, project_name, project_desc, input_type, stage, mode,
+     dim_scores, signal_scores, github_meta, veto_triggered,
+     total_score, verdict, ai_advice, is_public, lang)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    id, userId, body.projectName, body.projectDesc || null, body.inputType || null,
+    body.stage || 'concept', body.mode || 'quick',
+    JSON.stringify(body.dimScores || {}), JSON.stringify(body.signalScores || {}),
+    JSON.stringify(body.githubMeta || null), JSON.stringify(body.vetoTriggered || {}),
+    body.totalScore ?? 0, body.verdict || null, body.aiAdvice || null,
+    isPublic, body.lang || 'zh-TW'
+  ).run();
+
+  return jsonResponse({ id, url: `https://paulkuo.tw/tools/builders-scorecard/eval/${id}` }, 200, request);
+}
+
+export async function handleScorecardFeed(request, env) {
+  const url = new URL(request.url);
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
+
+  const results = await env.AUTH_DB.prepare(`
+    SELECT id, project_name, total_score, verdict, dim_scores,
+           github_meta, stage, created_at
+    FROM scorecard_evaluations
+    WHERE is_public = 1
+    ORDER BY created_at DESC
+    LIMIT ?
+  `).bind(limit).all();
+
+  return jsonResponse(results.results, 200, request);
+}
+
+export async function handleScorecardGetEval(request, env, id) {
+  const result = await env.AUTH_DB.prepare(
+    'SELECT * FROM scorecard_evaluations WHERE id = ? AND is_public = 1'
+  ).bind(id).first();
+
+  if (!result) return errorResponse(404, 'not_found', '找不到此評估結果', request);
+  return jsonResponse(result, 200, request);
 }

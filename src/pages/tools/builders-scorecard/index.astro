@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ScorecardApp from '../../../components/scorecard/ScorecardApp';
+import ScorecardFeed from '../../../components/scorecard/ScorecardFeed';
 ---
 <BaseLayout
   title="Builder's Scorecard — 五個維度，一張體檢報告"
@@ -8,4 +9,7 @@ import ScorecardApp from '../../../components/scorecard/ScorecardApp';
   ogUrl="https://paulkuo.tw/tools/builders-scorecard"
 >
   <ScorecardApp client:load />
+  <div style="max-width: 640px; margin: 0 auto; padding: 0 16px;">
+    <ScorecardFeed client:load />
+  </div>
 </BaseLayout>

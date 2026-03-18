@@ -53,6 +53,12 @@ export default function ScorecardApp() {
   const [advice, setAdvice] = useState('');
   const [githubMeta, setGithubMeta] = useState<Record<string, any> | null>(null);
   const [detectedType, setDetectedType] = useState<'text' | 'github_url' | 'website_url'>('text');
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [savedUrl, setSavedUrl] = useState<string | null>(null);
+  const [isPublic, setIsPublic] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [cachedResult, setCachedResult] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -179,6 +185,7 @@ export default function ScorecardApp() {
       clearTimeout(timeout);
       if (!resp.ok) { const err = await resp.json().catch(() => ({ message: 'AI 評估暫時無法完成' })); throw new Error(err.message || `API error ${resp.status}`); }
       const result = await resp.json();
+      if (result.cached) setCachedResult(true); else setCachedResult(false);
       if (result.githubMeta) setGithubMeta(result.githubMeta);
       const detectedStage = result.stage_detected || stage || 'concept';
       if (!stage) setStage(detectedStage as Stage);
@@ -188,6 +195,7 @@ export default function ScorecardApp() {
       if (result.gates) { const newGates: Record<string, boolean> = {}; for (const [id, g] of Object.entries(result.gates) as [string, { pass: boolean; reason: string }][]) { newGates[id] = g.pass; } setGates(newGates); }
       if (result.vetoes) { const newVetoes: Record<string, boolean> = {}; for (const [id, val] of Object.entries(result.vetoes)) { newVetoes[id] = val as boolean; } setVetoes(newVetoes); }
       if (result.confidence) { setAiConfidence({ level: result.confidence, note: result.confidence_note || '' }); }
+      setSavedId(null); setSavedUrl(null);
       setIsQuickResult(true); setAdvice(''); setMode('full'); setStep(4);
     } catch (e: any) {
       setAiError(e.name === 'AbortError' ? (lang === 'zh-TW' ? 'AI 評估超時，請切換到完整模式手動評估' : 'AI evaluation timed out.') : (e.message || 'Unknown error'));
@@ -208,6 +216,63 @@ export default function ScorecardApp() {
       setAdvice(data.advice || '');
     } catch { setAdvice(lang === 'zh-TW' ? '⚠️ AI 顧問暫時無法回應，請稍後再試。' : '⚠️ AI advisor temporarily unavailable.'); }
     finally { setAdviceLoading(false); }
+  };
+
+  /* ── Force refresh (skip cache) ── */
+  const onForceRefresh = async () => {
+    const input = quickInput.trim();
+    if (!input) return;
+    setAiLoading(true); setAiError(''); setCachedResult(false);
+    const inputType = detectType(input);
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 90000);
+      const resp = await fetch('https://api.paulkuo.tw/api/scorecard/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectName: projectName || '', projectDesc: projectDesc || '', stage: stage || undefined, inputContent: input, inputType, lang, forceRefresh: true }), signal: controller.signal });
+      clearTimeout(timeout);
+      if (!resp.ok) { const err = await resp.json().catch(() => ({ message: 'AI 評估暫時無法完成' })); throw new Error(err.message || `API error ${resp.status}`); }
+      const result = await resp.json();
+      setCachedResult(false);
+      if (result.githubMeta) setGithubMeta(result.githubMeta);
+      const detectedStage = result.stage_detected || stage || 'concept';
+      if (!stage) setStage(detectedStage as Stage);
+      const newScores: Record<string, number> = {}; const newNotes: Record<string, string> = {};
+      if (result.signals) { for (const [id, sig] of Object.entries(result.signals) as [string, { score: number; reason: string }][]) { newScores[id] = sig.score; newNotes[id] = sig.reason || ''; } }
+      setScores(newScores); setNotes(newNotes);
+      if (result.gates) { const newGates: Record<string, boolean> = {}; for (const [id, g] of Object.entries(result.gates) as [string, { pass: boolean; reason: string }][]) { newGates[id] = g.pass; } setGates(newGates); }
+      if (result.vetoes) { const newVetoes: Record<string, boolean> = {}; for (const [id, val] of Object.entries(result.vetoes)) { newVetoes[id] = val as boolean; } setVetoes(newVetoes); }
+      if (result.confidence) setAiConfidence({ level: result.confidence, note: result.confidence_note || '' });
+      setSavedId(null); setSavedUrl(null);
+      setIsQuickResult(true); setAdvice(''); setMode('full'); setStep(4);
+    } catch (e: any) {
+      setAiError(e.name === 'AbortError' ? (lang === 'zh-TW' ? 'AI 評估超時' : 'Timed out') : (e.message || 'Unknown error'));
+    } finally { setAiLoading(false); }
+  };
+
+  /* ── Save evaluation ── */
+  const onSaveEval = async () => {
+    setSaveLoading(true);
+    try {
+      const signalScores: Record<string, { score: number; reason: string }> = {};
+      for (const [id, score] of Object.entries(scores)) { signalScores[id] = { score, reason: notes[id] || '' }; }
+      const resp = await fetch('https://api.paulkuo.tw/api/scorecard/submit', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          projectName, projectDesc, inputType: detectedType, stage, mode: isQuickResult ? 'quick' : 'full',
+          dimScores, signalScores, githubMeta,
+          vetoTriggered: vetoes, totalScore: +weightedTotal.toFixed(2),
+          verdict: i(verdict.label), aiAdvice: advice || null, isPublic, lang,
+        }),
+      });
+      if (!resp.ok) throw new Error('save failed');
+      const data = await resp.json();
+      setSavedId(data.id); setSavedUrl(data.url);
+    } catch { /* silently fail */ }
+    finally { setSaveLoading(false); }
+  };
+
+  const onCopyLink = () => {
+    if (savedUrl) { navigator.clipboard.writeText(savedUrl); setCopySuccess(true); setTimeout(() => setCopySuccess(false), 2000); }
   };
 
   return (
@@ -558,7 +623,13 @@ export default function ScorecardApp() {
                   <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>
                     {STAGES.find(s => s.id === stage) ? i(STAGES.find(s => s.id === stage)!.label) : ''} · {new Date().toISOString().slice(0, 10)}
                     {isQuickResult && <span style={{ marginLeft: 8, padding: '2px 8px', background: 'rgba(37,99,235,0.1)', color: '#2563eb', borderRadius: 4, fontSize: 10, fontWeight: 600 }}>{lang === 'zh-TW' ? '快速模式' : 'Quick Mode'}</span>}
+                    {cachedResult && <span style={{ marginLeft: 8, padding: '2px 8px', background: 'rgba(234,179,8,0.1)', color: '#ca8a04', borderRadius: 4, fontSize: 10, fontWeight: 600 }}>{lang === 'zh-TW' ? '快取結果' : 'Cached'}</span>}
                   </div>
+                  {cachedResult && (
+                    <button onClick={onForceRefresh} disabled={aiLoading} style={{ marginTop: 8, padding: '4px 12px', background: 'transparent', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 12, color: '#6b7280', cursor: 'pointer' }}>
+                      {aiLoading ? (lang === 'zh-TW' ? '重新評估中⋯' : 'Re-evaluating...') : (lang === 'zh-TW' ? '重新評估' : 'Re-evaluate')}
+                    </button>
+                  )}
                   {isQuickResult && aiConfidence && (
                     <div style={{ marginTop: 10, padding: '6px 12px', background: aiConfidence.level === 'low' ? 'rgba(234,179,8,0.1)' : 'rgba(5,150,105,0.06)', borderRadius: 6, fontSize: 12, color: aiConfidence.level === 'low' ? '#ca8a04' : '#6b7280' }}>
                       {aiConfidence.level === 'low' ? (lang === 'zh-TW' ? '⚠️ 資訊有限，建議提供更多細節以獲得更精確的評估' : '⚠️ Limited info — provide more details for accuracy') : aiConfidence.note}
@@ -648,6 +719,32 @@ export default function ScorecardApp() {
                   {!advice && !adviceLoading && <button style={{ ...S.btnP, background: '#7c3aed', fontSize: 13 }} onClick={onRequestAdvice}>{lang === 'zh-TW' ? '生成改善建議' : 'Generate Advice'}</button>}
                   {adviceLoading && <p style={{ fontSize: 13, color: '#6b7280' }}>{lang === 'zh-TW' ? 'AI 顧問正在分析⋯' : 'AI advisor analyzing...'}</p>}
                   {advice && <div style={{ fontSize: 14, lineHeight: 1.8, color: '#374151', whiteSpace: 'pre-wrap' }}>{advice}</div>}
+                </div>
+
+                {/* Save & Share */}
+                <div style={{ ...S.card, borderColor: 'rgba(37,99,235,0.2)', background: 'rgba(37,99,235,0.03)' }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10, color: '#1a1a1a' }}>{lang === 'zh-TW' ? '💾 儲存與分享' : '💾 Save & Share'}</h3>
+                  {!savedId ? (
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#6b7280', marginBottom: 10, cursor: 'pointer' }}>
+                        <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} style={{ accentColor: '#2563eb' }} />
+                        {lang === 'zh-TW' ? '公開到動態牆（讓其他人也能看到）' : 'Show on public feed'}
+                      </label>
+                      <button style={{ ...S.btnP, fontSize: 13 }} onClick={onSaveEval} disabled={saveLoading}>
+                        {saveLoading ? (lang === 'zh-TW' ? '儲存中⋯' : 'Saving...') : (lang === 'zh-TW' ? '儲存評估結果' : 'Save Evaluation')}
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize: 13, color: '#059669', marginBottom: 8 }}>{lang === 'zh-TW' ? '✅ 已儲存！' : '✅ Saved!'}</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <input readOnly value={savedUrl || ''} style={{ ...S.input, fontSize: 12, padding: '6px 10px', background: '#f3f4f6' }} />
+                        <button style={{ ...S.btnP, fontSize: 12, padding: '6px 14px', whiteSpace: 'nowrap' }} onClick={onCopyLink}>
+                          {copySuccess ? (lang === 'zh-TW' ? '已複製' : 'Copied!') : (lang === 'zh-TW' ? '複製連結' : 'Copy')}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Actions */}

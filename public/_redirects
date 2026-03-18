@@ -1,0 +1,2 @@
+# Cloudflare Pages rewrites for dynamic client-side routes
+/tools/builders-scorecard/eval/*  /tools/builders-scorecard/eval/index/index.html  200
