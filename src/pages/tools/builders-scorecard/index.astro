@@ -1,15 +1,11 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import ScorecardApp from '../../../components/scorecard/ScorecardApp';
-import ScorecardFeed from '../../../components/scorecard/ScorecardFeed';
+import ScorecardAuthGate from '../../../components/scorecard/ScorecardAuthGate';
 ---
 <BaseLayout
-  title="Builder's Scorecard — 產品自評計分卡"
-  description="在後 AI 社會裡，當每個人都可能成為 Builder，我設計了一套評估工具適用度的模組，透過五個核心維度，幫助大家有系統地理解工具的實際價值與使用條件，形成一張直觀、可溝通的工具體檢報告。"
+  title="Builder's Scorecard — 五個維度，一張體檢報告"
+  description="一把通用的尺，讓任何 builder 能客觀評估自己做的工具值不值得繼續投入。五維度加權評分框架：問題解決力、市場驗證、技術護城河、商業化路徑、長線可持續性。"
   ogUrl="https://paulkuo.tw/tools/builders-scorecard"
 >
-  <ScorecardApp client:load />
-  <div style="max-width: 640px; margin: 0 auto; padding: 0 16px;">
-    <ScorecardFeed client:load />
-  </div>
+  <ScorecardAuthGate client:load />
 </BaseLayout>
