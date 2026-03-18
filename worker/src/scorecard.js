@@ -608,19 +608,28 @@ export async function handleScorecardSubmit(request, env) {
 
   const isPublic = (body.isPublic === true || body.isPublic === 1) ? 1 : 0;
 
+  // Auto-increment version for same user + project
+  let nextVersion = 1;
+  if (userId) {
+    const lastVersion = await env.AUTH_DB.prepare(
+      'SELECT MAX(version) as max_v FROM scorecard_evaluations WHERE user_id = ? AND project_name = ?'
+    ).bind(userId, body.projectName).first();
+    nextVersion = (lastVersion?.max_v || 0) + 1;
+  }
+
   await env.AUTH_DB.prepare(`
     INSERT INTO scorecard_evaluations
     (id, user_id, project_name, project_desc, input_type, stage, mode,
      dim_scores, signal_scores, github_meta, veto_triggered,
-     total_score, verdict, ai_advice, is_public, lang)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     total_score, verdict, ai_advice, is_public, lang, version)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id, userId, body.projectName, body.projectDesc || null, body.inputType || null,
     body.stage || 'concept', body.mode || 'quick',
     JSON.stringify(body.dimScores || {}), JSON.stringify(body.signalScores || {}),
     JSON.stringify(body.githubMeta || null), JSON.stringify(body.vetoTriggered || {}),
     body.totalScore ?? 0, body.verdict || null, body.aiAdvice || null,
-    isPublic, body.lang || 'zh-TW'
+    isPublic, body.lang || 'zh-TW', nextVersion
   ).run();
 
   return jsonResponse({ id, url: `https://paulkuo.tw/tools/builders-scorecard/eval/${id}` }, 200, request);
@@ -649,4 +658,81 @@ export async function handleScorecardGetEval(request, env, id) {
 
   if (!result) return errorResponse(404, 'not_found', '找不到此評估結果', request);
   return jsonResponse(result, 200, request);
+}
+
+// ── Phase 5b: Badge SVG ──
+
+function getVerdictColor(score) {
+  if (score >= 8.5) return '#22c55e';
+  if (score >= 7.0) return '#eab308';
+  if (score >= 5.5) return '#f97316';
+  return '#ef4444';
+}
+
+function getVerdictEmoji(score) {
+  if (score >= 8.5) return '🟢';
+  if (score >= 7.0) return '🟡';
+  if (score >= 5.5) return '🟠';
+  return '🔴';
+}
+
+function generateBadgeSVG(label, value, color) {
+  const labelWidth = label.length * 7 + 12;
+  const valueWidth = value.length * 7 + 12;
+  const totalWidth = labelWidth + valueWidth;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="20" role="img" aria-label="${label}: ${value}">
+  <title>${label}: ${value}</title>
+  <linearGradient id="s" x2="0" y2="100%">
+    <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+    <stop offset="1" stop-opacity=".1"/>
+  </linearGradient>
+  <clipPath id="r"><rect width="${totalWidth}" height="20" rx="3" fill="#fff"/></clipPath>
+  <g clip-path="url(#r)">
+    <rect width="${labelWidth}" height="20" fill="#555"/>
+    <rect x="${labelWidth}" width="${valueWidth}" height="20" fill="${color}"/>
+    <rect width="${totalWidth}" height="20" fill="url(#s)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="11">
+    <text x="${labelWidth / 2}" y="14">${label}</text>
+    <text x="${labelWidth + valueWidth / 2}" y="14">${value}</text>
+  </g>
+</svg>`;
+}
+
+export async function handleScorecardBadge(request, env, evalId) {
+  const result = await env.AUTH_DB.prepare(
+    'SELECT total_score, verdict FROM scorecard_evaluations WHERE id = ? AND is_public = 1'
+  ).bind(evalId).first();
+
+  if (!result) {
+    return new Response(generateBadgeSVG('Not Found', '-', '#999'), {
+      headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=300', ...corsHeaders(request) }
+    });
+  }
+
+  const score = parseFloat(result.total_score).toFixed(1);
+  const color = getVerdictColor(parseFloat(score));
+  const emoji = getVerdictEmoji(parseFloat(score));
+
+  return new Response(generateBadgeSVG("Builder's Score", `${score}/10 ${emoji}`, color), {
+    headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=3600', ...corsHeaders(request) }
+  });
+}
+
+// ── Phase 5b: History API ──
+
+export async function handleScorecardHistory(request, env, projectName) {
+  const user = await getCurrentUser(request, env);
+  if (!user) return errorResponse(401, 'unauthorized', '請先登入', request);
+
+  const decoded = decodeURIComponent(projectName);
+  const results = await env.AUTH_DB.prepare(`
+    SELECT id, version, total_score, verdict, dim_scores, stage, created_at
+    FROM scorecard_evaluations
+    WHERE user_id = ? AND project_name = ?
+    ORDER BY version DESC
+  `).bind(user.id, decoded).all();
+
+  return jsonResponse(results.results, 200, request);
 }

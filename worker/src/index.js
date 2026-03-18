@@ -17,7 +17,7 @@ import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCal
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
-import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval } from './scorecard.js';
+import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -77,7 +77,7 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/scorecard/submit','/api/scorecard/feed','/api/scorecard/eval/:id','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
+const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/scorecard/submit','/api/scorecard/feed','/api/scorecard/eval/:id','/api/scorecard/badge/:id','/api/scorecard/history/:projectName','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
@@ -126,6 +126,14 @@ async function handleRequest(request, env) {
   if (path === '/api/scorecard/advise' && method === 'POST') return handleScorecardAdvise(request, env);
   if (path === '/api/scorecard/submit' && method === 'POST') return handleScorecardSubmit(request, env);
   if (path === '/api/scorecard/feed' && method === 'GET') return handleScorecardFeed(request, env);
+  if (path.startsWith('/api/scorecard/badge/') && method === 'GET') {
+    const evalId = decodeURIComponent(path.split('/api/scorecard/badge/')[1]);
+    if (evalId) return handleScorecardBadge(request, env, evalId);
+  }
+  if (path.startsWith('/api/scorecard/history/') && method === 'GET') {
+    const projectName = path.split('/api/scorecard/history/')[1];
+    if (projectName) return handleScorecardHistory(request, env, projectName);
+  }
   if (path.startsWith('/api/scorecard/eval/') && method === 'GET') {
     const evalId = decodeURIComponent(path.split('/api/scorecard/eval/')[1]);
     if (evalId) return handleScorecardGetEval(request, env, evalId);
