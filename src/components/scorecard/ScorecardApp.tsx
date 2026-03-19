@@ -88,16 +88,24 @@ export default function ScorecardApp() {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    if (isIOS && navigator.canShare) {
-      // iOS: use Web Share API with File
-      const file = new File([blob], filename, { type: mimeType });
-      if (navigator.canShare({ files: [file] })) {
-        navigator.share({ files: [file] }).catch(() => {
-          // User cancelled share or share failed — fallback to open in new tab
-          window.open(URL.createObjectURL(blob), '_blank');
-        });
-        return;
+    if (isIOS) {
+      // Strategy 1: Web Share API with text/plain MIME (best iOS compatibility)
+      try {
+        const shareFile = new File([content], filename, { type: 'text/plain' });
+        if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+          navigator.share({ files: [shareFile] }).catch(() => {
+            // User cancelled or share failed — fallback to Strategy 2
+            openInNewTab(content, filename);
+          });
+          return;
+        }
+      } catch {
+        // canShare/share not available — fall through to Strategy 2
       }
+
+      // Strategy 2: Open in new tab with save instructions
+      openInNewTab(content, filename);
+      return;
     }
 
     // Desktop / Android: standard blob download
@@ -107,8 +115,47 @@ export default function ScorecardApp() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    // Delay revoke to give browser time to process
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+
+  /* ── iOS fallback: open content in new tab ── */
+  const openInNewTab = (content: string, filename: string) => {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    // Show toast hint
+    showIOSToast(filename);
+    // Delay revoke — give new tab time to load
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  };
+
+  /* ── iOS toast notification ── */
+  const showIOSToast = (filename: string) => {
+    const existing = document.getElementById('ios-download-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'ios-download-toast';
+    toast.textContent = `📄 ${filename} 已在新分頁開啟，請點瀏覽器分享按鈕 ⬆ 選「儲存到檔案」`;
+    Object.assign(toast.style, {
+      position: 'fixed',
+      bottom: '20px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      background: '#1a1a1a',
+      color: '#fff',
+      padding: '12px 20px',
+      borderRadius: '10px',
+      fontSize: '13px',
+      lineHeight: '1.5',
+      zIndex: '99999',
+      maxWidth: '90vw',
+      textAlign: 'center',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+      animation: 'sc-fi .35s ease both',
+    });
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 6000);
   };
 
   /* ── Export Markdown ── */
