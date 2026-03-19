@@ -1,0 +1,18 @@
+{
+  "slug": "builders-scorecard-story",
+  "title": "Builder's Scorecard 的設計緣起與開發歷程",
+  "url": "https://paulkuo.tw/articles/builders-scorecard-story",
+  "pillar": "startup",
+  "summaries": {
+    "X": "看到 Lucy Chen（Zoo Capital EIR）的 VC 投資評分卡後，我想：這把尺能否給獨立 Builder 用？\n\n改動了 3 個地方：拿掉團隊維度、新增問題解決力、商業化階段適配。用自己的翻譯工具測試，得到 5.01 分——技術強但市場驗證不足。這面鏡子很誠實。\n\nhttps://paulkuo.tw/articles/builders-scorecard-story #Builder #產品開發",
+    "LI": "在這個人人都能用 AI 造工具的時代，我們缺的不是技術能力，而是一面能照出產品真相的鏡子。\n\n最近看到 Lucy Chen（新加坡 Zoo Capital EIR）分享的開源專案投資評分卡，她用這套框架在 NVIDIA GTC 前就標記了 LMCache 為「黑馬」，兩週後 NVIDIA 就將其收編進官方集成。這個框架很有料。\n\n但我想到一個問題：對於那些靠 AI 獨立做工具的個人來說，如果我們壓根沒想被投資呢？如果只是想做開心，沒有要商轉呢？我們需要的是另一把尺。\n\n所以我做了三個改動：\n1. 拿掉「團隊能力」維度，改為前置參考欄位\n2. 新增「問題解決力」維度——你解決的是真實痛點還是自己假想的？\n3. 商業化維度加入階段適配——概念期不該被問月收，但可以問有沒有想過怎麼賺錢\n\n改完後用自己的即時翻譯工具測試，結果：5.01 分。雷達圖呈現典型工程師產品輪廓——技術強但市場驗證不足。刺眼但誠實。\n\n在動手寫 code 前先做市場偵察是對的。這個習慣救了我很多次。\n\n完整開發歷程：https://paulkuo.tw/articles/builders-scorecard-story",
+    "TH": "滑 FB 看到 Lucy Chen 分享的 VC 投資評分卡，她用這套在 NVIDIA GTC 前就抓到了 LMCache 這隻黑馬 🎯\n\n但我在想：對我們這些用 AI 獨立做工具的人，如果不想被投資、只是想做開心呢？需要另一把尺吧。\n\n改了三個地方，做成 Builder's Scorecard。用自己的翻譯工具測試，5.01 分 😅 典型工程師產品——技術強但市場驗證弱。刺眼但誠實。\n\n完整故事：https://paulkuo.tw/articles/builders-scorecard-story",
+    "BS": "在人人都能用 AI 造工具的時代，缺的不是能力，是一面鏡子。\n\n看到 Lucy Chen 的 VC 投資評分卡後，我改編成給獨立 Builder 用的產品自評工具。拿自己的翻譯工具測試，得到 5.01 分——典型工程師產品輪廓，技術強但市場驗證不足。\n\n這面鏡子很誠實，沒有幻覺。\n\nhttps://paulkuo.tw/articles/builders-scorecard-story",
+    "YT": "最近做了一個有趣的實驗 🔬\n\n看到新加坡 Zoo Capital 的 Lucy Chen 分享 VC 投資評分卡，她用這套框架提前標記了 LMCache 為黑馬，結果兩週後 NVIDIA 就收編了。超準的！\n\n但我想：對我們這些用 AI 獨立做工具的人，如果不想被投資、只想做開心呢？我們需要另一把尺。\n\n所以我改編了這個框架，做成 Builder's Scorecard。三個關鍵改動：拿掉團隊維度、新增問題解決力、商業化階段適配。\n\n用自己的即時翻譯工具測試，結果 5.01 分 😅 典型工程師產品——技術護城河 6.2 分，但市場驗證只有 4.0 分。刺眼但誠實！\n\n這就是我們需要的：一面能照出產品真相的鏡子。",
+    "FB": "昨天用自己做的評分工具測試自己的產品，被打臉了 😂\n\n故事是這樣的：看到 Lucy Chen（Zoo Capital EIR）分享的投資評分卡，她用這套在 NVIDIA GTC 前就標記 LMCache 為黑馬，兩週後真的被 NVIDIA 收編。我想：這把尺能給我們獨立 Builder 用嗎？\n\n改了三個地方做成 Builder's Scorecard，然後用自己的即時翻譯工具測試。結果：5.01 分。雷達圖超典型工程師產品——技術強（6.2分）但市場驗證弱（4.0分）。\n\n刺眼但誠實。這就是我們需要的：在這個人人都能用 AI 造工具的時代，缺的不是技術能力，是一面能照出真相的鏡子。\n\n完整開發歷程分享：https://paulkuo.tw/articles/builders-scorecard-story",
+    "IG": "在人人都能用 AI 造工具的時代 🤖\n缺的不是能力，是一面鏡子 🪞\n\n看到 @lucychen 的 VC 投資評分卡 📊\n想：能給獨立 Builder 用嗎？ 🤔\n\n改了三個地方：\n✖️ 拿掉團隊維度\n➕ 新增問題解決力\n🔄 商業化階段適配\n\n用自己的翻譯工具測試 📱\n結果：5.01 分 😅\n\n典型工程師產品輪廓：\n💪 技術強但市場驗證弱\n\n刺眼但誠實的鏡子 ✨\n\n完整故事 👇\nhttps://paulkuo.tw/articles/builders-scorecard-story\n\n#Builder #產品開發 #AI工具 #創業 #ProductDevelopment #TechEntrepreneur"
+  },
+  "imageUrl": "https://iili.io/qjhOMWG.jpg",
+  "status": "pending_review",
+  "timestamp": "2026-03-19T06:50:57.757Z"
+}
