@@ -1,25 +1,25 @@
 ---
 title: "I Built a Chrome Extension to Track Claude Usage"
-subtitle: "Got rate-limited mid-conversation, so I built an orange tabby to watch my quota."
-description: "A Chrome Extension development story combining the official usage API with real-time token interception — from market research to three-language internationalization."
+subtitle: "Got hit by rate limits mid-work, so I made an orange tabby to monitor usage."
+description: "A development story of a Chrome Extension that runs both official usage API and real-time token interception, from market research to trilingual internationalization."
 abstract: |
-  The worst moment for a heavy Claude user is hitting the rate limit mid-conversation. There are over a dozen usage tracking tools out there, but almost all are macOS-native apps, track only a single data source, and have no Chinese interface. This documents the process of building a Chrome Extension in collaboration with Claude — running both the official API and real-time token interception simultaneously so you can see the gap between them. From stumbling over isolated worlds to guessing API formats to three rounds of icon iteration, the full development experience.
+  Heavy Claude users' worst nightmare is hitting rate limits mid-conversation. The market has over a dozen usage tracking tools, but almost all are macOS native apps, only track single data sources, and lack Chinese interfaces. This documents my process of collaborating with Claude to develop a Chrome Extension—running both official API and real-time token interception in parallel, making usage discrepancies visible. From wrestling with isolated world, guessing API formats, to iterating through three icon versions, a complete development experience.
 date: 2026-03-19
 updated: 2026-03-19
 pillar: ai
 tags:
   - Chrome Extension
   - Claude
-  - AI-Assisted Development
-  - Dev Log
+  - AI 協作開發
+  - 開發紀實
 cover: "/images/covers/claude-usage-nyan-chrome-extension.jpg"
 featured: false
 draft: false
 readingTime: 7
 
-# === AI / Machine Fields ===
-thesis: "Running both the official usage API and real-time token interception side by side makes Claude's usage discrepancy visible."
-domain_bridge: "AI Tooling × Chrome Extension × Product Design"
+# === AI / Machine 專用欄位 ===
+thesis: "同時跑官方用量 API 和即時 token 攔截兩條管道，讓 Claude 的用量差異可見。"
+domain_bridge: "AI 工具開發 × Chrome Extension × 產品設計"
 confidence: high
 content_type: case-study
 related_entities:
@@ -30,66 +30,66 @@ related_entities:
   - name: Chrome Extension MV3
     type: Framework
 reading_context: |
-  For Claude Pro/Max users, developers interested in AI tooling, and anyone curious about Chrome Extension implementation details. Non-technical readers can follow along too — technical sections are marked as skippable.
+  適合 Claude Pro/Max 使用者、對 AI 工具開發有興趣的開發者、想了解 Chrome Extension 實作細節的人。非技術讀者也能讀，技術段落有標註可跳過。
 ---
 
-Getting rate-limited in the middle of work is probably the most annoying moment for any Claude user.
+Getting hit by rate limits mid-work is probably the most annoying moment for Claude users.
 
-My old habit was to only check usage after getting blocked — navigating to the Settings page and discovering that extra credits were already at 84% and the seven-day usage was over half. I kept thinking, wouldn't it be nice to see that number on screen all the time?
+My old habit was to only check usage in Settings after getting blocked, only to discover that additional usage was already at 84% and the seven-day quota was also over half depleted. I thought, wouldn't it be great if these numbers were visible on screen?
 
-So I built a Chrome Extension to solve this. It's called "Claude Usage Nyan" — an orange tabby sits in the toolbar, and one click tells you how much quota you've used.
+So I built a Chrome Extension to solve this problem. Called "Claude Usage Nyan," it features an orange tabby sitting in the toolbar—click once to see how much quota you've used.
 
 ## What It Does
 
-After installing, you can see usage in three places.
+After installation, you can see usage in three places:
 
-The orange cat icon in the toolbar shows a small badge that auto-cycles every four seconds — how much of the five-hour session is used, how much of the seven-day allowance, how many extra credits remain, and how much you're spending in real time. Green means safe, yellow means watch it, orange means getting close, red means almost gone. No need to click anything — a glance tells you everything.
+The orange cat icon in the toolbar displays a small badge that automatically cycles every four seconds—how much of the five-hour session is used, seven-day usage, remaining additional credits, and real-time cost. Green means safe, yellow requires attention, orange is getting close, red is about to max out. No need to click anything, just glance to know.
 
-Clicking the popup reveals the full usage cards. The top half shows Anthropic's official numbers: five-hour session percentage, seven-day usage percentage, extra usage with used and cap amounts, each with a reset countdown. The bottom half is real-time token tracking: how many input tokens and output tokens your last conversation used, how much it cost, which model was used — all listed out.
+Clicking the popup shows complete usage cards. The upper half displays Anthropic's official numbers: five-hour session percentage, seven-day usage percentage, additional usage consumed and limits, each with reset countdown. The lower half shows real-time token tracking: how many input tokens, output tokens, and cost that last conversation used, which model was used, all listed out.
 
-There's also a semi-transparent floating status bar in the bottom-right corner of the claude.ai page, always showing a usage summary. Click the cat head to collapse it.
+A semi-transparent floating status bar appears in the bottom-right corner of claude.ai pages, constantly displaying usage summary. Click the cat head to collapse.
 
 ![Claude Usage Nyan popup interface showing official usage and real-time token tracking](/images/articles/claude-usage-nyan-popup.png)
-*The full popup view: official usage on top, real-time token tracking below.*
+*The full popup view: upper half shows official usage, lower half shows real-time token tracking.*
 
-## Two Pipelines, See the Difference
+## Two Data Streams, See the Difference
 
 What makes this tool different from other trackers is that it runs two data pipelines simultaneously.
 
-The first is official. The extension calls claude.ai's usage API every five minutes, and the numbers you get back are identical to what you'd see on the Settings page. This number is authoritative but has lag — Anthropic's backend doesn't update in real time, so sometimes you've clearly used a lot but the percentage hasn't moved.
+The first is official. The Extension calls claude.ai's usage API every five minutes, returning numbers identical to what you see in Settings. These numbers are authoritative but have delays—Anthropic's updates aren't real-time; sometimes even after heavy usage, percentages don't move.
 
-The second is real-time estimation. The extension intercepts every API call you make to Claude on the claude.ai page, estimates input tokens when the request goes out, accumulates output tokens as the response streams back, then calculates cost based on model pricing. This is real-time but estimated — there will be discrepancy with the official numbers.
+The second is real-time estimation. The Extension intercepts every API call from your conversations with Claude on claude.ai pages, estimating input tokens when requests are sent and accumulating output tokens as responses stream back, then calculating costs based on model pricing. This is real-time but estimated, with discrepancies from official numbers.
 
-Placing both side by side, you can observe for yourself how much the official percentage differs from the tokens you've actually burned. Making this gap visible is one of the reasons I built this tool.
+Placing both side by side lets you observe how much the official percentages differ from your actual token burn. One purpose of building this tool was to make this discrepancy visible.
 
-## Did My Homework First
+## Market Research Before Coding
 
-Before writing any code, I surveyed the existing tools on the market.
+Before writing code, I surveyed existing tools in the market.
 
-Turns out there are quite a few — I found over ten just from my search. But almost all of them are macOS native apps requiring .dmg installation, leaving Windows and Linux users out. Most only do either official usage tracking or real-time token counting, not both together. Every interface is English-only, with zero localization for Asian markets.
+The result: this niche already has many tools, over ten that I found. But almost all are macOS native apps requiring .dmg downloads, leaving Windows and Linux users without options. Most only do official usage tracking or real-time token calculation, not both. All interfaces are in English, with no localization options for Asian markets.
 
-So my positioning was clear: make it a Chrome Extension for cross-platform use, run both pipelines, Chinese-first. I later added English and Japanese interfaces too — Chrome automatically switches based on browser language.
+My positioning became clear: make it a Chrome Extension for cross-platform support, run both pipelines simultaneously, prioritize Chinese. Later I added English and Japanese interfaces, with Chrome auto-switching based on browser language.
 
-## A Few Pitfalls in Development (Skip If You're Not Into the Technical Stuff)
+## Development Pitfalls (Skip if Not Interested in Technical Details)
 
-The entire development was done in conversation with Claude, and it wasn't smooth sailing.
+I collaborated with Claude throughout development, and the process wasn't smooth sailing.
 
-The first pitfall was the API format. Anthropic's usage API has no public documentation, so I could only guess the format. The first time I connected, the popup spewed a chunk of raw JSON. But that chunk of JSON was itself the answer — I saw field names like five_hour.utilization and seven_day.resets_at and immediately knew how to parse it. So I deliberately left a debug mode in the popup: if parsing fails, it shows the raw JSON directly. That way, if the API format changes in the future, it can be fixed quickly.
+The first pitfall was API format. Anthropic's usage API has no public documentation, so I had to guess the format. First connection resulted in popup spewing raw JSON. But that JSON blob was itself the answer—seeing field names like five_hour.utilization and seven_day.resets_at immediately told me how to parse it. So "Claude" deliberately left a debug mode in the popup: if parsing fails, display raw JSON directly, making future API format changes quickly fixable.
 
-The second pitfall was more interesting. Chrome Extension content scripts run in something called an isolated world. I patched window.fetch in there to intercept claude.ai's API calls, but caught nothing. It took a while to figure out: the isolated world's window and the page's own window are different objects. The solution was to use Chrome MV3's world: "MAIN" setting, injecting the interception script directly into the page's context, then passing data back to the isolated world's bridging layer via CustomEvent. One problem, solved in two layers.
+The second pitfall was more interesting. Chrome Extension content scripts run in an isolated world. I patched window.fetch there to intercept claude.ai API calls but caught nothing. Took some time to figure out: isolated world's window and the page's actual window are different objects. The solution used Chrome MV3's world: "MAIN" setting, injecting the intercept script directly into the page context, then passing data back to the isolated world's bridge layer via CustomEvent. One problem, two-layer solution.
 
-The third pitfall was the icon. Three iterations — the first was too generic, the second was crammed into a circle and didn't look like a cat, and for the third I sent a reference photo of an orange tabby, specifying "ears flaring outward, M-shaped forehead marking" — and that nailed it. Some things are hard to describe in specs; a reference image is worth a hundred sentences.
+The third pitfall was the icon. Three iterations—first version too generic, second version crammed into a circle looked nothing like a cat, third version I provided an orange tabby photo as reference, specifying "ears spread outward, with M-shaped forehead markings" to get it right. Such things are hard to describe in specs; one reference image beats a hundred words.
 
-## Limitations, Stated Upfront
+## Limitations Stated Upfront
 
-Anthropic's usage API has no public documentation, and the format could change at any time. When it does, this extension needs an update — without maintenance, it will break. Real-time tokens are estimates, not precise numbers. English is roughly four characters per token, Chinese roughly 1.5 characters — both differ from Anthropic's actual tokenizer.
+Anthropic's usage API lacks public documentation; format could change anytime. When it changes, this Extension needs updates, or it breaks without maintenance. Real-time tokens are estimates, not precise numbers. English averages about four characters per token, Chinese about 1.5 characters—this differs from Anthropic's actual tokenizer.
 
-Only tracks the claude.ai web version. If you're using Claude Code CLI, that goes through a different channel and this extension can't capture it.
+Only tracks claude.ai web version. If you use Claude Code CLI, that goes through different channels this Extension can't capture.
 
-The extension needs to read claude.ai's session cookie to access the API. All data is stored locally in your browser and never sent to any external server — fully open source. But assessing the risk before installing any extension is basic hygiene.
+The Extension needs to read claude.ai session cookies to access APIs. All data stays in your local browser, not transmitted to external servers, fully open source. But assessing risks before installing any Extension is basic practice.
 
 ---
 
-Installation is simple: clone the GitHub repo, enable Chrome developer mode, load the folder — three steps. Supports Traditional Chinese, English, and Japanese interfaces.
+Installation is simple: clone GitHub repo, Chrome developer mode, load folder—three steps. Supports Traditional Chinese, English, and Japanese interfaces.
 
 🔗 https://github.com/zarqarwi/claude-usage-nyan
