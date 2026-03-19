@@ -41,23 +41,23 @@ reading_context: |
   適合正在做 side project 或獨立產品的開發者；對 AI 協作開發方法論有興趣的人；想理解「產品評估框架」怎麼從零設計的人。
 ---
 
-While scrolling through Facebook, I came across Lucy's post where she shared an open-source project investment scorecard (Lucy Chen, EIR at Singapore's Zoo Capital, managing a fund with over $2 billion in assets).
+While scrolling through Facebook, I came across [Lucy's post](https://www.facebook.com/share/p/1CTnacwLsa/) where she shared an open-source project investment scorecard ([Lucy Chen](https://www.facebook.com/share/p/1CTnacwLsa/), EIR at Singapore's Zoo Capital, managing a fund with over $2 billion in assets).
 
-Lucy's framework was clear: five dimensions, weighted scoring, veto mechanism. Many technical achievements that developers have long prided themselves on still have many pitfalls when it comes to real commercial implementation.
+[Lucy](https://www.facebook.com/share/p/1CTnacwLsa/)'s framework was clear: five dimensions, weighted scoring, veto mechanism. Many technical achievements that developers have long prided themselves on still have many pitfalls when it comes to real commercial implementation.
 
-Lucy's framework comes from real combat—she used this scorecard to mark the LMCache project before NVIDIA GTC, giving it a "dark horse" rating of 7.78 points. Two weeks later, when NVIDIA released Dynamo 1.0, LMCache was incorporated into the official integration list. Her investment scorecard can capture signals.
+[Lucy](https://www.facebook.com/share/p/1CTnacwLsa/)'s framework comes from real combat—she used this scorecard to mark the LMCache project before NVIDIA GTC, giving it a "dark horse" rating of 7.78 points. Two weeks later, when NVIDIA released Dynamo 1.0, LMCache was incorporated into the official integration list. Her investment scorecard can capture signals.
 
 But I also had another thought: Could this ruler be made accessible to ordinary people?
 
 ## A Different Perspective
 
-Lucy Chen's framework approaches from a VC investment angle. It considers exit paths, team internationalization, community governance, and capital efficiency. These are all critical issues for investors.
+[Lucy Chen](https://www.facebook.com/share/p/1CTnacwLsa/)'s framework approaches from a VC investment angle. It considers exit paths, team internationalization, community governance, and capital efficiency. These are all critical issues for investors.
 
 But for many individuals who independently build tools with AI, what if I have no intention of being invested in? What if I just want to build for joy? What if I don't want to commercialize? What if this era is no longer suitable for selling small software tools?
 
 For example, I've built [real-time meeting translation tools](/articles/ai-collab-realtime-translator), multi-model debate engines, etc.—all created from scratch by me plus Claude. I don't need investment, don't need exit paths, but I need "someone" to tell me the value of what I've built and the direction for adjustments.
 
-This problem is implicitly contained within other dimensions in Lucy Chen's framework. I wanted to make it independent.
+This problem is implicitly contained within other dimensions in [Lucy Chen](https://www.facebook.com/share/p/1CTnacwLsa/)'s framework. I wanted to make it independent.
 
 ## Three Modifications
 
@@ -125,7 +125,7 @@ After the tool went live, I ran tests: evaluated three completely different prod
 
 LangChain: 8.02 points. 130,000 stars, 3,659 contributors, has LangSmith paid product. All five dimensions above 7 points, only long-term sustainability slightly lower due to big tech threats.
 
-Lucy Chen's OSS Investment Scorecard itself: 6.82 points. Solid framework design, real problems, at testing time 233 stars, 2 contributors, zero revenue model.
+[Lucy Chen](https://www.facebook.com/share/p/1CTnacwLsa/)'s OSS Investment Scorecard itself: 6.82 points. Solid framework design, real problems, at testing time 233 stars, 2 contributors, zero revenue model.
 
 My real-time translation tool: 5.01 points. Technical foundation solid, market and commercialization aspects blank.
 
