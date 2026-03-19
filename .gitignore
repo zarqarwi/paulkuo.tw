@@ -45,3 +45,5 @@ scripts/*.log
 # Binary data files (should not be in git)
 *.xlsx
 *.xls
+.git-corrupt/
+scripts/auto_update.log.tmp
