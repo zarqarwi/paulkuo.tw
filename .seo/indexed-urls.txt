@@ -23,6 +23,7 @@ https://paulkuo.tw/articles/canary-in-coal-mine-ai-employment/
 https://paulkuo.tw/articles/china-cultural-discourse-power/
 https://paulkuo.tw/articles/cioran-on-suffering-and-clarity/
 https://paulkuo.tw/articles/civilization-metric-system-over-goal/
+https://paulkuo.tw/articles/claude-usage-nyan-chrome-extension/
 https://paulkuo.tw/articles/code-is-cheap-vibe-coding-to-claws/
 https://paulkuo.tw/articles/compass-meets-algorithm-authority-in-human-ai-era/
 https://paulkuo.tw/articles/computation-as-currency/
@@ -116,6 +117,7 @@ https://paulkuo.tw/en/articles/canary-in-coal-mine-ai-employment/
 https://paulkuo.tw/en/articles/china-cultural-discourse-power/
 https://paulkuo.tw/en/articles/cioran-on-suffering-and-clarity/
 https://paulkuo.tw/en/articles/civilization-metric-system-over-goal/
+https://paulkuo.tw/en/articles/claude-usage-nyan-chrome-extension/
 https://paulkuo.tw/en/articles/code-is-cheap-vibe-coding-to-claws/
 https://paulkuo.tw/en/articles/compass-meets-algorithm-authority-in-human-ai-era/
 https://paulkuo.tw/en/articles/computation-as-currency/
@@ -214,6 +216,7 @@ https://paulkuo.tw/ja/articles/canary-in-coal-mine-ai-employment/
 https://paulkuo.tw/ja/articles/china-cultural-discourse-power/
 https://paulkuo.tw/ja/articles/cioran-on-suffering-and-clarity/
 https://paulkuo.tw/ja/articles/civilization-metric-system-over-goal/
+https://paulkuo.tw/ja/articles/claude-usage-nyan-chrome-extension/
 https://paulkuo.tw/ja/articles/code-is-cheap-vibe-coding-to-claws/
 https://paulkuo.tw/ja/articles/compass-meets-algorithm-authority-in-human-ai-era/
 https://paulkuo.tw/ja/articles/computation-as-currency/
@@ -320,6 +323,7 @@ https://paulkuo.tw/zh-cn/articles/canary-in-coal-mine-ai-employment/
 https://paulkuo.tw/zh-cn/articles/china-cultural-discourse-power/
 https://paulkuo.tw/zh-cn/articles/cioran-on-suffering-and-clarity/
 https://paulkuo.tw/zh-cn/articles/civilization-metric-system-over-goal/
+https://paulkuo.tw/zh-cn/articles/claude-usage-nyan-chrome-extension/
 https://paulkuo.tw/zh-cn/articles/code-is-cheap-vibe-coding-to-claws/
 https://paulkuo.tw/zh-cn/articles/compass-meets-algorithm-authority-in-human-ai-era/
 https://paulkuo.tw/zh-cn/articles/computation-as-currency/
