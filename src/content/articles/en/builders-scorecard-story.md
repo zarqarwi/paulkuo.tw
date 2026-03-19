@@ -103,7 +103,7 @@ After confirming market positioning, I started writing code.
 
 ![Builder's Scorecard market comparison chart—radar chart comparison and feature comparison table of five tools across six capability dimensions](/images/builders-scorecard-market-comparison.png)
 
-## One Week, Five Phases
+## One Day, Five Phases
 
 From seeing the post to being inspired to execute took one day. The entire development was completed through AI collaboration—Chat sessions for reconnaissance and planning, Code sessions for writing code, Cowork sessions for batch processing and state management.
 

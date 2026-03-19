@@ -103,7 +103,7 @@ Lucy Chenのフレームワークは、VC投資の角度から出発している
 
 ![Builder's Scorecard市場比較図――6つの能力面での5つのツールのレーダーチャート対比と機能対照表](/images/builders-scorecard-market-comparison.png)
 
-## 一週間、5つの段階
+## 一日、5つの段階
 
 投稿を見てから実行を思い立つまでが一日。開発全体はAI協働で完成――Chat sessionで偵察と計画、Code sessionでプログラミング、Cowork sessionでバッチ処理と状態管理を処理。
 

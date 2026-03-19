@@ -103,7 +103,7 @@ Lucy Chen 的框架是從 VC 投資角度出發的。考慮出場路徑、團隊
 
 ![Builder's Scorecard 市場比較圖——五個工具在六個能力面向的雷達圖對比與功能對照表](/images/builders-scorecard-market-comparison.png)
 
-## 一週，五個階段
+## 一天，五個階段
 
 從看到貼文到起心動念去執行，是一天。整個開發用 AI 協作完成——Chat session 做偵察和規劃，Code session 寫程式碼，Cowork session 處理批次作業和狀態管理。
 
