@@ -398,7 +398,12 @@ export default function ScorecardApp() {
       if (!resp.ok) throw new Error('save failed');
       const data = await resp.json();
       setSavedId(data.id); setSavedUrl(data.url);
-    } catch { /* silently fail */ }
+    } catch (e: any) {
+      console.error('Scorecard save failed:', e);
+      setSavedId(null);
+      setSavedUrl(null);
+      alert(lang === 'zh-TW' ? '儲存失敗，請查看 Console' : 'Save failed, check console');
+    }
     finally { setSaveLoading(false); }
   };
 
