@@ -1760,11 +1760,11 @@
     }
   },
   "builders-scorecard-story.md": {
-    "sourceHash": "dda151ea5ffb",
+    "sourceHash": "6809be5a66be",
     "translations": {
       "en": {
-        "hash": "084a203faa2d",
-        "translatedAt": "2026-03-19T06:56:03.938Z",
+        "hash": "fd50885ab52d",
+        "translatedAt": "2026-03-19T07:03:42.678Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
