@@ -80,6 +80,37 @@ export default function ScorecardApp() {
 
   const navSteps = [t('step0', lang), t('step1', lang), t('step2', lang), t('step3', lang), t('step4', lang)];
 
+  /* ── Cross-platform download helper ── */
+  const downloadFile = (content: string, filename: string, mimeType: string) => {
+    const blob = new Blob([content], { type: mimeType });
+
+    // Detect iOS (iPhone/iPad/iPod, including iPadOS 13+ which reports as Mac)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    if (isIOS && navigator.canShare) {
+      // iOS: use Web Share API with File
+      const file = new File([blob], filename, { type: mimeType });
+      if (navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file] }).catch(() => {
+          // User cancelled share or share failed — fallback to open in new tab
+          window.open(URL.createObjectURL(blob), '_blank');
+        });
+        return;
+      }
+    }
+
+    // Desktop / Android: standard blob download
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // Delay revoke to give browser time to process
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+
   /* ── Export Markdown ── */
   const exportMd = () => {
     const stageLabel = STAGES.find(s => s.id === stage);
@@ -113,12 +144,11 @@ export default function ScorecardApp() {
       md += '\n';
     });
     md += `---\n\n*[Builder's Scorecard](https://paulkuo.tw/tools/builders-scorecard) by Paul Kuo · ${t('credit', lang)} [OSS Investment Scorecard](https://github.com/el09xccxy-stack/oss-investment-scorecard)*\n`;
-    const blob = new Blob([md], { type: 'text/markdown' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${(projectName || 'product').replace(/\s+/g, '-')}-scorecard-${new Date().toISOString().slice(0, 10)}.md`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    downloadFile(
+      md,
+      `${(projectName || 'product').replace(/\s+/g, '-')}-scorecard-${new Date().toISOString().slice(0, 10)}.md`,
+      'text/markdown'
+    );
   };
 
   /* ── Export JSON ── */
@@ -131,12 +161,11 @@ export default function ScorecardApp() {
       anyVeto, hasGapWarning,
       createdAt: new Date().toISOString(),
     };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${(projectName || 'product').replace(/\s+/g, '-')}-scorecard-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    downloadFile(
+      JSON.stringify(data, null, 2),
+      `${(projectName || 'product').replace(/\s+/g, '-')}-scorecard-${new Date().toISOString().slice(0, 10)}.json`,
+      'application/json'
+    );
   };
 
   /* ── Input type detection ── */
