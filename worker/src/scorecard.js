@@ -1,6 +1,7 @@
 /**
  * Builder's Scorecard — AI Evaluate + Advise endpoints
  * Phase 2: 2026-03-18 · Phase 3: 2026-03-18 · Phase 4: 2026-03-18
+ * Fix: 2026-03-20 — add try-catch to submit handler for D1 error visibility
  */
 import { corsHeaders, jsonResponse, checkRateLimit } from './utils.js';
 import { getCurrentUser } from './auth.js';
@@ -611,26 +612,35 @@ export async function handleScorecardSubmit(request, env) {
   // Auto-increment version for same user + project
   let nextVersion = 1;
   if (userId) {
-    const lastVersion = await env.AUTH_DB.prepare(
-      'SELECT MAX(version) as max_v FROM scorecard_evaluations WHERE user_id = ? AND project_name = ?'
-    ).bind(userId, body.projectName).first();
-    nextVersion = (lastVersion?.max_v || 0) + 1;
+    try {
+      const lastVersion = await env.AUTH_DB.prepare(
+        'SELECT MAX(version) as max_v FROM scorecard_evaluations WHERE user_id = ? AND project_name = ?'
+      ).bind(userId, body.projectName).first();
+      nextVersion = (lastVersion?.max_v || 0) + 1;
+    } catch (e) {
+      console.error('Scorecard version query failed:', e.message);
+    }
   }
 
-  await env.AUTH_DB.prepare(`
-    INSERT INTO scorecard_evaluations
-    (id, user_id, project_name, project_desc, input_type, stage, mode,
-     dim_scores, signal_scores, github_meta, veto_triggered,
-     total_score, verdict, ai_advice, is_public, lang, version)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(
-    id, userId, body.projectName, body.projectDesc || null, body.inputType || null,
-    body.stage || 'concept', body.mode || 'quick',
-    JSON.stringify(body.dimScores || {}), JSON.stringify(body.signalScores || {}),
-    JSON.stringify(body.githubMeta || null), JSON.stringify(body.vetoTriggered || {}),
-    body.totalScore ?? 0, body.verdict || null, body.aiAdvice || null,
-    isPublic, body.lang || 'zh-TW', nextVersion
-  ).run();
+  try {
+    await env.AUTH_DB.prepare(`
+      INSERT INTO scorecard_evaluations
+      (id, user_id, project_name, project_desc, input_type, stage, mode,
+       dim_scores, signal_scores, github_meta, veto_triggered,
+       total_score, verdict, ai_advice, is_public, lang, version)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      id, userId, body.projectName, body.projectDesc || null, body.inputType || null,
+      body.stage || 'concept', body.mode || 'quick',
+      JSON.stringify(body.dimScores || {}), JSON.stringify(body.signalScores || {}),
+      JSON.stringify(body.githubMeta || null), JSON.stringify(body.vetoTriggered || {}),
+      body.totalScore ?? 0, body.verdict || null, body.aiAdvice || null,
+      isPublic, body.lang || 'zh-TW', nextVersion
+    ).run();
+  } catch (e) {
+    console.error('Scorecard D1 insert failed:', e.message, e.stack);
+    return errorResponse(500, 'db_error', 'D1 寫入失敗：' + (e.message || 'unknown'), request);
+  }
 
   return jsonResponse({ id, url: `https://paulkuo.tw/tools/builders-scorecard/eval/${id}` }, 200, request);
 }
