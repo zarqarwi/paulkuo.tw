@@ -17,6 +17,7 @@ https://paulkuo.tw/articles/algorithm-as-judge/
 https://paulkuo.tw/articles/algorithm-cannot-replace-decisions/
 https://paulkuo.tw/articles/breaking-silo-effect/
 https://paulkuo.tw/articles/broken-crutch-elderly-faith/
+https://paulkuo.tw/articles/builders-scorecard-story/
 https://paulkuo.tw/articles/burnout-society-self-exploitation/
 https://paulkuo.tw/articles/canary-in-coal-mine-ai-employment/
 https://paulkuo.tw/articles/china-cultural-discourse-power/
@@ -109,6 +110,7 @@ https://paulkuo.tw/en/articles/algorithm-as-judge/
 https://paulkuo.tw/en/articles/algorithm-cannot-replace-decisions/
 https://paulkuo.tw/en/articles/breaking-silo-effect/
 https://paulkuo.tw/en/articles/broken-crutch-elderly-faith/
+https://paulkuo.tw/en/articles/builders-scorecard-story/
 https://paulkuo.tw/en/articles/burnout-society-self-exploitation/
 https://paulkuo.tw/en/articles/canary-in-coal-mine-ai-employment/
 https://paulkuo.tw/en/articles/china-cultural-discourse-power/
@@ -206,6 +208,7 @@ https://paulkuo.tw/ja/articles/algorithm-as-judge/
 https://paulkuo.tw/ja/articles/algorithm-cannot-replace-decisions/
 https://paulkuo.tw/ja/articles/breaking-silo-effect/
 https://paulkuo.tw/ja/articles/broken-crutch-elderly-faith/
+https://paulkuo.tw/ja/articles/builders-scorecard-story/
 https://paulkuo.tw/ja/articles/burnout-society-self-exploitation/
 https://paulkuo.tw/ja/articles/canary-in-coal-mine-ai-employment/
 https://paulkuo.tw/ja/articles/china-cultural-discourse-power/
@@ -311,6 +314,7 @@ https://paulkuo.tw/zh-cn/articles/algorithm-as-judge/
 https://paulkuo.tw/zh-cn/articles/algorithm-cannot-replace-decisions/
 https://paulkuo.tw/zh-cn/articles/breaking-silo-effect/
 https://paulkuo.tw/zh-cn/articles/broken-crutch-elderly-faith/
+https://paulkuo.tw/zh-cn/articles/builders-scorecard-story/
 https://paulkuo.tw/zh-cn/articles/burnout-society-self-exploitation/
 https://paulkuo.tw/zh-cn/articles/canary-in-coal-mine-ai-employment/
 https://paulkuo.tw/zh-cn/articles/china-cultural-discourse-power/
