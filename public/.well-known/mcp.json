@@ -1,0 +1,59 @@
+{
+  "name": "paulkuo.tw",
+  "description": "Paul Kuo's personal brand website with AI-accessible content tools",
+  "url": "https://paulkuo.tw",
+  "transport": "client-side",
+  "tools": [
+    {
+      "name": "get_paul_profile",
+      "description": "Returns Paul Kuo's detailed profile including background, expertise, and social links",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "search_articles",
+      "description": "Search articles by keyword, filter by content pillar, with configurable result limit",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "description": "Search keyword" },
+          "pillar": { "type": "string", "description": "Content pillar filter" },
+          "limit": { "type": "number", "description": "Max results (default 10)" }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_expertise_areas",
+      "description": "Browse five content pillars. When pillar is specified, also returns recent articles in that pillar.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pillar": { "type": "string", "description": "Optional specific pillar to browse" }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_project_portfolio",
+      "description": "Returns Paul's active projects and tools",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "contact_paul",
+      "description": "Returns contact information and opens email client",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  ]
+}

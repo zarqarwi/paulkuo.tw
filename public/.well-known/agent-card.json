@@ -1,0 +1,43 @@
+{
+  "name": "paulkuo.tw",
+  "description": "Paul Kuo 的個人品牌網站。內容涵蓋 AI 與秩序、循環經濟、文明與人性、創造與實踐、反思與記憶五大支柱。提供文章搜尋、作者資訊查詢、專案作品集瀏覽等 AI 互動功能。",
+  "url": "https://paulkuo.tw",
+  "provider": {
+    "organization": "Paul Kuo",
+    "url": "https://paulkuo.tw"
+  },
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["application/json", "text/plain"],
+  "skills": [
+    {
+      "id": "get_paul_profile",
+      "name": "Author profile",
+      "description": "Get Paul Kuo's background, expertise areas, and social profiles"
+    },
+    {
+      "id": "search_articles",
+      "name": "Article search",
+      "description": "Search articles by keyword or content pillar, with limit control"
+    },
+    {
+      "id": "get_expertise_areas",
+      "name": "Expertise and content pillars",
+      "description": "Browse Paul's five content pillars with optional article listings per pillar"
+    },
+    {
+      "id": "get_project_portfolio",
+      "name": "Project portfolio",
+      "description": "View Paul's active projects and tools including Agora Plaza and CircleFlow"
+    },
+    {
+      "id": "contact_paul",
+      "name": "Contact",
+      "description": "Get Paul's contact information and open email"
+    }
+  ]
+}
