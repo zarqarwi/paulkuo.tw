@@ -139,14 +139,42 @@
         },
       };
 
-      const result = args.pillar
-        ? { [args.pillar]: pillars[args.pillar] }
-        : pillars;
+      // When a specific pillar is requested, also fetch articles for that pillar
+      if (args.pillar) {
+        var pillarData = pillars[args.pillar];
+        if (!pillarData) {
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({ error: 'Unknown pillar. Valid options: ai, circular, faith, startup, life' })
+            }]
+          };
+        }
+        try {
+          var res = await fetch(SITE_URL + '/api/articles.json');
+          var allArticles = await res.json();
+          var pillarArticles = allArticles
+            .filter(function (a) { return a.pillar === args.pillar; })
+            .slice(0, 10)
+            .map(function (a) {
+              return { title: a.title, date: a.date, url: SITE_URL + a.url };
+            });
+          pillarData = Object.assign({}, pillarData, { articles: pillarArticles });
+        } catch (e) {
+          pillarData = Object.assign({}, pillarData, { articles: [], _note: 'Article fetch failed' });
+        }
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({ [args.pillar]: pillarData }, null, 2)
+          }]
+        };
+      }
 
       return {
         content: [{
           type: 'text',
-          text: JSON.stringify(result, null, 2)
+          text: JSON.stringify(pillars, null, 2)
         }]
       };
     }

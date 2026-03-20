@@ -3,7 +3,6 @@ import CostTicker from '../components/CostTicker.astro';
 import SiteHead from '../components/SiteHead.astro';
 import NavBar from '../components/NavBar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import WebMcpTools from '../components/WebMcpTools.astro';
 import FontToggle from '../components/FontToggle.astro';
 import I18nClient from '../components/I18nClient.astro';
 import FocusMode from '../components/FocusMode.astro';
@@ -132,7 +131,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
       updateProgress();
     })();
   </script>
-  <WebMcpTools />
   <FontToggle />
 
   <I18nClient />
