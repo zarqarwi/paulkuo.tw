@@ -320,18 +320,15 @@ export async function syncSocialFeed(env) {
 }
 
 /**
- * POST /feed/sync — admin-only manual trigger for syncSocialFeed with diagnostics
+ * POST /feed/sync — manual trigger for syncSocialFeed with diagnostics
+ * Accepts any valid invite code (admin or partner)
  */
 export async function handleFeedSync(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
-  const auth = await authenticateRequest(request, env, '');
-  if (!auth || !auth.isAdmin) {
-    // Also allow query param ?code=admin_code
-    const url = new URL(request.url);
-    const code = url.searchParams.get('code') || '';
-    const auth2 = await authenticateRequest(request, env, code);
-    if (!auth2 || !auth2.isAdmin) return jsonResponse({ error: 'Admin access required' }, 403, request);
-  }
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code') || '';
+  const auth = await authenticateRequest(request, env, code);
+  if (!auth) return jsonResponse({ error: 'Valid code required' }, 403, request);
   const result = await syncSocialFeed(env);
   return jsonResponse({ ok: true, ...result, timestamp: twISOString() }, 200, request);
 }
