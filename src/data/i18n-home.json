@@ -48,8 +48,8 @@
     "form_message": "Message", "form_message_ph": "What's on your mind?", "form_submit": "Send"
   },
   "ja": {
-    "nav_home": "ホーム", "nav_blog": "思想", "nav_projects": "プロジェクト",
-    "nav_feed": "フィード", "nav_about": "概要", "nav_contact": "お問い合わせ",
+    "nav_home": "ホーム", "nav_blog": "思想", "nav_projects": "実績",
+    "nav_feed": "フィード", "nav_about": "概要", "nav_contact": "連絡",
     "hero_identity": "郭曜郎（Paul Kuo）— サーキュラーエコノミー × AI 戦略コンサルタント ｜ 台日産業ブリッジ",
     "hero_tagline": "神学から起業、都市鉱山まで、20年にわたる領域横断の実践。既存の秩序が機能しなくなった時、どのような構造が再建に値するのか——この問いに向き合い続けてきた。",
     "btn_read": "思想を読む", "btn_about": "Paul について",

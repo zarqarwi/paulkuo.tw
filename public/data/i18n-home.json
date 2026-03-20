@@ -96,10 +96,10 @@
   "ja": {
     "nav_home": "ホーム",
     "nav_blog": "思想",
-    "nav_projects": "プロジェクト",
+    "nav_projects": "実績",
     "nav_feed": "フィード",
     "nav_about": "概要",
-    "nav_contact": "お問い合わせ",
+    "nav_contact": "連絡",
     "ticker_monthly": "月間 API",
     "ticker_daily": "日平均",
     "ticker_calls": "API 呼出",
