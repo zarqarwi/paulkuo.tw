@@ -10,6 +10,7 @@ import { readFileSync } from 'fs';
 const cssHash = (file: string) => createHash('md5').update(readFileSync(`public/styles/${file}`)).digest('hex').slice(0, 8);
 const globalCssV = cssHash('global.css');
 const cjkCssV = cssHash('cjk-fixes.css');
+const tickerCssV = cssHash('ticker-colors.css');
 
 interface Props {
   title: string;
@@ -69,6 +70,7 @@ const {
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href={`/styles/global.css?v=${globalCssV}`}>
 <link rel="stylesheet" href={`/styles/cjk-fixes.css?v=${cjkCssV}`}>
+<link rel="stylesheet" href={`/styles/ticker-colors.css?v=${tickerCssV}`}>
 {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
 <script type="application/ld+json">
 {
