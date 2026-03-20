@@ -16,7 +16,7 @@ const { langPrefix, langSwitchLinks, currentLang } = Astro.props;
 const navI18n: Record<string, Record<string, string>> = {
   'zh-Hant': { home: '首頁', blog: '思想', projects: '專案', feed: '動態情報', feedWall: '動態牆', graph: '知識圖譜', about: '關於', search: '搜尋', contact: '聯絡我', login: '登入', logout: '登出', fontSize: '字級', loginGoogle: 'Google 登入', loginLine: 'LINE 登入', loginFb: 'Facebook 登入' },
   'en': { home: 'Home', blog: 'Thinking', projects: 'Projects', feed: 'Feed', feedWall: 'Feed Wall', graph: 'Knowledge Graph', about: 'About', search: 'Search', contact: 'Contact', login: 'Sign In', logout: 'Sign Out', fontSize: 'Font Size', loginGoogle: 'Google Sign In', loginLine: 'LINE Sign In', loginFb: 'Facebook Sign In' },
-  'ja': { home: 'ホーム', blog: '思想', projects: 'プロジェクト', feed: 'フィード', feedWall: 'フィード', graph: 'ナレッジグラフ', about: 'プロフィール', search: '検索', contact: 'お問い合わせ', login: 'ログイン', logout: 'ログアウト', fontSize: '文字サイズ', loginGoogle: 'Google ログイン', loginLine: 'LINE ログイン', loginFb: 'Facebook ログイン' },
+  'ja': { home: 'ホーム', blog: '思想', projects: '実績', feed: 'フィード', feedWall: 'フィード', graph: 'タグ図', about: '概要', search: '検索', contact: '連絡', login: 'ログイン', logout: 'ログアウト', fontSize: '文字サイズ', loginGoogle: 'Google ログイン', loginLine: 'LINE ログイン', loginFb: 'Facebook ログイン' },
   'zh-CN': { home: '首页', blog: '思想', projects: '项目', feed: '动态情报', feedWall: '动态墙', graph: '知识图谱', about: '关于', search: '搜索', contact: '联系我', login: '登录', logout: '退出', fontSize: '字号', loginGoogle: 'Google 登录', loginLine: 'LINE 登录', loginFb: 'Facebook 登录' },
 };
 const n = navI18n[currentLang] || navI18n['zh-Hant'];
@@ -33,7 +33,7 @@ const n = navI18n[currentLang] || navI18n['zh-Hant'];
       <a href={langPrefix + '/tags-graph'} id="nav-graph">{n.graph}</a>
       <a href={langPrefix + '/about'} id="nav-about">{n.about}</a>
       <a href="/search" id="nav-search" title={n.search} aria-label={n.search} style="font-size:1.1rem;line-height:1">🔍</a>
-      <a href="/#contact" class="nav-cta">{n.contact}</a>
+      <a href={`${langPrefix || ''}/#contact`} class="nav-cta">{n.contact}</a>
       <!-- Auth: login/avatar -->
       <div class="nav-auth-mobile" id="navAuthMobile"></div>
       <div class="mobile-lang-divider"></div>
@@ -264,4 +264,15 @@ const n = navI18n[currentLang] || navI18n['zh-Hant'];
       window.history.replaceState({}, '', url.pathname + url.search);
     }
   })();
+
+// Hash scroll insurance: 跨頁導航時確保 #contact 等錨點能正確捲動
+// 動態內容（feed section）可能延遲載入導致頁面高度變化，所以等 300ms
+window.addEventListener('load', () => {
+  if (window.location.hash) {
+    const target = document.querySelector(window.location.hash);
+    if (target) {
+      setTimeout(() => target.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+  }
+});
 </script>
