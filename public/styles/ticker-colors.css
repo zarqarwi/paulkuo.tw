@@ -1,0 +1,36 @@
+/* ===== GLOBAL TICKER ===== */
+.global-ticker {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0; right: 0;
+  z-index: 99;
+  transition: transform 0.3s cubic-bezier(0.23,1,0.32,1);
+}
+.global-ticker.ticker-hidden {
+  transform: translateY(calc(-1 * var(--nav-height) - 48px));
+}
+/* Force white text inside ticker — prevents global a/body color from overriding */
+.global-ticker,
+.global-ticker a,
+.global-ticker a *,
+.global-ticker .cost-ticker,
+.global-ticker .ticker-inner,
+.global-ticker .ticker-item,
+.global-ticker .ticker-value,
+.global-ticker .ticker-label,
+.global-ticker .ticker-sub {
+  color: #fff;
+}
+.global-ticker .ticker-label {
+  color: rgba(255,255,255,0.7);
+}
+.global-ticker .ticker-sub,
+.global-ticker .ticker-loading-text {
+  color: rgba(255,255,255,0.5);
+}
+.global-ticker .ticker-change.up {
+  color: #34d399;
+}
+.global-ticker .ticker-change.down {
+  color: #fca5a5;
+}
