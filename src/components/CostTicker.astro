@@ -108,7 +108,7 @@ const tickerData = JSON.stringify({ dailyValues, hasData });
       <div class="ticker-sep"></div>
       <div class="ticker-item" title="今日 Fitbit 步數">
         <span class="ticker-label">{'\ud83d\udeb6'} 步數</span>
-        <span class="ticker-value" id="liveSteps">--</span>
+        <span class="ticker-value" id="liveSteps">{fitbitSteps > 0 ? fitbitSteps.toLocaleString() : '--'}</span>
       </div>
       <div class="ticker-sep"></div>
       <div class="ticker-item" title="AI 協作時間">
@@ -195,8 +195,8 @@ function buildTickerHTML(d) {
   var chgCls = chgUp ? 'up' : 'down';
   var chgArrow = chgUp ? '\u25b2' : '\u25bc';
   var steps = d.fitbit ? d.fitbit.steps : 0;
-  var aiToday = d.timing ? (Math.round((d.timing.ai_hours_today || 0) * 10) / 10) : 0;
-  var aiMonth = d.timing ? Math.round(d.timing.ai_hours_month || 0) : 0;
+  var aiToday = d.timing ? (Math.round((d.timing.todayHours || d.timing.ai_hours_today || 0) * 10) / 10) : 0;
+  var aiMonth = d.timing ? Math.round(d.timing.monthHours || d.timing.ai_hours_month || 0) : 0;
 
   var html = '<div class="ticker-item ticker-primary" title="本月 AI API 費用">'
     + '<span class="ticker-label">本月 API</span>'
@@ -228,9 +228,15 @@ function buildTickerHTML(d) {
       + '</div>';
   }
 
-  html += '<div class="ticker-sep" id="tickerVisitorsSep" style="display:none"></div>'
-    + '<div class="ticker-item" id="tickerVisitorsItem" title="昨日訪客數（與流量分析同源）" style="display:none">'
-    + '<span class="ticker-label">\ud83d\udc65 訪客</span><span class="ticker-value" id="liveVisitors">--</span></div>';
+  if (d.visitors && d.visitors.uniqueVisitors != null) {
+    html += '<div class="ticker-sep"></div>'
+      + '<div class="ticker-item" title="昨日訪客數（與流量分析同源）">'
+      + '<span class="ticker-label">\ud83d\udc65 訪客</span><span class="ticker-value" id="liveVisitors">' + d.visitors.uniqueVisitors.toLocaleString() + '/日</span></div>';
+  } else {
+    html += '<div class="ticker-sep" id="tickerVisitorsSep" style="display:none"></div>'
+      + '<div class="ticker-item" id="tickerVisitorsItem" title="昨日訪客數（與流量分析同源）" style="display:none">'
+      + '<span class="ticker-label">\ud83d\udc65 訪客</span><span class="ticker-value" id="liveVisitors">--</span></div>';
+  }
 
   return html;
 }
@@ -289,25 +295,18 @@ function buildTickerHTML(d) {
           }
           if (c.dailyValues && c.dailyValues.length >= 2) drawSparkline(c.dailyValues);
         }
+        // Visitors (from /ticker response)
+        if (d.visitors && d.visitors.uniqueVisitors != null) {
+          var ve = document.getElementById('liveVisitors');
+          if (ve) ve.textContent = d.visitors.uniqueVisitors.toLocaleString() + '/日';
+          var vs = document.getElementById('tickerVisitorsSep');
+          var vi = document.getElementById('tickerVisitorsItem');
+          if (vs) vs.style.display = '';
+          if (vi) vi.style.display = '';
+        }
       }
     })
     .catch(function() {}); // silent fail - keep build-time fallback
-
-  // Visitors: fetch from /analytics (same source as TrafficAnalytics)
-  fetch('https://api.paulkuo.tw/analytics', { cache: 'no-store' })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      var visits = d && d.overview && d.overview.total1d && d.overview.total1d.visits;
-      if (visits != null) {
-        var ve = document.getElementById('liveVisitors');
-        if (ve) ve.textContent = visits.toLocaleString() + '/日';
-        var vs = document.getElementById('tickerVisitorsSep');
-        var vi = document.getElementById('tickerVisitorsItem');
-        if (vs) vs.style.display = '';
-        if (vi) vi.style.display = '';
-      }
-    })
-    .catch(function() {});
 })();
 </script>
 
