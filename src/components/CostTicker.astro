@@ -2,156 +2,18 @@
 /**
  * CostTicker.astro — 首頁 API 費用 ticker bar
  * Apple Stocks widget 風格：迷你折線圖 + 數字
- * 資料來源：build-time fallback + client-side /ticker endpoint 覆蓋
+ * 資料來源：純 client-side fetch api.paulkuo.tw/ticker
  */
 import { version } from '../../package.json';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
-
-const _tw = new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Taipei' });
-const todayTW = _tw.slice(0, 10);
-const thisMonthTW = _tw.slice(0, 7);
-
-let fitbitSteps = 0;
-let fitbitGoal = 10000;
-const fitbitPath = join(process.cwd(), 'data', 'fitbit.json');
-if (existsSync(fitbitPath)) {
-  try {
-    const fb = JSON.parse(readFileSync(fitbitPath, 'utf-8'));
-    fitbitSteps = fb.today?.steps || 0;
-    fitbitGoal = fb.today?.goal || 10000;
-  } catch {}
-}
-
-const costsPath = join(process.cwd(), 'data', 'costs.jsonl');
-let records: any[] = [];
-if (existsSync(costsPath)) {
-  records = readFileSync(costsPath, 'utf-8')
-    .split('\n').filter(Boolean)
-    .map(line => { try { return JSON.parse(line); } catch { return null; } })
-    .filter(Boolean);
-}
-
-const totalUSD = records.reduce((s, r) => s + (r.costUSD || 0), 0);
-const monthRecords = records.filter(r => r.timestamp?.startsWith(thisMonthTW));
-const monthUSD = monthRecords.reduce((s, r) => s + (r.costUSD || 0), 0);
-const dailyMap: Record<string, number> = {};
-records.forEach(r => { const d = r.timestamp?.slice(0, 10); if (d) dailyMap[d] = (dailyMap[d] || 0) + r.costUSD; });
-const sortedDays = Object.keys(dailyMap).sort().slice(-14);
-const dailyValues = sortedDays.map(d => dailyMap[d]);
-const avgPerDay = dailyValues.length > 0 ? dailyValues.reduce((a,b)=>a+b,0) / dailyValues.length : 0;
-const totalTokens = records.reduce((s, r) => s + (r.inputTokens || 0) + (r.outputTokens || 0), 0);
-const last7 = sortedDays.slice(-7);
-const prev7 = sortedDays.slice(-14, -7);
-const last7Total = last7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
-const prev7Total = prev7.reduce((s, d) => s + (dailyMap[d] || 0), 0);
-const changePercent = prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0;
-
-let stockName = '', stockPrice = 0, stockChange = 0;
-const stockPath = join(process.cwd(), 'data', 'stock.json');
-if (existsSync(stockPath)) {
-  try { const s = JSON.parse(readFileSync(stockPath, 'utf-8')); stockName = s.name || ''; stockPrice = s.price || 0; stockChange = s.changePercent || 0; } catch {}
-}
-
-let aiHoursToday = 0, aiHoursMonth = 0;
-const timingPath = join(process.cwd(), 'data', 'timing.json');
-if (existsSync(timingPath)) {
-  try {
-    const t = JSON.parse(readFileSync(timingPath, 'utf-8'));
-    aiHoursMonth = Math.round(t.month_summary?.total_ai_hours || 0);
-    const todayEntry = (t.daily || []).find((d: any) => d.date === todayTW);
-    aiHoursToday = todayEntry ? Math.round(todayEntry.ai_hours * 10) / 10 : 0;
-  } catch {}
-}
-
-const hasData = records.length > 0;
-const tickerData = JSON.stringify({ dailyValues, hasData });
 ---
 
-<a href="/#feed" class="cost-ticker" id="costTicker" data-ticker={tickerData} style="text-decoration:none;color:inherit;display:block">
-  {hasData ? (
-    <div class="ticker-inner">
-      <div class="ticker-item ticker-version" title="paulkuo.tw 網站版本">
-        <span class="ticker-label">VER</span>
-        <span class="ticker-value">{version}</span>
-      </div>
-      <div class="ticker-sep"></div>
-      <div class="ticker-item ticker-primary" title="本月 AI API 費用">
-        <span class="ticker-label">本月 API</span>
-        <span class="ticker-value" id="liveMonthUSD">{`$${monthUSD.toFixed(2)}`}</span>
-        <span class="ticker-sub" id="liveMonthTWD">{`NT$${(monthUSD * 32.5).toFixed(0)}`}</span>
-        <canvas class="ticker-spark" id="tickerSpark" width="80" height="28"></canvas>
-        <span class={`ticker-change ${changePercent >= 0 ? 'up' : 'down'}`} id="liveChangePercent">
-          {changePercent >= 0 ? '\u25b2' : '\u25bc'} {Math.abs(changePercent).toFixed(0)}%
-        </span>
-      </div>
-      <div class="ticker-sep"></div>
-      <div class="ticker-item" title="每日平均 API 費用">
-        <span class="ticker-label">日均</span>
-        <span class="ticker-value" id="liveAvgDay">{`$${avgPerDay.toFixed(3)}`}</span>
-      </div>
-      <div class="ticker-sep"></div>
-      <div class="ticker-item" title="API 呼叫總次數">
-        <span class="ticker-label">API 呼叫</span>
-        <span class="ticker-value" id="liveCalls">{records.length.toLocaleString()}</span>
-      </div>
-      <div class="ticker-sep"></div>
-      <div class="ticker-item" title="Token 總量">
-        <span class="ticker-label">Token</span>
-        <span class="ticker-value" id="liveTokens">{(totalTokens / 1000).toFixed(0)}K</span>
-      </div>
-      <div class="ticker-sep"></div>
-      <div class="ticker-item" title="累計 API 費用">
-        <span class="ticker-label">累計</span>
-        <span class="ticker-value" id="liveTotalUSD">{`$${totalUSD.toFixed(2)}`}</span>
-      </div>
-      <div class="ticker-sep"></div>
-      <div class="ticker-item" title="今日 Fitbit 步數">
-        <span class="ticker-label">{'\ud83d\udeb6'} 步數</span>
-        <span class="ticker-value" id="liveSteps">{fitbitSteps > 0 ? fitbitSteps.toLocaleString() : '--'}</span>
-      </div>
-      <div class="ticker-sep"></div>
-      <div class="ticker-item" title="AI 協作時間">
-        <span class="ticker-label">{'\u23f1'} AI 協作</span>
-        <span class="ticker-value">{aiHoursToday}h</span>
-        <span class="ticker-sub">月{aiHoursMonth}h</span>
-      </div>
-      {stockPrice > 0 && (
-        <>
-          <div class="ticker-sep"></div>
-          <div class="ticker-item" title="CyberSolutions (436A.T) 即時股價">
-            <span class="ticker-label">{'\ud83d\udcc8'} {stockName}</span>
-            <span class="ticker-value" id="liveStockPrice">{'\u00a5'}{stockPrice.toLocaleString()}</span>
-            <span class={`ticker-change ${stockChange >= 0 ? 'up' : 'down'}`} id="liveStockChange">
-              {stockChange >= 0 ? '\u25b2' : '\u25bc'} {Math.abs(stockChange).toFixed(1)}%
-            </span>
-          </div>
-        </>
-      )}
-      <div class="ticker-sep" id="tickerVisitorsSep" style="display:none"></div>
-      <div class="ticker-item" id="tickerVisitorsItem" title="昨日訪客數（與流量分析同源）" style="display:none">
-        <span class="ticker-label">{'\ud83d\udc65'} 訪客</span>
-        <span class="ticker-value" id="liveVisitors">--</span>
-      </div>
-    </div>
-  ) : (
-    <div class="ticker-inner ticker-empty">
-      <span class="ticker-label">{'\u26a1'} 自動化管線運行中</span>
-      <span class="ticker-value" style="opacity:0.5">待收集數據</span>
-    </div>
-  )}
+<a href="/#feed" class="cost-ticker" id="costTicker" style="text-decoration:none;color:inherit;display:block">
+  <div class="ticker-inner ticker-loading">
+    <span class="ticker-loading-text">載入中...</span>
+  </div>
 </a>
 
-<script is:inline>
-// Draw initial sparkline from build-time data
-(function() {
-  var ticker = document.getElementById('costTicker');
-  if (!ticker) return;
-  var data = JSON.parse(ticker.dataset.ticker || '{}');
-  if (!data.hasData || !data.dailyValues || data.dailyValues.length < 2) return;
-  drawSparkline(data.dailyValues);
-})();
-
+<script is:inline define:vars={{ version }}>
 function drawSparkline(vals) {
   var canvas = document.getElementById('tickerSpark');
   if (!canvas || !vals || vals.length < 2) return;
@@ -182,7 +44,6 @@ function drawSparkline(vals) {
   ctx.strokeStyle = clr; ctx.lineWidth = 1.5; ctx.stroke();
 }
 
-// Build full ticker HTML from API data (used when build-time had no data)
 function buildTickerHTML(d) {
   var c = d.costs || {};
   var monthUSD = c.monthUSD != null ? c.monthUSD : 0;
@@ -198,7 +59,12 @@ function buildTickerHTML(d) {
   var aiToday = d.timing ? (Math.round((d.timing.todayHours || d.timing.ai_hours_today || 0) * 10) / 10) : 0;
   var aiMonth = d.timing ? Math.round(d.timing.monthHours || d.timing.ai_hours_month || 0) : 0;
 
-  var html = '<div class="ticker-item ticker-primary" title="本月 AI API 費用">'
+  var html = '<div class="ticker-item ticker-version" title="paulkuo.tw 網站版本">'
+    + '<span class="ticker-label">VER</span>'
+    + '<span class="ticker-value">' + version + '</span>'
+    + '</div>'
+    + '<div class="ticker-sep"></div>'
+    + '<div class="ticker-item ticker-primary" title="本月 AI API 費用">'
     + '<span class="ticker-label">本月 API</span>'
     + '<span class="ticker-value" id="liveMonthUSD">$' + monthUSD.toFixed(2) + '</span>'
     + '<span class="ticker-sub" id="liveMonthTWD">NT$' + Math.round(monthUSD * 32.5) + '</span>'
@@ -232,81 +98,32 @@ function buildTickerHTML(d) {
     html += '<div class="ticker-sep"></div>'
       + '<div class="ticker-item" title="昨日訪客數（與流量分析同源）">'
       + '<span class="ticker-label">\ud83d\udc65 訪客</span><span class="ticker-value" id="liveVisitors">' + d.visitors.uniqueVisitors.toLocaleString() + '/日</span></div>';
-  } else {
-    html += '<div class="ticker-sep" id="tickerVisitorsSep" style="display:none"></div>'
-      + '<div class="ticker-item" id="tickerVisitorsItem" title="昨日訪客數（與流量分析同源）" style="display:none">'
-      + '<span class="ticker-label">\ud83d\udc65 訪客</span><span class="ticker-value" id="liveVisitors">--</span></div>';
   }
 
   return html;
 }
 
-// Single fetch to /ticker updates ALL live data (costs + fitbit + stock)
+// Fetch API and render ticker
 (function() {
   fetch('https://api.paulkuo.tw/ticker')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var ticker = document.getElementById('costTicker');
       var inner = ticker && ticker.querySelector('.ticker-inner');
-
-      // If build-time rendered empty fallback, rebuild full ticker from API data
-      if (inner && inner.classList.contains('ticker-empty')) {
-        inner.classList.remove('ticker-empty');
-        inner.innerHTML = buildTickerHTML(d);
-        if (d.costs && d.costs.dailyValues && d.costs.dailyValues.length >= 2) {
-          drawSparkline(d.costs.dailyValues);
-        }
-      } else {
-        // Normal incremental update path
-        // Fitbit
-        var se = document.getElementById('liveSteps');
-        if (se && d.fitbit) se.textContent = d.fitbit.steps.toLocaleString();
-        // Stock
-        var pe = document.getElementById('liveStockPrice');
-        var ce = document.getElementById('liveStockChange');
-        if (pe && d.stock && d.stock.price) {
-          pe.textContent = '\u00a5' + d.stock.price.toLocaleString();
-          if (ce) {
-            var u = d.stock.changePercent >= 0;
-            ce.textContent = (u ? '\u25b2 ' : '\u25bc ') + Math.abs(d.stock.changePercent).toFixed(1) + '%';
-            ce.className = 'ticker-change ' + (u ? 'up' : 'down');
-          }
-        }
-        // Costs
-        if (d.costs) {
-          var c = d.costs;
-          var updates = {
-            liveMonthUSD: c.monthUSD != null ? ('$' + c.monthUSD.toFixed(2)) : null,
-            liveMonthTWD: c.monthUSD != null ? ('NT$' + Math.round(c.monthUSD * 32.5)) : null,
-            liveAvgDay: c.avgPerDay != null ? ('$' + c.avgPerDay.toFixed(3)) : null,
-            liveCalls: c.totalCalls != null ? c.totalCalls.toLocaleString() : null,
-            liveTokens: c.totalTokens != null ? (Math.round(c.totalTokens / 1000) + 'K') : null,
-            liveTotalUSD: c.totalUSD != null ? ('$' + c.totalUSD.toFixed(2)) : null
-          };
-          for (var k in updates) {
-            var el = document.getElementById(k);
-            if (el && updates[k] != null) el.textContent = updates[k];
-          }
-          var chg = document.getElementById('liveChangePercent');
-          if (chg && typeof c.changePercent === 'number') {
-            var up = c.changePercent >= 0;
-            chg.textContent = (up ? '\u25b2' : '\u25bc') + ' ' + Math.abs(c.changePercent).toFixed(0) + '%';
-            chg.className = 'ticker-change ' + (up ? 'up' : 'down');
-          }
-          if (c.dailyValues && c.dailyValues.length >= 2) drawSparkline(c.dailyValues);
-        }
-        // Visitors (from /ticker response)
-        if (d.visitors && d.visitors.uniqueVisitors != null) {
-          var ve = document.getElementById('liveVisitors');
-          if (ve) ve.textContent = d.visitors.uniqueVisitors.toLocaleString() + '/日';
-          var vs = document.getElementById('tickerVisitorsSep');
-          var vi = document.getElementById('tickerVisitorsItem');
-          if (vs) vs.style.display = '';
-          if (vi) vi.style.display = '';
-        }
+      if (!inner) return;
+      inner.classList.remove('ticker-loading');
+      inner.innerHTML = buildTickerHTML(d);
+      if (d.costs && d.costs.dailyValues && d.costs.dailyValues.length >= 2) {
+        drawSparkline(d.costs.dailyValues);
       }
     })
-    .catch(function() {}); // silent fail - keep build-time fallback
+    .catch(function() {
+      var inner = document.querySelector('#costTicker .ticker-inner');
+      if (inner) {
+        inner.classList.remove('ticker-loading');
+        inner.innerHTML = '<span class="ticker-loading-text">數據暫時無法載入</span>';
+      }
+    });
 })();
 </script>
 
@@ -328,7 +145,8 @@ function buildTickerHTML(d) {
     white-space: nowrap;
     font-family: var(--font-body);
   }
-  .ticker-empty { justify-content: center; gap: 12px; }
+  .ticker-loading { justify-content: center; }
+  .ticker-loading-text { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
   .ticker-item { display: flex; align-items: center; gap: 6px; padding: 0 16px; flex-shrink: 0; }
   .ticker-primary { gap: 8px; }
   .ticker-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.7); font-weight: 500; }
