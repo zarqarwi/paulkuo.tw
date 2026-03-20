@@ -19,11 +19,11 @@ const PLATFORM_FEED = {
 //  X (Twitter) — OAuth 1.0a + HMAC-SHA1
 // ═══════════════════════════════════════════════════════
 
-function pctEncode(s) {
+export function pctEncode(s) {
   return encodeURIComponent(s).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
 }
 
-async function hmacSha1(key, data) {
+export async function hmacSha1(key, data) {
   const ck = await crypto.subtle.importKey(
     'raw', new TextEncoder().encode(key),
     { name: 'HMAC', hash: 'SHA-1' }, false, ['sign'],

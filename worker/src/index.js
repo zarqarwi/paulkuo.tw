@@ -11,7 +11,7 @@ import { costBuffer, flushCosts, handleCosts, handleUsage, handleLogCost } from 
 import { refreshToken, fetchFitbitData, fetchSleepData } from './fitbit.js';
 import { isTseTradingHours, fetchStockData } from './stock.js';
 import { handleTranslate, handleTranslateStream, handleSummarize, handlePolishTranscript, handleGroqSTT, handleGoogleSTT, handleFeedbackPost, handleFeedbackGet, handleTqefClaude } from './translator.js';
-import { handleFeedGet, handleFeedPush } from './feed.js';
+import { handleFeedGet, handleFeedPush, syncSocialFeed } from './feed.js';
 import { handleCommentsGet, handleCommentCreate, handleCommentUpdate, handleCommentDelete, handleCommentLike, handleCommentsAdminRecent } from './comments.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
@@ -238,6 +238,7 @@ async function handleScheduled(event, env) {
   try { await fetchFitbitData(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_refresh', new Date().toISOString()); console.log('Cron: Fitbit data cached'); } catch (e) { console.error('Cron: Fitbit fetch FAILED:', e.message); }
   try { await fetchDailyVisitors(env); } catch (e) { console.error('Cron: visitors fetch FAILED:', e.message); }
   try { await fetchAnalyticsOverview(env); await fetchRumAnalytics(env); await fetchDurationAnalytics(env); console.log('Cron: analytics updated'); } catch (e) { console.error('Cron: analytics FAILED:', e.message); }
+  try { await syncSocialFeed(env); console.log('Cron: social feed synced'); } catch (e) { console.error('Cron: social feed sync FAILED:', e.message); }
 }
 
 export default {
