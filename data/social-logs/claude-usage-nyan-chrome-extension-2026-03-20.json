@@ -4,15 +4,15 @@
   "url": "https://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
   "pillar": "ai",
   "summaries": {
-    "X": "工作到一半被 Claude rate limit 擋下來真的超煩！所以我做了「Claude 用量喵喵」Chrome Extension，工具列上有隻橘虎斑會顯示用量，同時追蹤官方 API 和即時 token 消耗。跨平台、支援中英日三語，讓你再也不用被突然的額度限制打斷思路 🐱\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension #Claude #ChromeExtension",
-    "LI": "身為一個重度 Claude 使用者，最討厭的就是工作到一半被 rate limit 打斷。每次都要等到被擋了才想起去看用量，然後發現額外用量已經快爆了。\n\n所以我決定自己解決這個問題，做了「Claude 用量喵喵」Chrome Extension。\n\n這個工具的特色是同時跑兩條資料管道：官方 usage API（權威但有延遲）和即時 token 攔截（即時但是估算）。把兩者並排顯示，讓使用者可以看到差異。\n\n在開發前我調研了市場，發現現有工具幾乎都是 macOS 限定，而且只做單一功能。我的定位就很明確：跨平台的 Chrome Extension、雙管道追蹤、三語介面。\n\n技術上踩了幾個有趣的坑，特別是 Chrome Extension 的 isolated world 機制，需要用 CustomEvent 橋接才能攔截到頁面的 API 呼叫。\n\n工具已經上線，希望能幫到同樣被 rate limit 困擾的朋友們。\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
-    "TH": "被 Claude rate limit 擋到崩潰，所以我做了個小工具 😤\n\n「Claude 用量喵喵」Chrome Extension，工具列上蹲著一隻橘虎斑，會自動輪播顯示各種用量數據。最酷的是同時追蹤官方數字和即時 token 消耗，讓你看到兩者的差異。\n\n支援中英日三語，Windows/Mac/Linux 都能用。再也不用工作到一半才發現額度快爆了！\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
-    "BS": "工作被 Claude rate limit 打斷真的很煩，所以我做了「Claude 用量喵喵」🐱\n\nChrome Extension 形式，工具列上的橘虎斑會顯示用量 badge，同時追蹤官方 API 和即時 token。最特別的是兩條資料管道並排，可以看到官方數字和實際消耗的差異。\n\n跨平台、三語支援，讓重度使用者不再被突襲式的額度限制困擾。\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
-    "YT": "各位 Claude 重度使用者，有沒有遇過工作到一半被 rate limit 擋下來的痛苦？🤯\n\n我受不了這種突襲，所以做了「Claude 用量喵喵」Chrome Extension！工具列上有隻可愛的橘虎斑，會自動輪播顯示用量狀態。\n\n最特別的是雙管道追蹤：官方 usage API + 即時 token 攔截，讓你同時看到權威數字和即時估算。開發過程還踩了不少技術坑，特別是 Chrome Extension 的 isolated world 機制。\n\n現在支援中英日三語，跨平台使用。有興趣的朋友可以看看完整的開發紀實！",
-    "FB": "最近做了個小工具想跟大家分享 😊\n\n身為 Claude 重度使用者，最怕的就是工作到一半被 rate limit 擋下來。每次都要等到被擋了才想起去看用量，超級煩！\n\n所以我做了「Claude 用量喵喵」Chrome Extension，工具列上蹲著一隻橘虎斑，會自動顯示各種用量數據。比較特別的是同時追蹤官方 API 和即時 token 消耗，讓你看到兩者的差異。\n\n開發過程跟 Claude 對話完成，踩了不少坑但也學到很多。現在支援中英日三語，希望能幫到同樣被額度限制困擾的朋友！\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
-    "IG": "工作被 Claude rate limit 打斷的舉手 🙋‍♂️\n\n受不了突襲式的額度限制，我做了「Claude 用量喵喵」🐱✨\n\n🔸 Chrome Extension 跨平台使用\n🔸 工具列橘虎斑自動輪播用量\n🔸 同時追蹤官方 API + 即時 token\n🔸 支援中英日三語介面\n🔸 再也不用被突然的限制打斷思路\n\n開發過程踩了不少坑，但跟 Claude 對話寫程式還蠻有趣的 😄\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension\n\n#Claude #ChromeExtension #開發日記 #工具分享"
+    "X": "工作到一半被 Claude rate limit 擋下來超煩的！所以我做了個 Chrome Extension「Claude 用量喵喵」🐱 工具列蹲著一隻橘虎斑，點一下就知道用量。同時跑官方 API 和即時 token 追蹤，中英日三語，跨平台。技術細節都在這篇 👇 #Claude #ChromeExtension https://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
+    "LI": "分享一個解決實際痛點的小專案。\n\n作為重度 Claude 使用者，最煩的就是工作到一半被 rate limit 擋下來，然後才發現用量已經 84%。市面上類似工具很多，但幾乎都是 macOS 原生 app，而且只做單一功能。\n\n所以我做了「Claude 用量喵喵」Chrome Extension，有幾個特色：\n\n1. 跨平台：Chrome Extension 讓 Windows/Linux 用戶也能用\n2. 雙管道：同時跑官方 usage API 和即時 token 攔截，可以看到數據差異\n3. 國際化：中英日三語自動切換\n4. 視覺化：工具列橘貓 badge 用顏色表示用量狀態\n\n技術上最有趣的是處理 Chrome Extension 的 isolated world 問題，和透過攔截 API 呼叫做即時 token 計算。整個開發過程都是跟 Claude 對話完成的，算是 AI 協作開發的實例。\n\n小工具解決大問題，有時候最簡單的想法反而最實用。\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
+    "TH": "被 Claude rate limit 擋到受不了，所以自己做了個 Chrome Extension 來追蹤用量 😂\n\n工具列上蹲著一隻橘虎斑貓，會用顏色告訴你用量狀態。綠色安全，黃色注意，橘色快到了，紅色快爆了。不用點開任何東西，瞄一眼就知道。\n\n最特別的是同時跑官方 API 和即時 token 攔截，可以看到數據差異。而且支援中英日三語！\n\n詳細開發過程和技術細節：\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
+    "BS": "工作到一半被 Claude rate limit 擋下來真的很煩，所以我做了個 Chrome Extension 解決這問題。\n\n「Claude 用量喵喵」工具列上蹲著橘虎斑，點開可看完整用量。特色是同時跑官方 API 和即時 token 追蹤，讓你看到數據差異。還支援中英日三語自動切換。\n\n整個開發都跟 Claude 對話完成，算是 AI 協作的有趣實例。\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
+    "YT": "分享一個解決實際問題的小專案！\n\n身為 Claude 重度使用者，最討厭就是工作到一半被 rate limit 擋下來。市面上追蹤工具大多是 macOS 原生 app，功能也比較單一。\n\n所以我做了「Claude 用量喵喵」Chrome Extension：\n• 工具列橘貓用顏色顯示用量狀態\n• 同時跑官方 API 和即時 token 攔截\n• 支援中英日三語自動切換\n• 跨平台，Windows/Linux 都能用\n\n開發過程踩了不少坑，像是 Chrome Extension 的 isolated world 問題，還有 API 攔截的技術細節。整個專案都是跟 Claude 對話完成的，算是 AI 協作開發的實際案例。\n\n有興趣的朋友可以看看完整開發紀實！",
+    "FB": "跟大家分享一個小專案 😊\n\n最近工作常用 Claude，但最煩的就是用到一半被 rate limit 擋下來，然後才發現用量已經快滿了。想說如果能在畫面上直接看到用量該多好？\n\n所以我做了個 Chrome Extension 叫「Claude 用量喵喵」。工具列上蹲著一隻橘虎斑，會用顏色告訴你用量狀態。點開可以看到完整數據，包括官方用量和即時 token 追蹤。\n\n比較特別的是同時跑兩條資料管道，可以看到官方數據跟實際使用的差異。而且支援中英日三語，Chrome 會自動切換。\n\n開發過程還蠻有趣的，整個都是跟 Claude 對話完成。踩了一些技術上的坑，但最後都解決了。詳細過程寫成文章跟大家分享！\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension",
+    "IG": "被 Claude rate limit 擋到做了個 Extension 😂🐱\n\n工作到一半被擋超煩的！所以做了「Claude 用量喵喵」Chrome Extension ✨\n\n🟢 綠色安全 🟡 黃色注意 🟠 橘色快到 🔴 紅色快爆\n工具列橘虎斑會告訴你用量狀態 📊\n\n特色：\n✅ 跨平台 Chrome Extension\n✅ 官方 API + 即時 token 追蹤\n✅ 中英日三語自動切換\n✅ 視覺化用量顯示\n\n整個開發都跟 Claude 對話完成，AI 協作開發實例 🤖💻\n\n詳細技術分享 👇\n#Claude #ChromeExtension #WebDev #AI #開發日記 #程式設計\n\nhttps://paulkuo.tw/articles/claude-usage-nyan-chrome-extension"
   },
-  "imageUrl": "https://iili.io/qNOtdXI.jpg",
+  "imageUrl": "https://iili.io/qNet4Uu.jpg",
   "status": "pending_review",
-  "timestamp": "2026-03-20T06:08:31.192Z"
+  "timestamp": "2026-03-20T06:22:00.629Z"
 }
