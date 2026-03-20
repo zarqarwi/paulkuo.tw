@@ -167,6 +167,7 @@ export async function syncSocialFeed(env) {
       );
       if (thResp.ok) {
         const data = await thResp.json();
+        console.log('syncSocialFeed Threads: API returned', data.data?.length || 0, 'posts');
         const latestPost = data.data?.[0];
         if (latestPost?.text) {
           const newItem = {
@@ -182,6 +183,8 @@ export async function syncSocialFeed(env) {
             if (items[idx].content !== newItem.content) {
               items[idx] = newItem;
               updated = true;
+            } else {
+              console.log('syncSocialFeed Threads: content unchanged, skipping');
             }
           } else {
             items.unshift(newItem);
@@ -189,7 +192,8 @@ export async function syncSocialFeed(env) {
           }
         }
       } else {
-        console.error('syncSocialFeed Threads:', thResp.status);
+        const errText = await thResp.text().catch(() => '');
+        console.error('syncSocialFeed Threads error:', thResp.status, errText.slice(0, 300));
       }
     }
   } catch (e) {
