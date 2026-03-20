@@ -118,11 +118,13 @@ export async function handleFeedPush(request, env) {
 
 /**
  * syncSocialFeed — cron 定期拉各平台最新貼文，upsert 到 KV feed_items
+ * Returns diagnostic log array when called from handleFeedSync
  */
 export async function syncSocialFeed(env) {
   const raw = await env.TICKER_KV.get('feed_items');
   let items = raw ? JSON.parse(raw) : [];
   let updated = false;
+  const log = [];
 
   // ── Bluesky（公開 API，不需認證）──
   try {
@@ -148,15 +150,24 @@ export async function syncSocialFeed(env) {
           if (items[idx].content !== newItem.content) {
             items[idx] = newItem;
             updated = true;
+            log.push({ platform: 'bluesky', status: 'updated', content: newItem.content.slice(0, 80) });
+          } else {
+            log.push({ platform: 'bluesky', status: 'unchanged' });
           }
         } else {
           items.unshift(newItem);
           updated = true;
+          log.push({ platform: 'bluesky', status: 'added', content: newItem.content.slice(0, 80) });
         }
+      } else {
+        log.push({ platform: 'bluesky', status: 'no_posts' });
       }
+    } else {
+      log.push({ platform: 'bluesky', status: 'error', code: bskyResp.status });
     }
   } catch (e) {
     console.error('syncSocialFeed Bluesky failed:', e.message);
+    log.push({ platform: 'bluesky', status: 'exception', error: e.message });
   }
 
   // ── Threads ──
@@ -167,7 +178,8 @@ export async function syncSocialFeed(env) {
       );
       if (thResp.ok) {
         const data = await thResp.json();
-        console.log('syncSocialFeed Threads: API returned', data.data?.length || 0, 'posts');
+        const postCount = data.data?.length || 0;
+        console.log('syncSocialFeed Threads: API returned', postCount, 'posts');
         const latestPost = data.data?.[0];
         if (latestPost?.text) {
           const newItem = {
@@ -183,28 +195,36 @@ export async function syncSocialFeed(env) {
             if (items[idx].content !== newItem.content) {
               items[idx] = newItem;
               updated = true;
+              log.push({ platform: 'threads', status: 'updated', postCount, content: newItem.content.slice(0, 80) });
             } else {
               console.log('syncSocialFeed Threads: content unchanged, skipping');
+              log.push({ platform: 'threads', status: 'unchanged', postCount });
             }
           } else {
             items.unshift(newItem);
             updated = true;
+            log.push({ platform: 'threads', status: 'added', postCount, content: newItem.content.slice(0, 80) });
           }
+        } else {
+          log.push({ platform: 'threads', status: 'no_text_in_latest', postCount });
         }
       } else {
         const errText = await thResp.text().catch(() => '');
         console.error('syncSocialFeed Threads error:', thResp.status, errText.slice(0, 300));
+        log.push({ platform: 'threads', status: 'error', code: thResp.status, error: errText.slice(0, 200) });
       }
+    } else {
+      log.push({ platform: 'threads', status: 'no_credentials' });
     }
   } catch (e) {
     console.error('syncSocialFeed Threads failed:', e.message);
+    log.push({ platform: 'threads', status: 'exception', error: e.message });
   }
 
   // ── X（OAuth 1.0a — 試讀 timeline，403 就跳過）──
   try {
     const { X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET } = env;
     if (X_API_KEY && X_ACCESS_TOKEN) {
-      // 先拿 user ID
       const meUrl = 'https://api.twitter.com/2/users/me';
       const meOp = {
         oauth_consumer_key: X_API_KEY,
@@ -224,7 +244,6 @@ export async function syncSocialFeed(env) {
         const meData = await meResp.json();
         const userId = meData.data?.id;
         if (userId) {
-          // 試讀最近推文
           const tweetsUrl = `https://api.twitter.com/2/users/${userId}/tweets`;
           const queryParams = { max_results: '5', 'tweet.fields': 'created_at,text' };
           const tOp = {
@@ -260,22 +279,33 @@ export async function syncSocialFeed(env) {
                 if (items[idx].content !== newItem.content) {
                   items[idx] = newItem;
                   updated = true;
+                  log.push({ platform: 'x', status: 'updated', content: newItem.content.slice(0, 80) });
+                } else {
+                  log.push({ platform: 'x', status: 'unchanged' });
                 }
               } else {
                 items.unshift(newItem);
                 updated = true;
+                log.push({ platform: 'x', status: 'added', content: newItem.content.slice(0, 80) });
               }
+            } else {
+              log.push({ platform: 'x', status: 'no_tweets' });
             }
           } else {
+            log.push({ platform: 'x', status: 'timeline_error', code: tResp.status });
             console.log('syncSocialFeed X timeline:', tResp.status, '— tier may not support reads');
           }
         }
       } else {
+        log.push({ platform: 'x', status: 'me_error', code: meResp.status });
         console.log('syncSocialFeed X /users/me:', meResp.status);
       }
+    } else {
+      log.push({ platform: 'x', status: 'no_credentials' });
     }
   } catch (e) {
     console.error('syncSocialFeed X failed:', e.message);
+    log.push({ platform: 'x', status: 'exception', error: e.message });
   }
 
   // 寫回 KV
@@ -285,4 +315,23 @@ export async function syncSocialFeed(env) {
     await env.TICKER_KV.put('feed_items', JSON.stringify(items));
     console.log('syncSocialFeed: KV updated');
   }
+
+  return { updated, log };
+}
+
+/**
+ * POST /feed/sync — admin-only manual trigger for syncSocialFeed with diagnostics
+ */
+export async function handleFeedSync(request, env) {
+  if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
+  const auth = await authenticateRequest(request, env, '');
+  if (!auth || !auth.isAdmin) {
+    // Also allow query param ?code=admin_code
+    const url = new URL(request.url);
+    const code = url.searchParams.get('code') || '';
+    const auth2 = await authenticateRequest(request, env, code);
+    if (!auth2 || !auth2.isAdmin) return jsonResponse({ error: 'Admin access required' }, 403, request);
+  }
+  const result = await syncSocialFeed(env);
+  return jsonResponse({ ok: true, ...result, timestamp: twISOString() }, 200, request);
 }
