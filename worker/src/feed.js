@@ -49,7 +49,6 @@ export async function handleFeedGet(request, env) {
       };
     });
   } catch (e) {
-    // comments table 不存在時不要炸掉整個 feed
     console.error('Feed: comment query failed:', e.message);
   }
 
@@ -174,14 +173,16 @@ export async function syncSocialFeed(env) {
   try {
     if (env.THREADS_USER_ID && env.THREADS_ACCESS_TOKEN) {
       const thResp = await fetch(
-        `https://graph.threads.net/v1.0/${env.THREADS_USER_ID}/threads?fields=id,text,timestamp,permalink&access_token=${env.THREADS_ACCESS_TOKEN}&limit=3`
+        `https://graph.threads.net/v1.0/${env.THREADS_USER_ID}/threads?fields=id,text,timestamp,permalink,media_type&access_token=${env.THREADS_ACCESS_TOKEN}&limit=5`
       );
       if (thResp.ok) {
         const data = await thResp.json();
-        const postCount = data.data?.length || 0;
+        const posts = data.data || [];
+        const postCount = posts.length;
         console.log('syncSocialFeed Threads: API returned', postCount, 'posts');
-        const latestPost = data.data?.[0];
-        if (latestPost?.text) {
+        // Find the first post with text content (skip image/video-only posts)
+        const latestPost = posts.find(p => p.text && p.text.trim().length > 0);
+        if (latestPost) {
           const newItem = {
             platform: '◉ Threads',
             color: '#000000',
@@ -206,7 +207,9 @@ export async function syncSocialFeed(env) {
             log.push({ platform: 'threads', status: 'added', postCount, content: newItem.content.slice(0, 80) });
           }
         } else {
-          log.push({ platform: 'threads', status: 'no_text_in_latest', postCount });
+          // All posts are media-only with no text
+          const types = posts.map(p => p.media_type || 'unknown');
+          log.push({ platform: 'threads', status: 'no_text_posts', postCount, media_types: types });
         }
       } else {
         const errText = await thResp.text().catch(() => '');
