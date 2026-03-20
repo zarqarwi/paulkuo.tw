@@ -151,6 +151,65 @@ const homeSchema = JSON.stringify({
             <a href="https://www.threads.net/@zarqarwi" class="social-link" target="_blank" rel="noopener">◉ Threads</a>
           </div>
         </div>
+        <div class="contact-form">
+          <form id="contact-form" toolname="contact_paul_kuo" tooldescription="Send a direct message or inquiry to Paul Kuo regarding consulting, speaking, collaborations, or circular economy topics. Paul is based in Taiwan and speaks Chinese, English, and Japanese.">
+            <div class="form-group">
+              <label for="contact-name">姓名</label>
+              <input type="text" id="contact-name" name="name" placeholder="你的名字" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="contact-email">邮箱</label>
+              <input type="email" id="contact-email" name="email" placeholder="you@example.com" required autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="contact-message">消息</label>
+              <textarea id="contact-message" name="message" placeholder="想聊些什么？"></textarea>
+            </div>
+            <button type="submit" class="btn-submit" id="contact-submit">发送</button>
+            <div id="form-feedback" role="status" aria-live="polite" style="margin-top:12px;text-align:center;font-size:0.88rem;display:none;"></div>
+          </form>
+          <script>
+            (function() {
+              const form = document.getElementById('contact-form');
+              const btn = document.getElementById('contact-submit');
+              const feedback = document.getElementById('form-feedback');
+              if (!form || !btn || !feedback) return;
+              const originalText = btn.textContent;
+              form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (btn.disabled) return;
+                const name = document.getElementById('contact-name').value.trim();
+                const email = document.getElementById('contact-email').value.trim();
+                const message = document.getElementById('contact-message').value.trim();
+                if (!name || !email) {
+                  feedback.style.display = 'block';
+                  feedback.style.color = '#ff6b6b';
+                  feedback.textContent = '请填写姓名和邮箱。';
+                  return;
+                }
+                btn.disabled = true;
+                btn.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span> 发送中...';
+                feedback.style.display = 'none';
+                var subject = encodeURIComponent('来自 paulkuo.tw 的消息 — ' + name);
+                var body = encodeURIComponent('姓名：' + name + '\n邮箱：' + email + '\n\n' + message);
+                window.location.href = 'mailto:paul@lasaas.com?subject=' + subject + '&body=' + body;
+                setTimeout(function() {
+                  btn.disabled = false;
+                  btn.textContent = originalText;
+                  feedback.style.display = 'block';
+                  feedback.style.color = 'rgba(255,255,255,0.8)';
+                  feedback.textContent = '✅ 邮件已打开，请确认发送。谢谢！';
+                  setTimeout(function() { feedback.style.display = 'none'; }, 6000);
+                }, 1200);
+              });
+            })();
+          </script>
+          <style>
+            @keyframes contact-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            .btn-submit:disabled { cursor: not-allowed; opacity: 0.6; pointer-events: none; }
+            .btn-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: contact-spin 0.6s linear infinite; vertical-align: middle; margin-right: 4px; }
+          </style>
+        </div>
       </div>
     </div>
   </section>
