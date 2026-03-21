@@ -411,8 +411,9 @@ export default {
 
     // Auth check for all endpoints
     const authHeader = request.headers.get('Authorization');
-    const token = authHeader?.replace('Bearer ', '');
-    if (token !== env.EVAL_AUTH_TOKEN) {
+    const token = authHeader?.replace(/^Bearer\s+/i, '').trim();
+    const expected = (env.EVAL_AUTH_TOKEN || '').trim();
+    if (!token || !expected || token !== expected) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
