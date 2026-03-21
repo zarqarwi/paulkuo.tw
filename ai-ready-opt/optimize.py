@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AI-Ready Continuous Optimization System — MVP (v1.1)"""
+"""AI-Ready Continuous Optimization System — MVP (v2)"""
 
 import os
 import sys
@@ -98,19 +98,52 @@ Articles you may add/modify `faq` frontmatter on:
 
     prompt = f"""You are an AI-Ready SEO optimizer for paulkuo.tw.
 
+## Scoring Breakdown (from eval Worker)
+The eval Worker scores 4 layers. Here are the current sub-scores and what each layer checks:
+
+### JSON-LD ({baseline_sub.get('json_ld', 0)}/25) — BIGGEST GAP
+- Coverage (10 pts): % of sampled pages (/, /about, /articles, + articles) that have JSON-LD
+- Person @id (5 pts): Any page has Person schema with @id attribute
+- Property completeness (5 pts): Article schemas have all 5 required fields (name, headline, description, author, datePublished)
+- No duplicate entities (5 pts): No inline Person schemas without @id
+⚠️ FAQ schema is NOT scored in this layer. Adding FAQ to articles will NOT improve this score.
+
+### llms.txt ({baseline_sub.get('llms_txt', 0)}/25)
+- H1 brand (5), blockquote (5), H2 sections≥3 (5), links exist (3), links reachable (7)
+
+### MCP+A2A ({baseline_sub.get('mcp_a2a', 0)}/25)
+- mcp.json valid+tools (10), agent-card.json valid+skills (10), cross-match (5)
+
+### AI Comprehension ({baseline_sub.get('ai_comprehension', 0)}/25)
+- 10 factual questions answered by Claude using llms.txt content, 2.5 pts each
+
+## Your Task
+1. FIRST, analyze which sub-score has the biggest gap and which specific sub-item is losing points
+2. THEN, identify which file modification would directly improve that sub-item
+3. ONLY THEN, produce your modification
+
+## Action Priority (follow this order strictly)
+1. Fix structural JSON-LD issues in src/data/siteSchema.ts (duplicate Person, missing CollectionPage, incomplete Article properties)
+2. Improve llms.txt for AI comprehension gains
+3. Fix MCP/A2A issues (usually already at max)
+4. Add article FAQ (LAST RESORT — currently not scored by eval)
+
+## Anti-Patterns (DO NOT do these)
+- DO NOT add FAQ frontmatter to articles hoping to improve JSON-LD score — it won't work
+- DO NOT repeat a strategy that failed in the previous iteration
+- DO NOT make changes that cannot be measured by the eval Worker
+
 ## Rules
 - You may ONLY modify these files: {list(file_contents.keys())} or any article listed below
-- For article .md files, you may ONLY add or modify the `faq` frontmatter field. Do NOT change title, description, date, body, or any other field.
+- For article .md files, you may ONLY add or modify the `faq` frontmatter field
 - faq format: a YAML list of {{q: "question", a: "answer"}} items
 - Make ONE small, targeted modification per iteration
-- Focus on the lowest-scoring dimension first
-- When modifying an article, output the COMPLETE file content (frontmatter + body). You must preserve the original body exactly.
+- When modifying an article, output the COMPLETE file content (frontmatter + body)
 
 ## Current State
 - Total score: {baseline_score}/100
 - Sub-scores: {json.dumps(baseline_sub)}
-- Focus areas: {json.dumps(strategy.get('focus_areas', []))}
-- Known gaps: {json.dumps(strategy.get('known_gaps', []))}
+- Focus areas: {json.dumps(strategy.get('focus_areas', {{}}))}
 
 ## Previous Changes (avoid repeating)
 {json.dumps(previous_changes[-2:] if previous_changes else [])}
@@ -118,16 +151,27 @@ Articles you may add/modify `faq` frontmatter on:
 ## Metadata File Contents
 {chr(10).join(f"### {path}{chr(10)}```{chr(10)}{content}{chr(10)}```" for path, content in file_contents.items())}
 {articles_section}
+
 ## Output Format
 Respond with EXACTLY this JSON structure, nothing else:
 {{
+  "analysis": "<which sub-score is lowest, which sub-item loses most points, which file to modify and why>",
   "file": "<file path to modify>",
-  "reason": "<why this change will improve the score>",
+  "reason": "<why this specific change will improve the specific sub-item score>",
   "content": "<complete new file content>"
 }}
 
-If you choose to modify an article, you MUST first read its full content. Since you only see the frontmatter summary above, include a "read_file" field instead:
+If no meaningful improvement is possible with allowed files, respond:
 {{
+  "analysis": "<explanation of why no action is beneficial>",
+  "file": "none",
+  "reason": "no_action",
+  "content": ""
+}}
+
+If you choose to modify an article, you MUST first read its full content:
+{{
+  "analysis": "<gap analysis>",
   "file": "<article path>",
   "reason": "<why adding FAQ to this article will improve the score>",
   "read_file": true
@@ -184,9 +228,23 @@ Respond with EXACTLY this JSON:
         text = re.sub(r'\s*```$', '', text.strip())
         mutation = json.loads(text)
 
+    # Handle no_action response
+    if mutation.get("file") == "none" or mutation.get("reason") == "no_action":
+        return {
+            "file": "none",
+            "reason": mutation.get("analysis", "No beneficial action found"),
+            "content": "",
+            "no_action": True,
+            "token_usage": {
+                "input": total_input,
+                "output": total_output
+            }
+        }
+
     return {
         "file": mutation["file"],
         "reason": mutation["reason"],
+        "analysis": mutation.get("analysis", ""),
         "content": mutation["content"],
         "token_usage": {
             "input": total_input,
@@ -432,7 +490,7 @@ def main():
             "experiment_id": "ai-ready-opt-v1",
             "iteration_id": iteration_id,
             "timestamp": datetime.now().isoformat(),
-            "strategy_version": "v1",
+            "strategy_version": "v2",
         }
 
         # 1. Mutation (1 retry)
@@ -457,8 +515,21 @@ def main():
             continue
 
         entry["change_summary"] = mutation["reason"]
+        entry["gap_analysis"] = mutation.get("analysis", "")
         entry["files_modified"] = [mutation["file"]]
         entry["token_usage"] = mutation.get("token_usage")
+
+        # Handle no_action response
+        if mutation.get("no_action"):
+            print(f"  Agent determined no beneficial action: {mutation['reason']}")
+            entry["evaluation_status"] = "no_action"
+            entry["failure_reason"] = mutation["reason"]
+            log_experiment(entry)
+            no_improvement_streak += 1
+            if no_improvement_streak >= strategy.get("stop_after_no_improvement", 2):
+                print(f"\nNo improvement for {no_improvement_streak} iterations, stopping")
+                break
+            continue
 
         # 2. Guard (no retry)
         print("Checking file guard...")

@@ -6,6 +6,7 @@
  */
 import { createHash } from 'crypto';
 import { readFileSync } from 'fs';
+import { getSiteGraph } from '../data/siteSchema';
 
 const cssHash = (file: string) => createHash('md5').update(readFileSync(`public/styles/${file}`)).digest('hex').slice(0, 8);
 const globalCssV = cssHash('global.css');
@@ -35,6 +36,8 @@ const {
   currentLang,
   hreflangs,
 } = Astro.props;
+
+const defaultSchema = JSON.stringify(getSiteGraph());
 ---
 
 <meta charset="UTF-8">
@@ -71,49 +74,5 @@ const {
 <link rel="stylesheet" href={`/styles/global.css?v=${globalCssV}`}>
 <link rel="stylesheet" href={`/styles/cjk-fixes.css?v=${cjkCssV}`}>
 <link rel="stylesheet" href={`/styles/ticker-colors.css?v=${tickerCssV}`}>
-{schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Person",
-      "@id": "https://paulkuo.tw/#person",
-      "name": "Paul Kuo",
-      "alternateName": "郭曜郎",
-      "url": "https://paulkuo.tw",
-      "description": "Paul Kuo（郭曜郎）— 在技術與文明的交匯處，以 AI 策略、循環經濟與人文視角重建秩序。深度文章涵蓋智能趨勢、廢棄物資源化與文明反思。",
-      "image": "https://paulkuo.tw/paul-photo.png",
-      "jobTitle": "Circular Economy & AI Strategy Consultant",
-      "worksFor": {
-        "@type": "Organization",
-        "name": "SDTI 佳龍科技",
-        "url": "https://www.sdti.com.tw"
-      },
-      "knowsAbout": ["Circular Economy", "AI Systems", "Taiwan-Japan Industrial Cooperation", "Theology", "Urban Mining", "PCB Metal Recovery", "Startup Strategy", "Agentic SEO", "Taiwan-Japan Business"],
-      "alumniOf": ["AppWorks"],
-      "nationality": { "@type": "Country", "name": "Taiwan" },
-      "sameAs": [
-        "https://www.linkedin.com/in/paulkuo",
-        "https://x.com/zarqarwi",
-        "https://www.threads.net/@zarqarwi",
-        "https://www.youtube.com/@kuopaul8265",
-        "https://www.facebook.com/guo.yao.lang.2025",
-        "https://www.instagram.com/zarqarwi",
-        "https://bsky.app/profile/paulkuo.bsky.social",
-        "https://www.reddit.com/user/Constant-Variety1656"
-      ]
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://paulkuo.tw/#website",
-      "name": "Paul Kuo",
-      "url": "https://paulkuo.tw",
-      "description": "Paul Kuo（郭曜郎）— 在技術與文明的交匯處，以 AI 策略、循環經濟與人文視角重建秩序。深度文章涵蓋智能趨勢、廢棄物資源化與文明反思。",
-      "publisher": { "@id": "https://paulkuo.tw/#person" },
-      "inLanguage": ["zh-Hant", "en", "ja", "zh-Hans"]
-    }
-  ]
-}
-</script>
+<script type="application/ld+json" set:html={schemaJson || defaultSchema} />
 <script src="/webmcp.js" defer></script>
