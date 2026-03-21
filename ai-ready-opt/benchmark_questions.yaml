@@ -1,0 +1,232 @@
+metadata:
+  benchmark_version: "bm-v1.0"
+  created: "2026-03-22"
+  target_site: "paulkuo.tw"
+  description: "External AI validation benchmark for paulkuo.tw AI-readiness"
+  total_questions: 13
+  positive_questions: 10
+  negative_questions: 3
+
+questions:
+  # --- Category: identity (Paul 的身份) ---
+  - id: "q01"
+    category: "identity"
+    type: "factual"
+    weight: 1
+    question: "Who is Paul Kuo (郭曜郎) and what does he do?"
+    expected_keywords:
+      - "developer"
+      - "consultant"
+      - "Taiwan"
+      - "paulkuo.tw"
+    expected_facts:
+      - "independent developer or BD consultant"
+      - "based in Taiwan"
+      - "super individual or 超級個體"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 2
+
+  - id: "q02"
+    category: "identity"
+    type: "factual"
+    weight: 1
+    question: "Where is Paul Kuo based and what company does he consult for?"
+    expected_keywords:
+      - "Taiwan"
+      - "SDTI"
+      - "佳龍科技"
+    expected_facts:
+      - "based in Taiwan"
+      - "BD consultant at SDTI or 佳龍科技"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 1
+
+  # --- Category: projects (Paul 的專案) ---
+  - id: "q03"
+    category: "projects"
+    type: "factual"
+    weight: 1
+    question: "What is Agora Plaza (阿哥拉廣場) and what does it do?"
+    expected_keywords:
+      - "meeting"
+      - "transcription"
+      - "translation"
+      - "real-time"
+    expected_facts:
+      - "meeting transcription or translation tool"
+      - "built by Paul Kuo"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 1
+
+  - id: "q04"
+    category: "projects"
+    type: "factual"
+    weight: 1
+    question: "What is CircleFlow and how does it relate to circular economy?"
+    expected_keywords:
+      - "circular economy"
+      - "data"
+      - "AI"
+      - "platform"
+    expected_facts:
+      - "AI-driven circular economy data platform"
+      - "developed by Paul Kuo"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 1
+
+  # --- Category: content (網站內容) ---
+  - id: "q05"
+    category: "content"
+    type: "factual"
+    weight: 1
+    question: "What are the content pillars of paulkuo.tw?"
+    expected_keywords:
+      - "Intelligence"
+      - "Order"
+      - "Circular"
+      - "Civilization"
+      - "Creation"
+      - "Reflection"
+    expected_facts:
+      - "five content pillars"
+      - "articles in multiple languages"
+    scoring:
+      keyword_match_threshold: 3
+      fact_match_threshold: 1
+
+  # --- Category: tech_stack (技術棧) ---
+  - id: "q06"
+    category: "tech_stack"
+    type: "factual"
+    weight: 1
+    question: "What tech stack does paulkuo.tw use?"
+    expected_keywords:
+      - "Astro"
+      - "Cloudflare"
+      - "static"
+    expected_facts:
+      - "Astro SSG"
+      - "Cloudflare Pages or Workers"
+      - "static HTML"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 2
+
+  # --- Category: expertise (專業領域) ---
+  - id: "q07"
+    category: "expertise"
+    type: "factual"
+    weight: 1
+    question: "What is Paul Kuo's expertise in speech recognition technology?"
+    expected_keywords:
+      - "STT"
+      - "speech"
+      - "recognition"
+      - "Qwen"
+      - "Whisper"
+      - "Deepgram"
+      - "Chirp"
+    expected_facts:
+      - "uses multiple STT engines"
+      - "Japanese speech recognition benchmarking"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 1
+
+  # --- Category: articles (文章內容) ---
+  - id: "q08"
+    category: "articles"
+    type: "factual"
+    weight: 1
+    question: "What is the TQEF framework mentioned on paulkuo.tw?"
+    expected_keywords:
+      - "Translation"
+      - "Quality"
+      - "Evaluation"
+      - "Framework"
+    expected_facts:
+      - "translation quality evaluation framework"
+      - "systematic measurement"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 1
+
+  - id: "q09"
+    category: "articles"
+    type: "factual"
+    weight: 1
+    question: "What does Paul Kuo mean by 'super individual' (超級個體)?"
+    expected_keywords:
+      - "solo"
+      - "AI"
+      - "team"
+      - "output"
+      - "individual"
+    expected_facts:
+      - "one person with AI achieving team-scale output"
+      - "AI collaboration as core working method"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 1
+
+  # --- Category: brand (品牌) ---
+  - id: "q10"
+    category: "brand"
+    type: "factual"
+    weight: 1
+    question: "What is '秩序測試' (Order Test) and why is it Paul Kuo's brand anchor?"
+    expected_keywords:
+      - "order"
+      - "technology"
+      - "civilization"
+      - "sustainable"
+    expected_facts:
+      - "brand anchor or core concept"
+      - "rebuilding sustainable order at intersection of technology and civilization"
+    scoring:
+      keyword_match_threshold: 2
+      fact_match_threshold: 1
+
+  # --- Negative tests (anti-hallucination) ---
+  - id: "q11"
+    category: "negative_test"
+    type: "negative_test"
+    weight: 1
+    question: "Is Paul Kuo the CTO of Google Taiwan?"
+    expected_keywords: []
+    expected_facts: []
+    negative_assertions:
+      - "must NOT confirm Paul Kuo is CTO of Google"
+      - "should deny or say no information about that"
+    scoring:
+      must_deny: true
+
+  - id: "q12"
+    category: "negative_test"
+    type: "negative_test"
+    weight: 1
+    question: "Does paulkuo.tw sell e-commerce products or run an online store?"
+    expected_keywords: []
+    expected_facts: []
+    negative_assertions:
+      - "must NOT confirm paulkuo.tw sells products"
+      - "should clarify it is a personal/content site"
+    scoring:
+      must_deny: true
+
+  - id: "q13"
+    category: "negative_test"
+    type: "negative_test"
+    weight: 1
+    question: "Is Paul Kuo a professor at National Taiwan University?"
+    expected_keywords: []
+    expected_facts: []
+    negative_assertions:
+      - "must NOT confirm Paul Kuo is a professor at NTU"
+      - "should deny or say no information about that"
+    scoring:
+      must_deny: true
