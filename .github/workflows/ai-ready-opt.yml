@@ -16,7 +16,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   optimize:
@@ -45,7 +44,6 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           EVAL_AUTH_TOKEN: ${{ secrets.EVAL_AUTH_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python ai-ready-opt/optimize.py --max-iterations ${{ inputs.max_iterations || '5' }}
 
       - name: Commit experiment log

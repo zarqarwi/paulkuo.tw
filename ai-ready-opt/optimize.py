@@ -258,102 +258,54 @@ def _check_size(file_path, new_content):
         raise PolicyViolation(f"Size increase too large: {len(new_content)} > {original_size * 3}")
 
 
-# --- Module 4: Preview Deployer ---
+# --- Module 4: Direct-to-Main Deploy (MVP) ---
+# MVP 策略：直接 commit 到 main → 等 CF Pages production rebuild → eval
+# 如果分數下降 → git revert + push。比 preview branch 簡單可靠。
 
-def verify_preview_readiness(preview_url):
-    """確認 preview 站點關鍵頁面可存取"""
-    critical_paths = [
-        "/",              # 首頁
-        "/llms.txt",      # llms.txt
-        "/blog",          # 文章列表
-    ]
-    for path in critical_paths:
-        url = f"{preview_url}{path}"
-        try:
-            resp = requests.get(url, timeout=15)
-            if resp.status_code != 200:
-                raise RuntimeError(f"Preview readiness failed: {url} returned {resp.status_code}")
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(f"Preview readiness failed: {url} — {e}")
-
-
-def deploy_preview(iteration_id, file_path, new_content):
-    """推到 preview branch，等 Cloudflare Pages 部署"""
-    branch = f"ai-ready-opt-{iteration_id}"
-
-    # 建 branch
-    run_cmd(["git", "checkout", "-b", branch, "main"])
-
-    # 寫入修改
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+def apply_change(iteration_id, file_path, new_content):
+    """寫入修改，commit + push 到 main"""
+    os.makedirs(os.path.dirname(file_path) or ".", exist_ok=True)
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    # commit + push
     run_cmd(["git", "add", file_path])
     run_cmd(["git", "commit", "-m", f"ai-ready-opt: {iteration_id}"])
-    run_cmd(["git", "push", "origin", branch])
-
-    # 等 CF Pages preview（polling，最多 5 分鐘）
-    preview_url = f"https://{branch}.paulkuo-tw.pages.dev"
-    deadline = time.time() + 300
-    while time.time() < deadline:
-        try:
-            resp = requests.head(preview_url, timeout=10)
-            if resp.status_code < 500:
-                # 等待穩定
-                time.sleep(30)
-                # Readiness check
-                verify_preview_readiness(preview_url)
-                return preview_url
-        except Exception:
-            pass
-        time.sleep(15)
-
-    raise TimeoutError(f"Preview deploy timeout: {preview_url}")
-
-
-def create_pr(iteration_id, mutation_reason, baseline_score, preview_score):
-    """keep 後自動開 PR 而非直接 merge"""
-    branch = f"ai-ready-opt-{iteration_id}"
-    diff = preview_score - baseline_score
-    title = f"ai-ready-opt: {iteration_id} (+{diff}pts)"
-    body = f"""## AI-Ready Optimization — 自動提案
-
-**修改理由**：{mutation_reason}
-**分數變化**：{baseline_score} → {preview_score} (+{diff})
-
-由 AI-Ready Optimization System 自動產生。
-Review 後 merge 或 close。
-"""
-    run_cmd([
-        "gh", "pr", "create",
-        "--base", "main",
-        "--head", branch,
-        "--title", title,
-        "--body", body,
-    ])
-
-
-def merge_branch(iteration_id):
-    """保留修改：merge 到 main（V2 auto-merge 時再啟用）"""
-    branch = f"ai-ready-opt-{iteration_id}"
-    run_cmd(["git", "checkout", "main"])
-    run_cmd(["git", "merge", branch, "--no-ff", "-m", f"ai-ready-opt: keep {iteration_id}"])
     run_cmd(["git", "push", "origin", "main"])
-    run_cmd(["git", "branch", "-d", branch])
-    run_cmd(["git", "push", "origin", "--delete", branch])
+
+    # 回傳 commit hash 供 revert 用
+    sha = run_cmd(["git", "rev-parse", "HEAD"]).strip()
+    return sha
 
 
-def cleanup_branch(iteration_id):
-    """回退修改：刪除 branch"""
-    branch = f"ai-ready-opt-{iteration_id}"
-    run_cmd(["git", "checkout", "main"])
-    try:
-        run_cmd(["git", "branch", "-D", branch])
-        run_cmd(["git", "push", "origin", "--delete", branch])
-    except Exception:
-        pass  # branch 可能不存在
+def wait_for_production(production_url, max_wait=180):
+    """等 CF Pages production rebuild 完成（polling 關鍵頁面）"""
+    critical_paths = ["/", "/llms.txt"]
+    deadline = time.time() + max_wait
+    # 先等 30 秒讓 build 啟動
+    time.sleep(30)
+    while time.time() < deadline:
+        all_ok = True
+        for path in critical_paths:
+            try:
+                resp = requests.get(f"{production_url}{path}", timeout=15)
+                if resp.status_code != 200:
+                    all_ok = False
+                    break
+            except Exception:
+                all_ok = False
+                break
+        if all_ok:
+            return True
+        time.sleep(15)
+    # production 通常已經在跑，即使 polling 超時也繼續 eval
+    print("  Warning: production readiness polling timed out, proceeding with eval")
+    return True
+
+
+def revert_change(commit_sha):
+    """git revert 回退指定 commit 並 push"""
+    run_cmd(["git", "revert", "--no-edit", commit_sha])
+    run_cmd(["git", "push", "origin", "main"])
 
 
 def run_cmd(cmd):
@@ -467,7 +419,6 @@ def main():
     print(f"Baseline: {baseline_score}/100 — {baseline_sub}")
 
     no_improvement_streak = 0
-    consecutive_deploy_failures = 0
     consecutive_eval_failures = 0
     previous_changes = []
 
@@ -481,7 +432,6 @@ def main():
             "experiment_id": "ai-ready-opt-v1",
             "iteration_id": iteration_id,
             "timestamp": datetime.now().isoformat(),
-            "branch": f"ai-ready-opt-{iteration_id}",
             "strategy_version": "v1",
         }
 
@@ -528,35 +478,33 @@ def main():
             log_experiment(entry)
             continue
 
-        # 3. Preview deploy (consecutive failure abort at 3)
-        print("Deploying preview...")
+        # 3. Apply change to main (commit + push)
+        print("Applying change to main...")
+        commit_sha = None
         try:
-            preview_url = deploy_preview(iteration_id, mutation["file"], mutation["content"])
-            print(f"  Preview: {preview_url}")
-            consecutive_deploy_failures = 0
-            entry["preview_url"] = preview_url
-            entry["deploy_status"] = "success"
+            commit_sha = apply_change(iteration_id, mutation["file"], mutation["content"])
+            print(f"  Committed: {commit_sha[:8]}")
+            entry["commit_sha"] = commit_sha
         except Exception as e:
-            consecutive_deploy_failures += 1
             print(f"  FAILED: {e}")
-            entry["deploy_status"] = "failed"
+            entry["evaluation_status"] = "commit_failed"
             entry["failure_reason"] = str(e)
-            cleanup_branch(iteration_id)
             log_experiment(entry)
-            if consecutive_deploy_failures >= 3:
-                print("3 consecutive deploy failures, aborting run")
-                break
             continue
 
-        # 4. Evaluate (2 retries, 10s interval; consecutive failure abort at 3)
-        print("Evaluating preview...")
-        preview_score = None
-        preview_sub = None
+        # 4. Wait for CF Pages production rebuild
+        print("Waiting for production rebuild...")
+        wait_for_production(PRODUCTION_URL)
+
+        # 5. Evaluate production (2 retries, 10s interval)
+        print("Evaluating production...")
+        new_score = None
+        new_sub = None
         for attempt in range(3):
             try:
-                result = evaluate(preview_url, auth_token)
-                preview_score = result["total"]
-                preview_sub = result["sub_scores"]
+                result = evaluate(PRODUCTION_URL, auth_token)
+                new_score = result["total"]
+                new_sub = result["sub_scores"]
                 consecutive_eval_failures = 0
                 break
             except Exception as e:
@@ -568,49 +516,58 @@ def main():
                     print(f"  FAILED after 3 attempts: {e}")
                     entry["evaluation_status"] = "eval_failed"
                     entry["failure_reason"] = str(e)
-                    cleanup_branch(iteration_id)
+                    # eval 失敗 → 安全起見 revert
+                    print("  Reverting due to eval failure...")
+                    try:
+                        revert_change(commit_sha)
+                    except Exception:
+                        print("  Warning: revert also failed")
                     log_experiment(entry)
 
-        if preview_score is None:
+        if new_score is None:
             if consecutive_eval_failures >= 3:
                 print("3 consecutive eval failures, aborting run")
                 break
             continue
 
-        print(f"  Score: {baseline_score} -> {preview_score} (diff: {preview_score - baseline_score})")
-        print(f"  Sub-scores: {preview_sub}")
+        print(f"  Score: {baseline_score} -> {new_score} (diff: {new_score - baseline_score})")
+        print(f"  Sub-scores: {new_sub}")
         entry["baseline_score"] = baseline_score
-        entry["preview_score"] = preview_score
-        entry["score_diff"] = preview_score - baseline_score
+        entry["preview_score"] = new_score
+        entry["score_diff"] = new_score - baseline_score
         entry["baseline_sub_scores"] = baseline_sub
-        entry["preview_sub_scores"] = preview_sub
+        entry["preview_sub_scores"] = new_sub
         entry["evaluation_status"] = "success"
 
-        # 5. Decide
-        decision = decide(baseline_score, preview_score, baseline_sub, preview_sub, strategy)
+        # 6. Decide: keep or revert
+        decision = decide(baseline_score, new_score, baseline_sub, new_sub, strategy)
         print(f"  Decision: {decision['action']} — {decision['reason']}")
         entry["kept_or_reverted"] = decision["action"]
 
         if decision["action"] == "keep":
-            create_pr(iteration_id, mutation["reason"], baseline_score, preview_score)
-            baseline_score = preview_score
-            baseline_sub = preview_sub
+            baseline_score = new_score
+            baseline_sub = new_sub
             no_improvement_streak = 0
             previous_changes.append(mutation["reason"])
-            print(f"  PR created. New baseline: {baseline_score}")
+            print(f"  Kept. New baseline: {baseline_score}")
         else:
-            cleanup_branch(iteration_id)
+            print("  Reverting...")
+            try:
+                revert_change(commit_sha)
+                print("  Reverted successfully")
+            except Exception as e:
+                print(f"  Warning: revert failed: {e}")
             no_improvement_streak += 1
             entry["failure_reason"] = decision["reason"]
-            print(f"  Reverted. Streak: {no_improvement_streak}")
+            print(f"  Streak: {no_improvement_streak}")
 
-        # 6. Log
+        # 7. Log
         entry["model"] = strategy.get("model", "claude-sonnet-4-20250514")
         log_experiment(entry)
 
-        # 7. Stop conditions
-        if preview_score >= strategy.get("target_score", 95):
-            print(f"\nTarget reached: {preview_score} >= {strategy['target_score']}")
+        # 8. Stop conditions
+        if new_score >= strategy.get("target_score", 95):
+            print(f"\nTarget reached: {new_score} >= {strategy['target_score']}")
             break
 
         if no_improvement_streak >= strategy.get("stop_after_no_improvement", 2):
