@@ -1,0 +1,47 @@
+[
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210732-1",
+    "timestamp": "2026-03-21T07:32:18.965477",
+    "branch": "ai-ready-opt-202603210732-1",
+    "strategy_version": "v1",
+    "evaluation_status": "mutation_failed",
+    "failure_reason": "Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 212512 tokens > 200000 maximum'}, 'request_id': 'req_011CZFqT4W1LAaQ6WfyaWFAX'}"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210732-2",
+    "timestamp": "2026-03-21T07:32:19.726523",
+    "branch": "ai-ready-opt-202603210732-2",
+    "strategy_version": "v1",
+    "evaluation_status": "mutation_failed",
+    "failure_reason": "Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 212512 tokens > 200000 maximum'}, 'request_id': 'req_011CZFqT7nhVNi5pwQoGQ8Ce'}"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210732-3",
+    "timestamp": "2026-03-21T07:32:20.506684",
+    "branch": "ai-ready-opt-202603210732-3",
+    "strategy_version": "v1",
+    "evaluation_status": "mutation_failed",
+    "failure_reason": "Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 212512 tokens > 200000 maximum'}, 'request_id': 'req_011CZFqTAccg9EuHhepQ7gtH'}"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210732-4",
+    "timestamp": "2026-03-21T07:32:21.186081",
+    "branch": "ai-ready-opt-202603210732-4",
+    "strategy_version": "v1",
+    "evaluation_status": "mutation_failed",
+    "failure_reason": "Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 212512 tokens > 200000 maximum'}, 'request_id': 'req_011CZFqTDahpXjQm5SaNQgcq'}"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210732-5",
+    "timestamp": "2026-03-21T07:32:21.864253",
+    "branch": "ai-ready-opt-202603210732-5",
+    "strategy_version": "v1",
+    "evaluation_status": "mutation_failed",
+    "failure_reason": "Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 212512 tokens > 200000 maximum'}, 'request_id': 'req_011CZFqTGSrUh8KzYUvqcfMh'}"
+  }
+]
