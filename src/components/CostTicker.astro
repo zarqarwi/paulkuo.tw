@@ -94,10 +94,10 @@ function buildTickerHTML(d) {
       + '</div>';
   }
 
-  if (d.visitors && d.visitors.uniqueVisitors != null) {
+  if (d.visitors && d.visitors.visits != null) {
     html += '<div class="ticker-sep"></div>'
-      + '<div class="ticker-item" title="昨日訪客數（與流量分析同源）">'
-      + '<span class="ticker-label">\ud83d\udc65 訪客</span><span class="ticker-value" id="liveVisitors">' + d.visitors.uniqueVisitors.toLocaleString() + '/日</span></div>';
+      + '<div class="ticker-item" title="昨日訪客數（Web Analytics 同源）">'
+      + '<span class="ticker-label">\ud83d\udc65 訪客</span><span class="ticker-value" id="liveVisitors">' + d.visitors.visits.toLocaleString() + '/日</span></div>';
   }
 
   return html;
