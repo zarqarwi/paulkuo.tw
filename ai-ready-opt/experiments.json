@@ -171,5 +171,81 @@
     },
     "deploy_status": "failed",
     "failure_reason": "Preview deploy timeout: https://ai-ready-opt-202603211051-3.paulkuo-tw.pages.dev"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603211136-1",
+    "timestamp": "2026-03-21T11:36:11.189085",
+    "strategy_version": "v1",
+    "evaluation_status": "mutation_failed",
+    "failure_reason": "Expecting value: line 1 column 1 (char 0)"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603211136-2",
+    "timestamp": "2026-03-21T11:36:30.251512",
+    "strategy_version": "v1",
+    "change_summary": "This popular article about AI capability gaps would benefit from FAQ schema to improve JSON-LD structured data score. The topic naturally generates questions about AI adoption statistics and implications.",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97766,
+      "output": 4688
+    },
+    "commit_sha": "2921d2b0428813ad9d25afce1a3ae0f492c12353",
+    "baseline_score": 85,
+    "preview_score": 85,
+    "score_diff": 0,
+    "baseline_sub_scores": {
+      "llms_txt": 25,
+      "json_ld": 12,
+      "mcp_a2a": 25,
+      "ai_comprehension": 23
+    },
+    "preview_sub_scores": {
+      "llms_txt": 25,
+      "json_ld": 12,
+      "mcp_a2a": 25,
+      "ai_comprehension": 23
+    },
+    "evaluation_status": "success",
+    "kept_or_reverted": "revert",
+    "failure_reason": "Improvement 0 < threshold 2",
+    "model": "claude-sonnet-4-20250514"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603211138-3",
+    "timestamp": "2026-03-21T11:38:19.844488",
+    "strategy_version": "v1",
+    "change_summary": "Adding FAQ to this high-visibility AI article about capability gaps will trigger FAQPage JSON-LD schema and improve the json-ld score. This article covers important AI adoption data that readers likely have questions about.",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97788,
+      "output": 4624
+    },
+    "commit_sha": "495ef25ba144cdd00c59b293ec82e363ee2fb29d",
+    "baseline_score": 85,
+    "preview_score": 85,
+    "score_diff": 0,
+    "baseline_sub_scores": {
+      "llms_txt": 25,
+      "json_ld": 12,
+      "mcp_a2a": 25,
+      "ai_comprehension": 23
+    },
+    "preview_sub_scores": {
+      "llms_txt": 25,
+      "json_ld": 12,
+      "mcp_a2a": 25,
+      "ai_comprehension": 23
+    },
+    "evaluation_status": "success",
+    "kept_or_reverted": "revert",
+    "failure_reason": "Improvement 0 < threshold 2",
+    "model": "claude-sonnet-4-20250514"
   }
 ]
