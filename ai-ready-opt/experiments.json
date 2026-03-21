@@ -120,5 +120,56 @@
     },
     "evaluation_status": "policy_violation",
     "failure_reason": "File not in whitelist: src/content/articles/ai-capability-gap-2026.md"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603211038-1",
+    "timestamp": "2026-03-21T10:38:32.018271",
+    "branch": "ai-ready-opt-202603211038-1",
+    "strategy_version": "v1",
+    "change_summary": "Adding FAQ to a highly relevant AI topic article will trigger FAQPage JSON-LD schema, improving the json_ld score which is currently the lowest at 12/100",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97774,
+      "output": 4461
+    },
+    "deploy_status": "failed",
+    "failure_reason": "Preview deploy timeout: https://ai-ready-opt-202603211038-1.paulkuo-tw.pages.dev"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603211045-2",
+    "timestamp": "2026-03-21T10:45:05.406657",
+    "branch": "ai-ready-opt-202603211045-2",
+    "strategy_version": "v1",
+    "change_summary": "This article about AI capability gaps would benefit from FAQ schema as it addresses common questions about AI adoption statistics, Taiwan's position, and implications for different user segments. Adding FAQ frontmatter will trigger FAQPage JSON-LD generation, improving the json_ld score.",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97810,
+      "output": 4654
+    },
+    "deploy_status": "failed",
+    "failure_reason": "Preview deploy timeout: https://ai-ready-opt-202603211045-2.paulkuo-tw.pages.dev"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603211051-3",
+    "timestamp": "2026-03-21T10:51:39.671945",
+    "branch": "ai-ready-opt-202603211051-3",
+    "strategy_version": "v1",
+    "change_summary": "This article about AI capability gaps would benefit from FAQ schema to improve JSON-LD structured data score. It's a popular topic that likely generates common questions about AI adoption statistics and implications.",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97774,
+      "output": 4570
+    },
+    "deploy_status": "failed",
+    "failure_reason": "Preview deploy timeout: https://ai-ready-opt-202603211051-3.paulkuo-tw.pages.dev"
   }
 ]
