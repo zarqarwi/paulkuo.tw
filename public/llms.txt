@@ -1,60 +1,72 @@
-# paulkuo.tw — LLMs.txt
+# Paul Kuo — paulkuo.tw
 
-> Paul Kuo（郭曜郎）— 在技術與文明的交匯處，以 AI 策略、循環經濟與人文視角重建秩序。深度文章涵蓋智能趨勢、廢棄物資源化與文明反思。
+> Paul Kuo (郭曜郎) is an independent developer, BD consultant, and "super individual" (超級個體) based in Taiwan. He operates at the intersection of circular economy, AI-powered tools, and Taiwan-Japan business collaboration. His personal site paulkuo.tw publishes long-form articles in Traditional Chinese, English, Japanese, and Simplified Chinese across five content pillars: Intelligence & Order, Circular Economy, Civilization & Humanity, Creation & Practice, and Reflections & Memory.
 
-## About the Author
+Paul leverages AI collaboration as a core working method — accomplishing team-scale output as a solo practitioner. He serves as an external BD consultant at SDTI (佳龍科技), focusing on waste information product recovery and CLGM green materials development for the circular economy. He also builds and operates Agora Plaza (阿哥拉廣場), a real-time meeting transcription and translation tool, and is developing CircleFlow, an AI-driven circular economy data platform.
 
-Paul Kuo is the Commercial Integration & AI Digital Development Director at SDTI (佳龍科技), focusing on Taiwan-Japan semiconductor cooperation, circular economy initiatives, and AI systems development. He has 15 years of theological training, over a decade of experience in PCB manufacturing metal recovery, and extensive entrepreneurial background (AppWorks, 厚生市集, 半畝塘).
+His brand anchor is "秩序測試" (Order Test) — exploring how to rebuild sustainable order at the intersection of technology and civilization. Key expertise areas include: ESG data infrastructure, cross-border business (Taiwan-Japan), real-time speech recognition, translation quality evaluation (TQEF framework), and AI-augmented content production.
 
-## Content Pillars
+Tech stack: Astro (SSG) + Cloudflare Pages/Workers/D1/KV/R2, Qwen3-ASR (Chinese STT), Groq Whisper (English STT), Deepgram Nova-3 (multilingual STT), Claude API (translation + evaluation), Google Chirp 3 (business Japanese STT). All content is static HTML — no JavaScript required for content extraction.
 
-This site organizes all content under five thematic pillars:
+## About
 
-1. **Intelligence & Order (智能與秩序)** — AI governance, agentic systems, human-AI collaboration, digital sovereignty
-2. **Recycle & Reuse (循環再利用)** — Circular economy, urban mining, resource recovery, sustainability infrastructure
-3. **Civilization & Human Nature (文明與人性)** — Theology meets technology, ethics, social critique, cultural analysis
-4. **Creation & Enterprise (創造與建構)** — Startup methodology, business strategy, entrepreneurial reflections
-5. **Reflections & Memory (沉思與記憶)** — Personal essays, life philosophy, parenting, faith journey
+- [About Paul](https://paulkuo.tw/en/about): Background, philosophy, and professional journey — theology, agricultural e-commerce, circular economy, and AI practice
+- [Projects](https://paulkuo.tw/en/projects): Overview of active projects — Agora Plaza, CircleFlow, and multi-model cognitive collaboration
 
-## Key Projects
+## Articles (Content Pillars)
 
-- **CircleFlow**: AI-driven circular economy platform for resource tracking and governance
-- **Multi-Model Cognitive Collaboration Framework**: Multi-agent debate engine using Claude, GPT-4o, Gemini, and Grok for structured analysis
-- **Builder's Scorecard**: Product self-assessment framework with five dimensions (Problem-Solution Fit, Market Validation, Technical Moat, Commercialisation Path, Sustainability). AI-powered quick mode and manual full mode. Available at /tools/builders-scorecard
+- [All Articles](https://paulkuo.tw/en/blog): Full article index across five pillars, sorted by date
+- [Knowledge Graph](https://paulkuo.tw/en/tags-graph): Visual tag-based knowledge map connecting all articles
 
-## Site Structure
+### Intelligence & Order (AI 與秩序)
 
-- `/` — Home page with manifesto, featured articles, social feed, and projects
-- `/blog` — Full article listing (60+ articles across five pillars)
-- `/articles/{slug}` — Individual article pages (semantic HTML with BlogPosting schema)
-- `/about` — Author biography and background
-- `/projects` — Active projects and initiatives
-- `/health` — Personal health data dashboard (Fitbit integration)
-- `/dashboard` — Site analytics and cost tracking
+- [The AI Capability Gap: What a Viral Chart Reveals](https://paulkuo.tw/en/articles/ai-capability-gap-2026): Analysis of global AI adoption data — 84% have never used AI, Taiwan's position, and implications
+- [I Built a Chrome Extension to Track Claude Usage](https://paulkuo.tw/en/articles/claude-usage-nyan-chrome-extension): Development story of Claude Usage Nyan — official API + real-time token interception
+- [6.4%: Pushing Japanese Speech Recognition Accuracy](https://paulkuo.tw/en/articles/google-chirp3-japanese-stt-benchmark): Real-world benchmark of Google Chirp 3 vs Groq Whisper across Japanese business scenarios
+- [Code is Cheap: From Vibe Coding to CLAWS](https://paulkuo.tw/en/articles/code-is-cheap-vibe-coding-to-claws): Framework for AI-augmented development beyond "vibe coding"
+- [Super Individual Case Study](https://paulkuo.tw/en/articles/super-individual-case-study): How one person with AI achieves team-scale output — a lived case study
 
-## Languages
+### Recycle & Reuse (循環經濟)
 
-All content is available in four languages:
-- Traditional Chinese (zh-Hant) — primary, at root paths
-- English (en) — at `/en/` paths
-- Japanese (ja) — at `/ja/` paths
-- Simplified Chinese (zh-CN) — at `/zh-cn/` paths
+- [Circular Economy articles](https://paulkuo.tw/en/blog): Articles on waste recovery, green materials, and ESG infrastructure (filtered by pillar tag)
 
-## Technical Details
+### Civilization & Human Nature (文明與人性)
 
-- Built with Astro (static site generation)
-- Deployed via Cloudflare Pages with GitHub Actions CI/CD
-- Automated translation pipeline for en/ja/zh-cn
-- Real-time data: Fitbit health metrics, Timing App AI collaboration hours
-- Social feed aggregation from 8 platforms
+- [2030 World Outlook](https://paulkuo.tw/en/articles/world-outlook-2030): Finding position between technological acceleration and physical limits
+- [Burnout Society & Self-Exploitation](https://paulkuo.tw/en/articles/burnout-society-self-exploitation): Memorandum for a resilient society — modern exhaustion analysis
 
-## Contact
+### Creation & Enterprise (創造與實踐)
 
-- Email: paul@lasaas.com
-- Website: https://paulkuo.tw
-- LinkedIn: https://www.linkedin.com/in/paulkuo
-- X/Twitter: https://x.com/zarqarwi
-- Threads: https://www.threads.net/@zarqarwi
-- YouTube: https://www.youtube.com/@kuopaul8265
-- Facebook: https://www.facebook.com/guo.yao.lang.2025
-- Bluesky: https://bsky.app/profile/paulkuo.bsky.social
+- [Builder's Scorecard Story](https://paulkuo.tw/en/articles/builders-scorecard-story): Design origins and development journey of an OSS investment self-assessment tool
+
+### Reflections & Memory (反思與記憶)
+
+- [Quiet Edge: Thirteen Notes](https://paulkuo.tw/en/articles/quiet-edge-thirteen-notes): Observations on self-possession, reading people, and walking through life
+- [Life Database Engineering](https://paulkuo.tw/en/articles/life-database-engineering): When 70,267 memory nodes get structured
+
+## Tools & Projects
+
+- [Agora Plaza — Real-Time Meeting Translator](https://paulkuo.tw/tools/translator/): Tri-engine STT (Qwen3-ASR + Groq Whisper + Deepgram Nova-3) with Claude Haiku translation, 12-language auto-detection
+- [Builder's Scorecard](https://paulkuo.tw/tools/builders-scorecard/): Open-source project self-assessment tool adapted from VC investment frameworks
+- [TQEF Evaluation](https://paulkuo.tw/tools/tqef/): Translation Quality Evaluation Framework — systematic translation accuracy measurement
+
+## Structured Data
+
+All pages include JSON-LD structured data:
+- Home: Person + WebSite schema graph
+- Articles: BlogPosting with author reference, datePublished, dateModified, articleSection, inLanguage
+- Article listing: CollectionPage schema
+- Selected articles: FAQPage schema
+- Breadcrumb navigation on all article pages
+
+## AI & Agent Interfaces
+
+- [Agent Card](https://paulkuo.tw/.well-known/agent-card.json): A2A protocol agent card for agent-to-agent discovery
+- [MCP Configuration](https://paulkuo.tw/mcp.json): Model Context Protocol tool definitions
+- [RSS Feed](https://paulkuo.tw/rss.xml): Full-content RSS for syndication
+- [Sitemap](https://paulkuo.tw/sitemap-index.xml): Complete sitemap with lastmod and priority
+
+## Optional
+
+- [llms-full.txt](https://paulkuo.tw/llms-full.txt): Complete markdown content of all articles — AI models can ingest the full knowledge base in one request
+- [Search](https://paulkuo.tw/search): Client-side full-text search across all articles

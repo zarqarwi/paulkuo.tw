@@ -11,45 +11,8 @@ const articles = (await getCollection('articles', ({ data, id }) => !data.draft 
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-const homeSchema = JSON.stringify({
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": `${SITE.url}/#website`,
-      "url": SITE.url,
-      "name": "Paul Kuo",
-      "description": SITE.description,
-      "inLanguage": ["zh-Hant", "en", "ja", "zh-Hans"],
-      "publisher": { "@id": `${SITE.url}/#person` }
-    },
-    {
-      "@type": "Person",
-      "@id": `${SITE.url}/#person`,
-      "name": SITE.author,
-      "alternateName": SITE.authorAlt,
-      "url": SITE.url,
-      "description": SITE.description,
-      "jobTitle": "Circular Economy & AI Strategy Consultant",
-      "image": "https://paulkuo.tw/paul-photo.png",
-      "knowsAbout": ["Circular Economy", "AI Systems", "Taiwan-Japan Industrial Cooperation", "Theology", "Startup Strategy", "Urban Mining", "PCB Metal Recovery", "Agentic SEO", "Taiwan-Japan Business"],
-      "alumniOf": ["AppWorks"],
-      "nationality": { "@type": "Country", "name": "Taiwan" },
-      "sameAs": [
-        "https://www.linkedin.com/in/paulkuo",
-        "https://x.com/zarqarwi",
-        "https://www.threads.net/@zarqarwi",
-        "https://www.youtube.com/@kuopaul8265",
-        "https://www.facebook.com/guo.yao.lang.2025",
-        "https://www.instagram.com/zarqarwi",
-        "https://bsky.app/profile/paulkuo.bsky.social",
-        "https://www.reddit.com/user/Constant-Variety1656"
-      ]
-    }
-  ]
-});
 ---
-<BaseLayout title={SITE.title} schemaJson={homeSchema} showTicker={true}>
+<BaseLayout title={SITE.title} showTicker={true}>
 
   <!-- HERO -->
   <section class="hero">
