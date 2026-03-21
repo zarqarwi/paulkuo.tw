@@ -43,5 +43,82 @@
     "strategy_version": "v1",
     "evaluation_status": "mutation_failed",
     "failure_reason": "Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 212512 tokens > 200000 maximum'}, 'request_id': 'req_011CZFqTGSrUh8KzYUvqcfMh'}"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210741-1",
+    "timestamp": "2026-03-21T07:41:14.105082",
+    "branch": "ai-ready-opt-202603210741-1",
+    "strategy_version": "v1",
+    "change_summary": "This article about AI capability gaps would benefit from FAQ schema to improve JSON-LD structured data coverage. It's a high-traffic topic that people commonly have questions about, making it ideal for FAQPage implementation.",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97786,
+      "output": 4612
+    },
+    "evaluation_status": "policy_violation",
+    "failure_reason": "File not in whitelist: src/content/articles/ai-capability-gap-2026.md"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210742-2",
+    "timestamp": "2026-03-21T07:42:35.870161",
+    "branch": "ai-ready-opt-202603210742-2",
+    "strategy_version": "v1",
+    "evaluation_status": "mutation_failed",
+    "failure_reason": "Expecting value: line 1 column 1 (char 0)"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210742-3",
+    "timestamp": "2026-03-21T07:42:53.271507",
+    "branch": "ai-ready-opt-202603210742-3",
+    "strategy_version": "v1",
+    "change_summary": "This article about AI capability gaps would benefit from FAQ schema as it addresses common questions about AI adoption rates, Taiwan's position, and future implications. Adding FAQ will trigger FAQPage JSON-LD generation, directly improving the json_ld score which is currently the lowest at 12/100.",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97820,
+      "output": 4629
+    },
+    "evaluation_status": "policy_violation",
+    "failure_reason": "File not in whitelist: src/content/articles/ai-capability-gap-2026.md"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210744-4",
+    "timestamp": "2026-03-21T07:44:15.602123",
+    "branch": "ai-ready-opt-202603210744-4",
+    "strategy_version": "v1",
+    "change_summary": "Adding FAQ to this popular AI-related article will trigger FAQPage JSON-LD schema, improving the json_ld score which is currently the lowest at 12/25. This article about AI capability gaps is likely to have good FAQ potential.",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97802,
+      "output": 4725
+    },
+    "evaluation_status": "policy_violation",
+    "failure_reason": "File not in whitelist: src/content/articles/ai-capability-gap-2026.md"
+  },
+  {
+    "experiment_id": "ai-ready-opt-v1",
+    "iteration_id": "202603210745-5",
+    "timestamp": "2026-03-21T07:45:28.027918",
+    "branch": "ai-ready-opt-202603210745-5",
+    "strategy_version": "v1",
+    "change_summary": "Adding FAQ to this popular AI-related article will help trigger FAQPage JSON-LD schema, improving the json_ld score which is currently the lowest at 12. This article discusses AI adoption gaps and would benefit from structured Q&A format for better AI comprehension.",
+    "files_modified": [
+      "src/content/articles/ai-capability-gap-2026.md"
+    ],
+    "token_usage": {
+      "input": 97814,
+      "output": 4677
+    },
+    "evaluation_status": "policy_violation",
+    "failure_reason": "File not in whitelist: src/content/articles/ai-capability-gap-2026.md"
   }
 ]
