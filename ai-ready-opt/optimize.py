@@ -206,7 +206,9 @@ def guard_check(file_path, new_content):
         return True
 
     # 路徑 B：文章 frontmatter（只允許 faq）
-    if fnmatch.fnmatch(file_path, ALLOWED_ARTICLE_GLOB):
+    # 支援 articles/*.md（flat）和 articles/sub/*.md（nested）
+    if (file_path.startswith("src/content/articles/")
+            and file_path.endswith(".md")):
         _check_article_faq_only(file_path, new_content)
         return True
 
