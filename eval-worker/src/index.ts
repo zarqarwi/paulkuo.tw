@@ -469,11 +469,11 @@ export default {
         return new Response(JSON.stringify({
           experiment_id: experimentId,
           target_url: targetUrl,
-          total: result.score_total,
-          llms_txt: result.score_llms_txt,
-          json_ld: result.score_json_ld,
-          mcp_a2a: result.score_mcp_a2a,
-          ai_comprehension: result.score_ai_comprehension,
+          score_total: result.score_total,
+          score_llms_txt: result.score_llms_txt,
+          score_json_ld: result.score_json_ld,
+          score_mcp_a2a: result.score_mcp_a2a,
+          score_ai_comprehension: result.score_ai_comprehension,
           details: result.layers,
           timestamp: new Date().toISOString(),
         }, null, 2), {

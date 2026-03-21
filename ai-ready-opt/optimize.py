@@ -302,12 +302,12 @@ def evaluate(target_url, auth_token):
     result = response.json()
 
     return {
-        "total": result["total"],
+        "total": result["score_total"],
         "sub_scores": {
-            "llms_txt": result.get("llms_txt", 0),
-            "json_ld": result.get("json_ld", 0),
-            "mcp_a2a": result.get("mcp_a2a", 0),
-            "ai_comprehension": result.get("ai_comprehension", 0),
+            "llms_txt": result.get("score_llms_txt", 0),
+            "json_ld": result.get("score_json_ld", 0),
+            "mcp_a2a": result.get("score_mcp_a2a", 0),
+            "ai_comprehension": result.get("score_ai_comprehension", 0),
         },
         "status": "success",
         "details": result.get("details", {})
