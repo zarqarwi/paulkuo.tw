@@ -1,0 +1,16 @@
+name = "paulkuo-eval"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://paulkuo.tw"
+
+# D1 — 複用現有 paulkuo-auth database
+[[d1_databases]]
+binding = "DB"
+database_name = "paulkuo-auth"
+database_id = "1cf40e96-b745-4b5b-9855-c8f5fbb1b3fb"
+
+# Secrets (Paul 手動設定):
+# wrangler secret put ANTHROPIC_API_KEY --config eval-worker/wrangler.toml
+# wrangler secret put EVAL_AUTH_TOKEN --config eval-worker/wrangler.toml
