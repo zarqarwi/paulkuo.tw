@@ -51,28 +51,60 @@ def load_strategy(path="ai-ready-opt/program.md"):
 
 # --- Module 2: Mutation Agent ---
 
+def _scan_articles(glob_pattern):
+    """掃描文章：只讀 frontmatter metadata，不讀 body"""
+    article_summaries = []
+    for path in sorted(globmod.glob(glob_pattern, recursive=True)):
+        try:
+            raw = open(path, encoding="utf-8").read()
+            parts = raw.split("---", 2)
+            if len(parts) < 3:
+                continue
+            fm = yaml.safe_load(parts[1]) or {}
+            faq = fm.get("faq")
+            faq_info = f"yes ({len(faq)} items)" if faq else "no"
+            title = fm.get("title", "(no title)")
+            desc = fm.get("description", "")[:80]
+            article_summaries.append(
+                f"- {path} — title: {title} | desc: {desc} | has faq: {faq_info}"
+            )
+        except Exception:
+            article_summaries.append(f"- {path} — (parse error)")
+    return article_summaries
+
+
 def generate_mutation(strategy, baseline_score, baseline_sub, previous_changes=None):
     """呼叫 Claude API 產生一個修改提案"""
     client = anthropic.Anthropic()
 
-    # 讀取所有白名單檔案的當前內容
+    # 白名單 metadata 檔案：讀完整內容（都很小）
     file_contents = {}
+    article_summaries = []
     for f in strategy["allowed_files"]:
-        if "**" in f:  # glob pattern (articles)
-            for path in globmod.glob(f, recursive=True):
-                file_contents[path] = open(path, encoding="utf-8").read()
+        if "**" in f:  # glob pattern (articles) — 只讀 frontmatter
+            article_summaries = _scan_articles(f)
         else:
             if os.path.exists(f):
                 file_contents[f] = open(f, encoding="utf-8").read()
 
+    # 組裝文章清單區塊
+    articles_section = ""
+    if article_summaries:
+        articles_section = f"""
+## Article Inventory ({len(article_summaries)} files)
+Articles you may add/modify `faq` frontmatter on:
+{chr(10).join(article_summaries)}
+"""
+
     prompt = f"""You are an AI-Ready SEO optimizer for paulkuo.tw.
 
 ## Rules
-- You may ONLY modify these files: {list(file_contents.keys())}
+- You may ONLY modify these files: {list(file_contents.keys())} or any article listed below
 - For article .md files, you may ONLY add or modify the `faq` frontmatter field. Do NOT change title, description, date, body, or any other field.
 - faq format: a YAML list of {{q: "question", a: "answer"}} items
 - Make ONE small, targeted modification per iteration
 - Focus on the lowest-scoring dimension first
+- When modifying an article, output the COMPLETE file content (frontmatter + body). You must preserve the original body exactly.
 
 ## Current State
 - Total score: {baseline_score}/100
@@ -83,9 +115,9 @@ def generate_mutation(strategy, baseline_score, baseline_sub, previous_changes=N
 ## Previous Changes (avoid repeating)
 {json.dumps(previous_changes[-2:] if previous_changes else [])}
 
-## Current File Contents
-{chr(10).join(f"### {path}{chr(10)}```{chr(10)}{content[:3000]}{chr(10)}```" for path, content in file_contents.items())}
-
+## Metadata File Contents
+{chr(10).join(f"### {path}{chr(10)}```{chr(10)}{content}{chr(10)}```" for path, content in file_contents.items())}
+{articles_section}
 ## Output Format
 Respond with EXACTLY this JSON structure, nothing else:
 {{
@@ -93,28 +125,72 @@ Respond with EXACTLY this JSON structure, nothing else:
   "reason": "<why this change will improve the score>",
   "content": "<complete new file content>"
 }}
+
+If you choose to modify an article, you MUST first read its full content. Since you only see the frontmatter summary above, include a "read_file" field instead:
+{{
+  "file": "<article path>",
+  "reason": "<why adding FAQ to this article will improve the score>",
+  "read_file": true
+}}
 """
 
+    messages = [{"role": "user", "content": prompt}]
+    model = strategy.get("model", "claude-sonnet-4-20250514")
+    total_input = 0
+    total_output = 0
+
     response = client.messages.create(
-        model=strategy.get("model", "claude-sonnet-4-20250514"),
-        max_tokens=8000,
-        messages=[{"role": "user", "content": prompt}]
+        model=model, max_tokens=8000, messages=messages
     )
+    total_input += response.usage.input_tokens
+    total_output += response.usage.output_tokens
 
     # Parse JSON from response
     text = response.content[0].text
-    # 去除可能的 markdown code fences
     text = re.sub(r'^```json\s*', '', text.strip())
     text = re.sub(r'\s*```$', '', text.strip())
     mutation = json.loads(text)
+
+    # Two-step flow: Agent 要改文章，先讀完整內容再產生修改
+    if mutation.get("read_file") and os.path.exists(mutation["file"]):
+        article_content = open(mutation["file"], encoding="utf-8").read()
+        followup = f"""Here is the full content of {mutation["file"]}:
+
+```
+{article_content}
+```
+
+Now produce the modified version with FAQ added to the frontmatter.
+Keep the body EXACTLY the same. Only add/modify the `faq` field.
+
+Respond with EXACTLY this JSON:
+{{
+  "file": "{mutation['file']}",
+  "reason": "{mutation['reason']}",
+  "content": "<complete new file content with faq added>"
+}}
+"""
+        messages.append({"role": "assistant", "content": response.content[0].text})
+        messages.append({"role": "user", "content": followup})
+
+        response = client.messages.create(
+            model=model, max_tokens=8000, messages=messages
+        )
+        total_input += response.usage.input_tokens
+        total_output += response.usage.output_tokens
+
+        text = response.content[0].text
+        text = re.sub(r'^```json\s*', '', text.strip())
+        text = re.sub(r'\s*```$', '', text.strip())
+        mutation = json.loads(text)
 
     return {
         "file": mutation["file"],
         "reason": mutation["reason"],
         "content": mutation["content"],
         "token_usage": {
-            "input": response.usage.input_tokens,
-            "output": response.usage.output_tokens
+            "input": total_input,
+            "output": total_output
         }
     }
 
