@@ -107,6 +107,8 @@ I needed two independent metrics:
 - **AI/Bot visitors**: how many AI systems are reading my content — this is the effectiveness metric for the AI-Ready strategy
 
 The final architecture is not complicated. Human visitors use a self-hosted visit beacon — when a page loads, it sends a POST to my Cloudflare Worker, which uses an anonymized IP + User-Agent hash for daily deduplication. Total site visitors continue using Zone Analytics precise IP deduplication. Subtract one from the other and you get the AI/Bot volume.
+![paulkuo.tw analytics architecture: self-hosted beacon (human) + Zone Analytics (total) → subtract for AI/Bot](/images/articles/analytics-sampling-trap-architecture.svg)
+
 
 All three numbers are self-computed, not relying on Cloudflare estimates. The approach is the same principle used by Google Analytics, Plausible, Umami, and similar website traffic analysis tools. Embed a tracking snippet in the page, count every head yourself. The only difference is I do not need to install a third-party tool — it runs directly on the existing server infrastructure.
 

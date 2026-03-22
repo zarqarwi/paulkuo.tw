@@ -107,6 +107,8 @@ Web Analytics Dashboard 說 130。Zone Analytics 說 1,100。API 說 0。
 - **AI/Bot 訪客**：多少 AI 系統在讀取我的內容——這是 AI-Ready 策略的成效指標
 
 最終的架構也不複雜。真人訪客用自建的 visit beacon——頁面載入時發一個 POST 到我的 Cloudflare Worker，Worker 用 IP + User-Agent 的匿名 hash 做每日去重。全站訪客繼續用 Zone Analytics 的精確 IP 去重。兩個相減就是 AI/Bot 的量。
+![paulkuo.tw 流量分析架構圖：自建 beacon（真人）+ Zone Analytics（全量）→ 差值計算 AI/Bot](/images/articles/analytics-sampling-trap-architecture.svg)
+
 
 三個數字都是自己算出來的，不靠 Cloudflare 的估算。做法跟 Google Analytics、Plausible、Umami 這類網站流量分析工具的原理一樣。在網頁裡埋一段追蹤碼，自己數人頭，每一個都算到。只是我不需要額外裝第三方工具，直接跑在網站既有的伺服器上就行。
 
