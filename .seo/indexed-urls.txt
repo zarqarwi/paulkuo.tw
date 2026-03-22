@@ -10,6 +10,7 @@ https://paulkuo.tw/articles/ai-always-on-economy-restructure/
 https://paulkuo.tw/articles/ai-always-on-economy/
 https://paulkuo.tw/articles/ai-capability-gap-2026/
 https://paulkuo.tw/articles/ai-collab-realtime-translator/
+https://paulkuo.tw/articles/ai-ready-continuous-optimization/
 https://paulkuo.tw/articles/ai-slaughterhouse-2028-crisis-scenario/
 https://paulkuo.tw/articles/ai-social-intelligence-psychologist/
 https://paulkuo.tw/articles/ai-surpass-human-intelligence-six-years/
@@ -104,6 +105,7 @@ https://paulkuo.tw/en/articles/ai-always-on-economy-restructure/
 https://paulkuo.tw/en/articles/ai-always-on-economy/
 https://paulkuo.tw/en/articles/ai-capability-gap-2026/
 https://paulkuo.tw/en/articles/ai-collab-realtime-translator/
+https://paulkuo.tw/en/articles/ai-ready-continuous-optimization/
 https://paulkuo.tw/en/articles/ai-slaughterhouse-2028-crisis-scenario/
 https://paulkuo.tw/en/articles/ai-social-intelligence-psychologist/
 https://paulkuo.tw/en/articles/ai-surpass-human-intelligence-six-years/
@@ -203,6 +205,7 @@ https://paulkuo.tw/ja/articles/ai-always-on-economy-restructure/
 https://paulkuo.tw/ja/articles/ai-always-on-economy/
 https://paulkuo.tw/ja/articles/ai-capability-gap-2026/
 https://paulkuo.tw/ja/articles/ai-collab-realtime-translator/
+https://paulkuo.tw/ja/articles/ai-ready-continuous-optimization/
 https://paulkuo.tw/ja/articles/ai-slaughterhouse-2028-crisis-scenario/
 https://paulkuo.tw/ja/articles/ai-social-intelligence-psychologist/
 https://paulkuo.tw/ja/articles/ai-surpass-human-intelligence-six-years/
@@ -311,6 +314,7 @@ https://paulkuo.tw/zh-cn/articles/ai-always-on-economy-restructure/
 https://paulkuo.tw/zh-cn/articles/ai-always-on-economy/
 https://paulkuo.tw/zh-cn/articles/ai-capability-gap-2026/
 https://paulkuo.tw/zh-cn/articles/ai-collab-realtime-translator/
+https://paulkuo.tw/zh-cn/articles/ai-ready-continuous-optimization/
 https://paulkuo.tw/zh-cn/articles/ai-slaughterhouse-2028-crisis-scenario/
 https://paulkuo.tw/zh-cn/articles/ai-social-intelligence-psychologist/
 https://paulkuo.tw/zh-cn/articles/ai-surpass-human-intelligence-six-years/
