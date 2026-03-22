@@ -1,0 +1,181 @@
+---
+import CostTicker from '../components/CostTicker.astro';
+import SiteHead from '../components/SiteHead.astro';
+import NavBar from '../components/NavBar.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import FontToggle from '../components/FontToggle.astro';
+import I18nClient from '../components/I18nClient.astro';
+import FocusMode from '../components/FocusMode.astro';
+import ReadingTracker from '../components/ReadingTracker.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogType?: string;
+  ogUrl?: string;
+  ogImage?: string;
+  schemaJson?: string;
+  canonicalUrl?: string;
+  showTicker?: boolean;
+}
+
+const { 
+  title, 
+  description = 'Paul Kuo（郭曜郎）— 在技術與文明的交匯處，以 AI 策略、循環經濟與人文視角重建秩序。深度文章涵蓋智能趨勢、廢棄物資源化與文明反思。',
+  ogType = 'website',
+  ogUrl = 'https://paulkuo.tw',
+  ogImage = 'https://paulkuo.tw/paul-photo.png',
+  schemaJson,
+  canonicalUrl,
+  showTicker = false,
+} = Astro.props;
+
+const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
+
+// Determine current lang from URL
+const pathname = Astro.url.pathname;
+const langMap: Record<string, string> = {
+  '/en/': 'en',
+  '/ja/': 'ja',
+  '/zh-cn/': 'zh-CN',
+};
+const currentLang = Object.entries(langMap).find(([prefix]) => pathname.startsWith(prefix))?.[1] || 'zh-Hant';
+
+// Build hreflang alternates
+const basePath = pathname.replace(/^\/(en|ja|zh-cn)\//, '/');
+
+// Pages that only exist in zh-Hant (no translation pages created)
+const zhOnlyPrefixes = ['/dashboard', '/health', '/search', '/tags'];
+const isZhOnly = zhOnlyPrefixes.some(p => basePath === p || basePath.startsWith(p + '/'));
+
+const hreflangs = isZhOnly
+  ? [
+      { lang: 'zh-TW', href: `https://paulkuo.tw${basePath}` },
+      { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
+    ]
+  : [
+      { lang: 'zh-TW', href: `https://paulkuo.tw${basePath}` },
+      { lang: 'en', href: `https://paulkuo.tw/en${basePath}` },
+      { lang: 'ja', href: `https://paulkuo.tw/ja${basePath}` },
+      { lang: 'zh-CN', href: `https://paulkuo.tw/zh-cn${basePath}` },
+      { lang: 'x-default', href: `https://paulkuo.tw${basePath}` },
+    ];
+
+// Language switcher links
+const isHome = basePath === '/' || basePath === '';
+const langSwitchLinks = {
+  'zh-Hant': isHome ? '/' : basePath,
+  'en': isHome ? '/en/' : `/en${basePath}`,
+  'ja': isHome ? '/ja/' : `/ja${basePath}`,
+  'zh-CN': isHome ? '/zh-cn/' : `/zh-cn${basePath}`,
+};
+
+const isArticlePage = pathname.includes('/articles/');
+const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' : currentLang === 'zh-CN' ? '/zh-cn' : '';
+
+---
+
+<!DOCTYPE html>
+<html lang={currentLang}>
+<head>
+  <SiteHead
+    {title}
+    {description}
+    {ogType}
+    {ogUrl}
+    {ogImage}
+    {schemaJson}
+    {canonical}
+    {currentLang}
+    {hreflangs}
+  />
+  <slot name="head" />
+</head>
+<body>
+  {isArticlePage && <div class="reading-progress" id="reading-progress"></div>}
+
+  <NavBar {langPrefix} {langSwitchLinks} {currentLang} />
+
+  {showTicker && (
+    <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料" data-nosnippet>
+      <CostTicker />
+    </aside>
+  )}
+
+  <main>
+    <slot />
+  </main>
+
+  <SiteFooter />
+
+  <script>
+    (() => {
+      const progressBar = document.getElementById('reading-progress');
+      const articleBody = document.querySelector('.article-body');
+      if (!progressBar || !articleBody) return;
+      let ticking = false;
+      const updateProgress = () => {
+        const articleTop = articleBody.getBoundingClientRect().top + window.scrollY;
+        const articleHeight = articleBody.scrollHeight;
+        const viewportHeight = window.innerHeight;
+        const scrolled = window.scrollY - articleTop + viewportHeight * 0.3;
+        const progress = Math.min(Math.max(scrolled / articleHeight * 100, 0), 100);
+        progressBar.style.width = `${progress}%`;
+        if (window.scrollY > articleTop - viewportHeight) { progressBar.classList.add('visible'); }
+        else { progressBar.classList.remove('visible'); }
+        ticking = false;
+      };
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(updateProgress); ticking = true; }
+      }, { passive: true });
+      updateProgress();
+    })();
+  </script>
+  <FontToggle />
+
+  <I18nClient />
+  <FocusMode />
+  <ReadingTracker />
+
+  <script is:inline>
+  if (document.querySelector('.contact-section')) { document.body.classList.add('has-contact-section'); }
+  </script>
+  <script is:inline>
+  (function() { var indicator = document.getElementById('agentIndicator'); if (!indicator) return; if ('modelContext' in navigator) { indicator.style.display = 'inline'; setTimeout(function() { indicator.style.opacity = '1'; }, 100); } })();
+  </script>
+  <script is:inline>
+  (function() {
+    // Visit beacon — 頁面載入時立刻發送
+    if (navigator.webdriver) return;
+    var payload = JSON.stringify({ path: location.pathname });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('https://api.paulkuo.tw/analytics/visit', payload);
+    } else {
+      fetch('https://api.paulkuo.tw/analytics/visit', { method: 'POST', body: payload, keepalive: true }).catch(function(){});
+    }
+  })();
+  </script>
+  <script is:inline>
+  (function() {
+    var start = performance.now();
+    var sent = false;
+    var hadInteraction = false;
+    function markInteraction() { hadInteraction = true; }
+    document.addEventListener('mousemove', markInteraction, { once: true, passive: true });
+    document.addEventListener('touchstart', markInteraction, { once: true, passive: true });
+    document.addEventListener('scroll', markInteraction, { once: true, passive: true });
+    document.addEventListener('keydown', markInteraction, { once: true, passive: true });
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState !== 'hidden' || sent) return;
+      sent = true;
+      var sec = Math.round((performance.now() - start) / 1000);
+      if (sec <= 1 || sec >= 1800) return;
+      var payload = JSON.stringify({ path: location.pathname, duration: sec, hasInteraction: hadInteraction });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('https://api.paulkuo.tw/analytics/beacon', payload);
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
