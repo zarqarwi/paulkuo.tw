@@ -1,0 +1,50 @@
+name: AI-Ready External Eval (Temporal Baseline)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Run tag (default: temporal-YYYYMMDD)'
+        default: ''
+        type: string
+  schedule:
+    - cron: '0 1 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  external-eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install openai pyyaml
+
+      - name: Run external benchmark
+        env:
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            TAG="temporal-$(date -u +%Y%m%d)"
+          fi
+          python3 ai-ready-opt/multi_model_query.py --run-benchmark --tag "$TAG"
+
+      - name: Commit results
+        run: |
+          git config user.name "ai-ready-bot"
+          git config user.email "bot@paulkuo.tw"
+          git add ai-ready-opt/external-eval-results/
+          git diff --cached --quiet || git commit -m "chore: external eval temporal baseline $(date -u +%Y-%m-%d)"
+          git push origin main
