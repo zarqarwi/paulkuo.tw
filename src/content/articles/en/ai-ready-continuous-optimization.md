@@ -54,6 +54,22 @@ So I decided to try building exactly that.
 
 Karpathy's autoresearch currently focuses on training experiments for small language models. What I'm doing here is bringing the concept of an "automated experiment loop" to website optimization.
 
+Here's a comparison of the scope differences between my implementation and Karpathy's autoresearch. They share the same spirit but operate in different domains — they're not the same system:
+
+| Aspect | Karpathy autoresearch | My AI-Ready Continuous Optimization System |
+| --- | --- | --- |
+| Primary Goal | Automate "model training research experiments" to find better training configurations and architectures within fixed resources | Automate continuous optimization of "website and AI interface quality," making the site easier for various AI systems to correctly understand and cite |
+| Domain & Target | Small language model training (e.g., nanochat / nanoGPT-class tasks) | Personal website paulkuo.tw's structure, llms.txt, JSON-LD, agent protocols, etc. |
+| Environment Type | Closed lab environment: single codebase, single dataset, single GPU, offline training experiments | Near-production: modifications directly affect the website repo / production, and are tested by external AI systems |
+| Unit of Automation | Code modifications to train.py, hyperparameter and training strategy experiments | Modifications to website content structure, metadata, llms.txt, FAQ sections, protocol configurations, etc. |
+| Pipeline Structure | Research loop: program.md → agent modifies train.py → run experiment → read validation metrics → decide keep or discard | Production workflow: GitHub Actions trigger → mutation agent modifies → file guard checks → deploy → eval worker scores across 4 layers → decision engine keep/revert → experiments.json |
+| Evaluation Metric Nature | Single-task internal metrics (e.g., validation loss), generated and consumed entirely within the experiment environment | Multi-dimensional metrics: llms.txt structure, JSON-LD completeness, MCP/A2A support, AI comprehension score, plus external Perplexity benchmark scores |
+| External Validation | Almost no direct real-world validation; focus is on relative improvement and experiment efficiency | Specifically designed Perplexity Q&A benchmark + multiple calibration rounds, measuring noise, establishing temporal baseline, progressively evaluating whether changes genuinely improve external AI understanding |
+| Rollback & Decision Strategy | Primarily based on validation set metrics; worse configurations are simply not adopted; relatively simple design | Layered gates: internal 4-layer eval drives keep/revert, external Layer 5a starts as observe-only, and only after accumulating sufficient rounds considers upgrading to soft gate or full gate |
+| Identity of Subject | "AI helping AI do research": LLM agent acts as junior researcher | "AI helping a person maintain their digital presence": LLM agent helps me tune my personal website to be more AI-readable |
+| Typical User Threshold | Requires deep learning engineering background, GPU environment, and code-level proficiency | Requires DevOps / Web / GitHub Actions skills, but is closer to real-world content operations and personal branding |
+
+
 I didn't transplant autoresearch wholesale. Model training has a loss function; website optimization needs something different. But the spirit is the same: define goals, constrain boundaries, build evaluation, design rollback, then let the loop run.
 
 ![AI-Ready Continuous Optimization System Flow](/images/articles/ai-ready-continuous-optimization-flow.jpg)
