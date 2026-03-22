@@ -1,5 +1,8 @@
 // worker/src/visitors.js
 // 每日訪客數：Cloudflare GraphQL Analytics API → KV
+// 2026-03-22: visits 改用 zone-level httpRequestsAdaptiveGroups（CDN 層）
+//             解決 RUM rumPageloadEventsAdaptiveGroups adaptive sampling
+//             在低流量網站將 visits 壓成 0 的問題
 
 const CF_GRAPHQL_ENDPOINT = 'https://api.cloudflare.com/client/v4/graphql';
 
@@ -79,7 +82,15 @@ export async function fetchDailyVisitors(env) {
 
 /**
  * 從 Cloudflare Web Analytics (RUM) 撈過去 30 天的流量概覽 + 國家分佈
- * 資料來源：rumPageloadEventsAdaptiveGroups（beacon-based，過濾 bot，比 Zone Analytics 精準）
+ * 
+ * visits 資料來源：zone-level httpRequestsAdaptiveGroups（CDN 層，精度高）
+ * pageViews 資料來源：account-level rumPageloadEventsAdaptiveGroups（RUM beacon）
+ * 
+ * 為什麼不全用 RUM？
+ * rumPageloadEventsAdaptiveGroups 的 adaptive sampling 在日訪客 <500 的網站
+ * 會將 visits 壓成 0 或 100 的整數倍（2026-03-22 發現，Dashboard 顯示 130 visits
+ * 但 RUM API 回 0）。zone-level API 的取樣粒度更細，能回傳接近真實的數字。
+ * 
  * 寫入 KV keys: analytics:overview, analytics:countries
  * 節流：analytics:lastFetch 記錄上次時間，間隔 < 6hr skip
  */
@@ -87,6 +98,7 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
   const token = env.CF_ANALYTICS_TOKEN;
   const accountId = env.CF_ACCOUNT_ID;
   const siteTag = env.CF_WEB_ANALYTICS_SITE_TAG;
+  const zoneId = env.CF_ZONE_ID;
   if (!token || !accountId || !siteTag) {
     console.error('analytics: missing CF_ANALYTICS_TOKEN, CF_ACCOUNT_ID, or CF_WEB_ANALYTICS_SITE_TAG');
     return null;
@@ -109,8 +121,10 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
   const since = new Date(now);
   since.setUTCDate(since.getUTCDate() - 31);
   const sinceStr = since.toISOString().split('T')[0];
+  const sinceISO = since.toISOString();
+  const nowISO = now.toISOString();
 
-  // Web Analytics: 每日瀏覽量 + 訪客數
+  // ── Query 1: RUM pageViews (account-level, beacon-based) ──
   const dailyQuery = `
     query WebAnalyticsDaily($accountTag: string!, $siteTag: string!, $since: string!) {
       viewer {
@@ -121,7 +135,6 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
             orderBy: [date_ASC]
           ) {
             count
-            sum { visits }
             dimensions { date }
           }
         }
@@ -129,7 +142,30 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
     }
   `;
 
-  // Web Analytics: 國家分佈
+  // ── Query 2: Zone-level visits (CDN 層，精度高) ──
+  // 使用 httpRequestsAdaptiveGroups + requestSource: "eyeball" 過濾真人流量
+  const zoneVisitsQuery = zoneId ? `
+    query ZoneVisitsDaily($zoneTag: string!, $start: Time!, $end: Time!) {
+      viewer {
+        zones(filter: { zoneTag: $zoneTag }) {
+          httpRequestsAdaptiveGroups(
+            filter: {
+              datetime_geq: $start
+              datetime_lt: $end
+              requestSource: "eyeball"
+            }
+            limit: 31
+            orderBy: [date_ASC]
+          ) {
+            sum { visits }
+            dimensions { date }
+          }
+        }
+      }
+    }
+  ` : null;
+
+  // ── Query 3: 國家分佈 (RUM) ──
   const countryQuery = `
     query WebAnalyticsCountries($accountTag: string!, $siteTag: string!, $since: string!) {
       viewer {
@@ -147,20 +183,36 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
     }
   `;
 
-  const variables = { accountTag: accountId, siteTag, since: sinceStr };
+  const rumVariables = { accountTag: accountId, siteTag, since: sinceStr };
+  const zoneVariables = { zoneTag: zoneId, start: sinceISO, end: nowISO };
   const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-  const [dailyResp, countryResp] = await Promise.all([
-    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: dailyQuery, variables }) }),
-    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: countryQuery, variables }) }),
-  ]);
+  // 同時發三個 query
+  const fetches = [
+    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: dailyQuery, variables: rumVariables }) }),
+    fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: countryQuery, variables: rumVariables }) }),
+  ];
+  if (zoneVisitsQuery && zoneId) {
+    fetches.push(
+      fetch(CF_GRAPHQL_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ query: zoneVisitsQuery, variables: zoneVariables }) })
+    );
+  }
+
+  const responses = await Promise.all(fetches);
+
+  const dailyResp = responses[0];
+  const countryResp = responses[1];
+  const zoneResp = responses[2] || null;
 
   if (!dailyResp.ok || !countryResp.ok) {
     console.error('analytics: GraphQL API error', dailyResp.status, countryResp.status);
     return null;
   }
 
-  const [dailyJson, countryJson] = await Promise.all([dailyResp.json(), countryResp.json()]);
+  const jsonResults = await Promise.all(responses.map(r => r.json()));
+  const dailyJson = jsonResults[0];
+  const countryJson = jsonResults[1];
+  const zoneJson = jsonResults[2] || null;
 
   for (const j of [dailyJson, countryJson]) {
     if (j.errors) {
@@ -169,20 +221,55 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
     }
   }
 
-  // 每日數據
+  // ── 處理 RUM pageViews ──
   const dailyGroups = dailyJson?.data?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups;
   if (!dailyGroups || dailyGroups.length === 0) {
     console.log('analytics: no data');
     return null;
   }
 
-  const daily = dailyGroups
-    .map(g => ({
-      date: g.dimensions.date,
-      visits: g.sum.visits,
-      pageViews: g.count,
-    }))
-    .sort((a, b) => a.date.localeCompare(b.date));
+  // Build pageViews map from RUM (date → pageViews)
+  const pvMap = {};
+  for (const g of dailyGroups) {
+    pvMap[g.dimensions.date] = g.count;
+  }
+
+  // ── 處理 Zone-level visits ──
+  let zoneVisitsMap = {};
+  let zoneVisitsOk = false;
+  if (zoneJson && !zoneJson.errors) {
+    const zoneGroups = zoneJson?.data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups;
+    if (zoneGroups && zoneGroups.length > 0) {
+      for (const g of zoneGroups) {
+        zoneVisitsMap[g.dimensions.date] = g.sum.visits;
+      }
+      zoneVisitsOk = true;
+      console.log(`analytics: zone-level visits loaded, ${zoneGroups.length} days`);
+    }
+  }
+  if (!zoneVisitsOk) {
+    console.warn('analytics: zone-level visits unavailable, falling back to RUM (may be inaccurate for low-traffic sites)');
+  }
+
+  // ── 合併：每日數據 ──
+  // 以 RUM 的日期列表為基準，visits 優先用 zone-level
+  const allDates = Object.keys(pvMap).sort();
+  const daily = allDates.map(date => ({
+    date,
+    visits: zoneVisitsOk && zoneVisitsMap[date] !== undefined ? zoneVisitsMap[date] : 0,
+    pageViews: pvMap[date] || 0,
+  }));
+
+  // 如果 zone-level 有 RUM 沒有的日期，也加進去（可能 RUM beacon 沒觸發但有 CDN 流量）
+  if (zoneVisitsOk) {
+    const rumDates = new Set(allDates);
+    for (const date of Object.keys(zoneVisitsMap).sort()) {
+      if (!rumDates.has(date)) {
+        daily.push({ date, visits: zoneVisitsMap[date], pageViews: 0 });
+      }
+    }
+    daily.sort((a, b) => a.date.localeCompare(b.date));
+  }
 
   // 1d / 7d / 30d 加總
   const sumFn = (arr) => arr.reduce((acc, d) => ({
@@ -214,7 +301,8 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
     env.TICKER_KV.put('analytics:lastFetch', updatedAt),
   ]);
 
-  console.log(`analytics: updated (Web Analytics), ${daily.length} days, ${top15.length} countries`);
+  const source = zoneVisitsOk ? 'Zone+RUM hybrid' : 'RUM only (zone fallback)';
+  console.log(`analytics: updated (${source}), ${daily.length} days, ${top15.length} countries`);
   return { overview: { daily, total1d, total7d, total30d }, countries: { top15 }, updatedAt };
 }
 
