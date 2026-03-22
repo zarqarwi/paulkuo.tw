@@ -152,11 +152,12 @@ async function scoreJsonLd(baseUrl: string): Promise<LayerResult> {
 
       if (schemas.length > 0) pagesWithSchema++;
 
-      // Check for @id references (good) vs inline duplicates (bad)
-      const personSchemas = schemas.filter(
-        s => s['@type'] === 'Person' && !s['@id']?.startsWith('#')
+      // Check for inline Person without @id (duplicate = bad)
+      // Person with any @id (whether "#person" or "https://.../#person") is OK
+      const inlinePersons = schemas.filter(
+        s => s['@type'] === 'Person' && !s['@id']
       );
-      if (personSchemas.length > 0) duplicateEntities++;
+      if (inlinePersons.length > 0) duplicateEntities++;
 
       // Check for Person with @id (good practice)
       if (schemas.some(s => s['@type'] === 'Person' && s['@id'])) {
