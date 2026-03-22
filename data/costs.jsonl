@@ -1,0 +1,3 @@
+{"timestamp":"2026-03-22T13:21:17.745Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":3425,"outputTokens":2263,"costUSD":0.04422,"costTWD":1.44,"note":"ai-ready-continuous-optimization"}
+{"timestamp":"2026-03-22T13:22:22.686Z","service":"anthropic","model":"claude-sonnet","action":"translate-ja","source":"translate-article","inputTokens":3480,"outputTokens":3674,"costUSD":0.06555,"costTWD":2.13,"note":"ai-ready-continuous-optimization"}
+{"timestamp":"2026-03-22T13:22:49.004Z","service":"anthropic","model":"claude-sonnet","action":"translate-zh-cn","source":"translate-article","inputTokens":3461,"outputTokens":3080,"costUSD":0.056583,"costTWD":1.84,"note":"ai-ready-continuous-optimization"}

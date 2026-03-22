@@ -1798,5 +1798,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "ai-ready-continuous-optimization.md": {
+    "sourceHash": "80bbf8c3a8e6",
+    "translations": {
+      "en": {
+        "hash": "1a98df8b3db4",
+        "translatedAt": "2026-03-22T13:21:17.747Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "5908aff970d9",
+        "translatedAt": "2026-03-22T13:22:22.686Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "4d82c42e4463",
+        "translatedAt": "2026-03-22T13:22:49.004Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
