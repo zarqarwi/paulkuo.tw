@@ -184,6 +184,20 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
     }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
+  // ── 用自有 beacon visits 覆蓋 RUM visits ──
+  // RUM visits 受 adaptive sampling 影響，低流量時不準
+  // 自有 beacon 是精確計數
+  for (const d of daily) {
+    const beaconKey = `analytics:visits:${d.date}`;
+    try {
+      const raw = await env.TICKER_KV.get(beaconKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        d.visits = parsed.unique || d.visits;  // 有 beacon 數據就用 beacon，沒有就保留 RUM
+      }
+    } catch {}
+  }
+
   // 1d / 7d / 30d 加總
   const sumFn = (arr) => arr.reduce((acc, d) => ({
     visits: acc.visits + d.visits,
@@ -559,6 +573,136 @@ export async function fetchDurationAnalytics(env) {
 
   console.log(`duration: aggregated ${pages.length} paths, top15 saved, bounce=${bounceRate}%, human=${totalHuman}`);
   return { pages: top15, bounceRate, totalBounce, totalCount, humanVisits: totalHuman, updatedAt: new Date().toISOString() };
+}
+
+/**
+ * POST /analytics/visit — 接收前端頁面載入 visit beacon
+ * Body: { path: string }
+ *
+ * 去重機制（Plausible/Umami 同做法）：
+ * - 用 IP + User-Agent 做 SHA-256 hash（匿名，不存原始值）
+ * - 每日 unique set 存在 KV，key = analytics:visit-set:{date}
+ * - 同一個 hash 當天重複來訪不重複計數
+ * - KV TTL = 2 天（自動過期，不需手動清理）
+ *
+ * 計數寫入：analytics:visits:{date} = { total: N, unique: M }
+ */
+export async function handleVisitBeacon(request, env, corsHeadersFn) {
+  if (request.method !== 'POST') {
+    return new Response(null, { status: 405, headers: corsHeadersFn(request) });
+  }
+
+  let body;
+  try {
+    const text = await request.text();
+    body = JSON.parse(text);
+  } catch {
+    return new Response(null, { status: 400, headers: corsHeadersFn(request) });
+  }
+
+  const { path } = body;
+  if (typeof path !== 'string' || !path.startsWith('/')) {
+    return new Response(null, { status: 400, headers: corsHeadersFn(request) });
+  }
+
+  // 取得 IP 和 User-Agent（用於匿名 hash，不存原始值）
+  const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || 'unknown';
+  const ua = request.headers.get('user-agent') || 'unknown';
+
+  // 簡單 bot 過濾：沒有 UA 或已知 bot pattern 就跳過
+  if (ua === 'unknown' || /bot|crawler|spider|scraper|curl|wget|python|go-http/i.test(ua)) {
+    return new Response(null, { status: 204, headers: corsHeadersFn(request) });
+  }
+
+  // SHA-256 hash（匿名去重）
+  const encoder = new TextEncoder();
+  const data = encoder.encode(ip + '|' + ua);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const visitorHash = hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
+
+  // 今天的日期（UTC）
+  const today = new Date().toISOString().split('T')[0];
+
+  // 讀取今日 unique set
+  const setKey = `analytics:visit-set:${today}`;
+  let visitSet;
+  try {
+    const raw = await env.TICKER_KV.get(setKey);
+    visitSet = raw ? JSON.parse(raw) : [];
+  } catch {
+    visitSet = [];
+  }
+
+  // 計數 key
+  const countKey = `analytics:visits:${today}`;
+  let counts;
+  try {
+    const raw = await env.TICKER_KV.get(countKey);
+    counts = raw ? JSON.parse(raw) : { total: 0, unique: 0 };
+  } catch {
+    counts = { total: 0, unique: 0 };
+  }
+
+  // 總 pageview +1
+  counts.total += 1;
+
+  // unique 去重
+  const isNew = !visitSet.includes(visitorHash);
+  if (isNew) {
+    visitSet.push(visitorHash);
+    counts.unique += 1;
+  }
+
+  // 寫回 KV（visit-set TTL = 2 天自動過期）
+  await Promise.all([
+    env.TICKER_KV.put(setKey, JSON.stringify(visitSet), { expirationTtl: 172800 }),
+    env.TICKER_KV.put(countKey, JSON.stringify(counts), { expirationTtl: 86400 * 35 }),
+  ]);
+
+  return new Response(null, { status: 204, headers: corsHeadersFn(request) });
+}
+
+/**
+ * Cron: 拿 Zone Analytics 的 uniq.uniques（含 bot），用於計算 AI/Bot 訪客數
+ * 寫入 KV key: analytics:zone-uniques:{date}
+ */
+export async function fetchZoneUniqueVisitors(env) {
+  const token = env.CF_ANALYTICS_TOKEN;
+  const zoneId = env.CF_ZONE_ID;
+  if (!token || !zoneId) return null;
+
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const dateStr = yesterday.toISOString().split('T')[0];
+
+  const query = `
+    query GetZoneUniques($zoneTag: string!, $date: string!) {
+      viewer {
+        zones(filter: { zoneTag: $zoneTag }) {
+          httpRequests1dGroups(filter: { date: $date }, limit: 1) {
+            uniq { uniques }
+          }
+        }
+      }
+    }
+  `;
+
+  const resp = await fetch('https://api.cloudflare.com/client/v4/graphql', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables: { zoneTag: zoneId, date: dateStr } }),
+  });
+
+  if (!resp.ok) return null;
+  const json = await resp.json();
+  const groups = json?.data?.viewer?.zones?.[0]?.httpRequests1dGroups;
+  if (!groups || groups.length === 0) return null;
+
+  const uniques = groups[0].uniq.uniques;
+  await env.TICKER_KV.put(`analytics:zone-uniques:${dateStr}`, JSON.stringify({ uniques, date: dateStr }), { expirationTtl: 86400 * 35 });
+  console.log(`zone-uniques: ${dateStr} → ${uniques}`);
+  return { date: dateStr, uniques };
 }
 
 /**

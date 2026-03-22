@@ -145,6 +145,18 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   </script>
   <script is:inline>
   (function() {
+    // Visit beacon — 頁面載入時立刻發送
+    if (navigator.webdriver) return;
+    var payload = JSON.stringify({ path: location.pathname });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('https://api.paulkuo.tw/analytics/visit', payload);
+    } else {
+      fetch('https://api.paulkuo.tw/analytics/visit', { method: 'POST', body: payload, keepalive: true }).catch(function(){});
+    }
+  })();
+  </script>
+  <script is:inline>
+  (function() {
     var start = performance.now();
     var sent = false;
     var hadInteraction = false;

@@ -15,7 +15,7 @@ import { handleFeedGet, handleFeedPush, syncSocialFeed, handleFeedSync } from '.
 import { handleCommentsGet, handleCommentCreate, handleCommentUpdate, handleCommentDelete, handleCommentLike, handleCommentsAdminRecent } from './comments.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
-import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics } from './visitors.js';
+import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
 
@@ -77,7 +77,7 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/feed/sync','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/scorecard/submit','/api/scorecard/feed','/api/scorecard/eval/:id','/api/scorecard/badge/:id','/api/scorecard/history/:projectName','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
+const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/visit','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/feed/sync','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/scorecard/submit','/api/scorecard/feed','/api/scorecard/eval/:id','/api/scorecard/badge/:id','/api/scorecard/history/:projectName','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
@@ -86,6 +86,7 @@ async function handleRequest(request, env) {
   if (path === '/ticker' && method === 'GET') return handleTicker(request, env);
   if (path === '/visitors' && method === 'GET') return handleVisitors(request, env, corsHeaders);
   if (path === '/analytics' && method === 'GET') return handleAnalytics(request, env, corsHeaders);
+  if (path === '/analytics/visit' && method === 'POST') return handleVisitBeacon(request, env, corsHeaders);
   if (path === '/analytics/beacon' && method === 'POST') return handleAnalyticsBeacon(request, env, corsHeaders);
   if (path === '/feed' && method === 'GET') return handleFeedGet(request, env);
   if (path === '/feed/sync' && method === 'POST') return handleFeedSync(request, env);
@@ -238,6 +239,7 @@ async function handleScheduled(event, env) {
   try { await refreshToken(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_token_refresh', new Date().toISOString()); console.log('Cron: token refresh success'); } catch (e) { console.error('Cron: token refresh FAILED:', e.message); }
   try { await fetchFitbitData(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_refresh', new Date().toISOString()); console.log('Cron: Fitbit data cached'); } catch (e) { console.error('Cron: Fitbit fetch FAILED:', e.message); }
   try { await fetchDailyVisitors(env); } catch (e) { console.error('Cron: visitors fetch FAILED:', e.message); }
+  try { await fetchZoneUniqueVisitors(env); } catch (e) { console.error('Cron: zone uniques FAILED:', e.message); }
   try { await fetchAnalyticsOverview(env); await fetchRumAnalytics(env); await fetchDurationAnalytics(env); console.log('Cron: analytics updated'); } catch (e) { console.error('Cron: analytics FAILED:', e.message); }
   try { await syncSocialFeed(env); console.log('Cron: social feed synced'); } catch (e) { console.error('Cron: social feed sync FAILED:', e.message); }
 }
