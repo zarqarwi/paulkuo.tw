@@ -16,62 +16,99 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
 <BaseLayout title="AI-Ready Dashboard — Paul Kuo" description="AI-Ready SEO 持續優化儀表板">
 
-<div id="authGate" class="dashboard-auth">
-  <div class="auth-card">
-    <h2>🔒 AI-Ready Dashboard</h2>
-    <p>輸入存取密碼</p>
-    <input type="password" id="authInput" placeholder="Password" autofocus />
+<div id="authGate" class="ard-auth">
+  <div class="ard-auth-card">
+    <div class="ard-auth-icon">📐</div>
+    <h2>AI-Ready Dashboard</h2>
+    <p>管理員限定</p>
+    <input type="password" id="authInput" placeholder="存取密碼" autofocus />
     <button id="authBtn">進入</button>
   </div>
 </div>
 
-<div id="dashboardMain" class="dashboard-container" style="display:none">
-  <header class="dash-header">
-    <div>
-      <h1>AI-Ready Optimizer</h1>
-      <p class="dash-subtitle">持續優化儀表板 · 資料更新：{buildTime} · 策略版本：v2</p>
+<div id="dashboardMain" class="ard-container" style="display:none">
+
+  <!-- Header -->
+  <header class="ard-header">
+    <div class="ard-header-left">
+      <div class="ard-header-badge">v2</div>
+      <div>
+        <h1>AI-Ready Optimizer</h1>
+        <p class="ard-header-sub">持續優化儀表板 · 更新 {buildTime}</p>
+      </div>
+    </div>
+    <div class="ard-header-right">
+      <a href="/projects" class="ard-back-link">← 返回專案</a>
     </div>
   </header>
 
-  <!-- KPI Cards -->
-  <div id="kpiGrid" class="kpi-grid"></div>
-
-  <!-- Score Trend Chart -->
-  <div class="charts-row">
-    <div class="chart-panel full-width">
-      <h3>分數趨勢</h3>
-      <div class="chart-wrap tall"><canvas id="scoreTrendChart"></canvas></div>
+  <!-- Score Ring + KPIs -->
+  <section class="ard-score-section">
+    <div class="ard-score-ring-wrap">
+      <canvas id="scoreRing" width="200" height="200"></canvas>
+      <div class="ard-score-ring-label">
+        <span id="scoreRingValue" class="ard-ring-value">—</span>
+        <span class="ard-ring-sub">/ 100</span>
+      </div>
     </div>
-  </div>
-
-  <!-- Sub-score Trends -->
-  <div class="charts-row">
-    <div class="chart-panel">
-      <h3>子分數趨勢</h3>
-      <div class="chart-wrap tall"><canvas id="subScoreChart"></canvas></div>
+    <div class="ard-kpi-col">
+      <div class="ard-kpi" id="kpi-jsonld">
+        <div class="ard-kpi-bar"><div class="ard-kpi-fill" data-color="#f59e0b"></div></div>
+        <div class="ard-kpi-info"><span class="ard-kpi-name">JSON-LD</span><span class="ard-kpi-val">—</span><span class="ard-kpi-max">/ 25</span></div>
+      </div>
+      <div class="ard-kpi" id="kpi-llms">
+        <div class="ard-kpi-bar"><div class="ard-kpi-fill" data-color="#059669"></div></div>
+        <div class="ard-kpi-info"><span class="ard-kpi-name">llms.txt</span><span class="ard-kpi-val">—</span><span class="ard-kpi-max">/ 25</span></div>
+      </div>
+      <div class="ard-kpi" id="kpi-mcp">
+        <div class="ard-kpi-bar"><div class="ard-kpi-fill" data-color="#3b82f6"></div></div>
+        <div class="ard-kpi-info"><span class="ard-kpi-name">MCP+A2A</span><span class="ard-kpi-val">—</span><span class="ard-kpi-max">/ 25</span></div>
+      </div>
+      <div class="ard-kpi" id="kpi-ai">
+        <div class="ard-kpi-bar"><div class="ard-kpi-fill" data-color="#8b5cf6"></div></div>
+        <div class="ard-kpi-info"><span class="ard-kpi-name">AI 理解度</span><span class="ard-kpi-val">—</span><span class="ard-kpi-max">/ 25</span></div>
+      </div>
     </div>
-    <div class="chart-panel">
-      <h3>實驗結果分佈</h3>
-      <div class="chart-wrap"><canvas id="statusChart"></canvas></div>
+    <div class="ard-stats-col">
+      <div class="ard-stat"><span class="ard-stat-val" id="statTotal">—</span><span class="ard-stat-label">總實驗</span></div>
+      <div class="ard-stat"><span class="ard-stat-val" id="statSuccess">—</span><span class="ard-stat-label">成功評分</span></div>
+      <div class="ard-stat"><span class="ard-stat-val" id="statKept">—</span><span class="ard-stat-label">保留</span></div>
+      <div class="ard-stat"><span class="ard-stat-val" id="statReverted">—</span><span class="ard-stat-label">回退</span></div>
     </div>
-  </div>
+  </section>
 
-  <!-- Experiment Log Table -->
-  <div class="table-panel">
-    <h3>實驗紀錄</h3>
-    <div id="expTableBody" style="overflow-x:auto"></div>
-  </div>
-
-  <!-- Layer 5a Placeholder -->
-  <div class="layer5-placeholder" style="margin-top:1.5rem;padding:2rem;background:var(--bg-section);border:1px dashed var(--border);border-radius:var(--radius);text-align:center;color:var(--text-muted);">
-    <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">🔬 外部 AI 交叉驗證（Layer 5a）</h3>
-    <p style="font-size:0.85rem;">Step 2 完成後啟用 — Perplexity 交叉驗證 · discovery / grounding 追蹤 · 反幻覺測試</p>
-    <div id="layer5aContent" style="display:none">
-      <!-- Step 2 上線後填入 -->
+  <!-- Charts -->
+  <section class="ard-charts">
+    <div class="ard-panel ard-panel-wide">
+      <h3 class="ard-panel-title">分數趨勢</h3>
+      <div class="ard-chart-wrap ard-chart-tall"><canvas id="scoreTrendChart"></canvas></div>
     </div>
-  </div>
+    <div class="ard-panel">
+      <h3 class="ard-panel-title">子分數趨勢</h3>
+      <div class="ard-chart-wrap ard-chart-tall"><canvas id="subScoreChart"></canvas></div>
+    </div>
+    <div class="ard-panel">
+      <h3 class="ard-panel-title">結果分佈</h3>
+      <div class="ard-chart-wrap"><canvas id="statusChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- Experiment Log -->
+  <section class="ard-panel ard-panel-wide">
+    <h3 class="ard-panel-title">實驗紀錄 <span class="ard-panel-badge" id="expCount">0</span></h3>
+    <div class="ard-table-wrap" id="expTableBody"></div>
+  </section>
+
+  <!-- Layer 5a -->
+  <section class="ard-layer5">
+    <div class="ard-layer5-icon">🔬</div>
+    <div>
+      <h3>外部 AI 交叉驗證（Layer 5a）</h3>
+      <p>Step 2 完成後啟用 — Perplexity 交叉驗證 · discovery / grounding 追蹤 · 反幻覺測試</p>
+    </div>
+  </section>
+
 </div>
-
 </BaseLayout>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
@@ -130,135 +167,321 @@ authBtn.addEventListener('click', async () => {
 authInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
 checkAuth();
 
+// ── Score Ring ──
+function drawScoreRing(score) {
+  const canvas = document.getElementById('scoreRing');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = 200 * dpr; canvas.height = 200 * dpr;
+  canvas.style.width = '200px'; canvas.style.height = '200px';
+  ctx.scale(dpr, dpr);
+
+  const cx = 100, cy = 100, r = 80, lw = 12;
+  const pct = score / 100;
+  const startAngle = -Math.PI / 2;
+  const endAngle = startAngle + (2 * Math.PI * pct);
+
+  // Background ring
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.stroke();
+
+  // Score arc
+  const color = score >= 90 ? '#059669' : score >= 70 ? '#6366f1' : score >= 50 ? '#f59e0b' : '#dc2626';
+  ctx.beginPath(); ctx.arc(cx, cy, r, startAngle, endAngle);
+  ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.stroke();
+
+  document.getElementById('scoreRingValue').textContent = score;
+  document.getElementById('scoreRingValue').style.color = color;
+}
+
+// ── KPI Bars ──
+function setKpi(id, value, max) {
+  const el = document.getElementById(id);
+  const fill = el.querySelector('.ard-kpi-fill');
+  const val = el.querySelector('.ard-kpi-val');
+  val.textContent = value;
+  const pct = Math.min(100, (value / max) * 100);
+  fill.style.width = pct + '%';
+  fill.style.background = fill.dataset.color;
+  if (value >= max * 0.9) val.style.color = '#059669';
+  else if (value >= max * 0.6) val.style.color = fill.dataset.color;
+  else val.style.color = '#dc2626';
+}
+
 // ── Render ──
 function renderDashboard() {
   const data = experiments || [];
   const successes = data.filter(e => e.evaluation_status === 'success');
   const latest = successes.length > 0 ? successes[successes.length - 1] : null;
-
-  // KPIs
   const currentScore = latest ? (latest.preview_score || latest.baseline_score || 0) : 0;
-  const latestSub = latest ? (latest.preview_sub_scores || latest.baseline_sub_scores || {}) : {};
-  const totalRuns = data.length;
-  const successRuns = successes.length;
-  const keptRuns = data.filter(e => e.kept_or_reverted === 'keep').length;
+  const sub = latest ? (latest.preview_sub_scores || latest.baseline_sub_scores || {}) : {};
 
-  document.getElementById('kpiGrid').innerHTML = `
-    <div class="kpi"><span class="kpi-label">當前總分</span><span class="kpi-value">${currentScore}</span><span class="kpi-sub">/ 100</span></div>
-    <div class="kpi"><span class="kpi-label">JSON-LD</span><span class="kpi-value ${latestSub.json_ld >= 20 ? 'kpi-green' : 'kpi-amber'}">${latestSub.json_ld || 0}</span><span class="kpi-sub">/ 25</span></div>
-    <div class="kpi"><span class="kpi-label">llms.txt</span><span class="kpi-value ${latestSub.llms_txt >= 25 ? 'kpi-green' : 'kpi-amber'}">${latestSub.llms_txt || 0}</span><span class="kpi-sub">/ 25</span></div>
-    <div class="kpi"><span class="kpi-label">MCP+A2A</span><span class="kpi-value ${latestSub.mcp_a2a >= 25 ? 'kpi-green' : 'kpi-amber'}">${latestSub.mcp_a2a || 0}</span><span class="kpi-sub">/ 25</span></div>
-    <div class="kpi"><span class="kpi-label">AI 理解度</span><span class="kpi-value ${latestSub.ai_comprehension >= 23 ? 'kpi-green' : 'kpi-amber'}">${latestSub.ai_comprehension || 0}</span><span class="kpi-sub">/ 25</span></div>
-    <div class="kpi"><span class="kpi-label">實驗次數</span><span class="kpi-value kpi-cyan">${totalRuns}</span><span class="kpi-sub">${successRuns} 成功 · ${keptRuns} kept</span></div>
-  `;
+  // Score ring
+  drawScoreRing(currentScore);
 
-  // Score Trend Chart
+  // KPI bars
+  setKpi('kpi-jsonld', sub.json_ld || 0, 25);
+  setKpi('kpi-llms', sub.llms_txt || 0, 25);
+  setKpi('kpi-mcp', sub.mcp_a2a || 0, 25);
+  setKpi('kpi-ai', sub.ai_comprehension || 0, 25);
+
+  // Stats
+  document.getElementById('statTotal').textContent = data.length;
+  document.getElementById('statSuccess').textContent = successes.length;
+  document.getElementById('statKept').textContent = data.filter(e => e.kept_or_reverted === 'keep').length;
+  document.getElementById('statReverted').textContent = data.filter(e => e.kept_or_reverted === 'revert').length;
+  document.getElementById('expCount').textContent = data.length;
+
+  // Charts
   Object.values(charts).forEach(c => c.destroy()); charts = {};
-  const chartDefaults = {
+  const cDef = {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: '#5A5A5A', font: { family: 'DM Sans', size: 11 }, padding: 12 } } },
+    plugins: { legend: { labels: { color: '#6b7280', font: { family: "'DM Sans',sans-serif", size: 11 }, padding: 14, usePointStyle: true, pointStyleWidth: 8 } } },
   };
 
   if (successes.length > 0) {
-    const labels = successes.map(e => e.iteration_id || e.timestamp?.slice(5, 16) || '');
+    const labels = successes.map(e => {
+      const id = e.iteration_id || '';
+      const m = id.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})-(\d+)$/);
+      return m ? `${m[2]}-${m[3]} ${m[4]}:${m[5]}` : id.slice(0, 12);
+    });
     const baselines = successes.map(e => e.baseline_score || 0);
     const previews = successes.map(e => e.preview_score || 0);
 
     charts.trend = new Chart(document.getElementById('scoreTrendChart'), {
       type: 'line',
-      data: {
-        labels,
-        datasets: [
-          { label: 'Baseline', data: baselines, borderColor: '#94a3b8', borderDash: [5, 5], borderWidth: 2, pointRadius: 3, fill: false, tension: 0.2 },
-          { label: 'After Change', data: previews, borderColor: '#6366f1', borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#6366f1', fill: false, tension: 0.2 },
-        ]
-      },
-      options: { ...chartDefaults,
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#8A8A8A', font: { size: 9 }, maxRotation: 45 } },
-          y: { min: 0, max: 100, grid: { color: '#E8E6E1' }, ticks: { color: '#8A8A8A' } }
-        },
-      },
+      data: { labels, datasets: [
+        { label: 'Baseline', data: baselines, borderColor: '#cbd5e1', borderDash: [6, 3], borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#cbd5e1', fill: false, tension: 0.3 },
+        { label: 'After Change', data: previews, borderColor: '#6366f1', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#6366f1', fill: { target: 'origin', above: 'rgba(99,102,241,0.06)' }, tension: 0.3 },
+      ]},
+      options: { ...cDef, scales: {
+        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+        y: { min: 0, max: 100, grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', stepSize: 20 } },
+      }},
     });
 
-    // Sub-score trends
     const jsonLd = successes.map(e => (e.preview_sub_scores || e.baseline_sub_scores || {}).json_ld || 0);
-    const llmsTxt = successes.map(e => (e.preview_sub_scores || e.baseline_sub_scores || {}).llms_txt || 0);
-    const mcpA2a = successes.map(e => (e.preview_sub_scores || e.baseline_sub_scores || {}).mcp_a2a || 0);
-    const aiComp = successes.map(e => (e.preview_sub_scores || e.baseline_sub_scores || {}).ai_comprehension || 0);
+    const llms = successes.map(e => (e.preview_sub_scores || e.baseline_sub_scores || {}).llms_txt || 0);
+    const mcp = successes.map(e => (e.preview_sub_scores || e.baseline_sub_scores || {}).mcp_a2a || 0);
+    const ai = successes.map(e => (e.preview_sub_scores || e.baseline_sub_scores || {}).ai_comprehension || 0);
 
     charts.sub = new Chart(document.getElementById('subScoreChart'), {
       type: 'line',
-      data: {
-        labels,
-        datasets: [
-          { label: 'JSON-LD', data: jsonLd, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 3, fill: false, tension: 0.2 },
-          { label: 'llms.txt', data: llmsTxt, borderColor: '#059669', borderWidth: 2, pointRadius: 3, fill: false, tension: 0.2 },
-          { label: 'MCP+A2A', data: mcpA2a, borderColor: '#3b82f6', borderWidth: 2, pointRadius: 3, fill: false, tension: 0.2 },
-          { label: 'AI 理解', data: aiComp, borderColor: '#8b5cf6', borderWidth: 2, pointRadius: 3, fill: false, tension: 0.2 },
-        ]
-      },
-      options: { ...chartDefaults,
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#8A8A8A', font: { size: 9 }, maxRotation: 45 } },
-          y: { min: 0, max: 25, grid: { color: '#E8E6E1' }, ticks: { color: '#8A8A8A' } }
-        },
-      },
+      data: { labels, datasets: [
+        { label: 'JSON-LD', data: jsonLd, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 3, fill: false, tension: 0.3 },
+        { label: 'llms.txt', data: llms, borderColor: '#059669', borderWidth: 2, pointRadius: 3, fill: false, tension: 0.3 },
+        { label: 'MCP+A2A', data: mcp, borderColor: '#3b82f6', borderWidth: 2, pointRadius: 3, fill: false, tension: 0.3 },
+        { label: 'AI 理解', data: ai, borderColor: '#8b5cf6', borderWidth: 2, pointRadius: 3, fill: false, tension: 0.3 },
+      ]},
+      options: { ...cDef, scales: {
+        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+        y: { min: 0, max: 25, grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', stepSize: 5 } },
+      }},
     });
   }
 
-  // Status distribution doughnut
-  const statusCounts = {};
-  data.forEach(e => {
-    const s = e.evaluation_status || e.kept_or_reverted || 'unknown';
-    statusCounts[s] = (statusCounts[s] || 0) + 1;
-  });
-  const statusColors = {
-    success: '#059669', mutation_failed: '#dc2626', policy_violation: '#f59e0b',
-    no_action: '#94a3b8', eval_failed: '#dc2626', keep: '#059669', revert: '#f59e0b',
-    dry_run: '#6366f1', unknown: '#d1d5db',
-  };
-  const statusKeys = Object.keys(statusCounts);
+  // Status doughnut
+  const sc = {}; data.forEach(e => { const s = e.evaluation_status || 'unknown'; sc[s] = (sc[s] || 0) + 1; });
+  const sClr = { success:'#059669', mutation_failed:'#dc2626', policy_violation:'#f59e0b', no_action:'#94a3b8', eval_failed:'#ef4444', dry_run:'#6366f1', unknown:'#d1d5db' };
+  const sLabel = { success:'成功', mutation_failed:'生成失敗', policy_violation:'違規', no_action:'無動作', eval_failed:'評分失敗', dry_run:'試跑', unknown:'其他' };
+  const sKeys = Object.keys(sc).sort((a,b) => sc[b] - sc[a]);
   charts.status = new Chart(document.getElementById('statusChart'), {
     type: 'doughnut',
-    data: {
-      labels: statusKeys,
-      datasets: [{ data: statusKeys.map(k => statusCounts[k]),
-        backgroundColor: statusKeys.map(k => statusColors[k] || '#8A8A8A'), borderWidth: 2, borderColor: '#FFFFFF' }]
-    },
-    options: { ...chartDefaults, cutout: '55%',
-      plugins: { ...chartDefaults.plugins, legend: { position: 'right', labels: chartDefaults.plugins.legend.labels } },
-    },
+    data: { labels: sKeys.map(k => sLabel[k] || k), datasets: [{ data: sKeys.map(k => sc[k]),
+      backgroundColor: sKeys.map(k => sClr[k] || '#8A8A8A'), borderWidth: 3, borderColor: '#ffffff', borderRadius: 4 }] },
+    options: { ...cDef, cutout: '60%', plugins: { ...cDef.plugins, legend: { position: 'right', labels: { ...cDef.plugins.legend.labels, padding: 16 } } } },
   });
 
-  // Experiment table
+  // Table
   const sorted = [...data].reverse();
-  const statusBadge = (e) => {
+  const badge = (e) => {
     const s = e.kept_or_reverted || e.evaluation_status || '';
-    const colors = { keep: '#059669', revert: '#f59e0b', success: '#059669', mutation_failed: '#dc2626', policy_violation: '#f97316', no_action: '#94a3b8', dry_run: '#6366f1' };
-    const c = colors[s] || '#8A8A8A';
-    return '<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:600;background:' + c + '20;color:' + c + '">' + (s || 'pending') + '</span>';
+    const map = { keep:['保留','#059669'], revert:['回退','#f59e0b'], success:['成功','#059669'], mutation_failed:['生成失敗','#dc2626'], policy_violation:['違規','#f97316'], no_action:['無動作','#94a3b8'], dry_run:['試跑','#6366f1'] };
+    const [label, color] = map[s] || [s || '—', '#8A8A8A'];
+    return `<span class="ard-badge" style="--bc:${color}">${label}</span>`;
   };
+  const fmtTime = (ts) => { if (!ts) return '—'; return ts.slice(5,16).replace('T',' '); };
+  const fmtFile = (files) => { if (!files || !files.length) return '<span class="ard-muted">—</span>'; return files.map(f => f.split('/').pop()).join(', '); };
 
-  document.getElementById('expTableBody').innerHTML = `<table>
-    <thead><tr><th>時間</th><th>Iteration</th><th>修改檔案</th><th>分析</th><th>Baseline</th><th>After</th><th>Diff</th><th>結果</th></tr></thead>
+  document.getElementById('expTableBody').innerHTML = `<table class="ard-table">
+    <thead><tr><th>時間</th><th>修改檔案</th><th>分析摘要</th><th style="text-align:center">Baseline</th><th style="text-align:center">After</th><th style="text-align:center">Diff</th><th style="text-align:center">結果</th></tr></thead>
     <tbody>${sorted.map(e => {
-      const files = (e.files_modified || []).map(f => f.split('/').pop()).join(', ') || '—';
-      const analysis = (e.gap_analysis || e.change_summary || e.failure_reason || '').slice(0, 80);
-      const baseline = e.baseline_score != null ? e.baseline_score : '—';
-      const preview = e.preview_score != null ? e.preview_score : '—';
-      const diff = e.score_diff != null ? (e.score_diff >= 0 ? '+' : '') + e.score_diff : '—';
-      const diffColor = e.score_diff > 0 ? '#059669' : e.score_diff < 0 ? '#dc2626' : '#8A8A8A';
-      return '<tr>' +
-        '<td>' + (e.timestamp || '').slice(5, 16).replace('T', ' ') + '</td>' +
-        '<td style="font-family:monospace;font-size:0.75rem">' + (e.iteration_id || '—') + '</td>' +
-        '<td style="font-size:0.75rem">' + files + '</td>' +
-        '<td style="font-size:0.72rem;color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (analysis || '').replace(/"/g, '&quot;') + '">' + analysis + '</td>' +
-        '<td>' + baseline + '</td>' +
-        '<td>' + preview + '</td>' +
-        '<td style="font-weight:600;color:' + diffColor + '">' + diff + '</td>' +
-        '<td>' + statusBadge(e) + '</td>' +
-      '</tr>';
+      const analysis = (e.gap_analysis || e.change_summary || e.failure_reason || '');
+      const bl = e.baseline_score != null ? e.baseline_score : '—';
+      const pv = e.preview_score != null ? e.preview_score : '—';
+      const df = e.score_diff != null ? e.score_diff : null;
+      const dfStr = df != null ? (df >= 0 ? '+' + df : '' + df) : '—';
+      const dfCls = df > 0 ? 'ard-diff-up' : df < 0 ? 'ard-diff-down' : 'ard-diff-zero';
+      return `<tr>
+        <td class="ard-td-time">${fmtTime(e.timestamp)}</td>
+        <td class="ard-td-file">${fmtFile(e.files_modified)}</td>
+        <td class="ard-td-analysis" title="${analysis.replace(/"/g, '&quot;')}">${analysis.slice(0, 90)}${analysis.length > 90 ? '…' : ''}</td>
+        <td style="text-align:center">${bl}</td>
+        <td style="text-align:center">${pv}</td>
+        <td style="text-align:center" class="${dfCls}">${dfStr}</td>
+        <td style="text-align:center">${badge(e)}</td>
+      </tr>`;
     }).join('')}</tbody></table>`;
 }
 </script>
+
+<style is:global>
+/* ═══════════════════════════════════════════════
+   AI-Ready Dashboard — Scoped Styles
+   ═══════════════════════════════════════════════ */
+
+/* Auth Gate */
+.ard-auth {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 60vh; padding: 2rem;
+}
+.ard-auth-card {
+  text-align: center; background: var(--bg-card, #fff); border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px; padding: 2.5rem 2rem; max-width: 340px; width: 100%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+.ard-auth-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.ard-auth-card h2 { font-family: var(--font-display, 'Playfair Display', serif); font-size: 1.4rem; margin-bottom: 0.25rem; color: var(--text-primary, #1a1a1a); }
+.ard-auth-card p { color: var(--text-muted, #9ca3af); margin-bottom: 1.5rem; font-size: 0.85rem; }
+.ard-auth-card input {
+  width: 100%; padding: 0.7rem 1rem; border: 1.5px solid var(--border, #e5e7eb);
+  border-radius: 10px; font-size: 0.95rem; text-align: center;
+  background: var(--bg, #fafaf9); transition: border-color 0.2s; color: var(--text-primary, #1a1a1a);
+}
+.ard-auth-card input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+.ard-auth-card button {
+  margin-top: 0.75rem; width: 100%; padding: 0.7rem;
+  background: var(--brand-navy, #1b2d4f); color: white; border: none;
+  border-radius: 10px; font-size: 0.9rem; cursor: pointer; font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+.ard-auth-card button:hover { opacity: 0.9; }
+.ard-auth-card button:active { transform: scale(0.98); }
+
+/* Container */
+.ard-container {
+  max-width: 1080px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem;
+}
+
+/* Header */
+.ard-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 2rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border, #e5e7eb);
+}
+.ard-header-left { display: flex; align-items: center; gap: 1rem; }
+.ard-header-badge {
+  background: #6366f1; color: white; font-size: 0.65rem; font-weight: 700;
+  padding: 0.2rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.ard-header h1 { font-family: var(--font-display, 'Playfair Display', serif); font-size: 1.5rem; color: var(--text-primary, #1a1a1a); margin: 0; }
+.ard-header-sub { color: var(--text-muted, #9ca3af); font-size: 0.8rem; margin-top: 0.15rem; }
+.ard-back-link {
+  font-size: 0.8rem; color: var(--text-secondary, #6b7280); text-decoration: none;
+  padding: 0.4rem 0.8rem; border: 1px solid var(--border, #e5e7eb); border-radius: 8px;
+  transition: all 0.2s;
+}
+.ard-back-link:hover { border-color: #6366f1; color: #6366f1; }
+
+/* Score Section (Ring + KPI bars + Stats) */
+.ard-score-section {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 2rem; align-items: center;
+  background: var(--bg-card, #fff); border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.ard-score-ring-wrap { position: relative; width: 200px; height: 200px; }
+.ard-score-ring-label {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center; display: flex; flex-direction: column;
+}
+.ard-ring-value { font-size: 2.8rem; font-weight: 800; font-family: 'DM Sans', sans-serif; line-height: 1; }
+.ard-ring-sub { font-size: 0.8rem; color: var(--text-muted, #9ca3af); margin-top: 0.2rem; }
+
+/* KPI Bars */
+.ard-kpi-col { display: flex; flex-direction: column; gap: 1rem; min-width: 240px; }
+.ard-kpi { display: flex; align-items: center; gap: 0.75rem; }
+.ard-kpi-bar {
+  width: 100%; height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden; flex: 1;
+}
+.ard-kpi-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; width: 0; }
+.ard-kpi-info { display: flex; align-items: baseline; gap: 0.4rem; min-width: 140px; }
+.ard-kpi-name { font-size: 0.78rem; color: var(--text-secondary, #6b7280); width: 70px; }
+.ard-kpi-val { font-size: 1.1rem; font-weight: 700; font-family: 'DM Sans', sans-serif; }
+.ard-kpi-max { font-size: 0.72rem; color: var(--text-muted, #9ca3af); }
+
+/* Stats Column */
+.ard-stats-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1.25rem; }
+.ard-stat { text-align: center; }
+.ard-stat-val { display: block; font-size: 1.5rem; font-weight: 800; font-family: 'DM Sans', sans-serif; color: var(--text-primary, #1a1a1a); }
+.ard-stat-label { font-size: 0.7rem; color: var(--text-muted, #9ca3af); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Chart Panels */
+.ard-charts {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;
+}
+.ard-panel {
+  background: var(--bg-card, #fff); border: 1px solid var(--border, #e5e7eb);
+  border-radius: 14px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.ard-panel-wide { grid-column: 1 / -1; }
+.ard-panel-title {
+  font-size: 0.82rem; color: var(--text-secondary, #6b7280); margin-bottom: 1rem;
+  font-weight: 600; display: flex; align-items: center; gap: 0.5rem;
+}
+.ard-panel-badge {
+  background: #f3f4f6; color: var(--text-muted, #9ca3af); font-size: 0.7rem;
+  padding: 0.1rem 0.5rem; border-radius: 10px; font-weight: 700;
+}
+.ard-chart-wrap { position: relative; height: 240px; }
+.ard-chart-tall { height: 300px; }
+
+/* Table */
+.ard-table-wrap { overflow-x: auto; }
+.ard-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.ard-table thead th {
+  text-align: left; padding: 0.6rem 0.75rem; color: var(--text-muted, #9ca3af);
+  font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border, #e5e7eb); white-space: nowrap;
+}
+.ard-table tbody td {
+  padding: 0.55rem 0.75rem; border-bottom: 1px solid #f3f4f6;
+  color: var(--text-secondary, #6b7280); vertical-align: middle;
+}
+.ard-table tbody tr:hover td { background: rgba(99,102,241,0.03); }
+.ard-td-time { font-family: 'DM Sans', monospace; font-size: 0.75rem; white-space: nowrap; color: var(--text-muted, #9ca3af); }
+.ard-td-file { font-size: 0.74rem; font-family: 'DM Sans', monospace; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ard-td-analysis { font-size: 0.73rem; color: var(--text-muted, #9ca3af); max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ard-diff-up { font-weight: 700; color: #059669 !important; }
+.ard-diff-down { font-weight: 700; color: #dc2626 !important; }
+.ard-diff-zero { color: #9ca3af !important; }
+.ard-muted { color: var(--text-muted, #9ca3af); }
+
+/* Badge */
+.ard-badge {
+  display: inline-block; padding: 0.15rem 0.55rem; border-radius: 6px;
+  font-size: 0.68rem; font-weight: 700; white-space: nowrap;
+  background: color-mix(in srgb, var(--bc) 12%, transparent); color: var(--bc);
+}
+
+/* Layer 5a Placeholder */
+.ard-layer5 {
+  display: flex; align-items: center; gap: 1rem;
+  margin-top: 1.5rem; padding: 1.5rem 2rem;
+  background: var(--bg-section, #fafaf9); border: 1.5px dashed var(--border, #e5e7eb);
+  border-radius: 14px;
+}
+.ard-layer5-icon { font-size: 1.8rem; }
+.ard-layer5 h3 { font-size: 0.9rem; color: var(--text-secondary, #6b7280); margin: 0 0 0.25rem; font-weight: 600; }
+.ard-layer5 p { font-size: 0.8rem; color: var(--text-muted, #9ca3af); margin: 0; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ard-score-section { grid-template-columns: 1fr; justify-items: center; }
+  .ard-kpi-col { width: 100%; }
+  .ard-stats-col { width: 100%; }
+  .ard-charts { grid-template-columns: 1fr; }
+  .ard-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .ard-header-right { align-self: flex-end; }
+}
+</style>
