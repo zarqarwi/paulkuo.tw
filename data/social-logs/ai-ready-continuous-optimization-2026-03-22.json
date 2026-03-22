@@ -1,0 +1,18 @@
+{
+  "slug": "ai-ready-continuous-optimization",
+  "title": "把 paulkuo.tw 變成一個自己進化的網站",
+  "url": "https://paulkuo.tw/articles/ai-ready-continuous-optimization",
+  "pillar": "ai",
+  "summaries": {
+    "X": "當 AI 成為資訊入口，你的網站該為 AI 而設計，不只為人。受 Karpathy 的 autoresearch 啟發，我把個人網站改造成會自己進化的知識實體。從封閉迴圈到外部驗證，實作過程滿滿反思。真正的優化不是做很多修改，而是建立能區分有效訊號的研究制度。\n\nhttps://paulkuo.tw/articles/ai-ready-continuous-optimization #AI #WebOptimization",
+    "LI": "看到 Andrej Karpathy 的 autoresearch 時，我開始思考一個問題：當 AI 愈來愈成為資訊交流的入口，我們的網站是否該重新設計？\n\n不只是 SEO，而是 AEO（Answer Engine Optimization）。當 Perplexity 在引用你、ChatGPT 在理解你的網站結構、Claude 在讀你的 llms.txt 時，真正的任務已經從「被人看見」轉向「被 AI 正確理解」。\n\n於是我決定把自己的網站當實驗場，建立一套 AI-Ready Continuous Optimization System。定義目標、限縮邊界、建立評估、設計回滾，讓網站進入自動優化迴圈。\n\n但過程中發現，自己考自己的分數再高也不算數。真正可持續的優化，不是做很多修改，而是建立一套能區分有效訊號與無效波動的研究制度。所以我加了外部驗證，讓 Perplexity 當考官。\n\n這不只是技術實驗，更是對「止於至善」這個理想的重新思考。分享完整實作過程與反思：\nhttps://paulkuo.tw/articles/ai-ready-continuous-optimization",
+    "TH": "受 Karpathy 的 autoresearch 啟發，我把自己網站改造成會自己進化的系統。當 AI 愈來愈成為資訊入口時，網站該為 AI 而設計，不只為人。\n\n實作過程學到：自己考自己的分數再高也沒用，真正的優化需要外部驗證。建立了 13 題 benchmark，讓 Perplexity 當外部考官。這是技術實驗，也是對「持續改進」的重新思考。\n\nhttps://paulkuo.tw/articles/ai-ready-continuous-optimization",
+    "BS": "當 AI 成為資訊入口，你的網站該怎麼進化？我受 Karpathy 的 autoresearch 啟發，把個人網站改造成自動優化系統。從定義目標到建立外部驗證，過程滿是意外發現。\n\n最大的學習：真正的優化不是做很多修改，而是建立能區分有效訊號的制度。分享完整實作過程。\n\nhttps://paulkuo.tw/articles/ai-ready-continuous-optimization",
+    "YT": "最近看到 Andrej Karpathy 的 autoresearch，讓我開始思考：當 AI 愈來愈成為我們獲取資訊的入口時，網站該如何設計？\n\n於是我決定用自己的網站做實驗，建立一套 AI-Ready Continuous Optimization System。讓網站不只是被人看見，更要被 AI 正確理解和引用。\n\n實作過程中最大的發現是：自己考自己的分數再高都沒意義。真正可持續的優化，需要外部驗證機制。我建立了 13 題 benchmark，讓 Perplexity 當考官，才算是真正的測試。\n\n這個實驗讓我重新思考「持續改進」的本質。分享完整的技術實作與反思過程。",
+    "FB": "受到 Karpathy 的 autoresearch 啟發，我做了一個有趣的實驗：把自己的網站改造成會自己進化的系統。\n\n想法很簡單：當 AI 愈來愈成為資訊入口時，網站該為 AI 而設計，不只為人。於是我建立了自動優化迴圈，定義目標、建立評估、設計回滾機制。\n\n過程中學到很重要的一課：自己考自己的分數再高也沒用！後來加了外部驗證，讓 Perplexity 當考官，才算是真正的測試。\n\n這不只是技術實驗，更是對「止於至善」這個理想的重新思考。分享完整過程給有興趣的朋友們。\n\nhttps://paulkuo.tw/articles/ai-ready-continuous-optimization",
+    "IG": "當 AI 成為資訊入口，你的網站該如何進化？🤖\n\n受 Karpathy 的 autoresearch 啟發，我把個人網站改造成自動優化系統 ✨ 讓網站不只被人看見，更要被 AI 正確理解！\n\n實作過程最大發現：自己考自己沒意義 😅 真正的優化需要外部驗證。建立 13 題 benchmark，讓 Perplexity 當考官 📊\n\n這是技術實驗，也是對「持續改進」的重新思考 💭 分享完整過程～\n\nhttps://paulkuo.tw/articles/ai-ready-continuous-optimization\n\n#AI #WebOptimization #TechExperiment #ContinuousImprovement #AEO"
+  },
+  "imageUrl": "https://iili.io/q8rp4zQ.jpg",
+  "status": "pending_review",
+  "timestamp": "2026-03-22T13:22:33.653Z"
+}
