@@ -1,15 +1,16 @@
-[2026-03-23 02:40:01] === Start ===
-[2026-03-23 02:40:01] WARN: dirty working tree, stashing...
-[2026-03-23 02:40:01] WARN: stash pop conflict, dropped
-[2026-03-23 02:40:01] Timing...
-[2026-03-23 02:40:01] WARN: Timing failed
-[2026-03-23 02:40:01] ✅ Timing → KV
-[2026-03-23 02:40:01] WARN: Timing KV push failed
-[2026-03-23 02:40:01] Costs → KV...
-[2026-03-23 02:40:01] WARN: Costs KV sync failed
-[2026-03-23 02:40:01] Stock...
-[2026-03-23 02:40:01] WARN: Stock fetch failed
-[2026-03-23 02:40:01] Push: data/timing.json
+[2026-03-23 01:20:00] === Start ===
+[2026-03-23 01:20:00] WARN: dirty working tree, stashing...
+[2026-03-23 01:20:00] WARN: git pull --rebase failed, hard reset to origin/main
+[2026-03-23 01:20:00] WARN: stash pop conflict, dropped
+[2026-03-23 01:20:00] Timing...
+[2026-03-23 01:20:00] WARN: Timing failed
+[2026-03-23 01:20:00] ✅ Timing → KV
+[2026-03-23 01:20:00] WARN: Timing KV push failed
+[2026-03-23 01:20:00] Costs → KV...
+[2026-03-23 01:20:00] WARN: Costs KV sync failed
+[2026-03-23 01:20:00] Stock...
+[2026-03-23 01:20:00] WARN: Stock fetch failed
+[2026-03-23 01:20:00] Push: data/timing.json
 
-[2026-03-23 02:40:01] ✅ Pushed
-1774204974
+[2026-03-23 01:20:00] ✅ Pushed
+1774200120
