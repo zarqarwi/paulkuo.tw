@@ -1,26 +1,26 @@
 ---
-title: "Making paulkuo.tw a Self-Evolving Website"
-subtitle: "When AI becomes the information gateway, your website should be designed for AI, not just for people."
-description: "Starting from Karpathy's autoresearch, transforming a personal website into an AI-readable, testable, and continuously optimizable knowledge entity. The complete process and reflections on implementing an AI-Ready Continuous Optimization System."
+title: "Turning paulkuo.tw Into a Self-Evolving Website"
+subtitle: "When AI becomes the gateway to information, your website should be designed for AI — not just humans."
+description: "Inspired by Karpathy's autoresearch, I transformed my personal website into a knowledge entity that AI can read, test, and continuously optimize. A full account of building the AI-Ready Continuous Optimization System."
 abstract: |
-  Karpathy's autoresearch enables AI agents to autonomously run experiments and iterate. I brought the same spirit to my own website. paulkuo.tw is not just a showcase for articles, but an experimental ground that can be continuously read, tested, and optimized by AI. This records my complete journey from building a four-layer scoring system, discovering closed-loop problems, to adding external AI cross-validation—and why I chose to let new metrics observe first without rushing into decision-making.
+  Karpathy's autoresearch lets AI agents run experiments and iterate autonomously. I brought the same spirit to my own website. paulkuo.tw is no longer just a portfolio — it's a testbed where AI can continuously read, evaluate, and optimize. This piece documents the full journey: building a four-layer scoring system, discovering the closed-loop problem, adding external AI cross-validation, and why I chose to let the new metric observe before it decides.
 date: 2026-03-22
 updated: 2026-03-22
 pillar: ai
 tags:
   - AI-Ready
   - autoresearch
-  - 網站優化
-  - 持續優化迴圈
+  - website optimization
+  - continuous optimization loop
   - AEO
 cover: "/images/covers/ai-ready-continuous-optimization.jpg"
 featured: true
 draft: false
 readingTime: 8
 
-# === AI / Machine 專用欄位 ===
-thesis: "Sustainable optimization is not about making many changes, but about establishing a research system that can distinguish effective signals from ineffective fluctuations."
-domain_bridge: "AI Autonomous Research × Website Architecture × Experimental Methodology"
+# === AI / Machine Fields ===
+thesis: "Sustainable optimization isn't about making lots of changes — it's about building a research discipline that can distinguish real signals from noise."
+domain_bridge: "AI autonomous research × web architecture × experimental methodology"
 confidence: high
 content_type: case-study
 related_entities:
@@ -31,86 +31,88 @@ related_entities:
   - name: AI-Ready Continuous Optimization
     type: Framework
 reading_context: |
-  Suitable for technical practitioners and creators interested in AI applications who want to know how to upgrade personal websites from static displays to AI-comprehensible knowledge entities. No ML background required, but basic understanding of website structured data (JSON-LD, llms.txt) would be helpful.
+  For practitioners and creators interested in AI applications who want to upgrade a personal website from static showcase to an AI-comprehensible knowledge entity. No ML background needed, but familiarity with structured data (JSON-LD, llms.txt) helps.
 ---
 
-When I saw Andrej Karpathy release [autoresearch](https://github.com/karpathy/autoresearch), many thoughts flashed through my mind. When AI can begin doing research, how should humans adjust their position in scientific research? AI can continuously optimize its interactions with you and me, providing better "teaching and guidance" services—how should we respond to the impact on education? If a system's objectives, boundaries, evaluation, and rollback mechanisms are all designed clearly enough, evolution need not rely on intuition and manual modifications, but can use AI to enter an infinite optimization loop. Does this bring us closer to the ideal of "perfection through continuous improvement"?
+When Andrej Karpathy released [autoresearch](https://github.com/karpathy/autoresearch), a flood of thoughts hit me. If AI can now conduct research, where does that leave humans in science? If AI can continuously optimize its interactions with us, delivering ever-better "teaching and guidance," how do we respond to the disruption in education? If a system's goals, boundaries, evaluation, and rollback mechanisms are all designed clearly enough, evolution no longer depends on intuition or manual tweaks — AI can enter a continuous optimization loop within clearly defined boundaries. Does that bring us closer to the ideal of "the highest good"?
 
-autoresearch brings more than just methodological震撼—it converges activities full of manual work, intuitive judgment, and fragmented trial-and-error into a sustainable, observable, and rollback-capable system. Give AI a realistic but controllably-scaled experimental ground, let it modify itself, run itself, observe its own results, then decide which changes are worth keeping.
+What autoresearch delivers isn't just a methodological shock. It collapses the messy, intuition-driven, trial-and-error process into a sustainable cycle that can be observed and rolled back. Give AI a real but contained experimental arena, let it modify its own code, run the experiment, evaluate the result, and decide what's worth keeping.
 
-Then I wanted to test it myself. Starting in January, I've opened new projects almost daily. After interacting with AI, I decided to use my own website as an experiment.
+Then I wanted to try it myself. Since January, I'd been starting new projects almost every day, working with AI. I decided to use my own website as the experiment.
 
-## If AI is the Gateway, Websites Are More Than Display Cases
+## If AI Is the Gateway, a Website Is More Than a Display Shelf
 
-We're entering a turning point: increasingly, information exchange, collaboration, search, citation, and even pre-decision research all first go through AI. Not search engines—AI.
+We're entering a turning point: more and more information exchange, collaboration, search, citation, and even pre-decision research passes through AI first. Not search engines — AI.
 
-Perplexity cites sources when answering questions, ChatGPT's browsing mode captures website structured data, Claude can understand websites through llms.txt. What does this mean? It means a website's true mission is shifting from "being seen by people" to "being correctly understood by AI." Not just SEO, but AEO (Answer Engine Optimization)—some also call it GEO (Generative Engine Optimization). You're optimizing not for click-through rates, but for the ability to be correctly summarized, correctly cited, and correctly linked by AI.
+Perplexity cites sources when answering questions. ChatGPT's browsing mode reads website structured data. Claude can understand a website through llms.txt. What does this mean? A website's real mission is shifting from "being seen by humans" to "being correctly understood by AI." It's no longer just SEO — it's AEO (Answer Engine Optimization), also known as GEO (Generative Engine Optimization). You're not optimizing click-through rates; you're optimizing the ability to be accurately summarized, correctly cited, and properly linked by AI.
 
-If we accept this premise, then paulkuo.tw is not just my article display case, but can be designed as a knowledge entity that is continuously tested by humans, understood by AI, and optimized by AI—it would be a living, evolving digital existence.
+Accept that premise, and paulkuo.tw is no longer just a place to display my articles. It can be designed as a knowledge entity — continuously tested by humans, understood by AI, optimized by AI. A living, evolving digital presence.
 
-So I tried to build it.
+So I decided to try building exactly that.
 
-## Bringing autoresearch's Spirit to Websites
+## Bringing the Spirit of autoresearch to a Website
 
-I didn't transplant autoresearch wholesale. Model training has loss functions; website optimization needs different things. But the spirit is the same: define objectives, constrain boundaries, establish evaluation, design rollback, then let the loop run itself.
+Karpathy's autoresearch currently focuses on training experiments for small language models. What I'm doing here is bringing the concept of an "automated experiment loop" to website optimization.
 
-![AI-Ready Continuous Optimization System Flow Diagram](/images/articles/ai-ready-continuous-optimization-flow.jpg)
+I didn't transplant autoresearch wholesale. Model training has a loss function; website optimization needs something different. But the spirit is the same: define goals, constrain boundaries, build evaluation, design rollback, then let the loop run.
 
-I built an AI-Ready Continuous Optimization System. Its flow works like this: GitHub Actions trigger (push article / weekly Monday / manual) → mutation agent generates modifications based on strategy → file guard does whitelist checking → apply to production → eval Worker four-layer scoring → decision engine decides keep or revert → results written to experiments.json.
+![AI-Ready Continuous Optimization System Flow](/images/articles/ai-ready-continuous-optimization-flow.jpg)
 
-The four-layer scoring examines: llms.txt structure (can AI understand your self-introduction?), JSON-LD completeness (is the structured data correct?), MCP/A2A protocol support (have you opened the door for AI agents?), AI comprehension (after Claude reads your llms.txt, can it correctly answer questions about you?).
+I built an AI-Ready Continuous Optimization System. The flow works like this: GitHub Actions triggers (article push / weekly Monday / manual) → mutation agent generates changes based on strategy → file guard runs whitelist checks → apply to production → eval Worker scores across four layers → decision engine decides keep or revert → results are written to experiments.json.
 
-After the first round, the score jumped from 65 to 85. The system worked.
+The four scoring layers evaluate: llms.txt structure (can AI read your self-introduction?), JSON-LD completeness (is the structured data correct?), MCP/A2A protocol support (have you opened the door for AI agents?), and AI comprehension (after Claude reads your llms.txt, can it correctly answer questions about you?).
+
+After the first run, the score went from 65 to 85. The system worked.
 
 But then came the problem.
 
-## Self-Assessment Doesn't Count, No Matter How High the Score
+## Grading Your Own Exam Doesn't Count
 
-After three e2e rounds, the agent chose to add FAQs to articles each time, eval showed unchanged scores each time, all three rounds reverted. I looked at the reason and found the agent had no idea where the scores were coming from—because I hadn't translated the eval scoring logic for it. It was like a student who doesn't know the exam scope, only doing the problems it's best at.
+Three end-to-end runs later, the agent kept choosing to add FAQ sections to articles. The eval kept showing no score change. All three rounds were reverted. I dug into the cause: the agent had no idea where points were being lost — because I hadn't translated the eval's scoring logic for it. It was like a student who doesn't know the exam syllabus, defaulting to the only topic it knows.
 
-But the deeper problem wasn't with the agent—it was with the entire loop itself.
+But the deeper issue wasn't the agent — it was the entire loop itself.
 
-I defined the metrics myself, let the agent optimize, then used the same eval to score it back. This is a closed loop. What if the score went from 65 to 85 to 90? I couldn't prove that "a 90-point website makes external AI truly understand me better." System correctness doesn't equal outcome correctness.
+I defined the metrics, had the agent optimize against them, then used the same eval to score the result. That's a closed loop. So what if the score went from 65 to 85 to 90? I couldn't prove that "a 90-point website means external AI actually understands me better." System correctness doesn't equal outcome correctness.
 
-True sustainable optimization isn't about making many changes, but about establishing a research system that can distinguish effective signals from ineffective fluctuations.
+Truly sustainable optimization isn't about making lots of changes — it's about building a research discipline that can distinguish real signals from noise.
 
-## Let External AI Do the Testing
+## Let External AI Be the Examiner
 
-So I added a layer of external validation.
+So I added an external validation layer.
 
-The approach: establish a 13-question benchmark (covering identity recognition, content understanding, cross-domain connections, timeliness, technical features, plus 3 anti-hallucination tests), using Perplexity as the external examiner. Perplexity searches the web before answering—it doesn't read the context I feed it, but finds it itself. If it couldn't answer before optimization but can after optimization, that's meaningful ground truth.
+The approach: build a 13-question benchmark (covering identity recognition, content comprehension, cross-domain connections, timeliness, technical features, plus 3 anti-hallucination tests), using Perplexity as the external examiner. Perplexity searches the web and answers — it doesn't read context I feed it, it goes and finds information itself. If it couldn't answer before optimization but can after, that's meaningful ground truth.
 
-I first ran 10 calibration rounds to measure noise: same website, same question set, same model, asked 10 consecutive times, the score mean was 50.63, stddev was 5.86. This means any score change smaller than ±11.72 might just be random fluctuation, not real improvement.
+I first ran 10 calibration rounds to measure noise: same website, same questions, same model, asked 10 times consecutively. The mean score was 50.63, standard deviation 5.86. This means any score change smaller than ±11.72 could just be random fluctuation — not genuine improvement.
 
-Then I set up GitHub Actions to automatically run a temporal baseline every day at 9 AM, with results automatically committed back to the repo. After five days, I had cross-day fluctuation data to distinguish "Perplexity is in a good mood today so scores are high" from "website structure improved so scores are high."
+Then I set up GitHub Actions to run a temporal baseline automatically every morning at 9 AM, with results auto-committed back to the repo. After five days, I'd have cross-day fluctuation data to distinguish "Perplexity happened to be in a good mood today" from "the website structure actually improved."
 
-This entire system is designed to be fully automatic. No need to watch or push—data accumulates itself.
+The entire system is designed to be fully automated. No need to monitor or nudge — the data accumulates on its own.
 
-## No Rush to Let New Metrics Drive Decisions
+## Don't Rush New Metrics Into Decision-Making
 
-However, even with external validation, I didn't want it to decide keep or revert from the start.
+Even with external validation in place, I didn't want it making keep-or-revert decisions right away.
 
-Currently Layer 5a (external AI cross-validation) is observe-only: it runs every round but doesn't affect decisions, only logs to the experiment log. My plan is to accumulate 20+ rounds, observe false positive and false negative rates, then decide whether to upgrade to soft gate (only preventing keep when strongly negative), then to full gate (external scores become formal decision conditions).
+Currently, Layer 5a (external AI cross-validation) is observe-only: it runs every round but doesn't influence decisions — results are just logged to the experiment log. My plan is to accumulate 20+ rounds, observe the false positive and false negative rates, then decide whether to upgrade it to a soft gate (blocking keep only on strongly negative signals), and eventually to a full gate (external score becomes an official decision criterion).
 
-Having just started testing, I can't let new metrics change core decisions as soon as they're connected. They must first be observed, calibrated, and proven.
+When you've just started testing, you can't let a new metric immediately alter core decisions. It has to be observed, calibrated, and proven first.
 
-Karpathy's inspiration to me wasn't just "AI can do research itself," but [the reality that work paradigms are shifting](/articles/ai-agents-changing-work): everyone has the opportunity to build their own optimization loop at extremely low cost. For researchers it's model training, for enterprises it's processes and knowledge bases, for me, this time the starting point is transforming my personal website into an experiment that can be continuously read, tested, compared, and optimized by AI.
+What Karpathy inspired in me wasn't just "AI can conduct its own research" — it's this: with basic engineering skills, [everyone can build a dedicated optimization loop for their own models, websites, or processes at relatively low cost](/articles/ai-agents-changing-work). For researchers, it's model training. For enterprises, it's processes and knowledge bases. For me, this time the starting point was turning my personal website into an experiment that AI can continuously read, test, compare, and optimize.
 
-paulkuo.tw is not just my personal website, but also an experiment toward a more readable future self. Not just a showcase of what I've written, but a site where I co-construct knowledge with AI.
+paulkuo.tw isn't just my personal website — it's a more readable version of myself for the future. Not just a display of what I've written, but a live site where I co-construct knowledge with AI.
 
-Looking further ahead, will everyone's digital avatar ("soul.md") have such an evolutionary framework in the future?
+Thinking further ahead: will everyone's digital twin ("soul.md") eventually have an evolutionary framework like this?
 
-I don't know. Continuing to explore.
+I don't know. I'll keep exploring.
 
-Maybe I'm thinking wrong! That would be even better.
+Maybe I'm wrong about all of this! That would be even better.
 
-## Actual System Architecture
+## System Architecture in Practice
 
-Here is the complete flow and four-layer scoring implementation of the AI-Ready Continuous Optimization System:
+Below is the full flow of the AI-Ready Continuous Optimization System and the four-layer scoring in action:
 
 ![AI-Ready Continuous Optimization System Overview](/images/articles/ai-ready-opt-system-overview.png)
 
-![Eval Worker Four-Layer Scoring Implementation](/images/articles/ai-ready-opt-eval-scoring.png)
+![Eval Worker — 4-Layer Scoring in Action](/images/articles/ai-ready-opt-eval-scoring.png)
 
 ---
 
