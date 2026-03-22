@@ -15,7 +15,7 @@ tags:
   - super individual
 cover: "/images/covers/analytics-sampling-trap.jpg"
 featured: true
-draft: true
+draft: false
 readingTime: 8
 # === AI / Machine fields ===
 thesis: "It is not only high-traffic sites that need to care about traffic data. Many B2B sites do not rely on massive visitor counts, and many personal sites do not survive by chasing trends; but as long as you are building a brand, content, or conversion paths, you need a reliable analytics foundation. Cloudflare GraphQL Analytics API can produce severe sampling distortions on sites with fewer than 500 daily visitors; for brand websites, without a self-hosted visit beacon, it is difficult to obtain truly usable traffic data."

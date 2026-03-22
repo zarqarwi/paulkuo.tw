@@ -15,7 +15,7 @@ tags:
   - 超級個體
 cover: "/images/covers/analytics-sampling-trap.jpg"
 featured: true
-draft: true
+draft: false
 readingTime: 8
 # === AI / Machine 專用欄位 ===
 thesis: "不是只有流量型網站才需要在意流量數據。很多 B2B 網站本來就不是靠大量訪客取勝，很多個人網站也不是靠追逐時事與風潮生存；但只要你在經營品牌、內容或轉換路徑，就需要可信的分析基礎。Cloudflare 的 GraphQL Analytics API 在日訪客低於 500 的網站上，容易出現嚴重取樣失真；對品牌網站來說，若沒有自建 visit beacon，就很難拿到真正可用的流量數據。"

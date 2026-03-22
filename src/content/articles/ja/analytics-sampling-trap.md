@@ -15,7 +15,7 @@ tags:
   - スーパー個体
 cover: "/images/covers/analytics-sampling-trap.jpg"
 featured: true
-draft: true
+draft: false
 readingTime: 8
 # === AI / Machine 専用フィールド ===
 thesis: "トラフィック型サイトだけがトラフィックデータを気にすべきではない。多くのB2Bサイトは大量の訪問者に頼って勝つわけではなく、多くの個人サイトもトレンドを追って生き残るわけではない。しかし、ブランド、コンテンツ、コンバージョンパスを構築している限り、信頼できる分析基盤が必要。Cloudflare の GraphQL Analytics API は日間訪問者500未満のサイトで深刻なサンプリング歪みが発生しやすく、ブランドサイトにとって自前の visit beacon なしでは本当に使えるトラフィックデータを取得することは困難。"
