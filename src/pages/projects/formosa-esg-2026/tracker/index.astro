@@ -1,0 +1,1543 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import AuthGate from '../_components/AuthGate.astro';
+---
+
+<BaseLayout
+  title="活動紀錄 — 2026 白沙屯媽祖 ESG 永續進香"
+  description="填寫問卷並上傳繞境照片，記錄你的進香足跡與善行體悟。"
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/tracker/"
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+>
+
+<AuthGate title="活動參與足跡紀錄" subtitle="請輸入存取碼">
+
+<div class="tracker">
+
+  <!-- Breadcrumb -->
+  <nav class="tracker-breadcrumb">
+    <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+  </nav>
+
+  <!-- Header -->
+  <header class="tracker-header">
+    <div class="tracker-badge">4/12 – 4/20 活動紀錄</div>
+    <h1>2026 白沙屯媽祖徒步進香</h1>
+    <p>活動參與足跡紀錄</p>
+  </header>
+
+  <!-- GPS Tracking Banner -->
+  <div class="gps-banner" id="gpsBanner">
+    <div class="gps-banner-inner">
+      <div class="gps-pulse" id="gpsPulse"></div>
+      <div class="gps-banner-text">
+        <span id="gpsStatus">📍 正在取得定位權限...</span>
+        <span class="gps-count" id="gpsCount"></span>
+      </div>
+      <button class="gps-checkin-btn" id="gpsCheckinBtn" style="display:none" onclick="manualCheckin()">打卡 📍</button>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-step active" data-step="1">
+      <div class="step-num">1</div>
+      <div class="step-label">善行體悟</div>
+    </div>
+    <div class="progress-line"><div class="progress-line-fill"></div></div>
+    <div class="progress-step" data-step="2">
+      <div class="step-num">2</div>
+      <div class="step-label">活動後的改變</div>
+    </div>
+    <div class="progress-line"><div class="progress-line-fill"></div></div>
+    <div class="progress-step" data-step="3">
+      <div class="step-num">3</div>
+      <div class="step-label">交通與環境</div>
+    </div>
+    <div class="progress-line"><div class="progress-line-fill"></div></div>
+    <div class="progress-step" data-step="4">
+      <div class="step-num">4</div>
+      <div class="step-label">照片上傳</div>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 1: 善行體悟 ==================== -->
+  <section class="step-panel active" id="step1">
+    <h2 class="step-title">第一部份：善行、行善</h2>
+
+    <!-- Q1 -->
+    <div class="form-group">
+      <label class="form-label">Q1. 您於此次進香期間，有參與以下哪些善行活動？<span class="form-hint">（可複選）</span></label>
+      <div class="checkbox-group" data-name="q1">
+        <label class="checkbox-item"><input type="checkbox" name="q1" value="環球境地志工，協助整理沿路環境設施"><span>環球境地志工，協助整理沿路環境設施</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q1" value="提供飲水/補給品給香客"><span>提供飲水/補給品給香客</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q1" value="參與環境清潔或垃圾分類"><span>參與環境清潔或垃圾分類</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q1" value="協助老人、小孩、安全引導"><span>協助老人、小孩、安全引導</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q1" value="默禱/祈福"><span>默禱/祈福</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q1" value="協助他人搬運物資"><span>協助他人搬運物資</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q1" value="協助環球境地夥伴-參與奉獻佈施"><span>協助環球境地夥伴 - 參與奉獻佈施</span></label>
+        <label class="checkbox-item other-item">
+          <input type="checkbox" name="q1" value="__other__"><span>其他</span>
+          <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="form-group">
+      <label class="form-label">Q2. 您於此次進香期間，被感動的事情？<span class="form-hint">（可複選）</span></label>
+      <div class="checkbox-group" data-name="q2">
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="看到或感受到媽祖的神跡"><span>看到或感受到媽祖的神跡</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="看到彼此扶助的行為"><span>看到彼此扶助的行為</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我約束的自律行為"><span>看到自我約束的自律行為</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我改變、改善或悔改的行為"><span>看到自我改變、改善或悔改的行為</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="善心開導、包容關愛"><span>善心開導、包容關愛</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="自備餐具容器、自覺減少垃圾"><span>自備餐具容器、自覺減少垃圾</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="協助清理垃圾、撿拾廢棄物"><span>協助清理垃圾、撿拾廢棄物</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="協助減少污染、自覺減少環境影響"><span>協助減少污染、自覺減少環境影響</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q2" value="自願共乘、互相協助解決交通問題"><span>自願共乘、互相協助解決交通問題</span></label>
+        <label class="checkbox-item other-item">
+          <input type="checkbox" name="q2" value="__other__"><span>其他</span>
+          <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Q2-1 -->
+    <div class="form-group">
+      <label class="form-label">Q2-1. 請分享您被感動幾次及最讓您感動的一次「善的經驗」？<span class="form-hint">（選填）</span></label>
+      <textarea class="form-textarea" id="q2_1" rows="4" placeholder="在這裡分享您的故事..."></textarea>
+    </div>
+
+    <!-- Q3 -->
+    <div class="form-group">
+      <label class="form-label">Q3. 此次活動是否讓您更深刻體會到「行善」的價值？</label>
+      <div class="radio-group" data-name="q3">
+        <label class="radio-item"><input type="radio" name="q3" value="非常同意"><span>非常同意</span></label>
+        <label class="radio-item"><input type="radio" name="q3" value="同意"><span>同意</span></label>
+        <label class="radio-item"><input type="radio" name="q3" value="普通"><span>普通</span></label>
+        <label class="radio-item"><input type="radio" name="q3" value="不同意"><span>不同意</span></label>
+        <label class="radio-item"><input type="radio" name="q3" value="非常不同意"><span>非常不同意</span></label>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <div></div>
+      <button class="btn btn-next" onclick="goToStep(2)">下一步 →</button>
+    </div>
+  </section>
+
+  <!-- ==================== STEP 2: 活動後的改變 ==================== -->
+  <section class="step-panel" id="step2">
+    <h2 class="step-title">第二部份：活動後的改變</h2>
+
+    <!-- Q4 -->
+    <div class="form-group">
+      <label class="form-label">Q4. 進香結束後，您是否有意願在日常生活中延續「行善」的心？</label>
+      <div class="radio-group" data-name="q4">
+        <label class="radio-item"><input type="radio" name="q4" value="有，會更積極參與"><span>有，會更積極參與</span></label>
+        <label class="radio-item"><input type="radio" name="q4" value="可能會有影響"><span>可能會有影響</span></label>
+        <label class="radio-item"><input type="radio" name="q4" value="不確定"><span>不確定</span></label>
+        <label class="radio-item"><input type="radio" name="q4" value="沒有特別改變"><span>沒有特別改變</span></label>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="form-group">
+      <label class="form-label">Q5. 您計畫在未來做哪些善的行動？<span class="form-hint">（可複選）</span></label>
+      <div class="checkbox-group" data-name="q5">
+        <label class="checkbox-item"><input type="checkbox" name="q5" value="志工服務"><span>志工服務</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q5" value="捐款或物資支持公益團體"><span>捐款或物資支持公益團體</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q5" value="鼓勵親友參與善行"><span>鼓勵親友參與善行</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q5" value="在公司/組織內推動CSR或ESG相關善行"><span>在公司/組織內推動 CSR 或 ESG 相關善行</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="q5" value="日常生活中更多關懷他人"><span>日常生活中更多關懷他人</span></label>
+        <label class="checkbox-item other-item">
+          <input type="checkbox" name="q5" value="__other__"><span>其他</span>
+          <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="form-group">
+      <label class="form-label">Q6. 若您來自企業或組織，是否會考慮將此次體驗轉化為企業的社會責任行動？</label>
+      <div class="radio-group" data-name="q6">
+        <label class="radio-item"><input type="radio" name="q6" value="會，並已著手規劃"><span>會，並已著手規劃</span></label>
+        <label class="radio-item"><input type="radio" name="q6" value="有此想法，尚在討論"><span>有此想法，尚在討論</span></label>
+        <label class="radio-item"><input type="radio" name="q6" value="我是個人參與者，非企業身份，但願意投入"><span>我是個人參與者，非企業身份，但願意投入</span></label>
+        <label class="radio-item"><input type="radio" name="q6" value="不可能"><span>不可能</span></label>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-back" onclick="goToStep(1)">← 上一步</button>
+      <button class="btn btn-next" onclick="goToStep(3)">下一步 →</button>
+    </div>
+  </section>
+
+  <!-- ==================== STEP 3: 基本資料 & 交通里程 ==================== -->
+  <section class="step-panel" id="step3">
+    <h2 class="step-title">第三部份：基本資料與環境影響</h2>
+
+    <!-- 身分 -->
+    <div class="form-group">
+      <label class="form-label">請問您是以什麼身分參與本活動？</label>
+      <div class="radio-group" data-name="role">
+        <label class="radio-item"><input type="radio" name="role" value="主辦方"><span>主辦方</span></label>
+        <label class="radio-item"><input type="radio" name="role" value="參與人" checked><span>參與人</span></label>
+      </div>
+    </div>
+
+    <!-- 交通里程 -->
+    <div class="form-group">
+      <label class="form-label">交通里程數據<span class="form-hint">（請填寫本次活動期間的交通里程，無則填 0）</span></label>
+      <div class="transport-grid">
+        <div class="transport-item">
+          <label class="transport-label">🚶 步行</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_walk" value="0" min="0" step="0.1" />
+            <span class="transport-unit">KM</span>
+          </div>
+        </div>
+        <div class="transport-item">
+          <label class="transport-label">🚗 開車/計程車</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_car" value="0" min="0" step="0.1" />
+            <span class="transport-unit">KM</span>
+          </div>
+        </div>
+        <div class="transport-item">
+          <label class="transport-label">🚗 開車共乘人數</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_carpool" value="1" min="1" step="1" />
+            <span class="transport-unit">人</span>
+          </div>
+        </div>
+        <div class="transport-item">
+          <label class="transport-label">🏍️ 機車</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_scooter" value="0" min="0" step="0.1" />
+            <span class="transport-unit">KM</span>
+          </div>
+        </div>
+        <div class="transport-item">
+          <label class="transport-label">🚌 公車</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_bus" value="0" min="0" step="0.1" />
+            <span class="transport-unit">KM</span>
+          </div>
+        </div>
+        <div class="transport-item">
+          <label class="transport-label">🚇 捷運</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_mrt" value="0" min="0" step="0.1" />
+            <span class="transport-unit">KM</span>
+          </div>
+        </div>
+        <div class="transport-item">
+          <label class="transport-label">🚂 火車</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_train" value="0" min="0" step="0.1" />
+            <span class="transport-unit">KM</span>
+          </div>
+        </div>
+        <div class="transport-item">
+          <label class="transport-label">🚄 高鐵</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_hsr" value="0" min="0" step="0.1" />
+            <span class="transport-unit">KM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 瓶裝水 & 旅宿 -->
+    <div class="form-group">
+      <label class="form-label">其他環境影響數據</label>
+      <div class="transport-grid cols-2">
+        <div class="transport-item">
+          <label class="transport-label">🧴 使用瓶裝水</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_water" value="0" min="0" step="1" />
+            <span class="transport-unit">瓶</span>
+          </div>
+        </div>
+        <div class="transport-item">
+          <label class="transport-label">🏨 旅宿服務</label>
+          <div class="transport-input-wrap">
+            <input type="number" class="transport-input" id="t_hotel" value="0" min="0" step="1" />
+            <span class="transport-unit">天</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carbon estimate -->
+    <div class="carbon-card" id="carbonCard">
+      <div class="carbon-title">🌱 碳足跡估算</div>
+      <div class="carbon-total" id="carbonTotal">0.00 <small>kg CO₂e</small></div>
+      <div class="carbon-breakdown" id="carbonBreakdown"></div>
+      <div class="carbon-note">排放係數依據台灣環境部公布數據估算</div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-back" onclick="goToStep(2)">← 上一步</button>
+      <button class="btn btn-next" onclick="goToStep(4)">下一步 →</button>
+    </div>
+  </section>
+
+  <!-- ==================== STEP 4: 照片上傳 ==================== -->
+  <section class="step-panel" id="step4">
+    <h2 class="step-title">第四部份：照片上傳與足跡定位</h2>
+    <p class="step-desc">上傳您在進香途中拍攝的照片（需開啟定位），系統會自動提取 GPS 座標標記在地圖上。</p>
+
+    <!-- Upload Area -->
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">📷</div>
+      <p class="upload-text">點擊選取照片或拖曳到這裡</p>
+      <p class="upload-hint">支援 JPEG 格式，會自動讀取照片中的 GPS 資訊</p>
+      <input type="file" id="photoInput" accept="image/jpeg,image/jpg" multiple hidden />
+    </div>
+
+    <!-- Status -->
+    <div id="status" class="tracker-status" style="display:none"></div>
+
+    <!-- Results -->
+    <section id="resultsSection" style="display:none">
+      <h3 class="form-label">提取結果</h3>
+      <div class="results-summary" id="resultsSummary"></div>
+      <div class="results-list" id="resultsList"></div>
+    </section>
+
+    <!-- Map -->
+    <section id="mapSection" style="display:none;margin-top:1.5rem">
+      <h3 class="form-label">地圖標記</h3>
+      <div id="map" class="tracker-map"></div>
+    </section>
+
+    <!-- Submit -->
+    <div class="step-nav" style="margin-top:2rem">
+      <button class="btn btn-back" onclick="goToStep(3)">← 上一步</button>
+      <button class="btn btn-submit" id="submitBtn" onclick="handleSubmit()">完成提交 ✓</button>
+    </div>
+  </section>
+
+  <!-- ==================== SUCCESS SCREEN ==================== -->
+  <section class="step-panel" id="stepDone" style="text-align:center">
+    <div class="done-icon">🙏</div>
+    <h2 class="done-title">感謝您的參與！</h2>
+    <p class="done-text">您的活動紀錄已成功提交。<br>願媽祖保佑平安順利。</p>
+    <div class="done-summary" id="doneSummary"></div>
+    <div style="margin-top:2rem">
+      <a href="/projects/formosa-esg-2026/" class="btn btn-next">回到專案總覽</a>
+    </div>
+  </section>
+
+  <!-- Back link -->
+  <div class="tracker-back-link">
+    <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+  </div>
+
+</div>
+
+</AuthGate>
+
+<!-- Leaflet CSS + JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<!-- All logic -->
+<script is:inline>
+(function() {
+  // ── Background GPS Tracking ──
+  var gpsTrackPoints = [];
+  var watchId = null;
+  var gpsReady = false;
+
+  function startGPSTracking() {
+    var statusEl = document.getElementById('gpsStatus');
+    var countEl = document.getElementById('gpsCount');
+    var pulseEl = document.getElementById('gpsPulse');
+    var checkinBtn = document.getElementById('gpsCheckinBtn');
+
+    if (!navigator.geolocation) {
+      statusEl.textContent = '⚠️ 此裝置不支援定位';
+      pulseEl.classList.add('off');
+      return;
+    }
+
+    // Start continuous watching
+    watchId = navigator.geolocation.watchPosition(
+      function(pos) {
+        gpsReady = true;
+        pulseEl.classList.add('active');
+        checkinBtn.style.display = 'inline-block';
+
+        var pt = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          altitude: pos.coords.altitude,
+          accuracy: pos.coords.accuracy,
+          datetime: new Date().toISOString(),
+          source: 'auto',
+          filename: 'GPS 自動追蹤'
+        };
+
+        // Avoid duplicate points (within 10m and 30s)
+        var last = gpsTrackPoints[gpsTrackPoints.length - 1];
+        if (last) {
+          var dist = haversine(last.lat, last.lng, pt.lat, pt.lng);
+          var timeDiff = new Date(pt.datetime) - new Date(last.datetime);
+          if (dist < 0.01 && timeDiff < 30000) {
+            statusEl.textContent = '📍 追蹤中 — 等待移動...';
+            return;
+          }
+        }
+
+        gpsTrackPoints.push(pt);
+        statusEl.textContent = '📍 追蹤中';
+        countEl.textContent = gpsTrackPoints.length + ' 個定位點';
+      },
+      function(err) {
+        pulseEl.classList.add('off');
+        if (err.code === 1) {
+          statusEl.textContent = '⚠️ 定位權限被拒絕';
+          checkinBtn.style.display = 'none';
+        } else {
+          statusEl.textContent = '⚠️ 無法取得定位';
+        }
+      },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+    );
+  }
+
+  // Manual check-in button
+  window.manualCheckin = function() {
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        gpsTrackPoints.push({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          altitude: pos.coords.altitude,
+          accuracy: pos.coords.accuracy,
+          datetime: new Date().toISOString(),
+          source: 'manual',
+          filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
+        });
+        var countEl = document.getElementById('gpsCount');
+        countEl.textContent = gpsTrackPoints.length + ' 個定位點';
+
+        // Quick visual feedback
+        var btn = document.getElementById('gpsCheckinBtn');
+        btn.textContent = '✓ 已打卡';
+        btn.disabled = true;
+        setTimeout(function() { btn.textContent = '打卡 📍'; btn.disabled = false; }, 1500);
+      },
+      function() { alert('無法取得定位，請確認已開啟定位權限。'); },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  // Haversine distance in km
+  function haversine(lat1, lng1, lat2, lng2) {
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLng = (lng2 - lng1) * Math.PI / 180;
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLng/2) * Math.sin(dLng/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  // Start tracking immediately
+  startGPSTracking();
+
+  // ── Step Wizard ──
+  var currentStep = 1;
+  var totalSteps = 4;
+
+  // ── Validation ──
+  function hasChecked(name) {
+    return document.querySelectorAll('input[name="' + name + '"]:checked').length > 0;
+  }
+  function hasRadio(name) {
+    return !!document.querySelector('input[name="' + name + '"]:checked');
+  }
+
+  function validateStep(step) {
+    var errors = [];
+
+    if (step === 1) {
+      if (!hasChecked('q1')) errors.push('Q1. 請至少選擇一項善行活動');
+      if (!hasChecked('q2')) errors.push('Q2. 請至少選擇一項被感動的事');
+      if (!hasRadio('q3')) errors.push('Q3. 請選擇您對行善價值的認同程度');
+    }
+    if (step === 2) {
+      if (!hasRadio('q4')) errors.push('Q4. 請選擇是否延續行善的心');
+      if (!hasChecked('q5')) errors.push('Q5. 請至少選擇一項未來善行');
+      if (!hasRadio('q6')) errors.push('Q6. 請選擇是否轉化為社會責任行動');
+    }
+    // Step 3 & 4: 數字欄位有預設值，不強制驗證
+
+    if (errors.length > 0) {
+      showValidationError(errors);
+      return false;
+    }
+    clearValidationError();
+    return true;
+  }
+
+  function showValidationError(errors) {
+    var el = document.getElementById('validationMsg');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'validationMsg';
+      el.className = 'validation-msg';
+      document.querySelector('.tracker').insertBefore(el, document.querySelector('.progress-bar').nextSibling);
+    }
+    el.innerHTML = errors.map(function(e) { return '<div>⚠ ' + e + '</div>'; }).join('');
+    el.style.display = 'block';
+    window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+  }
+
+  function clearValidationError() {
+    var el = document.getElementById('validationMsg');
+    if (el) el.style.display = 'none';
+  }
+
+  window.goToStep = function(step) {
+    if (step < 1 || step > totalSteps) return;
+
+    // Validate before going forward (not when going back)
+    if (step > currentStep && !validateStep(currentStep)) return;
+
+    // Hide current
+    var cur = document.getElementById('step' + currentStep);
+    if (cur) cur.classList.remove('active');
+
+    // Show next
+    var next = document.getElementById('step' + step);
+    if (next) next.classList.add('active');
+
+    currentStep = step;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Recalculate carbon when entering step 3
+    if (step === 3) updateCarbon();
+  };
+
+  function updateProgress() {
+    var steps = document.querySelectorAll('.progress-step');
+    var lines = document.querySelectorAll('.progress-line-fill');
+
+    steps.forEach(function(el, i) {
+      var s = i + 1;
+      el.classList.toggle('active', s === currentStep);
+      el.classList.toggle('done', s < currentStep);
+    });
+    lines.forEach(function(el, i) {
+      el.style.width = (i + 1 < currentStep) ? '100%' : '0%';
+    });
+  }
+
+  // ── Other checkbox toggle ──
+  document.querySelectorAll('.other-item input[type="checkbox"]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var textInput = this.closest('.other-item').querySelector('.other-input');
+      if (textInput) textInput.style.display = this.checked ? 'block' : 'none';
+    });
+  });
+
+  // ── Carbon Calculator ──
+  var FACTORS = {
+    walk: 0, car: 0.21, scooter: 0.05,
+    bus: 0.04, mrt: 0.02, train: 0.04, hsr: 0.03,
+    water: 0.08, hotel: 10
+  };
+  var LABELS = {
+    walk: '步行', car: '開車', scooter: '機車',
+    bus: '公車', mrt: '捷運', train: '火車', hsr: '高鐵',
+    water: '瓶裝水', hotel: '旅宿'
+  };
+
+  function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+  function updateCarbon() {
+    var walk = getVal('t_walk');
+    var car = getVal('t_car');
+    var carpool = Math.max(1, getVal('t_carpool'));
+    var scooter = getVal('t_scooter');
+    var bus = getVal('t_bus');
+    var mrt = getVal('t_mrt');
+    var train = getVal('t_train');
+    var hsr = getVal('t_hsr');
+    var water = getVal('t_water');
+    var hotel = getVal('t_hotel');
+
+    var breakdown = {};
+    breakdown.walk = walk * FACTORS.walk;
+    breakdown.car = (car * FACTORS.car) / carpool; // shared driving
+    breakdown.scooter = scooter * FACTORS.scooter;
+    breakdown.bus = bus * FACTORS.bus;
+    breakdown.mrt = mrt * FACTORS.mrt;
+    breakdown.train = train * FACTORS.train;
+    breakdown.hsr = hsr * FACTORS.hsr;
+    breakdown.water = water * FACTORS.water;
+    breakdown.hotel = hotel * FACTORS.hotel;
+
+    var total = 0;
+    for (var k in breakdown) total += breakdown[k];
+
+    document.getElementById('carbonTotal').innerHTML =
+      total.toFixed(2) + ' <small>kg CO₂e</small>';
+
+    var html = '';
+    for (var k in breakdown) {
+      if (breakdown[k] > 0) {
+        html += '<div class="carbon-row"><span>' + LABELS[k] + '</span><span>' + breakdown[k].toFixed(2) + ' kg</span></div>';
+      }
+    }
+    if (!html) html = '<div class="carbon-row"><span>尚未填寫交通資料</span><span>—</span></div>';
+    document.getElementById('carbonBreakdown').innerHTML = html;
+
+    return { total: total, breakdown: breakdown };
+  }
+
+  // Attach carbon update to all transport inputs
+  document.querySelectorAll('.transport-input').forEach(function(input) {
+    input.addEventListener('input', updateCarbon);
+  });
+
+  // ── Collect all form data ──
+  function collectCheckbox(name) {
+    var vals = [];
+    document.querySelectorAll('input[name="' + name + '"]:checked').forEach(function(cb) {
+      if (cb.value === '__other__') {
+        var t = cb.closest('.other-item').querySelector('.other-input');
+        if (t && t.value.trim()) vals.push(t.value.trim());
+      } else {
+        vals.push(cb.value);
+      }
+    });
+    return vals;
+  }
+
+  function collectRadio(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : '';
+  }
+
+  function collectAllData() {
+    var carbon = updateCarbon();
+
+    return {
+      timestamp: new Date().toISOString(),
+      survey: {
+        q1: collectCheckbox('q1'),
+        q2: collectCheckbox('q2'),
+        q2_1: document.getElementById('q2_1').value.trim(),
+        q3: collectRadio('q3'),
+        q4: collectRadio('q4'),
+        q5: collectCheckbox('q5'),
+        q6: collectRadio('q6')
+      },
+      profile: {
+        role: collectRadio('role'),
+        transport: {
+          walk_km: getVal('t_walk'),
+          car_km: getVal('t_car'),
+          carpool_count: getVal('t_carpool'),
+          scooter_km: getVal('t_scooter'),
+          bus_km: getVal('t_bus'),
+          mrt_km: getVal('t_mrt'),
+          train_km: getVal('t_train'),
+          hsr_km: getVal('t_hsr')
+        },
+        water_bottles: getVal('t_water'),
+        hotel_nights: getVal('t_hotel')
+      },
+      carbon: {
+        total_kg: carbon.total,
+        breakdown: carbon.breakdown
+      },
+      gps_points: gpsTrackPoints.concat(allPoints).sort(function(a, b) {
+        if (a.datetime && b.datetime) return a.datetime.localeCompare(b.datetime);
+        return 0;
+      })
+    };
+  }
+
+  // ── Submit ──
+  window.handleSubmit = function() {
+    var data = collectAllData();
+    console.log('=== Formosa ESG 2026 — 提交資料 ===');
+    console.log(JSON.stringify(data, null, 2));
+
+    // Show done screen
+    document.getElementById('step4').classList.remove('active');
+    document.getElementById('stepDone').classList.add('active');
+
+    // Update progress to show all done
+    document.querySelectorAll('.progress-step').forEach(function(el) { el.classList.add('done'); el.classList.remove('active'); });
+    document.querySelectorAll('.progress-line-fill').forEach(function(el) { el.style.width = '100%'; });
+
+    // Summary
+    var pts = data.gps_points.length;
+    var co2 = data.carbon.total_kg.toFixed(2);
+    document.getElementById('doneSummary').innerHTML =
+      '<div class="done-stats">' +
+        '<div class="done-stat"><strong>' + pts + '</strong><span>GPS 座標點</span></div>' +
+        '<div class="done-stat"><strong>' + co2 + '</strong><span>kg CO₂e</span></div>' +
+      '</div>';
+  };
+
+  // ── Minimal EXIF GPS parser (no library needed) ──
+
+  function readFileAsArrayBuffer(file) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function() { resolve(reader.result); };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function parseExifGPS(arrayBuffer) {
+    var view = new DataView(arrayBuffer);
+    if (view.getUint16(0) !== 0xFFD8) return null;
+
+    var offset = 2;
+    var length = view.byteLength;
+
+    while (offset < length) {
+      if (view.getUint8(offset) !== 0xFF) break;
+      var marker = view.getUint8(offset + 1);
+
+      if (marker === 0xE1) {
+        var exifLength = view.getUint16(offset + 2);
+        return parseExifBlock(view, offset + 4, exifLength - 2);
+      }
+
+      if (marker === 0xD8 || marker === 0xD9) {
+        offset += 2;
+      } else {
+        var segLen = view.getUint16(offset + 2);
+        offset += 2 + segLen;
+      }
+    }
+    return null;
+  }
+
+  function parseExifBlock(view, start, length) {
+    var exifHeader = '';
+    for (var i = 0; i < 4; i++) exifHeader += String.fromCharCode(view.getUint8(start + i));
+    if (exifHeader !== 'Exif') return null;
+
+    var tiffStart = start + 6;
+    var bigEndian = view.getUint16(tiffStart) === 0x4D4D;
+
+    function read16(off) { return view.getUint16(off, !bigEndian); }
+    function read32(off) { return view.getUint32(off, !bigEndian); }
+    function readRational(off) {
+      var num = read32(off);
+      var den = read32(off + 4);
+      return den ? num / den : 0;
+    }
+
+    var ifd0Offset = read32(tiffStart + 4);
+    var ifd0Abs = tiffStart + ifd0Offset;
+
+    var gpsIFDOffset = null;
+    var exifIFDOffset = null;
+    var numEntries = read16(ifd0Abs);
+
+    for (var i = 0; i < numEntries; i++) {
+      var entryOff = ifd0Abs + 2 + i * 12;
+      var tag = read16(entryOff);
+      if (tag === 0x8825) gpsIFDOffset = read32(entryOff + 8);
+      if (tag === 0x8769) exifIFDOffset = read32(entryOff + 8);
+    }
+
+    var result = { hasGPS: false, datetime: null };
+
+    if (exifIFDOffset !== null) {
+      try {
+        var exifAbs = tiffStart + exifIFDOffset;
+        var exifEntries = read16(exifAbs);
+        for (var i = 0; i < exifEntries; i++) {
+          var entryOff = exifAbs + 2 + i * 12;
+          var tag = read16(entryOff);
+          if (tag === 0x9003) {
+            var count = read32(entryOff + 4);
+            var valOffset = count > 4 ? tiffStart + read32(entryOff + 8) : entryOff + 8;
+            var dt = '';
+            for (var c = 0; c < Math.min(count - 1, 19); c++) dt += String.fromCharCode(view.getUint8(valOffset + c));
+            result.datetime = dt;
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (gpsIFDOffset === null) return result;
+
+    var gpsAbs = tiffStart + gpsIFDOffset;
+    var gpsEntries = read16(gpsAbs);
+    var gps = {};
+
+    for (var i = 0; i < gpsEntries; i++) {
+      try {
+        var entryOff = gpsAbs + 2 + i * 12;
+        var tag = read16(entryOff);
+
+        if (tag === 1) gps.latRef = String.fromCharCode(view.getUint8(entryOff + 8));
+        else if (tag === 2) { var off = tiffStart + read32(entryOff + 8); gps.lat = [readRational(off), readRational(off + 8), readRational(off + 16)]; }
+        else if (tag === 3) gps.lngRef = String.fromCharCode(view.getUint8(entryOff + 8));
+        else if (tag === 4) { var off = tiffStart + read32(entryOff + 8); gps.lng = [readRational(off), readRational(off + 8), readRational(off + 16)]; }
+        else if (tag === 6) { var off = tiffStart + read32(entryOff + 8); gps.altitude = readRational(off); }
+        else if (tag === 16) { var off = tiffStart + read32(entryOff + 8); gps.direction = readRational(off); }
+      } catch (e) {}
+    }
+
+    if (gps.lat && gps.lng) {
+      var lat = gps.lat[0] + gps.lat[1] / 60 + gps.lat[2] / 3600;
+      var lng = gps.lng[0] + gps.lng[1] / 60 + gps.lng[2] / 3600;
+      if (gps.latRef === 'S') lat = -lat;
+      if (gps.lngRef === 'W') lng = -lng;
+      result.hasGPS = true;
+      result.lat = lat;
+      result.lng = lng;
+      result.altitude = gps.altitude || null;
+      result.direction = gps.direction || null;
+    }
+
+    return result;
+  }
+
+  // ── Photo Upload UI ──
+  var uploadArea = document.getElementById('uploadArea');
+  var photoInput = document.getElementById('photoInput');
+  var statusEl = document.getElementById('status');
+  var resultsSection = document.getElementById('resultsSection');
+  var resultsSummary = document.getElementById('resultsSummary');
+  var resultsList = document.getElementById('resultsList');
+  var mapSection = document.getElementById('mapSection');
+  var map = null;
+  var markers = [];
+  var allPoints = [];
+
+  if (uploadArea) {
+    uploadArea.addEventListener('click', function() { photoInput.click(); });
+
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      uploadArea.classList.add('drag-over');
+    });
+    uploadArea.addEventListener('dragleave', function() {
+      uploadArea.classList.remove('drag-over');
+    });
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) processFiles(e.dataTransfer.files);
+    });
+  }
+
+  if (photoInput) {
+    photoInput.addEventListener('change', function() {
+      if (photoInput.files.length) processFiles(photoInput.files);
+    });
+  }
+
+  function showStatus(msg, type) {
+    statusEl.style.display = 'block';
+    statusEl.className = 'tracker-status status-' + (type || 'info');
+    statusEl.textContent = msg;
+  }
+
+  async function processFiles(files) {
+    var total = files.length;
+    var withGPS = 0;
+    var withoutGPS = 0;
+
+    showStatus('正在解析 ' + total + ' 張照片的 EXIF 資料...', 'info');
+
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (!file.type.match(/^image\/jpe?g$/)) { withoutGPS++; continue; }
+
+      try {
+        var buf = await readFileAsArrayBuffer(file);
+        var data = parseExifGPS(buf);
+
+        if (data && data.hasGPS) {
+          withGPS++;
+          allPoints.push({
+            lat: data.lat, lng: data.lng,
+            altitude: data.altitude, direction: data.direction,
+            datetime: data.datetime, filename: file.name
+          });
+        } else { withoutGPS++; }
+      } catch (e) { withoutGPS++; }
+    }
+
+    showStatus(
+      '解析完成：' + withGPS + ' 張有 GPS，' + withoutGPS + ' 張無 GPS',
+      withGPS > 0 ? 'success' : 'warn'
+    );
+
+    renderResults();
+    if (allPoints.length > 0) renderMap();
+  }
+
+  function renderResults() {
+    resultsSection.style.display = 'block';
+    resultsSummary.innerHTML =
+      '<div class="summary-stat"><strong>' + allPoints.length + '</strong><span>GPS 座標點</span></div>';
+
+    var html = '';
+    allPoints.forEach(function(pt, i) {
+      html += '<div class="result-item">' +
+        '<div class="result-num">' + (i + 1) + '</div>' +
+        '<div class="result-info">' +
+          '<div class="result-filename">' + pt.filename + '</div>' +
+          '<div class="result-coords">' + pt.lat.toFixed(6) + ', ' + pt.lng.toFixed(6) + '</div>' +
+          (pt.datetime ? '<div class="result-time">' + pt.datetime + '</div>' : '') +
+          (pt.altitude ? '<div class="result-alt">海拔 ' + pt.altitude.toFixed(1) + 'm</div>' : '') +
+        '</div>' +
+      '</div>';
+    });
+    resultsList.innerHTML = html;
+  }
+
+  function renderMap() {
+    mapSection.style.display = 'block';
+
+    if (!map) {
+      map = L.map('map').setView([24.0, 120.5], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(map);
+    }
+
+    markers.forEach(function(m) { map.removeLayer(m); });
+    markers = [];
+
+    var bounds = [];
+    allPoints.forEach(function(pt, i) {
+      var marker = L.marker([pt.lat, pt.lng]).addTo(map);
+      marker.bindPopup(
+        '<strong>#' + (i + 1) + ' ' + pt.filename + '</strong><br>' +
+        pt.lat.toFixed(6) + ', ' + pt.lng.toFixed(6) +
+        (pt.datetime ? '<br>' + pt.datetime : '') +
+        (pt.altitude ? '<br>海拔 ' + pt.altitude.toFixed(1) + 'm' : '')
+      );
+      markers.push(marker);
+      bounds.push([pt.lat, pt.lng]);
+    });
+
+    if (bounds.length > 1) {
+      var sorted = allPoints.slice().sort(function(a, b) {
+        if (a.datetime && b.datetime) return a.datetime.localeCompare(b.datetime);
+        return 0;
+      });
+      var sortedBounds = sorted.map(function(pt) { return [pt.lat, pt.lng]; });
+      L.polyline(sortedBounds, { color: '#B45309', weight: 3, opacity: 0.7 }).addTo(map);
+    }
+
+    if (bounds.length === 1) map.setView(bounds[0], 16);
+    else if (bounds.length > 1) map.fitBounds(bounds, { padding: [30, 30] });
+
+    setTimeout(function() { map.invalidateSize(); }, 100);
+  }
+
+  // Init carbon display
+  updateCarbon();
+})();
+</script>
+
+</BaseLayout>
+
+<style>
+  .tracker {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1rem 4rem;
+  }
+
+  /* Breadcrumb */
+  .tracker-breadcrumb { padding: 1.5rem 0; }
+  .tracker-breadcrumb a {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .tracker-breadcrumb a:hover { color: var(--accent-faith); }
+
+  /* Header */
+  .tracker-header {
+    text-align: center;
+    padding: 2rem 0 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .tracker-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-faith);
+    background: rgba(180,83,9,0.08);
+    padding: 4px 14px;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+  }
+  .tracker-header h1 {
+    font-family: var(--font-cjk);
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+  .tracker-header p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+  }
+
+  /* ── Progress Bar ── */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 2.5rem;
+    padding: 0 0.5rem;
+  }
+  .progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg-section);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: all 0.3s;
+  }
+  .step-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    transition: color 0.3s;
+  }
+  .progress-step.active .step-num {
+    background: var(--accent-faith);
+    border-color: var(--accent-faith);
+    color: white;
+  }
+  .progress-step.active .step-label { color: var(--accent-faith); font-weight: 600; }
+  .progress-step.done .step-num {
+    background: #059669;
+    border-color: #059669;
+    color: white;
+  }
+  .progress-step.done .step-label { color: #059669; }
+
+  .progress-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin: 0 0.25rem;
+    margin-bottom: 1.4rem;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .progress-line-fill {
+    height: 100%;
+    width: 0%;
+    background: #059669;
+    transition: width 0.4s ease;
+  }
+
+  /* ── GPS Tracking Banner ── */
+  .gps-banner {
+    background: linear-gradient(135deg, #065F46, #047857);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    color: white;
+  }
+  .gps-banner-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .gps-pulse {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #6EE7B7;
+    flex-shrink: 0;
+  }
+  .gps-pulse.active {
+    animation: pulse 2s infinite;
+  }
+  .gps-pulse.off {
+    background: #F87171;
+    animation: none;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(110,231,183,0.6); }
+    50% { box-shadow: 0 0 0 8px rgba(110,231,183,0); }
+  }
+  .gps-banner-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  .gps-count {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+  .gps-checkin-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    font-weight: 600;
+  }
+  .gps-checkin-btn:hover { background: rgba(255,255,255,0.3); }
+  .gps-checkin-btn:disabled { opacity: 0.6; cursor: default; }
+
+  /* ── Validation Message ── */
+  .validation-msg {
+    background: rgba(220,38,38,0.08);
+    border: 1px solid rgba(220,38,38,0.2);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    color: #DC2626;
+    line-height: 1.7;
+  }
+
+  /* ── Step Panels ── */
+  .step-panel {
+    display: none;
+  }
+  .step-panel.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-title {
+    font-family: var(--font-cjk);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-faith);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(180,83,9,0.15);
+  }
+  .step-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  /* ── Form Elements ── */
+  .form-group {
+    margin-bottom: 2rem;
+  }
+  .form-label {
+    display: block;
+    font-family: var(--font-cjk);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary) !important;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+  /* Override global .form-group label styles */
+  .tracker .form-group label {
+    color: var(--text-primary);
+    margin-bottom: 0;
+  }
+  /* Reset global .form-group input overrides */
+  .tracker .form-group input,
+  .tracker .form-group textarea {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-primary) !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  .form-hint {
+    font-weight: 400;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* Checkbox & Radio */
+  .checkbox-group, .radio-group {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .checkbox-item, .radio-item {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--text-primary) !important;
+    margin-bottom: 0 !important;
+  }
+  .checkbox-item:hover, .radio-item:hover {
+    border-color: var(--accent-faith);
+    background: rgba(180,83,9,0.02);
+  }
+  .checkbox-item input[type="checkbox"],
+  .checkbox-item input[type="radio"],
+  .radio-item input[type="checkbox"],
+  .radio-item input[type="radio"] {
+    width: auto !important;
+    padding: 0 !important;
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: var(--accent-faith);
+    background: none !important;
+    border: none !important;
+  }
+  .other-input {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    outline: none;
+  }
+  .other-input:focus { border-color: var(--accent-faith); }
+
+  /* Textarea */
+  .form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .form-textarea:focus { border-color: var(--accent-faith); }
+
+  /* ── Transport Grid ── */
+  .transport-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .transport-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .transport-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+  }
+  .transport-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .transport-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .transport-input {
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'DM Sans', sans-serif;
+    text-align: right;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .transport-input:focus { border-color: var(--accent-faith); }
+  .transport-unit {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Carbon Card ── */
+  .carbon-card {
+    background: linear-gradient(135deg, rgba(5,150,105,0.06), rgba(5,150,105,0.02));
+    border: 1px solid rgba(5,150,105,0.2);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .carbon-title {
+    font-family: var(--font-cjk);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #059669;
+    margin-bottom: 0.75rem;
+  }
+  .carbon-total {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #059669;
+    margin-bottom: 1rem;
+  }
+  .carbon-total small {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .carbon-breakdown {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+  .carbon-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(5,150,105,0.08);
+  }
+  .carbon-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* ── Navigation Buttons ── */
+  .step-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-cjk);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-next {
+    background: var(--accent-faith);
+    color: white;
+  }
+  .btn-next:hover { background: #9a4408; }
+  .btn-back {
+    background: var(--bg-section);
+    color: var(--text-secondary);
+  }
+  .btn-back:hover { background: var(--border-light); }
+  .btn-submit {
+    background: #059669;
+    color: white;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+  .btn-submit:hover { background: #047857; }
+
+  /* ── Upload Area ── */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--bg-card);
+    margin-bottom: 1.5rem;
+  }
+  .upload-area:hover,
+  .upload-area.drag-over {
+    border-color: var(--accent-faith);
+    background: rgba(180,83,9,0.03);
+  }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .upload-text {
+    font-family: var(--font-cjk);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .upload-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* Status */
+  .tracker-status {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .status-info { background: rgba(37,99,235,0.08); color: var(--accent-ai); }
+  .status-success { background: rgba(5,150,105,0.08); color: #059669; }
+  .status-warn { background: rgba(245,158,11,0.08); color: #B45309; }
+
+  /* Results */
+  .summary-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .summary-stat strong {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-faith);
+  }
+  .summary-stat span { font-size: 0.85rem; color: var(--text-secondary); }
+
+  .results-list { display: grid; gap: 0.5rem; }
+  .result-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+  }
+  .result-num {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    background: var(--accent-faith);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .result-filename { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .result-coords { font-family: 'DM Sans', monospace; font-size: 0.8rem; color: var(--accent-ai); }
+  .result-time, .result-alt { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* Map */
+  .tracker-map {
+    height: 400px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+  }
+
+  /* ── Done Screen ── */
+  .done-icon { font-size: 4rem; margin-bottom: 1rem; margin-top: 2rem; }
+  .done-title {
+    font-family: var(--font-cjk);
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+  .done-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .done-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .done-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--bg-section);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+  }
+  .done-stat strong {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-faith);
+  }
+  .done-stat span { font-size: 0.8rem; color: var(--text-secondary); }
+
+  /* Back link */
+  .tracker-back-link { text-align: center; margin-top: 1rem; }
+  .tracker-back-link a {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .tracker-back-link a:hover { color: var(--accent-faith); }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .tracker-map { height: 300px; }
+    .upload-area { padding: 2rem 1rem; }
+    .transport-grid { grid-template-columns: 1fr; }
+    .step-label { font-size: 0.6rem; }
+    .step-num { width: 28px; height: 28px; font-size: 0.72rem; }
+    .progress-bar { gap: 0; }
+    .done-stats { flex-direction: column; align-items: center; }
+  }
+</style>
