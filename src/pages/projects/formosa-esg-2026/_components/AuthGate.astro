@@ -1,10 +1,7 @@
 ---
 /**
  * AuthGate — Client-side auth gate for Formosa ESG 2026 pages
- * Pattern: Same as dashboard.astro + ai-ready-dashboard.astro
- * Scope: Only accepts invite codes with name === 'Formosa ESG 2026' or role === 'admin'
- * SessionStorage key: formosa_esg_code
- * Full-screen dark mode auth gate — hides NavBar/Footer until verified
+ * Hides NavBar/Footer until verified, keeps original light design
  */
 interface Props {
   title?: string;
@@ -14,10 +11,10 @@ interface Props {
 const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入管理密碼' } = Astro.props;
 ---
 
-<!-- Auth Gate (visible by default, full-screen dark) -->
+<!-- Auth Gate (visible by default) -->
 <div id="authGate" class="formosa-auth">
   <div class="auth-card">
-    <img src="/images/global-formosa-logo.png" alt="環球境地" class="auth-logo" />
+    <div class="auth-icon">⛩️</div>
     <h2>{title}</h2>
     <p>{subtitle}</p>
     <input type="password" id="authInput" placeholder="Access Code" autofocus />
@@ -108,55 +105,48 @@ const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入�
 
 <style is:global>
   .formosa-auth {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 10000;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #1a1a24;
+    min-height: 100vh;
+    padding: 2rem;
+    background: var(--bg);
   }
   .formosa-auth .auth-card {
     text-align: center;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    padding: 3rem 2.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 3rem;
     max-width: 400px;
-    width: 90%;
-    backdrop-filter: blur(8px);
+    width: 100%;
+    box-shadow: var(--shadow-md);
   }
-  .formosa-auth .auth-logo {
-    width: 80px;
-    height: auto;
-    margin-bottom: 1.5rem;
-    opacity: 0.9;
+  .formosa-auth .auth-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
   }
   .formosa-auth .auth-card h2 {
     font-family: var(--font-cjk);
     font-size: 1.35rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: #ffffff;
+    color: var(--text-primary);
   }
   .formosa-auth .auth-card p {
-    color: rgba(255,255,255,0.5);
+    color: var(--text-secondary);
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
   }
   .formosa-auth .auth-card input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid var(--border);
     border-radius: 8px;
     font-size: 1rem;
     text-align: center;
-    background: rgba(255,255,255,0.08);
-    color: #ffffff;
+    background: var(--bg);
     transition: border-color 0.2s;
-  }
-  .formosa-auth .auth-card input::placeholder {
-    color: rgba(255,255,255,0.3);
   }
   .formosa-auth .auth-card input:focus {
     outline: none;
