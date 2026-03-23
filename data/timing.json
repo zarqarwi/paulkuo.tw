@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-23T16:30:04+08:00",
+  "updated": "2026-03-23T16:40:05+08:00",
   "source": "timing-sqlite-direct",
   "method": "SQLite DB + bundleIdentifier/path/title matching",
   "api_version": "v4",
