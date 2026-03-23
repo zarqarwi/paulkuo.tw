@@ -375,6 +375,7 @@ main { padding-top: calc(var(--nav-height) + 48px); }
 .project-card.debate::before { background: linear-gradient(90deg, var(--accent-ai), var(--accent-life)); }
 .project-card.brand::before { background: linear-gradient(90deg, var(--accent-startup), var(--accent-ai)); }
 .project-card.scorecard::before { background: linear-gradient(90deg, var(--accent-ai), var(--accent-life)); }
+.project-card.formosa-esg::before { background: linear-gradient(90deg, var(--accent-faith), var(--accent-circular)); }
 .project-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 20px; }
 .project-card h3 { font-family: var(--font-cjk); font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; }
 .project-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; }

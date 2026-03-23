@@ -1,0 +1,641 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AuthGate from './_components/AuthGate.astro';
+import partners from './_data/partners.json';
+
+const schemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "2026 白沙屯媽祖進香：低碳行善・善行天下",
+  "description": "結合白沙屯媽祖進香傳統信仰與 ESG 永續框架，透過數據收集系統、善足跡平台與自然解方，將民間信仰能量轉化為可量化的環境與社會影響力。",
+  "url": "https://paulkuo.tw/projects/formosa-esg-2026/",
+  "startDate": "2026-04-12",
+  "location": { "@type": "Place", "name": "白沙屯拱天宮", "address": "苗栗縣通霄鎮白沙屯" },
+  "organizer": [
+    { "@type": "Organization", "name": "環球境地" },
+    { "@type": "Organization", "name": "台北天后獅子會" }
+  ],
+  "about": ["ESG", "永續發展", "碳足跡", "媽祖進香"]
+});
+---
+
+<BaseLayout
+  title="2026 白沙屯媽祖 ESG 永續進香 — Paul Kuo"
+  description="結合白沙屯媽祖進香傳統信仰與 ESG 永續框架，將民間信仰能量轉化為可量化的環境與社會影響力。"
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/"
+  schemaJson={schemaJson}
+>
+
+<AuthGate>
+
+<div class="formosa-hub">
+
+  <!-- Section 1: Hero -->
+  <section class="formosa-hero">
+    <div class="formosa-hero-inner">
+      <div class="formosa-hero-badge">環球境地 × 天后獅子會</div>
+      <h1>2026 白沙屯媽祖進香<br /><span class="formosa-hero-accent">低碳行善・善行天下</span></h1>
+      <p class="formosa-hero-subtitle">構建永續行善・民間共善平台</p>
+      <div class="formosa-hero-advisors">
+        <span>指導單位：白沙屯拱天宮・環境部</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Vision -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">從無形庇佑到有形行動</h2>
+    <div class="formosa-vision-grid">
+      <div class="formosa-vision-card">
+        <div class="formosa-vision-icon">🏛️</div>
+        <h3>傳統的底蘊</h3>
+        <p>白沙屯媽祖進香，三百年來凝聚百萬人的信仰能量。每一步都是虔誠，每一程都是善意的具體化。</p>
+      </div>
+      <div class="formosa-vision-card">
+        <div class="formosa-vision-arrow">→</div>
+        <div class="formosa-vision-icon">🔄</div>
+        <h3>時代的轉化</h3>
+        <p>當信仰遇見永續，行善不再只是心意。ESG 框架讓每一份善意變得可追蹤、可量化、可被制度承認。</p>
+      </div>
+      <div class="formosa-vision-card">
+        <div class="formosa-vision-arrow">→</div>
+        <div class="formosa-vision-icon">🌱</div>
+        <h3>永續的交匯</h3>
+        <p>民間信仰 × 科學減碳 × 數位治理。三股力量在進香路上交匯，開創全球首例 ESG 零碳進香。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Three Engines -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">三大永續引擎</h2>
+    <div class="formosa-engines-grid">
+      <div class="formosa-engine-card engine-s">
+        <div class="engine-label">S — Social</div>
+        <h3>光復鄉里</h3>
+        <p class="engine-subtitle">災後韌性重建</p>
+        <p>以信仰為軸心，串聯社區重建、弱勢關懷與在地產業復興。讓進香不只是過路，而是留下改變的力量。</p>
+      </div>
+      <div class="formosa-engine-card engine-e">
+        <div class="engine-label">E — Environment</div>
+        <h3>自然解方 NbS</h3>
+        <p class="engine-subtitle">循環經濟・淤泥重生</p>
+        <p>運用自然基礎解方（Nature-based Solutions），將進香路徑上的環境負荷轉化為生態修復契機。淤泥不是廢棄物，是土壤的重生。</p>
+      </div>
+      <div class="formosa-engine-card engine-g">
+        <div class="engine-label">G — Governance</div>
+        <h3>科學減碳</h3>
+        <p class="engine-subtitle">善+1 平台・數位碳足跡</p>
+        <p>透過數據收集系統與善足跡平台，為每一位香燈腳的行善建立可驗證的碳足跡紀錄，讓善行成為有據可查的永續貢獻。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Metrics -->
+  <section class="formosa-section formosa-metrics-section">
+    <h2 class="formosa-section-title">預期影響力</h2>
+    <div class="formosa-metrics-grid">
+      <div class="formosa-metric">
+        <span class="metric-number">100K+</span>
+        <span class="metric-label">香燈腳註冊</span>
+      </div>
+      <div class="formosa-metric">
+        <span class="metric-number">500+</span>
+        <span class="metric-label">噸減碳目標</span>
+      </div>
+      <div class="formosa-metric">
+        <span class="metric-number">No.1</span>
+        <span class="metric-label">全球首創 ESG 零碳進香</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Sub-projects -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">子專案</h2>
+    <div class="formosa-subprojects-grid">
+      <a href="/projects/formosa-esg-2026/data/" class="formosa-subproject-card active">
+        <div class="subproject-icon">🔢</div>
+        <h3>繞境數據收集系統</h3>
+        <p>香客組成分析、軌跡追蹤、碳足跡計算——用數據為進香建立可信的永續基礎。</p>
+        <span class="subproject-cta">查看詳情 →</span>
+      </a>
+      <div class="formosa-subproject-card coming-soon">
+        <div class="subproject-icon">🌱</div>
+        <h3>善足跡平台</h3>
+        <p>讓每一位香燈腳的行善都有跡可循，建立個人化的永續行動紀錄。</p>
+        <span class="subproject-status">Coming Soon</span>
+      </div>
+      <div class="formosa-subproject-card coming-soon">
+        <div class="subproject-icon">🧱</div>
+        <h3>永續磚造計畫</h3>
+        <p>善行存摺 × 永續磚——將淤泥轉化為建材，每一塊磚都承載信仰與環保的雙重意義。</p>
+        <span class="subproject-status">Coming Soon</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Partners -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">參與單位</h2>
+
+    <div class="formosa-partners-block">
+      <h3 class="partners-category">主辦單位</h3>
+      <div class="partners-row organizers">
+        {partners.organizers.map(p => (
+          <div class="partner-chip primary">{p.name}</div>
+        ))}
+      </div>
+    </div>
+
+    <div class="formosa-partners-block">
+      <h3 class="partners-category">指導單位</h3>
+      <div class="partners-row">
+        {partners.advisors.map(p => (
+          <div class="partner-chip advisor">{p.name}</div>
+        ))}
+      </div>
+    </div>
+
+    <div class="formosa-partners-block">
+      <h3 class="partners-category">協辦單位</h3>
+      <div class="partners-grid">
+        {partners.coOrganizers.map(name => (
+          <div class="partner-chip">{name}</div>
+        ))}
+      </div>
+    </div>
+
+    <div class="formosa-partners-block">
+      <h3 class="partners-category">參與企業</h3>
+      <div class="partners-grid dense">
+        {partners.enterprises.map(name => (
+          <div class="partner-chip small">{name}</div>
+        ))}
+      </div>
+    </div>
+
+    <div class="formosa-partners-block">
+      <h3 class="partners-category">數據夥伴</h3>
+      <div class="partners-row">
+        <a href={partners.dataPartner.url} target="_blank" rel="noopener" class="partner-chip data-partner">
+          {partners.dataPartner.name}
+          <span class="partner-role">{partners.dataPartner.role}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Collaboration -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">合作模式</h2>
+    <div class="formosa-collab-grid">
+      <div class="formosa-collab-card">
+        <div class="collab-icon">🏢</div>
+        <h3>企業夥伴</h3>
+        <p>ESG 實踐場域、碳權認證合作、品牌永續形象建立</p>
+      </div>
+      <div class="formosa-collab-card">
+        <div class="collab-icon">🎓</div>
+        <h3>學術研究</h3>
+        <p>民間信仰與永續發展研究、LCA 數據分析、社會影響力評估</p>
+      </div>
+      <div class="formosa-collab-card">
+        <div class="collab-icon">🏛️</div>
+        <h3>公部門合作</h3>
+        <p>碳排政策參考、宗教文化資產永續、社區韌性建設</p>
+      </div>
+      <div class="formosa-collab-card">
+        <div class="collab-icon">🤲</div>
+        <h3>志工參與</h3>
+        <p>數據收集志工、進香陪行、環保行動推廣</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Contact -->
+  <section class="formosa-section formosa-contact">
+    <div class="formosa-contact-card">
+      <h2>加入永續行善行列</h2>
+      <p>永續行善企劃辦公室</p>
+      <a href="mailto:info@ssbti.org" class="formosa-contact-email">info@ssbti.org</a>
+    </div>
+  </section>
+
+</div>
+
+</AuthGate>
+
+</BaseLayout>
+
+<style>
+  /* ===== Formosa Hub Page Styles ===== */
+  .formosa-hub {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1rem 4rem;
+  }
+
+  /* Hero */
+  .formosa-hero {
+    text-align: center;
+    padding: 80px 2rem 60px;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  .formosa-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 4px;
+    background: linear-gradient(90deg, var(--accent-faith), var(--accent-circular));
+    border-radius: 2px;
+  }
+  .formosa-hero-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--accent-faith);
+    background: rgba(180,83,9,0.08);
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+  }
+  .formosa-hero h1 {
+    font-family: var(--font-cjk);
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  .formosa-hero-accent {
+    background: linear-gradient(90deg, var(--accent-faith), var(--accent-circular));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .formosa-hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+  .formosa-hero-advisors {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* Sections */
+  .formosa-section {
+    margin-bottom: 3.5rem;
+  }
+  .formosa-section-title {
+    font-family: var(--font-cjk);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .formosa-section-title::after {
+    content: '';
+    display: block;
+    width: 48px; height: 3px;
+    background: var(--accent-faith);
+    margin: 12px auto 0;
+    border-radius: 2px;
+  }
+
+  /* Vision Grid */
+  .formosa-vision-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .formosa-vision-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .formosa-vision-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  .formosa-vision-card h3 {
+    font-family: var(--font-cjk);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .formosa-vision-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .formosa-vision-arrow {
+    display: none;
+  }
+
+  /* Engine Cards */
+  .formosa-engines-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .formosa-engine-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .formosa-engine-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .formosa-engine-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+  }
+  .engine-s::before { background: var(--accent-faith); }
+  .engine-e::before { background: var(--accent-circular); }
+  .engine-g::before { background: var(--accent-ai); }
+  .engine-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .engine-s .engine-label { color: var(--accent-faith); }
+  .engine-e .engine-label { color: var(--accent-circular); }
+  .engine-g .engine-label { color: var(--accent-ai); }
+  .formosa-engine-card h3 {
+    font-family: var(--font-cjk);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .engine-subtitle {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .formosa-engine-card > p:last-child {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Metrics */
+  .formosa-metrics-section {
+    background: var(--bg-section);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+  }
+  .formosa-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    text-align: center;
+  }
+  .formosa-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .metric-number {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-faith), var(--accent-circular));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .metric-label {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* Sub-projects */
+  .formosa-subprojects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .formosa-subproject-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+  }
+  .formosa-subproject-card.active:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-faith);
+  }
+  .formosa-subproject-card.coming-soon {
+    opacity: 0.6;
+  }
+  .subproject-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  .formosa-subproject-card h3 {
+    font-family: var(--font-cjk);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .formosa-subproject-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    flex: 1;
+  }
+  .subproject-cta {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-faith);
+  }
+  .subproject-status {
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* Partners */
+  .formosa-partners-block {
+    margin-bottom: 2rem;
+  }
+  .partners-category {
+    font-family: var(--font-cjk);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+  }
+  .partners-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .partners-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.5rem;
+  }
+  .partners-grid.dense {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+  .partner-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .partner-chip:hover {
+    border-color: var(--border);
+  }
+  .partner-chip.primary {
+    background: rgba(180,83,9,0.06);
+    border-color: rgba(180,83,9,0.2);
+    color: var(--accent-faith);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .partner-chip.advisor {
+    background: rgba(5,150,105,0.06);
+    border-color: rgba(5,150,105,0.2);
+    color: var(--accent-circular);
+    font-weight: 600;
+  }
+  .partner-chip.small {
+    font-size: 0.78rem;
+    padding: 6px 12px;
+  }
+  .partner-chip.data-partner {
+    flex-direction: column;
+    align-items: flex-start;
+    background: rgba(37,99,235,0.06);
+    border-color: rgba(37,99,235,0.2);
+    color: var(--accent-ai);
+    font-weight: 600;
+  }
+  .partner-role {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+
+  /* Collaboration */
+  .formosa-collab-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  .formosa-collab-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: all 0.3s;
+  }
+  .formosa-collab-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .collab-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .formosa-collab-card h3 {
+    font-family: var(--font-cjk);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .formosa-collab-card p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* Contact */
+  .formosa-contact-card {
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+  }
+  .formosa-contact-card h2 {
+    font-family: var(--font-cjk);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .formosa-contact-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .formosa-contact-email {
+    display: inline-block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent-faith);
+    text-decoration: none;
+    padding: 10px 24px;
+    border: 1px solid rgba(180,83,9,0.3);
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .formosa-contact-email:hover {
+    background: rgba(180,83,9,0.06);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .formosa-hero h1 { font-size: 1.7rem; }
+    .formosa-hero { padding: 60px 1rem 40px; }
+    .formosa-vision-grid,
+    .formosa-engines-grid,
+    .formosa-metrics-grid,
+    .formosa-subprojects-grid { grid-template-columns: 1fr; }
+    .formosa-collab-grid { grid-template-columns: repeat(2, 1fr); }
+    .metric-number { font-size: 2.2rem; }
+    .partners-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .partners-grid.dense { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  }
+
+  @media (max-width: 480px) {
+    .formosa-collab-grid { grid-template-columns: 1fr; }
+  }
+</style>

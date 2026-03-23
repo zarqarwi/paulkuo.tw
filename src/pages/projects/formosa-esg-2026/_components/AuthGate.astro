@@ -1,0 +1,164 @@
+---
+/**
+ * AuthGate — Client-side auth gate for Formosa ESG 2026 pages
+ * Pattern: Same as dashboard.astro + ai-ready-dashboard.astro
+ * Scope: Only accepts invite codes with name === 'Formosa ESG 2026' or role === 'admin'
+ * SessionStorage key: formosa_esg_code
+ */
+interface Props {
+  title?: string;
+  subtitle?: string;
+}
+
+const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入存取碼' } = Astro.props;
+---
+
+<!-- Auth Gate (visible by default) -->
+<div id="authGate" class="formosa-auth">
+  <div class="auth-card">
+    <div class="auth-icon">⛩️</div>
+    <h2>{title}</h2>
+    <p>{subtitle}</p>
+    <input type="password" id="authInput" placeholder="Access Code" autofocus />
+    <button id="authBtn">進入</button>
+  </div>
+</div>
+
+<!-- Protected content slot (hidden until verified) -->
+<div id="mainContent" style="display:none">
+  <slot />
+</div>
+
+<script is:inline>
+(function() {
+  const WORKER = 'https://api.paulkuo.tw';
+  const STORAGE_KEY = 'formosa_esg_code';
+  const authGate = document.getElementById('authGate');
+  const mainContent = document.getElementById('mainContent');
+  const authInput = document.getElementById('authInput');
+  const authBtn = document.getElementById('authBtn');
+
+  async function verifyCode(code) {
+    try {
+      const res = await fetch(WORKER + '/validate-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const d = await res.json();
+      // Scope isolation: only accept codes with name 'Formosa ESG 2026'
+      if (d.valid && d.name === 'Formosa ESG 2026') return d;
+      // Admin role always allowed (Paul's master code)
+      if (d.valid && d.role === 'admin') return d;
+    } catch (e) {}
+    return null;
+  }
+
+  function unlock() {
+    authGate.style.display = 'none';
+    mainContent.style.display = 'block';
+  }
+
+  async function checkAuth() {
+    const urlKey = new URLSearchParams(window.location.search).get('key');
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    const code = urlKey || stored;
+    if (code) {
+      const result = await verifyCode(code);
+      if (result) {
+        sessionStorage.setItem(STORAGE_KEY, code);
+        unlock();
+        return;
+      }
+    }
+  }
+
+  authBtn.addEventListener('click', async function() {
+    authBtn.textContent = '驗證中…';
+    authBtn.disabled = true;
+    var code = authInput.value.trim().toLowerCase();
+    var result = await verifyCode(code);
+    if (result) {
+      sessionStorage.setItem(STORAGE_KEY, code);
+      unlock();
+    } else {
+      authInput.style.borderColor = '#ef4444';
+      authInput.value = '';
+      authInput.placeholder = '存取碼無效';
+      authBtn.textContent = '進入';
+      authBtn.disabled = false;
+    }
+  });
+
+  authInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') authBtn.click();
+  });
+
+  checkAuth();
+})();
+</script>
+
+<style is:global>
+  .formosa-auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 2rem;
+  }
+  .formosa-auth .auth-card {
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 3rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: var(--shadow-md);
+  }
+  .formosa-auth .auth-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  .formosa-auth .auth-card h2 {
+    font-family: var(--font-cjk);
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  .formosa-auth .auth-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+  }
+  .formosa-auth .auth-card input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: center;
+    background: var(--bg);
+    transition: border-color 0.2s;
+  }
+  .formosa-auth .auth-card input:focus {
+    outline: none;
+    border-color: var(--accent-faith);
+  }
+  .formosa-auth .auth-card button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--accent-faith);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .formosa-auth .auth-card button:hover {
+    background: #9a4408;
+  }
+</style>

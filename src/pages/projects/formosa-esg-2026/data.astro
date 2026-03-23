@@ -1,0 +1,606 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AuthGate from './_components/AuthGate.astro';
+---
+
+<BaseLayout
+  title="繞境數據收集系統 — 2026 白沙屯媽祖 ESG 永續進香"
+  description="香客組成分析、軌跡追蹤、碳足跡計算——用數據為進香建立可信的永續基礎。"
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/data/"
+>
+
+<AuthGate title="繞境數據收集系統" subtitle="請輸入存取碼以查看內容">
+
+<div class="formosa-data">
+
+  <!-- Breadcrumb -->
+  <nav class="formosa-breadcrumb">
+    <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+  </nav>
+
+  <!-- Header -->
+  <header class="formosa-data-header">
+    <div class="data-header-badge">引擎三：科學減碳 (G)</div>
+    <h1>繞境數據收集系統</h1>
+    <p>用數據為進香建立可信的永續基礎——從香客組成、行進軌跡到碳足跡計算</p>
+  </header>
+
+  <!-- Why: Three Goals -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">為什麼做數據收集</h2>
+    <div class="data-goals-grid">
+      <div class="data-goal-card">
+        <div class="goal-number">01</div>
+        <h3>香客組成分析</h3>
+        <p>了解進香群體的年齡、地區、參與動機分布，為政策制定與資源配置提供數據基礎。</p>
+      </div>
+      <div class="data-goal-card">
+        <div class="goal-number">02</div>
+        <h3>軌跡追蹤</h3>
+        <p>記錄進香路線的實際行進軌跡，分析交通流量與補給站分布，優化路線安全與服務配置。</p>
+      </div>
+      <div class="data-goal-card">
+        <div class="goal-number">03</div>
+        <h3>碳足跡計算</h3>
+        <p>以 LCA（生命週期評估）方法論，計算每位香燈腳的碳足跡與減碳貢獻，建立可驗證的永續紀錄。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Flow: Four Steps -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">香客參與流程</h2>
+    <div class="data-flow-grid">
+      <div class="data-flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-icon">📱</div>
+        <h3>掃碼</h3>
+        <p>在進香現場掃描 QR Code，進入數據收集頁面</p>
+      </div>
+      <div class="flow-connector">→</div>
+      <div class="data-flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-icon">🌐</div>
+        <h3>開啟</h3>
+        <p>PWA 網頁自動開啟，無需下載 App</p>
+      </div>
+      <div class="flow-connector">→</div>
+      <div class="data-flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-icon">✍️</div>
+        <h3>填寫</h3>
+        <p>填寫基本資料與進香動機問卷（2 分鐘）</p>
+      </div>
+      <div class="flow-connector">→</div>
+      <div class="data-flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-icon">✅</div>
+        <h3>完成</h3>
+        <p>獲得個人善足跡紀錄，自動計入碳帳本</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- System Architecture -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">系統架構</h2>
+    <div class="data-arch-card">
+      <div class="arch-row">
+        <div class="arch-block arch-input">
+          <h4>前端多管道</h4>
+          <ul>
+            <li>QR Code 掃碼入口</li>
+            <li>LINE OA 推播</li>
+            <li>現場志工引導</li>
+            <li>社群分享連結</li>
+          </ul>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block arch-core">
+          <h4>統一匯流平台</h4>
+          <ul>
+            <li>PWA 數據收集介面</li>
+            <li>即時資料驗證</li>
+            <li>GPS 軌跡記錄</li>
+            <li>離線資料暫存</li>
+          </ul>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block arch-output">
+          <h4>分析產出</h4>
+          <ul>
+            <li>即時儀表板</li>
+            <li>碳足跡報告</li>
+            <li>人流熱力圖</li>
+            <li>政策建議書</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">執行時程</h2>
+    <div class="data-timeline">
+      <div class="timeline-phase prep">
+        <div class="phase-header">
+          <span class="phase-badge">準備期</span>
+          <span class="phase-period">3/22 — 4/11（三週）</span>
+        </div>
+        <ul>
+          <li>系統開發與測試</li>
+          <li>志工培訓與分工</li>
+          <li>QR Code 物料製作</li>
+          <li>LINE OA 設定與預約推播</li>
+        </ul>
+      </div>
+      <div class="timeline-phase active-phase">
+        <div class="phase-header">
+          <span class="phase-badge live">實戰期</span>
+          <span class="phase-period">4/12 — 4/19（八天）</span>
+        </div>
+        <ul>
+          <li>起駕日大量掃碼推廣</li>
+          <li>沿途補給站設點收集</li>
+          <li>即時數據監控與異常處理</li>
+          <li>每日數據摘要報告</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Risk Management -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">風險對策</h2>
+    <div class="data-risks-grid">
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">📡</span>
+          <span class="risk-level high">高</span>
+        </div>
+        <h3>網路不穩定</h3>
+        <p>進香路線偏遠地區訊號弱</p>
+        <div class="risk-solution">離線暫存 + 回到訊號區自動同步</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">🔋</span>
+          <span class="risk-level medium">中</span>
+        </div>
+        <h3>裝置沒電</h3>
+        <p>長途步行手機電量耗盡</p>
+        <div class="risk-solution">補給站設充電站 + 低電量模式</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">🗣️</span>
+          <span class="risk-level medium">中</span>
+        </div>
+        <h3>參與意願低</h3>
+        <p>香客不願填問卷</p>
+        <div class="risk-solution">精簡至 2 分鐘 + 善足跡即時回饋</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">🔒</span>
+          <span class="risk-level low">低</span>
+        </div>
+        <h3>資料安全</h3>
+        <p>個資外洩風險</p>
+        <div class="risk-solution">去識別化處理 + HTTPS 加密傳輸</div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">🌧️</span>
+          <span class="risk-level medium">中</span>
+        </div>
+        <h3>天候因素</h3>
+        <p>雨天影響現場收集</p>
+        <div class="risk-solution">防水物料 + 線上替代收集管道</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deliverables -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">預期產出</h2>
+    <div class="data-deliverables-grid">
+      <div class="deliverable-card">
+        <div class="deliverable-icon">📊</div>
+        <h3>即時數據儀表板</h3>
+        <p>進香期間每日更新的即時數據視覺化系統</p>
+      </div>
+      <div class="deliverable-card">
+        <div class="deliverable-icon">📋</div>
+        <h3>碳足跡報告</h3>
+        <p>符合國際標準的 LCA 碳足跡分析報告</p>
+      </div>
+      <div class="deliverable-card">
+        <div class="deliverable-icon">🗺️</div>
+        <h3>人流分析報告</h3>
+        <p>進香路線人流密度與移動模式分析</p>
+      </div>
+      <div class="deliverable-card">
+        <div class="deliverable-icon">📝</div>
+        <h3>政策建議書</h3>
+        <p>基於數據的宗教活動永續化政策建議</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Back link -->
+  <div class="formosa-back-link">
+    <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+  </div>
+
+</div>
+
+</AuthGate>
+
+</BaseLayout>
+
+<style>
+  .formosa-data {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem 4rem;
+  }
+
+  /* Breadcrumb */
+  .formosa-breadcrumb {
+    padding: 1.5rem 0;
+  }
+  .formosa-breadcrumb a {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .formosa-breadcrumb a:hover { color: var(--accent-faith); }
+
+  /* Header */
+  .formosa-data-header {
+    text-align: center;
+    padding: 2rem 0 3rem;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 3rem;
+  }
+  .data-header-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-ai);
+    background: rgba(37,99,235,0.08);
+    padding: 4px 14px;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+  }
+  .formosa-data-header h1 {
+    font-family: var(--font-cjk);
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+  .formosa-data-header p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Section titles (reuse from hub) */
+  .formosa-section {
+    margin-bottom: 3.5rem;
+  }
+  .formosa-section-title {
+    font-family: var(--font-cjk);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .formosa-section-title::after {
+    content: '';
+    display: block;
+    width: 48px; height: 3px;
+    background: var(--accent-faith);
+    margin: 10px auto 0;
+    border-radius: 2px;
+  }
+
+  /* Goals */
+  .data-goals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .data-goal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 2rem;
+  }
+  .goal-number {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--border);
+    margin-bottom: 0.75rem;
+  }
+  .data-goal-card h3 {
+    font-family: var(--font-cjk);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .data-goal-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* Flow */
+  .data-flow-grid {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .data-flow-step {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    flex: 1;
+    min-width: 140px;
+    max-width: 200px;
+    position: relative;
+  }
+  .flow-step-num {
+    position: absolute;
+    top: 10px; left: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .flow-step-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+  }
+  .data-flow-step h3 {
+    font-family: var(--font-cjk);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .data-flow-step p {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .flow-connector {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    padding-top: 2rem;
+  }
+
+  /* Architecture */
+  .data-arch-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    overflow-x: auto;
+  }
+  .arch-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    justify-content: center;
+  }
+  .arch-block {
+    background: var(--bg-section);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    flex: 1;
+    min-width: 180px;
+    border-top: 3px solid var(--border);
+  }
+  .arch-input { border-top-color: var(--accent-faith); }
+  .arch-core { border-top-color: var(--accent-ai); }
+  .arch-output { border-top-color: var(--accent-circular); }
+  .arch-block h4 {
+    font-family: var(--font-cjk);
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .arch-block ul {
+    list-style: none;
+    padding: 0;
+  }
+  .arch-block li {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .arch-block li:last-child { border-bottom: none; }
+  .arch-arrow {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    padding-top: 2rem;
+    flex-shrink: 0;
+  }
+
+  /* Timeline */
+  .data-timeline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .timeline-phase {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .phase-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: var(--bg-section);
+    color: var(--text-secondary);
+  }
+  .phase-badge.live {
+    background: rgba(180,83,9,0.1);
+    color: var(--accent-faith);
+  }
+  .phase-period {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .timeline-phase ul {
+    list-style: none;
+    padding: 0;
+  }
+  .timeline-phase li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 6px 0;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .timeline-phase li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 12px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .active-phase li::before { background: var(--accent-faith); }
+
+  /* Risks */
+  .data-risks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .risk-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .risk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .risk-icon { font-size: 1.3rem; }
+  .risk-level {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+  .risk-level.high { background: rgba(220,38,38,0.1); color: #DC2626; }
+  .risk-level.medium { background: rgba(245,158,11,0.1); color: #B45309; }
+  .risk-level.low { background: rgba(5,150,105,0.1); color: #059669; }
+  .risk-card h3 {
+    font-family: var(--font-cjk);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .risk-card > p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .risk-solution {
+    font-size: 0.82rem;
+    color: var(--accent-circular);
+    font-weight: 500;
+    padding: 8px 12px;
+    background: rgba(5,150,105,0.06);
+    border-radius: 6px;
+  }
+
+  /* Deliverables */
+  .data-deliverables-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  .deliverable-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .deliverable-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .deliverable-card h3 {
+    font-family: var(--font-cjk);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .deliverable-card p {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* Back link */
+  .formosa-back-link {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .formosa-back-link a {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .formosa-back-link a:hover { color: var(--accent-faith); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .data-goals-grid { grid-template-columns: 1fr; }
+    .data-flow-grid { flex-direction: column; align-items: center; }
+    .flow-connector { transform: rotate(90deg); padding: 0; }
+    .data-flow-step { max-width: 100%; }
+    .arch-row { flex-direction: column; }
+    .arch-arrow { transform: rotate(90deg); text-align: center; padding: 0; }
+    .data-timeline { grid-template-columns: 1fr; }
+    .data-deliverables-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
