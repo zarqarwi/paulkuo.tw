@@ -294,6 +294,7 @@ https://paulkuo.tw/ja/projects/
 https://paulkuo.tw/projects/
 https://paulkuo.tw/projects/formosa-esg-2026/
 https://paulkuo.tw/projects/formosa-esg-2026/data/
+https://paulkuo.tw/projects/formosa-esg-2026/tracker/
 https://paulkuo.tw/search/
 https://paulkuo.tw/tags-graph/
 https://paulkuo.tw/tags/
