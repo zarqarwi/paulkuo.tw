@@ -18,6 +18,7 @@ import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
+import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaPush, handleFormosaData } from './formosa.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -207,6 +208,12 @@ async function handleRequest(request, env) {
   // Channel D: YouTube 字幕進件
   if (path === '/api/tqef/youtube-transcript' && method === 'POST') return handleTqefYoutubeTranscript(request, env);
   if (path === '/api/tqef/youtube-corpus' && method === 'POST') return handleTqefYoutubeCorpus(request, env);
+  // ── Formosa ESG 2026 API ──
+  if (path === '/api/formosa/webhook') return handleFormosaWebhook(request, env);
+  if (path === '/api/formosa/submit' && method === 'POST') return handleFormosaSubmit(request, env);
+  if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env);
+  if (path === '/api/formosa/push' && method === 'POST') return handleFormosaPush(request, env);
+  if (path === '/api/formosa/data' && method === 'GET') return handleFormosaData(request, env);
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
   if (path === '/social/status') return handleSocialStatus(request, env);

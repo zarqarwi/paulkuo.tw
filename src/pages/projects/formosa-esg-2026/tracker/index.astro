@@ -353,6 +353,7 @@ import AuthGate from '../_components/AuthGate.astro';
   var gpsTrackPoints = [];
   var watchId = null;
   var gpsReady = false;
+  var API_BASE = 'https://paulkuo-ticker.paulkuo.workers.dev';
 
   function startGPSTracking() {
     var statusEl = document.getElementById('gpsStatus');
