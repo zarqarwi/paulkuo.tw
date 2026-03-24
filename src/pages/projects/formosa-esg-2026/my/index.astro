@@ -121,16 +121,17 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <script is:inline>
 (async function() {
+  var MASCOT_BASE = '/images/formosa/';
   var TITLES = [
-    { km: 0,   checkins: 1,  icon: '🔥', name: '煉氣香客', sub: '啟程入門者' },
-    { km: 15,  checkins: 3,  icon: '🧱', name: '築基香客', sub: '開始上路者' },
-    { km: 45,  checkins: 5,  icon: '💛', name: '金丹香客', sub: '穩定行腳者' },
-    { km: 90,  checkins: 6,  icon: '👶', name: '元嬰香客', sub: '深度參與者' },
-    { km: 135, checkins: 8,  icon: '✨', name: '化神香客', sub: '高里程行者' },
-    { km: 180, checkins: 10, icon: '🌀', name: '煉虛香客', sub: '進階完成者' },
-    { km: 225, checkins: 12, icon: '🤝', name: '合體香客', sub: '高階完成者' },
-    { km: 270, checkins: 14, icon: '🏆', name: '大乘香客', sub: '榮譽進階者' },
-    { km: 300, checkins: 14, icon: '🚀', name: '飛升香客', sub: '圓滿認證者' }
+    { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.png', name: '煉氣香客', sub: '啟程入門者' },
+    { km: 15,  checkins: 3,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
+    { km: 45,  checkins: 5,  icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
+    { km: 90,  checkins: 6,  icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
+    { km: 135, checkins: 8,  icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
+    { km: 180, checkins: 10, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
+    { km: 225, checkins: 12, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
+    { km: 270, checkins: 14, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
+    { km: 300, checkins: 14, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
   ];
 
   var SHARE_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
@@ -193,7 +194,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   var rank = getTitle(checkins, km);
 
   // Fill rank section
-  document.getElementById('rankIcon').textContent = rank.current.icon;
+  document.getElementById('rankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:120px;height:120px;object-fit:contain;" alt="' + rank.current.name + '">';
   document.getElementById('rankName').textContent = rank.current.name;
   document.getElementById('rankSub').textContent = rank.current.sub;
 
@@ -294,7 +295,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     '<p class="carbon-compare">🌳 相當於 ' + Math.max(1, Math.round(savedKm * 0.21 / 22 * 100) / 100).toFixed(2) + ' 棵樹的年吸收量</p>';
 
   // Share card data
-  document.getElementById('shareRankIcon').textContent = rank.current.icon;
+  document.getElementById('shareRankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:100px;height:100px;object-fit:contain;" alt="' + rank.current.name + '">';
   document.getElementById('shareRankName').textContent = rank.current.name;
   document.getElementById('shareRankSub').textContent = rank.current.sub;
   document.getElementById('shareKm').textContent = km.toFixed(1);
