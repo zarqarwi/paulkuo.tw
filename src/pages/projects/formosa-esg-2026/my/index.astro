@@ -346,8 +346,10 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
         zoomControl: false,
         attributionControl: false,
         dragging: false,
-        scrollWheelZoom: false
+        scrollWheelZoom: false,
+        preferCanvas: true
       });
+      window._shareMapInstance = shareMap;
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19
@@ -376,30 +378,14 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
       // Fit bounds
       shareMap.fitBounds(polyline.getBounds().pad(0.15));
 
-      // Wait for tiles to load, then capture
+      // Keep map alive — html2canvas will capture it directly when sharing
+      // Just wait for tiles, then hide card
       setTimeout(function() {
-        if (typeof leafletImage === 'function') {
-          leafletImage(shareMap, function(err, canvas) {
-            if (!err && canvas) {
-              var imgEl = document.getElementById('shareMapImg');
-              imgEl.src = canvas.toDataURL('image/png');
-              imgEl.style.display = 'block';
-              shareMapContainer.style.display = 'none';
-              shareMapReady = true;
-            }
-            // Hide share card again
-            shareCard.style.left = '-9999px';
-            shareCard.style.opacity = '1';
-            shareCard.style.zIndex = '';
-            shareMap.remove();
-          });
-        } else {
-          // Fallback: hide card
-          shareCard.style.left = '-9999px';
-          shareCard.style.opacity = '1';
-          shareCard.style.zIndex = '';
-        }
-      }, 2000); // Wait 2s for tiles
+        shareMapReady = true;
+        shareCard.style.left = '-9999px';
+        shareCard.style.opacity = '1';
+        shareCard.style.zIndex = '';
+      }, 3000);
     }
   } catch(e) { console.warn('Share map error:', e); }
 
@@ -420,32 +406,52 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
   window.generateShareImage = function() {
     var card = document.getElementById('shareCard');
+    var mapContainer = document.getElementById('shareMapContainer');
+
+    // Show card so map tiles can render
     card.style.left = '0';
     card.style.top = '0';
     card.style.position = 'fixed';
     card.style.zIndex = '9999';
+    card.style.opacity = '0.01'; // nearly invisible but rendered
 
-    var inner = card.querySelector('.share-card-inner');
-    html2canvas(inner, {
-      scale: 2, useCORS: true, backgroundColor: '#1a1510', width: 600, height: inner.scrollHeight
-    }).then(function(canvas) {
-      card.style.left = '-9999px';
-      canvas.toBlob(function(blob) {
-        if (navigator.share && navigator.canShare) {
-          var file = new File([blob], 'formosa-journey.png', { type: 'image/png' });
-          if (navigator.canShare({ files: [file] })) {
-            navigator.share({ files: [file], title: '我的進香足跡', text: getShareText() }).catch(function(){});
-            return;
+    // Invalidate map size so tiles reload
+    if (window._shareMapInstance) {
+      window._shareMapInstance.invalidateSize();
+    }
+
+    // Wait for map tiles to fully load, then capture
+    setTimeout(function() {
+      card.style.opacity = '1'; // make visible briefly for capture
+      var inner = card.querySelector('.share-card-inner');
+
+      html2canvas(inner, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#1a1510',
+        width: 600,
+        height: inner.scrollHeight,
+        logging: false
+      }).then(function(canvas) {
+        card.style.left = '-9999px';
+        canvas.toBlob(function(blob) {
+          if (navigator.share && navigator.canShare) {
+            var file = new File([blob], 'formosa-journey.png', { type: 'image/png' });
+            if (navigator.canShare({ files: [file] })) {
+              navigator.share({ files: [file], title: '我的進香足跡', text: getShareText() }).catch(function(){});
+              return;
+            }
           }
-        }
-        // Fallback: download
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url; a.download = 'formosa-journey.png';
-        a.click();
-        URL.revokeObjectURL(url);
-      }, 'image/png');
-    });
+          // Fallback: download
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = 'formosa-journey.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      });
+    }, 2000); // Wait 2s for tiles
   };
 
   window.shareNative = function() {
