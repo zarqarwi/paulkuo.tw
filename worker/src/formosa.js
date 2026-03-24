@@ -4,6 +4,16 @@
  */
 import { corsHeaders, jsonResponse } from './utils.js';
 
+// ── Admin Auth Helper ──
+const ADMIN_TOKEN = 'formosa-admin-2026';
+function requireAdmin(request) {
+  const auth = request.headers.get('X-Admin-Token') || new URL(request.url).searchParams.get('token');
+  if (auth !== ADMIN_TOKEN) {
+    return jsonResponse({ error: 'Unauthorized' }, 401, request);
+  }
+  return null; // authorized
+}
+
 // ── D1 Schema Migration ──
 const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS formosa_users (
@@ -82,7 +92,7 @@ export async function handleFormosaWebhook(request, env) {
           // Get user profile
           const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
           await env.AUTH_DB.prepare(
-            `INSERT OR REPLACE INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now'))`
+            `INSERT INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, updated_at=datetime('now')`
           ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '').run();
 
           // Send welcome message with tracker link
@@ -102,7 +112,7 @@ export async function handleFormosaWebhook(request, env) {
         if (userId) {
           const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
           await env.AUTH_DB.prepare(
-            `INSERT OR REPLACE INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now'))`
+            `INSERT INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, updated_at=datetime('now')`
           ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '').run();
         }
         const replyToken = event.replyToken;
@@ -136,11 +146,14 @@ export async function handleFormosaSubmit(request, env) {
   try {
     await migrateFormosa(env.AUTH_DB);
     const data = await request.json();
-    const userId = data.user_id || 'anonymous_' + Date.now();
+    // Use LINE user ID if available, otherwise fallback
+    const userId = data.line_user_id || data.user_id || 'anonymous_' + Date.now();
 
     // Save survey
     if (data.survey) {
       const s = data.survey;
+      const p = data.profile || {};
+      const t = p.transport || {};
       await env.AUTH_DB.prepare(`
         INSERT INTO formosa_surveys
         (user_id, q1_good_deeds, q2_moved_by, q2_1_story, q3_善行value, q4_continue, q5_future_actions, q6_csr,
@@ -156,20 +169,30 @@ export async function handleFormosaSubmit(request, env) {
         s.q4 || '',
         JSON.stringify(s.q5 || []),
         s.q6 || '',
-        s.role || 'participant',
-        s.transport?.walk || 0,
-        s.transport?.car || 0,
-        s.transport?.carpool || 1,
-        s.transport?.scooter || 0,
-        s.transport?.bus || 0,
-        s.transport?.mrt || 0,
-        s.transport?.train || 0,
-        s.transport?.hsr || 0,
-        s.water_bottles || 0,
-        s.hotel_nights || 0,
+        p.role || 'participant',
+        t.walk_km || 0,
+        t.car_km || 0,
+        t.carpool_count || 1,
+        t.scooter_km || 0,
+        t.bus_km || 0,
+        t.mrt_km || 0,
+        t.train_km || 0,
+        t.hsr_km || 0,
+        p.water_bottles || 0,
+        p.hotel_nights || 0,
         data.carbon?.total_kg || 0,
         JSON.stringify(data.carbon?.breakdown || {})
       ).run();
+    }
+
+    // Upsert user if LINE identity available
+    if (data.line_user_id) {
+      await env.AUTH_DB.prepare(`
+        INSERT INTO formosa_users (line_user_id, display_name, updated_at)
+        VALUES (?, ?, datetime('now'))
+        ON CONFLICT(line_user_id) DO UPDATE SET
+          display_name = excluded.display_name, updated_at = datetime('now')
+      `).bind(data.line_user_id, data.line_display_name || '').run();
     }
 
     // Save GPS points
@@ -218,6 +241,8 @@ export async function handleFormosaCheckin(request, env) {
 
 // ── Push Notification: Send check-in reminder to all followers ──
 export async function handleFormosaPush(request, env) {
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
   if (request.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405, request);
   }
@@ -358,6 +383,8 @@ export async function handleFormosaUser(request, env, userId) {
 // ── Admin: Survey Aggregations ──
 export async function handleFormosaAdminSurveys(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
     const rows = await env.AUTH_DB.prepare('SELECT q1_good_deeds, q2_moved_by, q3_善行value, q4_continue, q5_future_actions, q6_csr, role_type FROM formosa_surveys').all();
@@ -392,13 +419,15 @@ export async function handleFormosaAdminSurveys(request, env) {
 // ── Admin: Carbon Analytics ──
 export async function handleFormosaAdminCarbon(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
     const rows = await env.AUTH_DB.prepare('SELECT transport_walk, transport_car, transport_carpool, transport_scooter, transport_bus, transport_mrt, transport_train, transport_hsr, water_bottles, hotel_nights, carbon_total_kg FROM formosa_surveys').all();
     const data = rows?.results || [];
 
     const modes = ['walk','car','scooter','bus','mrt','train','hsr'];
-    const factors = { walk: 0, car: 0.21, scooter: 0.05, bus: 0.04, mrt: 0.03, train: 0.03, hsr: 0.04 };
+    const factors = { walk: 0, car: 0.21, scooter: 0.05, bus: 0.04, mrt: 0.02, train: 0.04, hsr: 0.03 };
     const totals = {};
     modes.forEach(m => { totals[m] = { km: 0, users: 0 }; });
     let waterTotal = 0, hotelTotal = 0, carbonTotal = 0;
@@ -434,6 +463,8 @@ export async function handleFormosaAdminCarbon(request, env) {
 // ── Admin: Activity Timeline ──
 export async function handleFormosaAdminTimeline(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
     const byDay = await env.AUTH_DB.prepare(
@@ -459,6 +490,8 @@ export async function handleFormosaAdminTimeline(request, env) {
 // ── Admin: User Table ──
 export async function handleFormosaAdminUsers(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
     const gpsUsers = await env.AUTH_DB.prepare(`

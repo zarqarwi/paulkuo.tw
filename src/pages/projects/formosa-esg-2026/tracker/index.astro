@@ -984,19 +984,20 @@ import AuthGate from '../_components/AuthGate.astro';
     // Attach LINE identity if available
     if (lineUserId) {
       data.line_user_id = lineUserId;
-      data.line_display_name = lineProfile ? lineProfile.displayName : '';
+      data.line_display_name = lineProfile ? lineProfile.displayName : localStorage.getItem('formosa_line_display_name') || '';
     }
 
     var submitBtn = document.getElementById('submitBtn');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '提交中...'; }
 
+    var result = null;
     try {
       var resp = await fetch(API_BASE + '/api/formosa/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      var result = await resp.json();
+      result = await resp.json();
       console.log('Submit result:', result);
     } catch (e) {
       console.warn('API submit failed:', e.message);

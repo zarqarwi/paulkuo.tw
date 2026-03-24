@@ -171,6 +171,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
         // Update localStorage with server values
         localStorage.setItem('formosa_checkins', checkins);
         localStorage.setItem('formosa_km', km);
+        if (carbon > 0) localStorage.setItem('formosa_carbon', carbon.toFixed(2));
       }
     } catch(e) { /* server unavailable, use localStorage */ }
   }
