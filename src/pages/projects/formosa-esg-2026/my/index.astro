@@ -16,6 +16,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 <div class="my-dashboard">
   <nav class="my-breadcrumb">
     <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+    <a href="/projects/formosa-esg-2026/tracker/" class="my-breadcrumb-right">📍 打卡</a>
   </nav>
 
   <!-- No data state -->
@@ -325,8 +326,9 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     padding: 1rem;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
-  .my-breadcrumb { margin-bottom: 1.5rem; }
+  .my-breadcrumb { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
   .my-breadcrumb a { color: #888; text-decoration: none; font-size: 0.85rem; }
+  .my-breadcrumb-right { background: #FAF6F1; padding: 0.3rem 0.75rem; border-radius: 8px; font-weight: 600; }
 
   .my-cta-btn {
     display: inline-block;
@@ -370,16 +372,16 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     justify-content: space-between;
     align-items: center;
     position: relative;
+    padding: 0.5rem 0;
   }
   .progress-levels::before {
     content: '';
     position: absolute;
-    top: 50%;
+    top: calc(50% - 6px);
     left: 5%;
     right: 5%;
     height: 3px;
     background: #e5e5e5;
-    transform: translateY(-50%);
     z-index: 0;
   }
   .progress-level {
@@ -387,16 +389,18 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     flex-direction: column;
     align-items: center;
     z-index: 1;
+    min-width: 0;
   }
   .level-dot {
-    width: 12px; height: 12px;
+    width: 10px; height: 10px;
     border-radius: 50%;
     background: #e5e5e5;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
+    flex-shrink: 0;
   }
-  .level-current .level-dot { background: #B45309; box-shadow: 0 0 0 4px rgba(180,83,9,0.2); width: 16px; height: 16px; }
+  .level-current .level-dot { background: #B45309; box-shadow: 0 0 0 3px rgba(180,83,9,0.2); width: 14px; height: 14px; }
   .level-done .level-dot { background: #059669; }
-  .level-icon { font-size: 0.9rem; }
+  .level-icon { font-size: 0.75rem; line-height: 1; }
   .my-progress-hint { color: #B45309; font-size: 0.85rem; text-align: center; margin-top: 1rem; }
 
   /* Map */
