@@ -303,14 +303,8 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   };
 
   window.shareFB = function() {
-    var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL);
-    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      window.location.href = 'fb://facewebmodal/f?href=' + encodeURIComponent(SHARE_URL);
-      setTimeout(function() { window.open(fbUrl, '_blank'); }, 1500);
-    } else {
-      window.open(fbUrl, '_blank');
-    }
+    var shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL) + '&quote=' + encodeURIComponent(getShareText());
+    window.open(shareUrl, '_blank');
   };
 
   window.shareCopy = function() {
