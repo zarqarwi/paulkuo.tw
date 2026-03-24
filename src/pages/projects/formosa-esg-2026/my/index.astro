@@ -234,7 +234,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
       document.getElementById('mapNote').textContent = trackPoints.length + ' 個定位點，' + km.toFixed(1) + ' 公里';
     } else {
-      document.getElementById('myMap').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">尚無 GPS 軌跡資料</div>';
+      document.getElementById('myMap').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;flex-direction:column;gap:0.5rem;"><span>尚無 GPS 軌跡資料</span><a href="/projects/formosa-esg-2026/tracker/" style="color:#B45309;font-size:0.85rem;">前往打卡開始記錄 →</a></div>';
     }
   } catch (e) {
     document.getElementById('myMap').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">無法載入地圖資料</div>';
@@ -303,7 +303,14 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   };
 
   window.shareFB = function() {
-    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL), '_blank');
+    var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL);
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = 'fb://facewebmodal/f?href=' + encodeURIComponent(SHARE_URL);
+      setTimeout(function() { window.open(fbUrl, '_blank'); }, 1500);
+    } else {
+      window.open(fbUrl, '_blank');
+    }
   };
 
   window.shareCopy = function() {

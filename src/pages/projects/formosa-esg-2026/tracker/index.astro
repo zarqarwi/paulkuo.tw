@@ -861,7 +861,17 @@ import AuthGate from '../_components/AuthGate.astro';
   };
 
   window.shareFB = function() {
-    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL), '_blank');
+    var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL);
+    // Try Facebook app deep link on mobile
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      var fbAppUrl = 'fb://facewebmodal/f?href=' + encodeURIComponent(SHARE_URL);
+      window.location.href = fbAppUrl;
+      // Fallback to web if app not installed
+      setTimeout(function() { window.open(fbUrl, '_blank'); }, 1500);
+    } else {
+      window.open(fbUrl, '_blank');
+    }
   };
 
   window.shareCopy = function() {
