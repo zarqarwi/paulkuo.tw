@@ -18,7 +18,7 @@ import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
-import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers } from './formosa.js';
+import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers } from './formosa.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -212,6 +212,7 @@ async function handleRequest(request, env) {
   if (path === '/api/formosa/webhook') return handleFormosaWebhook(request, env);
   if (path === '/api/formosa/submit' && method === 'POST') return handleFormosaSubmit(request, env);
   if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env);
+  if (path === '/api/formosa/user/sync' && method === 'POST') return handleFormosaUserSync(request, env);
   if (path === '/api/formosa/push' && method === 'POST') return handleFormosaPush(request, env);
   if (path === '/api/formosa/data' && method === 'GET') return handleFormosaData(request, env);
   if (path.startsWith('/api/formosa/user/') && method === 'GET') {

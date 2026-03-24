@@ -446,9 +446,63 @@ import AuthGate from '../_components/AuthGate.astro';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
+<!-- LIFF SDK -->
+<script is:inline src="https://static.line-scdn.net/liff/edge/versions/2.24.0/sdk.js"></script>
+
 <!-- All logic -->
 <script is:inline>
 (function() {
+  // ── Config ──
+  var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+
+  // ── LIFF Integration ──
+  var LIFF_ID = '2009588321-rXVntTKg';
+  var lineUserId = localStorage.getItem('formosa_line_user_id') || null;
+  var lineProfile = null;
+  var liffReady = false;
+
+  function initLIFF() {
+    if (typeof liff === 'undefined') return;
+    liff.init({ liffId: LIFF_ID }).then(function() {
+      liffReady = true;
+      if (liff.isLoggedIn()) {
+        liff.getProfile().then(function(profile) {
+          lineUserId = profile.userId;
+          lineProfile = profile;
+          localStorage.setItem('formosa_line_user_id', profile.userId);
+          localStorage.setItem('formosa_line_display_name', profile.displayName);
+          localStorage.setItem('formosa_line_picture', profile.pictureUrl || '');
+          // Sync user to server
+          syncUserToServer(profile);
+        }).catch(function(e) { console.log('LIFF getProfile error:', e); });
+      } else if (liff.isInClient()) {
+        // Inside LINE app but not logged in - auto login
+        liff.login();
+      }
+    }).catch(function(e) { console.log('LIFF init error:', e); });
+  }
+
+  function syncUserToServer(profile) {
+    fetch(API_BASE + '/api/formosa/user/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        line_user_id: profile.userId,
+        display_name: profile.displayName,
+        picture_url: profile.pictureUrl || ''
+      })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data.user_id) localStorage.setItem('formosa_user_id', data.user_id);
+      // Restore server data to localStorage if available
+      if (data.checkins) localStorage.setItem('formosa_checkins', data.checkins);
+      if (data.km) localStorage.setItem('formosa_km', data.km);
+      if (data.survey_done) localStorage.setItem('formosa_survey_done', 'true');
+      if (data.gps_track && data.gps_track.length > 0) {
+        localStorage.setItem('formosa_gps_track', JSON.stringify(data.gps_track));
+      }
+    }).catch(function() {});
+  }
+
   // ── Background GPS Tracking ──
   // Restore saved GPS track from localStorage
   var gpsTrackPoints = [];
@@ -458,7 +512,6 @@ import AuthGate from '../_components/AuthGate.astro';
   } catch(e) {}
   var watchId = null;
   var gpsReady = false;
-  var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
 
   function startGPSTracking() {
     var statusEl = document.getElementById('gpsStatus');
@@ -862,7 +915,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
   window.shareLine = function() {
     // Use LIFF shareTargetPicker if in LINE app
-    if (liff.isInClient() && liff.isApiAvailable('shareTargetPicker')) {
+    if (liffReady && liff.isInClient() && liff.isApiAvailable('shareTargetPicker')) {
       liff.shareTargetPicker([
         {
           type: 'text',
@@ -1144,6 +1197,24 @@ import AuthGate from '../_components/AuthGate.astro';
         savedTrack.push({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
         localStorage.setItem('formosa_gps_track', JSON.stringify(savedTrack));
 
+        // Sync checkin to server
+        var userId = lineUserId || localStorage.getItem('formosa_user_id') || '';
+        if (userId) {
+          fetch(API_BASE + '/api/formosa/checkin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: userId,
+              lat: lat, lng: lng,
+              altitude: pos.coords.altitude,
+              accuracy: pos.coords.accuracy,
+              source: 'manual',
+              checkins: getSavedCheckins() + 1,
+              km: getSavedKm()
+            })
+          }).catch(function() {});
+        }
+
         var countEl = document.getElementById('gpsCount');
         if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
 
@@ -1195,6 +1266,8 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   // ── Page Init ──
+  initLIFF();
+
   if (localStorage.getItem('formosa_survey_done') === 'true') {
     enterCheckinMode();
   } else {

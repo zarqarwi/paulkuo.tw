@@ -120,7 +120,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 </div>
 
 <script is:inline>
-(function() {
+(async function() {
   var TITLES = [
     { km: 0,   checkins: 1,  icon: '🔥', name: '煉氣香客', sub: '啟程入門者' },
     { km: 15,  checkins: 3,  icon: '🧱', name: '築基香客', sub: '開始上路者' },
@@ -134,12 +134,42 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   ];
 
   var SHARE_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+  var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
 
-  // Read data from localStorage
+  // Read data from localStorage (fallback)
   var checkins = parseInt(localStorage.getItem('formosa_checkins') || '0');
   var km = parseFloat(localStorage.getItem('formosa_km') || '0');
   var carbon = parseFloat(localStorage.getItem('formosa_carbon') || '0');
   var surveyDone = localStorage.getItem('formosa_survey_done') === 'true';
+
+  // Try sync from server if LINE user is available
+  var lineUserId = localStorage.getItem('formosa_line_user_id');
+  if (lineUserId) {
+    try {
+      var syncResp = await fetch(API_BASE + '/api/formosa/user/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          line_user_id: lineUserId,
+          display_name: localStorage.getItem('formosa_line_display_name') || '',
+          picture_url: localStorage.getItem('formosa_line_picture') || ''
+        })
+      });
+      var syncData = await syncResp.json();
+      if (syncData.ok) {
+        if (syncData.checkins > checkins) checkins = syncData.checkins;
+        if (syncData.km > km) km = syncData.km;
+        if (syncData.carbon > carbon) carbon = syncData.carbon;
+        if (syncData.survey_done) surveyDone = true;
+        if (syncData.gps_track && syncData.gps_track.length > 0) {
+          localStorage.setItem('formosa_gps_track', JSON.stringify(syncData.gps_track));
+        }
+        // Update localStorage with server values
+        localStorage.setItem('formosa_checkins', checkins);
+        localStorage.setItem('formosa_km', km);
+      }
+    } catch(e) { /* server unavailable, use localStorage */ }
+  }
 
   if (!surveyDone && checkins === 0) {
     document.getElementById('noData').style.display = 'block';

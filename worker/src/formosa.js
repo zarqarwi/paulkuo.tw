@@ -542,3 +542,71 @@ async function multicastLineMessage(userIds, token, messages) {
     });
   }
 }
+
+// ── User Sync: LIFF login → upsert user + return server data ──
+export async function handleFormosaUserSync(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Method not allowed' }, 405, request);
+  }
+
+  try {
+    await migrateFormosa(env.AUTH_DB);
+    const data = await request.json();
+    const lineUserId = data.line_user_id;
+    if (!lineUserId) return jsonResponse({ error: 'line_user_id required' }, 400, request);
+
+    // Upsert user
+    await env.AUTH_DB.prepare(`
+      INSERT INTO formosa_users (line_user_id, display_name, picture_url, updated_at)
+      VALUES (?, ?, ?, datetime('now'))
+      ON CONFLICT(line_user_id) DO UPDATE SET
+        display_name = excluded.display_name,
+        picture_url = excluded.picture_url,
+        updated_at = datetime('now')
+    `).bind(lineUserId, data.display_name || '', data.picture_url || '').run();
+
+    // Get user's cumulative data from server
+    const gpsPoints = await env.AUTH_DB.prepare(
+      'SELECT lat, lng, timestamp as datetime, source FROM formosa_gps_points WHERE user_id = ? ORDER BY timestamp ASC'
+    ).bind(lineUserId).all();
+
+    const checkinCount = gpsPoints.results?.length || 0;
+
+    // Calculate total km from GPS points
+    let totalKm = 0;
+    const pts = gpsPoints.results || [];
+    for (let i = 1; i < pts.length; i++) {
+      totalKm += haversineKm(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
+    }
+
+    // Check if survey was done
+    const survey = await env.AUTH_DB.prepare(
+      'SELECT id, carbon_total_kg FROM formosa_surveys WHERE user_id = ? LIMIT 1'
+    ).bind(lineUserId).first();
+
+    return jsonResponse({
+      ok: true,
+      user_id: lineUserId,
+      checkins: checkinCount,
+      km: Math.round(totalKm * 100) / 100,
+      survey_done: !!survey,
+      carbon: survey?.carbon_total_kg || 0,
+      gps_track: pts.map(p => ({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source }))
+    }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+    Math.sin(dLng/2) * Math.sin(dLng/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
