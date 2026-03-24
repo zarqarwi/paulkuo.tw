@@ -12,6 +12,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <div class="my-dashboard">
   <nav class="my-breadcrumb">
@@ -90,21 +91,24 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
       <div class="my-share-toast" id="shareToast" style="display:none;">✅ 已複製</div>
     </div>
 
-    <!-- Hidden share card for html2canvas -->
+    <!-- Hidden share card for html2canvas (FB: 1200x630) -->
     <div id="shareCard" class="share-card" style="position:fixed;left:-9999px;top:0;">
       <div class="share-card-inner">
-        <div class="share-card-header">白沙屯媽祖 ESG 進香 2026</div>
-        <div class="share-card-rank" id="shareRankIcon">🔥</div>
-        <div class="share-card-title" id="shareRankName">煉氣香客</div>
-        <div class="share-card-stats">
-          <div class="share-stat"><span id="shareKm">0</span><small>公里</small></div>
-          <div class="share-stat"><span id="shareCheckins">0</span><small>打卡</small></div>
-          <div class="share-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
+        <div class="share-card-left">
+          <div class="share-card-header">白沙屯媽祖 ESG 進香 2026</div>
+          <div class="share-card-rank" id="shareRankIcon">🔥</div>
+          <div class="share-card-title" id="shareRankName">煉氣香客</div>
+          <div class="share-card-sub" id="shareRankSub">啟程入門者</div>
+          <div class="share-card-stats">
+            <div class="share-stat"><span id="shareKm">0</span><small>公里</small></div>
+            <div class="share-stat"><span id="shareCheckins">0</span><small>打卡</small></div>
+            <div class="share-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
+          </div>
         </div>
-        <canvas id="shareMapCanvas" width="900" height="400"></canvas>
-        <div class="share-card-footer">
-          <div>paulkuo.tw/projects/formosa-esg-2026/tracker/</div>
-          <div>掃碼加入 🙏</div>
+        <div class="share-card-right">
+          <div class="share-card-qr" id="shareQR"></div>
+          <div class="share-card-cta">掃碼加入進香</div>
+          <div class="share-card-url">paulkuo.tw</div>
         </div>
       </div>
     </div>
@@ -252,9 +256,20 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   // Share card data
   document.getElementById('shareRankIcon').textContent = rank.current.icon;
   document.getElementById('shareRankName').textContent = rank.current.name;
+  document.getElementById('shareRankSub').textContent = rank.current.sub;
   document.getElementById('shareKm').textContent = km.toFixed(1);
   document.getElementById('shareCheckins').textContent = checkins;
   document.getElementById('shareCarbon').textContent = carbon.toFixed(2);
+
+  // Generate QR code
+  try {
+    new QRCode(document.getElementById('shareQR'), {
+      text: 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/',
+      width: 92, height: 92,
+      colorDark: '#1a1a1a', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) { console.warn('QR generation failed:', e); }
 
   // Share functions
   function getShareText() {
@@ -269,7 +284,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     card.style.zIndex = '9999';
 
     html2canvas(card.querySelector('.share-card-inner'), {
-      scale: 2, useCORS: true, backgroundColor: '#1a1a1a', width: 540, height: 675
+      scale: 2, useCORS: true, backgroundColor: '#1a1a1a', width: 600, height: 315
     }).then(function(canvas) {
       card.style.left = '-9999px';
       canvas.toBlob(function(blob) {
@@ -446,28 +461,44 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     margin-top: 0.5rem;
   }
 
-  /* Share card (hidden, for html2canvas) */
+  /* Share card (hidden, for html2canvas) — FB 1200×630 */
   .share-card-inner {
-    width: 540px;
-    height: 675px;
-    background: linear-gradient(180deg, #1a1a1a 0%, #2d1f0e 100%);
+    width: 600px;
+    height: 315px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d1f0e 60%, #3d2510 100%);
     color: #fff;
-    padding: 2rem;
+    display: flex;
+    align-items: center;
+    font-family: -apple-system, sans-serif;
+    overflow: hidden;
+  }
+  .share-card-left {
+    flex: 1;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .share-card-right {
+    width: 160px;
+    padding: 2rem 1.5rem 2rem 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-family: -apple-system, sans-serif;
   }
-  .share-card-header { font-size: 0.9rem; color: #B45309; letter-spacing: 2px; margin-bottom: 1.5rem; }
-  .share-card-rank { font-size: 4rem; }
-  .share-card-title { font-size: 2rem; font-weight: 800; margin: 0.5rem 0 1.5rem; }
-  .share-card-stats { display: flex; gap: 2rem; margin-bottom: 1.5rem; }
+  .share-card-header { font-size: 0.7rem; color: #B45309; letter-spacing: 2px; margin-bottom: 1rem; text-transform: uppercase; }
+  .share-card-rank { font-size: 3rem; line-height: 1; }
+  .share-card-title { font-size: 1.8rem; font-weight: 800; margin: 0.3rem 0 0.2rem; }
+  .share-card-sub { font-size: 0.8rem; color: #B45309; margin-bottom: 1rem; }
+  .share-card-stats { display: flex; gap: 1.5rem; }
   .share-stat { text-align: center; }
-  .share-stat span { font-size: 1.8rem; font-weight: 800; display: block; }
-  .share-stat small { font-size: 0.75rem; color: #aaa; }
-  #shareMapCanvas { border-radius: 8px; background: #333; width: 450px; height: 200px; }
-  .share-card-footer { margin-top: 1.5rem; font-size: 0.7rem; color: #888; text-align: center; }
+  .share-stat span { font-size: 1.4rem; font-weight: 800; display: block; }
+  .share-stat small { font-size: 0.65rem; color: #aaa; }
+  .share-card-qr { width: 100px; height: 100px; background: #fff; border-radius: 8px; padding: 4px; }
+  .share-card-qr canvas, .share-card-qr img { width: 100% !important; height: 100% !important; }
+  .share-card-cta { font-size: 0.7rem; color: #B45309; margin-top: 0.5rem; font-weight: 600; }
+  .share-card-url { font-size: 0.55rem; color: #666; margin-top: 0.2rem; }
 
   @media (max-width: 480px) {
     .my-stats-grid { grid-template-columns: repeat(2, 1fr); }
