@@ -945,6 +945,86 @@ import AuthGate from '../_components/AuthGate.astro';
     }
   };
 
+  // ── Mini Photo Upload Handler (check-in mode) ──
+  var uploadedPhotos = []; // store for sharing
+
+  async function handlePhotos(files, resultsEl) {
+    if (!resultsEl) return;
+    var count = 0;
+    var gpsCount = 0;
+
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (!file.type.match(/^image\/jpe?g$/)) continue;
+
+      count++;
+
+      // Create thumbnail
+      var thumb = document.createElement('div');
+      thumb.className = 'photo-thumb';
+      var img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.alt = file.name;
+      thumb.appendChild(img);
+
+      // Store for sharing
+      uploadedPhotos.push({ file: file, url: img.src, name: file.name });
+
+      // Try extract GPS
+      try {
+        var buf = await readFileAsArrayBuffer(file);
+        var data = parseExifGPS(buf);
+        if (data && data.hasGPS) {
+          gpsCount++;
+          var label = document.createElement('span');
+          label.className = 'photo-gps-badge';
+          label.textContent = '📍';
+          thumb.appendChild(label);
+
+          // Add to track points and calculate distance
+          var last = getLastCheckinCoords();
+          if (last) {
+            var dist = haversine(last.lat, last.lng, data.lat, data.lng);
+            if (dist > 0.01) addKm(dist);
+          }
+          saveLastCheckinCoords(data.lat, data.lng);
+
+          gpsTrackPoints.push({
+            lat: data.lat, lng: data.lng,
+            altitude: data.altitude,
+            datetime: data.datetime,
+            source: 'photo',
+            filename: file.name
+          });
+        }
+      } catch (e) { /* no GPS */ }
+
+      resultsEl.appendChild(thumb);
+    }
+
+    // Show feedback
+    if (count > 0) {
+      var feedback = document.createElement('div');
+      feedback.className = 'photo-feedback';
+      feedback.textContent = '✅ 已上傳 ' + count + ' 張照片' + (gpsCount > 0 ? '（' + gpsCount + ' 張含 GPS）' : '');
+      resultsEl.appendChild(feedback);
+
+      // Update stats display
+      var km = getSavedKm();
+      var checkins = getSavedCheckins();
+      var t = getTitle(checkins, km);
+      var statsEl = document.getElementById('checkinStats');
+      if (statsEl) {
+        statsEl.innerHTML = '<div class="done-stats">' +
+          '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
+          '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
+          '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
+          '</div>';
+      }
+      updateCheckinProgress(t);
+    }
+  }
+
   // ── Returning User: Check-in Mode ──
   function enterCheckinMode() {
     showCard('checkin');
@@ -2003,6 +2083,43 @@ import AuthGate from '../_components/AuthGate.astro';
     transition: border-color 0.2s;
   }
   .upload-zone-mini:hover { border-color: var(--accent-faith); }
+
+  /* Photo thumbnails */
+  #photoResultsMini {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .photo-thumb {
+    position: relative;
+    width: 64px; height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .photo-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .photo-gps-badge {
+    position: absolute;
+    bottom: 2px; right: 2px;
+    font-size: 0.7rem;
+    background: rgba(0,0,0,0.5);
+    border-radius: 4px;
+    padding: 1px 3px;
+  }
+  .photo-feedback {
+    width: 100%;
+    text-align: center;
+    color: #059669;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(5, 150, 105, 0.08);
+    border-radius: 8px;
+  }
+
   .checkin-stats { margin: 1rem 0; }
 
   /* ── Responsive ── */
