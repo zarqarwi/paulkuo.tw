@@ -353,12 +353,12 @@ import AuthGate from '../_components/AuthGate.astro';
     <!-- 善行者獎勵卡 -->
     <div class="reward-card" id="rewardCard">
       <div class="reward-card-inner">
-        <div class="reward-badge">🙏</div>
-        <div class="reward-title">✦ 善行者 ✦</div>
+        <div class="reward-badge">🔥</div>
+        <div class="reward-title">✦ 煉氣香客 ✦</div>
         <div class="reward-subtitle">白沙屯媽祖 ESG 進香 2026</div>
         <div class="reward-stats" id="rewardStats"></div>
         <div class="reward-date" id="rewardDate"></div>
-        <div class="reward-next">📍 持續打卡，升級為 🚶 行腳人</div>
+        <div class="reward-next">📍 持續打卡，升級為 🧱 築基香客</div>
       </div>
     </div>
     <!-- Share buttons -->
@@ -387,7 +387,7 @@ import AuthGate from '../_components/AuthGate.astro';
   <!-- ═══════════════════════════════════════════ -->
   <div class="q-card" data-q="checkin" id="stepCheckin" style="text-align:center">
     <div class="checkin-mode">
-      <div class="checkin-badge" id="checkinBadge">🙏 善行者</div>
+      <div class="checkin-badge" id="checkinBadge">🔥 煉氣香客</div>
       <h2>歡迎回來！</h2>
       <p class="checkin-subtitle">問卷已完成。您可以繼續打卡記錄足跡。</p>
 
@@ -769,28 +769,61 @@ import AuthGate from '../_components/AuthGate.astro';
     };
   }
 
-  // ── Gamification: Titles ──
+  // ── Gamification: 9-Level Pilgrim Ranking ──
   var TITLES = [
-    { min: 0,  icon: '🙏', name: '善行者' },
-    { min: 10, icon: '🚶', name: '行腳人' },
-    { min: 30, icon: '🔥', name: '虔誠香客' },
-    { min: 50, icon: '✨', name: '圓滿行者' }
+    { km: 0,   checkins: 1,  icon: '🔥', name: '煉氣香客', sub: '啟程入門者' },
+    { km: 15,  checkins: 3,  icon: '🧱', name: '築基香客', sub: '開始上路者' },
+    { km: 45,  checkins: 5,  icon: '💛', name: '金丹香客', sub: '穩定行腳者' },
+    { km: 90,  checkins: 6,  icon: '👶', name: '元嬰香客', sub: '深度參與者' },
+    { km: 135, checkins: 8,  icon: '✨', name: '化神香客', sub: '高里程行者' },
+    { km: 180, checkins: 10, icon: '🌀', name: '煉虛香客', sub: '進階完成者' },
+    { km: 225, checkins: 12, icon: '🤝', name: '合體香客', sub: '高階完成者' },
+    { km: 270, checkins: 14, icon: '🏆', name: '大乘香客', sub: '榮譽進階者' },
+    { km: 300, checkins: 14, icon: '🚀', name: '飛升香客', sub: '圓滿認證者' }
   ];
 
-  function getTitle(checkins) {
+  function getTitle(checkins, km) {
+    if (typeof km === 'undefined') km = getSavedKm();
     var title = TITLES[0];
     for (var i = TITLES.length - 1; i >= 0; i--) {
-      if (checkins >= TITLES[i].min) { title = TITLES[i]; break; }
+      if (km >= TITLES[i].km && checkins >= TITLES[i].checkins) {
+        title = TITLES[i];
+        break;
+      }
     }
+    // Find next achievable level
     var next = null;
     for (var j = 0; j < TITLES.length; j++) {
-      if (TITLES[j].min > checkins) { next = TITLES[j]; break; }
+      if (km < TITLES[j].km || checkins < TITLES[j].checkins) {
+        next = TITLES[j];
+        break;
+      }
     }
-    return { current: title, next: next, checkins: checkins };
+    return { current: title, next: next, checkins: checkins, km: km };
   }
 
   function getSavedCheckins() {
     return parseInt(localStorage.getItem('formosa_checkins') || '0');
+  }
+
+  function getSavedKm() {
+    return parseFloat(localStorage.getItem('formosa_km') || '0');
+  }
+
+  function getLastCheckinCoords() {
+    var raw = localStorage.getItem('formosa_last_coords');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch(e) { return null; }
+  }
+
+  function saveLastCheckinCoords(lat, lng) {
+    localStorage.setItem('formosa_last_coords', JSON.stringify({ lat: lat, lng: lng }));
+  }
+
+  function addKm(dist) {
+    var total = getSavedKm() + dist;
+    localStorage.setItem('formosa_km', total.toFixed(2));
+    return total;
   }
 
   function incrementCheckins() {
@@ -805,8 +838,9 @@ import AuthGate from '../_components/AuthGate.astro';
 
   function getShareText() {
     var checkins = getSavedCheckins();
-    var t = getTitle(checkins);
-    return '我參加了 2026 白沙屯媽祖 ESG 進香，獲得' + t.current.icon + t.current.name + '稱號！一起來記錄你的進香足跡 🙏';
+    var km = getSavedKm();
+    var t = getTitle(checkins, km);
+    return '我參加了 2026 白沙屯媽祖 ESG 進香，已走 ' + km.toFixed(1) + ' 公里，獲得' + t.current.icon + '「' + t.current.name + '」稱號！一起來記錄你的進香足跡 🙏';
   }
 
   window.shareNative = function() {
@@ -900,6 +934,15 @@ import AuthGate from '../_components/AuthGate.astro';
       '善行參與：' + deeds + ' 項　｜　碳足跡：' + co2 + ' kg CO₂e';
     document.getElementById('rewardDate').textContent =
       '加入時間：' + new Date().toLocaleDateString('zh-TW');
+
+    // Update reward card with current title
+    var initT = getTitle(1, 0); // first checkin, 0 km
+    document.querySelector('.reward-badge').textContent = initT.current.icon;
+    document.querySelector('.reward-title').textContent = '✦ ' + initT.current.name + ' ✦';
+    var nextEl = document.querySelector('.reward-next');
+    if (nextEl && initT.next) {
+      nextEl.textContent = '📍 持續打卡，升級為 ' + initT.next.icon + ' ' + initT.next.name;
+    }
   };
 
   // ── Returning User: Check-in Mode ──
@@ -907,23 +950,19 @@ import AuthGate from '../_components/AuthGate.astro';
     showCard('checkin');
 
     var checkins = getSavedCheckins();
-    var t = getTitle(checkins);
+    var km = getSavedKm();
+    var t = getTitle(checkins, km);
 
     document.getElementById('checkinBadge').textContent = t.current.icon + ' ' + t.current.name;
 
     var statsHtml = '<div class="done-stats">' +
       '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
+      '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
       '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
       '</div>';
     document.getElementById('checkinStats').innerHTML = statsHtml;
 
-    if (t.next) {
-      document.getElementById('checkinProgress').innerHTML =
-        '<p style="color:#b45309;margin-top:1.5rem;">再打卡 ' + (t.next.min - checkins) + ' 次升級為 ' + t.next.icon + ' ' + t.next.name + '</p>';
-    } else {
-      document.getElementById('checkinProgress').innerHTML =
-        '<p style="color:#059669;margin-top:1.5rem;">🎉 已達最高等級！</p>';
-    }
+    updateCheckinProgress(t);
 
     var zoneMini = document.getElementById('uploadZoneMini');
     var inputMini = document.getElementById('photoInputMini');
@@ -935,30 +974,81 @@ import AuthGate from '../_components/AuthGate.astro';
     }
   }
 
-  // Override manualCheckin to update check-in stats
-  var _origCheckin = window.manualCheckin;
+  // Override manualCheckin to calculate distance and update stats
   window.manualCheckin = function() {
-    _origCheckin();
-    setTimeout(function() {
-      var n = incrementCheckins();
-      var t = getTitle(n);
-      var badgeEl = document.getElementById('checkinBadge');
-      if (badgeEl) badgeEl.textContent = t.current.icon + ' ' + t.current.name;
-      var statsEl = document.getElementById('checkinStats');
-      if (statsEl) {
-        statsEl.innerHTML = '<div class="done-stats">' +
-          '<div class="done-stat"><strong>' + n + '</strong><span>打卡次數</span></div>' +
-          '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
-          '</div>';
-      }
-      var progEl = document.getElementById('checkinProgress');
-      if (progEl && t.next) {
-        progEl.innerHTML = '<p style="color:#b45309;margin-top:1.5rem;">再打卡 ' + (t.next.min - n) + ' 次升級為 ' + t.next.icon + ' ' + t.next.name + '</p>';
-      } else if (progEl) {
-        progEl.innerHTML = '<p style="color:#059669;margin-top:1.5rem;">🎉 已達最高等級！</p>';
-      }
-    }, 1500);
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        var lat = pos.coords.latitude;
+        var lng = pos.coords.longitude;
+
+        // Calculate distance from last check-in
+        var last = getLastCheckinCoords();
+        if (last) {
+          var dist = haversine(last.lat, last.lng, lat, lng);
+          if (dist > 0.01) { // ignore < 10m (noise)
+            addKm(dist);
+          }
+        }
+        saveLastCheckinCoords(lat, lng);
+
+        // Push to GPS track
+        gpsTrackPoints.push({
+          lat: lat, lng: lng,
+          altitude: pos.coords.altitude,
+          accuracy: pos.coords.accuracy,
+          datetime: new Date().toISOString(),
+          source: 'manual',
+          filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
+        });
+        var countEl = document.getElementById('gpsCount');
+        if (countEl) countEl.textContent = gpsTrackPoints.length + ' 個定位點';
+
+        // Button feedback
+        var btn = document.getElementById('gpsCheckinBtn');
+        if (btn) {
+          btn.textContent = '✓ 已打卡';
+          btn.disabled = true;
+          setTimeout(function() { btn.textContent = '打卡 📍'; btn.disabled = false; }, 1500);
+        }
+
+        // Update stats
+        var n = incrementCheckins();
+        var km = getSavedKm();
+        var t = getTitle(n, km);
+
+        var badgeEl = document.getElementById('checkinBadge');
+        if (badgeEl) badgeEl.textContent = t.current.icon + ' ' + t.current.name;
+
+        var statsEl = document.getElementById('checkinStats');
+        if (statsEl) {
+          statsEl.innerHTML = '<div class="done-stats">' +
+            '<div class="done-stat"><strong>' + n + '</strong><span>打卡次數</span></div>' +
+            '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
+            '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
+            '</div>';
+        }
+
+        updateCheckinProgress(t);
+      },
+      function() { alert('無法取得定位，請確認已開啟定位權限。'); },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   };
+
+  function updateCheckinProgress(t) {
+    var progEl = document.getElementById('checkinProgress');
+    if (!progEl) return;
+    if (t.next) {
+      var needKm = Math.max(0, t.next.km - t.km);
+      var needCheckins = Math.max(0, t.next.checkins - t.checkins);
+      var parts = [];
+      if (needKm > 0) parts.push('走 ' + needKm.toFixed(1) + ' 公里');
+      if (needCheckins > 0) parts.push('打卡 ' + needCheckins + ' 次');
+      progEl.innerHTML = '<p style="color:#b45309;margin-top:1.5rem;">再' + parts.join('、') + '升級為 ' + t.next.icon + ' ' + t.next.name + '</p>';
+    } else {
+      progEl.innerHTML = '<p style="color:#059669;margin-top:1.5rem;">🚀 恭喜飛升！已達最高等級！</p>';
+    }
+  }
 
   // ── Page Init ──
   if (localStorage.getItem('formosa_survey_done') === 'true') {
