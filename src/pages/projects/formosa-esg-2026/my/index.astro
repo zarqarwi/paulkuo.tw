@@ -111,25 +111,25 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
           <div id="shareMapContainer" style="width:560px;height:220px;border-radius:8px;overflow:hidden;"></div>
           <img id="shareMapImg" style="width:560px;height:220px;border-radius:8px;display:none;" />
         </div>
-        <!-- Bottom: Stats + QR -->
+        <!-- Bottom: Stats left + QR right -->
         <div class="sc-bottom">
-          <div class="sc-stats">
-            <div class="sc-stat"><span id="shareKm">0</span><small>公里</small></div>
-            <div class="sc-divider"></div>
-            <div class="sc-stat"><span id="shareCheckins">0</span><small>打卡</small></div>
-            <div class="sc-divider"></div>
-            <div class="sc-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
-          </div>
-          <div class="sc-carbon" id="shareCarbonCompare">
-            <span>🚗 少開車 0 km</span>
-            <span>🌳 0 棵樹年吸收量</span>
-          </div>
-          <div class="sc-footer">
-            <div class="sc-qr" id="shareQR"></div>
-            <div class="sc-footer-text">
-              <div class="sc-cta">掃碼加入進香 🙏</div>
-              <div class="sc-url">paulkuo.tw</div>
+          <div class="sc-bottom-left">
+            <div class="sc-stats">
+              <div class="sc-stat"><span id="shareKm">0</span><small>公里</small></div>
+              <div class="sc-divider"></div>
+              <div class="sc-stat"><span id="shareCheckins">0</span><small>打卡</small></div>
+              <div class="sc-divider"></div>
+              <div class="sc-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
             </div>
+            <div class="sc-carbon" id="shareCarbonCompare">
+              <span>🚗 少開車 0 km</span>
+              <span>🌳 0 棵樹年吸收量</span>
+            </div>
+          </div>
+          <div class="sc-bottom-right">
+            <div class="sc-qr" id="shareQR"></div>
+            <div class="sc-cta">掃碼加入</div>
+            <div class="sc-url">paulkuo.tw</div>
           </div>
         </div>
       </div>
@@ -625,11 +625,14 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   .map-label { background: none !important; border: none !important; box-shadow: none !important; font-weight: bold; font-size: 11px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
   .sc-bottom {
     padding: 0.8rem 1.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
+  .sc-bottom-left { flex: 1; }
   .sc-stats {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 1.2rem;
   }
   .sc-stat { text-align: center; }
@@ -638,24 +641,18 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   .sc-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.15); }
   .sc-carbon {
     display: flex;
-    justify-content: center;
     gap: 1rem;
     margin-top: 0.4rem;
   }
   .sc-carbon span { font-size: 0.6rem; color: #8fbc8f; }
-  .sc-footer {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-top: 0.6rem;
-    padding-top: 0.6rem;
-    border-top: 1px solid rgba(255,255,255,0.08);
+  .sc-bottom-right {
+    flex-shrink: 0;
+    text-align: center;
   }
-  .sc-qr { width: 52px; height: 52px; background: #fff; border-radius: 6px; padding: 3px; flex-shrink: 0; }
+  .sc-qr { width: 56px; height: 56px; background: #fff; border-radius: 6px; padding: 3px; }
   .sc-qr canvas, .sc-qr img { width: 100% !important; height: 100% !important; }
-  .sc-footer-text { flex: 1; }
-  .sc-cta { font-size: 0.7rem; color: #B45309; font-weight: 600; }
-  .sc-url { font-size: 0.55rem; color: #666; margin-top: 0.1rem; }
+  .sc-cta { font-size: 0.55rem; color: #B45309; font-weight: 600; margin-top: 0.3rem; }
+  .sc-url { font-size: 0.5rem; color: #666; margin-top: 0.1rem; }
 
   @media (max-width: 480px) {
     .my-stats-grid { grid-template-columns: repeat(2, 1fr); }
