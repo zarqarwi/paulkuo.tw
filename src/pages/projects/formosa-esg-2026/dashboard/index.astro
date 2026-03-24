@@ -47,11 +47,18 @@ import AuthGate from '../_components/AuthGate.astro';
     <div class="dash-section-header">
       <h2>📍 即時路徑圖</h2>
       <div class="map-toggles">
-        <button class="map-toggle active" id="toggleMarkers" onclick="setMapMode('markers')">標記</button>
-        <button class="map-toggle" id="toggleHeat" onclick="setMapMode('heat')">熱力圖</button>
+        <button class="map-toggle active" id="toggleHeat" onclick="setMapMode('heat')">熱力圖</button>
+        <button class="map-toggle" id="toggleMarkers" onclick="setMapMode('markers')">標記</button>
+        <button class="map-toggle" id="toggleCluster" onclick="setMapMode('cluster')">聚類</button>
       </div>
     </div>
     <div id="adminMap" class="admin-map"></div>
+    <div class="map-info-bar">
+      <div class="map-info-item" id="mapFront">🟢 前鋒：--</div>
+      <div class="map-info-item" id="mapTail">🔴 尾巴：--</div>
+      <div class="map-info-item" id="mapSpread">📏 展開：--</div>
+      <div class="map-info-item" id="mapLost">⚠️ 失聯：--</div>
+    </div>
   </section>
 
   <!-- Two columns: Carbon + Rank -->
@@ -156,19 +163,80 @@ import AuthGate from '../_components/AuthGate.astro';
     document.getElementById('kpiSaved').textContent = (carbon.carbon_saved_kg || 0);
   }
 
-  // ── Live Map ──
+  // ── Live Map: Heatmap + Cluster + Front/Tail ──
+  var clusterLayer = null;
+  var frontTailLayer = null;
+
   function renderMap(points) {
     if (!map) {
-      map = L.map('adminMap').setView([24.0, 120.5], 9);
+      map = L.map('adminMap').setView([24.3, 120.5], 9);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OSM', maxZoom: 19
       }).addTo(map);
     }
 
+    window._mapPoints = points;
+    if (!points || points.length === 0) return;
+
+    // Get latest point per user (their current position)
+    var userLatest = {};
+    points.forEach(function(p) {
+      var uid = p.user_id || 'unknown';
+      if (!userLatest[uid] || p.timestamp > userLatest[uid].timestamp) {
+        userLatest[uid] = p;
+      }
+    });
+    var currentPositions = Object.values(userLatest);
+
+    // Haversine for distance
+    function hav(lat1, lng1, lat2, lng2) {
+      var R = 6371;
+      var dLat = (lat2 - lat1) * Math.PI / 180;
+      var dLng = (lng2 - lng1) * Math.PI / 180;
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // Baishatun reference point for "progress" calculation
+    var BAISHATUN = { lat: 24.5965, lng: 120.656 };
+    currentPositions.forEach(function(p) {
+      p._distFromStart = hav(BAISHATUN.lat, BAISHATUN.lng, p.lat, p.lng);
+    });
+    currentPositions.sort(function(a, b) { return b._distFromStart - a._distFromStart; });
+
+    var front = currentPositions[0];
+    var tail = currentPositions[currentPositions.length - 1];
+    var spread = front && tail ? hav(front.lat, front.lng, tail.lat, tail.lng) : 0;
+
+    // Lost signal: no update > 30 min
+    var now = Date.now();
+    var lostCount = currentPositions.filter(function(p) {
+      return p.timestamp && (now - new Date(p.timestamp).getTime()) > 30 * 60 * 1000;
+    }).length;
+
+    // Update info bar
+    document.getElementById('mapFront').textContent = '🟢 前鋒：' + (front ? front._distFromStart.toFixed(1) + ' km' : '--');
+    document.getElementById('mapTail').textContent = '🔴 尾巴：' + (tail ? tail._distFromStart.toFixed(1) + ' km' : '--');
+    document.getElementById('mapSpread').textContent = '📏 展開：' + spread.toFixed(1) + ' km';
+    document.getElementById('mapLost').textContent = '⚠️ 失聯：' + lostCount + ' 人';
+
+    // Build all layers
+    buildMarkerLayer(points);
+    buildHeatLayer(currentPositions);
+    buildClusterLayer(currentPositions);
+    buildFrontTailLayer(front, tail);
+
+    // Show default mode
+    setMapMode(mapMode);
+
+    var bounds = currentPositions.map(function(p) { return [p.lat, p.lng]; });
+    if (bounds.length > 0) map.fitBounds(bounds, { padding: [30, 30] });
+  }
+
+  function buildMarkerLayer(points) {
     if (markerLayer) map.removeLayer(markerLayer);
     markerLayer = L.layerGroup();
 
-    // Group by user
     var userGroups = {};
     points.forEach(function(p) {
       var uid = p.user_id || 'unknown';
@@ -176,30 +244,98 @@ import AuthGate from '../_components/AuthGate.astro';
       userGroups[uid].push(p);
     });
 
-    var bounds = [];
     Object.keys(userGroups).forEach(function(uid) {
       var pts = userGroups[uid];
       var hue = simpleHash(uid) % 360;
       var color = 'hsl(' + hue + ', 70%, 50%)';
-
       pts.forEach(function(p) {
         L.circleMarker([p.lat, p.lng], {
-          radius: 5, color: color, fillColor: color, fillOpacity: 0.8, weight: 1
+          radius: 4, color: color, fillColor: color, fillOpacity: 0.7, weight: 1
         }).bindPopup(uid.substring(0, 8) + '<br>' + (p.timestamp || '')).addTo(markerLayer);
-        bounds.push([p.lat, p.lng]);
       });
+    });
+  }
 
-      if (pts.length > 1) {
-        var latlngs = pts.map(function(p) { return [p.lat, p.lng]; });
-        L.polyline(latlngs, { color: color, weight: 2, opacity: 0.5 }).addTo(markerLayer);
-      }
+  function buildHeatLayer(positions) {
+    if (heatLayer) map.removeLayer(heatLayer);
+    heatLayer = L.layerGroup();
+
+    // Multi-layer circles for heat effect
+    positions.forEach(function(p) {
+      // Outer glow
+      L.circleMarker([p.lat, p.lng], {
+        radius: 25, color: 'transparent', fillColor: '#FF4500', fillOpacity: 0.08, weight: 0
+      }).addTo(heatLayer);
+      // Mid
+      L.circleMarker([p.lat, p.lng], {
+        radius: 15, color: 'transparent', fillColor: '#FF6B00', fillOpacity: 0.12, weight: 0
+      }).addTo(heatLayer);
+      // Core
+      L.circleMarker([p.lat, p.lng], {
+        radius: 6, color: 'transparent', fillColor: '#FFD700', fillOpacity: 0.25, weight: 0
+      }).addTo(heatLayer);
+    });
+  }
+
+  function buildClusterLayer(positions) {
+    if (clusterLayer) map.removeLayer(clusterLayer);
+    clusterLayer = L.layerGroup();
+
+    // Grid-based clustering
+    var gridSize = 0.02; // ~2km cells
+    var cells = {};
+    positions.forEach(function(p) {
+      var key = Math.round(p.lat / gridSize) + ',' + Math.round(p.lng / gridSize);
+      if (!cells[key]) cells[key] = { lat: 0, lng: 0, count: 0 };
+      cells[key].lat += p.lat;
+      cells[key].lng += p.lng;
+      cells[key].count++;
     });
 
-    if (mapMode === 'markers') markerLayer.addTo(map);
-    if (bounds.length > 0) map.fitBounds(bounds, { padding: [30, 30] });
+    Object.values(cells).forEach(function(c) {
+      var lat = c.lat / c.count;
+      var lng = c.lng / c.count;
+      var r = Math.min(35, 10 + Math.sqrt(c.count) * 3);
+      var opacity = Math.min(0.8, 0.3 + c.count / 100);
 
-    // Store for heatmap toggle
-    window._mapPoints = points;
+      // Bubble
+      L.circleMarker([lat, lng], {
+        radius: r, color: '#f59e0b', fillColor: '#f59e0b', fillOpacity: opacity, weight: 2
+      }).bindPopup('此區域 ' + c.count + ' 人').addTo(clusterLayer);
+
+      // Label
+      if (c.count >= 2) {
+        var icon = L.divIcon({
+          className: 'cluster-label',
+          html: '<span>' + c.count + '</span>',
+          iconSize: [40, 20],
+          iconAnchor: [20, 10]
+        });
+        L.marker([lat, lng], { icon: icon }).addTo(clusterLayer);
+      }
+    });
+  }
+
+  function buildFrontTailLayer(front, tail) {
+    if (frontTailLayer) map.removeLayer(frontTailLayer);
+    frontTailLayer = L.layerGroup();
+
+    if (front) {
+      L.circleMarker([front.lat, front.lng], {
+        radius: 10, color: '#fff', fillColor: '#10b981', fillOpacity: 1, weight: 3
+      }).bindPopup('🟢 前鋒<br>' + front._distFromStart.toFixed(1) + ' km').addTo(frontTailLayer);
+      L.marker([front.lat, front.lng], {
+        icon: L.divIcon({ className: 'front-tail-label', html: '前鋒', iconSize: [40, 16], iconAnchor: [20, -8] })
+      }).addTo(frontTailLayer);
+    }
+    if (tail) {
+      L.circleMarker([tail.lat, tail.lng], {
+        radius: 10, color: '#fff', fillColor: '#ef4444', fillOpacity: 1, weight: 3
+      }).bindPopup('🔴 尾巴<br>' + tail._distFromStart.toFixed(1) + ' km').addTo(frontTailLayer);
+      L.marker([tail.lat, tail.lng], {
+        icon: L.divIcon({ className: 'front-tail-label', html: '尾巴', iconSize: [40, 16], iconAnchor: [20, -8] })
+      }).addTo(frontTailLayer);
+    }
   }
 
   function simpleHash(str) {
@@ -215,22 +351,19 @@ import AuthGate from '../_components/AuthGate.astro';
     mapMode = mode;
     document.getElementById('toggleMarkers').className = 'map-toggle' + (mode === 'markers' ? ' active' : '');
     document.getElementById('toggleHeat').className = 'map-toggle' + (mode === 'heat' ? ' active' : '');
+    document.getElementById('toggleCluster').className = 'map-toggle' + (mode === 'cluster' ? ' active' : '');
 
-    if (mode === 'markers') {
-      if (heatLayer) map.removeLayer(heatLayer);
-      if (markerLayer) markerLayer.addTo(map);
-    } else {
-      if (markerLayer) map.removeLayer(markerLayer);
-      // Simple CSS-based heat effect using overlapping circles
-      if (heatLayer) map.removeLayer(heatLayer);
-      heatLayer = L.layerGroup();
-      (window._mapPoints || []).forEach(function(p) {
-        L.circleMarker([p.lat, p.lng], {
-          radius: 15, color: 'transparent', fillColor: '#FF4500', fillOpacity: 0.15, weight: 0
-        }).addTo(heatLayer);
-      });
-      heatLayer.addTo(map);
-    }
+    // Remove all layers
+    if (markerLayer) map.removeLayer(markerLayer);
+    if (heatLayer) map.removeLayer(heatLayer);
+    if (clusterLayer) map.removeLayer(clusterLayer);
+    if (frontTailLayer) map.removeLayer(frontTailLayer);
+
+    // Add selected + front/tail always on
+    if (mode === 'markers' && markerLayer) markerLayer.addTo(map);
+    if (mode === 'heat' && heatLayer) heatLayer.addTo(map);
+    if (mode === 'cluster' && clusterLayer) clusterLayer.addTo(map);
+    if (frontTailLayer) frontTailLayer.addTo(map);
   };
 
   // ── Carbon Panel ──
@@ -523,6 +656,25 @@ import AuthGate from '../_components/AuthGate.astro';
 
   /* Map */
   .admin-map { height: 450px; border-radius: 12px; overflow: hidden; }
+  .map-info-bar {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    padding: 0.75rem 1rem; margin-top: 0.5rem;
+    background: #FAF6F1; border-radius: 10px;
+    font-size: 0.8rem; color: #555;
+  }
+  .map-info-item { white-space: nowrap; }
+  .cluster-label {
+    background: none !important; border: none !important; box-shadow: none !important;
+  }
+  .cluster-label span {
+    font-size: 11px; font-weight: 800; color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+  .front-tail-label {
+    background: none !important; border: none !important; box-shadow: none !important;
+    font-size: 10px; font-weight: 700; color: #333;
+    text-align: center; text-shadow: 0 0 3px #fff, 0 0 3px #fff;
+  }
   .map-toggles { display: flex; gap: 0.25rem; }
   .map-toggle {
     padding: 0.3rem 0.75rem;
