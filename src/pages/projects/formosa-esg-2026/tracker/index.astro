@@ -38,260 +38,268 @@ import AuthGate from '../_components/AuthGate.astro';
     </div>
   </div>
 
-  <!-- Progress Bar -->
-  <div class="progress-bar" id="progressBar">
-    <div class="progress-step active" data-step="1">
-      <div class="step-num">1</div>
-      <div class="step-label">善行體悟</div>
+  <!-- ═══ Linear Progress Bar ═══ -->
+  <div class="q-progress" id="qProgress">
+    <div class="q-progress-bar">
+      <div class="q-progress-fill" id="qProgressFill"></div>
     </div>
-    <div class="progress-line"><div class="progress-line-fill"></div></div>
-    <div class="progress-step" data-step="2">
-      <div class="step-num">2</div>
-      <div class="step-label">活動後的改變</div>
+    <div class="q-progress-text" id="qProgressText">第 1 / 13 題</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ONE QUESTION PER CARD                      -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- Q1 -->
+  <div class="q-card active" data-q="1" data-section="善行體悟">
+    <div class="q-section-tag">第一部份：善行、行善</div>
+    <label class="form-label">Q1. 您於此次進香期間，有參與以下哪些善行活動？<span class="form-hint">（可複選，選完請按下一題）</span></label>
+    <div class="checkbox-group" data-name="q1" data-required="true">
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="環球境地志工，協助整理沿路環境設施"><span>環球境地志工，協助整理沿路環境設施</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="提供飲水/補給品給香客"><span>提供飲水/補給品給香客</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="參與環境清潔或垃圾分類"><span>參與環境清潔或垃圾分類</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助老人、小孩、安全引導"><span>協助老人、小孩、安全引導</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="默禱/祈福"><span>默禱/祈福</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助他人搬運物資"><span>協助他人搬運物資</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助環球境地夥伴-參與奉獻佈施"><span>協助環球境地夥伴 - 參與奉獻佈施</span></label>
+      <label class="checkbox-item other-item">
+        <input type="checkbox" name="q1" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+      </label>
     </div>
-    <div class="progress-line"><div class="progress-line-fill"></div></div>
-    <div class="progress-step" data-step="3">
-      <div class="step-num">3</div>
-      <div class="step-label">交通與環境</div>
-    </div>
-    <div class="progress-line"><div class="progress-line-fill"></div></div>
-    <div class="progress-step" data-step="4">
-      <div class="step-num">4</div>
-      <div class="step-label">照片上傳</div>
+    <div class="q-nav">
+      <div></div>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
     </div>
   </div>
 
-  <!-- ==================== STEP 1: 善行體悟 ==================== -->
-  <section class="step-panel active" id="step1">
-    <h2 class="step-title">第一部份：善行、行善</h2>
-
-    <!-- Q1 -->
-    <div class="form-group">
-      <label class="form-label">Q1. 您於此次進香期間，有參與以下哪些善行活動？<span class="form-hint">（可複選）</span></label>
-      <div class="checkbox-group" data-name="q1">
-        <label class="checkbox-item"><input type="checkbox" name="q1" value="環球境地志工，協助整理沿路環境設施"><span>環球境地志工，協助整理沿路環境設施</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q1" value="提供飲水/補給品給香客"><span>提供飲水/補給品給香客</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q1" value="參與環境清潔或垃圾分類"><span>參與環境清潔或垃圾分類</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q1" value="協助老人、小孩、安全引導"><span>協助老人、小孩、安全引導</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q1" value="默禱/祈福"><span>默禱/祈福</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q1" value="協助他人搬運物資"><span>協助他人搬運物資</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q1" value="協助環球境地夥伴-參與奉獻佈施"><span>協助環球境地夥伴 - 參與奉獻佈施</span></label>
-        <label class="checkbox-item other-item">
-          <input type="checkbox" name="q1" value="__other__"><span>其他</span>
-          <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
-        </label>
-      </div>
+  <!-- Q2 -->
+  <div class="q-card" data-q="2">
+    <label class="form-label">Q2. 您於此次進香期間，被感動的事情？<span class="form-hint">（可複選，選完請按下一題）</span></label>
+    <div class="checkbox-group" data-name="q2" data-required="true">
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到或感受到媽祖的神跡"><span>看到或感受到媽祖的神跡</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到彼此扶助的行為"><span>看到彼此扶助的行為</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我約束的自律行為"><span>看到自我約束的自律行為</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我改變、改善或悔改的行為"><span>看到自我改變、改善或悔改的行為</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="善心開導、包容關愛"><span>善心開導、包容關愛</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="自備餐具容器、自覺減少垃圾"><span>自備餐具容器、自覺減少垃圾</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="協助清理垃圾、撿拾廢棄物"><span>協助清理垃圾、撿拾廢棄物</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="協助減少污染、自覺減少環境影響"><span>協助減少污染、自覺減少環境影響</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="自願共乘、互相協助解決交通問題"><span>自願共乘、互相協助解決交通問題</span></label>
+      <label class="checkbox-item other-item">
+        <input type="checkbox" name="q2" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+      </label>
     </div>
-
-    <!-- Q2 -->
-    <div class="form-group">
-      <label class="form-label">Q2. 您於此次進香期間，被感動的事情？<span class="form-hint">（可複選）</span></label>
-      <div class="checkbox-group" data-name="q2">
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="看到或感受到媽祖的神跡"><span>看到或感受到媽祖的神跡</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="看到彼此扶助的行為"><span>看到彼此扶助的行為</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我約束的自律行為"><span>看到自我約束的自律行為</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我改變、改善或悔改的行為"><span>看到自我改變、改善或悔改的行為</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="善心開導、包容關愛"><span>善心開導、包容關愛</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="自備餐具容器、自覺減少垃圾"><span>自備餐具容器、自覺減少垃圾</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="協助清理垃圾、撿拾廢棄物"><span>協助清理垃圾、撿拾廢棄物</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="協助減少污染、自覺減少環境影響"><span>協助減少污染、自覺減少環境影響</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q2" value="自願共乘、互相協助解決交通問題"><span>自願共乘、互相協助解決交通問題</span></label>
-        <label class="checkbox-item other-item">
-          <input type="checkbox" name="q2" value="__other__"><span>其他</span>
-          <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
-        </label>
-      </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
     </div>
+  </div>
 
-    <!-- Q2-1 -->
-    <div class="form-group">
-      <label class="form-label">Q2-1. 請分享您被感動幾次及最讓您感動的一次「善的經驗」？<span class="form-hint">（選填）</span></label>
-      <textarea class="form-textarea" id="q2_1" rows="4" placeholder="在這裡分享您的故事..."></textarea>
+  <!-- Q2-1 -->
+  <div class="q-card" data-q="3">
+    <label class="form-label">Q2-1. 請分享您被感動幾次及最讓您感動的一次「善的經驗」？<span class="form-hint">（選填，可跳過）</span></label>
+    <textarea class="form-textarea" id="q2_1" rows="5" placeholder="在這裡分享您的故事..."></textarea>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
     </div>
+  </div>
 
-    <!-- Q3 -->
-    <div class="form-group">
-      <label class="form-label">Q3. 此次活動是否讓您更深刻體會到「行善」的價值？</label>
-      <div class="radio-group" data-name="q3">
-        <label class="radio-item"><input type="radio" name="q3" value="非常同意"><span>非常同意</span></label>
-        <label class="radio-item"><input type="radio" name="q3" value="同意"><span>同意</span></label>
-        <label class="radio-item"><input type="radio" name="q3" value="普通"><span>普通</span></label>
-        <label class="radio-item"><input type="radio" name="q3" value="不同意"><span>不同意</span></label>
-        <label class="radio-item"><input type="radio" name="q3" value="非常不同意"><span>非常不同意</span></label>
-      </div>
+  <!-- Q3 -->
+  <div class="q-card" data-q="4">
+    <label class="form-label">Q3. 此次活動是否讓您更深刻體會到「行善」的價值？</label>
+    <div class="radio-group" data-name="q3" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q3" value="非常同意"><span>非常同意</span></label>
+      <label class="radio-item"><input type="radio" name="q3" value="同意"><span>同意</span></label>
+      <label class="radio-item"><input type="radio" name="q3" value="普通"><span>普通</span></label>
+      <label class="radio-item"><input type="radio" name="q3" value="不同意"><span>不同意</span></label>
+      <label class="radio-item"><input type="radio" name="q3" value="非常不同意"><span>非常不同意</span></label>
     </div>
-
-    <div class="step-nav">
-      <div></div>
-      <button class="btn btn-next" onclick="goToStep(2)">下一步 →</button>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
     </div>
-  </section>
+  </div>
 
-  <!-- ==================== STEP 2: 活動後的改變 ==================== -->
-  <section class="step-panel" id="step2">
-    <h2 class="step-title">第二部份：活動後的改變</h2>
-
-    <!-- Q4 -->
-    <div class="form-group">
-      <label class="form-label">Q4. 進香結束後，您是否有意願在日常生活中延續「行善」的心？</label>
-      <div class="radio-group" data-name="q4">
-        <label class="radio-item"><input type="radio" name="q4" value="有，會更積極參與"><span>有，會更積極參與</span></label>
-        <label class="radio-item"><input type="radio" name="q4" value="可能會有影響"><span>可能會有影響</span></label>
-        <label class="radio-item"><input type="radio" name="q4" value="不確定"><span>不確定</span></label>
-        <label class="radio-item"><input type="radio" name="q4" value="沒有特別改變"><span>沒有特別改變</span></label>
-      </div>
+  <!-- Q4 -->
+  <div class="q-card" data-q="5" data-section="活動後的改變">
+    <div class="q-section-tag">第二部份：活動後的改變</div>
+    <label class="form-label">Q4. 進香結束後，您是否有意願在日常生活中延續「行善」的心？</label>
+    <div class="radio-group" data-name="q4" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q4" value="有，會更積極參與"><span>有，會更積極參與</span></label>
+      <label class="radio-item"><input type="radio" name="q4" value="可能會有影響"><span>可能會有影響</span></label>
+      <label class="radio-item"><input type="radio" name="q4" value="不確定"><span>不確定</span></label>
+      <label class="radio-item"><input type="radio" name="q4" value="沒有特別改變"><span>沒有特別改變</span></label>
     </div>
-
-    <!-- Q5 -->
-    <div class="form-group">
-      <label class="form-label">Q5. 您計畫在未來做哪些善的行動？<span class="form-hint">（可複選）</span></label>
-      <div class="checkbox-group" data-name="q5">
-        <label class="checkbox-item"><input type="checkbox" name="q5" value="志工服務"><span>志工服務</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q5" value="捐款或物資支持公益團體"><span>捐款或物資支持公益團體</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q5" value="鼓勵親友參與善行"><span>鼓勵親友參與善行</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q5" value="在公司/組織內推動CSR或ESG相關善行"><span>在公司/組織內推動 CSR 或 ESG 相關善行</span></label>
-        <label class="checkbox-item"><input type="checkbox" name="q5" value="日常生活中更多關懷他人"><span>日常生活中更多關懷他人</span></label>
-        <label class="checkbox-item other-item">
-          <input type="checkbox" name="q5" value="__other__"><span>其他</span>
-          <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
-        </label>
-      </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
     </div>
+  </div>
 
-    <!-- Q6 -->
-    <div class="form-group">
-      <label class="form-label">Q6. 若您來自企業或組織，是否會考慮將此次體驗轉化為企業的社會責任行動？</label>
-      <div class="radio-group" data-name="q6">
-        <label class="radio-item"><input type="radio" name="q6" value="會，並已著手規劃"><span>會，並已著手規劃</span></label>
-        <label class="radio-item"><input type="radio" name="q6" value="有此想法，尚在討論"><span>有此想法，尚在討論</span></label>
-        <label class="radio-item"><input type="radio" name="q6" value="我是個人參與者，非企業身份，但願意投入"><span>我是個人參與者，非企業身份，但願意投入</span></label>
-        <label class="radio-item"><input type="radio" name="q6" value="不可能"><span>不可能</span></label>
-      </div>
+  <!-- Q5 -->
+  <div class="q-card" data-q="6">
+    <label class="form-label">Q5. 您計畫在未來做哪些善的行動？<span class="form-hint">（可複選，選完請按下一題）</span></label>
+    <div class="checkbox-group" data-name="q5" data-required="true">
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="志工服務"><span>志工服務</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="捐款或物資支持公益團體"><span>捐款或物資支持公益團體</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="鼓勵親友參與善行"><span>鼓勵親友參與善行</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="在公司/組織內推動CSR或ESG相關善行"><span>在公司/組織內推動 CSR 或 ESG 相關善行</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="日常生活中更多關懷他人"><span>日常生活中更多關懷他人</span></label>
+      <label class="checkbox-item other-item">
+        <input type="checkbox" name="q5" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+      </label>
     </div>
-
-    <div class="step-nav">
-      <button class="btn btn-back" onclick="goToStep(1)">← 上一步</button>
-      <button class="btn btn-next" onclick="goToStep(3)">下一步 →</button>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
     </div>
-  </section>
+  </div>
 
-  <!-- ==================== STEP 3: 基本資料 & 交通里程 ==================== -->
-  <section class="step-panel" id="step3">
-    <h2 class="step-title">第三部份：基本資料與環境影響</h2>
-
-    <!-- 身分 -->
-    <div class="form-group">
-      <label class="form-label">請問您是以什麼身分參與本活動？</label>
-      <div class="radio-group" data-name="role">
-        <label class="radio-item"><input type="radio" name="role" value="主辦方"><span>主辦方</span></label>
-        <label class="radio-item"><input type="radio" name="role" value="參與人" checked><span>參與人</span></label>
-      </div>
+  <!-- Q6 -->
+  <div class="q-card" data-q="7">
+    <label class="form-label">Q6. 若您來自企業或組織，是否會考慮將此次體驗轉化為企業的社會責任行動？</label>
+    <div class="radio-group" data-name="q6" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q6" value="會，並已著手規劃"><span>會，並已著手規劃</span></label>
+      <label class="radio-item"><input type="radio" name="q6" value="有此想法，尚在討論"><span>有此想法，尚在討論</span></label>
+      <label class="radio-item"><input type="radio" name="q6" value="我是個人參與者，非企業身份，但願意投入"><span>我是個人參與者，非企業身份，但願意投入</span></label>
+      <label class="radio-item"><input type="radio" name="q6" value="不可能"><span>不可能</span></label>
     </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
 
-    <!-- 交通里程 -->
-    <div class="form-group">
-      <label class="form-label">交通里程數據<span class="form-hint">（請填寫本次活動期間的交通里程，無則填 0）</span></label>
-      <div class="transport-grid">
-        <div class="transport-item">
-          <label class="transport-label">🚶 步行</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_walk" value="0" min="0" step="0.1" />
-            <span class="transport-unit">KM</span>
-          </div>
+  <!-- Q7: 身分 -->
+  <div class="q-card" data-q="8" data-section="基本資料與環境影響">
+    <div class="q-section-tag">第三部份：基本資料與環境影響</div>
+    <label class="form-label">請問您是以什麼身分參與本活動？</label>
+    <div class="radio-group" data-name="role" data-auto="true">
+      <label class="radio-item"><input type="radio" name="role" value="主辦方"><span>主辦方</span></label>
+      <label class="radio-item"><input type="radio" name="role" value="參與人" checked><span>參與人</span></label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q8: 交通里程 -->
+  <div class="q-card" data-q="9">
+    <label class="form-label">交通里程數據<span class="form-hint">（請填寫本次活動期間的交通里程，無則填 0）</span></label>
+    <div class="transport-grid">
+      <div class="transport-item">
+        <label class="transport-label">🚶 步行</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_walk" value="0" min="0" step="0.1" />
+          <span class="transport-unit">KM</span>
         </div>
-        <div class="transport-item">
-          <label class="transport-label">🚗 開車/計程車</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_car" value="0" min="0" step="0.1" />
-            <span class="transport-unit">KM</span>
-          </div>
+      </div>
+      <div class="transport-item">
+        <label class="transport-label">🚗 開車/計程車</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_car" value="0" min="0" step="0.1" />
+          <span class="transport-unit">KM</span>
         </div>
-        <div class="transport-item">
-          <label class="transport-label">🚗 開車共乘人數</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_carpool" value="1" min="1" step="1" />
-            <span class="transport-unit">人</span>
-          </div>
+      </div>
+      <div class="transport-item">
+        <label class="transport-label">🚗 開車共乘人數</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_carpool" value="1" min="1" step="1" />
+          <span class="transport-unit">人</span>
         </div>
-        <div class="transport-item">
-          <label class="transport-label">🏍️ 機車</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_scooter" value="0" min="0" step="0.1" />
-            <span class="transport-unit">KM</span>
-          </div>
+      </div>
+      <div class="transport-item">
+        <label class="transport-label">🏍️ 機車</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_scooter" value="0" min="0" step="0.1" />
+          <span class="transport-unit">KM</span>
         </div>
-        <div class="transport-item">
-          <label class="transport-label">🚌 公車</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_bus" value="0" min="0" step="0.1" />
-            <span class="transport-unit">KM</span>
-          </div>
+      </div>
+      <div class="transport-item">
+        <label class="transport-label">🚌 公車</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_bus" value="0" min="0" step="0.1" />
+          <span class="transport-unit">KM</span>
         </div>
-        <div class="transport-item">
-          <label class="transport-label">🚇 捷運</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_mrt" value="0" min="0" step="0.1" />
-            <span class="transport-unit">KM</span>
-          </div>
+      </div>
+      <div class="transport-item">
+        <label class="transport-label">🚇 捷運</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_mrt" value="0" min="0" step="0.1" />
+          <span class="transport-unit">KM</span>
         </div>
-        <div class="transport-item">
-          <label class="transport-label">🚂 火車</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_train" value="0" min="0" step="0.1" />
-            <span class="transport-unit">KM</span>
-          </div>
+      </div>
+      <div class="transport-item">
+        <label class="transport-label">🚂 火車</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_train" value="0" min="0" step="0.1" />
+          <span class="transport-unit">KM</span>
         </div>
-        <div class="transport-item">
-          <label class="transport-label">🚄 高鐵</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_hsr" value="0" min="0" step="0.1" />
-            <span class="transport-unit">KM</span>
-          </div>
+      </div>
+      <div class="transport-item">
+        <label class="transport-label">🚄 高鐵</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_hsr" value="0" min="0" step="0.1" />
+          <span class="transport-unit">KM</span>
         </div>
       </div>
     </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
 
-    <!-- 瓶裝水 & 旅宿 -->
-    <div class="form-group">
-      <label class="form-label">其他環境影響數據</label>
-      <div class="transport-grid cols-2">
-        <div class="transport-item">
-          <label class="transport-label">🧴 使用瓶裝水</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_water" value="0" min="0" step="1" />
-            <span class="transport-unit">瓶</span>
-          </div>
+  <!-- Q9: 瓶裝水 & 旅宿 -->
+  <div class="q-card" data-q="10">
+    <label class="form-label">其他環境影響數據</label>
+    <div class="transport-grid cols-2">
+      <div class="transport-item">
+        <label class="transport-label">🧴 使用瓶裝水</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_water" value="0" min="0" step="1" />
+          <span class="transport-unit">瓶</span>
         </div>
-        <div class="transport-item">
-          <label class="transport-label">🏨 旅宿服務</label>
-          <div class="transport-input-wrap">
-            <input type="number" class="transport-input" id="t_hotel" value="0" min="0" step="1" />
-            <span class="transport-unit">天</span>
-          </div>
+      </div>
+      <div class="transport-item">
+        <label class="transport-label">🏨 旅宿服務</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_hotel" value="0" min="0" step="1" />
+          <span class="transport-unit">天</span>
         </div>
       </div>
     </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
 
-    <!-- Carbon estimate -->
+  <!-- Q10: Carbon estimate (read-only display) -->
+  <div class="q-card" data-q="11">
+    <label class="form-label">碳足跡估算結果</label>
     <div class="carbon-card" id="carbonCard">
       <div class="carbon-title">🌱 碳足跡估算</div>
       <div class="carbon-total" id="carbonTotal">0.00 <small>kg CO₂e</small></div>
       <div class="carbon-breakdown" id="carbonBreakdown"></div>
       <div class="carbon-note">排放係數依據台灣環境部公布數據估算</div>
     </div>
-
-    <div class="step-nav">
-      <button class="btn btn-back" onclick="goToStep(2)">← 上一步</button>
-      <button class="btn btn-next" onclick="goToStep(4)">下一步 →</button>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
     </div>
-  </section>
+  </div>
 
-  <!-- ==================== STEP 4: 照片上傳 ==================== -->
-  <section class="step-panel" id="step4">
-    <h2 class="step-title">第四部份：照片上傳與足跡定位</h2>
-    <p class="step-desc">上傳您在進香途中拍攝的照片（需開啟定位），系統會自動提取 GPS 座標標記在地圖上。</p>
+  <!-- Q11: 照片上傳 -->
+  <div class="q-card" data-q="12" data-section="照片上傳">
+    <div class="q-section-tag">第四部份：照片上傳與足跡定位</div>
+    <label class="form-label">上傳進香途中拍攝的照片<span class="form-hint">（需開啟定位，系統自動提取 GPS 座標）</span></label>
 
-    <!-- Upload Area -->
     <div class="upload-area" id="uploadArea">
       <div class="upload-icon">📷</div>
       <p class="upload-text">點擊選取照片或拖曳到這裡</p>
@@ -299,31 +307,45 @@ import AuthGate from '../_components/AuthGate.astro';
       <input type="file" id="photoInput" accept="image/jpeg,image/jpg" multiple hidden />
     </div>
 
-    <!-- Status -->
     <div id="status" class="tracker-status" style="display:none"></div>
 
-    <!-- Results -->
     <section id="resultsSection" style="display:none">
       <h3 class="form-label">提取結果</h3>
       <div class="results-summary" id="resultsSummary"></div>
       <div class="results-list" id="resultsList"></div>
     </section>
 
-    <!-- Map -->
     <section id="mapSection" style="display:none;margin-top:1.5rem">
       <h3 class="form-label">地圖標記</h3>
       <div id="map" class="tracker-map"></div>
     </section>
 
-    <!-- Submit -->
-    <div class="step-nav" style="margin-top:2rem">
-      <button class="btn btn-back" onclick="goToStep(3)">← 上一步</button>
+    <div class="q-nav" style="margin-top:2rem">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q12: 確認提交 -->
+  <div class="q-card" data-q="13">
+    <div style="text-align:center;padding:1rem 0">
+      <div style="font-size:3rem;margin-bottom:1rem">✅</div>
+      <label class="form-label" style="text-align:center;font-size:1.2rem">確認提交</label>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:2rem;line-height:1.6">
+        您已完成所有問題。<br>點擊下方按鈕提交您的活動紀錄。
+      </p>
       <button class="btn btn-submit" id="submitBtn" onclick="handleSubmit()">完成提交 ✓</button>
     </div>
-  </section>
+    <div class="q-nav" style="margin-top:1.5rem">
+      <button class="btn btn-back" onclick="goQ(-1)">← 回到上一題</button>
+      <div></div>
+    </div>
+  </div>
 
-  <!-- ==================== SUCCESS SCREEN ==================== -->
-  <section class="step-panel" id="stepDone" style="text-align:center">
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SUCCESS SCREEN                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="q-card" data-q="done" id="stepDone" style="text-align:center">
     <div class="done-icon">🙏</div>
     <h2 class="done-title">感謝您的參與！</h2>
     <p class="done-text">您的活動紀錄已成功提交。<br>願媽祖保佑平安順利。</p>
@@ -339,13 +361,31 @@ import AuthGate from '../_components/AuthGate.astro';
         <div class="reward-next">📍 持續打卡，升級為 🚶 行腳人</div>
       </div>
     </div>
-    <div style="margin-top:1.5rem">
-      <p style="color:#888;font-size:0.85rem;">截圖分享給朋友一起參與！</p>
+    <!-- Share buttons -->
+    <div class="share-section" id="shareSection">
+      <p class="share-label">分享給朋友一起參與</p>
+      <div class="share-buttons">
+        <button class="share-btn share-native" id="shareNativeBtn" onclick="shareNative()" style="display:none">
+          <span>📤</span> 分享
+        </button>
+        <button class="share-btn share-line" onclick="shareLine()">
+          <span>💬</span> LINE
+        </button>
+        <button class="share-btn share-fb" onclick="shareFB()">
+          <span>📘</span> Facebook
+        </button>
+        <button class="share-btn share-copy" onclick="shareCopy()">
+          <span>🔗</span> 複製連結
+        </button>
+      </div>
+      <div class="share-toast" id="shareToast" style="display:none">已複製到剪貼簿！</div>
     </div>
-  </section>
+  </div>
 
-  <!-- ==================== RETURNING USER: CHECK-IN MODE ==================== -->
-  <section class="step-panel" id="stepCheckin" style="text-align:center">
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- RETURNING USER: CHECK-IN MODE               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="q-card" data-q="checkin" id="stepCheckin" style="text-align:center">
     <div class="checkin-mode">
       <div class="checkin-badge" id="checkinBadge">🙏 善行者</div>
       <h2>歡迎回來！</h2>
@@ -368,8 +408,28 @@ import AuthGate from '../_components/AuthGate.astro';
       </div>
 
       <div class="checkin-progress" id="checkinProgress"></div>
+
+      <!-- Share buttons in check-in mode -->
+      <div class="share-section" style="margin-top:2rem">
+        <p class="share-label">邀請朋友一起參與</p>
+        <div class="share-buttons">
+          <button class="share-btn share-native" id="shareNativeBtnCheckin" onclick="shareNative()" style="display:none">
+            <span>📤</span> 分享
+          </button>
+          <button class="share-btn share-line" onclick="shareLine()">
+            <span>💬</span> LINE
+          </button>
+          <button class="share-btn share-fb" onclick="shareFB()">
+            <span>📘</span> Facebook
+          </button>
+          <button class="share-btn share-copy" onclick="shareCopy()">
+            <span>🔗</span> 複製連結
+          </button>
+        </div>
+        <div class="share-toast" id="shareToastCheckin" style="display:none">已複製到剪貼簿！</div>
+      </div>
     </div>
-  </section>
+  </div>
 
   <!-- Back link -->
   <div class="tracker-back-link">
@@ -405,7 +465,6 @@ import AuthGate from '../_components/AuthGate.astro';
       return;
     }
 
-    // Start continuous watching
     watchId = navigator.geolocation.watchPosition(
       function(pos) {
         gpsReady = true;
@@ -422,7 +481,6 @@ import AuthGate from '../_components/AuthGate.astro';
           filename: 'GPS 自動追蹤'
         };
 
-        // Avoid duplicate points (within 10m and 30s)
         var last = gpsTrackPoints[gpsTrackPoints.length - 1];
         if (last) {
           var dist = haversine(last.lat, last.lng, pt.lat, pt.lng);
@@ -450,7 +508,6 @@ import AuthGate from '../_components/AuthGate.astro';
     );
   }
 
-  // Manual check-in button
   window.manualCheckin = function() {
     navigator.geolocation.getCurrentPosition(
       function(pos) {
@@ -466,7 +523,6 @@ import AuthGate from '../_components/AuthGate.astro';
         var countEl = document.getElementById('gpsCount');
         countEl.textContent = gpsTrackPoints.length + ' 個定位點';
 
-        // Quick visual feedback
         var btn = document.getElementById('gpsCheckinBtn');
         btn.textContent = '✓ 已打卡';
         btn.disabled = true;
@@ -477,7 +533,6 @@ import AuthGate from '../_components/AuthGate.astro';
     );
   };
 
-  // Haversine distance in km
   function haversine(lat1, lng1, lat2, lng2) {
     var R = 6371;
     var dLat = (lat2 - lat1) * Math.PI / 180;
@@ -488,99 +543,107 @@ import AuthGate from '../_components/AuthGate.astro';
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
-  // Start tracking immediately
   startGPSTracking();
 
-  // ── Step Wizard ──
-  var currentStep = 1;
-  var totalSteps = 4;
+  // ── One-Question-Per-Card System ──
+  var cards = document.querySelectorAll('.q-card[data-q]');
+  var totalQ = 13; // numbered questions (1-13)
+  var curQ = 1;
+  var autoTimer = null;
 
-  // ── Validation ──
-  function hasChecked(name) {
-    return document.querySelectorAll('input[name="' + name + '"]:checked').length > 0;
-  }
-  function hasRadio(name) {
-    return !!document.querySelector('input[name="' + name + '"]:checked');
-  }
+  function showCard(q) {
+    cards.forEach(function(c) {
+      var cq = c.getAttribute('data-q');
+      if (cq === String(q)) {
+        c.classList.add('active');
+      } else {
+        c.classList.remove('active');
+      }
+    });
 
-  function validateStep(step) {
-    var errors = [];
-
-    if (step === 1) {
-      if (!hasChecked('q1')) errors.push('Q1. 請至少選擇一項善行活動');
-      if (!hasChecked('q2')) errors.push('Q2. 請至少選擇一項被感動的事');
-      if (!hasRadio('q3')) errors.push('Q3. 請選擇您對行善價值的認同程度');
+    // Update progress bar
+    if (typeof q === 'number' && q >= 1 && q <= totalQ) {
+      var pct = ((q - 1) / (totalQ - 1)) * 100;
+      document.getElementById('qProgressFill').style.width = pct + '%';
+      document.getElementById('qProgressText').textContent = '第 ' + q + ' / ' + totalQ + ' 題';
+      document.getElementById('qProgress').style.display = '';
+    } else {
+      document.getElementById('qProgress').style.display = 'none';
     }
-    if (step === 2) {
-      if (!hasRadio('q4')) errors.push('Q4. 請選擇是否延續行善的心');
-      if (!hasChecked('q5')) errors.push('Q5. 請至少選擇一項未來善行');
-      if (!hasRadio('q6')) errors.push('Q6. 請選擇是否轉化為社會責任行動');
-    }
-    // Step 3 & 4: 數字欄位有預設值，不強制驗證
 
-    if (errors.length > 0) {
-      showValidationError(errors);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Navigate: direction = +1 or -1
+  window.goQ = function(dir) {
+    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+    var next = curQ + dir;
+    if (next < 1 || next > totalQ) return;
+
+    // Validate current question before going forward
+    if (dir > 0 && !validateQuestion(curQ)) return;
+
+    // Recalculate carbon when arriving at Q11
+    if (next === 11) updateCarbon();
+
+    curQ = next;
+    showCard(curQ);
+  };
+
+  function validateQuestion(q) {
+    var card = document.querySelector('.q-card[data-q="' + q + '"]');
+    if (!card) return true;
+
+    var req = card.querySelector('[data-required="true"]');
+    if (!req) return true;
+
+    var name = req.getAttribute('data-name');
+    if (!name) return true;
+
+    var checked = card.querySelectorAll('input[name="' + name + '"]:checked');
+    if (checked.length === 0) {
+      // Show inline error
+      var existing = card.querySelector('.q-error');
+      if (!existing) {
+        var err = document.createElement('div');
+        err.className = 'q-error';
+        err.textContent = '⚠ 請至少選擇一個選項';
+        req.parentNode.insertBefore(err, req.nextSibling);
+      }
       return false;
     }
-    clearValidationError();
+    // Clear error if exists
+    var errEl = card.querySelector('.q-error');
+    if (errEl) errEl.remove();
     return true;
   }
 
-  function showValidationError(errors) {
-    var el = document.getElementById('validationMsg');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'validationMsg';
-      el.className = 'validation-msg';
-      document.querySelector('.tracker').insertBefore(el, document.querySelector('.progress-bar').nextSibling);
-    }
-    el.innerHTML = errors.map(function(e) { return '<div>⚠ ' + e + '</div>'; }).join('');
-    el.style.display = 'block';
-    window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-  }
+  // Auto-advance on radio selection
+  document.querySelectorAll('.radio-group[data-auto="true"] input[type="radio"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      if (autoTimer) clearTimeout(autoTimer);
+      // Highlight selected item
+      var group = this.closest('.radio-group');
+      group.querySelectorAll('.radio-item').forEach(function(item) {
+        item.classList.remove('selected');
+      });
+      this.closest('.radio-item').classList.add('selected');
 
-  function clearValidationError() {
-    var el = document.getElementById('validationMsg');
-    if (el) el.style.display = 'none';
-  }
-
-  window.goToStep = function(step) {
-    if (step < 1 || step > totalSteps) return;
-
-    // Validate before going forward (not when going back)
-    if (step > currentStep && !validateStep(currentStep)) return;
-
-    // Hide current
-    var cur = document.getElementById('step' + currentStep);
-    if (cur) cur.classList.remove('active');
-
-    // Show next
-    var next = document.getElementById('step' + step);
-    if (next) next.classList.add('active');
-
-    currentStep = step;
-    updateProgress();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Recalculate carbon when entering step 3
-    if (step === 3) updateCarbon();
-  };
-
-  function updateProgress() {
-    var steps = document.querySelectorAll('.progress-step');
-    var lines = document.querySelectorAll('.progress-line-fill');
-
-    steps.forEach(function(el, i) {
-      var s = i + 1;
-      el.classList.toggle('active', s === currentStep);
-      el.classList.toggle('done', s < currentStep);
+      // Auto advance after 400ms
+      autoTimer = setTimeout(function() {
+        goQ(1);
+      }, 400);
     });
-    lines.forEach(function(el, i) {
-      el.style.width = (i + 1 < currentStep) ? '100%' : '0%';
-    });
-  }
+  });
 
-  // ── Other checkbox toggle ──
+  // Highlight checkbox items on change
+  document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      this.closest('.checkbox-item').classList.toggle('selected', this.checked);
+    });
+  });
+
+  // Other checkbox toggle
   document.querySelectorAll('.other-item input[type="checkbox"]').forEach(function(cb) {
     cb.addEventListener('change', function() {
       var textInput = this.closest('.other-item').querySelector('.other-input');
@@ -616,7 +679,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
     var breakdown = {};
     breakdown.walk = walk * FACTORS.walk;
-    breakdown.car = (car * FACTORS.car) / carpool; // shared driving
+    breakdown.car = (car * FACTORS.car) / carpool;
     breakdown.scooter = scooter * FACTORS.scooter;
     breakdown.bus = bus * FACTORS.bus;
     breakdown.mrt = mrt * FACTORS.mrt;
@@ -643,7 +706,6 @@ import AuthGate from '../_components/AuthGate.astro';
     return { total: total, breakdown: breakdown };
   }
 
-  // Attach carbon update to all transport inputs
   document.querySelectorAll('.transport-input').forEach(function(input) {
     input.addEventListener('input', updateCarbon);
   });
@@ -737,15 +799,74 @@ import AuthGate from '../_components/AuthGate.astro';
     return n;
   }
 
+  // ── Share Functions ──
+  var SHARE_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+  var SHARE_TITLE = '2026 白沙屯媽祖 ESG 進香';
+
+  function getShareText() {
+    var checkins = getSavedCheckins();
+    var t = getTitle(checkins);
+    return '我參加了 2026 白沙屯媽祖 ESG 進香，獲得' + t.current.icon + t.current.name + '稱號！一起來記錄你的進香足跡 🙏';
+  }
+
+  window.shareNative = function() {
+    if (navigator.share) {
+      navigator.share({
+        title: SHARE_TITLE,
+        text: getShareText(),
+        url: SHARE_URL
+      }).catch(function() {});
+    }
+  };
+
+  window.shareLine = function() {
+    var text = encodeURIComponent(getShareText() + '\n' + SHARE_URL);
+    window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(SHARE_URL) + '&text=' + text, '_blank');
+  };
+
+  window.shareFB = function() {
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL), '_blank');
+  };
+
+  window.shareCopy = function() {
+    var text = getShareText() + '\n' + SHARE_URL;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function() {
+        showToast();
+      });
+    } else {
+      // Fallback
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast();
+    }
+  };
+
+  function showToast() {
+    var toasts = document.querySelectorAll('.share-toast');
+    toasts.forEach(function(t) {
+      t.style.display = 'block';
+      setTimeout(function() { t.style.display = 'none'; }, 2000);
+    });
+  }
+
+  // Show native share button if supported
+  if (navigator.share) {
+    var nBtns = document.querySelectorAll('.share-native');
+    nBtns.forEach(function(b) { b.style.display = ''; });
+  }
+
   // ── Submit ──
   window.handleSubmit = async function() {
     var data = collectAllData();
-    console.log('=== Formosa ESG 2026 — 提交資料 ===');
 
     var submitBtn = document.getElementById('submitBtn');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '提交中...'; }
 
-    // Submit to API
     try {
       var resp = await fetch(API_BASE + '/api/formosa/submit', {
         method: 'POST',
@@ -758,22 +879,14 @@ import AuthGate from '../_components/AuthGate.astro';
       console.warn('API submit failed:', e.message);
     }
 
-    // Save completion to localStorage
     localStorage.setItem('formosa_survey_done', 'true');
     localStorage.setItem('formosa_survey_date', new Date().toISOString());
     localStorage.setItem('formosa_carbon', data.carbon.total_kg.toFixed(2));
     localStorage.setItem('formosa_deeds', (data.survey.q1 || []).length);
 
     // Show done screen
-    document.getElementById('step4').classList.remove('active');
-    document.getElementById('progressBar').style.display = 'none';
-    document.getElementById('stepDone').classList.add('active');
+    showCard('done');
 
-    // Update progress to show all done
-    document.querySelectorAll('.progress-step').forEach(function(el) { el.classList.add('done'); el.classList.remove('active'); });
-    document.querySelectorAll('.progress-line-fill').forEach(function(el) { el.style.width = '100%'; });
-
-    // Summary
     var pts = data.gps_points.length;
     var co2 = data.carbon.total_kg.toFixed(2);
     var deeds = (data.survey.q1 || []).length;
@@ -783,7 +896,6 @@ import AuthGate from '../_components/AuthGate.astro';
         '<div class="done-stat"><strong>' + co2 + '</strong><span>kg CO₂e</span></div>' +
       '</div>';
 
-    // Reward card
     document.getElementById('rewardStats').innerHTML =
       '善行參與：' + deeds + ' 項　｜　碳足跡：' + co2 + ' kg CO₂e';
     document.getElementById('rewardDate').textContent =
@@ -792,10 +904,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
   // ── Returning User: Check-in Mode ──
   function enterCheckinMode() {
-    // Hide survey, show check-in mode
-    document.getElementById('progressBar').style.display = 'none';
-    document.getElementById('step1').classList.remove('active');
-    document.getElementById('stepCheckin').classList.add('active');
+    showCard('checkin');
 
     var checkins = getSavedCheckins();
     var t = getTitle(checkins);
@@ -816,7 +925,6 @@ import AuthGate from '../_components/AuthGate.astro';
         '<p style="color:#059669;margin-top:1.5rem;">🎉 已達最高等級！</p>';
     }
 
-    // Mini photo upload
     var zoneMini = document.getElementById('uploadZoneMini');
     var inputMini = document.getElementById('photoInputMini');
     if (zoneMini && inputMini) {
@@ -827,11 +935,10 @@ import AuthGate from '../_components/AuthGate.astro';
     }
   }
 
-  // Override manualCheckin to also update check-in stats
+  // Override manualCheckin to update check-in stats
   var _origCheckin = window.manualCheckin;
   window.manualCheckin = function() {
     _origCheckin();
-    // Wait for GPS result then update stats
     setTimeout(function() {
       var n = incrementCheckins();
       var t = getTitle(n);
@@ -853,13 +960,14 @@ import AuthGate from '../_components/AuthGate.astro';
     }, 1500);
   };
 
-  // ── Page Init: Check if returning user ──
+  // ── Page Init ──
   if (localStorage.getItem('formosa_survey_done') === 'true') {
     enterCheckinMode();
+  } else {
+    showCard(1);
   }
 
-  // ── Minimal EXIF GPS parser (no library needed) ──
-
+  // ── Minimal EXIF GPS parser ──
   function readFileAsArrayBuffer(file) {
     return new Promise(function(resolve, reject) {
       var reader = new FileReader();
@@ -994,7 +1102,6 @@ import AuthGate from '../_components/AuthGate.astro';
 
   if (uploadArea) {
     uploadArea.addEventListener('click', function() { photoInput.click(); });
-
     uploadArea.addEventListener('dragover', function(e) {
       e.preventDefault();
       uploadArea.classList.add('drag-over');
@@ -1171,68 +1278,76 @@ import AuthGate from '../_components/AuthGate.astro';
     color: var(--text-secondary);
   }
 
-  /* ── Progress Bar ── */
-  .progress-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    margin-bottom: 2.5rem;
-    padding: 0 0.5rem;
+  /* ═══ Linear Progress Bar ═══ */
+  .q-progress {
+    margin-bottom: 2rem;
+    padding: 0 0.25rem;
   }
-  .progress-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.4rem;
-    flex-shrink: 0;
-  }
-  .step-num {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: var(--bg-section);
-    border: 2px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    transition: all 0.3s;
-  }
-  .step-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    transition: color 0.3s;
-  }
-  .progress-step.active .step-num {
-    background: var(--accent-faith);
-    border-color: var(--accent-faith);
-    color: white;
-  }
-  .progress-step.active .step-label { color: var(--accent-faith); font-weight: 600; }
-  .progress-step.done .step-num {
-    background: #059669;
-    border-color: #059669;
-    color: white;
-  }
-  .progress-step.done .step-label { color: #059669; }
-
-  .progress-line {
-    flex: 1;
-    height: 2px;
-    background: var(--border);
-    margin: 0 0.25rem;
-    margin-bottom: 1.4rem;
-    border-radius: 1px;
+  .q-progress-bar {
+    height: 6px;
+    background: var(--border-light, #e5e7eb);
+    border-radius: 3px;
     overflow: hidden;
+    margin-bottom: 0.5rem;
   }
-  .progress-line-fill {
+  .q-progress-fill {
     height: 100%;
     width: 0%;
-    background: #059669;
+    background: linear-gradient(90deg, var(--accent-faith), #d97706);
+    border-radius: 3px;
     transition: width 0.4s ease;
+  }
+  .q-progress-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: right;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+  }
+
+  /* ═══ Question Cards ═══ */
+  .q-card {
+    display: none;
+    min-height: 50vh;
+  }
+  .q-card.active {
+    display: block;
+    animation: qFadeIn 0.35s ease;
+  }
+  @keyframes qFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-section-tag {
+    font-family: var(--font-cjk);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-faith);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(180,83,9,0.15);
+  }
+
+  .q-error {
+    background: rgba(220,38,38,0.08);
+    border: 1px solid rgba(220,38,38,0.2);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    color: #DC2626;
+  }
+
+  .q-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
   }
 
   /* ── GPS Tracking Banner ── */
@@ -1291,66 +1406,20 @@ import AuthGate from '../_components/AuthGate.astro';
   .gps-checkin-btn:hover { background: rgba(255,255,255,0.3); }
   .gps-checkin-btn:disabled { opacity: 0.6; cursor: default; }
 
-  /* ── Validation Message ── */
-  .validation-msg {
-    background: rgba(220,38,38,0.08);
-    border: 1px solid rgba(220,38,38,0.2);
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.5rem;
-    font-size: 0.85rem;
-    color: #DC2626;
-    line-height: 1.7;
-  }
-
-  /* ── Step Panels ── */
-  .step-panel {
-    display: none;
-  }
-  .step-panel.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .step-title {
-    font-family: var(--font-cjk);
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--accent-faith);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid rgba(180,83,9,0.15);
-  }
-  .step-desc {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-  }
-
   /* ── Form Elements ── */
-  .form-group {
-    margin-bottom: 2rem;
-  }
   .form-label {
     display: block;
     font-family: var(--font-cjk);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-primary) !important;
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
+    margin-bottom: 1rem;
+    line-height: 1.6;
   }
-  /* Override global .form-group label styles */
   .tracker .form-group label {
     color: var(--text-primary);
     margin-bottom: 0;
   }
-  /* Reset global .form-group input overrides */
   .tracker .form-group input,
   .tracker .form-group textarea {
     background: var(--bg-card) !important;
@@ -1373,13 +1442,13 @@ import AuthGate from '../_components/AuthGate.astro';
     display: flex !important;
     align-items: flex-start;
     gap: 0.6rem;
-    padding: 0.65rem 0.85rem;
+    padding: 0.75rem 1rem;
     background: var(--bg-card);
-    border: 1px solid var(--border-light);
-    border-radius: 10px;
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    font-size: 0.88rem;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    font-size: 0.9rem;
     line-height: 1.45;
     color: var(--text-primary) !important;
     margin-bottom: 0 !important;
@@ -1387,6 +1456,11 @@ import AuthGate from '../_components/AuthGate.astro';
   .checkbox-item:hover, .radio-item:hover {
     border-color: var(--accent-faith);
     background: rgba(180,83,9,0.02);
+  }
+  .checkbox-item.selected, .radio-item.selected {
+    border-color: var(--accent-faith);
+    background: rgba(180,83,9,0.06);
+    transform: scale(1.01);
   }
   .checkbox-item input[type="checkbox"],
   .checkbox-item input[type="radio"],
@@ -1424,6 +1498,8 @@ import AuthGate from '../_components/AuthGate.astro';
     resize: vertical;
     outline: none;
     box-sizing: border-box;
+    background: var(--bg-card);
+    color: var(--text-primary);
   }
   .form-textarea:focus { border-color: var(--accent-faith); }
 
@@ -1461,6 +1537,8 @@ import AuthGate from '../_components/AuthGate.astro';
     text-align: right;
     outline: none;
     box-sizing: border-box;
+    background: var(--bg-card);
+    color: var(--text-primary);
   }
   .transport-input:focus { border-color: var(--accent-faith); }
   .transport-unit {
@@ -1516,14 +1594,6 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   /* ── Navigation Buttons ── */
-  .step-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-light);
-  }
   .btn {
     display: inline-flex;
     align-items: center;
@@ -1551,10 +1621,12 @@ import AuthGate from '../_components/AuthGate.astro';
   .btn-submit {
     background: #059669;
     color: white;
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
+    padding: 0.9rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 14px;
   }
   .btn-submit:hover { background: #047857; }
+  .btn-submit:disabled { opacity: 0.6; cursor: default; }
 
   /* ── Upload Area ── */
   .upload-area {
@@ -1738,6 +1810,52 @@ import AuthGate from '../_components/AuthGate.astro';
     border-top: 1px solid rgba(217, 119, 6, 0.2);
   }
 
+  /* ── Share Section ── */
+  .share-section {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+  }
+  .share-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+  .share-btn:hover {
+    border-color: var(--accent-faith);
+    transform: translateY(-1px);
+  }
+  .share-native { background: var(--accent-faith); color: white; border-color: var(--accent-faith); }
+  .share-line:hover { background: #06C755; color: white; border-color: #06C755; }
+  .share-fb:hover { background: #1877F2; color: white; border-color: #1877F2; }
+  .share-copy:hover { background: var(--accent-faith); color: white; border-color: var(--accent-faith); }
+  .share-toast {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #059669;
+    font-weight: 600;
+    animation: qFadeIn 0.3s ease;
+  }
+
   /* ── Check-in Mode (Returning User) ── */
   .checkin-mode { padding: 1rem 0; }
   .checkin-badge {
@@ -1802,9 +1920,8 @@ import AuthGate from '../_components/AuthGate.astro';
     .tracker-map { height: 300px; }
     .upload-area { padding: 2rem 1rem; }
     .transport-grid { grid-template-columns: 1fr; }
-    .step-label { font-size: 0.6rem; }
-    .step-num { width: 28px; height: 28px; font-size: 0.72rem; }
-    .progress-bar { gap: 0; }
     .done-stats { flex-direction: column; align-items: center; }
+    .share-buttons { flex-direction: column; align-items: center; }
+    .share-btn { width: 100%; max-width: 250px; justify-content: center; }
   }
 </style>
