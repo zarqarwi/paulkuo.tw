@@ -184,13 +184,19 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   for (var i = 0; i < TITLES.length; i++) {
     if (km >= TITLES[i].km && checkins >= TITLES[i].checkins) currentIdx = i;
   }
-  var html = '<div class="progress-levels">';
+  var html = '<div class="progress-list">';
   for (var i = 0; i < TITLES.length; i++) {
-    var cls = i <= currentIdx ? 'level-done' : 'level-pending';
-    if (i === currentIdx) cls = 'level-current';
-    html += '<div class="progress-level ' + cls + '" title="' + TITLES[i].name + '">' +
-      '<span class="level-dot"></span>' +
-      '<span class="level-icon">' + TITLES[i].icon + '</span>' +
+    var cls = i < currentIdx ? 'pl-done' : (i === currentIdx ? 'pl-current' : 'pl-locked');
+    var condition = TITLES[i].km > 0
+      ? TITLES[i].km + ' km ＋ ' + TITLES[i].checkins + ' 次打卡'
+      : '完成首次打卡';
+    html += '<div class="pl-row ' + cls + '">' +
+      '<div class="pl-icon">' + TITLES[i].icon + '</div>' +
+      '<div class="pl-info">' +
+        '<div class="pl-name">' + TITLES[i].name + '</div>' +
+        '<div class="pl-sub">' + TITLES[i].sub + '　' + condition + '</div>' +
+      '</div>' +
+      '<div class="pl-badge">' + (i < currentIdx ? '✓' : (i === currentIdx ? '▶' : '🔒')) + '</div>' +
     '</div>';
   }
   html += '</div>';
@@ -344,7 +350,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 })();
 </script>
 
-<style>
+<style is:global>
   .my-dashboard {
     max-width: 600px;
     margin: 0 auto;
@@ -392,40 +398,26 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   /* Progress */
   .my-progress-section { margin: 2rem 0; }
   .my-progress-section h3 { font-size: 1rem; color: #555; margin-bottom: 1rem; }
-  .progress-levels {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    padding: 0.5rem 0;
+  .progress-list { display: flex; flex-direction: column; gap: 0; }
+  .pl-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-radius: 10px;
+    transition: background 0.2s;
   }
-  .progress-levels::before {
-    content: '';
-    position: absolute;
-    top: calc(50% - 6px);
-    left: 5%;
-    right: 5%;
-    height: 3px;
-    background: #e5e5e5;
-    z-index: 0;
-  }
-  .progress-level {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1;
-    min-width: 0;
-  }
-  .level-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #e5e5e5;
-    margin-bottom: 2px;
-    flex-shrink: 0;
-  }
-  .level-current .level-dot { background: #B45309; box-shadow: 0 0 0 3px rgba(180,83,9,0.2); width: 14px; height: 14px; }
-  .level-done .level-dot { background: #059669; }
-  .level-icon { font-size: 0.75rem; line-height: 1; }
+  .pl-row + .pl-row { border-top: 1px solid rgba(0,0,0,0.04); }
+  .pl-icon { font-size: 1.5rem; width: 2rem; text-align: center; flex-shrink: 0; }
+  .pl-info { flex: 1; min-width: 0; }
+  .pl-name { font-size: 0.95rem; font-weight: 700; color: #333; }
+  .pl-sub { font-size: 0.7rem; color: #999; margin-top: 0.1rem; }
+  .pl-badge { font-size: 0.8rem; flex-shrink: 0; width: 1.5rem; text-align: center; }
+
+  .pl-current { background: rgba(180,83,9,0.08); border-radius: 10px; }
+  .pl-current .pl-name { color: #B45309; }
+  .pl-current .pl-badge { color: #B45309; }
+  .pl-done .pl-name { color: #059669; }
+  .pl-done .pl-badge { color: #059669; }
+  .pl-locked { opacity: 0.45; }
+  .pl-locked .pl-icon { filter: grayscale(1); }
   .my-progress-hint { color: #B45309; font-size: 0.85rem; text-align: center; margin-top: 1rem; }
 
   /* Map */
