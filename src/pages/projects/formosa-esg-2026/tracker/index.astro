@@ -328,8 +328,46 @@ import AuthGate from '../_components/AuthGate.astro';
     <h2 class="done-title">感謝您的參與！</h2>
     <p class="done-text">您的活動紀錄已成功提交。<br>願媽祖保佑平安順利。</p>
     <div class="done-summary" id="doneSummary"></div>
-    <div style="margin-top:2rem">
-      <a href="/projects/formosa-esg-2026/" class="btn btn-next">回到專案總覽</a>
+    <!-- 善行者獎勵卡 -->
+    <div class="reward-card" id="rewardCard">
+      <div class="reward-card-inner">
+        <div class="reward-badge">🙏</div>
+        <div class="reward-title">✦ 善行者 ✦</div>
+        <div class="reward-subtitle">白沙屯媽祖 ESG 進香 2026</div>
+        <div class="reward-stats" id="rewardStats"></div>
+        <div class="reward-date" id="rewardDate"></div>
+        <div class="reward-next">📍 持續打卡，升級為 🚶 行腳人</div>
+      </div>
+    </div>
+    <div style="margin-top:1.5rem">
+      <p style="color:#888;font-size:0.85rem;">截圖分享給朋友一起參與！</p>
+    </div>
+  </section>
+
+  <!-- ==================== RETURNING USER: CHECK-IN MODE ==================== -->
+  <section class="step-panel" id="stepCheckin" style="text-align:center">
+    <div class="checkin-mode">
+      <div class="checkin-badge" id="checkinBadge">🙏 善行者</div>
+      <h2>歡迎回來！</h2>
+      <p class="checkin-subtitle">問卷已完成。您可以繼續打卡記錄足跡。</p>
+
+      <div class="checkin-stats" id="checkinStats"></div>
+
+      <button class="checkin-big-btn" onclick="manualCheckin()">
+        <span class="checkin-big-icon">📍</span>
+        <span>立即打卡</span>
+      </button>
+
+      <div class="checkin-upload-section">
+        <p style="margin-bottom:0.5rem;color:#888;font-size:0.85rem;">或上傳照片記錄</p>
+        <div class="upload-zone-mini" id="uploadZoneMini">
+          📷 點擊上傳照片
+          <input type="file" accept="image/jpeg" multiple id="photoInputMini" style="display:none">
+        </div>
+        <div id="photoResultsMini"></div>
+      </div>
+
+      <div class="checkin-progress" id="checkinProgress"></div>
     </div>
   </section>
 
@@ -669,14 +707,66 @@ import AuthGate from '../_components/AuthGate.astro';
     };
   }
 
+  // ── Gamification: Titles ──
+  var TITLES = [
+    { min: 0,  icon: '🙏', name: '善行者' },
+    { min: 10, icon: '🚶', name: '行腳人' },
+    { min: 30, icon: '🔥', name: '虔誠香客' },
+    { min: 50, icon: '✨', name: '圓滿行者' }
+  ];
+
+  function getTitle(checkins) {
+    var title = TITLES[0];
+    for (var i = TITLES.length - 1; i >= 0; i--) {
+      if (checkins >= TITLES[i].min) { title = TITLES[i]; break; }
+    }
+    var next = null;
+    for (var j = 0; j < TITLES.length; j++) {
+      if (TITLES[j].min > checkins) { next = TITLES[j]; break; }
+    }
+    return { current: title, next: next, checkins: checkins };
+  }
+
+  function getSavedCheckins() {
+    return parseInt(localStorage.getItem('formosa_checkins') || '0');
+  }
+
+  function incrementCheckins() {
+    var n = getSavedCheckins() + 1;
+    localStorage.setItem('formosa_checkins', n);
+    return n;
+  }
+
   // ── Submit ──
-  window.handleSubmit = function() {
+  window.handleSubmit = async function() {
     var data = collectAllData();
     console.log('=== Formosa ESG 2026 — 提交資料 ===');
-    console.log(JSON.stringify(data, null, 2));
+
+    var submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '提交中...'; }
+
+    // Submit to API
+    try {
+      var resp = await fetch(API_BASE + '/api/formosa/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      var result = await resp.json();
+      console.log('Submit result:', result);
+    } catch (e) {
+      console.warn('API submit failed:', e.message);
+    }
+
+    // Save completion to localStorage
+    localStorage.setItem('formosa_survey_done', 'true');
+    localStorage.setItem('formosa_survey_date', new Date().toISOString());
+    localStorage.setItem('formosa_carbon', data.carbon.total_kg.toFixed(2));
+    localStorage.setItem('formosa_deeds', (data.survey.q1 || []).length);
 
     // Show done screen
     document.getElementById('step4').classList.remove('active');
+    document.getElementById('progressBar').style.display = 'none';
     document.getElementById('stepDone').classList.add('active');
 
     // Update progress to show all done
@@ -686,12 +776,87 @@ import AuthGate from '../_components/AuthGate.astro';
     // Summary
     var pts = data.gps_points.length;
     var co2 = data.carbon.total_kg.toFixed(2);
+    var deeds = (data.survey.q1 || []).length;
     document.getElementById('doneSummary').innerHTML =
       '<div class="done-stats">' +
         '<div class="done-stat"><strong>' + pts + '</strong><span>GPS 座標點</span></div>' +
         '<div class="done-stat"><strong>' + co2 + '</strong><span>kg CO₂e</span></div>' +
       '</div>';
+
+    // Reward card
+    document.getElementById('rewardStats').innerHTML =
+      '善行參與：' + deeds + ' 項　｜　碳足跡：' + co2 + ' kg CO₂e';
+    document.getElementById('rewardDate').textContent =
+      '加入時間：' + new Date().toLocaleDateString('zh-TW');
   };
+
+  // ── Returning User: Check-in Mode ──
+  function enterCheckinMode() {
+    // Hide survey, show check-in mode
+    document.getElementById('progressBar').style.display = 'none';
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('stepCheckin').classList.add('active');
+
+    var checkins = getSavedCheckins();
+    var t = getTitle(checkins);
+
+    document.getElementById('checkinBadge').textContent = t.current.icon + ' ' + t.current.name;
+
+    var statsHtml = '<div class="done-stats">' +
+      '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
+      '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
+      '</div>';
+    document.getElementById('checkinStats').innerHTML = statsHtml;
+
+    if (t.next) {
+      document.getElementById('checkinProgress').innerHTML =
+        '<p style="color:#b45309;margin-top:1.5rem;">再打卡 ' + (t.next.min - checkins) + ' 次升級為 ' + t.next.icon + ' ' + t.next.name + '</p>';
+    } else {
+      document.getElementById('checkinProgress').innerHTML =
+        '<p style="color:#059669;margin-top:1.5rem;">🎉 已達最高等級！</p>';
+    }
+
+    // Mini photo upload
+    var zoneMini = document.getElementById('uploadZoneMini');
+    var inputMini = document.getElementById('photoInputMini');
+    if (zoneMini && inputMini) {
+      zoneMini.addEventListener('click', function() { inputMini.click(); });
+      inputMini.addEventListener('change', function() {
+        if (this.files.length > 0) handlePhotos(this.files, document.getElementById('photoResultsMini'));
+      });
+    }
+  }
+
+  // Override manualCheckin to also update check-in stats
+  var _origCheckin = window.manualCheckin;
+  window.manualCheckin = function() {
+    _origCheckin();
+    // Wait for GPS result then update stats
+    setTimeout(function() {
+      var n = incrementCheckins();
+      var t = getTitle(n);
+      var badgeEl = document.getElementById('checkinBadge');
+      if (badgeEl) badgeEl.textContent = t.current.icon + ' ' + t.current.name;
+      var statsEl = document.getElementById('checkinStats');
+      if (statsEl) {
+        statsEl.innerHTML = '<div class="done-stats">' +
+          '<div class="done-stat"><strong>' + n + '</strong><span>打卡次數</span></div>' +
+          '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
+          '</div>';
+      }
+      var progEl = document.getElementById('checkinProgress');
+      if (progEl && t.next) {
+        progEl.innerHTML = '<p style="color:#b45309;margin-top:1.5rem;">再打卡 ' + (t.next.min - n) + ' 次升級為 ' + t.next.icon + ' ' + t.next.name + '</p>';
+      } else if (progEl) {
+        progEl.innerHTML = '<p style="color:#059669;margin-top:1.5rem;">🎉 已達最高等級！</p>';
+      }
+    }, 1500);
+  };
+
+  // ── Page Init: Check if returning user ──
+  if (localStorage.getItem('formosa_survey_done') === 'true') {
+    enterCheckinMode();
+  }
 
   // ── Minimal EXIF GPS parser (no library needed) ──
 
@@ -1530,6 +1695,107 @@ import AuthGate from '../_components/AuthGate.astro';
     text-decoration: none;
   }
   .tracker-back-link a:hover { color: var(--accent-faith); }
+
+  /* ── Reward Card ── */
+  .reward-card {
+    margin: 1.5rem auto;
+    max-width: 340px;
+  }
+  .reward-card-inner {
+    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 50%, #fef3c7 100%);
+    border: 2px solid #d97706;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(217, 119, 6, 0.15);
+  }
+  .reward-badge { font-size: 3rem; margin-bottom: 0.5rem; }
+  .reward-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 0.25rem;
+  }
+  .reward-subtitle {
+    font-size: 0.8rem;
+    color: #b45309;
+    margin-bottom: 1rem;
+  }
+  .reward-stats {
+    font-size: 0.82rem;
+    color: #78350f;
+    margin-bottom: 0.5rem;
+  }
+  .reward-date {
+    font-size: 0.78rem;
+    color: #a16207;
+    margin-bottom: 1rem;
+  }
+  .reward-next {
+    font-size: 0.78rem;
+    color: #b45309;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(217, 119, 6, 0.2);
+  }
+
+  /* ── Check-in Mode (Returning User) ── */
+  .checkin-mode { padding: 1rem 0; }
+  .checkin-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #fef3c7, #fffbeb);
+    border: 1px solid #d97706;
+    border-radius: 20px;
+    padding: 0.4rem 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #92400e;
+    margin-bottom: 0.75rem;
+  }
+  .checkin-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .checkin-big-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 300px;
+    margin: 1.5rem auto;
+    padding: 1.2rem 2rem;
+    background: #059669;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .checkin-big-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+  }
+  .checkin-big-icon { font-size: 1.6rem; }
+  .checkin-upload-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .upload-zone-mini {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  .upload-zone-mini:hover { border-color: var(--accent-faith); }
+  .checkin-stats { margin: 1rem 0; }
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
