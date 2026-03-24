@@ -353,22 +353,25 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
         maxZoom: 19
       }).addTo(shareMap);
 
-      // Draw route
+      // Draw route — glow + main line
       var latLngs = sharePts.map(function(p) { return [p.lat, p.lng]; });
+      L.polyline(latLngs, {
+        color: '#f59e0b', weight: 10, opacity: 0.3
+      }).addTo(shareMap);
       var polyline = L.polyline(latLngs, {
-        color: '#f59e0b', weight: 4, opacity: 0.9
+        color: '#f59e0b', weight: 5, opacity: 1
       }).addTo(shareMap);
 
       // Start marker (green)
       L.circleMarker([sharePts[0].lat, sharePts[0].lng], {
-        radius: 6, color: '#fff', fillColor: '#10b981', fillOpacity: 1, weight: 2
-      }).addTo(shareMap).bindTooltip('起', { permanent: true, direction: 'right', className: 'map-label' });
+        radius: 8, color: '#fff', fillColor: '#10b981', fillOpacity: 1, weight: 3
+      }).addTo(shareMap).bindTooltip('起點', { permanent: true, direction: 'right', className: 'map-label' });
 
       // End marker (gold)
       var lastPt = sharePts[sharePts.length - 1];
       L.circleMarker([lastPt.lat, lastPt.lng], {
-        radius: 6, color: '#fff', fillColor: '#f59e0b', fillOpacity: 1, weight: 2
-      }).addTo(shareMap).bindTooltip('現', { permanent: true, direction: 'right', className: 'map-label' });
+        radius: 8, color: '#fff', fillColor: '#f59e0b', fillOpacity: 1, weight: 3
+      }).addTo(shareMap).bindTooltip('現在', { permanent: true, direction: 'right', className: 'map-label' });
 
       // Fit bounds
       shareMap.fitBounds(polyline.getBounds().pad(0.15));
@@ -422,8 +425,9 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     card.style.position = 'fixed';
     card.style.zIndex = '9999';
 
-    html2canvas(card.querySelector('.share-card-inner'), {
-      scale: 2, useCORS: true, backgroundColor: '#1a1a1a', width: 600, height: 315
+    var inner = card.querySelector('.share-card-inner');
+    html2canvas(inner, {
+      scale: 2, useCORS: true, backgroundColor: '#1a1510', width: 600, height: inner.scrollHeight
     }).then(function(canvas) {
       card.style.left = '-9999px';
       canvas.toBlob(function(blob) {
