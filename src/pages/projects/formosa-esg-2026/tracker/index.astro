@@ -31,7 +31,7 @@ import AuthGate from '../_components/AuthGate.astro';
     <div class="gps-banner-inner">
       <div class="gps-pulse" id="gpsPulse"></div>
       <div class="gps-banner-text">
-        <span id="gpsStatus">📍 正在取得定位權限...</span>
+        <span id="gpsStatus">📍 定位中（自動記錄行走路線）...</span>
         <span class="gps-count" id="gpsCount"></span>
       </div>
       <button class="gps-checkin-btn" id="gpsCheckinBtn" style="display:none" onclick="manualCheckin()">打卡 📍</button>
@@ -450,7 +450,12 @@ import AuthGate from '../_components/AuthGate.astro';
 <script is:inline>
 (function() {
   // ── Background GPS Tracking ──
+  // Restore saved GPS track from localStorage
   var gpsTrackPoints = [];
+  try {
+    var saved = JSON.parse(localStorage.getItem('formosa_gps_track') || '[]');
+    gpsTrackPoints = saved.map(function(p) { return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source || 'saved' }; });
+  } catch(e) {}
   var watchId = null;
   var gpsReady = false;
   var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
@@ -495,7 +500,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
         gpsTrackPoints.push(pt);
         statusEl.textContent = '📍 追蹤中';
-        countEl.textContent = gpsTrackPoints.length + ' 個定位點';
+        countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
       },
       function(err) {
         pulseEl.classList.add('off');
@@ -523,7 +528,7 @@ import AuthGate from '../_components/AuthGate.astro';
           filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
         });
         var countEl = document.getElementById('gpsCount');
-        countEl.textContent = gpsTrackPoints.length + ' 個定位點';
+        countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
 
         var btn = document.getElementById('gpsCheckinBtn');
         btn.textContent = '✓ 已打卡';
@@ -873,8 +878,17 @@ import AuthGate from '../_components/AuthGate.astro';
   };
 
   window.shareFB = function() {
-    var shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL) + '&quote=' + encodeURIComponent(getShareText());
-    window.open(shareUrl, '_blank');
+    // On mobile, use native share (user picks FB app from share sheet)
+    if (navigator.share) {
+      navigator.share({
+        title: SHARE_TITLE,
+        text: getShareText(),
+        url: SHARE_URL
+      }).catch(function() {});
+    } else {
+      // Desktop fallback
+      window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL) + '&quote=' + encodeURIComponent(getShareText()), '_blank');
+    }
   };
 
   window.shareCopy = function() {
@@ -1052,11 +1066,14 @@ import AuthGate from '../_components/AuthGate.astro';
       }
       updateCheckinProgress(t);
 
-      // Persist GPS track for route map
+      // Persist photo GPS points to localStorage for route map
       try {
-        var existing = JSON.parse(localStorage.getItem('formosa_gps_track') || '[]');
-        existing.push({ lat: lat, lng: lng, datetime: new Date().toISOString(), source: 'manual' });
-        localStorage.setItem('formosa_gps_track', JSON.stringify(existing));
+        var savedTrack = JSON.parse(localStorage.getItem('formosa_gps_track') || '[]');
+        gpsTrackPoints.filter(function(p) { return p.source === 'photo'; }).forEach(function(p) {
+          var exists = savedTrack.some(function(s) { return s.lat === p.lat && s.lng === p.lng && s.source === 'photo'; });
+          if (!exists) savedTrack.push({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: 'photo' });
+        });
+        localStorage.setItem('formosa_gps_track', JSON.stringify(savedTrack));
       } catch(e) {}
     }
   }
@@ -1070,6 +1087,10 @@ import AuthGate from '../_components/AuthGate.astro';
     var t = getTitle(checkins, km);
 
     document.getElementById('checkinBadge').textContent = t.current.icon + ' ' + t.current.name;
+
+    // Hide GPS banner check-in button (replaced by big button in checkin mode)
+    var gpsBannerBtn = document.getElementById('gpsCheckinBtn');
+    if (gpsBannerBtn) gpsBannerBtn.style.display = 'none';
 
     var statsHtml = '<div class="done-stats">' +
       '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
@@ -1108,16 +1129,23 @@ import AuthGate from '../_components/AuthGate.astro';
         saveLastCheckinCoords(lat, lng);
 
         // Push to GPS track
-        gpsTrackPoints.push({
+        var newPt = {
           lat: lat, lng: lng,
           altitude: pos.coords.altitude,
           accuracy: pos.coords.accuracy,
           datetime: new Date().toISOString(),
           source: 'manual',
           filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
-        });
+        };
+        gpsTrackPoints.push(newPt);
+
+        // Persist to localStorage for route map
+        var savedTrack = JSON.parse(localStorage.getItem('formosa_gps_track') || '[]');
+        savedTrack.push({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
+        localStorage.setItem('formosa_gps_track', JSON.stringify(savedTrack));
+
         var countEl = document.getElementById('gpsCount');
-        if (countEl) countEl.textContent = gpsTrackPoints.length + ' 個定位點';
+        if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
 
         // Button feedback
         var btn = document.getElementById('gpsCheckinBtn');
@@ -2129,18 +2157,23 @@ import AuthGate from '../_components/AuthGate.astro';
   }
   .photo-thumb {
     position: relative;
-    width: 64px; height: 64px;
-    min-width: 64px; min-height: 64px;
-    max-width: 64px; max-height: 64px;
+    width: 72px !important; height: 72px !important;
+    min-width: 72px; min-height: 72px;
+    max-width: 72px !important; max-height: 72px !important;
     border-radius: 8px;
     overflow: hidden;
     flex-shrink: 0;
   }
   .photo-thumb img {
-    width: 64px; height: 64px;
-    max-width: 64px; max-height: 64px;
+    width: 72px !important; height: 72px !important;
+    max-width: 72px !important; max-height: 72px !important;
     object-fit: cover;
     display: block;
+  }
+  #photoResultsMini img, #photoResults img {
+    width: 72px !important; height: 72px !important;
+    max-width: 72px !important; max-height: 72px !important;
+    object-fit: cover;
   }
   .photo-gps-badge {
     position: absolute;
