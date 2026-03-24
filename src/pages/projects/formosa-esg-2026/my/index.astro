@@ -104,6 +104,10 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
             <div class="share-stat"><span id="shareCheckins">0</span><small>打卡</small></div>
             <div class="share-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
           </div>
+          <div class="share-card-carbon" id="shareCarbonCompare">
+            <span>🚗 相當於少開車 0 公里</span>
+            <span>🌳 相當於 0 棵樹的年吸收量</span>
+          </div>
         </div>
         <div class="share-card-right">
           <div class="share-card-qr" id="shareQR"></div>
@@ -260,6 +264,11 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   document.getElementById('shareKm').textContent = km.toFixed(1);
   document.getElementById('shareCheckins').textContent = checkins;
   document.getElementById('shareCarbon').textContent = carbon.toFixed(2);
+  var carbonSavedShare = (km * 0.21).toFixed(2);
+  var treesEquiv = Math.max(0.01, km * 0.21 / 22).toFixed(2);
+  document.getElementById('shareCarbonCompare').innerHTML =
+    '<span>🚗 相當於少開車 ' + km.toFixed(1) + ' 公里</span>' +
+    '<span>🌳 相當於 ' + treesEquiv + ' 棵樹的年吸收量</span>';
 
   // Generate QR code
   try {
@@ -495,6 +504,8 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   .share-stat { text-align: center; }
   .share-stat span { font-size: 1.4rem; font-weight: 800; display: block; }
   .share-stat small { font-size: 0.65rem; color: #aaa; }
+  .share-card-carbon { display: flex; flex-direction: column; gap: 0.15rem; margin-top: 0.6rem; }
+  .share-card-carbon span { font-size: 0.65rem; color: #8fbc8f; }
   .share-card-qr { width: 100px; height: 100px; background: #fff; border-radius: 8px; padding: 4px; }
   .share-card-qr canvas, .share-card-qr img { width: 100% !important; height: 100% !important; }
   .share-card-cta { font-size: 0.7rem; color: #B45309; margin-top: 0.5rem; font-weight: 600; }
