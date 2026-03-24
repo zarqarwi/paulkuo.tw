@@ -110,6 +110,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
           </div>
         </div>
         <div class="share-card-right">
+          <canvas id="shareRouteCanvas" width="200" height="180"></canvas>
           <div class="share-card-qr" id="shareQR"></div>
           <div class="share-card-cta">掃碼加入進香</div>
           <div class="share-card-url">paulkuo.tw</div>
@@ -306,6 +307,106 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   document.getElementById('shareCarbonCompare').innerHTML =
     '<span>🚗 相當於少開車 ' + km.toFixed(1) + ' 公里</span>' +
     '<span>🌳 相當於 ' + treesEquiv + ' 棵樹的年吸收量</span>';
+
+  // Draw route map on canvas
+  try {
+    var trackRaw2 = localStorage.getItem('formosa_gps_track');
+    var pts = trackRaw2 ? JSON.parse(trackRaw2) : [];
+    var cvs = document.getElementById('shareRouteCanvas');
+    if (cvs && pts.length >= 1) {
+      var ctx = cvs.getContext('2d');
+      var W = cvs.width, H = cvs.height;
+      var pad = 20;
+
+      // Find bounds
+      var minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+      pts.forEach(function(p) {
+        if (p.lat < minLat) minLat = p.lat;
+        if (p.lat > maxLat) maxLat = p.lat;
+        if (p.lng < minLng) minLng = p.lng;
+        if (p.lng > maxLng) maxLng = p.lng;
+      });
+
+      // Add padding if single point
+      if (maxLat === minLat) { maxLat += 0.01; minLat -= 0.01; }
+      if (maxLng === minLng) { maxLng += 0.01; minLng -= 0.01; }
+
+      var latRange = maxLat - minLat;
+      var lngRange = maxLng - minLng;
+
+      function toX(lng) { return pad + ((lng - minLng) / lngRange) * (W - pad * 2); }
+      function toY(lat) { return pad + ((maxLat - lat) / latRange) * (H - pad * 2); }
+
+      // Background
+      ctx.fillStyle = 'rgba(30, 25, 20, 0.9)';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, W, H, 10);
+      ctx.fill();
+
+      // Grid lines
+      ctx.strokeStyle = 'rgba(180, 83, 9, 0.15)';
+      ctx.lineWidth = 0.5;
+      for (var gi = 0; gi <= 4; gi++) {
+        var gy = pad + (gi / 4) * (H - pad * 2);
+        ctx.beginPath(); ctx.moveTo(pad, gy); ctx.lineTo(W - pad, gy); ctx.stroke();
+        var gx = pad + (gi / 4) * (W - pad * 2);
+        ctx.beginPath(); ctx.moveTo(gx, pad); ctx.lineTo(gx, H - pad); ctx.stroke();
+      }
+
+      // Draw route line with gold gradient
+      if (pts.length >= 2) {
+        var grad = ctx.createLinearGradient(toX(pts[0].lng), toY(pts[0].lat), toX(pts[pts.length-1].lng), toY(pts[pts.length-1].lat));
+        grad.addColorStop(0, '#d97706');
+        grad.addColorStop(0.5, '#fbbf24');
+        grad.addColorStop(1, '#f59e0b');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 3;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(toX(pts[0].lng), toY(pts[0].lat));
+        for (var pi = 1; pi < pts.length; pi++) {
+          ctx.lineTo(toX(pts[pi].lng), toY(pts[pi].lat));
+        }
+        ctx.stroke();
+
+        // Glow effect
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.3)';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(toX(pts[0].lng), toY(pts[0].lat));
+        for (var pi2 = 1; pi2 < pts.length; pi2++) {
+          ctx.lineTo(toX(pts[pi2].lng), toY(pts[pi2].lat));
+        }
+        ctx.stroke();
+      }
+
+      // Start point (green)
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(toX(pts[0].lng), toY(pts[0].lat), 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 8px sans-serif';
+      ctx.fillText('起', toX(pts[0].lng) + 7, toY(pts[0].lat) + 3);
+
+      // End point (gold)
+      var last = pts[pts.length - 1];
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(toX(last.lng), toY(last.lat), 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.fillText('現', toX(last.lng) + 7, toY(last.lat) + 3);
+
+      // Route label
+      ctx.fillStyle = 'rgba(180, 83, 9, 0.6)';
+      ctx.font = '8px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(km.toFixed(1) + ' km · ' + pts.length + ' 點', W / 2, H - 5);
+      ctx.textAlign = 'start';
+    }
+  } catch(e) { console.warn('Route canvas error:', e); }
 
   // Generate QR code
   try {
@@ -529,6 +630,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   .share-stat small { font-size: 0.65rem; color: #aaa; }
   .share-card-carbon { display: flex; flex-direction: column; gap: 0.15rem; margin-top: 0.6rem; }
   .share-card-carbon span { font-size: 0.65rem; color: #8fbc8f; }
+  #shareRouteCanvas { width: 200px; height: 180px; border-radius: 10px; margin-bottom: 0.5rem; }
   .share-card-qr { width: 100px; height: 100px; background: #fff; border-radius: 8px; padding: 4px; }
   .share-card-qr canvas, .share-card-qr img { width: 100% !important; height: 100% !important; }
   .share-card-cta { font-size: 0.7rem; color: #B45309; margin-top: 0.5rem; font-weight: 600; }
