@@ -1,0 +1,612 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import AuthGate from '../_components/AuthGate.astro';
+---
+
+<BaseLayout
+  title="管理後台 — 2026 白沙屯媽祖 ESG 進香"
+  description="進香數據儀表板：即時路徑、碳減量、問卷洞察。"
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/dashboard/"
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+>
+
+<AuthGate title="進香數據儀表板" subtitle="請輸入管理密碼">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<div class="admin-dash">
+  <nav class="dash-breadcrumb">
+    <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+  </nav>
+
+  <header class="dash-header">
+    <div>
+      <span class="dash-badge">管理後台</span>
+      <h1>進香數據儀表板</h1>
+    </div>
+    <div class="dash-refresh">
+      <span class="dash-pulse" id="refreshPulse"></span>
+      <label><input type="checkbox" id="autoRefresh" checked> 自動更新</label>
+      <span class="dash-updated" id="lastUpdated">載入中...</span>
+    </div>
+  </header>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row" id="kpiRow">
+    <div class="kpi-card"><div class="kpi-num" id="kpiUsers">-</div><div class="kpi-label">總參與人數</div></div>
+    <div class="kpi-card"><div class="kpi-num" id="kpiActive">-</div><div class="kpi-label">今日活躍</div></div>
+    <div class="kpi-card"><div class="kpi-num" id="kpiCheckins">-</div><div class="kpi-label">總打卡次數</div></div>
+    <div class="kpi-card"><div class="kpi-num" id="kpiWalkKm">-</div><div class="kpi-label">總步行公里</div></div>
+    <div class="kpi-card kpi-green"><div class="kpi-num" id="kpiSaved">-</div><div class="kpi-label">碳減量 kg</div></div>
+  </div>
+
+  <!-- Live Map -->
+  <section class="dash-section">
+    <div class="dash-section-header">
+      <h2>📍 即時路徑圖</h2>
+      <div class="map-toggles">
+        <button class="map-toggle active" id="toggleMarkers" onclick="setMapMode('markers')">標記</button>
+        <button class="map-toggle" id="toggleHeat" onclick="setMapMode('heat')">熱力圖</button>
+      </div>
+    </div>
+    <div id="adminMap" class="admin-map"></div>
+  </section>
+
+  <!-- Two columns: Carbon + Rank -->
+  <div class="dash-grid-2">
+    <section class="dash-section">
+      <h2>🌱 累積碳減量</h2>
+      <div id="carbonPanel" class="carbon-panel"></div>
+    </section>
+    <section class="dash-section">
+      <h2>🏆 等級分布</h2>
+      <div id="rankPanel" class="rank-panel"></div>
+    </section>
+  </div>
+
+  <!-- Two columns: Survey + Timeline -->
+  <div class="dash-grid-2">
+    <section class="dash-section">
+      <h2>📋 問卷洞察</h2>
+      <div id="surveyPanel" class="survey-panel"></div>
+    </section>
+    <section class="dash-section">
+      <h2>📈 活動時間軸</h2>
+      <div id="timelinePanel" class="timeline-panel"></div>
+    </section>
+  </div>
+
+  <!-- User Table -->
+  <section class="dash-section">
+    <div class="dash-section-header">
+      <h2>👥 參與者列表</h2>
+      <input type="text" class="dash-search" id="userSearch" placeholder="搜尋..." oninput="filterUsers(this.value)">
+    </div>
+    <div class="table-wrap">
+      <table class="dash-table" id="userTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)">名稱 ↕</th>
+            <th onclick="sortTable(1)">打卡 ↕</th>
+            <th onclick="sortTable(2)">碳排 ↕</th>
+            <th onclick="sortTable(3)">最後活躍 ↕</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script is:inline>
+(function() {
+  var API = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+  var TITLES = [
+    { km: 0,   checkins: 1,  icon: '🔥', name: '煉氣香客' },
+    { km: 15,  checkins: 3,  icon: '🧱', name: '築基香客' },
+    { km: 45,  checkins: 5,  icon: '💛', name: '金丹香客' },
+    { km: 90,  checkins: 6,  icon: '👶', name: '元嬰香客' },
+    { km: 135, checkins: 8,  icon: '✨', name: '化神香客' },
+    { km: 180, checkins: 10, icon: '🌀', name: '煉虛香客' },
+    { km: 225, checkins: 12, icon: '🤝', name: '合體香客' },
+    { km: 270, checkins: 14, icon: '🏆', name: '大乘香客' },
+    { km: 300, checkins: 14, icon: '🚀', name: '飛升香客' }
+  ];
+
+  var map = null, markerLayer = null, heatLayer = null;
+  var mapMode = 'markers';
+  var allUsers = [];
+
+  // ── Fetch all data ──
+  async function fetchAll() {
+    try {
+      var [dataRes, carbonRes, timelineRes, usersRes, surveyRes] = await Promise.all([
+        fetch(API + '/api/formosa/data').then(r => r.json()),
+        fetch(API + '/api/formosa/admin/carbon').then(r => r.json()),
+        fetch(API + '/api/formosa/admin/timeline').then(r => r.json()),
+        fetch(API + '/api/formosa/admin/users').then(r => r.json()),
+        fetch(API + '/api/formosa/admin/surveys').then(r => r.json())
+      ]);
+
+      renderKPI(dataRes, carbonRes, timelineRes);
+      renderMap(dataRes.gps_points || []);
+      renderCarbon(carbonRes);
+      renderRanks(usersRes.users || []);
+      renderSurvey(surveyRes);
+      renderTimeline(timelineRes);
+      renderUserTable(usersRes.users || []);
+
+      document.getElementById('lastUpdated').textContent = '更新: ' + new Date().toLocaleTimeString('zh-TW');
+    } catch (e) {
+      document.getElementById('lastUpdated').textContent = '⚠️ 載入失敗';
+      console.error('Dashboard fetch error:', e);
+    }
+  }
+
+  // ── KPI Cards ──
+  function renderKPI(data, carbon, timeline) {
+    document.getElementById('kpiUsers').textContent = data.stats.total_users;
+    document.getElementById('kpiActive').textContent = timeline.active_today;
+    document.getElementById('kpiCheckins').textContent = data.stats.total_gps_points;
+    document.getElementById('kpiWalkKm').textContent = (carbon.transport_totals?.walk?.km || 0).toFixed(0);
+    document.getElementById('kpiSaved').textContent = carbon.carbon_saved_kg;
+  }
+
+  // ── Live Map ──
+  function renderMap(points) {
+    if (!map) {
+      map = L.map('adminMap').setView([24.0, 120.5], 9);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OSM', maxZoom: 19
+      }).addTo(map);
+    }
+
+    if (markerLayer) map.removeLayer(markerLayer);
+    markerLayer = L.layerGroup();
+
+    // Group by user
+    var userGroups = {};
+    points.forEach(function(p) {
+      var uid = p.user_id || 'unknown';
+      if (!userGroups[uid]) userGroups[uid] = [];
+      userGroups[uid].push(p);
+    });
+
+    var bounds = [];
+    Object.keys(userGroups).forEach(function(uid) {
+      var pts = userGroups[uid];
+      var hue = simpleHash(uid) % 360;
+      var color = 'hsl(' + hue + ', 70%, 50%)';
+
+      pts.forEach(function(p) {
+        L.circleMarker([p.lat, p.lng], {
+          radius: 5, color: color, fillColor: color, fillOpacity: 0.8, weight: 1
+        }).bindPopup(uid.substring(0, 8) + '<br>' + (p.timestamp || '')).addTo(markerLayer);
+        bounds.push([p.lat, p.lng]);
+      });
+
+      if (pts.length > 1) {
+        var latlngs = pts.map(function(p) { return [p.lat, p.lng]; });
+        L.polyline(latlngs, { color: color, weight: 2, opacity: 0.5 }).addTo(markerLayer);
+      }
+    });
+
+    if (mapMode === 'markers') markerLayer.addTo(map);
+    if (bounds.length > 0) map.fitBounds(bounds, { padding: [30, 30] });
+
+    // Store for heatmap toggle
+    window._mapPoints = points;
+  }
+
+  function simpleHash(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  window.setMapMode = function(mode) {
+    mapMode = mode;
+    document.getElementById('toggleMarkers').className = 'map-toggle' + (mode === 'markers' ? ' active' : '');
+    document.getElementById('toggleHeat').className = 'map-toggle' + (mode === 'heat' ? ' active' : '');
+
+    if (mode === 'markers') {
+      if (heatLayer) map.removeLayer(heatLayer);
+      if (markerLayer) markerLayer.addTo(map);
+    } else {
+      if (markerLayer) map.removeLayer(markerLayer);
+      // Simple CSS-based heat effect using overlapping circles
+      if (heatLayer) map.removeLayer(heatLayer);
+      heatLayer = L.layerGroup();
+      (window._mapPoints || []).forEach(function(p) {
+        L.circleMarker([p.lat, p.lng], {
+          radius: 15, color: 'transparent', fillColor: '#FF4500', fillOpacity: 0.15, weight: 0
+        }).addTo(heatLayer);
+      });
+      heatLayer.addTo(map);
+    }
+  };
+
+  // ── Carbon Panel ──
+  function renderCarbon(data) {
+    var panel = document.getElementById('carbonPanel');
+    var saved = data.carbon_saved_kg || 0;
+    var trees = Math.max(0.01, saved / 22).toFixed(2);
+
+    var modes = [
+      { key: 'walk', label: '步行', color: '#059669' },
+      { key: 'car', label: '汽車', color: '#DC2626' },
+      { key: 'bus', label: '公車', color: '#2563EB' },
+      { key: 'scooter', label: '機車', color: '#D97706' },
+      { key: 'train', label: '火車', color: '#7C3AED' },
+      { key: 'hsr', label: '高鐵', color: '#0891B2' },
+      { key: 'mrt', label: '捷運', color: '#059669' }
+    ];
+
+    var totalKm = 0;
+    modes.forEach(function(m) { totalKm += (data.transport_totals?.[m.key]?.km || 0); });
+
+    var html = '<div class="carbon-saved-big">' + saved + '<small> kg CO₂</small></div>' +
+      '<p class="carbon-saved-sub">碳減量（相當於 🌳 ' + trees + ' 棵樹年吸收量）</p>';
+
+    // Donut chart with conic-gradient
+    if (totalKm > 0) {
+      var gradientParts = [];
+      var cumPct = 0;
+      modes.forEach(function(m) {
+        var km = data.transport_totals?.[m.key]?.km || 0;
+        if (km > 0) {
+          var pct = (km / totalKm * 100);
+          gradientParts.push(m.color + ' ' + cumPct.toFixed(1) + '% ' + (cumPct + pct).toFixed(1) + '%');
+          cumPct += pct;
+        }
+      });
+
+      html += '<div class="donut-wrap"><div class="donut" style="background:conic-gradient(' + gradientParts.join(',') + ')"></div></div>';
+
+      // Legend
+      html += '<div class="donut-legend">';
+      modes.forEach(function(m) {
+        var km = data.transport_totals?.[m.key]?.km || 0;
+        if (km > 0) {
+          html += '<span class="legend-item"><span class="legend-dot" style="background:' + m.color + '"></span>' + m.label + ' ' + km.toFixed(0) + 'km</span>';
+        }
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="carbon-meta">人均碳足跡: ' + (data.avg_carbon_kg || 0) + ' kg ｜ 水瓶: ' + (data.water_bottles_total || 0) + ' 瓶 ｜ 住宿: ' + (data.hotel_nights_total || 0) + ' 晚</div>';
+    panel.innerHTML = html;
+  }
+
+  // ── Rank Distribution ──
+  function renderRanks(users) {
+    var counts = {};
+    TITLES.forEach(function(t) { counts[t.name] = 0; });
+
+    users.forEach(function(u) {
+      // Estimate rank from gps_count (as checkin proxy) and walk_km
+      var checkins = u.gps_count || 0;
+      var km = u.walk_km || 0;
+      var rank = TITLES[0];
+      for (var i = TITLES.length - 1; i >= 0; i--) {
+        if (km >= TITLES[i].km && checkins >= TITLES[i].checkins) { rank = TITLES[i]; break; }
+      }
+      counts[rank.name]++;
+    });
+
+    var maxCount = Math.max.apply(null, Object.values(counts).concat([1]));
+    var html = '';
+    TITLES.forEach(function(t) {
+      var pct = (counts[t.name] / maxCount * 100).toFixed(0);
+      html += '<div class="rank-bar-row">' +
+        '<span class="rank-bar-label">' + t.icon + ' ' + t.name + '</span>' +
+        '<div class="rank-bar-track"><div class="rank-bar-fill" style="width:' + pct + '%"></div></div>' +
+        '<span class="rank-bar-val">' + counts[t.name] + '</span>' +
+      '</div>';
+    });
+
+    document.getElementById('rankPanel').innerHTML = html;
+  }
+
+  // ── Survey Insights ──
+  function renderSurvey(data) {
+    var panel = document.getElementById('surveyPanel');
+    if (!data.total_surveys) {
+      panel.innerHTML = '<p style="color:#888;">尚無問卷資料</p>';
+      return;
+    }
+
+    var html = '<p class="survey-total">共 ' + data.total_surveys + ' 份問卷</p>';
+
+    // Top 5 善行 (Q1)
+    html += '<h4>Top 善行活動</h4>';
+    var q1 = Object.entries(data.q1_deeds || {}).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 5);
+    var maxQ1 = q1.length ? q1[0][1] : 1;
+    q1.forEach(function(item) {
+      var pct = (item[1] / maxQ1 * 100).toFixed(0);
+      html += '<div class="survey-bar-row"><span class="survey-bar-label">' + item[0] + '</span>' +
+        '<div class="survey-bar-track"><div class="survey-bar-fill" style="width:' + pct + '%"></div></div>' +
+        '<span class="survey-bar-val">' + item[1] + '</span></div>';
+    });
+
+    // CSR (Q6)
+    html += '<h4 style="margin-top:1rem;">CSR 意願</h4>';
+    var q6 = Object.entries(data.q6_csr || {}).sort(function(a, b) { return b[1] - a[1]; });
+    var maxQ6 = q6.length ? q6[0][1] : 1;
+    q6.forEach(function(item) {
+      var pct = (item[1] / maxQ6 * 100).toFixed(0);
+      html += '<div class="survey-bar-row"><span class="survey-bar-label">' + item[0] + '</span>' +
+        '<div class="survey-bar-track"><div class="survey-bar-fill survey-fill-green" style="width:' + pct + '%"></div></div>' +
+        '<span class="survey-bar-val">' + item[1] + '</span></div>';
+    });
+
+    panel.innerHTML = html;
+  }
+
+  // ── Timeline ──
+  function renderTimeline(data) {
+    var panel = document.getElementById('timelinePanel');
+    var days = data.by_day || [];
+    if (!days.length) {
+      panel.innerHTML = '<p style="color:#888;">尚無時間軸資料</p>';
+      return;
+    }
+
+    var maxCnt = Math.max.apply(null, days.map(function(d) { return d.cnt; }).concat([1]));
+    var svgW = 500, svgH = 150, pad = 30;
+    var stepX = days.length > 1 ? (svgW - pad * 2) / (days.length - 1) : 0;
+
+    var points = days.map(function(d, i) {
+      var x = pad + i * stepX;
+      var y = svgH - pad - (d.cnt / maxCnt) * (svgH - pad * 2);
+      return x + ',' + y;
+    });
+
+    var svg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" class="timeline-svg">' +
+      '<polyline points="' + points.join(' ') + '" fill="none" stroke="#B45309" stroke-width="2.5" />';
+
+    // Dots + labels
+    days.forEach(function(d, i) {
+      var x = pad + i * stepX;
+      var y = svgH - pad - (d.cnt / maxCnt) * (svgH - pad * 2);
+      svg += '<circle cx="' + x + '" cy="' + y + '" r="4" fill="#B45309" />';
+      var label = d.d ? d.d.substring(5) : '';
+      svg += '<text x="' + x + '" y="' + (svgH - 5) + '" text-anchor="middle" font-size="10" fill="#888">' + label + '</text>';
+      svg += '<text x="' + x + '" y="' + (y - 8) + '" text-anchor="middle" font-size="10" fill="#555">' + d.cnt + '</text>';
+    });
+
+    svg += '</svg>';
+
+    var html = svg;
+    html += '<div class="timeline-meta">今日活躍: <strong>' + (data.active_today || 0) + '</strong> 人 ｜ 總 GPS 點: <strong>' + (data.total_gps_points || 0) + '</strong></div>';
+
+    panel.innerHTML = html;
+  }
+
+  // ── User Table ──
+  function renderUserTable(users) {
+    allUsers = users;
+    var tbody = document.getElementById('userTableBody');
+    var today = new Date().toISOString().split('T')[0];
+
+    var html = '';
+    users.forEach(function(u) {
+      var isToday = u.last_active && u.last_active.startsWith(today);
+      var statusDot = isToday ? '<span class="status-dot active"></span>' : '<span class="status-dot"></span>';
+      var lastTime = u.last_active ? new Date(u.last_active).toLocaleString('zh-TW', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+
+      html += '<tr>' +
+        '<td>' + (u.display_name || u.user_id.substring(0, 10)) + '</td>' +
+        '<td>' + u.gps_count + '</td>' +
+        '<td>' + u.carbon_kg + '</td>' +
+        '<td>' + lastTime + '</td>' +
+        '<td>' + statusDot + '</td>' +
+      '</tr>';
+    });
+
+    tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center;color:#888;">尚無參與者</td></tr>';
+  }
+
+  window.filterUsers = function(q) {
+    q = q.toLowerCase();
+    var filtered = allUsers.filter(function(u) {
+      return (u.display_name || u.user_id).toLowerCase().indexOf(q) >= 0;
+    });
+    renderUserTable(filtered);
+  };
+
+  var sortDir = 1;
+  window.sortTable = function(col) {
+    sortDir *= -1;
+    var keys = ['display_name', 'gps_count', 'carbon_kg', 'last_active'];
+    allUsers.sort(function(a, b) {
+      var va = a[keys[col]] || '', vb = b[keys[col]] || '';
+      if (typeof va === 'number') return (va - vb) * sortDir;
+      return String(va).localeCompare(String(vb)) * sortDir;
+    });
+    renderUserTable(allUsers);
+  };
+
+  // ── Init + Auto-refresh ──
+  fetchAll();
+  var refreshInterval = setInterval(function() {
+    if (document.getElementById('autoRefresh').checked) {
+      fetchAll();
+    }
+  }, 30000);
+
+  document.getElementById('autoRefresh').addEventListener('change', function() {
+    var pulse = document.getElementById('refreshPulse');
+    pulse.className = 'dash-pulse' + (this.checked ? ' active' : '');
+  });
+})();
+</script>
+
+<style>
+  .admin-dash {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .dash-breadcrumb { margin-bottom: 1rem; }
+  .dash-breadcrumb a { color: #888; text-decoration: none; font-size: 0.85rem; }
+
+  .dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .dash-badge {
+    display: inline-block;
+    background: #B45309;
+    color: #fff;
+    padding: 0.2rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .dash-header h1 { margin: 0; font-size: 1.5rem; color: #1a1a1a; }
+  .dash-refresh { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #888; }
+  .dash-pulse {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+    display: inline-block;
+  }
+  .dash-pulse.active { background: #059669; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .dash-updated { font-size: 0.75rem; }
+
+  /* KPI */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .kpi-card {
+    background: #FAF6F1;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .kpi-card.kpi-green { background: #f0fdf4; }
+  .kpi-num { font-size: 1.8rem; font-weight: 800; color: #1a1a1a; }
+  .kpi-green .kpi-num { color: #2E7D32; }
+  .kpi-label { font-size: 0.75rem; color: #888; margin-top: 0.25rem; }
+
+  /* Sections */
+  .dash-section {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .dash-section h2 { font-size: 1.1rem; margin: 0 0 1rem; color: #333; }
+  .dash-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .dash-section-header h2 { margin-bottom: 0; }
+  .dash-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  /* Map */
+  .admin-map { height: 450px; border-radius: 12px; overflow: hidden; }
+  .map-toggles { display: flex; gap: 0.25rem; }
+  .map-toggle {
+    padding: 0.3rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .map-toggle.active { background: #B45309; color: #fff; border-color: #B45309; }
+
+  /* Carbon */
+  .carbon-saved-big { font-size: 2.5rem; font-weight: 800; color: #2E7D32; text-align: center; }
+  .carbon-saved-big small { font-size: 1rem; font-weight: 400; }
+  .carbon-saved-sub { text-align: center; color: #555; font-size: 0.85rem; margin: 0.5rem 0 1rem; }
+  .donut-wrap { display: flex; justify-content: center; margin: 1rem 0; }
+  .donut {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    mask: radial-gradient(circle, transparent 38%, black 39%);
+    -webkit-mask: radial-gradient(circle, transparent 38%, black 39%);
+  }
+  .donut-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 0.75rem; }
+  .legend-item { font-size: 0.75rem; color: #555; display: flex; align-items: center; gap: 3px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .carbon-meta { font-size: 0.75rem; color: #888; text-align: center; margin-top: 1rem; border-top: 1px solid #eee; padding-top: 0.75rem; }
+
+  /* Rank bars */
+  .rank-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .rank-bar-label { font-size: 0.75rem; width: 100px; white-space: nowrap; }
+  .rank-bar-track { flex: 1; height: 18px; background: #f3f4f6; border-radius: 9px; overflow: hidden; }
+  .rank-bar-fill { height: 100%; background: linear-gradient(90deg, #B45309, #D97706); border-radius: 9px; transition: width 0.5s; min-width: 2px; }
+  .rank-bar-val { font-size: 0.8rem; font-weight: 700; width: 24px; text-align: right; }
+
+  /* Survey bars */
+  .survey-total { font-size: 0.85rem; color: #888; margin-bottom: 1rem; }
+  .survey-panel h4 { font-size: 0.85rem; color: #555; margin: 0 0 0.5rem; }
+  .survey-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+  .survey-bar-label { font-size: 0.7rem; width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .survey-bar-track { flex: 1; height: 14px; background: #f3f4f6; border-radius: 7px; overflow: hidden; }
+  .survey-bar-fill { height: 100%; background: #B45309; border-radius: 7px; transition: width 0.5s; }
+  .survey-fill-green { background: #2E7D32; }
+  .survey-bar-val { font-size: 0.75rem; font-weight: 700; width: 24px; text-align: right; }
+
+  /* Timeline */
+  .timeline-svg { width: 100%; max-height: 180px; }
+  .timeline-meta { font-size: 0.8rem; color: #888; text-align: center; margin-top: 0.75rem; }
+
+  /* User Table */
+  .dash-search {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    width: 180px;
+  }
+  .table-wrap { overflow-x: auto; }
+  .dash-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .dash-table th {
+    text-align: left;
+    padding: 0.5rem;
+    border-bottom: 2px solid #e5e5e5;
+    color: #888;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.8rem;
+  }
+  .dash-table td { padding: 0.5rem; border-bottom: 1px solid #f3f4f6; }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    background: #ddd;
+  }
+  .status-dot.active { background: #059669; }
+
+  @media (max-width: 768px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+    .dash-grid-2 { grid-template-columns: 1fr; }
+    .admin-map { height: 300px; }
+    .dash-header { flex-direction: column; }
+  }
+  @media (max-width: 480px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+</AuthGate>
+</BaseLayout>

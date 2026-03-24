@@ -18,7 +18,7 @@ import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
-import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaPush, handleFormosaData } from './formosa.js';
+import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers } from './formosa.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -214,6 +214,14 @@ async function handleRequest(request, env) {
   if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env);
   if (path === '/api/formosa/push' && method === 'POST') return handleFormosaPush(request, env);
   if (path === '/api/formosa/data' && method === 'GET') return handleFormosaData(request, env);
+  if (path.startsWith('/api/formosa/user/') && method === 'GET') {
+    const userId = decodeURIComponent(path.split('/api/formosa/user/')[1]);
+    if (userId) return handleFormosaUser(request, env, userId);
+  }
+  if (path === '/api/formosa/admin/surveys' && method === 'GET') return handleFormosaAdminSurveys(request, env);
+  if (path === '/api/formosa/admin/carbon' && method === 'GET') return handleFormosaAdminCarbon(request, env);
+  if (path === '/api/formosa/admin/timeline' && method === 'GET') return handleFormosaAdminTimeline(request, env);
+  if (path === '/api/formosa/admin/users' && method === 'GET') return handleFormosaAdminUsers(request, env);
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
   if (path === '/social/status') return handleSocialStatus(request, env);

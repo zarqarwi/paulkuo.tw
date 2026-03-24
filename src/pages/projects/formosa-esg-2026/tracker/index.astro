@@ -380,6 +380,7 @@ import AuthGate from '../_components/AuthGate.astro';
       </div>
       <div class="share-toast" id="shareToast" style="display:none">已複製到剪貼簿！</div>
     </div>
+    <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
   </div>
 
   <!-- ═══════════════════════════════════════════ -->
@@ -428,6 +429,7 @@ import AuthGate from '../_components/AuthGate.astro';
         </div>
         <div class="share-toast" id="shareToastCheckin" style="display:none">已複製到剪貼簿！</div>
       </div>
+      <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
     </div>
   </div>
 
@@ -913,10 +915,18 @@ import AuthGate from '../_components/AuthGate.astro';
       console.warn('API submit failed:', e.message);
     }
 
+    // Persist user_id from API response
+    if (result && result.user_id) {
+      localStorage.setItem('formosa_user_id', result.user_id);
+    }
+
     localStorage.setItem('formosa_survey_done', 'true');
     localStorage.setItem('formosa_survey_date', new Date().toISOString());
     localStorage.setItem('formosa_carbon', data.carbon.total_kg.toFixed(2));
-    localStorage.setItem('formosa_deeds', (data.survey.q1 || []).length);
+    localStorage.setItem('formosa_deeds', JSON.stringify(data.survey.q1 || []));
+
+    // Save GPS track for route map
+    localStorage.setItem('formosa_gps_track', JSON.stringify(data.gps_points || []));
 
     // Show done screen
     showCard('done');
@@ -1022,6 +1032,13 @@ import AuthGate from '../_components/AuthGate.astro';
           '</div>';
       }
       updateCheckinProgress(t);
+
+      // Persist GPS track for route map
+      try {
+        var existing = JSON.parse(localStorage.getItem('formosa_gps_track') || '[]');
+        existing.push({ lat: lat, lng: lng, datetime: new Date().toISOString(), source: 'manual' });
+        localStorage.setItem('formosa_gps_track', JSON.stringify(existing));
+      } catch(e) {}
     }
   }
 
@@ -2118,6 +2135,18 @@ import AuthGate from '../_components/AuthGate.astro';
     padding: 0.5rem;
     background: rgba(5, 150, 105, 0.08);
     border-radius: 8px;
+  }
+
+  .my-journey-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #B45309, #92400e);
+    color: #fff;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
   }
 
   .checkin-stats { margin: 1rem 0; }

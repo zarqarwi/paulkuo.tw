@@ -70,6 +70,7 @@ export async function handleFormosaWebhook(request, env) {
   }
 
   try {
+    await migrateFormosa(env.AUTH_DB);
     const body = await request.json();
     const events = body.events || [];
 
@@ -97,6 +98,13 @@ export async function handleFormosaWebhook(request, env) {
       // User sends a message
       if (event.type === 'message') {
         const userId = event.source?.userId;
+        // Ensure user is saved (in case follow event was missed)
+        if (userId) {
+          const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
+          await env.AUTH_DB.prepare(
+            `INSERT OR REPLACE INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now'))`
+          ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '').run();
+        }
         const replyToken = event.replyToken;
         if (replyToken) {
           await replyLineMessage(replyToken, env.FORMOSA_LINE_TOKEN, [
@@ -279,6 +287,212 @@ export async function handleFormosaData(request, env) {
   } catch (e) {
     return jsonResponse({ error: e.message }, 500, request);
   }
+}
+
+// ── 9-Level Pilgrim Ranking (mirrored from frontend) ──
+const TITLES = [
+  { km: 0,   checkins: 1,  icon: '🔥', name: '煉氣香客', sub: '啟程入門者' },
+  { km: 15,  checkins: 3,  icon: '🧱', name: '築基香客', sub: '開始上路者' },
+  { km: 45,  checkins: 5,  icon: '💛', name: '金丹香客', sub: '穩定行腳者' },
+  { km: 90,  checkins: 6,  icon: '👶', name: '元嬰香客', sub: '深度參與者' },
+  { km: 135, checkins: 8,  icon: '✨', name: '化神香客', sub: '高里程行者' },
+  { km: 180, checkins: 10, icon: '🌀', name: '煉虛香客', sub: '進階完成者' },
+  { km: 225, checkins: 12, icon: '🤝', name: '合體香客', sub: '高階完成者' },
+  { km: 270, checkins: 14, icon: '🏆', name: '大乘香客', sub: '榮譽進階者' },
+  { km: 300, checkins: 14, icon: '🚀', name: '飛升香客', sub: '圓滿認證者' }
+];
+
+function computeRank(km, checkins) {
+  let current = TITLES[0], next = null;
+  for (let i = TITLES.length - 1; i >= 0; i--) {
+    if (km >= TITLES[i].km && checkins >= TITLES[i].checkins) { current = TITLES[i]; break; }
+  }
+  for (let j = 0; j < TITLES.length; j++) {
+    if (km < TITLES[j].km || checkins < TITLES[j].checkins) { next = TITLES[j]; break; }
+  }
+  return { current, next };
+}
+
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ── Per-User Dashboard API ──
+export async function handleFormosaUser(request, env, userId) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  try {
+    await migrateFormosa(env.AUTH_DB);
+    const user = await env.AUTH_DB.prepare('SELECT display_name, picture_url, created_at FROM formosa_users WHERE line_user_id = ?').bind(userId).first();
+    const points = await env.AUTH_DB.prepare('SELECT lat, lng, altitude, accuracy, source, timestamp FROM formosa_gps_points WHERE user_id = ? ORDER BY timestamp ASC').bind(userId).all();
+    const survey = await env.AUTH_DB.prepare('SELECT * FROM formosa_surveys WHERE user_id = ? ORDER BY created_at DESC LIMIT 1').bind(userId).first();
+
+    const pts = points?.results || [];
+    let totalKm = 0;
+    for (let i = 1; i < pts.length; i++) {
+      totalKm += haversine(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
+    }
+
+    const checkins = pts.filter(p => p.source === 'manual').length || Math.max(pts.length, 1);
+    const rank = computeRank(totalKm, checkins);
+
+    return jsonResponse({
+      user: user || { display_name: 'Anonymous', created_at: null },
+      gps_points: pts,
+      survey: survey || null,
+      stats: {
+        total_points: pts.length,
+        total_km: +totalKm.toFixed(2),
+        carbon_kg: +(survey?.carbon_total_kg || 0).toFixed(2),
+        checkins,
+        rank: rank.current,
+        next_rank: rank.next ? { name: rank.next.name, icon: rank.next.icon, km_needed: +(rank.next.km - totalKm).toFixed(1), checkins_needed: Math.max(0, rank.next.checkins - checkins) } : null
+      }
+    }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+}
+
+// ── Admin: Survey Aggregations ──
+export async function handleFormosaAdminSurveys(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  try {
+    await migrateFormosa(env.AUTH_DB);
+    const rows = await env.AUTH_DB.prepare('SELECT q1_good_deeds, q2_moved_by, q3_善行value, q4_continue, q5_future_actions, q6_csr, role_type FROM formosa_surveys').all();
+    const data = rows?.results || [];
+
+    const aggregate = (field, isJson) => {
+      const counts = {};
+      data.forEach(r => {
+        if (isJson) {
+          try { JSON.parse(r[field] || '[]').forEach(v => { counts[v] = (counts[v] || 0) + 1; }); } catch(e) {}
+        } else {
+          const v = r[field] || '未填';
+          counts[v] = (counts[v] || 0) + 1;
+        }
+      });
+      return counts;
+    };
+
+    return jsonResponse({
+      total_surveys: data.length,
+      q1_deeds: aggregate('q1_good_deeds', true),
+      q2_moved: aggregate('q2_moved_by', true),
+      q3_value: aggregate('q3_善行value', false),
+      q4_continue: aggregate('q4_continue', false),
+      q5_actions: aggregate('q5_future_actions', true),
+      q6_csr: aggregate('q6_csr', false),
+      role_distribution: aggregate('role_type', false)
+    }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+}
+
+// ── Admin: Carbon Analytics ──
+export async function handleFormosaAdminCarbon(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  try {
+    await migrateFormosa(env.AUTH_DB);
+    const rows = await env.AUTH_DB.prepare('SELECT transport_walk, transport_car, transport_carpool, transport_scooter, transport_bus, transport_mrt, transport_train, transport_hsr, water_bottles, hotel_nights, carbon_total_kg FROM formosa_surveys').all();
+    const data = rows?.results || [];
+
+    const modes = ['walk','car','scooter','bus','mrt','train','hsr'];
+    const factors = { walk: 0, car: 0.21, scooter: 0.05, bus: 0.04, mrt: 0.03, train: 0.03, hsr: 0.04 };
+    const totals = {};
+    modes.forEach(m => { totals[m] = { km: 0, users: 0 }; });
+    let waterTotal = 0, hotelTotal = 0, carbonTotal = 0;
+
+    data.forEach(r => {
+      modes.forEach(m => {
+        const km = r['transport_' + m] || 0;
+        if (km > 0) { totals[m].km += km; totals[m].users++; }
+      });
+      waterTotal += r.water_bottles || 0;
+      hotelTotal += r.hotel_nights || 0;
+      carbonTotal += r.carbon_total_kg || 0;
+    });
+
+    // Calculate carbon saved: if all walk km were driven by car
+    const walkKm = totals.walk.km;
+    const hypothetical = walkKm * 0.21;
+    const carbonSaved = Math.max(0, hypothetical);
+
+    return jsonResponse({
+      total_carbon_kg: +carbonTotal.toFixed(2),
+      avg_carbon_kg: data.length ? +(carbonTotal / data.length).toFixed(2) : 0,
+      total_surveys: data.length,
+      transport_totals: totals,
+      carbon_saved_kg: +carbonSaved.toFixed(2),
+      hypothetical_driving_kg: +hypothetical.toFixed(2),
+      water_bottles_total: waterTotal,
+      hotel_nights_total: hotelTotal
+    }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+}
+
+// ── Admin: Activity Timeline ──
+export async function handleFormosaAdminTimeline(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  try {
+    await migrateFormosa(env.AUTH_DB);
+    const byDay = await env.AUTH_DB.prepare(
+      "SELECT date(created_at) as d, COUNT(*) as cnt, COUNT(DISTINCT user_id) as users FROM formosa_gps_points GROUP BY d ORDER BY d"
+    ).all();
+    const byHour = await env.AUTH_DB.prepare(
+      "SELECT strftime('%Y-%m-%dT%H', created_at) as h, COUNT(*) as cnt FROM formosa_gps_points WHERE created_at >= datetime('now', '-7 days') GROUP BY h ORDER BY h"
+    ).all();
+    const activeToday = await env.AUTH_DB.prepare(
+      "SELECT COUNT(DISTINCT user_id) as cnt FROM formosa_gps_points WHERE date(created_at) = date('now')"
+    ).first();
+    const totalPts = await env.AUTH_DB.prepare('SELECT COUNT(*) as cnt FROM formosa_gps_points').first();
+
+    return jsonResponse({
+      by_day: byDay?.results || [],
+      by_hour: byHour?.results || [],
+      active_today: activeToday?.cnt || 0,
+      total_gps_points: totalPts?.cnt || 0
+    }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+}
+
+// ── Admin: User Table ──
+export async function handleFormosaAdminUsers(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  try {
+    await migrateFormosa(env.AUTH_DB);
+    const gpsUsers = await env.AUTH_DB.prepare(`
+      SELECT g.user_id, u.display_name, u.picture_url,
+        COUNT(g.id) as gps_count,
+        MAX(g.created_at) as last_active,
+        MIN(g.created_at) as first_active
+      FROM formosa_gps_points g
+      LEFT JOIN formosa_users u ON g.user_id = u.line_user_id
+      GROUP BY g.user_id
+      ORDER BY last_active DESC
+    `).all();
+
+    const surveys = await env.AUTH_DB.prepare('SELECT user_id, carbon_total_kg, transport_walk FROM formosa_surveys').all();
+    const surveyMap = {};
+    (surveys?.results || []).forEach(s => { surveyMap[s.user_id] = s; });
+
+    const users = (gpsUsers?.results || []).map(u => {
+      const s = surveyMap[u.user_id];
+      return {
+        user_id: u.user_id,
+        display_name: u.display_name || u.user_id.substring(0, 8),
+        picture_url: u.picture_url || null,
+        gps_count: u.gps_count,
+        survey_done: !!s,
+        carbon_kg: +(s?.carbon_total_kg || 0).toFixed(2),
+        walk_km: +(s?.transport_walk || 0).toFixed(1),
+        last_active: u.last_active,
+        first_active: u.first_active
+      };
+    });
+
+    return jsonResponse({ users }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
 }
 
 // ── LINE API Helpers ──

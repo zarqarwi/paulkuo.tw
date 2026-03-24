@@ -1,0 +1,473 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="我的進香足跡 — 2026 白沙屯媽祖 ESG 進香"
+  description="查看你的進香路徑、等級成就與碳足跡數據。"
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/my/"
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<div class="my-dashboard">
+  <nav class="my-breadcrumb">
+    <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+  </nav>
+
+  <!-- No data state -->
+  <div id="noData" style="display:none;text-align:center;padding:4rem 1rem;">
+    <p style="font-size:1.5rem;">🙏</p>
+    <h2>尚未有打卡紀錄</h2>
+    <p style="color:#888;margin:1rem 0;">前往打卡頁面開始記錄你的進香足跡</p>
+    <a href="/projects/formosa-esg-2026/tracker/" class="my-cta-btn">📍 前往打卡</a>
+  </div>
+
+  <!-- Main content -->
+  <div id="mainContent" style="display:none;">
+
+    <!-- Rank Badge -->
+    <div class="my-rank-section">
+      <div class="my-rank-icon" id="rankIcon">🔥</div>
+      <h1 class="my-rank-name" id="rankName">煉氣香客</h1>
+      <p class="my-rank-sub" id="rankSub">啟程入門者</p>
+      <p class="my-rank-event">白沙屯媽祖 ESG 進香 2026</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="my-stats-grid">
+      <div class="my-stat-card">
+        <div class="my-stat-num" id="statCheckins">0</div>
+        <div class="my-stat-label">打卡次數</div>
+      </div>
+      <div class="my-stat-card">
+        <div class="my-stat-num" id="statKm">0</div>
+        <div class="my-stat-label">公里</div>
+      </div>
+      <div class="my-stat-card">
+        <div class="my-stat-num" id="statDeeds">0</div>
+        <div class="my-stat-label">善行項目</div>
+      </div>
+      <div class="my-stat-card">
+        <div class="my-stat-num" id="statCarbon">0</div>
+        <div class="my-stat-label">kg CO₂e</div>
+      </div>
+    </div>
+
+    <!-- Rank Progress -->
+    <div class="my-progress-section">
+      <h3>等級進度</h3>
+      <div class="my-progress-track" id="progressTrack"></div>
+      <p class="my-progress-hint" id="progressHint"></p>
+    </div>
+
+    <!-- Route Map -->
+    <div class="my-map-section">
+      <h3>📍 我的路徑圖</h3>
+      <div id="myMap" class="my-map"></div>
+      <p class="my-map-note" id="mapNote"></p>
+    </div>
+
+    <!-- Carbon Card -->
+    <div class="my-carbon-section">
+      <h3>🌱 碳足跡</h3>
+      <div class="my-carbon-main" id="carbonMain"></div>
+    </div>
+
+    <!-- Share Section -->
+    <div class="my-share-section">
+      <button class="my-share-primary" onclick="generateShareImage()">📸 分享我的進香足跡</button>
+      <div class="my-share-buttons">
+        <button class="my-share-btn" onclick="shareNative()" style="display:none" id="shareNativeBtn">📤 分享</button>
+        <button class="my-share-btn" onclick="shareLine()">💬 LINE</button>
+        <button class="my-share-btn" onclick="shareFB()">📘 Facebook</button>
+        <button class="my-share-btn" onclick="shareCopy()">🔗 複製連結</button>
+      </div>
+      <div class="my-share-toast" id="shareToast" style="display:none;">✅ 已複製</div>
+    </div>
+
+    <!-- Hidden share card for html2canvas -->
+    <div id="shareCard" class="share-card" style="position:fixed;left:-9999px;top:0;">
+      <div class="share-card-inner">
+        <div class="share-card-header">白沙屯媽祖 ESG 進香 2026</div>
+        <div class="share-card-rank" id="shareRankIcon">🔥</div>
+        <div class="share-card-title" id="shareRankName">煉氣香客</div>
+        <div class="share-card-stats">
+          <div class="share-stat"><span id="shareKm">0</span><small>公里</small></div>
+          <div class="share-stat"><span id="shareCheckins">0</span><small>打卡</small></div>
+          <div class="share-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
+        </div>
+        <canvas id="shareMapCanvas" width="900" height="400"></canvas>
+        <div class="share-card-footer">
+          <div>paulkuo.tw/projects/formosa-esg-2026/tracker/</div>
+          <div>掃碼加入 🙏</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+(function() {
+  var TITLES = [
+    { km: 0,   checkins: 1,  icon: '🔥', name: '煉氣香客', sub: '啟程入門者' },
+    { km: 15,  checkins: 3,  icon: '🧱', name: '築基香客', sub: '開始上路者' },
+    { km: 45,  checkins: 5,  icon: '💛', name: '金丹香客', sub: '穩定行腳者' },
+    { km: 90,  checkins: 6,  icon: '👶', name: '元嬰香客', sub: '深度參與者' },
+    { km: 135, checkins: 8,  icon: '✨', name: '化神香客', sub: '高里程行者' },
+    { km: 180, checkins: 10, icon: '🌀', name: '煉虛香客', sub: '進階完成者' },
+    { km: 225, checkins: 12, icon: '🤝', name: '合體香客', sub: '高階完成者' },
+    { km: 270, checkins: 14, icon: '🏆', name: '大乘香客', sub: '榮譽進階者' },
+    { km: 300, checkins: 14, icon: '🚀', name: '飛升香客', sub: '圓滿認證者' }
+  ];
+
+  var SHARE_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+
+  // Read data from localStorage
+  var checkins = parseInt(localStorage.getItem('formosa_checkins') || '0');
+  var km = parseFloat(localStorage.getItem('formosa_km') || '0');
+  var carbon = parseFloat(localStorage.getItem('formosa_carbon') || '0');
+  var surveyDone = localStorage.getItem('formosa_survey_done') === 'true';
+
+  if (!surveyDone && checkins === 0) {
+    document.getElementById('noData').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('mainContent').style.display = 'block';
+
+  // Compute rank
+  function getTitle(c, k) {
+    var current = TITLES[0], next = null;
+    for (var i = TITLES.length - 1; i >= 0; i--) {
+      if (k >= TITLES[i].km && c >= TITLES[i].checkins) { current = TITLES[i]; break; }
+    }
+    for (var j = 0; j < TITLES.length; j++) {
+      if (k < TITLES[j].km || c < TITLES[j].checkins) { next = TITLES[j]; break; }
+    }
+    return { current: current, next: next };
+  }
+
+  var rank = getTitle(checkins, km);
+
+  // Fill rank section
+  document.getElementById('rankIcon').textContent = rank.current.icon;
+  document.getElementById('rankName').textContent = rank.current.name;
+  document.getElementById('rankSub').textContent = rank.current.sub;
+
+  // Fill stats
+  document.getElementById('statCheckins').textContent = checkins;
+  document.getElementById('statKm').textContent = km.toFixed(1);
+  document.getElementById('statCarbon').textContent = carbon.toFixed(2);
+
+  // Deeds count from survey data
+  try {
+    var deedsRaw = localStorage.getItem('formosa_deeds');
+    document.getElementById('statDeeds').textContent = deedsRaw ? JSON.parse(deedsRaw).length : (surveyDone ? '✓' : '0');
+  } catch(e) { document.getElementById('statDeeds').textContent = surveyDone ? '✓' : '0'; }
+
+  // Rank progress bar
+  var progressTrack = document.getElementById('progressTrack');
+  var currentIdx = 0;
+  for (var i = 0; i < TITLES.length; i++) {
+    if (km >= TITLES[i].km && checkins >= TITLES[i].checkins) currentIdx = i;
+  }
+  var html = '<div class="progress-levels">';
+  for (var i = 0; i < TITLES.length; i++) {
+    var cls = i <= currentIdx ? 'level-done' : 'level-pending';
+    if (i === currentIdx) cls = 'level-current';
+    html += '<div class="progress-level ' + cls + '" title="' + TITLES[i].name + '">' +
+      '<span class="level-dot"></span>' +
+      '<span class="level-icon">' + TITLES[i].icon + '</span>' +
+    '</div>';
+  }
+  html += '</div>';
+  progressTrack.innerHTML = html;
+
+  var hintEl = document.getElementById('progressHint');
+  if (rank.next) {
+    var parts = [];
+    var needKm = Math.max(0, rank.next.km - km);
+    var needC = Math.max(0, rank.next.checkins - checkins);
+    if (needKm > 0) parts.push('走 ' + needKm.toFixed(1) + ' 公里');
+    if (needC > 0) parts.push('打卡 ' + needC + ' 次');
+    hintEl.textContent = '再' + parts.join('、') + '升級為 ' + rank.next.icon + ' ' + rank.next.name;
+  } else {
+    hintEl.textContent = '🚀 恭喜飛升！已達最高等級！';
+    hintEl.style.color = '#059669';
+  }
+
+  // Route map — use GPS track points from localStorage
+  var map = null;
+  try {
+    var trackRaw = localStorage.getItem('formosa_gps_track');
+    var trackPoints = trackRaw ? JSON.parse(trackRaw) : [];
+
+    if (trackPoints.length > 0) {
+      map = L.map('myMap').setView([trackPoints[0].lat, trackPoints[0].lng], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OSM', maxZoom: 19
+      }).addTo(map);
+
+      var latlngs = trackPoints.map(function(p) { return [p.lat, p.lng]; });
+
+      // Polyline
+      L.polyline(latlngs, { color: '#B45309', weight: 3, opacity: 0.8 }).addTo(map);
+
+      // Start marker
+      L.circleMarker(latlngs[0], { radius: 8, color: '#059669', fillColor: '#059669', fillOpacity: 1 })
+        .bindPopup('📍 起點').addTo(map);
+
+      // End marker
+      if (latlngs.length > 1) {
+        L.circleMarker(latlngs[latlngs.length - 1], { radius: 8, color: '#DC2626', fillColor: '#DC2626', fillOpacity: 1 })
+          .bindPopup('🏁 最新位置').addTo(map);
+      }
+
+      // Fit bounds
+      if (latlngs.length > 1) map.fitBounds(latlngs, { padding: [30, 30] });
+      else map.setView(latlngs[0], 15);
+
+      document.getElementById('mapNote').textContent = trackPoints.length + ' 個定位點，' + km.toFixed(1) + ' 公里';
+    } else {
+      document.getElementById('myMap').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">尚無 GPS 軌跡資料</div>';
+    }
+  } catch (e) {
+    document.getElementById('myMap').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">無法載入地圖資料</div>';
+  }
+
+  // Carbon card
+  var carbonMain = document.getElementById('carbonMain');
+  var savedKm = km; // walk km saved vs driving
+  var carbonSaved = (savedKm * 0.21).toFixed(2);
+  carbonMain.innerHTML =
+    '<div class="carbon-big">' + carbon.toFixed(2) + ' <small>kg CO₂e</small></div>' +
+    '<p class="carbon-compare">🚗 相當於少開車 ' + savedKm.toFixed(1) + ' 公里</p>' +
+    '<p class="carbon-compare">🌳 相當於 ' + Math.max(1, Math.round(savedKm * 0.21 / 22 * 100) / 100).toFixed(2) + ' 棵樹的年吸收量</p>';
+
+  // Share card data
+  document.getElementById('shareRankIcon').textContent = rank.current.icon;
+  document.getElementById('shareRankName').textContent = rank.current.name;
+  document.getElementById('shareKm').textContent = km.toFixed(1);
+  document.getElementById('shareCheckins').textContent = checkins;
+  document.getElementById('shareCarbon').textContent = carbon.toFixed(2);
+
+  // Share functions
+  function getShareText() {
+    return '我參加了 2026 白沙屯媽祖 ESG 進香，已走 ' + km.toFixed(1) + ' 公里，獲得' + rank.current.icon + '「' + rank.current.name + '」稱號！一起來記錄你的進香足跡 🙏';
+  }
+
+  window.generateShareImage = function() {
+    var card = document.getElementById('shareCard');
+    card.style.left = '0';
+    card.style.top = '0';
+    card.style.position = 'fixed';
+    card.style.zIndex = '9999';
+
+    html2canvas(card.querySelector('.share-card-inner'), {
+      scale: 2, useCORS: true, backgroundColor: '#1a1a1a', width: 540, height: 675
+    }).then(function(canvas) {
+      card.style.left = '-9999px';
+      canvas.toBlob(function(blob) {
+        if (navigator.share && navigator.canShare) {
+          var file = new File([blob], 'formosa-journey.png', { type: 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            navigator.share({ files: [file], title: '我的進香足跡', text: getShareText() }).catch(function(){});
+            return;
+          }
+        }
+        // Fallback: download
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'formosa-journey.png';
+        a.click();
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    });
+  };
+
+  window.shareNative = function() {
+    if (navigator.share) {
+      navigator.share({ title: '我的進香足跡', text: getShareText(), url: SHARE_URL }).catch(function(){});
+    }
+  };
+  if (navigator.share) document.getElementById('shareNativeBtn').style.display = '';
+
+  window.shareLine = function() {
+    var text = encodeURIComponent(getShareText() + '\n' + SHARE_URL);
+    window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(SHARE_URL) + '&text=' + text, '_blank');
+  };
+
+  window.shareFB = function() {
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL), '_blank');
+  };
+
+  window.shareCopy = function() {
+    var text = getShareText() + '\n' + SHARE_URL;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function() {
+        var t = document.getElementById('shareToast');
+        t.style.display = 'block';
+        setTimeout(function() { t.style.display = 'none'; }, 2000);
+      });
+    }
+  };
+})();
+</script>
+
+<style>
+  .my-dashboard {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .my-breadcrumb { margin-bottom: 1.5rem; }
+  .my-breadcrumb a { color: #888; text-decoration: none; font-size: 0.85rem; }
+
+  .my-cta-btn {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: #B45309;
+    color: #fff;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 1rem;
+  }
+
+  /* Rank */
+  .my-rank-section { text-align: center; padding: 2rem 0 1rem; }
+  .my-rank-icon { font-size: 4rem; }
+  .my-rank-name { font-size: 2rem; font-weight: 800; margin: 0.5rem 0 0.25rem; color: #1a1a1a; }
+  .my-rank-sub { color: #B45309; font-size: 1rem; margin: 0; }
+  .my-rank-event { color: #888; font-size: 0.8rem; margin-top: 0.5rem; }
+
+  /* Stats */
+  .my-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+  .my-stat-card {
+    background: #FAF6F1;
+    border-radius: 12px;
+    padding: 1rem 0.5rem;
+    text-align: center;
+  }
+  .my-stat-num { font-size: 1.5rem; font-weight: 800; color: #1a1a1a; }
+  .my-stat-label { font-size: 0.7rem; color: #888; margin-top: 0.25rem; }
+
+  /* Progress */
+  .my-progress-section { margin: 2rem 0; }
+  .my-progress-section h3 { font-size: 1rem; color: #555; margin-bottom: 1rem; }
+  .progress-levels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+  .progress-levels::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    right: 5%;
+    height: 3px;
+    background: #e5e5e5;
+    transform: translateY(-50%);
+    z-index: 0;
+  }
+  .progress-level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+  }
+  .level-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #e5e5e5;
+    margin-bottom: 4px;
+  }
+  .level-current .level-dot { background: #B45309; box-shadow: 0 0 0 4px rgba(180,83,9,0.2); width: 16px; height: 16px; }
+  .level-done .level-dot { background: #059669; }
+  .level-icon { font-size: 0.9rem; }
+  .my-progress-hint { color: #B45309; font-size: 0.85rem; text-align: center; margin-top: 1rem; }
+
+  /* Map */
+  .my-map-section { margin: 2rem 0; }
+  .my-map-section h3 { font-size: 1rem; color: #555; margin-bottom: 0.75rem; }
+  .my-map { height: 350px; border-radius: 12px; overflow: hidden; background: #e5e5e5; }
+  .my-map-note { font-size: 0.8rem; color: #888; text-align: center; margin-top: 0.5rem; }
+
+  /* Carbon */
+  .my-carbon-section { margin: 2rem 0; background: #f0fdf4; border-radius: 16px; padding: 1.5rem; }
+  .my-carbon-section h3 { font-size: 1rem; color: #2E7D32; margin-bottom: 1rem; }
+  .carbon-big { font-size: 2.5rem; font-weight: 800; color: #2E7D32; text-align: center; }
+  .carbon-big small { font-size: 1rem; font-weight: 400; }
+  .carbon-compare { color: #555; font-size: 0.85rem; text-align: center; margin: 0.5rem 0 0; }
+
+  /* Share */
+  .my-share-section { margin: 2rem 0; text-align: center; }
+  .my-share-primary {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #B45309, #92400e);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  .my-share-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+  .my-share-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .my-share-toast {
+    color: #059669;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Share card (hidden, for html2canvas) */
+  .share-card-inner {
+    width: 540px;
+    height: 675px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #2d1f0e 100%);
+    color: #fff;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, sans-serif;
+  }
+  .share-card-header { font-size: 0.9rem; color: #B45309; letter-spacing: 2px; margin-bottom: 1.5rem; }
+  .share-card-rank { font-size: 4rem; }
+  .share-card-title { font-size: 2rem; font-weight: 800; margin: 0.5rem 0 1.5rem; }
+  .share-card-stats { display: flex; gap: 2rem; margin-bottom: 1.5rem; }
+  .share-stat { text-align: center; }
+  .share-stat span { font-size: 1.8rem; font-weight: 800; display: block; }
+  .share-stat small { font-size: 0.75rem; color: #aaa; }
+  #shareMapCanvas { border-radius: 8px; background: #333; width: 450px; height: 200px; }
+  .share-card-footer { margin-top: 1.5rem; font-size: 0.7rem; color: #888; text-align: center; }
+
+  @media (max-width: 480px) {
+    .my-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .my-map { height: 280px; }
+  }
+</style>
+
+</BaseLayout>
