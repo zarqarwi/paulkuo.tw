@@ -856,8 +856,20 @@ import AuthGate from '../_components/AuthGate.astro';
   };
 
   window.shareLine = function() {
-    var text = encodeURIComponent(getShareText() + '\n' + SHARE_URL);
-    window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(SHARE_URL) + '&text=' + text, '_blank');
+    // Use LIFF shareTargetPicker if in LINE app
+    if (liff.isInClient() && liff.isApiAvailable('shareTargetPicker')) {
+      liff.shareTargetPicker([
+        {
+          type: 'text',
+          text: getShareText() + '\n' + SHARE_URL
+        }
+      ]).catch(function(e) {
+        console.warn('shareTargetPicker failed:', e);
+      });
+    } else {
+      var text = encodeURIComponent(getShareText() + '\n' + SHARE_URL);
+      window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(SHARE_URL) + '&text=' + text, '_blank');
+    }
   };
 
   window.shareFB = function() {
@@ -900,6 +912,12 @@ import AuthGate from '../_components/AuthGate.astro';
   // ── Submit ──
   window.handleSubmit = async function() {
     var data = collectAllData();
+
+    // Attach LINE identity if available
+    if (lineUserId) {
+      data.line_user_id = lineUserId;
+      data.line_display_name = lineProfile ? lineProfile.displayName : '';
+    }
 
     var submitBtn = document.getElementById('submitBtn');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '提交中...'; }
