@@ -92,30 +92,45 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
       <div class="my-share-toast" id="shareToast" style="display:none;">✅ 已複製</div>
     </div>
 
-    <!-- Hidden share card for html2canvas (FB: 1200x630) -->
+    <!-- Hidden share card for html2canvas -->
     <div id="shareCard" class="share-card" style="position:fixed;left:-9999px;top:0;">
       <div class="share-card-inner">
-        <div class="share-card-left">
-          <div class="share-card-header">白沙屯媽祖 ESG 進香 2026</div>
-          <div class="share-card-rank" id="shareRankIcon">🔥</div>
-          <div class="share-card-title" id="shareRankName">煉氣香客</div>
-          <div class="share-card-sub" id="shareRankSub">啟程入門者</div>
-          <div class="share-card-stats">
-            <div class="share-stat"><span id="shareKm">0</span><small>公里</small></div>
-            <div class="share-stat"><span id="shareCheckins">0</span><small>打卡</small></div>
-            <div class="share-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
-          </div>
-          <div class="share-card-carbon" id="shareCarbonCompare">
-            <span>🚗 相當於少開車 0 公里</span>
-            <span>🌳 相當於 0 棵樹的年吸收量</span>
+        <!-- Top: Header + Rank -->
+        <div class="sc-top">
+          <div class="sc-header">白沙屯媽祖 ESG 進香 2026</div>
+          <div class="sc-rank-row">
+            <div class="sc-mascot" id="shareRankIcon"></div>
+            <div class="sc-rank-info">
+              <div class="sc-title" id="shareRankName">煉氣香客</div>
+              <div class="sc-sub" id="shareRankSub">啟程入門者</div>
+            </div>
           </div>
         </div>
-        <div class="share-card-right">
-          <div id="shareMapContainer" style="width:220px;height:200px;border-radius:10px;overflow:hidden;"></div>
-          <img id="shareMapImg" style="width:220px;height:200px;border-radius:10px;display:none;" />
-          <div class="share-card-qr" id="shareQR"></div>
-          <div class="share-card-cta">掃碼加入進香</div>
-          <div class="share-card-url">paulkuo.tw</div>
+        <!-- Middle: Map (full width) -->
+        <div class="sc-map-wrap">
+          <div id="shareMapContainer" style="width:560px;height:220px;border-radius:8px;overflow:hidden;"></div>
+          <img id="shareMapImg" style="width:560px;height:220px;border-radius:8px;display:none;" />
+        </div>
+        <!-- Bottom: Stats + QR -->
+        <div class="sc-bottom">
+          <div class="sc-stats">
+            <div class="sc-stat"><span id="shareKm">0</span><small>公里</small></div>
+            <div class="sc-divider"></div>
+            <div class="sc-stat"><span id="shareCheckins">0</span><small>打卡</small></div>
+            <div class="sc-divider"></div>
+            <div class="sc-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
+          </div>
+          <div class="sc-carbon" id="shareCarbonCompare">
+            <span>🚗 少開車 0 km</span>
+            <span>🌳 0 棵樹年吸收量</span>
+          </div>
+          <div class="sc-footer">
+            <div class="sc-qr" id="shareQR"></div>
+            <div class="sc-footer-text">
+              <div class="sc-cta">掃碼加入進香 🙏</div>
+              <div class="sc-url">paulkuo.tw</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -299,7 +314,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     '<p class="carbon-compare">🌳 相當於 ' + Math.max(1, Math.round(savedKm * 0.21 / 22 * 100) / 100).toFixed(2) + ' 棵樹的年吸收量</p>';
 
   // Share card data
-  document.getElementById('shareRankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:100px;height:100px;object-fit:contain;" alt="' + rank.current.name + '">';
+  document.getElementById('shareRankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:56px;height:56px;object-fit:contain;" alt="' + rank.current.name + '">';
   document.getElementById('shareRankName').textContent = rank.current.name;
   document.getElementById('shareRankSub').textContent = rank.current.sub;
   document.getElementById('shareKm').textContent = km.toFixed(1);
@@ -308,8 +323,8 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   var carbonSavedShare = (km * 0.21).toFixed(2);
   var treesEquiv = Math.max(0.01, km * 0.21 / 22).toFixed(2);
   document.getElementById('shareCarbonCompare').innerHTML =
-    '<span>🚗 相當於少開車 ' + km.toFixed(1) + ' 公里</span>' +
-    '<span>🌳 相當於 ' + treesEquiv + ' 棵樹的年吸收量</span>';
+    '<span>🚗 少開車 ' + km.toFixed(1) + ' km</span>' +
+    '<span>🌳 ' + treesEquiv + ' 棵樹年吸收量</span>';
 
   // Create share map with leaflet-image for static screenshot
   var shareMapReady = false;
@@ -389,7 +404,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   try {
     new QRCode(document.getElementById('shareQR'), {
       text: 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/',
-      width: 92, height: 92,
+      width: 46, height: 46,
       colorDark: '#1a1a1a', colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.M
     });
@@ -571,48 +586,72 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     margin-top: 0.5rem;
   }
 
-  /* Share card (hidden, for html2canvas) — FB 1200×630 */
+  /* Share card (hidden, for html2canvas) */
   .share-card-inner {
     width: 600px;
-    height: 315px;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d1f0e 60%, #3d2510 100%);
+    background: linear-gradient(180deg, #1a1510 0%, #2d1f0e 40%, #1a1510 100%);
     color: #fff;
-    display: flex;
-    align-items: center;
     font-family: -apple-system, sans-serif;
     overflow: hidden;
-  }
-  .share-card-left {
-    flex: 1;
-    padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
   }
-  .share-card-right {
-    width: 160px;
-    padding: 2rem 1.5rem 2rem 0;
+  .sc-top {
+    padding: 1.2rem 1.5rem 0.8rem;
+  }
+  .sc-header {
+    font-size: 0.65rem;
+    color: #B45309;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .sc-rank-row {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .sc-mascot img { width: 56px; height: 56px; object-fit: contain; }
+  .sc-title { font-size: 1.4rem; font-weight: 800; line-height: 1.2; }
+  .sc-sub { font-size: 0.7rem; color: #B45309; margin-top: 0.15rem; }
+  .sc-map-wrap {
+    padding: 0 1.2rem;
+  }
+  #shareMapImg { border-radius: 8px; object-fit: cover; }
+  .map-label { background: none !important; border: none !important; box-shadow: none !important; font-weight: bold; font-size: 11px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
+  .sc-bottom {
+    padding: 0.8rem 1.5rem 1rem;
+  }
+  .sc-stats {
+    display: flex;
     align-items: center;
     justify-content: center;
+    gap: 1.2rem;
   }
-  .share-card-header { font-size: 0.7rem; color: #B45309; letter-spacing: 2px; margin-bottom: 1rem; text-transform: uppercase; }
-  .share-card-rank { font-size: 3rem; line-height: 1; }
-  .share-card-title { font-size: 1.8rem; font-weight: 800; margin: 0.3rem 0 0.2rem; }
-  .share-card-sub { font-size: 0.8rem; color: #B45309; margin-bottom: 1rem; }
-  .share-card-stats { display: flex; gap: 1.5rem; }
-  .share-stat { text-align: center; }
-  .share-stat span { font-size: 1.4rem; font-weight: 800; display: block; }
-  .share-stat small { font-size: 0.65rem; color: #aaa; }
-  .share-card-carbon { display: flex; flex-direction: column; gap: 0.15rem; margin-top: 0.6rem; }
-  .share-card-carbon span { font-size: 0.65rem; color: #8fbc8f; }
-  #shareMapImg { border-radius: 10px; margin-bottom: 0.5rem; object-fit: cover; }
-  .map-label { background: none !important; border: none !important; box-shadow: none !important; font-weight: bold; font-size: 11px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
-  .share-card-qr { width: 100px; height: 100px; background: #fff; border-radius: 8px; padding: 4px; }
-  .share-card-qr canvas, .share-card-qr img { width: 100% !important; height: 100% !important; }
-  .share-card-cta { font-size: 0.7rem; color: #B45309; margin-top: 0.5rem; font-weight: 600; }
-  .share-card-url { font-size: 0.55rem; color: #666; margin-top: 0.2rem; }
+  .sc-stat { text-align: center; }
+  .sc-stat span { font-size: 1.3rem; font-weight: 800; display: block; }
+  .sc-stat small { font-size: 0.6rem; color: #aaa; }
+  .sc-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.15); }
+  .sc-carbon {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.4rem;
+  }
+  .sc-carbon span { font-size: 0.6rem; color: #8fbc8f; }
+  .sc-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .sc-qr { width: 52px; height: 52px; background: #fff; border-radius: 6px; padding: 3px; flex-shrink: 0; }
+  .sc-qr canvas, .sc-qr img { width: 100% !important; height: 100% !important; }
+  .sc-footer-text { flex: 1; }
+  .sc-cta { font-size: 0.7rem; color: #B45309; font-weight: 600; }
+  .sc-url { font-size: 0.55rem; color: #666; margin-top: 0.1rem; }
 
   @media (max-width: 480px) {
     .my-stats-grid { grid-template-columns: repeat(2, 1fr); }
