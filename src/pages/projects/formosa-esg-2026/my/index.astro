@@ -311,7 +311,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   carbonMain.innerHTML =
     '<div class="carbon-big">' + carbon.toFixed(2) + ' <small>kg CO₂e</small></div>' +
     '<p class="carbon-compare">🚗 相當於少開車 ' + savedKm.toFixed(1) + ' 公里</p>' +
-    '<p class="carbon-compare">🌳 相當於 ' + Math.max(1, Math.round(savedKm * 0.21 / 22 * 100) / 100).toFixed(2) + ' 棵樹的年吸收量</p>';
+    '<p class="carbon-compare">🌳 相當於 ' + Math.max(0.01, savedKm * 0.21 / 22).toFixed(2) + ' 棵樹的年吸收量</p>';
 
   // Share card data
   document.getElementById('shareRankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:56px;height:56px;object-fit:contain;" alt="' + rank.current.name + '">';
