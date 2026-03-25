@@ -588,6 +588,66 @@ export async function handleFormosaAdminUsers(request, env) {
   } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
 }
 
+// ── Admin: Server-side GPS Grid Clustering ──
+export async function handleFormosaAdminClusters(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
+  try {
+    await migrateFormosa(env.AUTH_DB);
+    const points = await env.AUTH_DB.prepare(
+      'SELECT lat, lng, user_id, created_at FROM formosa_gps_points ORDER BY created_at ASC'
+    ).all();
+    const rows = points?.results || [];
+    if (rows.length === 0) return jsonResponse({ clusters: [], front: null, tail: null, spread_km: 0, lost: 0 }, 200, request);
+
+    // Grid clustering (~2km cells)
+    const cellSize = 0.018; // ~2km
+    const grid = {};
+    let latestByUser = {};
+    rows.forEach(p => {
+      const key = Math.floor(p.lat / cellSize) + ',' + Math.floor(p.lng / cellSize);
+      if (!grid[key]) grid[key] = { lat: 0, lng: 0, count: 0, users: new Set() };
+      grid[key].lat += p.lat;
+      grid[key].lng += p.lng;
+      grid[key].count++;
+      grid[key].users.add(p.user_id);
+      if (!latestByUser[p.user_id] || p.created_at > latestByUser[p.user_id].created_at) {
+        latestByUser[p.user_id] = p;
+      }
+    });
+
+    const clusters = Object.values(grid).map(c => ({
+      lat: c.lat / c.count,
+      lng: c.lng / c.count,
+      count: c.count,
+      users: c.users.size
+    }));
+
+    // Front/tail from latest positions per user
+    const latestPoints = Object.values(latestByUser);
+    latestPoints.sort((a, b) => a.lat - b.lat); // rough south→north
+    const front = latestPoints.length > 0 ? latestPoints[latestPoints.length - 1] : null;
+    const tail = latestPoints.length > 0 ? latestPoints[0] : null;
+
+    // Spread distance (km)
+    let spread_km = 0;
+    if (front && tail) {
+      const R = 6371;
+      const dLat = (front.lat - tail.lat) * Math.PI / 180;
+      const dLng = (front.lng - tail.lng) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(tail.lat*Math.PI/180) * Math.cos(front.lat*Math.PI/180) * Math.sin(dLng/2)**2;
+      spread_km = +(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
+    }
+
+    // Lost: users with no GPS in last 2 hours
+    const twoHoursAgo = new Date(Date.now() - 2*60*60*1000).toISOString();
+    const lost = latestPoints.filter(p => p.created_at < twoHoursAgo).length;
+
+    return jsonResponse({ clusters, front, tail, spread_km, lost }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+}
+
 // ── LINE API Helpers ──
 async function getLineProfile(userId, token) {
   try {
