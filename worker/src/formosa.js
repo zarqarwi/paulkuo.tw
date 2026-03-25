@@ -134,45 +134,29 @@ export async function handleFormosaWebhook(request, env) {
     const events = body.events || [];
 
     for (const event of events) {
-      // User follows the bot
-      if (event.type === 'follow') {
-        const userId = event.source?.userId;
-        if (userId) {
-          // Get user profile
-          const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
-          await env.AUTH_DB.prepare(
-            `INSERT INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, updated_at=datetime('now')`
-          ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '').run();
+      const userId = event.source?.userId;
 
-          // Send welcome message with tracker link
-          await sendLineMessage(userId, env.FORMOSA_LINE_TOKEN, [
-            {
-              type: 'text',
-              text: '🙏 感謝加入白沙屯媽祖 ESG 進香！\n\n進香期間，我們會定時提醒您打卡記錄足跡。\n\n📍 現在就開始記錄：\nhttps://paulkuo.tw/projects/formosa-esg-2026/tracker/'
-            }
-          ]);
-        }
+      // Upsert user for any event type
+      if (userId) {
+        const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
+        await env.AUTH_DB.prepare(
+          `INSERT INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, updated_at=datetime('now')`
+        ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '').run();
       }
 
-      // User sends a message
-      if (event.type === 'message') {
-        const userId = event.source?.userId;
-        // Ensure user is saved (in case follow event was missed)
-        if (userId) {
-          const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
-          await env.AUTH_DB.prepare(
-            `INSERT INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, updated_at=datetime('now')`
-          ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '').run();
-        }
+      // ── Follow: Welcome Flex Message ──
+      if (event.type === 'follow' && userId) {
+        await sendLineMessage(userId, env.FORMOSA_LINE_TOKEN, [buildWelcomeMessage()]);
+      }
+
+      // ── Message: Keyword Router ──
+      if (event.type === 'message' && event.message?.type === 'text') {
+        const text = (event.message.text || '').trim();
         const replyToken = event.replyToken;
-        if (replyToken) {
-          await replyLineMessage(replyToken, env.FORMOSA_LINE_TOKEN, [
-            {
-              type: 'text',
-              text: '📍 點這裡打卡記錄足跡：\nhttps://paulkuo.tw/projects/formosa-esg-2026/tracker/'
-            }
-          ]);
-        }
+        if (!replyToken) continue;
+
+        const reply = await routeKeyword(text, userId, env);
+        await replyLineMessage(replyToken, env.FORMOSA_LINE_TOKEN, reply);
       }
     }
 
@@ -308,14 +292,21 @@ export async function handleFormosaCheckin(request, env) {
       return jsonResponse({ error: '打卡太頻繁，請稍後再試', rate_limited: true }, 429, request);
     }
 
+    // Geofence: 白沙屯↔北港路線範圍（含緩衝）
+    // lat: 23.4° ~ 24.9°, lng: 120.1° ~ 121.0°
+    const lat = data.lat;
+    const lng = data.lng;
+    const inRange = lat >= 23.4 && lat <= 24.9 && lng >= 120.1 && lng <= 121.0;
+    const source = inRange ? (data.source || 'checkin') : 'remote';
+
     await env.AUTH_DB.prepare(
       `INSERT INTO formosa_gps_points (user_id, lat, lng, altitude, accuracy, source, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)`
-    ).bind(userId, data.lat, data.lng, data.altitude || null, data.accuracy || null, data.source || 'checkin', data.timestamp || new Date().toISOString()).run();
+    ).bind(userId, lat, lng, data.altitude || null, data.accuracy || null, source, data.timestamp || new Date().toISOString()).run();
 
     // Count total points for this user
     const count = await env.AUTH_DB.prepare('SELECT COUNT(*) as cnt FROM formosa_gps_points WHERE user_id = ?').bind(userId).first();
 
-    return jsonResponse({ ok: true, total_points: count?.cnt || 1 }, 200, request);
+    return jsonResponse({ ok: true, total_points: count?.cnt || 1, in_range: inRange }, 200, request);
   } catch (e) {
     return jsonResponse({ error: e.message }, 500, request);
   }
@@ -397,9 +388,9 @@ export async function handleFormosaPush(request, env) {
       }
     };
 
-    await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [message]);
+    const lineResults = await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [message]);
 
-    return jsonResponse({ ok: true, sent: userIds.length, role: targetRole }, 200, request);
+    return jsonResponse({ ok: true, sent: userIds.length, role: targetRole, line_results: lineResults }, 200, request);
   } catch (e) {
     console.error('Push error:', e.message);
     return jsonResponse({ error: e.message }, 500, request);
@@ -758,6 +749,203 @@ export async function handleFormosaAdminClusters(request, env) {
   } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
 }
 
+// ── Keyword Router ──
+const TRACKER_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+const PROJECT_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/';
+
+async function routeKeyword(text, userId, env) {
+  const t = text.toLowerCase();
+
+  // 打卡
+  if (/打卡|checkin|check.?in|記錄/.test(t)) {
+    return [{ type: 'text', text: `📍 立即打卡記錄足跡：\n${TRACKER_URL}` }];
+  }
+
+  // 說明 / 使用 / 幫助
+  if (/說明|使用|幫助|help|怎麼用|功能/.test(t)) {
+    return [buildUsageMessage()];
+  }
+
+  // 等級 / 紀錄 / 我的
+  if (/等級|紀錄|我的|成就|level|stats/.test(t)) {
+    return [await buildStatsMessage(userId, env)];
+  }
+
+  // 碳足跡 / 碳排
+  if (/碳|carbon|co2|排放/.test(t)) {
+    return [buildCarbonInfoMessage()];
+  }
+
+  // 關於 / 專案 / ESG
+  if (/關於|專案|esg|永續|什麼/.test(t)) {
+    return [{ type: 'text', text: `🌱 2026 白沙屯媽祖 ESG 永續進香\n\n台灣首份進香永續數據計畫，記錄參與者的足跡、碳足跡與善行故事。\n\n📖 了解更多：\n${PROJECT_URL}` }];
+  }
+
+  // Default: 功能選單
+  return [buildMenuMessage()];
+}
+
+// ── Welcome Flex Message (follow event) ──
+function buildWelcomeMessage() {
+  return {
+    type: 'flex',
+    altText: '🙏 歡迎加入白沙屯媽祖 ESG 永續進香！',
+    contents: {
+      type: 'bubble',
+      size: 'mega',
+      header: {
+        type: 'box', layout: 'vertical',
+        backgroundColor: '#1a5c2a',
+        paddingAll: '20px',
+        contents: [
+          { type: 'text', text: '🙏 白沙屯媽祖', color: '#ffffff', size: 'xl', weight: 'bold' },
+          { type: 'text', text: 'ESG 永續進香 2026', color: '#b8e6c8', size: 'sm', margin: 'sm' }
+        ]
+      },
+      body: {
+        type: 'box', layout: 'vertical', spacing: 'md', paddingAll: '20px',
+        contents: [
+          { type: 'text', text: '感謝加入！', weight: 'bold', size: 'lg' },
+          { type: 'text', text: '這是台灣首份進香永續數據計畫。\n進香期間，您可以：', wrap: true, size: 'sm', color: '#666666', margin: 'md' },
+          { type: 'box', layout: 'vertical', margin: 'lg', spacing: 'sm', contents: [
+            { type: 'text', text: '📍 GPS 打卡記錄足跡', size: 'sm' },
+            { type: 'text', text: '📷 上傳照片定位路徑', size: 'sm' },
+            { type: 'text', text: '🌱 計算個人碳足跡', size: 'sm' },
+            { type: 'text', text: '📊 解鎖 9 級香客等級', size: 'sm' }
+          ]},
+          { type: 'separator', margin: 'lg' },
+          { type: 'text', text: '輸入關鍵字快速操作：', size: 'xs', color: '#999999', margin: 'lg' },
+          { type: 'text', text: '「打卡」「說明」「等級」「碳足跡」', size: 'xs', color: '#999999', margin: 'xs' }
+        ]
+      },
+      footer: {
+        type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: '15px',
+        contents: [
+          { type: 'button', style: 'primary', color: '#1a5c2a', action: { type: 'uri', label: '📍 開始打卡', uri: TRACKER_URL } },
+          { type: 'button', style: 'link', action: { type: 'uri', label: '📖 了解更多', uri: PROJECT_URL } }
+        ]
+      }
+    }
+  };
+}
+
+// ── Usage Instructions ──
+function buildUsageMessage() {
+  return {
+    type: 'flex',
+    altText: '📖 使用說明',
+    contents: {
+      type: 'bubble',
+      size: 'mega',
+      header: {
+        type: 'box', layout: 'vertical', backgroundColor: '#1a5c2a', paddingAll: '15px',
+        contents: [
+          { type: 'text', text: '📖 使用說明', color: '#ffffff', size: 'lg', weight: 'bold' }
+        ]
+      },
+      body: {
+        type: 'box', layout: 'vertical', spacing: 'lg', paddingAll: '20px',
+        contents: [
+          { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+            { type: 'text', text: '① 打卡記錄', weight: 'bold', size: 'sm' },
+            { type: 'text', text: '點「立即打卡」按鈕，系統自動記錄您的 GPS 位置。建議每到一個新地點就打卡一次。', wrap: true, size: 'xs', color: '#666666' }
+          ]},
+          { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+            { type: 'text', text: '② 照片上傳', weight: 'bold', size: 'sm' },
+            { type: 'text', text: '上傳進香途中照片，系統會讀取照片中的 GPS 定位。照片不會上傳到伺服器，僅讀取 GPS 資訊作為路徑紀錄。', wrap: true, size: 'xs', color: '#666666' }
+          ]},
+          { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+            { type: 'text', text: '③ 問卷填寫', weight: 'bold', size: 'sm' },
+            { type: 'text', text: '填寫善行紀錄、交通方式等問卷，系統自動計算您的碳足跡。問卷只需填一次。', wrap: true, size: 'xs', color: '#666666' }
+          ]},
+          { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
+            { type: 'text', text: '④ 等級成就', weight: 'bold', size: 'sm' },
+            { type: 'text', text: '打卡越多、走越遠，等級越高！共 9 級，從煉氣香客到飛升香客。', wrap: true, size: 'xs', color: '#666666' }
+          ]},
+          { type: 'separator' },
+          { type: 'text', text: '💡 輸入關鍵字快速操作', weight: 'bold', size: 'xs', margin: 'md' },
+          { type: 'text', text: '「打卡」→ 記錄足跡\n「等級」→ 我的紀錄\n「碳足跡」→ 碳排資訊\n「關於」→ 專案介紹', wrap: true, size: 'xs', color: '#888888', margin: 'sm' }
+        ]
+      },
+      footer: {
+        type: 'box', layout: 'vertical', paddingAll: '15px',
+        contents: [
+          { type: 'button', style: 'primary', color: '#1a5c2a', action: { type: 'uri', label: '📍 開始打卡', uri: TRACKER_URL } }
+        ]
+      }
+    }
+  };
+}
+
+// ── Stats Message (from DB) ──
+async function buildStatsMessage(userId, env) {
+  if (!userId) return { type: 'text', text: '請先透過 LINE 登入 tracker 建立帳號。' };
+
+  try {
+    const gpsPoints = await env.AUTH_DB.prepare(
+      'SELECT COUNT(*) as cnt FROM formosa_gps_points WHERE user_id = ?'
+    ).bind(userId).first();
+
+    const survey = await env.AUTH_DB.prepare(
+      'SELECT carbon_total_kg FROM formosa_surveys WHERE user_id = ? LIMIT 1'
+    ).bind(userId).first();
+
+    const user = await env.AUTH_DB.prepare(
+      'SELECT photo_count FROM formosa_users WHERE line_user_id = ?'
+    ).bind(userId).first();
+
+    const checkins = gpsPoints?.cnt || 0;
+    const carbon = survey?.carbon_total_kg || 0;
+    const photos = user?.photo_count || 0;
+
+    // Calculate level
+    const TITLES = [
+      { km: 0, checkins: 1, name: '煉氣香客', icon: '🔥' },
+      { km: 15, checkins: 3, name: '築基香客', icon: '🧱' },
+      { km: 45, checkins: 5, name: '金丹香客', icon: '💛' },
+      { km: 90, checkins: 6, name: '元嬰香客', icon: '👶' },
+      { km: 135, checkins: 8, name: '化神香客', icon: '✨' },
+      { km: 180, checkins: 10, name: '煉虛香客', icon: '🌀' },
+      { km: 225, checkins: 12, name: '合體香客', icon: '🤝' },
+      { km: 270, checkins: 14, name: '大乘香客', icon: '🏆' },
+      { km: 300, checkins: 14, name: '飛升香客', icon: '🚀' }
+    ];
+    let title = TITLES[0];
+    for (let i = TITLES.length - 1; i >= 0; i--) {
+      if (checkins >= TITLES[i].checkins) { title = TITLES[i]; break; }
+    }
+
+    const lines = [
+      `${title.icon} ${title.name}`,
+      '',
+      `📍 打卡次數：${checkins}`,
+      `📷 上傳照片：${photos} 張`,
+      `🌱 碳足跡：${carbon.toFixed(2)} kg CO₂e`,
+      survey ? '📋 問卷：已完成' : '📋 問卷：尚未填寫'
+    ];
+
+    return { type: 'text', text: lines.join('\n') };
+  } catch (e) {
+    return { type: 'text', text: '暫時無法讀取資料，請稍後再試。' };
+  }
+}
+
+// ── Carbon Info ──
+function buildCarbonInfoMessage() {
+  return {
+    type: 'text',
+    text: '🌱 碳足跡小知識\n\n進香途中的碳排放來源：\n🚗 開車：0.21 kg/km\n🛵 機車：0.05 kg/km\n🚌 公車：0.04 kg/km\n🚂 火車：0.04 kg/km\n🚄 高鐵：0.03 kg/km\n🚇 捷運：0.02 kg/km\n🚶 步行：0 kg/km ✨\n\n💧 每瓶瓶裝水：0.08 kg\n🏨 每晚旅宿：10 kg\n\n填寫問卷即可計算您的碳足跡！\n\n📍 前往填寫：\n' + TRACKER_URL
+  };
+}
+
+// ── Default Menu ──
+function buildMenuMessage() {
+  return {
+    type: 'text',
+    text: '🙏 媽祖 Bot 為您服務\n\n輸入以下關鍵字：\n📍「打卡」→ 記錄足跡\n📖「說明」→ 使用方式\n📊「等級」→ 我的紀錄\n🌱「碳足跡」→ 碳排資訊\n💡「關於」→ 專案介紹'
+  };
+}
+
 // ── LINE API Helpers ──
 async function getLineProfile(userId, token) {
   try {
@@ -793,9 +981,10 @@ async function replyLineMessage(replyToken, token, messages) {
 
 async function multicastLineMessage(userIds, token, messages) {
   // LINE multicast supports max 500 users per call
+  const results = [];
   for (let i = 0; i < userIds.length; i += 500) {
     const batch = userIds.slice(i, i + 500);
-    await fetch('https://api.line.me/v2/bot/message/multicast', {
+    const resp = await fetch('https://api.line.me/v2/bot/message/multicast', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -803,7 +992,14 @@ async function multicastLineMessage(userIds, token, messages) {
       },
       body: JSON.stringify({ to: batch, messages })
     });
+    const result = { status: resp.status };
+    if (!resp.ok) {
+      try { result.error = await resp.json(); } catch (e) { result.error = await resp.text(); }
+      console.error('LINE multicast error:', JSON.stringify(result));
+    }
+    results.push(result);
   }
+  return results;
 }
 
 // ── User Sync: LIFF login → upsert user + return server data ──
