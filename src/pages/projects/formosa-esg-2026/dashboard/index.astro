@@ -65,12 +65,16 @@ import AuthGate from '../_components/AuthGate.astro';
         <button class="map-toggle" id="toggleCluster" onclick="setMapMode('cluster')">聚類</button>
       </div>
     </div>
-    <div id="adminMap" class="admin-map"></div>
-    <div class="map-info-bar">
+    <div id="adminMap" class="admin-map admin-map-dark"></div>
+    <div class="map-info-bar map-info-dark">
       <div class="map-info-item" id="mapFront">🟢 前鋒：--</div>
       <div class="map-info-item" id="mapTail">🔴 尾巴：--</div>
       <div class="map-info-item" id="mapSpread">📏 展開：--</div>
       <div class="map-info-item" id="mapLost">⚠️ 失聯：--</div>
+    </div>
+    <div class="route-progress-wrap">
+      <div class="route-progress-labels"><span>🔴 白沙屯</span><span id="routeProgressPct">--</span><span>🟡 北港</span></div>
+      <div class="route-progress-track"><div class="route-progress-fill" id="routeProgressBar" style="width:0%"></div><div class="route-progress-mazu" id="routeProgressMazu" style="left:0%">👑</div></div>
     </div>
   </section>
 
@@ -258,16 +262,96 @@ import AuthGate from '../_components/AuthGate.astro';
     document.getElementById('kpiSaved').textContent = (carbon.carbon_saved_kg || 0);
   }
 
-  // ── Live Map: Heatmap + Cluster + Front/Tail ──
+  // ── Live Map: Dark Theme + Pilgrimage Route ──
   var clusterLayer = null;
   var frontTailLayer = null;
+  var routeLayer = null;
+  var mazuMarker = null;
+
+  // Pilgrimage route waypoints: 白沙屯 → 北港
+  var ROUTE_WAYPOINTS = [
+    { name: '白沙屯', lat: 24.5965, lng: 120.6560 },
+    { name: '通霄',   lat: 24.4890, lng: 120.6830 },
+    { name: '苑裡',   lat: 24.4410, lng: 120.6540 },
+    { name: '大甲',   lat: 24.3490, lng: 120.6220 },
+    { name: '清水',   lat: 24.2680, lng: 120.5590 },
+    { name: '沙鹿',   lat: 24.2330, lng: 120.5660 },
+    { name: '台中',   lat: 24.1480, lng: 120.6740 },
+    { name: '彰化',   lat: 24.0810, lng: 120.5380 },
+    { name: '西螺',   lat: 23.7980, lng: 120.4660 },
+    { name: '北港',   lat: 23.5710, lng: 120.3020 }
+  ];
+
+  // Total route distance (cumulative km between waypoints)
+  var ROUTE_DISTS = []; // cumulative km at each waypoint
+  (function() {
+    ROUTE_DISTS.push(0);
+    for (var i = 1; i < ROUTE_WAYPOINTS.length; i++) {
+      var d = _hav(ROUTE_WAYPOINTS[i-1].lat, ROUTE_WAYPOINTS[i-1].lng, ROUTE_WAYPOINTS[i].lat, ROUTE_WAYPOINTS[i].lng);
+      ROUTE_DISTS.push(ROUTE_DISTS[i-1] + d);
+    }
+  })();
+  var ROUTE_TOTAL_KM = ROUTE_DISTS[ROUTE_DISTS.length - 1];
+
+  // Haversine (global helper)
+  function _hav(lat1, lng1, lat2, lng2) {
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLng = (lng2 - lng1) * Math.PI / 180;
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  // Find progress % along route for a given lat/lng
+  function routeProgress(lat, lng) {
+    var bestDist = Infinity, bestIdx = 0;
+    for (var i = 0; i < ROUTE_WAYPOINTS.length; i++) {
+      var d = _hav(lat, lng, ROUTE_WAYPOINTS[i].lat, ROUTE_WAYPOINTS[i].lng);
+      if (d < bestDist) { bestDist = d; bestIdx = i; }
+    }
+    // Interpolate between nearest waypoint and neighbors
+    var cumKm = ROUTE_DISTS[bestIdx];
+    // Check if closer to next or prev segment
+    if (bestIdx > 0) {
+      var prevD = _hav(lat, lng, ROUTE_WAYPOINTS[bestIdx-1].lat, ROUTE_WAYPOINTS[bestIdx-1].lng);
+      var segLen = ROUTE_DISTS[bestIdx] - ROUTE_DISTS[bestIdx-1];
+      if (prevD < segLen) {
+        var frac = 1 - (prevD / (prevD + bestDist));
+        cumKm = ROUTE_DISTS[bestIdx-1] + frac * segLen;
+      }
+    }
+    return Math.min(100, Math.max(0, (cumKm / ROUTE_TOTAL_KM) * 100));
+  }
 
   function renderMap(points) {
     if (!map) {
-      map = L.map('adminMap').setView([24.3, 120.5], 9);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OSM', maxZoom: 19
+      map = L.map('adminMap', { zoomControl: false }).setView([24.1, 120.5], 9);
+      // Dark tile layer (Carto Dark Matter)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://carto.com/">CARTO</a>', maxZoom: 19, subdomains: 'abcd'
       }).addTo(map);
+      L.control.zoom({ position: 'topright' }).addTo(map);
+
+      // Draw pilgrimage route polyline
+      routeLayer = L.layerGroup().addTo(map);
+      var routeCoords = ROUTE_WAYPOINTS.map(function(w) { return [w.lat, w.lng]; });
+      // Outer glow line
+      L.polyline(routeCoords, { color: '#ffd700', weight: 6, opacity: 0.25, lineCap: 'round' }).addTo(routeLayer);
+      // Main route line
+      L.polyline(routeCoords, { color: '#ffd700', weight: 2.5, opacity: 0.8, lineCap: 'round', dashArray: null }).addTo(routeLayer);
+      // Waypoint dots
+      ROUTE_WAYPOINTS.forEach(function(w, i) {
+        var isEnd = (i === 0 || i === ROUTE_WAYPOINTS.length - 1);
+        L.circleMarker([w.lat, w.lng], {
+          radius: isEnd ? 6 : 3,
+          color: isEnd ? '#ffd700' : 'rgba(255,215,0,0.5)',
+          fillColor: isEnd ? '#ffd700' : 'rgba(255,215,0,0.3)',
+          fillOpacity: 1, weight: isEnd ? 2 : 1
+        }).bindTooltip(w.name, {
+          permanent: isEnd, direction: 'top', className: 'route-tooltip',
+          offset: [0, -8]
+        }).addTo(routeLayer);
+      });
     }
 
     window._mapPoints = points;
@@ -283,25 +367,17 @@ import AuthGate from '../_components/AuthGate.astro';
     });
     var currentPositions = Object.values(userLatest);
 
-    // Haversine for distance
-    function hav(lat1, lng1, lat2, lng2) {
-      var R = 6371;
-      var dLat = (lat2 - lat1) * Math.PI / 180;
-      var dLng = (lng2 - lng1) * Math.PI / 180;
-      var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2) * Math.sin(dLng/2);
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
-
-    // Baishatun reference point for "progress" calculation
+    // Baishatun reference for distance
     var BAISHATUN = { lat: 24.5965, lng: 120.656 };
     currentPositions.forEach(function(p) {
-      p._distFromStart = hav(BAISHATUN.lat, BAISHATUN.lng, p.lat, p.lng);
+      p._distFromStart = _hav(BAISHATUN.lat, BAISHATUN.lng, p.lat, p.lng);
+      p._routePct = routeProgress(p.lat, p.lng);
     });
     currentPositions.sort(function(a, b) { return b._distFromStart - a._distFromStart; });
 
     var front = currentPositions[0];
     var tail = currentPositions[currentPositions.length - 1];
-    var spread = front && tail ? hav(front.lat, front.lng, tail.lat, tail.lng) : 0;
+    var spread = front && tail ? _hav(front.lat, front.lng, tail.lat, tail.lng) : 0;
 
     // Lost signal: no update > 30 min
     var now = Date.now();
@@ -315,6 +391,15 @@ import AuthGate from '../_components/AuthGate.astro';
     document.getElementById('mapSpread').textContent = '📏 展開：' + spread.toFixed(1) + ' km';
     document.getElementById('mapLost').textContent = '⚠️ 失聯：' + lostCount + ' 人';
 
+    // Update route progress bar
+    var avgPct = 0;
+    currentPositions.forEach(function(p) { avgPct += p._routePct; });
+    avgPct = currentPositions.length ? (avgPct / currentPositions.length) : 0;
+    var frontPct = front ? front._routePct : 0;
+    document.getElementById('routeProgressBar').style.width = avgPct.toFixed(1) + '%';
+    document.getElementById('routeProgressMazu').style.left = frontPct.toFixed(1) + '%';
+    document.getElementById('routeProgressPct').textContent = avgPct.toFixed(0) + '%';
+
     // Build all layers
     buildMarkerLayer(points);
     buildHeatLayer(currentPositions);
@@ -324,7 +409,9 @@ import AuthGate from '../_components/AuthGate.astro';
     // Show default mode
     setMapMode(mapMode);
 
+    // Include route waypoints in bounds so we always see the pilgrimage route
     var bounds = currentPositions.map(function(p) { return [p.lat, p.lng]; });
+    ROUTE_WAYPOINTS.forEach(function(w) { bounds.push([w.lat, w.lng]); });
     if (bounds.length > 0) map.fitBounds(bounds, { padding: [30, 30] });
   }
 
@@ -342,11 +429,11 @@ import AuthGate from '../_components/AuthGate.astro';
     Object.keys(userGroups).forEach(function(uid) {
       var pts = userGroups[uid];
       var hue = simpleHash(uid) % 360;
-      var color = 'hsl(' + hue + ', 70%, 50%)';
+      var color = 'hsl(' + hue + ', 80%, 65%)';
       pts.forEach(function(p) {
         L.circleMarker([p.lat, p.lng], {
-          radius: 4, color: color, fillColor: color, fillOpacity: 0.7, weight: 1
-        }).bindPopup(uid.substring(0, 8) + '<br>' + (p.timestamp || '')).addTo(markerLayer);
+          radius: 4, color: color, fillColor: color, fillOpacity: 0.8, weight: 1
+        }).bindPopup('<span style="color:#ccc">' + uid.substring(0, 8) + '</span><br><span style="color:#888">' + (p.timestamp || '') + '</span>').addTo(markerLayer);
       });
     });
   }
@@ -355,19 +442,19 @@ import AuthGate from '../_components/AuthGate.astro';
     if (heatLayer) map.removeLayer(heatLayer);
     heatLayer = L.layerGroup();
 
-    // Multi-layer circles for heat effect
+    // Multi-layer circles for dark-theme heat effect (orange/gold/red)
     positions.forEach(function(p) {
-      // Outer glow
+      // Wide outer glow
       L.circleMarker([p.lat, p.lng], {
-        radius: 25, color: 'transparent', fillColor: '#FF4500', fillOpacity: 0.08, weight: 0
+        radius: 30, color: 'transparent', fillColor: '#ff4500', fillOpacity: 0.06, weight: 0
       }).addTo(heatLayer);
-      // Mid
+      // Mid glow
       L.circleMarker([p.lat, p.lng], {
-        radius: 15, color: 'transparent', fillColor: '#FF6B00', fillOpacity: 0.12, weight: 0
+        radius: 18, color: 'transparent', fillColor: '#ff6b00', fillOpacity: 0.15, weight: 0
       }).addTo(heatLayer);
       // Core
       L.circleMarker([p.lat, p.lng], {
-        radius: 6, color: 'transparent', fillColor: '#FFD700', fillOpacity: 0.25, weight: 0
+        radius: 7, color: 'transparent', fillColor: '#ffd700', fillOpacity: 0.4, weight: 0
       }).addTo(heatLayer);
     });
   }
@@ -376,8 +463,7 @@ import AuthGate from '../_components/AuthGate.astro';
     if (clusterLayer) map.removeLayer(clusterLayer);
     clusterLayer = L.layerGroup();
 
-    // Grid-based clustering
-    var gridSize = 0.02; // ~2km cells
+    var gridSize = 0.02;
     var cells = {};
     positions.forEach(function(p) {
       var key = Math.round(p.lat / gridSize) + ',' + Math.round(p.lng / gridSize);
@@ -393,12 +479,15 @@ import AuthGate from '../_components/AuthGate.astro';
       var r = Math.min(35, 10 + Math.sqrt(c.count) * 3);
       var opacity = Math.min(0.8, 0.3 + c.count / 100);
 
+      // Outer glow
+      L.circleMarker([lat, lng], {
+        radius: r + 6, color: 'transparent', fillColor: '#f59e0b', fillOpacity: opacity * 0.2, weight: 0
+      }).addTo(clusterLayer);
       // Bubble
       L.circleMarker([lat, lng], {
         radius: r, color: '#f59e0b', fillColor: '#f59e0b', fillOpacity: opacity, weight: 2
-      }).bindPopup('此區域 ' + c.count + ' 人').addTo(clusterLayer);
+      }).bindPopup('<span style="color:#ccc">此區域 ' + c.count + ' 人</span>').addTo(clusterLayer);
 
-      // Label
       if (c.count >= 2) {
         var icon = L.divIcon({
           className: 'cluster-label',
@@ -416,20 +505,50 @@ import AuthGate from '../_components/AuthGate.astro';
     frontTailLayer = L.layerGroup();
 
     if (front) {
+      // Glow ring
       L.circleMarker([front.lat, front.lng], {
-        radius: 10, color: '#fff', fillColor: '#10b981', fillOpacity: 1, weight: 3
-      }).bindPopup('🟢 前鋒<br>' + front._distFromStart.toFixed(1) + ' km').addTo(frontTailLayer);
+        radius: 18, color: 'transparent', fillColor: '#10b981', fillOpacity: 0.2, weight: 0
+      }).addTo(frontTailLayer);
+      L.circleMarker([front.lat, front.lng], {
+        radius: 10, color: '#10b981', fillColor: '#10b981', fillOpacity: 1, weight: 2
+      }).bindPopup('<span style="color:#10b981;font-weight:700">🟢 前鋒</span><br>' + front._distFromStart.toFixed(1) + ' km').addTo(frontTailLayer);
       L.marker([front.lat, front.lng], {
-        icon: L.divIcon({ className: 'front-tail-label', html: '前鋒', iconSize: [40, 16], iconAnchor: [20, -8] })
+        icon: L.divIcon({ className: 'front-tail-label front-label-dark', html: '前鋒', iconSize: [40, 16], iconAnchor: [20, -12] })
       }).addTo(frontTailLayer);
     }
     if (tail) {
+      // Glow ring
       L.circleMarker([tail.lat, tail.lng], {
-        radius: 10, color: '#fff', fillColor: '#ef4444', fillOpacity: 1, weight: 3
-      }).bindPopup('🔴 尾巴<br>' + tail._distFromStart.toFixed(1) + ' km').addTo(frontTailLayer);
-      L.marker([tail.lat, tail.lng], {
-        icon: L.divIcon({ className: 'front-tail-label', html: '尾巴', iconSize: [40, 16], iconAnchor: [20, -8] })
+        radius: 18, color: 'transparent', fillColor: '#ef4444', fillOpacity: 0.2, weight: 0
       }).addTo(frontTailLayer);
+      L.circleMarker([tail.lat, tail.lng], {
+        radius: 10, color: '#ef4444', fillColor: '#ef4444', fillOpacity: 1, weight: 2
+      }).bindPopup('<span style="color:#ef4444;font-weight:700">🔴 尾巴</span><br>' + tail._distFromStart.toFixed(1) + ' km').addTo(frontTailLayer);
+      L.marker([tail.lat, tail.lng], {
+        icon: L.divIcon({ className: 'front-tail-label tail-label-dark', html: '尾巴', iconSize: [40, 16], iconAnchor: [20, -12] })
+      }).addTo(frontTailLayer);
+    }
+
+    // 神轎 (Mazu palanquin) marker — median position of all users
+    if (front && tail) {
+      var allLats = [], allLngs = [];
+      (window._mapPoints || []).forEach(function(p) { allLats.push(p.lat); allLngs.push(p.lng); });
+      if (allLats.length > 0) {
+        allLats.sort(function(a,b){return a-b;});
+        allLngs.sort(function(a,b){return a-b;});
+        var medLat = allLats[Math.floor(allLats.length / 2)];
+        var medLng = allLngs[Math.floor(allLngs.length / 2)];
+        // Gold glow
+        L.circleMarker([medLat, medLng], {
+          radius: 22, color: 'transparent', fillColor: '#ffd700', fillOpacity: 0.15, weight: 0
+        }).addTo(frontTailLayer);
+        L.circleMarker([medLat, medLng], {
+          radius: 12, color: '#ffd700', fillColor: '#ffd700', fillOpacity: 1, weight: 2
+        }).bindPopup('<span style="color:#ffd700;font-weight:700">👑 神轎（媽祖）</span>').addTo(frontTailLayer);
+        L.marker([medLat, medLng], {
+          icon: L.divIcon({ className: 'front-tail-label mazu-label-dark', html: '👑 神轎', iconSize: [56, 18], iconAnchor: [28, -14] })
+        }).addTo(frontTailLayer);
+      }
     }
   }
 
@@ -448,7 +567,7 @@ import AuthGate from '../_components/AuthGate.astro';
     document.getElementById('toggleHeat').className = 'map-toggle' + (mode === 'heat' ? ' active' : '');
     document.getElementById('toggleCluster').className = 'map-toggle' + (mode === 'cluster' ? ' active' : '');
 
-    // Remove all layers
+    // Remove data layers (keep route)
     if (markerLayer) map.removeLayer(markerLayer);
     if (heatLayer) map.removeLayer(heatLayer);
     if (clusterLayer) map.removeLayer(clusterLayer);
@@ -845,13 +964,18 @@ import AuthGate from '../_components/AuthGate.astro';
   .dash-section-header h2 { margin-bottom: 0; }
   .dash-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 
-  /* Map */
+  /* Map — Dark Theme */
   .admin-map { height: 450px; border-radius: 12px; overflow: hidden; }
+  .admin-map-dark { border: 1px solid #21262d; }
   .map-info-bar {
     display: flex; gap: 1rem; flex-wrap: wrap;
     padding: 0.75rem 1rem; margin-top: 0.5rem;
     background: #FAF6F1; border-radius: 10px;
     font-size: 0.8rem; color: #555;
+  }
+  .map-info-dark {
+    background: #0d1117; color: #c9d1d9;
+    border: 1px solid #21262d;
   }
   .map-info-item { white-space: nowrap; }
   .cluster-label {
@@ -859,23 +983,78 @@ import AuthGate from '../_components/AuthGate.astro';
   }
   .cluster-label span {
     font-size: 11px; font-weight: 800; color: #fff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
   }
   .front-tail-label {
     background: none !important; border: none !important; box-shadow: none !important;
-    font-size: 10px; font-weight: 700; color: #333;
-    text-align: center; text-shadow: 0 0 3px #fff, 0 0 3px #fff;
+    font-size: 10px; font-weight: 700;
+    text-align: center;
   }
+  .front-label-dark { color: #10b981; text-shadow: 0 0 6px rgba(16,185,129,0.6), 0 0 2px #000; }
+  .tail-label-dark { color: #ef4444; text-shadow: 0 0 6px rgba(239,68,68,0.6), 0 0 2px #000; }
+  .mazu-label-dark { color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.6), 0 0 2px #000; font-size: 11px; }
+  .route-tooltip {
+    background: rgba(13,17,23,0.85) !important;
+    color: #ffd700 !important;
+    border: 1px solid #ffd700 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 8px rgba(255,215,0,0.3) !important;
+  }
+  .route-tooltip::before { border-top-color: #ffd700 !important; }
+
+  /* Route Progress Bar */
+  .route-progress-wrap {
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 10px;
+  }
+  .route-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #c9d1d9;
+    margin-bottom: 0.4rem;
+  }
+  .route-progress-track {
+    position: relative;
+    height: 10px;
+    background: #21262d;
+    border-radius: 5px;
+    overflow: visible;
+  }
+  .route-progress-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+    transition: width 0.8s ease;
+    box-shadow: 0 0 8px rgba(245,158,11,0.4);
+  }
+  .route-progress-mazu {
+    position: absolute;
+    top: -8px;
+    transform: translateX(-50%);
+    font-size: 16px;
+    transition: left 0.8s ease;
+    filter: drop-shadow(0 0 4px rgba(255,215,0,0.8));
+  }
+
   .map-toggles { display: flex; gap: 0.25rem; }
   .map-toggle {
     padding: 0.3rem 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid #21262d;
     border-radius: 6px;
-    background: #fff;
+    background: #0d1117;
+    color: #c9d1d9;
     cursor: pointer;
     font-size: 0.8rem;
   }
-  .map-toggle.active { background: #B45309; color: #fff; border-color: #B45309; }
+  .map-toggle:hover { border-color: #f59e0b; color: #f59e0b; }
+  .map-toggle.active { background: #f59e0b; color: #0d1117; border-color: #f59e0b; font-weight: 600; }
 
   /* Carbon */
   .carbon-saved-big { font-size: 2.5rem; font-weight: 800; color: #2E7D32; text-align: center; }
