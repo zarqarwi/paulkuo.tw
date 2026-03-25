@@ -946,6 +946,82 @@ function buildMenuMessage() {
   };
 }
 
+// ── Rich Menu Setup ──
+export async function handleFormosaRichMenu(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
+
+  const token = env.FORMOSA_LINE_TOKEN;
+  const LINE_API = 'https://api.line.me/v2/bot';
+
+  try {
+    // Step 1: Create Rich Menu structure
+    // Layout: 2500x843, 2 rows x 3 columns = 6 buttons
+    const richMenu = {
+      size: { width: 2500, height: 843 },
+      selected: true,
+      name: 'Formosa ESG 2026',
+      chatBarText: '📍 媽祖進香選單',
+      areas: [
+        // Row 1
+        { bounds: { x: 0, y: 0, width: 833, height: 421 }, action: { type: 'message', text: '打卡' } },
+        { bounds: { x: 833, y: 0, width: 834, height: 421 }, action: { type: 'message', text: '等級' } },
+        { bounds: { x: 1667, y: 0, width: 833, height: 421 }, action: { type: 'message', text: '碳足跡' } },
+        // Row 2
+        { bounds: { x: 0, y: 421, width: 833, height: 422 }, action: { type: 'message', text: '說明' } },
+        { bounds: { x: 833, y: 421, width: 834, height: 422 }, action: { type: 'message', text: '關於' } },
+        { bounds: { x: 1667, y: 421, width: 833, height: 422 }, action: { type: 'uri', uri: TRACKER_URL, label: '開啟 Tracker' } }
+      ]
+    };
+
+    // Create rich menu
+    const createRes = await fetch(`${LINE_API}/richmenu`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(richMenu)
+    });
+    const createData = await createRes.json();
+    if (!createRes.ok) return jsonResponse({ error: 'Create failed', detail: createData }, 500, request);
+    const richMenuId = createData.richMenuId;
+
+    // Step 2: Fetch pre-built image and upload to LINE
+    const imgRes = await fetchRichMenuImage();
+    const uploadRes = await fetch(`https://api-data.line.me/v2/bot/richmenu/${richMenuId}/content`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'image/png', 'Authorization': `Bearer ${token}` },
+      body: imgRes
+    });
+    if (!uploadRes.ok) {
+      const uploadErr = await uploadRes.text();
+      return jsonResponse({ error: 'Image upload failed', detail: uploadErr, richMenuId }, 500, request);
+    }
+
+    // Step 3: Set as default for all users
+    const defaultRes = await fetch(`${LINE_API}/user/all/richmenu/${richMenuId}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    return jsonResponse({
+      ok: true,
+      richMenuId,
+      set_default: defaultRes.ok
+    }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// Rich Menu image: fetch pre-built PNG from site
+const RICH_MENU_IMAGE_URL = 'https://paulkuo.tw/images/formosa/rich-menu.png';
+
+async function fetchRichMenuImage() {
+  const res = await fetch(RICH_MENU_IMAGE_URL);
+  if (!res.ok) throw new Error('Failed to fetch rich menu image: ' + res.status);
+  return await res.arrayBuffer();
+}
+
 // ── LINE API Helpers ──
 async function getLineProfile(userId, token) {
   try {
