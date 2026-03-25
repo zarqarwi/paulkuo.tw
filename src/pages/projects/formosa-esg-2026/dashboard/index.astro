@@ -124,6 +124,23 @@ import AuthGate from '../_components/AuthGate.astro';
     </div>
   </section>
 
+  <!-- Stress Test -->
+  <section class="dash-section">
+    <h2>🔧 壓力測試</h2>
+    <div class="push-form">
+      <div class="push-row">
+        <label>人數</label>
+        <input type="number" id="stressUsers" class="push-input" value="100" min="1" max="10000">
+      </div>
+      <div class="push-row">
+        <label>並發</label>
+        <input type="number" id="stressConcurrency" class="push-input" value="10" min="1" max="100">
+      </div>
+      <button id="stressBtn" class="push-send-btn" onclick="runStressTest()" style="background:#6B7280;">🔧 開始壓測</button>
+      <div id="stressResult" style="margin-top:0.75rem;font-size:0.85rem;color:#555;"></div>
+    </div>
+  </section>
+
   <!-- User Table -->
   <section class="dash-section">
     <div class="dash-section-header">
@@ -685,6 +702,60 @@ import AuthGate from '../_components/AuthGate.astro';
       if (d.ok) { alert('推播成功！已發送 ' + d.sent + ' 人'); }
       else { alert('推播失敗: ' + (d.error || '未知錯誤')); }
     }).catch(function(e) { btn.disabled = false; btn.textContent = '📤 發送推播'; alert('推播失敗: ' + e.message); });
+  };
+
+  // ── Stress Test ──
+  window.runStressTest = async function() {
+    var totalUsers = parseInt(document.getElementById('stressUsers').value) || 100;
+    var concurrency = parseInt(document.getElementById('stressConcurrency').value) || 10;
+    var btn = document.getElementById('stressBtn');
+    var result = document.getElementById('stressResult');
+    btn.disabled = true; btn.textContent = '壓測中...';
+    result.innerHTML = '';
+
+    // Generate random GPS points around Baishatun route (苗栗→彰化)
+    var baseLat = 24.55, baseLng = 120.65;
+    var ok = 0, fail = 0, rateLimited = 0, times = [];
+    var start = Date.now();
+
+    async function sendOne(i) {
+      var userId = 'stress_test_' + i + '_' + Date.now();
+      var lat = baseLat + (Math.random() - 0.5) * 0.5;
+      var lng = baseLng + (Math.random() - 0.5) * 0.5;
+      var t0 = Date.now();
+      try {
+        var r = await fetch(API + '/api/formosa/checkin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, lat: lat, lng: lng, source: 'stress_test', timestamp: new Date().toISOString() })
+        });
+        times.push(Date.now() - t0);
+        var d = await r.json();
+        if (r.status === 429) { rateLimited++; }
+        else if (d.ok) { ok++; }
+        else { fail++; }
+      } catch (e) { fail++; times.push(Date.now() - t0); }
+    }
+
+    // Run in batches
+    for (var batch = 0; batch < totalUsers; batch += concurrency) {
+      var promises = [];
+      for (var j = 0; j < concurrency && batch + j < totalUsers; j++) {
+        promises.push(sendOne(batch + j));
+      }
+      await Promise.all(promises);
+      result.innerHTML = '進度: ' + Math.min(batch + concurrency, totalUsers) + '/' + totalUsers;
+    }
+
+    var elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    var avgMs = times.length ? (times.reduce(function(a,b){return a+b;},0) / times.length).toFixed(0) : 0;
+    var p95 = times.length ? times.sort(function(a,b){return a-b;})[Math.floor(times.length * 0.95)].toFixed(0) : 0;
+
+    result.innerHTML = '<strong>完成!</strong> ' + elapsed + '秒<br>' +
+      '✅ 成功: ' + ok + ' ｜ ❌ 失敗: ' + fail + ' ｜ 🚫 限流: ' + rateLimited + '<br>' +
+      '⏱ 平均: ' + avgMs + 'ms ｜ P95: ' + p95 + 'ms ｜ RPS: ' + (totalUsers / elapsed).toFixed(1);
+    btn.disabled = false; btn.textContent = '🔧 開始壓測';
+    fetchAll(); // refresh dashboard data
   };
 
   // ── Init + Auto-refresh ──

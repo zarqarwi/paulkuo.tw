@@ -384,6 +384,53 @@ export async function handleFormosaPush(request, env) {
   }
 }
 
+// ── Scheduled Push (called from cron) ──
+const PUSH_MESSAGES = [
+  { title: '📍 早安打卡', text: '媽祖保佑 🙏 新的一天，記錄您的進香足跡！' },
+  { title: '📍 午間打卡', text: '走了好多路！打個卡記錄一下 🚶' },
+  { title: '📍 下午打卡', text: '繼續前進！打卡累積您的香客等級 ✨' },
+  { title: '📍 傍晚打卡', text: '今天辛苦了 🙏 打卡記錄今日行程' },
+];
+
+export async function handleFormosaScheduledPush(env) {
+  // Only push during pilgrimage: 4/12 - 4/20, every 3 hours (6am, 9am, 12pm, 3pm, 6pm)
+  const now = new Date(Date.now() + 8 * 3600 * 1000); // UTC+8
+  const month = now.getUTCMonth() + 1; // 1-indexed
+  const day = now.getUTCDate();
+  const hour = now.getUTCHours();
+
+  if (month !== 4 || day < 12 || day > 20) return { skipped: true, reason: 'outside pilgrimage dates' };
+
+  const pushHours = [6, 9, 12, 15, 18];
+  if (!pushHours.includes(hour)) return { skipped: true, reason: 'not a push hour, current: ' + hour };
+
+  // Check activity status
+  const status = await getFormosaStatus(env.TICKER_KV);
+  if (status.status !== 'active') return { skipped: true, reason: 'activity ' + status.status };
+
+  // Pick message based on hour
+  const msgIdx = Math.min(pushHours.indexOf(hour), PUSH_MESSAGES.length - 1);
+  const msg = PUSH_MESSAGES[msgIdx];
+
+  const users = await env.AUTH_DB.prepare('SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL').all();
+  if (!users.results?.length) return { skipped: true, reason: 'no users' };
+
+  const userIds = users.results.map(u => u.line_user_id);
+  const message = {
+    type: 'template',
+    altText: msg.title,
+    template: {
+      type: 'buttons',
+      title: msg.title,
+      text: msg.text,
+      actions: [{ type: 'uri', label: '立即打卡 📍', uri: 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/' }]
+    }
+  };
+
+  await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [message]);
+  return { sent: userIds.length, message: msg.title };
+}
+
 // ── Data Dashboard API ──
 export async function handleFormosaData(request, env) {
   if (request.method === 'OPTIONS') {
