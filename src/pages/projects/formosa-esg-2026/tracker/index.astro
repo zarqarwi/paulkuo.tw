@@ -326,8 +326,19 @@ import AuthGate from '../_components/AuthGate.astro';
     </div>
   </div>
 
-  <!-- Q12: 確認提交 -->
+  <!-- Q12: 手機號碼（選填） -->
   <div class="q-card" data-q="13">
+    <label class="form-label">手機號碼<span class="form-hint">（選填）</span></label>
+    <p style="color:var(--text-secondary);font-size:0.82rem;margin-bottom:1rem;line-height:1.5">用於活動後續通知與合作夥伴優惠</p>
+    <input type="tel" id="phoneInput" class="transport-input" placeholder="0912-345-678" style="width:100%;max-width:280px;font-size:1rem;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary)">
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q13: 確認提交 -->
+  <div class="q-card" data-q="14">
     <div style="text-align:center;padding:1rem 0">
       <div style="font-size:3rem;margin-bottom:1rem">✅</div>
       <label class="form-label" style="text-align:center;font-size:1.2rem">確認提交</label>
@@ -405,7 +416,7 @@ import AuthGate from '../_components/AuthGate.astro';
           📷 點擊上傳照片
           <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" multiple id="photoInputMini" style="display:none">
         </div>
-        <div id="photoResultsMini"></div>
+        <div id="photoStatusMini" class="photo-status"></div>
       </div>
 
       <div class="checkin-progress" id="checkinProgress"></div>
@@ -499,6 +510,15 @@ import AuthGate from '../_components/AuthGate.astro';
       if (data.survey_done) localStorage.setItem('formosa_survey_done', 'true');
       if (data.gps_track && data.gps_track.length > 0) {
         localStorage.setItem('formosa_gps_track', JSON.stringify(data.gps_track));
+      }
+      // Restore photo count from server (use max of local vs server)
+      if (typeof data.photo_count === 'number') {
+        var localCount = parseInt(localStorage.getItem('formosa_photo_count') || '0', 10);
+        var serverCount = data.photo_count;
+        var maxCount = Math.max(localCount, serverCount);
+        cumulativePhotoCount = maxCount;
+        localStorage.setItem('formosa_photo_count', maxCount);
+        updatePhotoStatusDisplay();
       }
     }).catch(function() {});
   }
@@ -607,7 +627,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
   // ── One-Question-Per-Card System ──
   var cards = document.querySelectorAll('.q-card[data-q]');
-  var totalQ = 13; // numbered questions (1-13)
+  var totalQ = 14; // numbered questions (1-14)
   var curQ = 1;
   var autoTimer = null;
 
@@ -825,7 +845,8 @@ import AuthGate from '../_components/AuthGate.astro';
       gps_points: gpsTrackPoints.concat(allPoints).sort(function(a, b) {
         if (a.datetime && b.datetime) return a.datetime.localeCompare(b.datetime);
         return 0;
-      })
+      }),
+      phone: (document.getElementById('phoneInput') ? document.getElementById('phoneInput').value.trim() : '') || null
     };
   }
 
@@ -999,6 +1020,15 @@ import AuthGate from '../_components/AuthGate.astro';
       });
       result = await resp.json();
       console.log('Submit result:', result);
+
+      // Save phone separately if provided
+      if (data.phone && lineUserId) {
+        fetch(API_BASE + '/api/formosa/user/phone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ line_user_id: lineUserId, phone: data.phone })
+        }).catch(function() {});
+      }
     } catch (e) {
       console.warn('API submit failed:', e.message);
     }
@@ -1045,28 +1075,36 @@ import AuthGate from '../_components/AuthGate.astro';
 
   // ── Mini Photo Upload Handler (check-in mode) ──
   var uploadedPhotos = []; // store for sharing
+  var cumulativePhotoCount = parseInt(localStorage.getItem('formosa_photo_count') || '0', 10);
 
-  async function handlePhotos(files, resultsEl) {
-    if (!resultsEl) return;
+  function updatePhotoStatusDisplay() {
+    var statusEl = document.getElementById('photoStatusMini');
+    if (!statusEl) return;
+    if (cumulativePhotoCount <= 0) {
+      statusEl.innerHTML = '';
+      return;
+    }
+    statusEl.innerHTML = '<span class="photo-status-text">📷 已上傳 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
+  }
+
+  async function handlePhotos(files, statusEl) {
+    if (!statusEl) statusEl = document.getElementById('photoStatusMini');
+    if (!statusEl) return;
     var count = 0;
     var gpsCount = 0;
 
+    // Show uploading state
+    statusEl.innerHTML = '<span class="photo-status-text photo-status-loading">📷 上傳中...</span>';
+
+    var failed = false;
     for (var i = 0; i < files.length; i++) {
       var file = files[i];
       if (!file.type.match(/^image\/(jpe?g|png|heic|heif)$/)) continue;
 
       count++;
 
-      // Create thumbnail
-      var thumb = document.createElement('div');
-      thumb.className = 'photo-thumb';
-      var img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      img.alt = file.name;
-      thumb.appendChild(img);
-
-      // Store for sharing
-      uploadedPhotos.push({ file: file, url: img.src, name: file.name });
+      // Store for sharing (keep file ref but no objectURL thumbnail)
+      uploadedPhotos.push({ file: file, name: file.name });
 
       // Try extract GPS
       try {
@@ -1074,10 +1112,6 @@ import AuthGate from '../_components/AuthGate.astro';
         var data = parseExifGPS(buf);
         if (data && data.hasGPS) {
           gpsCount++;
-          var label = document.createElement('span');
-          label.className = 'photo-gps-badge';
-          label.textContent = '📍';
-          thumb.appendChild(label);
 
           // Add to track points and calculate distance
           var last = getLastCheckinCoords();
@@ -1096,24 +1130,35 @@ import AuthGate from '../_components/AuthGate.astro';
           });
         }
       } catch (e) { /* no GPS */ }
-
-      resultsEl.appendChild(thumb);
     }
 
-    // Show feedback
     if (count > 0) {
-      var feedback = document.createElement('div');
-      feedback.className = 'photo-feedback';
-      feedback.textContent = '✅ 已上傳 ' + count + ' 張照片' + (gpsCount > 0 ? '（' + gpsCount + ' 張含 GPS）' : '');
-      resultsEl.appendChild(feedback);
+      // Update cumulative count
+      cumulativePhotoCount += count;
+      localStorage.setItem('formosa_photo_count', cumulativePhotoCount);
+
+      // Increment on server
+      var userId = lineUserId || localStorage.getItem('formosa_user_id') || '';
+      if (userId) {
+        try {
+          await fetch(API_BASE + '/api/formosa/photos/count', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ line_user_id: userId, count: count })
+          });
+        } catch (e) { /* offline — localStorage is source of truth */ }
+      }
+
+      // Show success text
+      updatePhotoStatusDisplay();
 
       // Update stats display
       var km = getSavedKm();
       var checkins = getSavedCheckins();
       var t = getTitle(checkins, km);
-      var statsEl = document.getElementById('checkinStats');
-      if (statsEl) {
-        statsEl.innerHTML = '<div class="done-stats">' +
+      var statsEl2 = document.getElementById('checkinStats');
+      if (statsEl2) {
+        statsEl2.innerHTML = '<div class="done-stats">' +
           '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
           '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
           '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
@@ -1130,6 +1175,8 @@ import AuthGate from '../_components/AuthGate.astro';
         });
         localStorage.setItem('formosa_gps_track', JSON.stringify(savedTrack));
       } catch(e) {}
+    } else if (failed) {
+      statusEl.innerHTML = '<span class="photo-status-text photo-status-error">⚠️ 上傳失敗，請重試</span><button class="photo-retry-btn" onclick="document.getElementById(\'photoInputMini\').click()">重試</button>';
     }
   }
 
@@ -1161,9 +1208,12 @@ import AuthGate from '../_components/AuthGate.astro';
     if (zoneMini && inputMini) {
       zoneMini.addEventListener('click', function() { inputMini.click(); });
       inputMini.addEventListener('change', function() {
-        if (this.files.length > 0) handlePhotos(this.files, document.getElementById('photoResultsMini'));
+        if (this.files.length > 0) handlePhotos(this.files, document.getElementById('photoStatusMini'));
       });
     }
+
+    // Show existing photo count on page load
+    updatePhotoStatusDisplay();
   }
 
   // Override manualCheckin to calculate distance and update stats
@@ -2238,51 +2288,44 @@ import AuthGate from '../_components/AuthGate.astro';
   }
   .upload-zone-mini:hover { border-color: var(--accent-faith); }
 
-  /* Photo thumbnails */
-  #photoResultsMini {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-  }
-  .photo-thumb {
-    position: relative;
-    width: 72px !important; height: 72px !important;
-    min-width: 72px; min-height: 72px;
-    max-width: 72px !important; max-height: 72px !important;
-    border-radius: 8px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .photo-thumb img {
-    width: 72px !important; height: 72px !important;
-    max-width: 72px !important; max-height: 72px !important;
-    object-fit: cover;
-    display: block;
-  }
-  #photoResultsMini img, #photoResults img {
-    width: 72px !important; height: 72px !important;
-    max-width: 72px !important; max-height: 72px !important;
-    object-fit: cover;
-  }
-  .photo-gps-badge {
-    position: absolute;
-    bottom: 2px; right: 2px;
-    font-size: 0.7rem;
-    background: rgba(0,0,0,0.5);
-    border-radius: 4px;
-    padding: 1px 3px;
-  }
-  .photo-feedback {
-    width: 100%;
-    text-align: center;
-    color: #059669;
-    font-size: 0.85rem;
+  /* Photo status text (replaces thumbnails) */
+  .photo-status {
     margin-top: 0.5rem;
-    padding: 0.5rem;
-    background: rgba(5, 150, 105, 0.08);
-    border-radius: 8px;
+    text-align: center;
   }
+  .photo-status-text {
+    display: block;
+    font-size: 0.82rem;
+    color: #888;
+  }
+  .photo-status-check {
+    color: #059669;
+    font-weight: 600;
+  }
+  .photo-status-thanks {
+    display: block;
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 0.15rem;
+  }
+  .photo-status-loading {
+    color: #666;
+  }
+  .photo-status-error {
+    color: #dc2626;
+  }
+  .photo-retry-btn {
+    display: inline-block;
+    margin-top: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    border: 1px solid #dc2626;
+    border-radius: 6px;
+    background: transparent;
+    color: #dc2626;
+    cursor: pointer;
+  }
+  .photo-retry-btn:hover { background: rgba(220,38,38,0.08); }
 
   .my-journey-link {
     display: inline-block;

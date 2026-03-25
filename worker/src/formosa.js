@@ -58,6 +58,8 @@ CREATE TABLE IF NOT EXISTS formosa_users (
   line_user_id TEXT UNIQUE,
   display_name TEXT,
   picture_url TEXT,
+  phone TEXT DEFAULT NULL,
+  photo_count INTEGER DEFAULT 0,
   role TEXT DEFAULT 'participant',
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
@@ -102,11 +104,21 @@ CREATE TABLE IF NOT EXISTS formosa_gps_points (
 );
 `;
 
+// ── Column migrations for existing tables ──
+const COLUMN_MIGRATIONS = [
+  `ALTER TABLE formosa_users ADD COLUMN phone TEXT DEFAULT NULL`,
+  `ALTER TABLE formosa_users ADD COLUMN photo_count INTEGER DEFAULT 0`
+];
+
 // ── Run migration ──
 export async function migrateFormosa(db) {
   const statements = SCHEMA_SQL.split(';').filter(s => s.trim());
   for (const sql of statements) {
     try { await db.prepare(sql).run(); } catch (e) { /* table exists */ }
+  }
+  // Add new columns to existing tables (idempotent)
+  for (const sql of COLUMN_MIGRATIONS) {
+    try { await db.prepare(sql).run(); } catch (e) { /* column already exists */ }
   }
 }
 
@@ -232,12 +244,22 @@ export async function handleFormosaSubmit(request, env) {
 
     // Upsert user if LINE identity available
     if (data.line_user_id) {
-      await env.AUTH_DB.prepare(`
-        INSERT INTO formosa_users (line_user_id, display_name, updated_at)
-        VALUES (?, ?, datetime('now'))
-        ON CONFLICT(line_user_id) DO UPDATE SET
-          display_name = excluded.display_name, updated_at = datetime('now')
-      `).bind(data.line_user_id, data.line_display_name || '').run();
+      const phoneVal = data.phone || null;
+      if (phoneVal) {
+        await env.AUTH_DB.prepare(`
+          INSERT INTO formosa_users (line_user_id, display_name, phone, updated_at)
+          VALUES (?, ?, ?, datetime('now'))
+          ON CONFLICT(line_user_id) DO UPDATE SET
+            display_name = excluded.display_name, phone = COALESCE(excluded.phone, formosa_users.phone), updated_at = datetime('now')
+        `).bind(data.line_user_id, data.line_display_name || '', phoneVal).run();
+      } else {
+        await env.AUTH_DB.prepare(`
+          INSERT INTO formosa_users (line_user_id, display_name, updated_at)
+          VALUES (?, ?, datetime('now'))
+          ON CONFLICT(line_user_id) DO UPDATE SET
+            display_name = excluded.display_name, updated_at = datetime('now')
+        `).bind(data.line_user_id, data.line_display_name || '').run();
+      }
     }
 
     // Save GPS points
@@ -828,6 +850,11 @@ export async function handleFormosaUserSync(request, env) {
       'SELECT id, carbon_total_kg FROM formosa_surveys WHERE user_id = ? LIMIT 1'
     ).bind(lineUserId).first();
 
+    // Get photo count
+    const user = await env.AUTH_DB.prepare(
+      'SELECT photo_count, phone FROM formosa_users WHERE line_user_id = ?'
+    ).bind(lineUserId).first();
+
     return jsonResponse({
       ok: true,
       user_id: lineUserId,
@@ -835,8 +862,79 @@ export async function handleFormosaUserSync(request, env) {
       km: Math.round(totalKm * 100) / 100,
       survey_done: !!survey,
       carbon: survey?.carbon_total_kg || 0,
+      photo_count: user?.photo_count || 0,
       gps_track: pts.map(p => ({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source }))
     }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── Photo Count: increment + get ──
+export async function handleFormosaPhotoCount(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+
+  try {
+    await migrateFormosa(env.AUTH_DB);
+
+    if (request.method === 'POST') {
+      const data = await request.json();
+      const userId = data.line_user_id;
+      const count = data.count || 1;
+      if (!userId) return jsonResponse({ error: 'line_user_id required' }, 400, request);
+
+      await env.AUTH_DB.prepare(
+        `UPDATE formosa_users SET photo_count = photo_count + ?, updated_at = datetime('now') WHERE line_user_id = ?`
+      ).bind(count, userId).run();
+
+      const user = await env.AUTH_DB.prepare(
+        'SELECT photo_count FROM formosa_users WHERE line_user_id = ?'
+      ).bind(userId).first();
+
+      return jsonResponse({ ok: true, photo_count: user?.photo_count || 0 }, 200, request);
+    }
+
+    if (request.method === 'GET') {
+      const url = new URL(request.url);
+      const userId = url.searchParams.get('userId');
+      if (!userId) return jsonResponse({ error: 'userId required' }, 400, request);
+
+      const user = await env.AUTH_DB.prepare(
+        'SELECT photo_count FROM formosa_users WHERE line_user_id = ?'
+      ).bind(userId).first();
+
+      return jsonResponse({ ok: true, photo_count: user?.photo_count || 0 }, 200, request);
+    }
+
+    return jsonResponse({ error: 'Method not allowed' }, 405, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── Phone update ──
+export async function handleFormosaPhoneUpdate(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Method not allowed' }, 405, request);
+  }
+
+  try {
+    await migrateFormosa(env.AUTH_DB);
+    const data = await request.json();
+    const userId = data.line_user_id;
+    const phone = data.phone;
+    if (!userId) return jsonResponse({ error: 'line_user_id required' }, 400, request);
+
+    await env.AUTH_DB.prepare(
+      `UPDATE formosa_users SET phone = ?, updated_at = datetime('now') WHERE line_user_id = ?`
+    ).bind(phone || null, userId).run();
+
+    return jsonResponse({ ok: true }, 200, request);
   } catch (e) {
     return jsonResponse({ error: e.message }, 500, request);
   }
