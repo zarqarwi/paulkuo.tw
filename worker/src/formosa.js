@@ -299,7 +299,39 @@ export async function handleFormosaCheckin(request, env) {
   }
 }
 
-// ── Push Notification: Send check-in reminder to all followers ──
+// ── Admin: Role Management ──
+export async function handleFormosaAdminRoles(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
+
+  try {
+    await migrateFormosa(env.AUTH_DB);
+
+    if (request.method === 'GET') {
+      const users = await env.AUTH_DB.prepare(
+        `SELECT line_user_id, display_name, picture_url, role, created_at FROM formosa_users ORDER BY role DESC, created_at ASC`
+      ).all();
+      return jsonResponse({ users: users?.results || [] }, 200, request);
+    }
+
+    // POST — update user role
+    const body = await request.json();
+    if (!body.user_id || !body.role) {
+      return jsonResponse({ error: 'user_id and role required' }, 400, request);
+    }
+    const validRoles = ['participant', 'volunteer', 'admin'];
+    if (!validRoles.includes(body.role)) {
+      return jsonResponse({ error: 'Invalid role. Use: participant, volunteer, admin' }, 400, request);
+    }
+    await env.AUTH_DB.prepare(
+      'UPDATE formosa_users SET role = ?, updated_at = datetime(\'now\') WHERE line_user_id = ?'
+    ).bind(body.role, body.user_id).run();
+    return jsonResponse({ ok: true, user_id: body.user_id, role: body.role }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+}
+
+// ── Push Notification: Send to users by role ──
 export async function handleFormosaPush(request, env) {
   const authErr = requireAdmin(request);
   if (authErr) return authErr;
@@ -308,8 +340,17 @@ export async function handleFormosaPush(request, env) {
   }
 
   try {
-    // Get all registered users
-    const users = await env.AUTH_DB.prepare('SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL').all();
+    const body = await request.json().catch(() => ({}));
+    const targetRole = body.role || 'all'; // all | participant | volunteer | admin
+    const customText = body.text || '媽祖保佑 🙏\n記錄您的進香足跡吧！';
+    const customTitle = body.title || '📍 進香打卡提醒';
+
+    // Get users filtered by role
+    let query = 'SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL';
+    if (targetRole !== 'all') {
+      query += ` AND role = '${targetRole}'`;
+    }
+    const users = await env.AUTH_DB.prepare(query).all();
 
     if (!users.results?.length) {
       return jsonResponse({ ok: true, sent: 0, message: 'No users to notify' }, 200, request);
@@ -317,14 +358,13 @@ export async function handleFormosaPush(request, env) {
 
     const userIds = users.results.map(u => u.line_user_id);
 
-    // Use LINE multicast (up to 500 users per call)
     const message = {
       type: 'template',
-      altText: '📍 媽祖保佑！現在走到哪了？點這裡打卡',
+      altText: `📍 ${customTitle}`,
       template: {
         type: 'buttons',
-        title: '📍 進香打卡提醒',
-        text: '媽祖保佑 🙏\n記錄您的進香足跡吧！',
+        title: customTitle,
+        text: customText,
         actions: [
           {
             type: 'uri',
@@ -337,7 +377,7 @@ export async function handleFormosaPush(request, env) {
 
     await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [message]);
 
-    return jsonResponse({ ok: true, sent: userIds.length }, 200, request);
+    return jsonResponse({ ok: true, sent: userIds.length, role: targetRole }, 200, request);
   } catch (e) {
     console.error('Push error:', e.message);
     return jsonResponse({ error: e.message }, 500, request);
@@ -411,7 +451,7 @@ export async function handleFormosaUser(request, env, userId) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   try {
     await migrateFormosa(env.AUTH_DB);
-    const user = await env.AUTH_DB.prepare('SELECT display_name, picture_url, created_at FROM formosa_users WHERE line_user_id = ?').bind(userId).first();
+    const user = await env.AUTH_DB.prepare('SELECT display_name, picture_url, role, created_at FROM formosa_users WHERE line_user_id = ?').bind(userId).first();
     const points = await env.AUTH_DB.prepare('SELECT lat, lng, altitude, accuracy, source, timestamp FROM formosa_gps_points WHERE user_id = ? ORDER BY timestamp ASC').bind(userId).all();
     const survey = await env.AUTH_DB.prepare('SELECT * FROM formosa_surveys WHERE user_id = ? ORDER BY created_at DESC LIMIT 1').bind(userId).first();
 
@@ -555,7 +595,7 @@ export async function handleFormosaAdminUsers(request, env) {
   try {
     await migrateFormosa(env.AUTH_DB);
     const gpsUsers = await env.AUTH_DB.prepare(`
-      SELECT g.user_id, u.display_name, u.picture_url,
+      SELECT g.user_id, u.display_name, u.picture_url, u.role,
         COUNT(g.id) as gps_count,
         MAX(g.created_at) as last_active,
         MIN(g.created_at) as first_active
@@ -575,6 +615,7 @@ export async function handleFormosaAdminUsers(request, env) {
         user_id: u.user_id,
         display_name: u.display_name || u.user_id.substring(0, 8),
         picture_url: u.picture_url || null,
+        role: u.role || 'participant',
         gps_count: u.gps_count,
         survey_done: !!s,
         carbon_kg: +(s?.carbon_total_kg || 0).toFixed(2),

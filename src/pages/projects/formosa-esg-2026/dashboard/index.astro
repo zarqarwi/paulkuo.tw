@@ -98,6 +98,32 @@ import AuthGate from '../_components/AuthGate.astro';
     </section>
   </div>
 
+  <!-- Push Notification -->
+  <section class="dash-section">
+    <h2>📤 推播通知</h2>
+    <div class="push-form">
+      <div class="push-row">
+        <label>對象</label>
+        <select id="pushRole" class="push-input">
+          <option value="all">全部</option>
+          <option value="participant">🚶 香客</option>
+          <option value="volunteer">🙋 志工</option>
+          <option value="admin">🔑 管理者</option>
+        </select>
+      </div>
+      <div class="push-row">
+        <label>標題</label>
+        <input type="text" id="pushTitle" class="push-input" value="📍 進香打卡提醒" maxlength="40">
+      </div>
+      <div class="push-row">
+        <label>內容</label>
+        <textarea id="pushText" class="push-input push-textarea" maxlength="160">媽祖保佑 🙏
+記錄您的進香足跡吧！</textarea>
+      </div>
+      <button id="pushBtn" class="push-send-btn" onclick="sendPush()">📤 發送推播</button>
+    </div>
+  </section>
+
   <!-- User Table -->
   <section class="dash-section">
     <div class="dash-section-header">
@@ -112,6 +138,7 @@ import AuthGate from '../_components/AuthGate.astro';
             <th onclick="sortTable(1)">打卡 ↕</th>
             <th onclick="sortTable(2)">碳排 ↕</th>
             <th onclick="sortTable(3)">最後活躍 ↕</th>
+            <th>角色</th>
             <th>狀態</th>
           </tr>
         </thead>
@@ -581,21 +608,29 @@ import AuthGate from '../_components/AuthGate.astro';
     var today = new Date().toISOString().split('T')[0];
 
     var html = '';
+    var roleLabels = { admin: '🔑 管理', volunteer: '🙋 志工', participant: '🚶 香客' };
     users.forEach(function(u) {
       var isToday = u.last_active && u.last_active.startsWith(today);
       var statusDot = isToday ? '<span class="status-dot active"></span>' : '<span class="status-dot"></span>';
       var lastTime = u.last_active ? new Date(u.last_active).toLocaleString('zh-TW', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+      var role = u.role || 'participant';
+      var roleSelect = '<select class="role-select role-' + role + '" onchange="changeRole(\'' + u.user_id + '\', this.value)">' +
+        '<option value="participant"' + (role === 'participant' ? ' selected' : '') + '>🚶 香客</option>' +
+        '<option value="volunteer"' + (role === 'volunteer' ? ' selected' : '') + '>🙋 志工</option>' +
+        '<option value="admin"' + (role === 'admin' ? ' selected' : '') + '>🔑 管理</option>' +
+        '</select>';
 
       html += '<tr>' +
         '<td>' + (u.display_name || u.user_id.substring(0, 10)) + '</td>' +
         '<td>' + u.gps_count + '</td>' +
         '<td>' + u.carbon_kg + '</td>' +
         '<td>' + lastTime + '</td>' +
+        '<td>' + roleSelect + '</td>' +
         '<td>' + statusDot + '</td>' +
       '</tr>';
     });
 
-    tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center;color:#888;">尚無參與者</td></tr>';
+    tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:#888;">尚無參與者</td></tr>';
   }
 
   window.filterUsers = function(q) {
@@ -616,6 +651,40 @@ import AuthGate from '../_components/AuthGate.astro';
       return String(va).localeCompare(String(vb)) * sortDir;
     });
     renderUserTable(allUsers);
+  };
+
+  // ── Role Management ──
+  window.changeRole = function(userId, newRole) {
+    fetch(API + '/api/formosa/admin/roles', {
+      method: 'POST',
+      headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, role: newRole })
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      if (d.ok) {
+        // Update local data
+        allUsers.forEach(function(u) { if (u.user_id === userId) u.role = newRole; });
+        renderUserTable(allUsers);
+      } else { alert('角色更新失敗: ' + (d.error || '未知錯誤')); }
+    }).catch(function(e) { alert('角色更新失敗: ' + e.message); });
+  };
+
+  // ── Push Notification ──
+  window.sendPush = function() {
+    var role = document.getElementById('pushRole').value;
+    var title = document.getElementById('pushTitle').value || '📍 進香打卡提醒';
+    var text = document.getElementById('pushText').value || '媽祖保佑 🙏\n記錄您的進香足跡吧！';
+    if (!confirm('確定推播給' + (role === 'all' ? '所有人' : role) + '？')) return;
+    var btn = document.getElementById('pushBtn');
+    btn.disabled = true; btn.textContent = '推播中...';
+    fetch(API + '/api/formosa/push', {
+      method: 'POST',
+      headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: role, title: title, text: text })
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      btn.disabled = false; btn.textContent = '📤 發送推播';
+      if (d.ok) { alert('推播成功！已發送 ' + d.sent + ' 人'); }
+      else { alert('推播失敗: ' + (d.error || '未知錯誤')); }
+    }).catch(function(e) { btn.disabled = false; btn.textContent = '📤 發送推播'; alert('推播失敗: ' + e.message); });
   };
 
   // ── Init + Auto-refresh ──
@@ -773,6 +842,27 @@ import AuthGate from '../_components/AuthGate.astro';
   /* Timeline */
   .timeline-svg { width: 100%; max-height: 180px; }
   .timeline-meta { font-size: 0.8rem; color: #888; text-align: center; margin-top: 0.75rem; }
+
+  /* Push Form */
+  .push-form { max-width: 500px; }
+  .push-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .push-row label { font-size: 0.85rem; font-weight: 600; color: #555; width: 50px; flex-shrink: 0; }
+  .push-input { flex: 1; padding: 0.4rem 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; }
+  .push-textarea { min-height: 60px; resize: vertical; font-family: inherit; }
+  .push-send-btn {
+    padding: 0.5rem 1.5rem; background: #B45309; color: #fff; border: none;
+    border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  }
+  .push-send-btn:hover { background: #92400E; }
+  .push-send-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+  /* Role Select */
+  .role-select {
+    padding: 0.2rem 0.4rem; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 0.75rem; background: #fff; cursor: pointer;
+  }
+  .role-select.role-admin { border-color: #B45309; background: #FEF3C7; }
+  .role-select.role-volunteer { border-color: #059669; background: #ECFDF5; }
 
   /* User Table */
   .dash-search {
