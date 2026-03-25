@@ -4,6 +4,22 @@
  */
 import { corsHeaders, jsonResponse } from './utils.js';
 
+// ── Rate Limit Helper ──
+async function checkRateLimit(db, userId, windowMinutes, maxRequests) {
+  const result = await db.prepare(
+    `SELECT COUNT(*) as cnt FROM formosa_gps_points WHERE user_id = ? AND created_at >= datetime('now', '-' || ? || ' minutes')`
+  ).bind(userId, windowMinutes).first();
+  return (result?.cnt || 0) >= maxRequests;
+}
+
+// ── Activity Status Helper ──
+const FORMOSA_STATUS_KEY = 'formosa_status';
+async function getFormosaStatus(kv) {
+  const raw = await kv.get(FORMOSA_STATUS_KEY);
+  if (!raw) return { status: 'active', message: '' };
+  try { return JSON.parse(raw); } catch { return { status: 'active', message: '' }; }
+}
+
 // ── Admin Auth Helper ──
 const ADMIN_TOKEN = 'formosa-admin-2026';
 function requireAdmin(request) {
@@ -12,6 +28,27 @@ function requireAdmin(request) {
     return jsonResponse({ error: 'Unauthorized' }, 401, request);
   }
   return null; // authorized
+}
+
+// ── Admin: Get/Set Activity Status ──
+export async function handleFormosaAdminStatus(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+
+  if (request.method === 'GET') {
+    const data = await getFormosaStatus(env.TICKER_KV);
+    return jsonResponse(data, 200, request);
+  }
+
+  // POST — set status (requires admin)
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
+  try {
+    const body = await request.json();
+    const status = body.status || 'active'; // active | paused | ended
+    const message = body.message || '';
+    await env.TICKER_KV.put(FORMOSA_STATUS_KEY, JSON.stringify({ status, message, updated: new Date().toISOString() }));
+    return jsonResponse({ ok: true, status, message }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
 }
 
 // ── D1 Schema Migration ──
@@ -149,6 +186,14 @@ export async function handleFormosaSubmit(request, env) {
     // Use LINE user ID if available, otherwise fallback
     const userId = data.line_user_id || data.user_id || 'anonymous_' + Date.now();
 
+    // Rate limit: max 2 survey submissions per 10 minutes
+    const surveyCount = await env.AUTH_DB.prepare(
+      `SELECT COUNT(*) as cnt FROM formosa_surveys WHERE user_id = ? AND created_at >= datetime('now', '-10 minutes')`
+    ).bind(userId).first();
+    if ((surveyCount?.cnt || 0) >= 2) {
+      return jsonResponse({ error: '提交太頻繁，請稍後再試', rate_limited: true }, 429, request);
+    }
+
     // Save survey
     if (data.survey) {
       const s = data.survey;
@@ -222,9 +267,24 @@ export async function handleFormosaCheckin(request, env) {
   }
 
   try {
+    // Check activity status
+    const actStatus = await getFormosaStatus(env.TICKER_KV);
+    if (actStatus.status === 'paused') {
+      return jsonResponse({ error: actStatus.message || '活動目前暫停中', paused: true }, 403, request);
+    }
+    if (actStatus.status === 'ended') {
+      return jsonResponse({ error: actStatus.message || '活動已結束', ended: true }, 403, request);
+    }
+
     await migrateFormosa(env.AUTH_DB);
     const data = await request.json();
     const userId = data.user_id || 'anonymous_' + Date.now();
+
+    // Rate limit: max 5 checkins per minute
+    const rateLimited = await checkRateLimit(env.AUTH_DB, userId, 1, 5);
+    if (rateLimited) {
+      return jsonResponse({ error: '打卡太頻繁，請稍後再試', rate_limited: true }, 429, request);
+    }
 
     await env.AUTH_DB.prepare(
       `INSERT INTO formosa_gps_points (user_id, lat, lng, altitude, accuracy, source, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)`

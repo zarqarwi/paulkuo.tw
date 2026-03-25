@@ -33,6 +33,19 @@ import AuthGate from '../_components/AuthGate.astro';
     </div>
   </header>
 
+  <!-- Activity Status Control -->
+  <div class="status-control" id="statusControl">
+    <div class="status-indicator" id="statusIndicator">
+      <span class="status-dot-lg" id="statusDot"></span>
+      <span id="statusText">載入中...</span>
+    </div>
+    <div class="status-buttons">
+      <button class="status-btn status-btn-active" id="btnActive" onclick="setActivityStatus('active')">▶ 活動中</button>
+      <button class="status-btn status-btn-pause" id="btnPause" onclick="setActivityStatus('paused', '目前為休息時間，請稍後再打卡')">⏸ 暫停</button>
+      <button class="status-btn status-btn-end" id="btnEnd" onclick="if(confirm('確定結束活動？結束後無法打卡。')) setActivityStatus('ended', '2026 白沙屯媽祖 ESG 進香已圓滿結束 🙏')">⏹ 結束</button>
+    </div>
+  </div>
+
   <!-- KPI Cards -->
   <div class="kpi-row" id="kpiRow">
     <div class="kpi-card"><div class="kpi-num" id="kpiUsers">-</div><div class="kpi-label">總參與人數</div></div>
@@ -123,6 +136,44 @@ import AuthGate from '../_components/AuthGate.astro';
     { km: 270, checkins: 14, icon: '🏆', name: '大乘香客' },
     { km: 300, checkins: 14, icon: '🚀', name: '飛升香客' }
   ];
+
+  // ── Activity Status ──
+  async function loadActivityStatus() {
+    try {
+      var res = await fetch(API + '/api/formosa/admin/status', { headers: ADMIN_HEADERS });
+      var data = await res.json();
+      updateStatusUI(data.status || 'active', data.message || '');
+    } catch(e) { updateStatusUI('active', ''); }
+  }
+
+  function updateStatusUI(status, message) {
+    var dot = document.getElementById('statusDot');
+    var text = document.getElementById('statusText');
+    var labels = { active: '活動進行中', paused: '活動暫停中', ended: '活動已結束' };
+    var colors = { active: '#10b981', paused: '#f59e0b', ended: '#ef4444' };
+    dot.style.background = colors[status] || '#888';
+    text.textContent = labels[status] || status;
+    if (message) text.textContent += '（' + message + '）';
+    // Highlight active button
+    ['Active', 'Pause', 'End'].forEach(function(s) {
+      document.getElementById('btn' + s).classList.remove('status-btn-selected');
+    });
+    var btnMap = { active: 'Active', paused: 'Pause', ended: 'End' };
+    if (btnMap[status]) document.getElementById('btn' + btnMap[status]).classList.add('status-btn-selected');
+  }
+
+  window.setActivityStatus = async function(status, message) {
+    try {
+      await fetch(API + '/api/formosa/admin/status', {
+        method: 'POST',
+        headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: status, message: message || '' })
+      });
+      updateStatusUI(status, message || '');
+    } catch(e) { alert('設定失敗: ' + e.message); }
+  };
+
+  loadActivityStatus();
 
   var map = null, markerLayer = null, heatLayer = null;
   var mapMode = 'markers';
@@ -751,6 +802,52 @@ import AuthGate from '../_components/AuthGate.astro';
     background: #ddd;
   }
   .status-dot.active { background: #059669; }
+
+  /* Activity Status Control */
+  .status-control {
+    background: #FAF6F1;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+  }
+  .status-dot-lg {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    background: #ccc;
+  }
+  .status-dot-lg.active { background: #059669; animation: pulse 2s infinite; }
+  .status-dot-lg.paused { background: #D97706; animation: pulse 2s infinite; }
+  .status-dot-lg.ended { background: #DC2626; }
+  .status-buttons { display: flex; gap: 0.5rem; }
+  .status-btn {
+    padding: 0.4rem 0.85rem;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #555;
+    transition: all 0.15s;
+  }
+  .status-btn:hover { border-color: #aaa; }
+  .status-btn-active.status-btn-selected { background: #059669; color: #fff; border-color: #059669; }
+  .status-btn-pause.status-btn-selected { background: #D97706; color: #fff; border-color: #D97706; }
+  .status-btn-end.status-btn-selected { background: #DC2626; color: #fff; border-color: #DC2626; }
 
   @media (max-width: 768px) {
     .kpi-row { grid-template-columns: repeat(3, 1fr); }
