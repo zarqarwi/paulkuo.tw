@@ -258,14 +258,19 @@ async function handleRequest(request, env) {
 }
 
 async function handleScheduled(event, env) {
-  try { await refreshToken(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_token_refresh', new Date().toISOString()); console.log('Cron: token refresh success'); } catch (e) { console.error('Cron: token refresh FAILED:', e.message); }
-  try { await fetchFitbitData(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_refresh', new Date().toISOString()); console.log('Cron: Fitbit data cached'); } catch (e) { console.error('Cron: Fitbit fetch FAILED:', e.message); }
-  try { await fetchDailyVisitors(env); } catch (e) { console.error('Cron: visitors fetch FAILED:', e.message); }
-  try { await fetchZoneUniqueVisitors(env); } catch (e) { console.error('Cron: zone uniques FAILED:', e.message); }
-  try { await fetchAnalyticsOverview(env); await fetchRumAnalytics(env); await fetchDurationAnalytics(env); console.log('Cron: analytics updated'); } catch (e) { console.error('Cron: analytics FAILED:', e.message); }
-  try { await syncSocialFeed(env); console.log('Cron: social feed synced'); } catch (e) { console.error('Cron: social feed sync FAILED:', e.message); }
-  try { const r = await handleFormosaScheduledPush(env); console.log('Cron: formosa push', JSON.stringify(r)); } catch (e) { console.error('Cron: formosa push FAILED:', e.message); }
+  // GPS buffer flush runs on every trigger (cheap: 1 KV list if empty)
   try { const r = await handleFormosaFlushBuffer(env); console.log('Cron: formosa flush', JSON.stringify(r)); } catch (e) { console.error('Cron: formosa flush FAILED:', e.message); }
+
+  // Heavy external-API tasks only run on the hourly schedule
+  if (event.cron !== '*/5 * * * *') {
+    try { await refreshToken(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_token_refresh', new Date().toISOString()); console.log('Cron: token refresh success'); } catch (e) { console.error('Cron: token refresh FAILED:', e.message); }
+    try { await fetchFitbitData(env.TICKER_KV, env); await env.TICKER_KV.put('fitbit_last_refresh', new Date().toISOString()); console.log('Cron: Fitbit data cached'); } catch (e) { console.error('Cron: Fitbit fetch FAILED:', e.message); }
+    try { await fetchDailyVisitors(env); } catch (e) { console.error('Cron: visitors fetch FAILED:', e.message); }
+    try { await fetchZoneUniqueVisitors(env); } catch (e) { console.error('Cron: zone uniques FAILED:', e.message); }
+    try { await fetchAnalyticsOverview(env); await fetchRumAnalytics(env); await fetchDurationAnalytics(env); console.log('Cron: analytics updated'); } catch (e) { console.error('Cron: analytics FAILED:', e.message); }
+    try { await syncSocialFeed(env); console.log('Cron: social feed synced'); } catch (e) { console.error('Cron: social feed sync FAILED:', e.message); }
+    try { const r = await handleFormosaScheduledPush(env); console.log('Cron: formosa push', JSON.stringify(r)); } catch (e) { console.error('Cron: formosa push FAILED:', e.message); }
+  }
 }
 
 export default {

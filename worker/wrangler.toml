@@ -2,9 +2,11 @@ name = "paulkuo-ticker"
 main = "src/index.js"
 compatibility_date = "2024-12-01"
 
-# Cron: 每 6 小時 refresh Fitbit token (UTC 0,6,12,18 = 台灣 8,14,20,2)
+# Cron triggers:
+#   hourly  — Fitbit, analytics, social, stock (external APIs)
+#   every 5 min — Formosa GPS KV→D1 flush (near-zero cost when idle)
 [triggers]
-crons = ["0 0-15,23 * * *"]
+crons = ["0 0-15,23 * * *", "*/5 * * * *"]
 
 # KV binding — namespace ID 在 wrangler kv 建立後填入
 [[kv_namespaces]]
