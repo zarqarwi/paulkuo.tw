@@ -107,7 +107,8 @@ CREATE TABLE IF NOT EXISTS formosa_gps_points (
 // ── Column migrations for existing tables ──
 const COLUMN_MIGRATIONS = [
   `ALTER TABLE formosa_users ADD COLUMN phone TEXT DEFAULT NULL`,
-  `ALTER TABLE formosa_users ADD COLUMN photo_count INTEGER DEFAULT 0`
+  `ALTER TABLE formosa_users ADD COLUMN photo_count INTEGER DEFAULT 0`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS idx_gps_user_ts ON formosa_gps_points(user_id, timestamp)`
 ];
 
 // ── Run migration ──
@@ -263,7 +264,18 @@ export async function handleFormosaSubmit(request, env) {
   }
 }
 
-// ── GPS Check-in Handler (lightweight, for periodic pings) ──
+// ── KV-based Rate Limit (no D1 dependency) ──
+async function checkRateLimitKV(kv, userId, windowSec, maxRequests) {
+  const window = Math.floor(Date.now() / (windowSec * 1000));
+  const key = `rl:${userId}:${window}`;
+  const raw = await kv.get(key);
+  const count = raw ? parseInt(raw, 10) : 0;
+  if (count >= maxRequests) return true;
+  await kv.put(key, String(count + 1), { expirationTtl: windowSec * 2 });
+  return false;
+}
+
+// ── GPS Check-in Handler (KV Buffer — zero D1 writes) ──
 export async function handleFormosaCheckin(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
@@ -273,7 +285,7 @@ export async function handleFormosaCheckin(request, env) {
   }
 
   try {
-    // Check activity status
+    // Check activity status (KV only, no D1)
     const actStatus = await getFormosaStatus(env.TICKER_KV);
     if (actStatus.status === 'paused') {
       return jsonResponse({ error: actStatus.message || '活動目前暫停中', paused: true }, 403, request);
@@ -282,33 +294,127 @@ export async function handleFormosaCheckin(request, env) {
       return jsonResponse({ error: actStatus.message || '活動已結束', ended: true }, 403, request);
     }
 
-    await migrateFormosa(env.AUTH_DB);
     const data = await request.json();
     const userId = data.user_id || 'anonymous_' + Date.now();
 
-    // Rate limit: max 5 checkins per minute
-    const rateLimited = await checkRateLimit(env.AUTH_DB, userId, 1, 5);
+    // Rate limit via KV (no D1 query)
+    const rateLimited = await checkRateLimitKV(env.TICKER_KV, userId, 60, 5);
     if (rateLimited) {
       return jsonResponse({ error: '打卡太頻繁，請稍後再試', rate_limited: true }, 429, request);
     }
 
     // Geofence: 白沙屯↔北港路線範圍（含緩衝）
-    // lat: 23.4° ~ 24.9°, lng: 120.1° ~ 121.0°
     const lat = data.lat;
     const lng = data.lng;
     const inRange = lat >= 23.4 && lat <= 24.9 && lng >= 120.1 && lng <= 121.0;
     const source = inRange ? (data.source || 'checkin') : 'remote';
 
-    await env.AUTH_DB.prepare(
-      `INSERT INTO formosa_gps_points (user_id, lat, lng, altitude, accuracy, source, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)`
-    ).bind(userId, lat, lng, data.altitude || null, data.accuracy || null, source, data.timestamp || new Date().toISOString()).run();
+    const ts = data.timestamp || new Date().toISOString();
+    const bufferKey = `gps:${ts}:${userId}:${Math.random().toString(36).slice(2, 8)}`;
 
-    // Count total points for this user
-    const count = await env.AUTH_DB.prepare('SELECT COUNT(*) as cnt FROM formosa_gps_points WHERE user_id = ?').bind(userId).first();
+    // Write to KV buffer (single atomic write, no lock contention)
+    await env.TICKER_KV.put(bufferKey, JSON.stringify({
+      user_id: userId, lat, lng,
+      altitude: data.altitude || null,
+      accuracy: data.accuracy || null,
+      source, timestamp: ts
+    }), { expirationTtl: 86400 });
 
-    return jsonResponse({ ok: true, total_points: count?.cnt || 1, in_range: inRange }, 200, request);
+    // Approximate point count from KV (updated by cron flush)
+    const countKey = `gps_count:${userId}`;
+    const cachedCount = await env.TICKER_KV.get(countKey);
+    const approxCount = cachedCount ? parseInt(cachedCount, 10) + 1 : 1;
+    await env.TICKER_KV.put(countKey, String(approxCount), { expirationTtl: 86400 * 30 });
+
+    return jsonResponse({ ok: true, total_points: approxCount, in_range: inRange, buffered: true }, 200, request);
   } catch (e) {
     return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── Cron: Flush KV GPS Buffer → D1 (batch INSERT OR IGNORE) ──
+export async function handleFormosaFlushBuffer(env) {
+  const startTime = Date.now();
+  let flushed = 0, skipped = 0, errors = 0;
+
+  try {
+    await migrateFormosa(env.AUTH_DB);
+
+    // List all buffered GPS points from KV
+    let cursor = undefined;
+    const allKeys = [];
+    do {
+      const list = await env.TICKER_KV.list({ prefix: 'gps:', limit: 1000, cursor });
+      allKeys.push(...list.keys);
+      cursor = list.list_complete ? undefined : list.cursor;
+    } while (cursor);
+
+    if (allKeys.length === 0) {
+      return { flushed: 0, duration_ms: Date.now() - startTime };
+    }
+
+    // Process in batches of 50
+    const BATCH = 50;
+    for (let i = 0; i < allKeys.length; i += BATCH) {
+      const batch = allKeys.slice(i, i + BATCH);
+
+      // Read values in parallel
+      const entries = await Promise.all(
+        batch.map(async (k) => {
+          try {
+            const val = await env.TICKER_KV.get(k.name);
+            return val ? { key: k.name, data: JSON.parse(val) } : { key: k.name, data: null };
+          } catch { return { key: k.name, data: null }; }
+        })
+      );
+
+      const valid = entries.filter(e => e.data && e.data.user_id && e.data.lat && e.data.lng);
+      const invalid = entries.filter(e => !e.data);
+
+      // Batch INSERT OR IGNORE into D1 (max 100 per batch call)
+      if (valid.length > 0) {
+        try {
+          const stmts = valid.map(e =>
+            env.AUTH_DB.prepare(
+              `INSERT OR IGNORE INTO formosa_gps_points (user_id, lat, lng, altitude, accuracy, source, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)`
+            ).bind(e.data.user_id, e.data.lat, e.data.lng, e.data.altitude, e.data.accuracy, e.data.source || 'checkin', e.data.timestamp)
+          );
+          for (let j = 0; j < stmts.length; j += 100) {
+            await env.AUTH_DB.batch(stmts.slice(j, j + 100));
+          }
+          flushed += valid.length;
+          // Delete flushed keys
+          await Promise.all(valid.map(e => env.TICKER_KV.delete(e.key).catch(() => {})));
+        } catch (e) {
+          console.error('Flush batch error:', e.message);
+          errors += valid.length;
+          continue; // Don't delete on error — retry next cron
+        }
+      }
+
+      // Clean up invalid keys
+      if (invalid.length > 0) {
+        await Promise.all(invalid.map(e => env.TICKER_KV.delete(e.key).catch(() => {})));
+        skipped += invalid.length;
+      }
+    }
+
+    // Update accurate user point counts from D1
+    try {
+      const counts = await env.AUTH_DB.prepare(
+        `SELECT user_id, COUNT(*) as cnt FROM formosa_gps_points GROUP BY user_id`
+      ).all();
+      for (const row of (counts?.results || [])) {
+        await env.TICKER_KV.put(`gps_count:${row.user_id}`, String(row.cnt), { expirationTtl: 86400 * 30 });
+      }
+    } catch (e) {
+      console.error('Flush: count sync error:', e.message);
+    }
+
+    return { flushed, skipped, errors, total_buffered: allKeys.length, duration_ms: Date.now() - startTime };
+  } catch (e) {
+    console.error('Flush fatal:', e.message);
+    return { flushed, skipped, errors: errors + 1, error: e.message, duration_ms: Date.now() - startTime };
   }
 }
 
@@ -451,6 +557,11 @@ export async function handleFormosaData(request, env) {
   }
 
   try {
+    // KV cache: avoid D1 read storm during high traffic
+    const cacheKey = 'formosa_data_cache';
+    const cached = await env.TICKER_KV.get(cacheKey, 'json');
+    if (cached) return jsonResponse(cached, 200, request);
+
     const surveys = await env.AUTH_DB.prepare('SELECT COUNT(*) as cnt FROM formosa_surveys').first();
     const points = await env.AUTH_DB.prepare('SELECT COUNT(*) as cnt FROM formosa_gps_points').first();
     const users = await env.AUTH_DB.prepare('SELECT COUNT(*) as cnt FROM formosa_users').first();
@@ -459,7 +570,7 @@ export async function handleFormosaData(request, env) {
     // Carbon summary
     const carbonSum = await env.AUTH_DB.prepare('SELECT SUM(carbon_total_kg) as total, AVG(carbon_total_kg) as avg FROM formosa_surveys').first();
 
-    return jsonResponse({
+    const payload = {
       stats: {
         total_surveys: surveys?.cnt || 0,
         total_gps_points: points?.cnt || 0,
@@ -468,7 +579,10 @@ export async function handleFormosaData(request, env) {
         carbon_avg_kg: +(carbonSum?.avg || 0).toFixed(2),
       },
       gps_points: recentPoints?.results || [],
-    }, 200, request);
+    };
+
+    await env.TICKER_KV.put(cacheKey, JSON.stringify(payload), { expirationTtl: 60 });
+    return jsonResponse(payload, 200, request);
   } catch (e) {
     return jsonResponse({ error: e.message }, 500, request);
   }
