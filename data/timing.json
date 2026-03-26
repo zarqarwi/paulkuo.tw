@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-27T00:00:21+08:00",
+  "updated": "2026-03-27T00:10:18+08:00",
   "source": "timing-sqlite-direct",
   "method": "SQLite DB + bundleIdentifier/path/title matching",
   "api_version": "v4",
@@ -248,7 +248,9 @@
     {
       "date": "2026-03-27",
       "ai_hours": 0.0,
-      "breakdown": {}
+      "breakdown": {
+        "Claude": 0.0
+      }
     }
   ]
 }
