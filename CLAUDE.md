@@ -70,8 +70,7 @@ cd worker && wrangler deploy --config wrangler.toml
 npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangler.toml
 ```
 
-⚠️ Code session 無法跑 `wrangler deploy`（Cloudflare API 網路白名單限制）。
-需要 deploy 時，產出指令讓 Paul 在本機終端機跑。
+✅ Code session 可直接跑 `wrangler deploy` 和 `wrangler d1 execute`（2026-03-27 驗證通過）。
 
 ### Git
 
