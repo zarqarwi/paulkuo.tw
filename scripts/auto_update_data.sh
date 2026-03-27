@@ -1,9 +1,12 @@
 #!/bin/bash
-# auto_update_data.sh v6 — Timing + Stock only
+# auto_update_data.sh v7 — Timing + Stock only
 #
-# v6 改動（vs v5）：
-#   - 加 mutex lock（mkdir-based）防止 cron 和手動 git 操作 race condition
+# v7 改動（vs v6）：
+#   - 移除 git stash/pop 同步區塊，改在 push 失敗時用 --autostash rebase
+#   - 只 add data/*.json，不再碰 working tree 其他檔案
+#   - 解決 Claude Code 開發中改動被 revert 的問題
 #
+# v6 改動：加 mutex lock（mkdir-based）防止 cron 和手動 git 操作 race condition
 # v5 改動：移除 Fitbit（改由 Cloudflare Worker 獨立處理 token + 資料）
 # v4 改動：移除 CHAIN_STATUS 短路邏輯
 # v3 改動：新增長時間睡眠偵測
@@ -52,25 +55,8 @@ find .git/logs -name 'main *' -delete 2>/dev/null
 find .git/logs -name 'HEAD *' -delete 2>/dev/null
 find .git/refs -name 'main *' -delete 2>/dev/null
 
-# --- Guard: stash any dirty working tree before sync ---
-DIRTY=$(git status --porcelain 2>/dev/null)
-if [ -n "$DIRTY" ]; then
-    log "WARN: dirty working tree, stashing..."
-    git stash --include-untracked >> "$LOG" 2>&1
-fi
-
-# Sync with remote
+# --- v7: No more stash/pop — only touch data/ files, sync at push time ---
 git fetch origin >> "$LOG" 2>&1
-git pull --rebase origin main >> "$LOG" 2>&1 || {
-    log "WARN: git pull --rebase failed, hard reset to origin/main"
-    git rebase --abort >> "$LOG" 2>&1
-    git reset --hard origin/main >> "$LOG" 2>&1
-}
-
-# Restore stash if we stashed
-if [ -n "$DIRTY" ]; then
-    git stash pop >> "$LOG" 2>&1 || log "WARN: stash pop conflict, dropped"
-fi
 
 # --- Snapshot before (for significant change detection) ---
 OLD_AI=""
@@ -147,8 +133,8 @@ git add data/timing.json data/stock.json 2>/dev/null
 git commit -m "auto: data update $(date +%m/%d-%H:%M)" --no-verify >> "$LOG" 2>&1
 
 if ! git push origin main >> "$LOG" 2>&1; then
-    log "WARN: push rejected, pulling rebase..."
-    git pull --rebase origin main >> "$LOG" 2>&1
+    log "WARN: push rejected, pulling rebase with autostash..."
+    git pull --rebase --autostash origin main >> "$LOG" 2>&1
     if git push origin main >> "$LOG" 2>&1; then
         log "✅ Pushed (after rebase)"
         echo "$NOW_EPOCH" > "$LAST_PUSH_FILE"
