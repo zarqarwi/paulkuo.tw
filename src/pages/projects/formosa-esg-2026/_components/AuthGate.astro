@@ -1,24 +1,63 @@
 ---
 /**
  * AuthGate — Client-side auth gate for Formosa ESG 2026 pages
- * Hides NavBar/Footer until verified, keeps original light design
+ * Supports LINE login (for participants) and password (for admins)
  */
 interface Props {
   title?: string;
   subtitle?: string;
+  lineLogin?: boolean;
+  liffId?: string;
 }
 
-const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入管理密碼' } = Astro.props;
+const {
+  title = '2026 白沙屯媽祖 ESG 永續進香',
+  subtitle = '',
+  lineLogin = false,
+  liffId = '2009588321-rXVntTKg'
+} = Astro.props;
 ---
+
+<!-- LIFF SDK (only for LINE login mode) -->
+{lineLogin && <script is:inline src="https://static.line-scdn.net/liff/edge/versions/2.24.0/sdk.js"></script>}
 
 <!-- Auth Gate (visible by default) -->
 <div id="authGate" class="formosa-auth">
   <div class="auth-card">
     <div class="auth-icon">⛩️</div>
     <h2>{title}</h2>
-    <p>{subtitle}</p>
-    <input type="password" id="authInput" placeholder="Access Code" autofocus />
-    <button id="authBtn">進入</button>
+
+    {lineLogin ? (
+      <!-- LINE Login Mode -->
+      <div id="lineLoginSection">
+        <p>使用 LINE 帳號登入以記錄您的進香足跡</p>
+        <button id="lineLoginBtn" class="line-login-btn">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="white" style="vertical-align:middle;margin-right:8px"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          用 LINE 登入
+        </button>
+      </div>
+
+      <!-- LINE Profile (hidden until login) -->
+      <div id="lineProfileSection" style="display:none">
+        <img id="lineAvatar" class="line-avatar" src="" alt="" />
+        <div id="lineDisplayName" class="line-name"></div>
+        <button id="lineEnterBtn" class="line-enter-btn">進入活動</button>
+      </div>
+
+      <!-- Admin fallback -->
+      <div class="admin-fallback">
+        <a href="#" id="showAdminLogin">管理員登入</a>
+      </div>
+      <div id="adminLoginSection" style="display:none">
+        <input type="password" id="authInput" placeholder="管理員密碼" />
+        <button id="authBtn" class="admin-login-btn">驗證</button>
+      </div>
+    ) : (
+      <!-- Password Mode (admin pages) -->
+      <p>{subtitle || '請輸入管理密碼'}</p>
+      <input type="password" id="authInput" placeholder="Access Code" autofocus />
+      <button id="authBtn">進入</button>
+    )}
   </div>
 </div>
 
@@ -27,36 +66,34 @@ const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入�
   <slot />
 </div>
 
-<script is:inline>
+<script is:inline define:vars={{ lineLogin, liffId }}>
 (function() {
   const WORKER = 'https://api.paulkuo.tw';
   const STORAGE_KEY = 'formosa_esg_code';
   const authGate = document.getElementById('authGate');
   const mainContent = document.getElementById('mainContent');
-  const authInput = document.getElementById('authInput');
-  const authBtn = document.getElementById('authBtn');
 
   // Hide NavBar and Footer while auth gate is showing
-  // Use function so we can re-query after DOM is fully loaded
   var nav = document.getElementById('main-nav');
   if (nav) nav.style.display = 'none';
-
-  function hideFooter() {
-    var f = document.querySelector('footer');
-    if (f) f.style.display = 'none';
-  }
+  function hideFooter() { var f = document.querySelector('footer'); if (f) f.style.display = 'none'; }
   hideFooter();
-  // Footer may not exist yet (script runs before footer is parsed)
-  if (!document.querySelector('footer')) {
-    document.addEventListener('DOMContentLoaded', hideFooter);
+  if (!document.querySelector('footer')) document.addEventListener('DOMContentLoaded', hideFooter);
+
+  function unlock() {
+    authGate.style.display = 'none';
+    mainContent.style.display = 'block';
+    if (nav) nav.style.display = '';
+    var f = document.querySelector('footer'); if (f) f.style.display = '';
   }
 
+  // ── Password verification (admin pages + admin fallback) ──
   async function verifyCode(code) {
     try {
       var res = await fetch(WORKER + '/validate-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code: code })
       });
       var d = await res.json();
       if (d.valid && d.name === 'Formosa ESG 2026') return d;
@@ -65,51 +102,146 @@ const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入�
     return null;
   }
 
-  function unlock() {
-    authGate.style.display = 'none';
-    mainContent.style.display = 'block';
-    // Restore NavBar and Footer
-    if (nav) nav.style.display = '';
-    var f = document.querySelector('footer');
-    if (f) f.style.display = '';
+  var authInput = document.getElementById('authInput');
+  var authBtn = document.getElementById('authBtn');
+
+  if (authBtn) {
+    authBtn.addEventListener('click', async function() {
+      authBtn.textContent = '驗證中…';
+      authBtn.disabled = true;
+      var code = authInput.value.trim().toLowerCase();
+      var result = await verifyCode(code);
+      if (result) {
+        sessionStorage.setItem(STORAGE_KEY, code);
+        unlock();
+      } else {
+        authInput.style.borderColor = '#ef4444';
+        authInput.value = '';
+        authInput.placeholder = '密碼無效';
+        authBtn.textContent = '驗證';
+        authBtn.disabled = false;
+      }
+    });
+  }
+  if (authInput) {
+    authInput.addEventListener('keydown', function(e) { if (e.key === 'Enter' && authBtn) authBtn.click(); });
   }
 
-  async function checkAuth() {
+  // ── Auto-check stored code (both modes) ──
+  async function checkStoredCode() {
     var urlKey = new URLSearchParams(window.location.search).get('key');
     var stored = sessionStorage.getItem(STORAGE_KEY);
     var code = urlKey || stored;
     if (code) {
       var result = await verifyCode(code);
-      if (result) {
-        sessionStorage.setItem(STORAGE_KEY, code);
-        unlock();
-        return;
-      }
+      if (result) { sessionStorage.setItem(STORAGE_KEY, code); unlock(); return true; }
     }
+    return false;
   }
 
-  authBtn.addEventListener('click', async function() {
-    authBtn.textContent = '驗證中…';
-    authBtn.disabled = true;
-    var code = authInput.value.trim().toLowerCase();
-    var result = await verifyCode(code);
-    if (result) {
-      sessionStorage.setItem(STORAGE_KEY, code);
-      unlock();
-    } else {
-      authInput.style.borderColor = '#ef4444';
-      authInput.value = '';
-      authInput.placeholder = '存取碼無效';
-      authBtn.textContent = '進入';
-      authBtn.disabled = false;
+  // ── LINE Login Mode ──
+  if (lineLogin) {
+    var lineLoginBtn = document.getElementById('lineLoginBtn');
+    var lineProfileSection = document.getElementById('lineProfileSection');
+    var lineLoginSection = document.getElementById('lineLoginSection');
+    var showAdminLogin = document.getElementById('showAdminLogin');
+    var adminLoginSection = document.getElementById('adminLoginSection');
+
+    // Toggle admin login form
+    if (showAdminLogin) {
+      showAdminLogin.addEventListener('click', function(e) {
+        e.preventDefault();
+        adminLoginSection.style.display = adminLoginSection.style.display === 'none' ? 'block' : 'none';
+      });
     }
-  });
 
-  authInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') authBtn.click();
-  });
+    function showProfile(profile) {
+      lineLoginSection.style.display = 'none';
+      lineProfileSection.style.display = 'block';
+      document.getElementById('lineAvatar').src = profile.pictureUrl || '';
+      document.getElementById('lineDisplayName').textContent = profile.displayName;
 
-  checkAuth();
+      // Store globally for tracker script to pick up
+      window.__lineUserId = profile.userId;
+      window.__lineProfile = profile;
+      localStorage.setItem('formosa_line_user_id', profile.userId);
+      localStorage.setItem('formosa_line_display_name', profile.displayName);
+      localStorage.setItem('formosa_line_picture', profile.pictureUrl || '');
+
+      // Sync to server
+      fetch(WORKER + '/api/formosa/user/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          line_user_id: profile.userId,
+          display_name: profile.displayName,
+          picture_url: profile.pictureUrl || ''
+        })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.user_id) localStorage.setItem('formosa_user_id', data.user_id);
+        if (data.checkins) localStorage.setItem('formosa_checkins', data.checkins);
+        if (data.km) localStorage.setItem('formosa_km', data.km);
+        if (data.survey_done) localStorage.setItem('formosa_survey_done', 'true');
+        if (data.photo_count != null) localStorage.setItem('formosa_photo_count', data.photo_count);
+        if (data.gps_track && data.gps_track.length > 0) localStorage.setItem('formosa_gps_track', JSON.stringify(data.gps_track));
+      }).catch(function() {});
+    }
+
+    // Enter button after LINE profile shown
+    document.getElementById('lineEnterBtn').addEventListener('click', unlock);
+
+    // LIFF init
+    function initLIFF() {
+      if (typeof liff === 'undefined') {
+        setTimeout(initLIFF, 200);
+        return;
+      }
+      liff.init({ liffId: liffId }).then(function() {
+        window.__liffReady = true;
+
+        if (liff.isLoggedIn()) {
+          liff.getProfile().then(function(profile) {
+            showProfile(profile);
+          }).catch(function(e) { console.warn('LIFF getProfile error:', e); });
+        } else if (liff.isInClient()) {
+          liff.login();
+        }
+      }).catch(function(e) { console.warn('LIFF init error:', e); });
+    }
+
+    // LINE login button click
+    if (lineLoginBtn) {
+      lineLoginBtn.addEventListener('click', function() {
+        if (typeof liff !== 'undefined' && window.__liffReady) {
+          liff.login({ redirectUri: window.location.href });
+        } else {
+          initLIFF();
+          setTimeout(function() {
+            if (typeof liff !== 'undefined') liff.login({ redirectUri: window.location.href });
+          }, 1000);
+        }
+      });
+    }
+
+    // Boot sequence: check stored code first, then LIFF
+    checkStoredCode().then(function(unlocked) {
+      if (!unlocked) {
+        var storedLineId = localStorage.getItem('formosa_line_user_id');
+        var storedName = localStorage.getItem('formosa_line_display_name');
+        if (storedLineId && storedName) {
+          showProfile({
+            userId: storedLineId,
+            displayName: storedName,
+            pictureUrl: localStorage.getItem('formosa_line_picture') || ''
+          });
+        }
+        initLIFF();
+      }
+    });
+
+  } else {
+    checkStoredCode();
+  }
 })();
 </script>
 
@@ -132,10 +264,7 @@ const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入�
     width: 100%;
     box-shadow: var(--shadow-md);
   }
-  .formosa-auth .auth-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-  }
+  .formosa-auth .auth-icon { font-size: 3rem; margin-bottom: 1rem; }
   .formosa-auth .auth-card h2 {
     font-family: var(--font-cjk);
     font-size: 1.35rem;
@@ -148,7 +277,7 @@ const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入�
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
   }
-  .formosa-auth .auth-card input {
+  .formosa-auth .auth-card input[type="password"] {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid var(--border);
@@ -158,10 +287,7 @@ const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入�
     background: var(--bg);
     transition: border-color 0.2s;
   }
-  .formosa-auth .auth-card input:focus {
-    outline: none;
-    border-color: var(--accent-faith);
-  }
+  .formosa-auth .auth-card input:focus { outline: none; border-color: var(--accent-faith); }
   .formosa-auth .auth-card button {
     margin-top: 1rem;
     width: 100%;
@@ -174,7 +300,52 @@ const { title = '2026 白沙屯媽祖 ESG 永續進香', subtitle = '請輸入�
     cursor: pointer;
     transition: background 0.2s;
   }
-  .formosa-auth .auth-card button:hover {
-    background: #9a4408;
+  .formosa-auth .auth-card button:hover { background: #9a4408; }
+  .line-login-btn {
+    background: #06C755 !important;
+    color: white !important;
+    font-size: 1rem !important;
+    font-weight: 600;
+    padding: 0.85rem 1.5rem !important;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .line-login-btn:hover { background: #05a648 !important; }
+  .line-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 0.75rem;
+    display: block;
+    border: 3px solid var(--accent-faith);
+  }
+  .line-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  .line-enter-btn { background: var(--accent-faith) !important; font-weight: 600; }
+  .admin-fallback {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .admin-fallback a {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+  .admin-fallback a:hover { text-decoration: underline; }
+  .admin-login-btn {
+    font-size: 0.85rem !important;
+    padding: 0.5rem !important;
+    background: var(--text-secondary) !important;
   }
 </style>
