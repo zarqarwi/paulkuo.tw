@@ -174,6 +174,51 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
     </div>
   </section>
 
+  <!-- Glossary -->
+  <section class="ard-glossary">
+    <h3 class="ard-glossary-title">附錄：詞彙表</h3>
+    <dl class="ard-glossary-list">
+      <dt>JSON-LD</dt>
+      <dd>嵌入網頁的結構化資料格式，幫助 AI 與搜尋引擎理解頁面內容的語意（如人物、文章、組織）。</dd>
+
+      <dt>llms.txt</dt>
+      <dd>專為大型語言模型設計的網站摘要檔案，讓 AI 快速掌握網站的核心資訊，類似 robots.txt 之於搜尋引擎。</dd>
+
+      <dt>MCP + A2A</dt>
+      <dd>Model Context Protocol + Agent-to-Agent Protocol。兩種新興的 AI 互操作協議，讓 AI agent 能直接與網站交換結構化資訊。</dd>
+
+      <dt>AI 理解度</dt>
+      <dd>內部評分指標：讓 Claude 閱讀 llms.txt 後回答關於網站的問題，衡量 AI 是否能正確理解網站內容。</dd>
+
+      <dt>External Score</dt>
+      <dd>外部驗證分數：透過 Perplexity（獨立搜尋引擎）回答 13 道基準題，衡量外部 AI 對本站的認知準確度。</dd>
+
+      <dt>Positive Recall</dt>
+      <dd>正面召回率：10 道事實題中，外部 AI 能正確找到並回答的比例。越高代表網站資訊越容易被 AI 發現。</dd>
+
+      <dt>Hallucination Resistance（幻覺抵抗）</dt>
+      <dd>3 道反幻覺題中，外部 AI 正確拒絕捏造答案的比例。100% 代表 AI 不會編造關於你的虛假資訊。</dd>
+
+      <dt>Discovery</dt>
+      <dd>發現性指標：外部 AI 回答時是否引用了 paulkuo.tw 作為來源，衡量網站在 AI 搜尋中的可見度。</dd>
+
+      <dt>校準基線 (Calibration Baseline)</dt>
+      <dd>優化前的 10 次重複測試結果，建立統計參考基準。均值 = 系統的自然表現，標準差 = 自然波動幅度。</dd>
+
+      <dt>噪音帶 (Noise Band)</dt>
+      <dd>校準均值 ± 2 倍標準差。分數變化落在此範圍內視為隨機波動，超出此範圍才是真正的改善或退步訊號。</dd>
+
+      <dt>觀察期</dt>
+      <dd>Layer 5a 目前處於「只觀察、不決策」階段。累積 20 輪以上數據後，才考慮將外部分數納入自動 keep/revert 決策。</dd>
+
+      <dt>Keep / Revert</dt>
+      <dd>優化迴圈的核心決策：每次自動修改後評分，分數提升則保留 (keep)，下降則回退 (revert)。</dd>
+
+      <dt>Mutation Agent</dt>
+      <dd>自動產生網站優化修改的 AI 代理，根據差距分析提出具體的程式碼或內容變更。</dd>
+    </dl>
+  </section>
+
 </div>
 </BaseLayout>
 
@@ -698,6 +743,27 @@ function renderExternalEval() {
 .ard-ext-obs-fill { height: 100%; background: #6366f1; border-radius: 4px; transition: width 0.8s ease; width: 0; }
 .ard-ext-obs-text { font-size: 1rem; font-weight: 700; font-family: 'DM Sans', sans-serif; margin-top: 0.5rem; color: var(--text-primary, #1a1a1a); }
 .ard-ext-obs-status { font-size: 0.72rem; font-weight: 600; margin-top: 0.25rem; }
+
+/* Glossary */
+.ard-glossary {
+  margin-top: 2.5rem; padding: 2rem;
+  background: var(--bg-card, #fff); border: 1px solid var(--border, #e5e7eb);
+  border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.ard-glossary-title {
+  font-size: 0.82rem; color: var(--text-secondary, #6b7280); margin-bottom: 1.25rem;
+  font-weight: 600; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border, #e5e7eb);
+}
+.ard-glossary-list { margin: 0; }
+.ard-glossary-list dt {
+  font-size: 0.82rem; font-weight: 700; color: var(--text-primary, #1a1a1a);
+  margin-top: 1rem; font-family: 'DM Sans', sans-serif;
+}
+.ard-glossary-list dt:first-of-type { margin-top: 0; }
+.ard-glossary-list dd {
+  margin: 0.2rem 0 0 0; font-size: 0.78rem; color: var(--text-secondary, #6b7280);
+  line-height: 1.6; padding-bottom: 0.75rem; border-bottom: 1px solid #f3f4f6;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
