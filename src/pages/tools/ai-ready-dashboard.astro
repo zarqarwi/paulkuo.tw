@@ -23,10 +23,16 @@ if (existsSync(calPath)) {
 }
 
 let temporalRuns: any[] = [];
+let calibrationRuns: any[] = [];
 if (existsSync(evalDir)) {
   try {
-    const files = readdirSync(evalDir).filter(f => f.startsWith('ext-temporal-') && f.endsWith('.json')).sort();
-    temporalRuns = files.map(f => {
+    const allFiles = readdirSync(evalDir).filter(f => f.endsWith('.json')).sort();
+    // Temporal runs (daily tracking)
+    temporalRuns = allFiles.filter(f => f.startsWith('ext-temporal-')).map(f => {
+      try { return JSON.parse(readFileSync(join(evalDir, f), 'utf-8')); } catch { return null; }
+    }).filter(Boolean);
+    // Calibration + test runs (historical baseline)
+    calibrationRuns = allFiles.filter(f => f.startsWith('ext-calibration-') || f.startsWith('ext-test-run-')).map(f => {
       try { return JSON.parse(readFileSync(join(evalDir, f), 'utf-8')); } catch { return null; }
     }).filter(Boolean);
   } catch {}
@@ -237,7 +243,7 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
 
-<script define:vars={{ experiments, calibration, temporalRuns }} is:inline>
+<script define:vars={{ experiments, calibration, temporalRuns, calibrationRuns }} is:inline>
 // ── Auth ──
 const WORKER = 'https://api.paulkuo.tw';
 const authGate = document.getElementById('authGate');
@@ -552,16 +558,23 @@ function renderExternalEval() {
       + '</ul>';
   }
 
-  // Trend chart with noise band
-  if (runs.length > 0 && cal) {
-    const labels = runs.map(r => {
+  // Trend chart with noise band — includes calibration history + temporal runs
+  const calRuns = (calibrationRuns || []).slice();
+  const allRuns = [...calRuns, ...runs];
+  if (allRuns.length > 0 && cal) {
+    const labels = allRuns.map(r => {
       const ts = r.timestamp || '';
       return ts.slice(5, 10);
     });
-    const scores = runs.map(r => r.aggregate.overall_score);
-    const meanLine = runs.map(() => calMean);
-    const upperBand = runs.map(() => calMean + noise2x);
-    const lowerBand = runs.map(() => Math.max(0, calMean - noise2x));
+    const allScores = allRuns.map(r => r.aggregate.overall_score);
+    const meanLine = allRuns.map(() => calMean);
+    const upperBand = allRuns.map(() => calMean + noise2x);
+    const lowerBand = allRuns.map(() => Math.max(0, calMean - noise2x));
+
+    // Separate calibration vs temporal data for distinct visual treatment
+    const calCount = calRuns.length;
+    const calScores = allScores.map((s, i) => i < calCount ? s : null);
+    const temporalScores = allScores.map((s, i) => i >= calCount ? s : (i === calCount - 1 ? allScores[calCount - 1] : null));
 
     charts.extTrend = new Chart(document.getElementById('extTrendChart'), {
       type: 'line',
@@ -569,7 +582,8 @@ function renderExternalEval() {
         { label: '噪音上界', data: upperBand, borderColor: 'rgba(220,38,38,0.2)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false },
         { label: '噪音下界', data: lowerBand, borderColor: 'rgba(220,38,38,0.2)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: '-1', backgroundColor: 'rgba(220,38,38,0.04)' },
         { label: '校準均值 (' + calMean + ')', data: meanLine, borderColor: '#9ca3af', borderWidth: 1.5, borderDash: [8, 4], pointRadius: 0, fill: false },
-        { label: 'External Score', data: scores, borderColor: '#6366f1', borderWidth: 2.5, pointRadius: 6, pointBackgroundColor: '#6366f1', fill: false, tension: 0.3 },
+        { label: '校準期 (10 輪)', data: calScores, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#f59e0b', fill: false, tension: 0.3, borderDash: [6, 3] },
+        { label: '正式追蹤', data: temporalScores, borderColor: '#6366f1', borderWidth: 2.5, pointRadius: 6, pointBackgroundColor: '#6366f1', fill: false, tension: 0.3 },
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
