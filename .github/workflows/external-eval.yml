@@ -33,8 +33,10 @@ jobs:
 
       - name: Check API key
         id: check-key
+        env:
+          PPLX_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
         run: |
-          if [ -z "${{ secrets.PERPLEXITY_API_KEY }}" ]; then
+          if [ -z "$PPLX_KEY" ]; then
             echo "has_key=false" >> "$GITHUB_OUTPUT"
             echo "::warning::PERPLEXITY_API_KEY secret is not set — skipping benchmark"
           else
