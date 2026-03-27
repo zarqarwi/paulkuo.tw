@@ -129,6 +129,19 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
     </div>
   </section>
 
+  <!-- Narrative: Story Context -->
+  <section class="ard-narrative" id="extNarrative">
+    <div class="ard-narrative-context">
+      <h4 class="ard-narrative-label">這是什麼？</h4>
+      <p>這個網站有一套自動優化系統：AI 自動修改網站 → 自動評分 → 決定保留或回退。但我們發現一個問題——<strong>自己考自己，永遠不知道真的有沒有進步</strong>。</p>
+      <p>所以我們引入了「外部考官」：讓 Perplexity（一個獨立的 AI 搜尋引擎）回答 13 道關於 Paul Kuo 的問題，看它能找到多少正確資訊、會不會捏造假資料。這就是 Layer 5a。</p>
+      <p class="ard-narrative-link">完整設計思路 → <a href="/articles/ai-ready-continuous-optimization/">把 paulkuo.tw 變成一個自己進化的網站</a></p>
+    </div>
+    <div class="ard-narrative-status" id="extNarrativeStatus">
+      <!-- Dynamically populated -->
+    </div>
+  </section>
+
   <!-- External: Score Overview -->
   <section class="ard-ext-overview">
     <div class="ard-ext-score-card">
@@ -493,6 +506,52 @@ function renderExternalEval() {
     obsStatus.style.color = '#f59e0b';
   }
 
+  // Narrative status
+  if (agg && cal) {
+    const narEl = document.getElementById('extNarrativeStatus');
+    const recallPct = agg.positive_recall;
+    const halPct = agg.hallucination_resistance;
+    const cats = agg.per_category;
+
+    // Find weakest and strongest categories (exclude negative_test)
+    const posCats = ['identity','projects','content','tech_stack','expertise','articles','brand'];
+    const catNames = {identity:'身份辨識',projects:'專案',content:'內容',tech_stack:'技術背景',expertise:'專業領域',articles:'文章',brand:'品牌'};
+    const weakest = posCats.filter(c => cats[c] <= 25).map(c => catNames[c]);
+    const strongest = posCats.filter(c => cats[c] >= 75).map(c => catNames[c]);
+
+    // Determine phase description
+    let phaseDesc = '';
+    if (totalRuns < 20) {
+      phaseDesc = '目前處於<strong>觀察期</strong>（第 ' + totalRuns + ' / 20 輪）。外部分數只記錄、不影響系統的保留／回退決策。累積足夠數據後，才會考慮讓外部分數參與自動決策。';
+    } else {
+      phaseDesc = '觀察期已完成（' + totalRuns + ' 輪）。可以考慮將外部分數升級為 Soft Gate，讓它參與自動決策。';
+    }
+
+    // Trend narrative (if multiple runs)
+    let trendDesc = '';
+    if (runs.length >= 3) {
+      const first3 = runs.slice(0, 3).reduce((s, r) => s + r.aggregate.overall_score, 0) / 3;
+      const last3 = runs.slice(-3).reduce((s, r) => s + r.aggregate.overall_score, 0) / 3;
+      const diff = last3 - first3;
+      if (Math.abs(diff) > noise2x) {
+        trendDesc = diff > 0
+          ? '<li>趨勢方向：<strong style="color:#059669">上升中</strong>，近期均分高於早期，超過噪音閾值，屬於有效訊號</li>'
+          : '<li>趨勢方向：<strong style="color:#dc2626">下降中</strong>，近期均分低於早期，需要關注</li>';
+      } else {
+        trendDesc = '<li>趨勢方向：<strong>持平</strong>，分數波動仍在噪音範圍內，尚無法判定方向</li>';
+      }
+    }
+
+    narEl.innerHTML = '<h4 class="ard-narrative-label">目前狀況</h4><ul class="ard-narrative-bullets">'
+      + '<li>外部 AI <strong>答對了 ' + recallPct + '% 的事實</strong>——' + (recallPct >= 60 ? '多數資訊已被外界 AI 收錄' : recallPct >= 40 ? '部分資訊可被找到，但仍有改善空間' : '大部分資訊還沒被外界 AI 收錄，這是優化的重點方向') + '</li>'
+      + '<li>' + (halPct >= 90 ? '<strong style="color:#059669">沒有捏造虛假資訊</strong>（幻覺抵抗 ' + halPct + '%）' : '幻覺抵抗 ' + halPct + '%，外部 AI 偶爾會編造不實內容，需要警覺') + '</li>'
+      + (weakest.length > 0 ? '<li>最弱領域：<strong>' + weakest.join('、') + '</strong>——外部 AI 幾乎找不到這方面的資訊</li>' : '')
+      + (strongest.length > 0 ? '<li>最強領域：<strong style="color:#059669">' + strongest.join('、') + '</strong>——外部 AI 能正確回答</li>' : '')
+      + trendDesc
+      + '<li>' + phaseDesc + '</li>'
+      + '</ul>';
+  }
+
   // Trend chart with noise band
   if (runs.length > 0 && cal) {
     const labels = runs.map(r => {
@@ -714,6 +773,36 @@ function renderExternalEval() {
 .ard-ext-header-icon { font-size: 1.8rem; }
 .ard-ext-header-title { font-family: var(--font-display, 'Playfair Display', serif); font-size: 1.25rem; color: var(--text-primary, #1a1a1a); margin: 0; }
 .ard-ext-header-sub { font-size: 0.8rem; color: var(--text-muted, #9ca3af); margin: 0.15rem 0 0; }
+
+/* Narrative */
+.ard-narrative {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  margin-top: 1rem; padding: 1.75rem 2rem;
+  background: var(--bg-card, #fff); border: 1px solid var(--border, #e5e7eb);
+  border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  font-size: 0.85rem; line-height: 1.7; color: var(--text-secondary, #6b7280);
+}
+.ard-narrative-label {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-muted, #9ca3af); margin: 0 0 0.6rem; font-weight: 600;
+}
+.ard-narrative-context p { margin: 0 0 0.6rem; }
+.ard-narrative-context strong { color: var(--text-primary, #1a1a1a); }
+.ard-narrative-link { margin-top: 0.75rem; }
+.ard-narrative-link a {
+  color: #6366f1; text-decoration: none; font-weight: 600; font-size: 0.8rem;
+}
+.ard-narrative-link a:hover { text-decoration: underline; }
+.ard-narrative-bullets {
+  margin: 0; padding: 0 0 0 1.1rem; list-style: disc;
+}
+.ard-narrative-bullets li {
+  margin-bottom: 0.5rem; line-height: 1.65;
+}
+.ard-narrative-bullets strong { color: var(--text-primary, #1a1a1a); }
+@media (max-width: 768px) {
+  .ard-narrative { grid-template-columns: 1fr; }
+}
 
 /* External Eval Overview */
 .ard-ext-overview {
