@@ -1055,11 +1055,32 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   async function savePhotoToDevice(file) {
-    var age = Date.now() - (file.lastModified || 0);
-    if (age > 10000) return; // gallery photo — already on device
+    // Skip gallery picks — they're already on device
+    // lastModified=0 or epoch means iOS didn't set it, treat as camera shot
+    var lm = file.lastModified || 0;
+    var age = (lm > 1000000000000) ? (Date.now() - lm) : 0; // only trust reasonable timestamps
+    if (age > 10000 && lm > 1000000000000) return;
+
     var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
     var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
     var filename = 'formosa-' + ts + '.' + ext;
+
+    // Method 1: Web Share API (works on iOS Safari + Android)
+    if (navigator.share && navigator.canShare) {
+      try {
+        var shareFile = new File([file], filename, { type: file.type });
+        var shareData = { files: [shareFile] };
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          return; // user chose Save Image or shared it
+        }
+      } catch (e) {
+        if (e.name === 'AbortError') return; // user cancelled — that's fine
+        console.warn('share failed, trying fallback:', e);
+      }
+    }
+
+    // Method 2: <a download> fallback (works on Android Chrome, desktop)
     var url = URL.createObjectURL(file);
     var a = document.createElement('a');
     a.href = url; a.download = filename; a.style.display = 'none';
