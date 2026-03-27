@@ -12,7 +12,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Partner logos replace QR code -->
 <script is:inline src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
 
 <div class="my-dashboard">
@@ -127,9 +127,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
             </div>
           </div>
           <div class="sc-bottom-right">
-            <div class="sc-qr" id="shareQR"></div>
-            <div class="sc-cta">掃碼加入</div>
-            <div class="sc-url">paulkuo.tw</div>
+            <img class="sc-logo-main" src="/images/formosa/logo-netzero.jpg" alt="NET-ZERO" />
           </div>
         </div>
       </div>
@@ -389,15 +387,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     }
   } catch(e) { console.warn('Share map error:', e); }
 
-  // Generate QR code
-  try {
-    new QRCode(document.getElementById('shareQR'), {
-      text: 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/',
-      width: 46, height: 46,
-      colorDark: '#1a1a1a', colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
-    });
-  } catch(e) { console.warn('QR generation failed:', e); }
+  // Partner logos loaded via <img> tags — no QR code needed
 
   // Share functions
   function getShareText() {
@@ -655,10 +645,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     flex-shrink: 0;
     text-align: center;
   }
-  .sc-qr { width: 56px; height: 56px; background: #fff; border-radius: 6px; padding: 3px; }
-  .sc-qr canvas, .sc-qr img { width: 100% !important; height: 100% !important; }
-  .sc-cta { font-size: 0.55rem; color: #B45309; font-weight: 600; margin-top: 0.3rem; }
-  .sc-url { font-size: 0.5rem; color: #666; margin-top: 0.1rem; }
+  .sc-logo-main { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
 
   @media (max-width: 480px) {
     .my-stats-grid { grid-template-columns: repeat(2, 1fr); }
