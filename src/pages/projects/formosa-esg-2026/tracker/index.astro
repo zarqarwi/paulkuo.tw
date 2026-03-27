@@ -1056,8 +1056,54 @@ import AuthGate from '../_components/AuthGate.astro';
     statusEl.innerHTML = '<span class="photo-status-text">📷 已上傳 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
   }
 
-  // savePhotoToDevice removed — using capture="environment" on camera input
-  // iOS automatically saves camera photos to camera roll when capture attribute is set
+  // ── Save photo to device: show prompt after processing ──
+  var pendingSaveFiles = [];
+
+  function showSavePhotoPrompt() {
+    if (pendingSaveFiles.length === 0) return;
+    if (!navigator.share || !navigator.canShare) return; // no Web Share API
+
+    var container = document.getElementById('photoSavePrompt');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'photoSavePrompt';
+      container.className = 'photo-save-prompt';
+      var statusMini = document.getElementById('photoStatusMini');
+      if (statusMini) statusMini.parentNode.insertBefore(container, statusMini.nextSibling);
+      else document.body.appendChild(container);
+    }
+
+    var fileCount = pendingSaveFiles.length;
+    container.innerHTML = '<div class="photo-save-inner">' +
+      '<span>📷 ' + fileCount + ' 張照片已記錄</span>' +
+      '<button type="button" class="photo-save-btn" id="saveToDeviceBtn">儲存到相簿</button>' +
+      '<button type="button" class="photo-save-dismiss" id="dismissSaveBtn">✕</button>' +
+      '</div>';
+    container.style.display = 'block';
+
+    document.getElementById('saveToDeviceBtn').addEventListener('click', async function() {
+      for (var i = 0; i < pendingSaveFiles.length; i++) {
+        var f = pendingSaveFiles[i];
+        try {
+          var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+          var ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
+          var shareFile = new File([f], 'formosa-' + ts + '-' + i + '.' + ext, { type: f.type });
+          if (navigator.canShare({ files: [shareFile] })) {
+            await navigator.share({ files: [shareFile] });
+          }
+        } catch (e) {
+          if (e.name === 'AbortError') break; // user cancelled
+        }
+      }
+      pendingSaveFiles = [];
+      container.style.display = 'none';
+    });
+
+    document.getElementById('dismissSaveBtn').addEventListener('click', function() {
+      pendingSaveFiles = [];
+      container.style.display = 'none';
+    });
+  }
 
   async function handlePhotos(files, statusEl) {
     if (!statusEl) statusEl = document.getElementById('photoStatusMini');
@@ -1068,14 +1114,14 @@ import AuthGate from '../_components/AuthGate.astro';
     // Show uploading state
     statusEl.innerHTML = '<span class="photo-status-text photo-status-loading">📷 上傳中...</span>';
 
+    pendingSaveFiles = []; // reset for this batch
     var failed = false;
     for (var i = 0; i < files.length; i++) {
       var file = files[i];
       if (!file.type.match(/^image\/(jpe?g|png|heic|heif)$/)) continue;
 
       count++;
-
-      // Camera photos saved to device by iOS via capture="environment" attribute
+      pendingSaveFiles.push(file);
 
       // Store for sharing (keep file ref but no objectURL thumbnail)
       uploadedPhotos.push({ file: file, name: file.name });
@@ -1126,6 +1172,9 @@ import AuthGate from '../_components/AuthGate.astro';
       // Show success text
       updatePhotoStatusDisplay();
 
+      // Prompt user to save photos to device (iOS needs Web Share API)
+      showSavePhotoPrompt();
+
       // Update stats display
       var km = getSavedKm();
       var checkins = getSavedCheckins();
@@ -1150,7 +1199,7 @@ import AuthGate from '../_components/AuthGate.astro';
         localStorage.setItem('formosa_gps_track', JSON.stringify(savedTrack));
       } catch(e) {}
     } else if (failed) {
-      statusEl.innerHTML = '<span class="photo-status-text photo-status-error">⚠️ 上傳失敗，請重試</span><button class="photo-retry-btn" onclick="document.getElementById(\'photoInputMini\').click()">重試</button>';
+      statusEl.innerHTML = '<span class="photo-status-text photo-status-error">⚠️ 上傳失敗，請重試</span><button class="photo-retry-btn" onclick="document.getElementById(\'photoCameraMini\').click()">重試</button>';
     }
   }
 
@@ -2285,6 +2334,24 @@ import AuthGate from '../_components/AuthGate.astro';
   .photo-btn-camera:hover { background: rgba(76,175,80,0.08); }
   .photo-btn-gallery { color: var(--text-secondary); }
   .photo-btn-gallery:hover { border-color: var(--text-secondary); }
+  .photo-save-prompt {
+    display: none; margin-top: 0.5rem;
+  }
+  .photo-save-inner {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: #ECFDF5; border: 1px solid #059669; border-radius: 10px;
+    padding: 0.6rem 0.75rem; font-size: 0.85rem; color: #065F46;
+  }
+  .photo-save-btn {
+    margin-left: auto; padding: 0.4rem 0.8rem; border: none; border-radius: 8px;
+    background: #059669; color: white; font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+  }
+  .photo-save-btn:active { background: #047857; }
+  .photo-save-dismiss {
+    border: none; background: none; color: #6B7280; font-size: 1rem;
+    cursor: pointer; padding: 0.2rem;
+  }
 
   /* Photo status text (replaces thumbnails) */
   .photo-status {
