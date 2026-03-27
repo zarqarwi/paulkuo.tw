@@ -428,10 +428,12 @@ import AuthGate from '../_components/AuthGate.astro';
       <div class="checkin-upload-section">
         <p style="margin-bottom:0.25rem;color:#888;font-size:0.85rem;">或上傳照片記錄</p>
         <p style="margin-bottom:0.5rem;color:#aaa;font-size:0.72rem;">照片不會上傳到伺服器，僅讀取 GPS 定位資訊作為路徑紀錄</p>
-        <div class="upload-zone-mini" id="uploadZoneMini">
-          📷 點擊上傳照片
-          <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" multiple id="photoInputMini" style="display:none">
+        <div class="photo-btn-row">
+          <button type="button" class="photo-btn photo-btn-camera" id="cameraBtnMini">📷 拍照</button>
+          <button type="button" class="photo-btn photo-btn-gallery" id="galleryBtnMini">🖼 選照片</button>
         </div>
+        <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" capture="environment" id="photoCameraMini" style="display:none">
+        <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" multiple id="photoGalleryMini" style="display:none">
         <div id="photoStatusMini" class="photo-status"></div>
       </div>
 
@@ -1054,39 +1056,8 @@ import AuthGate from '../_components/AuthGate.astro';
     statusEl.innerHTML = '<span class="photo-status-text">📷 已上傳 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
   }
 
-  async function savePhotoToDevice(file) {
-    // Skip gallery picks — they're already on device
-    // lastModified=0 or epoch means iOS didn't set it, treat as camera shot
-    var lm = file.lastModified || 0;
-    var age = (lm > 1000000000000) ? (Date.now() - lm) : 0; // only trust reasonable timestamps
-    if (age > 10000 && lm > 1000000000000) return;
-
-    var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    var filename = 'formosa-' + ts + '.' + ext;
-
-    // Method 1: Web Share API (works on iOS Safari + Android)
-    if (navigator.share && navigator.canShare) {
-      try {
-        var shareFile = new File([file], filename, { type: file.type });
-        var shareData = { files: [shareFile] };
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-          return; // user chose Save Image or shared it
-        }
-      } catch (e) {
-        if (e.name === 'AbortError') return; // user cancelled — that's fine
-        console.warn('share failed, trying fallback:', e);
-      }
-    }
-
-    // Method 2: <a download> fallback (works on Android Chrome, desktop)
-    var url = URL.createObjectURL(file);
-    var a = document.createElement('a');
-    a.href = url; a.download = filename; a.style.display = 'none';
-    document.body.appendChild(a); a.click();
-    setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-  }
+  // savePhotoToDevice removed — using capture="environment" on camera input
+  // iOS automatically saves camera photos to camera roll when capture attribute is set
 
   async function handlePhotos(files, statusEl) {
     if (!statusEl) statusEl = document.getElementById('photoStatusMini');
@@ -1104,8 +1075,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
       count++;
 
-      // Save camera photo to device
-      try { await savePhotoToDevice(file); } catch (e) { console.warn('savePhotoToDevice:', e); }
+      // Camera photos saved to device by iOS via capture="environment" attribute
 
       // Store for sharing (keep file ref but no objectURL thumbnail)
       uploadedPhotos.push({ file: file, name: file.name });
@@ -1207,12 +1177,23 @@ import AuthGate from '../_components/AuthGate.astro';
 
     updateCheckinProgress(t);
 
-    var zoneMini = document.getElementById('uploadZoneMini');
-    var inputMini = document.getElementById('photoInputMini');
-    if (zoneMini && inputMini) {
-      zoneMini.addEventListener('click', function() { inputMini.click(); });
-      inputMini.addEventListener('change', function() {
-        if (this.files.length > 0) handlePhotos(this.files, document.getElementById('photoStatusMini'));
+    var cameraBtn = document.getElementById('cameraBtnMini');
+    var galleryBtn = document.getElementById('galleryBtnMini');
+    var cameraInput = document.getElementById('photoCameraMini');
+    var galleryInput = document.getElementById('photoGalleryMini');
+    var statusMini = document.getElementById('photoStatusMini');
+    if (cameraBtn && cameraInput) {
+      cameraBtn.addEventListener('click', function() { cameraInput.click(); });
+      cameraInput.addEventListener('change', function() {
+        if (this.files.length > 0) handlePhotos(this.files, statusMini);
+        this.value = ''; // reset so same photo can re-trigger
+      });
+    }
+    if (galleryBtn && galleryInput) {
+      galleryBtn.addEventListener('click', function() { galleryInput.click(); });
+      galleryInput.addEventListener('change', function() {
+        if (this.files.length > 0) handlePhotos(this.files, statusMini);
+        this.value = '';
       });
     }
 
@@ -2291,6 +2272,19 @@ import AuthGate from '../_components/AuthGate.astro';
     transition: border-color 0.2s;
   }
   .upload-zone-mini:hover { border-color: var(--accent-faith); }
+  .photo-btn-row {
+    display: flex; gap: 0.5rem; margin-bottom: 0.5rem;
+  }
+  .photo-btn {
+    flex: 1; padding: 0.75rem 0.5rem; border: 2px solid var(--border);
+    border-radius: 12px; background: var(--bg-card); cursor: pointer;
+    font-size: 0.95rem; color: var(--text-primary); transition: all 0.2s;
+  }
+  .photo-btn:active { transform: scale(0.97); }
+  .photo-btn-camera { border-color: var(--accent-faith); color: var(--accent-faith); font-weight: 600; }
+  .photo-btn-camera:hover { background: rgba(76,175,80,0.08); }
+  .photo-btn-gallery { color: var(--text-secondary); }
+  .photo-btn-gallery:hover { border-color: var(--text-secondary); }
 
   /* Photo status text (replaces thumbnails) */
   .photo-status {

@@ -1128,7 +1128,7 @@ export async function handleFormosaRichMenu(request, env) {
 }
 
 // Rich Menu image: fetch pre-built PNG from site
-const RICH_MENU_IMAGE_URL = 'https://paulkuo.tw/images/formosa/rich-menu.png';
+const RICH_MENU_IMAGE_URL = 'https://paulkuo.tw/images/formosa/rich-menu-v2.png';
 
 async function fetchRichMenuImage() {
   const res = await fetch(RICH_MENU_IMAGE_URL);
