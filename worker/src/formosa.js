@@ -4,6 +4,35 @@
  */
 import { corsHeaders, jsonResponse } from './utils.js';
 
+// ── Activity Status Helper ──
+const FORMOSA_STATUS_KEY = 'formosa_status';
+async function getFormosaStatus(kv) {
+  const raw = await kv.get(FORMOSA_STATUS_KEY);
+  if (!raw) return { status: 'active', message: '' };
+  try { return JSON.parse(raw); } catch { return { status: 'active', message: '' }; }
+}
+
+// ── Admin: Get/Set Activity Status ──
+export async function handleFormosaAdminStatus(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+
+  if (request.method === 'GET') {
+    const data = await getFormosaStatus(env.TICKER_KV);
+    return jsonResponse(data, 200, request);
+  }
+
+  // POST — set status (requires admin)
+  const authErr = requireAdmin(request);
+  if (authErr) return authErr;
+  try {
+    const body = await request.json();
+    const status = body.status || 'active'; // active | paused | ended
+    const message = body.message || '';
+    await env.TICKER_KV.put(FORMOSA_STATUS_KEY, JSON.stringify({ status, message, updated: new Date().toISOString() }));
+    return jsonResponse({ ok: true, status, message }, 200, request);
+  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+}
+
 // ── Rate Limit Helper ──
 async function checkRateLimit(db, userId, windowMinutes, maxRequests) {
   const result = await db.prepare(
