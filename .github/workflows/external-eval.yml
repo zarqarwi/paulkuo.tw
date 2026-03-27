@@ -31,7 +31,18 @@ jobs:
       - name: Install dependencies
         run: pip install openai pyyaml
 
+      - name: Check API key
+        id: check-key
+        run: |
+          if [ -z "${{ secrets.PERPLEXITY_API_KEY }}" ]; then
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::PERPLEXITY_API_KEY secret is not set — skipping benchmark"
+          else
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run external benchmark
+        if: steps.check-key.outputs.has_key == 'true'
         env:
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
         run: |
@@ -42,9 +53,16 @@ jobs:
           python3 ai-ready-opt/multi_model_query.py --run-benchmark --tag "$TAG"
 
       - name: Commit results
+        if: steps.check-key.outputs.has_key == 'true'
         run: |
           git config user.name "ai-ready-bot"
           git config user.email "bot@paulkuo.tw"
           git add ai-ready-opt/external-eval-results/
           git diff --cached --quiet || git commit -m "chore: external eval temporal baseline $(date -u +%Y-%m-%d)"
           git push origin main
+
+      - name: Notify on missing key
+        if: steps.check-key.outputs.has_key == 'false'
+        run: |
+          echo "::error::External eval skipped — PERPLEXITY_API_KEY not configured. Add it at Settings → Secrets → Actions."
+          exit 1
