@@ -10,7 +10,7 @@ import AuthGate from '../_components/AuthGate.astro';
   ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
 >
 
-<AuthGate title="活動參與足跡紀錄" subtitle="請輸入存取碼">
+<AuthGate title="活動參與足跡紀錄" lineLogin={true}>
 
 <div class="tracker">
 
@@ -248,6 +248,13 @@ import AuthGate from '../_components/AuthGate.astro';
           <span class="transport-unit">KM</span>
         </div>
       </div>
+      <div class="transport-item">
+        <label class="transport-label">🚲 腳踏車</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_bike" value="0" min="0" step="0.1" />
+          <span class="transport-unit">KM</span>
+        </div>
+      </div>
     </div>
     <div class="q-nav">
       <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
@@ -273,6 +280,13 @@ import AuthGate from '../_components/AuthGate.astro';
           <span class="transport-unit">天</span>
         </div>
       </div>
+      <div class="transport-item">
+        <label class="transport-label">♻️ 回收水瓶</label>
+        <div class="transport-input-wrap">
+          <input type="number" class="transport-input" id="t_recycle" value="0" min="0" step="1" />
+          <span class="transport-unit">瓶</span>
+        </div>
+      </div>
     </div>
     <div class="q-nav">
       <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
@@ -287,7 +301,7 @@ import AuthGate from '../_components/AuthGate.astro';
       <div class="carbon-title">🌱 碳足跡估算</div>
       <div class="carbon-total" id="carbonTotal">0.00 <small>kg CO₂e</small></div>
       <div class="carbon-breakdown" id="carbonBreakdown"></div>
-      <div class="carbon-note">排放係數依據台灣環境部公布數據估算</div>
+      <div class="carbon-note">排放係數依據 SSBTi 善足跡 / Ecoinvent 3.10 數據</div>
     </div>
     <div class="q-nav">
       <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
@@ -459,71 +473,14 @@ import AuthGate from '../_components/AuthGate.astro';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
-<!-- LIFF SDK -->
-<script is:inline src="https://static.line-scdn.net/liff/edge/versions/2.24.0/sdk.js"></script>
-
-<!-- All logic -->
+<!-- All logic (LIFF SDK loaded by AuthGate) -->
 <script is:inline>
 (function() {
   // ── Config ──
   var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
 
-  // ── LIFF Integration ──
-  var LIFF_ID = '2009588321-rXVntTKg';
-  var lineUserId = localStorage.getItem('formosa_line_user_id') || null;
-  var lineProfile = null;
-  var liffReady = false;
-
-  function initLIFF() {
-    if (typeof liff === 'undefined') return;
-    liff.init({ liffId: LIFF_ID }).then(function() {
-      liffReady = true;
-      if (liff.isLoggedIn()) {
-        liff.getProfile().then(function(profile) {
-          lineUserId = profile.userId;
-          lineProfile = profile;
-          localStorage.setItem('formosa_line_user_id', profile.userId);
-          localStorage.setItem('formosa_line_display_name', profile.displayName);
-          localStorage.setItem('formosa_line_picture', profile.pictureUrl || '');
-          // Sync user to server
-          syncUserToServer(profile);
-        }).catch(function(e) { console.log('LIFF getProfile error:', e); });
-      } else if (liff.isInClient()) {
-        // Inside LINE app but not logged in - auto login
-        liff.login();
-      }
-    }).catch(function(e) { console.log('LIFF init error:', e); });
-  }
-
-  function syncUserToServer(profile) {
-    fetch(API_BASE + '/api/formosa/user/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        line_user_id: profile.userId,
-        display_name: profile.displayName,
-        picture_url: profile.pictureUrl || ''
-      })
-    }).then(function(r) { return r.json(); }).then(function(data) {
-      if (data.user_id) localStorage.setItem('formosa_user_id', data.user_id);
-      // Restore server data to localStorage if available
-      if (data.checkins) localStorage.setItem('formosa_checkins', data.checkins);
-      if (data.km) localStorage.setItem('formosa_km', data.km);
-      if (data.survey_done) localStorage.setItem('formosa_survey_done', 'true');
-      if (data.gps_track && data.gps_track.length > 0) {
-        localStorage.setItem('formosa_gps_track', JSON.stringify(data.gps_track));
-      }
-      // Restore photo count from server (use max of local vs server)
-      if (typeof data.photo_count === 'number') {
-        var localCount = parseInt(localStorage.getItem('formosa_photo_count') || '0', 10);
-        var serverCount = data.photo_count;
-        var maxCount = Math.max(localCount, serverCount);
-        cumulativePhotoCount = maxCount;
-        localStorage.setItem('formosa_photo_count', maxCount);
-        updatePhotoStatusDisplay();
-      }
-    }).catch(function() {});
-  }
+  // ── LINE User Identity (set by AuthGate LIFF login) ──
+  var lineUserId = window.__lineUserId || localStorage.getItem('formosa_line_user_id') || null;
 
   // ── Background GPS Tracking ──
   // Restore saved GPS track from localStorage
@@ -735,14 +692,14 @@ import AuthGate from '../_components/AuthGate.astro';
 
   // ── Carbon Calculator ──
   var FACTORS = {
-    walk: 0, car: 0.21, scooter: 0.05,
-    bus: 0.04, mrt: 0.02, train: 0.04, hsr: 0.03,
-    water: 0.08, hotel: 10
+    walk: 0, car: 0.30479, scooter: 0.13734, bike: 0.01220,
+    bus: 0.47515, mrt: 0.07575, train: 0.07575, hsr: 0.07487,
+    water: 0.10974, recycle: -0.00265, hotel: 12.5
   };
   var LABELS = {
-    walk: '步行', car: '開車', scooter: '機車',
+    walk: '步行', car: '開車', scooter: '機車', bike: '腳踏車',
     bus: '公車', mrt: '捷運', train: '火車', hsr: '高鐵',
-    water: '瓶裝水', hotel: '旅宿'
+    water: '瓶裝水', recycle: '♻️ 回收水瓶', hotel: '旅宿'
   };
 
   function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
@@ -752,22 +709,26 @@ import AuthGate from '../_components/AuthGate.astro';
     var car = getVal('t_car');
     var carpool = Math.max(1, getVal('t_carpool'));
     var scooter = getVal('t_scooter');
+    var bike = getVal('t_bike');
     var bus = getVal('t_bus');
     var mrt = getVal('t_mrt');
     var train = getVal('t_train');
     var hsr = getVal('t_hsr');
     var water = getVal('t_water');
+    var recycle = getVal('t_recycle');
     var hotel = getVal('t_hotel');
 
     var breakdown = {};
     breakdown.walk = walk * FACTORS.walk;
     breakdown.car = (car * FACTORS.car) / carpool;
     breakdown.scooter = scooter * FACTORS.scooter;
+    breakdown.bike = bike * FACTORS.bike;
     breakdown.bus = bus * FACTORS.bus;
     breakdown.mrt = mrt * FACTORS.mrt;
     breakdown.train = train * FACTORS.train;
     breakdown.hsr = hsr * FACTORS.hsr;
     breakdown.water = water * FACTORS.water;
+    breakdown.recycle = recycle * FACTORS.recycle;
     breakdown.hotel = hotel * FACTORS.hotel;
 
     var total = 0;
@@ -780,6 +741,8 @@ import AuthGate from '../_components/AuthGate.astro';
     for (var k in breakdown) {
       if (breakdown[k] > 0) {
         html += '<div class="carbon-row"><span>' + LABELS[k] + '</span><span>' + breakdown[k].toFixed(2) + ' kg</span></div>';
+      } else if (breakdown[k] < 0) {
+        html += '<div class="carbon-row carbon-offset"><span>' + LABELS[k] + '</span><span>♻️ ' + breakdown[k].toFixed(4) + ' kg</span></div>';
       }
     }
     if (!html) html = '<div class="carbon-row"><span>尚未填寫交通資料</span><span>—</span></div>';
@@ -835,9 +798,11 @@ import AuthGate from '../_components/AuthGate.astro';
           bus_km: getVal('t_bus'),
           mrt_km: getVal('t_mrt'),
           train_km: getVal('t_train'),
-          hsr_km: getVal('t_hsr')
+          hsr_km: getVal('t_hsr'),
+          bike_km: getVal('t_bike')
         },
         water_bottles: getVal('t_water'),
+        recycle_bottles: getVal('t_recycle'),
         hotel_nights: getVal('t_hotel')
       },
       carbon: {
@@ -939,7 +904,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
   window.shareLine = function() {
     // Use LIFF shareTargetPicker if in LINE app
-    if (liffReady && liff.isInClient() && liff.isApiAvailable('shareTargetPicker')) {
+    if (window.__liffReady && typeof liff !== 'undefined' && liff.isInClient() && liff.isApiAvailable('shareTargetPicker')) {
       liff.shareTargetPicker([
         {
           type: 'text',
@@ -1007,7 +972,7 @@ import AuthGate from '../_components/AuthGate.astro';
     // Attach LINE identity if available
     if (lineUserId) {
       data.line_user_id = lineUserId;
-      data.line_display_name = lineProfile ? lineProfile.displayName : localStorage.getItem('formosa_line_display_name') || '';
+      data.line_display_name = (window.__lineProfile ? window.__lineProfile.displayName : null) || localStorage.getItem('formosa_line_display_name') || '';
     }
 
     var submitBtn = document.getElementById('submitBtn');
@@ -1089,6 +1054,19 @@ import AuthGate from '../_components/AuthGate.astro';
     statusEl.innerHTML = '<span class="photo-status-text">📷 已上傳 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
   }
 
+  async function savePhotoToDevice(file) {
+    var age = Date.now() - (file.lastModified || 0);
+    if (age > 10000) return; // gallery photo — already on device
+    var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    var filename = 'formosa-' + ts + '.' + ext;
+    var url = URL.createObjectURL(file);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  }
+
   async function handlePhotos(files, statusEl) {
     if (!statusEl) statusEl = document.getElementById('photoStatusMini');
     if (!statusEl) return;
@@ -1104,6 +1082,9 @@ import AuthGate from '../_components/AuthGate.astro';
       if (!file.type.match(/^image\/(jpe?g|png|heic|heif)$/)) continue;
 
       count++;
+
+      // Save camera photo to device
+      try { await savePhotoToDevice(file); } catch (e) { console.warn('savePhotoToDevice:', e); }
 
       // Store for sharing (keep file ref but no objectURL thumbnail)
       uploadedPhotos.push({ file: file, name: file.name });
@@ -1320,7 +1301,6 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   // ── Page Init ──
-  initLIFF();
 
   if (localStorage.getItem('formosa_survey_done') === 'true') {
     enterCheckinMode();
@@ -1948,6 +1928,7 @@ import AuthGate from '../_components/AuthGate.astro';
     padding: 0.25rem 0;
     border-bottom: 1px solid rgba(5,150,105,0.08);
   }
+  .carbon-row.carbon-offset { color: #059669; font-weight: 600; }
   .carbon-note {
     font-size: 0.72rem;
     color: var(--text-muted);

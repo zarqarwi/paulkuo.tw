@@ -2,7 +2,9 @@ import { ALLOWED_ORIGINS } from './config.js';
 
 export function corsHeaders(request) {
   const origin = request.headers.get('Origin') || '';
-  const allowed = ALLOWED_ORIGINS.find(o => origin.startsWith(o)) || ALLOWED_ORIGINS[0];
+  const allowed = ALLOWED_ORIGINS.find(o => origin === o || origin.startsWith(o)) ||
+    (origin.endsWith('.paulkuo-tw.pages.dev') ? origin : null) ||
+    ALLOWED_ORIGINS[0];
   return {
     'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, PATCH, OPTIONS',

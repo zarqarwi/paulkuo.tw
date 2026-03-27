@@ -12,6 +12,14 @@ async function getFormosaStatus(kv) {
   try { return JSON.parse(raw); } catch { return { status: 'active', message: '' }; }
 }
 
+// ── Rate Limit Helper ──
+async function checkRateLimit(db, userId, windowMinutes, maxRequests) {
+  const result = await db.prepare(
+    `SELECT COUNT(*) as cnt FROM formosa_gps_points WHERE user_id = ? AND created_at >= datetime('now', '-' || ? || ' minutes')`
+  ).bind(userId, windowMinutes).first();
+  return (result?.cnt || 0) >= maxRequests;
+}
+
 // ── Admin Auth Helper ──
 const ADMIN_TOKEN = 'formosa-admin-2026';
 function requireAdmin(request) {
