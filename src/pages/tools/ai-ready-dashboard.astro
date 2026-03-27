@@ -3,12 +3,33 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
+import { readdirSync } from 'fs';
+
 const expPath = join(process.cwd(), 'ai-ready-opt', 'experiments.json');
 let experiments: any[] = [];
 if (existsSync(expPath)) {
   try {
     experiments = JSON.parse(readFileSync(expPath, 'utf-8'));
   } catch { experiments = []; }
+}
+
+// Load external eval data
+const evalDir = join(process.cwd(), 'ai-ready-opt', 'external-eval-results');
+const calPath = join(process.cwd(), 'ai-ready-opt', 'calibration_report.json');
+
+let calibration: any = null;
+if (existsSync(calPath)) {
+  try { calibration = JSON.parse(readFileSync(calPath, 'utf-8')); } catch {}
+}
+
+let temporalRuns: any[] = [];
+if (existsSync(evalDir)) {
+  try {
+    const files = readdirSync(evalDir).filter(f => f.startsWith('ext-temporal-') && f.endsWith('.json')).sort();
+    temporalRuns = files.map(f => {
+      try { return JSON.parse(readFileSync(join(evalDir, f), 'utf-8')); } catch { return null; }
+    }).filter(Boolean);
+  } catch {}
 }
 
 const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
@@ -99,12 +120,57 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
     <div class="ard-table-wrap" id="expTableBody"></div>
   </section>
 
-  <!-- Layer 5a -->
-  <section class="ard-layer5">
-    <div class="ard-layer5-icon">🔬</div>
+  <!-- Layer 5a: External AI Cross-Validation -->
+  <section class="ard-ext-header">
+    <div class="ard-ext-header-icon">🔬</div>
     <div>
-      <h3>外部 AI 交叉驗證（Layer 5a）</h3>
-      <p>Step 2 完成後啟用 — Perplexity 交叉驗證 · discovery / grounding 追蹤 · 反幻覺測試</p>
+      <h2 class="ard-ext-header-title">外部 AI 交叉驗證（Layer 5a）</h2>
+      <p class="ard-ext-header-sub">Perplexity Sonar 獨立搜尋 · 13 題基準測試 · 每日自動追蹤</p>
+    </div>
+  </section>
+
+  <!-- External: Score Overview -->
+  <section class="ard-ext-overview">
+    <div class="ard-ext-score-card">
+      <div class="ard-ext-score-big" id="extScoreValue">—</div>
+      <div class="ard-ext-score-label">External Score</div>
+      <div class="ard-ext-score-delta" id="extScoreDelta"></div>
+    </div>
+    <div class="ard-ext-metrics">
+      <div class="ard-ext-metric">
+        <span class="ard-ext-metric-val" id="extRecall">—</span>
+        <span class="ard-ext-metric-label">Positive Recall</span>
+      </div>
+      <div class="ard-ext-metric">
+        <span class="ard-ext-metric-val" id="extHallucination">—</span>
+        <span class="ard-ext-metric-label">幻覺抵抗</span>
+      </div>
+      <div class="ard-ext-metric">
+        <span class="ard-ext-metric-val" id="extDiscovery">—</span>
+        <span class="ard-ext-metric-label">Discovery</span>
+      </div>
+    </div>
+    <div class="ard-ext-observation">
+      <div class="ard-ext-obs-title">觀察期進度</div>
+      <div class="ard-ext-obs-bar"><div class="ard-ext-obs-fill" id="extObsFill"></div></div>
+      <div class="ard-ext-obs-text" id="extObsText">— / 20 輪</div>
+      <div class="ard-ext-obs-status" id="extObsStatus">觀察中</div>
+    </div>
+  </section>
+
+  <!-- External: Trend Chart -->
+  <section class="ard-charts" style="margin-top:1.25rem">
+    <div class="ard-panel ard-panel-wide">
+      <h3 class="ard-panel-title">External Score 趨勢 <span class="ard-panel-badge">校準均值 ± 噪音帶</span></h3>
+      <div class="ard-chart-wrap ard-chart-tall"><canvas id="extTrendChart"></canvas></div>
+    </div>
+    <div class="ard-panel">
+      <h3 class="ard-panel-title">分類表現</h3>
+      <div class="ard-chart-wrap ard-chart-tall"><canvas id="extCategoryChart"></canvas></div>
+    </div>
+    <div class="ard-panel">
+      <h3 class="ard-panel-title">分類 vs 校準基線</h3>
+      <div class="ard-chart-wrap ard-chart-tall"><canvas id="extRadarChart"></canvas></div>
     </div>
   </section>
 
@@ -113,7 +179,7 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" is:inline></script>
 
-<script define:vars={{ experiments }} is:inline>
+<script define:vars={{ experiments, calibration, temporalRuns }} is:inline>
 // ── Auth ──
 const WORKER = 'https://api.paulkuo.tw';
 const authGate = document.getElementById('authGate');
@@ -292,6 +358,9 @@ function renderDashboard() {
     options: { ...cDef, cutout: '60%', plugins: { ...cDef.plugins, legend: { position: 'right', labels: { ...cDef.plugins.legend.labels, padding: 16 } } } },
   });
 
+  // ── External Eval (Layer 5a) ──
+  renderExternalEval();
+
   // Table
   const sorted = [...data].reverse();
   const badge = (e) => {
@@ -322,6 +391,134 @@ function renderDashboard() {
         <td style="text-align:center">${badge(e)}</td>
       </tr>`;
     }).join('')}</tbody></table>`;
+}
+
+// ── External Eval Renderer ──
+function renderExternalEval() {
+  const cal = calibration;
+  const runs = temporalRuns || [];
+  if (!cal && runs.length === 0) return;
+
+  const latest = runs.length > 0 ? runs[runs.length - 1] : null;
+  const agg = latest ? latest.aggregate : null;
+  const calMean = cal ? cal.overall.mean : null;
+  const noise2x = cal ? cal.threshold.stddev_2x : null;
+
+  // Score card
+  if (agg) {
+    const scoreEl = document.getElementById('extScoreValue');
+    scoreEl.textContent = agg.overall_score;
+    const color = agg.overall_score >= 70 ? '#059669' : agg.overall_score >= 50 ? '#f59e0b' : '#dc2626';
+    scoreEl.style.color = color;
+
+    // Delta vs calibration mean
+    if (calMean != null) {
+      const delta = (agg.overall_score - calMean).toFixed(1);
+      const deltaEl = document.getElementById('extScoreDelta');
+      const sign = delta >= 0 ? '+' : '';
+      deltaEl.textContent = sign + delta + ' vs 校準均值 (' + calMean + ')';
+      if (noise2x && Math.abs(delta) > noise2x) {
+        deltaEl.style.color = delta >= 0 ? '#059669' : '#dc2626';
+        deltaEl.textContent += ' ⚡ 強訊號';
+      } else {
+        deltaEl.style.color = '#9ca3af';
+        deltaEl.textContent += ' (噪音範圍內)';
+      }
+    }
+
+    // Metrics
+    document.getElementById('extRecall').textContent = agg.positive_recall + '%';
+    document.getElementById('extHallucination').textContent = agg.hallucination_resistance + '%';
+    document.getElementById('extHallucination').style.color = agg.hallucination_resistance >= 90 ? '#059669' : '#f59e0b';
+    document.getElementById('extDiscovery').textContent = agg.discovery_aggregate + '%';
+  }
+
+  // Observation progress
+  const totalRuns = runs.length;
+  const target = 20;
+  const pct = Math.min(100, (totalRuns / target) * 100);
+  document.getElementById('extObsFill').style.width = pct + '%';
+  document.getElementById('extObsText').textContent = totalRuns + ' / ' + target + ' 輪';
+  const obsStatus = document.getElementById('extObsStatus');
+  if (totalRuns >= target) {
+    obsStatus.textContent = '可升級為 Soft Gate';
+    obsStatus.style.color = '#059669';
+  } else {
+    obsStatus.textContent = '觀察中 — 不影響 keep/revert 決策';
+    obsStatus.style.color = '#f59e0b';
+  }
+
+  // Trend chart with noise band
+  if (runs.length > 0 && cal) {
+    const labels = runs.map(r => {
+      const ts = r.timestamp || '';
+      return ts.slice(5, 10);
+    });
+    const scores = runs.map(r => r.aggregate.overall_score);
+    const meanLine = runs.map(() => calMean);
+    const upperBand = runs.map(() => calMean + noise2x);
+    const lowerBand = runs.map(() => Math.max(0, calMean - noise2x));
+
+    charts.extTrend = new Chart(document.getElementById('extTrendChart'), {
+      type: 'line',
+      data: { labels, datasets: [
+        { label: '噪音上界', data: upperBand, borderColor: 'rgba(220,38,38,0.2)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false },
+        { label: '噪音下界', data: lowerBand, borderColor: 'rgba(220,38,38,0.2)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: '-1', backgroundColor: 'rgba(220,38,38,0.04)' },
+        { label: '校準均值 (' + calMean + ')', data: meanLine, borderColor: '#9ca3af', borderWidth: 1.5, borderDash: [8, 4], pointRadius: 0, fill: false },
+        { label: 'External Score', data: scores, borderColor: '#6366f1', borderWidth: 2.5, pointRadius: 6, pointBackgroundColor: '#6366f1', fill: false, tension: 0.3 },
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#6b7280', font: { family: "'DM Sans',sans-serif", size: 11 }, padding: 14, usePointStyle: true, pointStyleWidth: 8 } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+          y: { min: 0, max: 100, grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', stepSize: 20 } },
+        },
+      },
+    });
+  }
+
+  // Category bar chart (latest vs calibration)
+  const categories = ['identity', 'projects', 'content', 'tech_stack', 'expertise', 'articles', 'brand', 'negative_test'];
+  const catLabels = ['身份', '專案', '內容', '技術棧', '專業', '文章', '品牌', '反幻覺'];
+  const catColors = ['#6366f1', '#3b82f6', '#059669', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899', '#10b981'];
+
+  if (agg && cal) {
+    const latestCats = categories.map(c => agg.per_category[c] || 0);
+    const calCats = categories.map(c => cal.per_category[c] ? cal.per_category[c].mean : 0);
+
+    charts.extCat = new Chart(document.getElementById('extCategoryChart'), {
+      type: 'bar',
+      data: { labels: catLabels, datasets: [
+        { label: '校準基線', data: calCats, backgroundColor: 'rgba(156,163,175,0.3)', borderColor: '#9ca3af', borderWidth: 1, borderRadius: 4 },
+        { label: '最新', data: latestCats, backgroundColor: catColors.map(c => c + '33'), borderColor: catColors, borderWidth: 2, borderRadius: 4 },
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#6b7280', font: { family: "'DM Sans',sans-serif", size: 11 }, padding: 14, usePointStyle: true, pointStyleWidth: 8 } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+          y: { min: 0, max: 100, grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', stepSize: 25 } },
+        },
+      },
+    });
+
+    // Radar chart
+    charts.extRadar = new Chart(document.getElementById('extRadarChart'), {
+      type: 'radar',
+      data: { labels: catLabels, datasets: [
+        { label: '校準基線', data: calCats, borderColor: '#9ca3af', backgroundColor: 'rgba(156,163,175,0.1)', borderWidth: 1.5, pointRadius: 3 },
+        { label: '最新', data: latestCats, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', borderWidth: 2, pointRadius: 4 },
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#6b7280', font: { family: "'DM Sans',sans-serif", size: 11 }, padding: 14, usePointStyle: true, pointStyleWidth: 8 } } },
+        scales: {
+          r: { min: 0, max: 100, ticks: { stepSize: 25, color: '#9ca3af', backdropColor: 'transparent', font: { size: 9 } }, grid: { color: '#e5e7eb' }, pointLabels: { color: '#6b7280', font: { size: 11 } } },
+        },
+      },
+    });
+  }
 }
 </script>
 
@@ -464,16 +661,43 @@ function renderDashboard() {
   background: color-mix(in srgb, var(--bc) 12%, transparent); color: var(--bc);
 }
 
-/* Layer 5a Placeholder */
-.ard-layer5 {
+/* External Eval Header */
+.ard-ext-header {
   display: flex; align-items: center; gap: 1rem;
-  margin-top: 1.5rem; padding: 1.5rem 2rem;
-  background: var(--bg-section, #fafaf9); border: 1.5px dashed var(--border, #e5e7eb);
-  border-radius: 14px;
+  margin-top: 2.5rem; padding: 1.25rem 0; border-top: 2px solid var(--border, #e5e7eb);
 }
-.ard-layer5-icon { font-size: 1.8rem; }
-.ard-layer5 h3 { font-size: 0.9rem; color: var(--text-secondary, #6b7280); margin: 0 0 0.25rem; font-weight: 600; }
-.ard-layer5 p { font-size: 0.8rem; color: var(--text-muted, #9ca3af); margin: 0; }
+.ard-ext-header-icon { font-size: 1.8rem; }
+.ard-ext-header-title { font-family: var(--font-display, 'Playfair Display', serif); font-size: 1.25rem; color: var(--text-primary, #1a1a1a); margin: 0; }
+.ard-ext-header-sub { font-size: 0.8rem; color: var(--text-muted, #9ca3af); margin: 0.15rem 0 0; }
+
+/* External Eval Overview */
+.ard-ext-overview {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 2rem; align-items: center;
+  background: var(--bg-card, #fff); border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px; padding: 2rem; margin-top: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.ard-ext-score-card { text-align: center; min-width: 140px; }
+.ard-ext-score-big { font-size: 3.2rem; font-weight: 800; font-family: 'DM Sans', sans-serif; line-height: 1; }
+.ard-ext-score-label { font-size: 0.75rem; color: var(--text-muted, #9ca3af); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.ard-ext-score-delta { font-size: 0.78rem; margin-top: 0.5rem; font-weight: 600; }
+
+.ard-ext-metrics { display: flex; gap: 2rem; justify-content: center; }
+.ard-ext-metric { text-align: center; }
+.ard-ext-metric-val { display: block; font-size: 1.6rem; font-weight: 800; font-family: 'DM Sans', sans-serif; color: var(--text-primary, #1a1a1a); }
+.ard-ext-metric-label { font-size: 0.7rem; color: var(--text-muted, #9ca3af); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Observation Progress */
+.ard-ext-observation {
+  text-align: center; min-width: 160px;
+  background: var(--bg-section, #fafaf9); border-radius: 12px; padding: 1rem 1.25rem;
+}
+.ard-ext-obs-title { font-size: 0.7rem; color: var(--text-muted, #9ca3af); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+.ard-ext-obs-bar { width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+.ard-ext-obs-fill { height: 100%; background: #6366f1; border-radius: 4px; transition: width 0.8s ease; width: 0; }
+.ard-ext-obs-text { font-size: 1rem; font-weight: 700; font-family: 'DM Sans', sans-serif; margin-top: 0.5rem; color: var(--text-primary, #1a1a1a); }
+.ard-ext-obs-status { font-size: 0.72rem; font-weight: 600; margin-top: 0.25rem; }
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -483,5 +707,7 @@ function renderDashboard() {
   .ard-charts { grid-template-columns: 1fr; }
   .ard-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
   .ard-header-right { align-self: flex-end; }
+  .ard-ext-overview { grid-template-columns: 1fr; justify-items: center; }
+  .ard-ext-metrics { flex-direction: column; gap: 1rem; }
 }
 </style>
