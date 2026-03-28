@@ -426,14 +426,10 @@ import AuthGate from '../_components/AuthGate.astro';
       </button>
 
       <div class="checkin-upload-section">
-        <p style="margin-bottom:0.25rem;color:#888;font-size:0.85rem;">或上傳照片記錄</p>
+        <p style="margin-bottom:0.25rem;color:#888;font-size:0.85rem;">或拍照記錄位置</p>
         <p style="margin-bottom:0.5rem;color:#aaa;font-size:0.72rem;">照片不會上傳到伺服器，僅讀取 GPS 定位資訊作為路徑紀錄</p>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-btn photo-btn-camera" id="cameraBtnMini">📷 拍照</button>
-          <button type="button" class="photo-btn photo-btn-gallery" id="galleryBtnMini">🖼 選照片</button>
-        </div>
+        <button type="button" class="photo-btn photo-btn-camera" id="cameraBtnMini" style="width:100%">📷 拍照</button>
         <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" capture="environment" id="photoCameraMini" style="display:none">
-        <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" multiple id="photoGalleryMini" style="display:none">
         <div id="photoStatusMini" class="photo-status"></div>
       </div>
 
@@ -1053,7 +1049,7 @@ import AuthGate from '../_components/AuthGate.astro';
       statusEl.innerHTML = '';
       return;
     }
-    statusEl.innerHTML = '<span class="photo-status-text">📷 已上傳 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
+    statusEl.innerHTML = '<span class="photo-status-text">📷 已記錄 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
   }
 
   // ── Save photo to device: show prompt after processing ──
@@ -1061,7 +1057,6 @@ import AuthGate from '../_components/AuthGate.astro';
 
   function showSavePhotoPrompt() {
     if (pendingSaveFiles.length === 0) return;
-    if (!navigator.share || !navigator.canShare) return; // no Web Share API
 
     var container = document.getElementById('photoSavePrompt');
     if (!container) {
@@ -1074,30 +1069,44 @@ import AuthGate from '../_components/AuthGate.astro';
     }
 
     var fileCount = pendingSaveFiles.length;
+    var hasShareAPI = navigator.share && navigator.canShare;
+
     container.innerHTML = '<div class="photo-save-inner">' +
-      '<span>📷 ' + fileCount + ' 張照片已記錄</span>' +
-      '<button type="button" class="photo-save-btn" id="saveToDeviceBtn">儲存到相簿</button>' +
-      '<button type="button" class="photo-save-dismiss" id="dismissSaveBtn">✕</button>' +
+      '<span>📷 ' + fileCount + ' 張照片已記錄 GPS 座標</span>' +
+      (hasShareAPI
+        ? '<button type="button" class="photo-save-btn" id="saveToDeviceBtn">💾 儲存到相簿</button>'
+        : '<a id="saveToDeviceLink" class="photo-save-btn" style="display:block;text-decoration:none;color:white;text-align:center;">💾 儲存照片</a>') +
+      '<button type="button" class="photo-save-dismiss" id="dismissSaveBtn">不需要</button>' +
       '</div>';
     container.style.display = 'block';
 
-    document.getElementById('saveToDeviceBtn').addEventListener('click', async function() {
-      for (var i = 0; i < pendingSaveFiles.length; i++) {
-        var f = pendingSaveFiles[i];
-        try {
-          var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-          var ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
-          var shareFile = new File([f], 'formosa-' + ts + '-' + i + '.' + ext, { type: f.type });
-          if (navigator.canShare({ files: [shareFile] })) {
-            await navigator.share({ files: [shareFile] });
+    if (hasShareAPI) {
+      document.getElementById('saveToDeviceBtn').addEventListener('click', async function() {
+        for (var i = 0; i < pendingSaveFiles.length; i++) {
+          var f = pendingSaveFiles[i];
+          try {
+            var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            var ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
+            var shareFile = new File([f], 'formosa-' + ts + '-' + i + '.' + ext, { type: f.type });
+            if (navigator.canShare({ files: [shareFile] })) {
+              await navigator.share({ files: [shareFile] });
+            }
+          } catch (e) {
+            if (e.name === 'AbortError') break;
           }
-        } catch (e) {
-          if (e.name === 'AbortError') break; // user cancelled
         }
-      }
-      pendingSaveFiles = [];
-      container.style.display = 'none';
-    });
+        pendingSaveFiles = [];
+        container.innerHTML = '<div class="photo-save-inner photo-save-done"><span>✅ 已儲存</span></div>';
+        setTimeout(function() { container.style.display = 'none'; }, 2000);
+      });
+    } else {
+      // Fallback: create download link for the first file
+      var f = pendingSaveFiles[0];
+      var url = URL.createObjectURL(f);
+      var link = document.getElementById('saveToDeviceLink');
+      link.href = url;
+      link.download = 'formosa-photo-' + new Date().toISOString().slice(0,19).replace(/[:.]/g,'-') + '.jpg';
+    }
 
     document.getElementById('dismissSaveBtn').addEventListener('click', function() {
       pendingSaveFiles = [];
@@ -1112,7 +1121,7 @@ import AuthGate from '../_components/AuthGate.astro';
     var gpsCount = 0;
 
     // Show uploading state
-    statusEl.innerHTML = '<span class="photo-status-text photo-status-loading">📷 上傳中...</span>';
+    statusEl.innerHTML = '<span class="photo-status-text photo-status-loading">📷 讀取 GPS 中...</span>';
 
     pendingSaveFiles = []; // reset for this batch
     var failed = false;
@@ -1199,7 +1208,7 @@ import AuthGate from '../_components/AuthGate.astro';
         localStorage.setItem('formosa_gps_track', JSON.stringify(savedTrack));
       } catch(e) {}
     } else if (failed) {
-      statusEl.innerHTML = '<span class="photo-status-text photo-status-error">⚠️ 上傳失敗，請重試</span><button class="photo-retry-btn" onclick="document.getElementById(\'photoCameraMini\').click()">重試</button>';
+      statusEl.innerHTML = '<span class="photo-status-text photo-status-error">⚠️ 讀取失敗，請重試</span><button class="photo-retry-btn" onclick="document.getElementById(\'photoCameraMini\').click()">重試</button>';
     }
   }
 
@@ -1227,22 +1236,13 @@ import AuthGate from '../_components/AuthGate.astro';
     updateCheckinProgress(t);
 
     var cameraBtn = document.getElementById('cameraBtnMini');
-    var galleryBtn = document.getElementById('galleryBtnMini');
     var cameraInput = document.getElementById('photoCameraMini');
-    var galleryInput = document.getElementById('photoGalleryMini');
     var statusMini = document.getElementById('photoStatusMini');
     if (cameraBtn && cameraInput) {
       cameraBtn.addEventListener('click', function() { cameraInput.click(); });
       cameraInput.addEventListener('change', function() {
         if (this.files.length > 0) handlePhotos(this.files, statusMini);
         this.value = ''; // reset so same photo can re-trigger
-      });
-    }
-    if (galleryBtn && galleryInput) {
-      galleryBtn.addEventListener('click', function() { galleryInput.click(); });
-      galleryInput.addEventListener('change', function() {
-        if (this.files.length > 0) handlePhotos(this.files, statusMini);
-        this.value = '';
       });
     }
 
@@ -2321,36 +2321,37 @@ import AuthGate from '../_components/AuthGate.astro';
     transition: border-color 0.2s;
   }
   .upload-zone-mini:hover { border-color: var(--accent-faith); }
-  .photo-btn-row {
-    display: flex; gap: 0.5rem; margin-bottom: 0.5rem;
-  }
   .photo-btn {
-    flex: 1; padding: 0.75rem 0.5rem; border: 2px solid var(--border);
+    padding: 0.75rem 0.5rem; border: 2px solid var(--border);
     border-radius: 12px; background: var(--bg-card); cursor: pointer;
     font-size: 0.95rem; color: var(--text-primary); transition: all 0.2s;
+    margin-bottom: 0.5rem;
   }
   .photo-btn:active { transform: scale(0.97); }
   .photo-btn-camera { border-color: var(--accent-faith); color: var(--accent-faith); font-weight: 600; }
   .photo-btn-camera:hover { background: rgba(76,175,80,0.08); }
-  .photo-btn-gallery { color: var(--text-secondary); }
-  .photo-btn-gallery:hover { border-color: var(--text-secondary); }
   .photo-save-prompt {
-    display: none; margin-top: 0.5rem;
+    display: none; margin-top: 0.75rem;
   }
   .photo-save-inner {
-    display: flex; align-items: center; gap: 0.5rem;
-    background: #ECFDF5; border: 1px solid #059669; border-radius: 10px;
-    padding: 0.6rem 0.75rem; font-size: 0.85rem; color: #065F46;
+    display: flex; flex-direction: column; align-items: stretch; gap: 0.75rem;
+    background: #ECFDF5; border: 2px solid #059669; border-radius: 14px;
+    padding: 1rem 1.25rem; color: #065F46;
   }
+  .photo-save-inner > span { font-size: 1rem; font-weight: 600; text-align: center; }
   .photo-save-btn {
-    margin-left: auto; padding: 0.4rem 0.8rem; border: none; border-radius: 8px;
-    background: #059669; color: white; font-size: 0.82rem; font-weight: 600;
-    cursor: pointer; white-space: nowrap;
+    padding: 0.85rem 1rem; border: none; border-radius: 12px;
+    background: #059669; color: white; font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; text-align: center; letter-spacing: 0.5px;
   }
-  .photo-save-btn:active { background: #047857; }
+  .photo-save-btn:active { background: #047857; transform: scale(0.98); }
   .photo-save-dismiss {
-    border: none; background: none; color: #6B7280; font-size: 1rem;
-    cursor: pointer; padding: 0.2rem;
+    border: none; background: none; color: #9CA3AF; font-size: 0.85rem;
+    cursor: pointer; padding: 0.3rem; text-align: center;
+  }
+  .photo-save-dismiss:hover { color: #6B7280; }
+  .photo-save-done {
+    padding: 1rem; text-align: center;
   }
 
   /* Photo status text (replaces thumbnails) */
