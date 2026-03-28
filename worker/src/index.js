@@ -33,8 +33,8 @@ async function handleTicker(request, env) {
       // Read cumulative summary (written by sync_costs_to_kv.py)
       let totalUSD = 0, summaryTokens = 0, summaryCalls = 0;
       try { const sumRaw = await env.TICKER_KV.get('costs_summary'); if (sumRaw) { const s = JSON.parse(sumRaw); totalUSD = s.totalUSD || 0; summaryTokens = s.totalTokens || 0; summaryCalls = s.totalCalls || 0; } } catch (e) {}
-      // If no summary yet, fall back to month values
-      if (totalUSD === 0) { totalUSD = monthUSD; summaryTokens = totalTokens; summaryCalls = totalCalls; }
+      // If summary is missing or stale (total < current month), fall back to month values
+      if (totalUSD < monthUSD) { totalUSD = monthUSD; summaryTokens = totalTokens; summaryCalls = totalCalls; }
       const sortedDays = Object.keys(dailyMap).sort().slice(-14); const dailyValues = sortedDays.map(d => +(dailyMap[d] || 0).toFixed(4));
       const avgPerDay = dailyValues.length > 0 ? dailyValues.reduce((a, b) => a + b, 0) / dailyValues.length : 0;
       const last7Total = sortedDays.slice(-7).reduce((s, d) => s + (dailyMap[d] || 0), 0); const prev7Total = sortedDays.slice(-14, -7).reduce((s, d) => s + (dailyMap[d] || 0), 0);
