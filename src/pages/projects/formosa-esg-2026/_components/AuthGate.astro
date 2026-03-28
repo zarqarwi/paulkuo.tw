@@ -44,6 +44,14 @@ const {
         <button id="lineEnterBtn" class="line-enter-btn">進入活動</button>
       </div>
 
+      <!-- Privacy Consent (hidden until needed) -->
+      <div id="privacyConsentSection" style="display:none">
+        <div class="privacy-scroll" id="privacyScrollBox"></div>
+        <button id="privacyAgreeBtn" class="line-enter-btn privacy-agree-btn">我同意</button>
+        <button id="privacyDeclineBtn" class="privacy-decline-btn">不同意</button>
+        <div id="privacyDeclineMsg" class="privacy-decline-msg" style="display:none">需要同意隱私權聲明才能使用打卡功能</div>
+      </div>
+
       <!-- Admin fallback -->
       <div class="admin-fallback">
         <a href="#" id="showAdminLogin">管理員登入</a>
@@ -184,11 +192,82 @@ const {
         if (data.survey_done) localStorage.setItem('formosa_survey_done', 'true');
         if (data.photo_count != null) localStorage.setItem('formosa_photo_count', data.photo_count);
         if (data.gps_track && data.gps_track.length > 0) localStorage.setItem('formosa_gps_track', JSON.stringify(data.gps_track));
+        if (data.privacy_agreed) localStorage.setItem('formosa_privacy_agreed', '1');
+        if (data.participant_status) localStorage.setItem('formosa_participant_status', data.participant_status);
       }).catch(function() {});
     }
 
-    // Enter button after LINE profile shown
-    document.getElementById('lineEnterBtn').addEventListener('click', unlock);
+    // Privacy consent flow
+    var privacyConsentSection = document.getElementById('privacyConsentSection');
+    var privacyScrollBox = document.getElementById('privacyScrollBox');
+    var privacyAgreeBtn = document.getElementById('privacyAgreeBtn');
+    var privacyDeclineBtn = document.getElementById('privacyDeclineBtn');
+    var privacyDeclineMsg = document.getElementById('privacyDeclineMsg');
+
+    function showPrivacyConsent() {
+      lineProfileSection.style.display = 'none';
+      lineLoginSection.style.display = 'none';
+      privacyConsentSection.style.display = 'block';
+      // Load privacy content
+      fetch('/projects/formosa-esg-2026/privacy/')
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+          var tmp = document.createElement('div');
+          tmp.innerHTML = html;
+          var content = tmp.querySelector('.privacy-content') || tmp.querySelector('article') || tmp.querySelector('main');
+          privacyScrollBox.innerHTML = content ? content.innerHTML : '<p>隱私權聲明載入中...</p>';
+        })
+        .catch(function() {
+          privacyScrollBox.innerHTML = '<p>隱私權聲明載入失敗，請重新整理頁面。</p>';
+        });
+    }
+
+    if (privacyAgreeBtn) {
+      privacyAgreeBtn.addEventListener('click', function() {
+        var userId = window.__lineUserId || localStorage.getItem('formosa_line_user_id');
+        if (!userId) return;
+        privacyAgreeBtn.textContent = '處理中…';
+        privacyAgreeBtn.disabled = true;
+        fetch(WORKER + '/api/formosa/privacy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ line_user_id: userId })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok) {
+            localStorage.setItem('formosa_privacy_agreed', '1');
+            unlock();
+          }
+        }).catch(function() {
+          privacyAgreeBtn.textContent = '我同意';
+          privacyAgreeBtn.disabled = false;
+        });
+      });
+    }
+
+    if (privacyDeclineBtn) {
+      privacyDeclineBtn.addEventListener('click', function() {
+        privacyDeclineMsg.style.display = 'block';
+      });
+    }
+
+    // Enter button: check privacy consent first
+    document.getElementById('lineEnterBtn').addEventListener('click', function() {
+      var userId = window.__lineUserId || localStorage.getItem('formosa_line_user_id');
+      var localAgreed = localStorage.getItem('formosa_privacy_agreed');
+      if (localAgreed === '1') { unlock(); return; }
+      // Check server
+      fetch(WORKER + '/api/formosa/privacy?user_id=' + encodeURIComponent(userId))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.agreed) {
+            localStorage.setItem('formosa_privacy_agreed', '1');
+            unlock();
+          } else {
+            showPrivacyConsent();
+          }
+        })
+        .catch(function() { unlock(); }); // fallback: don't block on network error
+    });
 
     // LIFF init
     function initLIFF() {
@@ -240,7 +319,12 @@ const {
     });
 
   } else {
-    checkStoredCode();
+    // Demo mode bypasses auth gate (read-only, no real data)
+    if (new URLSearchParams(window.location.search).get('demo') === '1') {
+      unlock();
+    } else {
+      checkStoredCode();
+    }
   }
 })();
 </script>
@@ -347,5 +431,38 @@ const {
     font-size: 0.85rem !important;
     padding: 0.5rem !important;
     background: var(--text-secondary) !important;
+  }
+  .privacy-scroll {
+    max-height: 320px;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: var(--bg);
+  }
+  .privacy-scroll h1, .privacy-scroll h2 { font-size: 0.95rem; margin-top: 0.8rem; color: var(--text-primary); }
+  .privacy-scroll table { font-size: 0.75rem; width: 100%; border-collapse: collapse; }
+  .privacy-scroll td, .privacy-scroll th { border: 1px solid var(--border); padding: 0.25rem 0.4rem; }
+  .privacy-agree-btn { background: var(--accent-faith) !important; font-weight: 600; }
+  .privacy-decline-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .privacy-decline-msg {
+    margin-top: 0.75rem;
+    color: #ef4444;
+    font-size: 0.85rem;
   }
 </style>

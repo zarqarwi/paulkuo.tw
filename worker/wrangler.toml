@@ -27,3 +27,8 @@ database_id = "1cf40e96-b745-4b5b-9855-c8f5fbb1b3fb"
 [[r2_buckets]]
 binding = "TQEF_AUDIO"
 bucket_name = "tqef-audio"
+
+# R2 binding — Formosa personalized OG images
+[[r2_buckets]]
+binding = "FORMOSA_OG"
+bucket_name = "formosa-og"

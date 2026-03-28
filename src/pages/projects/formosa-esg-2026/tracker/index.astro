@@ -387,6 +387,24 @@ import AuthGate from '../_components/AuthGate.astro';
         <div class="share-toast" id="shareToastCheckin" style="display:none">已複製到剪貼簿！</div>
       </div>
       <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
+
+      <!-- Participant Status Actions -->
+      <div class="participant-actions" id="participantActions">
+        <div class="participant-divider"></div>
+        <button class="participant-btn participant-pause-btn" id="pauseBtn" onclick="setParticipantStatus('paused')">⏸️ 暫離</button>
+        <button class="participant-btn participant-complete-btn" id="completeBtn" onclick="confirmComplete()">✅ 完成進香</button>
+        <p class="participant-hint">暫離後重新進入即恢復；完成後不可回復。</p>
+      </div>
+
+      <!-- Completed overlay (shown when status=completed) -->
+      <div class="completed-overlay" id="completedOverlay" style="display:none">
+        <div class="completed-message">
+          <div class="completed-icon">🎉</div>
+          <h3>進香圓滿完成！</h3>
+          <p>感謝您的參與，願媽祖保佑平安。</p>
+          <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -845,14 +863,14 @@ import AuthGate from '../_components/AuthGate.astro';
   var MASCOT_BASE = '/images/formosa/';
   var TITLES = [
     { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.png', name: '煉氣香客', sub: '啟程入門者' },
-    { km: 15,  checkins: 3,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
-    { km: 45,  checkins: 5,  icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
-    { km: 90,  checkins: 6,  icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
-    { km: 135, checkins: 8,  icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
-    { km: 180, checkins: 10, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
-    { km: 225, checkins: 12, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
-    { km: 270, checkins: 14, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
-    { km: 300, checkins: 14, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
+    { km: 15,  checkins: 5,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
+    { km: 45,  checkins: 10, icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
+    { km: 90,  checkins: 15, icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
+    { km: 135, checkins: 20, icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
+    { km: 180, checkins: 25, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
+    { km: 225, checkins: 30, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
+    { km: 270, checkins: 35, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
+    { km: 300, checkins: 40, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
   ];
 
   function getTitle(checkins, km) {
@@ -903,6 +921,76 @@ import AuthGate from '../_components/AuthGate.astro';
     var n = getSavedCheckins() + 1;
     localStorage.setItem('formosa_checkins', n);
     return n;
+  }
+
+  // ── Participant Status (pause / complete) ──
+  window.setParticipantStatus = function(status) {
+    var userId = lineUserId || localStorage.getItem('formosa_line_user_id');
+    if (!userId) return;
+    var btn = status === 'paused' ? document.getElementById('pauseBtn') : document.getElementById('completeBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '處理中…'; }
+    fetch(API_BASE + '/api/formosa/participant-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ line_user_id: userId, status: status })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data.ok) {
+        localStorage.setItem('formosa_participant_status', status);
+        if (status === 'paused') {
+          if (btn) { btn.textContent = '已暫離'; }
+          // Stop GPS tracking
+          if (window.__gpsWatchId) { navigator.geolocation.clearWatch(window.__gpsWatchId); window.__gpsWatchId = null; }
+          var gpsEl = document.getElementById('gpsStatus');
+          if (gpsEl) gpsEl.textContent = '⏸️ 已暫離（重新進入即恢復）';
+        } else if (status === 'completed') {
+          showCompletedOverlay();
+        }
+      } else {
+        if (btn) { btn.textContent = data.error || '操作失敗'; }
+      }
+    }).catch(function() {
+      if (btn) { btn.disabled = false; btn.textContent = status === 'paused' ? '⏸️ 暫離' : '✅ 完成進香'; }
+    });
+  };
+
+  window.confirmComplete = function() {
+    if (confirm('確定要完成進香嗎？此操作無法復原。')) {
+      setParticipantStatus('completed');
+    }
+  };
+
+  function showCompletedOverlay() {
+    var overlay = document.getElementById('completedOverlay');
+    var actions = document.getElementById('participantActions');
+    if (overlay) overlay.style.display = 'block';
+    if (actions) actions.style.display = 'none';
+    // Hide checkin buttons
+    var checkinBtn = document.querySelector('.checkin-big-btn');
+    if (checkinBtn) checkinBtn.style.display = 'none';
+    var uploadSection = document.querySelector('.checkin-upload-section');
+    if (uploadSection) uploadSection.style.display = 'none';
+    // Stop GPS
+    if (window.__gpsWatchId) { navigator.geolocation.clearWatch(window.__gpsWatchId); window.__gpsWatchId = null; }
+  }
+
+  // Check participant status on load
+  function checkParticipantStatus() {
+    var status = localStorage.getItem('formosa_participant_status');
+    if (status === 'completed') {
+      showCompletedOverlay();
+    } else if (status === 'paused') {
+      // Auto-resume to active on page load
+      var userId = lineUserId || localStorage.getItem('formosa_line_user_id');
+      if (userId) {
+        fetch(API_BASE + '/api/formosa/participant-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ line_user_id: userId, status: 'active' })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok) localStorage.setItem('formosa_participant_status', 'active');
+        }).catch(function() {});
+      }
+    }
   }
 
   // ── Share Functions ──
@@ -1358,6 +1446,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
   if (localStorage.getItem('formosa_survey_done') === 'true') {
     enterCheckinMode();
+    checkParticipantStatus();
   } else {
     showCard(1);
   }
@@ -2517,4 +2606,33 @@ import AuthGate from '../_components/AuthGate.astro';
     .share-buttons { flex-direction: column; align-items: center; }
     .share-btn { width: 100%; max-width: 250px; justify-content: center; }
   }
+
+  /* Participant Status Actions */
+  .participant-actions { margin-top: 2rem; text-align: center; }
+  .participant-divider { border-top: 1px solid var(--border); margin-bottom: 1.5rem; }
+  .participant-btn {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin: 0 0.25rem;
+    transition: background 0.2s;
+  }
+  .participant-pause-btn { background: #f3f4f6; color: #666; border: 1px solid var(--border); }
+  .participant-pause-btn:hover { background: #e5e7eb; }
+  .participant-complete-btn { background: var(--accent-faith); color: white; }
+  .participant-complete-btn:hover { background: #9a4408; }
+  .participant-hint { color: var(--text-secondary); font-size: 0.75rem; margin-top: 0.75rem; }
+  .completed-overlay {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 12px;
+    text-align: center;
+  }
+  .completed-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+  .completed-message h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #92400e; }
+  .completed-message p { color: #78350f; font-size: 0.9rem; margin-bottom: 1rem; }
 </style>
