@@ -694,10 +694,20 @@ export async function fetchZoneUniqueVisitors(env) {
     body: JSON.stringify({ query, variables: { zoneTag: zoneId, date: dateStr } }),
   });
 
-  if (!resp.ok) return null;
+  if (!resp.ok) {
+    console.error('zone-uniques: GraphQL API error', resp.status);
+    return null;
+  }
   const json = await resp.json();
+  if (json.errors) {
+    console.error('zone-uniques: GraphQL errors', JSON.stringify(json.errors));
+    return null;
+  }
   const groups = json?.data?.viewer?.zones?.[0]?.httpRequests1dGroups;
-  if (!groups || groups.length === 0) return null;
+  if (!groups || groups.length === 0) {
+    console.log('zone-uniques: no data for', dateStr);
+    return null;
+  }
 
   const uniques = groups[0].uniq.uniques;
   await env.TICKER_KV.put(`analytics:zone-uniques:${dateStr}`, JSON.stringify({ uniques, date: dateStr }), { expirationTtl: 86400 * 35 });
