@@ -94,7 +94,7 @@ def kv_get(key: str) -> str | None:
     try:
         result = subprocess.run(
             [
-                "npx", "wrangler", "kv", "key", "get",
+                "wrangler", "kv", "key", "get",
                 "--config", WRANGLER_CONFIG,
                 "--namespace-id", KV_NAMESPACE_ID,
                 "--remote",
@@ -131,7 +131,7 @@ def kv_put(key: str, value: str) -> bool:
 
         result = subprocess.run(
             [
-                "npx", "wrangler", "kv", "key", "put",
+                "wrangler", "kv", "key", "put",
                 "--config", WRANGLER_CONFIG,
                 "--namespace-id", KV_NAMESPACE_ID,
                 "--remote",
