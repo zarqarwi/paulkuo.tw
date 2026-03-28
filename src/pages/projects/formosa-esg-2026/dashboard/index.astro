@@ -755,11 +755,196 @@ import AuthGate from '../_components/AuthGate.astro';
     }).catch(function(e) { btn.disabled = false; btn.textContent = '📤 發送推播'; alert('推播失敗: ' + e.message); });
   };
 
+  // ── Demo Mode: ?demo=1 ──
+  function generateDemoData() {
+    var N = 10000;
+    var now = new Date();
+
+    // Box-Muller normal distribution
+    function randn() {
+      var u = 0, v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    }
+    function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
+
+    // Interpolate a point along the route at a given fraction (0-1)
+    function routePoint(frac) {
+      frac = clamp(frac, 0, 1);
+      var targetKm = frac * ROUTE_TOTAL_KM;
+      var seg = 0;
+      for (var i = 1; i < ROUTE_DISTS.length; i++) {
+        if (ROUTE_DISTS[i] >= targetKm) { seg = i - 1; break; }
+        if (i === ROUTE_DISTS.length - 1) seg = i - 1;
+      }
+      var segLen = ROUTE_DISTS[seg + 1] - ROUTE_DISTS[seg];
+      var segFrac = segLen > 0 ? (targetKm - ROUTE_DISTS[seg]) / segLen : 0;
+      var a = ROUTE_WAYPOINTS[seg], b = ROUTE_WAYPOINTS[seg + 1];
+      return {
+        lat: a.lat + (b.lat - a.lat) * segFrac + randn() * 0.008,
+        lng: a.lng + (b.lng - a.lng) * segFrac + randn() * 0.008
+      };
+    }
+
+    // Generate users with normal distributions
+    var users = [];
+    var gpsPoints = [];
+    var surnames = ['陳','林','黃','張','李','王','吳','劉','蔡','楊','許','鄭','謝','洪','郭','邱','曾','廖','賴','徐','周','葉','蘇','莊','江','呂','何','羅','高','蕭'];
+    var names2 = ['志明','淑芬','俊傑','美玲','建宏','雅婷','家豪','怡君','宗翰','佳蓉','冠宇','惠如','柏翰','雪芳','承翰','玉華','宇翔','麗華','彥廷','素珍','育丞','淑惠','博文','秀英','鈺翔','月娥','子軒','玉蘭','宥翔','秋香'];
+
+    // Activity dates: 4/12 – 4/20 (simulate as if we're at day 5 = 4/16)
+    var activityStart = new Date('2026-04-12T06:00:00');
+    var simDay = 5; // day 5 of 9
+    var totalDays = 9;
+
+    for (var i = 0; i < N; i++) {
+      var uid = 'user_' + String(i).padStart(5, '0');
+      var displayName = surnames[Math.floor(Math.random() * surnames.length)] + names2[Math.floor(Math.random() * names2.length)];
+
+      // Checkin count: normal(μ=8, σ=4), min=1
+      var checkins = Math.max(1, Math.round(8 + randn() * 4));
+      // Walk km: normal(μ=55, σ=35), min=0.5
+      var walkKm = Math.max(0.5, 55 + randn() * 35);
+      // Carbon: correlated with km
+      var carbonKg = Math.max(0.1, walkKm * 0.15 + randn() * 2);
+
+      // Role distribution: 92% participant, 5% volunteer, 3% admin
+      var roleRand = Math.random();
+      var role = roleRand < 0.92 ? 'participant' : roleRand < 0.97 ? 'volunteer' : 'admin';
+
+      // Last active: most today, some yesterday
+      var hoursAgo = Math.max(0, Math.abs(randn() * 6));
+      var lastActive = new Date(now.getTime() - hoursAgo * 3600000);
+
+      users.push({
+        user_id: uid,
+        display_name: displayName,
+        gps_count: checkins,
+        walk_km: walkKm,
+        carbon_kg: carbonKg.toFixed(1),
+        role: role,
+        last_active: lastActive.toISOString()
+      });
+
+      // GPS points: scatter along route based on how far they've walked
+      var progress = clamp(walkKm / ROUTE_TOTAL_KM, 0, 1);
+      var nPts = Math.min(checkins, 8);
+      for (var j = 0; j < nPts; j++) {
+        var ptProgress = progress * (j + 1) / nPts;
+        var pt = routePoint(ptProgress);
+        var ptTime = new Date(activityStart.getTime() + (j / nPts) * simDay * 86400000 + Math.random() * 3600000);
+        gpsPoints.push({
+          user_id: uid,
+          lat: pt.lat,
+          lng: pt.lng,
+          timestamp: ptTime.toISOString()
+        });
+      }
+    }
+
+    // Aggregate stats
+    var totalCheckins = users.reduce(function(s, u) { return s + u.gps_count; }, 0);
+    var totalWalkKm = users.reduce(function(s, u) { return s + u.walk_km; }, 0);
+    var totalCarbon = users.reduce(function(s, u) { return s + parseFloat(u.carbon_kg); }, 0);
+    var activeToday = users.filter(function(u) {
+      return u.last_active && u.last_active.startsWith(now.toISOString().split('T')[0]);
+    }).length;
+
+    // Data response (matches /api/formosa/data)
+    var dataRes = {
+      stats: { total_users: N, total_gps_points: totalCheckins },
+      gps_points: gpsPoints
+    };
+
+    // Carbon response
+    var carbonRes = {
+      carbon_saved_kg: totalCarbon.toFixed(0),
+      avg_carbon_kg: (totalCarbon / N).toFixed(1),
+      water_bottles_total: Math.round(N * 2.3),
+      hotel_nights_total: Math.round(N * 0.4),
+      transport_totals: {
+        walk: { km: totalWalkKm, count: Math.round(N * 0.72) },
+        bus: { km: totalWalkKm * 0.15, count: Math.round(N * 0.12) },
+        car: { km: totalWalkKm * 0.08, count: Math.round(N * 0.06) },
+        scooter: { km: totalWalkKm * 0.06, count: Math.round(N * 0.05) },
+        train: { km: totalWalkKm * 0.04, count: Math.round(N * 0.03) },
+        hsr: { km: totalWalkKm * 0.02, count: Math.round(N * 0.015) },
+        mrt: { km: totalWalkKm * 0.01, count: Math.round(N * 0.005) }
+      }
+    };
+
+    // Timeline: 9 days with bell-curve activity
+    var byDay = [];
+    for (var d = 0; d < totalDays; d++) {
+      var dayDate = new Date(activityStart.getTime() + d * 86400000);
+      // Bell curve peaked at day 4-5
+      var dayActivity = Math.round(N * 0.7 * Math.exp(-0.5 * Math.pow((d - 4) / 2.2, 2)));
+      if (d > simDay) dayActivity = 0; // future days
+      byDay.push({
+        d: dayDate.toISOString().split('T')[0],
+        cnt: dayActivity
+      });
+    }
+    var timelineRes = {
+      by_day: byDay,
+      active_today: activeToday,
+      total_gps_points: totalCheckins
+    };
+
+    // Survey: realistic distributions
+    var surveyRes = {
+      total_surveys: Math.round(N * 0.85),
+      q1_deeds: {
+        '撿拾垃圾': Math.round(N * 0.62),
+        '幫助其他香客': Math.round(N * 0.48),
+        '節約用水': Math.round(N * 0.41),
+        '自備環保餐具': Math.round(N * 0.55),
+        '步行代替搭車': Math.round(N * 0.72),
+        '分享食物給他人': Math.round(N * 0.33),
+        '協助交通指揮': Math.round(N * 0.12),
+        '減少使用塑膠袋': Math.round(N * 0.38)
+      },
+      q6_csr: {
+        '非常願意': Math.round(N * 0.45),
+        '願意': Math.round(N * 0.32),
+        '考慮中': Math.round(N * 0.15),
+        '不太願意': Math.round(N * 0.06),
+        '不願意': Math.round(N * 0.02)
+      }
+    };
+
+    // Only render first 200 users in table (perf)
+    var tableUsers = users.slice(0, 200);
+
+    return { dataRes: dataRes, carbonRes: carbonRes, timelineRes: timelineRes, usersRes: { users: tableUsers }, surveyRes: surveyRes, allUsersForRank: users };
+  }
+
+  function fetchAllDemo() {
+    var demo = generateDemoData();
+    renderKPI(demo.dataRes, demo.carbonRes, demo.timelineRes);
+    // Limit GPS points for map perf (sample 5000)
+    var sampledGps = demo.dataRes.gps_points;
+    if (sampledGps.length > 5000) {
+      var step = Math.ceil(sampledGps.length / 5000);
+      sampledGps = sampledGps.filter(function(_, i) { return i % step === 0; });
+    }
+    renderMap(sampledGps);
+    renderCarbon(demo.carbonRes);
+    renderRanks(demo.allUsersForRank);
+    renderSurvey(demo.surveyRes);
+    renderTimeline(demo.timelineRes);
+    renderUserTable(demo.usersRes.users);
+    document.getElementById('lastUpdated').textContent = '🎭 Demo 模式 (' + new Date().toLocaleTimeString('zh-TW') + ')';
+  }
+
+  var isDemo = new URLSearchParams(window.location.search).get('demo') === '1';
+
   // ── Init + Auto-refresh ──
-  fetchAll();
+  if (isDemo) { fetchAllDemo(); } else { fetchAll(); }
   var refreshInterval = setInterval(function() {
     if (document.getElementById('autoRefresh').checked) {
-      fetchAll();
+      if (isDemo) fetchAllDemo(); else fetchAll();
     }
   }, 30000);
 
