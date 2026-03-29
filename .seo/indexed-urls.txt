@@ -51,6 +51,7 @@ https://paulkuo.tw/articles/jd-ai-supply-chain-revolution/
 https://paulkuo.tw/articles/jensen-huang-ai-mirror/
 https://paulkuo.tw/articles/jensen-huang-learn-ai/
 https://paulkuo.tw/articles/kevin-kelly-mirror-world-third-information-revolution/
+https://paulkuo.tw/articles/knowledge-pipeline-not-discipline/
 https://paulkuo.tw/articles/language-truth-chatgpt5-dialogue/
 https://paulkuo.tw/articles/language-truth-gemini-dialogue/
 https://paulkuo.tw/articles/life-database-engineering/
@@ -147,6 +148,7 @@ https://paulkuo.tw/en/articles/jd-ai-supply-chain-revolution/
 https://paulkuo.tw/en/articles/jensen-huang-ai-mirror/
 https://paulkuo.tw/en/articles/jensen-huang-learn-ai/
 https://paulkuo.tw/en/articles/kevin-kelly-mirror-world-third-information-revolution/
+https://paulkuo.tw/en/articles/knowledge-pipeline-not-discipline/
 https://paulkuo.tw/en/articles/language-truth-chatgpt5-dialogue/
 https://paulkuo.tw/en/articles/language-truth-gemini-dialogue/
 https://paulkuo.tw/en/articles/life-database-engineering/
@@ -248,6 +250,7 @@ https://paulkuo.tw/ja/articles/jd-ai-supply-chain-revolution/
 https://paulkuo.tw/ja/articles/jensen-huang-ai-mirror/
 https://paulkuo.tw/ja/articles/jensen-huang-learn-ai/
 https://paulkuo.tw/ja/articles/kevin-kelly-mirror-world-third-information-revolution/
+https://paulkuo.tw/ja/articles/knowledge-pipeline-not-discipline/
 https://paulkuo.tw/ja/articles/language-truth-chatgpt5-dialogue/
 https://paulkuo.tw/ja/articles/language-truth-gemini-dialogue/
 https://paulkuo.tw/ja/articles/life-database-engineering/
@@ -364,6 +367,7 @@ https://paulkuo.tw/zh-cn/articles/jd-ai-supply-chain-revolution/
 https://paulkuo.tw/zh-cn/articles/jensen-huang-ai-mirror/
 https://paulkuo.tw/zh-cn/articles/jensen-huang-learn-ai/
 https://paulkuo.tw/zh-cn/articles/kevin-kelly-mirror-world-third-information-revolution/
+https://paulkuo.tw/zh-cn/articles/knowledge-pipeline-not-discipline/
 https://paulkuo.tw/zh-cn/articles/language-truth-chatgpt5-dialogue/
 https://paulkuo.tw/zh-cn/articles/language-truth-gemini-dialogue/
 https://paulkuo.tw/zh-cn/articles/life-database-engineering/
