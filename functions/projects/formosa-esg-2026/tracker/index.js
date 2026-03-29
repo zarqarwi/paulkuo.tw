@@ -19,7 +19,7 @@ export async function onRequest(context) {
   // For crawlers: serve a minimal HTML with personalized OG tags
   const apiBase = 'https://paulkuo-ticker.paul-4bf.workers.dev';
   const ogImageUrl = `${apiBase}/api/formosa/og/${encodeURIComponent(userId)}.png`;
-  const trackerUrl = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+  const trackerUrl = `https://paulkuo.tw/projects/formosa-esg-2026/tracker/?u=${encodeURIComponent(userId)}`;
   const defaultOgImage = 'https://paulkuo.tw/images/formosa-esg-2026-og.png';
 
   try {
