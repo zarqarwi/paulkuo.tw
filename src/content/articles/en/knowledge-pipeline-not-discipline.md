@@ -1,26 +1,26 @@
 ---
-title: "Knowledge Management Runs on a Pipeline, Not Discipline"
-subtitle: "When you clip 50 articles a day but never read them again, the problem isn't you—it's the system."
-description: "Building a fully automated knowledge pipeline using APIs, cron scheduling, and AI Skills. From collection in Get筆記 to daily syncing, three-layer classification, and real-time AI queries—one person can make fragmented knowledge organize itself."
+title: "Knowledge Management Relies on Pipelines, Not Self-Discipline"
+subtitle: "Clipping 50 articles daily but never revisiting them—the problem isn't you, it's the system."
+description: "A hands-on record of building a fully automated knowledge pipeline with APIs, cron scheduling, and AI Skills. From Get Notes collection, daily sync, three-tier classification engine to AI real-time queries—how one person can make fragmented knowledge automatically find its place."
 abstract: |
-  Every day I clip a dozen articles on my phone, save podcast notes, buy Get Seed voice cards, integrate them into Get筆記, and dump meeting transcripts into folders. The information volume keeps growing. Fortunately, Get筆記 already has an API. Through its OpenAPI, a Python script, crontab scheduling, and a Cowork Skill, I've automated the entire knowledge pipeline—from collection to classification to retrieval. This isn't about which app to use. It's about sharing one approach to knowledge management that works for me right now. And like any pipeline, it'll keep evolving.
+  Every day I clip dozens of articles on my phone, save podcast notes, and dump meeting transcriptions into folders—then never open them again. This isn't laziness; it's a system design problem. After getting the Get Seed recording card and integrating it with Get Notes, I found the daily information flow even more overwhelming. Fortunately, Get Notes has an API. Through their OpenAPI, a Python script, crontab scheduling, and a Cowork Skill, I automated the entire knowledge pipeline from collection to classification to querying. This isn't about recommending apps—it's sharing my current knowledge pipeline toolkit. The pipeline will continue to evolve and optimize.
 date: 2026-03-29
 updated: 2026-03-29
 pillar: ai
 tags:
-  - Knowledge Management
-  - Automation
+  - 知識管理
+  - 自動化
   - API
   - AI Skill
-  - Pipeline Thinking
+  - 管線思維
 cover: "/images/covers/knowledge-pipeline-not-discipline.jpg"
 featured: false
 draft: false
 readingTime: 7
 
 # === AI / Machine 專用欄位 ===
-thesis: "The bottleneck in knowledge management isn't collection—it's classification and retrieval. Building an automated pipeline with API + cron + AI Skill is a hundred times more reliable than relying on discipline to maintain manual organization habits."
-domain_bridge: "Knowledge Management × Software Engineering Pipeline Thinking × Human-AI Collaboration"
+thesis: "知識管理的瓶頸不是收集，而是分類與取用。用 API + cron + AI Skill 建立自動管線，比靠自律維持手動整理習慣可靠一百倍。"
+domain_bridge: "知識管理 × 軟體工程管線思維 × AI 人機協作"
 confidence: high
 content_type: case-study
 related_entities:
@@ -33,87 +33,87 @@ related_entities:
   - name: crontab
     type: Technology
 reading_context: |
-  Best for knowledge workers who consume vast amounts of content daily but struggle with fragmented information. No programming background required, but those interested in automation and systems thinking will resonate most. If you've tried Notion, Obsidian, or Readwise but gave up, this article describes your exact problem.
+  適合每天大量閱讀但苦於知識散落各處的知識工作者。不需要程式背景，但對「自動化」和「系統思維」有興趣的人會特別有共鳴。如果你用過 Notion、Obsidian、Readwise 但最後都放棄了，這篇寫的就是你的痛點。
 ---
 
-I counted: in just the first two weeks of March, I saved nearly two hundred things to Get筆記. Articles, podcast summaries, course notes from the 得到 app, word-for-word meeting transcripts. Each time I saved them, I thought, "I definitely need to read this later."
+I counted—just in the first two weeks of March, I saved nearly two hundred items in Get Notes. Articles, podcast summaries, course notes from DeDao App, meeting transcription records. When saving them, I always thought "I'll definitely read this later."
 
-Then nothing.
+Then what? Nothing.
 
-I open the app and everything's jammed into one timeline. Course notes mixed with grocery lists. That deep-dive piece on AI Agent architecture from three weeks ago? Buried under twenty newer items somewhere I can't find.
+Opening the app, everything was crammed on the same timeline—course notes mixed with grocery lists. That in-depth article about AI Agent architecture I saved three weeks ago had been buried under twenty other items, lost somewhere in the digital void.
 
-You know this scene. My friends have the same struggle, no matter what tool they use: they set up beautiful databases and abandon them after three days. People using other tools suffer too. They exhaust their organizing energy just arguing about plugins and tag design.
+This scenario must sound familiar. Friends around me face the same struggle: they build beautiful databases, maintain them for three days, then never touch them again. Users of other tools also suffer—just agonizing over which plugins to use and how to design tags exhausts all their organizational energy.
 
-The problem is obvious: collection isn't hard. Organization is. And organization is hard because we treat it as a habit that requires "discipline" to maintain.
+The problem is clear: collection isn't hard, organization is. And organization is difficult because we treat it as a habit that requires "self-discipline" to maintain.
 
-But discipline is the least reliable resource on Earth.
+But self-discipline is the world's most unreliable resource.
 
-## What if organizing required no human intervention?
+## A Different Approach: What If Organization Doesn't Require Human Involvement?
 
-One insight from the work I do with AI: any process that requires continuous human intervention eventually breaks down. Not because you lack discipline, but because the maintenance cost of manual processes grows linearly with data volume, while your attention doesn't.
+One insight from [the engineering capacity one person plus AI can achieve](/articles/super-individual-case-study) is: any process requiring continuous manual human intervention will eventually collapse. Not due to lack of self-discipline, but because the maintenance cost of manual processes scales linearly with data volume, while our attention doesn't grow exponentially.
 
-Software engineering has a concept called a pipeline—data flows from A to B to C, each step automatically triggering the next, no human required. CI/CD is a pipeline. ETL is a pipeline. Your dishwasher is basically a pipeline: dirty plates go in, clean plates come out, you don't stand there washing one by one.
+Software engineering has a concept called pipeline—data flows from A to B to C, each stage automatically triggering the next, requiring no human oversight. CI/CD is a pipeline, ETL is a pipeline, even your home dishwasher is a kind of pipeline: dirty dishes go in, clean dishes come out, you don't need to stand there washing each one.
 
-What if knowledge management could be a pipeline too? I didn't know if it would work, but I decided to try.
+Could knowledge management become a pipeline too? I don't know—let's try building one and see.
 
-## Four Stages: Collection → Sync → Classification → Use
+## Four Stages: Collection → Sync → Classification → Usage
 
-The whole pipeline breaks down into four stages. (For the full picture, check out this [interactive flowchart](/knowledge-pipeline-flowchart-en.html).)
+The entire pipeline breaks down into four stages. (For the complete picture, check out this [interactive flowchart](/knowledge-pipeline-flowchart.html).)
 
-**Collection** happens on your phone. Get筆記 is my single entry point: find a good article, save it; hear something on a podcast, save it; course notes from the 得到 app sync automatically without extra steps; meeting recordings get transcribed and summarized by AI automatically. The key here is having one single funnel. Everything goes to Get筆記. No fragmentation.
+**Collection** happens on mobile. Get Notes serves as my unified entry point: see a good article, save it; hear something insightful in a podcast, save it; DeDao App course notes sync automatically without manual intervention; drop meeting recordings in, AI automatically transcribes and summarizes. The key to this layer is "single entry point." Everything goes into Get Notes, no fragmentation.
 
-**Sync to local machine** via a Python script. Get筆記 has an OpenAPI, so I wrote `sync_notes.py` and set crontab to run it automatically at 11 PM every night. It only pulls new notes (incremental sync), converts them to Markdown, and stores them in my local `notes/` folder. I wake up, and everything from yesterday is already waiting in my computer, quietly.
+**Sync to local machine** via a Python script. Get Notes has an OpenAPI, so I wrote `sync_notes.py`, with crontab set to run automatically every night at 23:00. It only pulls new notes (incremental sync), converts them to Markdown format and stores them in the local `notes/` folder. When I wake up, yesterday's saved items are already quietly waiting on my computer.
 
-**Auto-classification** is where the pipeline gets intricate—and where I'm most proud of it.
+**Automatic classification**—this is the most thoughtful part of the entire pipeline, and what I'm most proud of.
 
-**Use** means the classified notes are fully searchable, and you can also query them in natural language through a Cowork Skill. "Find that article about lobsters," and it searches the API, pulls the results. No filename memory needed. No folder memory needed.
+**Usage**—classified notes can be searched via full-text search or queried in natural language through Cowork Skill. "Help me find that article about lobsters," and it searches the API, returning results. No need to remember filenames or which folder things are in.
 
-## Three-Layer Classification Engine: Let Every Note Find Its Home
+## Three-Tier Classification Engine: Helping Every Note Automatically Find Its Home
 
-The classification engine uses a three-layer fallback architecture. Each note runs down from the top, and stops at the first match.
+The classification engine uses a three-tier fallback architecture. Each note runs from top to bottom, stopping at the first tier that matches.
 
-**Layer One is recording tag detection.** Get筆記's audio notes come with a "voice note" tag. The script detects this tag and sorts them into a meeting recordings folder. Then they're subdivided by keyword into eight project subfolders—SDTI, CircleFlow, investor meetings, each to its place.
+The first tier is **recording card detection**. Get Notes recording notes come with a "recording card note" tag. When the script detects this tag, it routes to the meeting recording folder. Inside, notes are further sorted by keywords into eight project subfolders—SDTI ones, CircleFlow ones, investor meetings—each finding its proper place.
 
-**Layer Two is course series detection**, which I'm most proud of. Articles from the 得到 app have a `courseArticleId` parameter hidden in the URL. All articles from the same course share the same courseArticleId. My script parses this ID and matches it against a dynamic registry file called `_course_registry.json`.
+The second tier is **course series detection**—my most satisfying design. DeDao App course articles hide a `courseArticleId` parameter in their URLs. All articles from the same course share the same courseArticleId. My script parses this ID and matches it against a dynamic registry called `_course_registry.json`.
 
-The clever part: it self-expands. When the script encounters an unfamiliar courseArticleId, it doesn't freeze up. Instead, it automatically creates a new folder, registers the course, and starts filing. Next time it sees another article from that course, it knows exactly where to put it.
+The brilliance of this registry is its auto-expansion capability. When the script encounters a previously unknown courseArticleId, it doesn't freeze—it automatically creates a new folder, registers this course in the registry, and begins filing. Next time it encounters other articles from the same course, it knows where to send them.
 
-I don't need to edit code every time a new course starts. The system learns new courses on its own.
+I don't need to modify code every time I start a new course. The system recognizes new courses by itself.
 
-**Layer Three is keyword classification**, the simplest but most reliable fallback. The script scans the note title and first 300 characters of content against a keyword library, sorting into topic folders: AI & Technology, Health, Investing, Personal Growth, Life Notes, etc. Anything that doesn't fit anywhere else goes to "Other"—at least it doesn't disappear into the void.
+The third tier is **keyword classification**—the most basic but most reliable fallback strategy. The script scans note titles plus the first 300 characters of content, matching against a keyword library to sort into corresponding topic folders: AI & Technology, Healthcare, Investment & Finance, Personal Growth, Life Miscellany... Notes that don't match any category go to "Others"—at least they don't vanish into the void.
 
-The three-layer priority matters: voice notes are most certain (explicit tag), course series are next most certain (structured ID), keywords are fuzzy but broadest coverage. Every note has a home.
+The three-tier priority order is crucial: recording cards are most certain (explicit tags), course series are moderately certain (structured IDs), keywords are fuzzy matching but broadest coverage. Every note has a destination.
 
-## Why Not Use Manual Tags?
+## Why Not Manual Tagging?
 
-While building the pipeline, I tried using manual tags repeatedly. The conclusion: it doesn't work.
+During pipeline construction, I repeatedly tried manual tagging. Conclusion: it doesn't work.
 
-Not technically impossible—humanly impossible. When you're saving an article, you're thinking "this is useful," not "what layer of my tag taxonomy does this belong to?" Asking people to make classification decisions at the moment of capture is also expensive cognitive work.
+Not technically—it doesn't work from a human nature perspective. When you save an article, your mind thinks "this is useful," not "which layer of which tag system should this go in?" Requiring users to make classification decisions at the moment of collection also consumes cognitive resources.
 
-The second problem: tags drift. Your January tag system looks wrong by March, but you can't go back and re-tag hundreds of notes from the past two months. Maintaining a tag system scales linearly with content volume, and it's retroactive—change a rule once and you have to reprocess all historical data.
+The second problem is tag drift. The tag system you design in January feels wrong by March, but you can't go back and retag hundreds of notes from the previous two months. Tag system maintenance cost scales with content volume, and it's retroactive—changing rules once means reprocessing all historical data.
 
-With auto-classification, you just rerun the script. One hundred notes or ten thousand: same cost.
+The advantage of automatic classification: when rules change, just re-run the script. The cost for one hundred notes equals that for ten thousand.
 
 ## From "Organization" to "Retrieval"
 
-After building the pipeline, what really changed my workflow wasn't just faster organizing—it was making retrieval genuinely useful. I can jump directly into Claude's window to pull data and produce whatever I need.
+After building the pipeline, what changed my workflow wasn't just faster "organization"—"retrieval" also became more user-friendly. I can directly access data in Claude's interface and output the content I need.
 
-Before, saving something was like not saving it, because I'd never find it. Now I can jump into Cowork and say "any articles on circular economy lately?", the Skill searches the API, lists matching notes with summaries. I can say "show me where I left off in that Wan Wei Gang course," and it reads the progress index from `_series_meta.json`.
+Previously, saved items were as good as unsaved because they were inconvenient to find. Now I can directly say in Cowork "Have I saved any articles about circular economy recently?" The Skill searches the API and lists matching notes with summaries. I can say "Help me check where I left off in Wan Weigang's course," and it reads the progress index in `_series_meta.json`.
 
-The goal of knowledge management isn't storing well—it's being able to use it. The pipeline solves the organization problem *and* fills the gulf between collection and retrieval.
+Knowledge management's goal isn't "storing well"—it's "being able to use." The pipeline solves not just organization problems but bridges the gap between collection and usage.
 
-This mirrors the logic in my work on [AI-Ready continuous optimization](/articles/ai-ready-continuous-optimization): don't make people adapt to systems, make systems adapt to people. Give website optimization to automated loops, knowledge organization to automated pipelines. Save human energy for things that actually need judgment.
+This follows the same logic as [making paulkuo.tw AI-Ready through continuous optimization](/articles/ai-ready-continuous-optimization): don't make people adapt to systems, make systems adapt to people. Leave website optimization to automatic loops, knowledge organization to automatic pipelines. Reserve human energy for tasks that truly require judgment.
 
-## One Pipeline, One Philosophy
+## One Pipeline, One Attitude
 
-Looking back, this pipeline isn't technically complex. One Python script, one cron job, one JSON registry, one Cowork Skill. No machine learning. No vector databases. No fancy NLP.
+Looking back, this pipeline isn't technically complex. A Python script, a crontab schedule, a JSON registry, a Cowork Skill. No machine learning, no vector databases, no sophisticated NLP.
 
-But it solved a problem that's been nagging me.
+But it solved a problem that had been troubling me.
 
-Every time I'd read about knowledge management, I'd get seduced by the "build your second brain" narrative, spend a weekend setting up a Notion template, designing my tag system, writing usage rules—and two weeks later I'm back where I started. Not because the tools are bad, but because this approach bets against human nature: it bets you'll have the energy to manually organize every day. You won't. I can't maintain enough focus every day.
+Previously, whenever I saw knowledge management articles, I'd be drawn to that "building a second brain" narrative, then spend a weekend building Notion templates, designing tag systems, writing usage guidelines—only to return to square one two weeks later. Not because the tools were bad, but because that approach fundamentally bets against human nature: it bets you'll have energy to manually organize every day. But I can't possibly have sufficient focus every day.
 
-Pipeline thinking doesn't bet on human nature. It bets on API stability, cron punctuality, and logic correctness. Those three things are more reliable than anyone's discipline.
+Pipeline thinking doesn't bet on human nature. It bets on API stability, cron punctuality, and program logic correctness. The reliability of these three things exceeds any person's self-discipline.
 
-If you're also anxious about knowledge management, my advice isn't to find a better app or prettier template. Instead, collaborate with AI, drop the traditional SOP, and ask yourself one question: Which steps in this flow don't actually need me? Which can I hand off? Give the steps that don't need you to the pipeline and AI. Keep for yourself the parts that do—reading, thinking, connecting, creating.
+If you're also anxious about knowledge management, my suggestion isn't to find better apps or prettier templates. Instead, collaborate with AI, abandon traditional SOPs, and ask yourself: in your process, which steps don't actually need you? Which can be delegated? Hand over the steps that don't need you to pipelines and AI. Keep "reading, thinking, connecting, creating" for yourself.
 
-That's what knowledge management should look like. Of course, this is my personal version. You can develop your own.
+I think that's what knowledge management should look like. Of course, this is my personal version—you can develop your own.
