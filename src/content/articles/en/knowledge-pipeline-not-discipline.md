@@ -117,3 +117,8 @@ Pipeline thinking doesn't bet on human nature. It bets on API stability, cron pu
 If you're also anxious about knowledge management, my suggestion isn't to find better apps or prettier templates. Instead, collaborate with AI, abandon traditional SOPs, and ask yourself: in your process, which steps don't actually need you? Which can be delegated? Hand over the steps that don't need you to pipelines and AI. Keep "reading, thinking, connecting, creating" for yourself.
 
 I think that's what knowledge management should look like. Of course, this is my personal version—you can develop your own.
+---
+
+## Pipeline Output Examples
+
+- [AI Lobster Decameron](/lobster-decameron-en) — A structured overview of ten livestream conversations by Kuaidao Qingyi, co-founder of Dedao App, synced and organized through the knowledge pipeline.
