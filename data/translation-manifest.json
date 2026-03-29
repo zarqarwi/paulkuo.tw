@@ -1840,11 +1840,11 @@
     }
   },
   "knowledge-pipeline-not-discipline.md": {
-    "sourceHash": "e7f6a7bcc4f6",
+    "sourceHash": "3919075e4661",
     "translations": {
       "en": {
-        "hash": "91d8cb801b06",
-        "translatedAt": "2026-03-29T06:26:22.113Z",
+        "hash": "16ee077ec474",
+        "translatedAt": "2026-03-29T11:50:12.356Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
