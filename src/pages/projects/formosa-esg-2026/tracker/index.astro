@@ -273,23 +273,9 @@ import AuthGate from '../_components/AuthGate.astro';
         <div class="reward-next">📍 持續打卡，升級為 🧱 築基香客</div>
       </div>
     </div>
-    <!-- Share buttons -->
+    <!-- Share button (simplified) -->
     <div class="share-section" id="shareSection">
-      <p class="share-label">分享給朋友一起參與</p>
-      <div class="share-buttons">
-        <button class="share-btn share-native" id="shareNativeBtn" onclick="shareNative()" style="display:none">
-          <span>📤</span> 分享
-        </button>
-        <button class="share-btn share-line" onclick="shareLine()">
-          <span>💬</span> LINE
-        </button>
-        <button class="share-btn share-fb" onclick="shareFB()">
-          <span>📘</span> Facebook
-        </button>
-        <button class="share-btn share-copy" onclick="shareCopy()">
-          <span>🔗</span> 複製連結
-        </button>
-      </div>
+      <button class="share-primary-btn" id="sharePrimaryBtn" onclick="smartShare()">📤 分享給朋友一起參與</button>
       <div class="share-toast" id="shareToast" style="display:none">已複製到剪貼簿！</div>
     </div>
     <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
@@ -357,23 +343,9 @@ import AuthGate from '../_components/AuthGate.astro';
         </div>
       </div>
 
-      <!-- Share buttons in check-in mode -->
+      <!-- Share button (simplified) -->
       <div class="share-section" style="margin-top:2rem">
-        <p class="share-label">邀請朋友一起參與</p>
-        <div class="share-buttons">
-          <button class="share-btn share-native" id="shareNativeBtnCheckin" onclick="shareNative()" style="display:none">
-            <span>📤</span> 分享
-          </button>
-          <button class="share-btn share-line" onclick="shareLine()">
-            <span>💬</span> LINE
-          </button>
-          <button class="share-btn share-fb" onclick="shareFB()">
-            <span>📘</span> Facebook
-          </button>
-          <button class="share-btn share-copy" onclick="shareCopy()">
-            <span>🔗</span> 複製連結
-          </button>
-        </div>
+        <button class="share-primary-btn" onclick="smartShare()">📤 邀請朋友一起參與</button>
         <div class="share-toast" id="shareToastCheckin" style="display:none">已複製到剪貼簿！</div>
       </div>
       <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
@@ -1151,6 +1123,32 @@ import AuthGate from '../_components/AuthGate.astro';
     var t = getTitle(checkins, km);
     return '我參加了 2026 白沙屯媽祖 ESG 進香，已走 ' + km.toFixed(1) + ' 公里，獲得' + t.current.icon + '「' + t.current.name + '」稱號！一起來記錄你的進香足跡 🙏';
   }
+
+  window.smartShare = function() {
+    var text = getShareText();
+    if (navigator.share) {
+      navigator.share({
+        title: SHARE_TITLE,
+        text: text,
+        url: TRACKER_URL
+      }).catch(function(){});
+    } else {
+      var fullText = text + '\n' + TRACKER_URL;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(fullText).then(function() {
+          showToast();
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = fullText;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast();
+      }
+    }
+  };
 
   window.shareNative = function() {
     if (navigator.share) {
@@ -2550,39 +2548,17 @@ import AuthGate from '../_components/AuthGate.astro';
     margin-top: 1.5rem;
     padding-top: 1rem;
   }
-  .share-label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 0.75rem;
-  }
-  .share-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .share-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.55rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 0.82rem;
-    font-weight: 600;
+  .share-primary-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #B45309, #92400e);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
-    background: var(--bg-card);
-    color: var(--text-primary);
   }
-  .share-btn:hover {
-    border-color: var(--accent-faith);
-    transform: translateY(-1px);
-  }
-  .share-native { background: var(--accent-faith); color: white; border-color: var(--accent-faith); }
-  .share-line:hover { background: #06C755; color: white; border-color: #06C755; }
-  .share-fb:hover { background: #1877F2; color: white; border-color: #1877F2; }
-  .share-copy:hover { background: var(--accent-faith); color: white; border-color: var(--accent-faith); }
   .share-toast {
     margin-top: 0.75rem;
     font-size: 0.8rem;
@@ -2858,8 +2834,6 @@ import AuthGate from '../_components/AuthGate.astro';
     .transport-grid.cols-2 { grid-template-columns: 1fr 1fr; }
     .daily-grid { grid-template-columns: 1fr 1fr; }
     .done-stats { flex-direction: column; align-items: center; }
-    .share-buttons { flex-direction: column; align-items: center; }
-    .share-btn { width: 100%; max-width: 250px; justify-content: center; }
   }
 
   /* Participant Status Actions */

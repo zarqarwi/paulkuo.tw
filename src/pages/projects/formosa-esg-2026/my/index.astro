@@ -79,15 +79,9 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
       <div class="my-carbon-main" id="carbonMain"></div>
     </div>
 
-    <!-- Share Section -->
+    <!-- Share Section (simplified) -->
     <div class="my-share-section">
       <button class="my-share-primary" onclick="generateShareImage()">📸 分享我的進香足跡</button>
-      <div class="my-share-buttons">
-        <button class="my-share-btn" onclick="shareNative()" style="display:none" id="shareNativeBtn">📤 分享</button>
-        <button class="my-share-btn" onclick="shareLine()">💬 LINE</button>
-        <button class="my-share-btn" onclick="shareFB()">📘 Facebook</button>
-        <button class="my-share-btn" onclick="shareCopy()">🔗 複製連結</button>
-      </div>
       <div class="my-share-toast" id="shareToast" style="display:none;">✅ 已複製</div>
     </div>
 
@@ -638,15 +632,6 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     font-weight: 700;
     cursor: pointer;
     margin-bottom: 1rem;
-  }
-  .my-share-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-  .my-share-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #fff;
-    cursor: pointer;
-    font-size: 0.85rem;
   }
   .my-share-toast {
     color: #059669;
