@@ -939,6 +939,7 @@ export async function handleFormosaAdminClusters(request, env) {
 // ── Keyword Router ──
 const TRACKER_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
 const PROJECT_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/';
+const GUIDE_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/guide/';
 
 async function routeKeyword(text, userId, env) {
   const t = text.toLowerCase();
@@ -1009,7 +1010,7 @@ function buildWelcomeMessage() {
         type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: '15px',
         contents: [
           { type: 'button', style: 'primary', color: '#1a5c2a', action: { type: 'uri', label: '📍 開始打卡', uri: TRACKER_URL } },
-          { type: 'button', style: 'link', action: { type: 'uri', label: '📖 了解更多', uri: PROJECT_URL } }
+          { type: 'button', style: 'link', action: { type: 'uri', label: '📖 使用說明', uri: GUIDE_URL } }
         ]
       }
     }
@@ -1055,9 +1056,10 @@ function buildUsageMessage() {
         ]
       },
       footer: {
-        type: 'box', layout: 'vertical', paddingAll: '15px',
+        type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: '15px',
         contents: [
-          { type: 'button', style: 'primary', color: '#1a5c2a', action: { type: 'uri', label: '📍 開始打卡', uri: TRACKER_URL } }
+          { type: 'button', style: 'primary', color: '#1a5c2a', action: { type: 'uri', label: '📍 開始打卡', uri: TRACKER_URL } },
+          { type: 'button', style: 'link', action: { type: 'uri', label: '📖 查看完整使用說明', uri: GUIDE_URL } }
         ]
       }
     }
@@ -1129,7 +1131,7 @@ function buildCarbonInfoMessage() {
 function buildMenuMessage() {
   return {
     type: 'text',
-    text: '🙏 媽祖 Bot 為您服務\n\n輸入以下關鍵字：\n📍「打卡」→ 記錄足跡\n📖「說明」→ 使用方式\n📊「等級」→ 我的紀錄\n🌱「碳足跡」→ 碳排資訊\n💡「關於」→ 專案介紹'
+    text: '🙏 媽祖 Bot 為您服務\n\n輸入以下關鍵字：\n📍「打卡」→ 記錄足跡\n📖「說明」→ 使用指南\n📊「等級」→ 我的紀錄\n🌱「碳足跡」→ 碳排資訊\n💡「關於」→ 專案介紹\n\n💡 輸入「說明」查看使用指南'
   };
 }
 
