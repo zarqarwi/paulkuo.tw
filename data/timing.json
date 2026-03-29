@@ -1,16 +1,16 @@
 {
-  "updated": "2026-03-29T12:10:03+08:00",
+  "updated": "2026-03-29T12:30:03+08:00",
   "source": "timing-sqlite-direct",
   "method": "SQLite DB + bundleIdentifier/path/title matching",
   "api_version": "v4",
   "month_summary": {
     "period": "2026-03",
-    "total_ai_hours": 39.5,
+    "total_ai_hours": 39.9,
     "active_days": 10,
-    "avg_daily": 3.9,
+    "avg_daily": 4.0,
     "platform_breakdown": {
-      "Claude": 35.63,
-      "ChatGPT": 3.46,
+      "Claude": 35.7,
+      "ChatGPT": 3.77,
       "Gemini": 0.37,
       "Perplexity": 0.06
     }
@@ -98,10 +98,10 @@
     },
     {
       "date": "2026-03-29",
-      "ai_hours": 1.79,
+      "ai_hours": 2.18,
       "breakdown": {
-        "Claude": 1.72,
-        "ChatGPT": 0.08
+        "Claude": 1.79,
+        "ChatGPT": 0.39
       }
     }
   ]
