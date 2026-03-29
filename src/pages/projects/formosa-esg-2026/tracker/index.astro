@@ -1113,7 +1113,9 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   // ── Share Functions ──
-  var TRACKER_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+  var TRACKER_URL = lineUserId
+    ? 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/?u=' + encodeURIComponent(lineUserId)
+    : 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
   var LIFF_URL = 'https://liff.line.me/2009588321-rXVntTKg';
   var SHARE_TITLE = '2026 白沙屯媽祖 ESG 進香';
 

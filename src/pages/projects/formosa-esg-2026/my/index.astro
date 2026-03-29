@@ -150,13 +150,6 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   var viewUserId = urlParams.get('u');
   var isViewingOther = false;
 
-  function getPersonalShareUrl() {
-    return lineUserId
-      ? 'https://paulkuo.tw/projects/formosa-esg-2026/my/?u=' + encodeURIComponent(lineUserId)
-      : 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
-  }
-  var SHARE_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
-
   // Read data from localStorage (fallback)
   var checkins = parseInt(localStorage.getItem('formosa_checkins') || '0');
   var km = parseFloat(localStorage.getItem('formosa_km') || '0');
@@ -166,6 +159,13 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
   // Try sync from server if LINE user is available
   var lineUserId = localStorage.getItem('formosa_line_user_id');
+
+  function getPersonalShareUrl() {
+    return lineUserId
+      ? 'https://paulkuo.tw/projects/formosa-esg-2026/my/?u=' + encodeURIComponent(lineUserId)
+      : 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+  }
+  var SHARE_URL = getPersonalShareUrl();
 
   // If ?u= is present and it's a different user (or no local user), fetch their public data
   if (viewUserId && viewUserId !== lineUserId) {
