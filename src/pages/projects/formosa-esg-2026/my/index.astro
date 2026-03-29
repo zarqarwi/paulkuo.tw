@@ -152,6 +152,12 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   ];
 
   var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+
+  // ── Detect ?u= param (shared profile view, e.g. from Facebook) ──
+  var urlParams = new URLSearchParams(window.location.search);
+  var viewUserId = urlParams.get('u');
+  var isViewingOther = false;
+
   function getPersonalShareUrl() {
     return lineUserId
       ? 'https://paulkuo.tw/projects/formosa-esg-2026/my/?u=' + encodeURIComponent(lineUserId)
@@ -164,10 +170,35 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   var km = parseFloat(localStorage.getItem('formosa_km') || '0');
   var carbon = parseFloat(localStorage.getItem('formosa_carbon') || '0');
   var surveyDone = localStorage.getItem('formosa_survey_done') === 'true';
+  var serverGpsTrack = null;
 
   // Try sync from server if LINE user is available
   var lineUserId = localStorage.getItem('formosa_line_user_id');
-  if (lineUserId) {
+
+  // If ?u= is present and it's a different user (or no local user), fetch their public data
+  if (viewUserId && viewUserId !== lineUserId) {
+    isViewingOther = true;
+    try {
+      var viewResp = await fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(viewUserId));
+      var viewData = await viewResp.json();
+      if (viewData && viewData.stats) {
+        checkins = viewData.stats.checkins || 0;
+        km = viewData.stats.total_km || 0;
+        carbon = viewData.stats.carbon_kg || 0;
+        surveyDone = viewData.survey ? true : checkins > 0;
+        if (viewData.gps_points && viewData.gps_points.length > 0) {
+          serverGpsTrack = viewData.gps_points.map(function(p) {
+            return { lat: p.lat, lng: p.lng, datetime: p.timestamp, source: p.source || 'gps' };
+          });
+        }
+        // Update page title for shared view
+        if (viewData.user && viewData.user.display_name && viewData.user.display_name !== 'Anonymous') {
+          document.title = viewData.user.display_name + ' 的進香足跡 — 白沙屯媽祖 ESG 進香';
+        }
+      }
+    } catch(e) { /* API unavailable */ }
+  } else if (lineUserId) {
+    // Normal: sync own data
     try {
       var syncResp = await fetch(API_BASE + '/api/formosa/user/sync', {
         method: 'POST',
@@ -193,11 +224,19 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
         if (carbon > 0) localStorage.setItem('formosa_carbon', carbon.toFixed(2));
       }
     } catch(e) { /* server unavailable, use localStorage */ }
+  } else if (viewUserId) {
+    // ?u= is present but same as local user — treat as own page, already loaded from localStorage
   }
 
   if (!surveyDone && checkins === 0) {
     document.getElementById('noData').style.display = 'block';
     return;
+  }
+
+  // Hide share buttons when viewing someone else's profile
+  if (isViewingOther) {
+    var shareSection = document.querySelector('.my-share-section');
+    if (shareSection) shareSection.style.display = 'none';
   }
 
   document.getElementById('mainContent').style.display = 'block';
@@ -269,11 +308,14 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     hintEl.style.color = '#059669';
   }
 
-  // Route map — use GPS track points from localStorage
+  // Route map — use server GPS data if viewing other user, else localStorage
   var map = null;
   try {
-    var trackRaw = localStorage.getItem('formosa_gps_track');
-    var trackPoints = trackRaw ? JSON.parse(trackRaw) : [];
+    var trackPoints = serverGpsTrack || [];
+    if (!trackPoints.length) {
+      var trackRaw = localStorage.getItem('formosa_gps_track');
+      trackPoints = trackRaw ? JSON.parse(trackRaw) : [];
+    }
 
     if (trackPoints.length > 0) {
       map = L.map('myMap').setView([trackPoints[0].lat, trackPoints[0].lng], 12);
@@ -363,8 +405,11 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   // Create share map with leaflet-image for static screenshot
   var shareMapReady = false;
   try {
-    var trackRaw2 = localStorage.getItem('formosa_gps_track');
-    var sharePts = trackRaw2 ? JSON.parse(trackRaw2) : [];
+    var sharePts = serverGpsTrack || [];
+    if (!sharePts.length) {
+      var trackRaw2 = localStorage.getItem('formosa_gps_track');
+      sharePts = trackRaw2 ? JSON.parse(trackRaw2) : [];
+    }
     var shareMapContainer = document.getElementById('shareMapContainer');
 
     if (shareMapContainer && sharePts.length >= 1) {
