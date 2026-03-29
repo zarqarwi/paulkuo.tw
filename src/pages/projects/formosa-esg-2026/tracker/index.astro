@@ -1141,7 +1141,8 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   // ── Share Functions ──
-  var SHARE_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+  var TRACKER_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+  var LIFF_URL = 'https://liff.line.me/2009588321-rXVntTKg';
   var SHARE_TITLE = '2026 白沙屯媽祖 ESG 進香';
 
   function getShareText() {
@@ -1156,7 +1157,7 @@ import AuthGate from '../_components/AuthGate.astro';
       navigator.share({
         title: SHARE_TITLE,
         text: getShareText(),
-        url: SHARE_URL
+        url: TRACKER_URL
       }).catch(function() {});
     }
   };
@@ -1167,21 +1168,21 @@ import AuthGate from '../_components/AuthGate.astro';
       liff.shareTargetPicker([
         {
           type: 'text',
-          text: getShareText() + '\n' + SHARE_URL
+          text: getShareText() + '\n' + LIFF_URL
         }
       ]).catch(function(e) {
         console.warn('shareTargetPicker failed:', e);
       });
     } else {
-      var text = encodeURIComponent(getShareText() + '\n' + SHARE_URL);
-      window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(SHARE_URL) + '&text=' + text, '_blank');
+      var text = encodeURIComponent(getShareText() + '\n' + LIFF_URL);
+      window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(LIFF_URL) + '&text=' + text, '_blank');
     }
   };
 
   window.shareFB = function() {
     // FB share URL includes userId so crawler can serve personalized OG image
-    var fbUrl = SHARE_URL;
-    if (lineUserId) fbUrl = SHARE_URL + '?u=' + encodeURIComponent(lineUserId);
+    var fbUrl = TRACKER_URL;
+    if (lineUserId) fbUrl = TRACKER_URL + '?u=' + encodeURIComponent(lineUserId);
     if (navigator.share) {
       navigator.share({
         title: SHARE_TITLE,
@@ -1194,7 +1195,7 @@ import AuthGate from '../_components/AuthGate.astro';
   };
 
   window.shareCopy = function() {
-    var text = getShareText() + '\n' + SHARE_URL;
+    var text = getShareText() + '\n' + TRACKER_URL;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(function() {
         showToast();
@@ -1355,6 +1356,15 @@ import AuthGate from '../_components/AuthGate.astro';
   async function autoSavePhotos() {
     if (pendingSaveFiles.length === 0) return;
 
+    if (isLineBrowser) {
+      // LINE WebView 不支援自動存檔，提示使用者用按鈕長按儲存
+      lastSavedFile = pendingSaveFiles[pendingSaveFiles.length - 1];
+      pendingSaveFiles = [];
+      updateSaveBtn();
+      showPhotoToast('點「📥 活動照存檔」長按儲存照片', 3500);
+      return;
+    }
+
     var saved = false;
     for (var i = 0; i < pendingSaveFiles.length; i++) {
       var f = pendingSaveFiles[i];
@@ -1370,19 +1380,47 @@ import AuthGate from '../_components/AuthGate.astro';
     updateSaveBtn();
 
     if (saved) {
-      showPhotoToast(isLineBrowser ? '照片已下載' : '📸 照片已儲存', 2500);
+      showPhotoToast('📸 照片已儲存', 2500);
     }
   }
 
   window.saveLastPhoto = async function() {
     if (!lastSavedFile) return;
-    try {
-      var saved = await saveFileToDevice(lastSavedFile);
-      if (saved) {
-        showPhotoToast(isLineBrowser ? '照片已下載' : '📸 照片已儲存', 2500);
+
+    if (isLineBrowser) {
+      // LINE WebView 不支援 <a download>，改用長按儲存模式
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;';
+
+      var hint = document.createElement('p');
+      hint.textContent = '長按照片 → 儲存圖片';
+      hint.style.cssText = 'color:white;font-size:16px;margin-bottom:12px;';
+
+      var img = document.createElement('img');
+      img.src = URL.createObjectURL(lastSavedFile);
+      img.style.cssText = 'max-width:90%;max-height:70vh;border-radius:8px;';
+
+      var closeBtn = document.createElement('button');
+      closeBtn.textContent = '✕ 關閉';
+      closeBtn.style.cssText = 'margin-top:16px;padding:10px 24px;background:#666;color:white;border:none;border-radius:8px;font-size:16px;';
+      closeBtn.onclick = function() {
+        URL.revokeObjectURL(img.src);
+        document.body.removeChild(overlay);
+      };
+
+      overlay.appendChild(hint);
+      overlay.appendChild(img);
+      overlay.appendChild(closeBtn);
+      document.body.appendChild(overlay);
+    } else {
+      try {
+        var saved = await saveFileToDevice(lastSavedFile);
+        if (saved) {
+          showPhotoToast('📸 照片已儲存', 2500);
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') console.warn('Photo save failed:', e);
       }
-    } catch (e) {
-      if (e.name !== 'AbortError') console.warn('Photo save failed:', e);
     }
   };
 
