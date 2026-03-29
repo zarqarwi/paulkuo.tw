@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Get笔记知识整理流程图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Noto Sans TC', sans-serif; background: #ffffff; color: #1e293b; padding: 40px 20px; }
+
+  h1 { text-align: center; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+  .subtitle { text-align: center; font-size: 14px; color: #94a3b8; margin-bottom: 48px; }
+
+  .flow-container { max-width: 1100px; margin: 0 auto; position: relative; }
+
+  /* Main vertical line */
+  .flow-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+    transform: translateX(-50%);
+    z-index: 0;
+  }
+
+  .phase { position: relative; margin-bottom: 60px; }
+
+  .phase-label {
+    position: relative;
+    z-index: 2;
+    width: 200px;
+    margin: 0 auto 24px;
+    padding: 10px 20px;
+    border-radius: 24px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .phase-1 .phase-label { background: #eff6ff; border: 2px solid #3b82f6; color: #1d4ed8; }
+  .phase-2 .phase-label { background: #f5f3ff; border: 2px solid #8b5cf6; color: #6d28d9; }
+  .phase-3 .phase-label { background: #ecfeff; border: 2px solid #06b6d4; color: #0e7490; }
+  .phase-4 .phase-label { background: #ecfdf5; border: 2px solid #10b981; color: #065f46; }
+
+  .cards { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; position: relative; z-index: 1; }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    width: 240px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+  .card-desc { font-size: 12.5px; color: #64748b; line-height: 1.6; }
+  .card-tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .tag-auto { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+  .tag-manual { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+  .tag-cron { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+  .tag-skill { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+
+  .arrow-down {
+    text-align: center;
+    font-size: 24px;
+    color: #cbd5e1;
+    margin: 12px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Legend */
+  .legend {
+    max-width: 700px;
+    margin: 40px auto 0;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin: 32px auto 0;
+    font-size: 14px;
+    color: #3b82f6;
+    text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .lang-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+  .lang-switcher a {
+    color: #64748b;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+  }
+  .lang-switcher a:hover { background: #f1f5f9; }
+  .lang-switcher a.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+
+  /* Classification grid */
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .class-item {
+    padding: 6px 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #475569;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+  }
+
+  .wide-card { width: 520px; }
+
+  .layer-label { color: #0e7490; font-weight: 700; }
+  .series-auto { color: #d97706; font-weight: 700; }
+  .series-hard { color: #0e7490; font-weight: 700; }
+
+  @media (max-width: 768px) {
+    .cards { flex-direction: column; align-items: center; }
+    .wide-card { width: 240px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lang-switcher">
+  <a href="/knowledge-pipeline-flowchart.html">中文</a>
+  <a href="/knowledge-pipeline-flowchart-en.html">English</a>
+  <a href="/knowledge-pipeline-flowchart-ja.html">日本語</a>
+  <a href="/knowledge-pipeline-flowchart-zh-cn.html" class="active">简体中文</a>
+</div>
+
+<h1>Get笔记 知识整理流程</h1>
+<p class="subtitle">从收集 → 同步 → 分类 → 使用的完整自动化管道</p>
+
+<div class="flow-container">
+
+  <!-- Phase 1: 收集 -->
+  <div class="phase phase-1">
+    <div class="phase-label">PHASE 1 — 收集</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">Get笔记 App</div>
+        <div class="card-desc">
+          日常收集入口：存储链接、录音、图片、文字笔记。得到 App 课程文章自动同步到 Get笔记。
+        </div>
+        <span class="card-tag tag-manual">手动收集</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎓</div>
+        <div class="card-title">得到 App 课程</div>
+        <div class="card-desc">
+          快刀青衣专栏、万维钢现代思维工具100讲、共读系列等。链接笔记自动抓取原文和 AI 摘要。
+        </div>
+        <span class="card-tag tag-auto">自动抓取</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎙️</div>
+        <div class="card-title">录音卡 / 会议录音</div>
+        <div class="card-desc">
+          商务会议、项目讨论自动录音转写。Get笔记 AI 自动生成摘要和标签。
+        </div>
+        <span class="card-tag tag-auto">自动转写</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">▼</div>
+
+  <!-- Phase 2: 同步 -->
+  <div class="phase phase-2">
+    <div class="phase-label">PHASE 2 — 同步到本机</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <div class="card-title">Get笔记 OpenAPI</div>
+        <div class="card-desc">
+          Base URL: openapi.biji.com<br>
+          认证：API Key + Client ID<br>
+          限流：2 QPS / 5000次/天
+        </div>
+        <span class="card-tag tag-auto">REST API</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏰</div>
+        <div class="card-title">每日定时同步</div>
+        <div class="card-desc">
+          cron 每天 23:00 执行 sync_notes.py<br>
+          增量同步（只抓新笔记）<br>
+          写入 notes/ 文件夹 + sync.log
+        </div>
+        <span class="card-tag tag-cron">crontab 23:00</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">Cowork Skill 即时存取</div>
+        <div class="card-desc">
+          透过 osascript → curl 调用 API<br>
+          即时搜索、查看详情、存笔记<br>
+          不用等定时任务，随问随查
+        </div>
+        <span class="card-tag tag-skill">getnote skill</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">▼</div>
+
+  <!-- Phase 3: 分类 -->
+  <div class="phase phase-3">
+    <div class="phase-label">PHASE 3 — 自动分类</div>
+    <div class="cards">
+      <div class="card wide-card">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">三层分类引擎（sync_notes.py）</div>
+        <div class="card-desc" style="margin-bottom: 16px;">
+          <strong class="layer-label">Layer 1 — 录音卡检测</strong><br>
+          tags 含「录音卡笔记」→ 09_会议录音/{项目}/<br>
+          按关键字自动归入 8 个项目子文件夹<br><br>
+
+          <strong class="layer-label">Layer 2 — 课程系列检测</strong><br>
+          解析 URL 的 courseArticleId 自动聚类<br>
+          _course_registry.json 动态维护课程清单<br>
+          新课程自动建立文件夹，无需人工介入<br><br>
+
+          <strong class="layer-label">Layer 3 — 关键字分类</strong><br>
+          标题 + 内文前 300 字比对关键字库
+        </div>
+        <div class="class-grid">
+          <div class="class-item">01 专栏文章</div>
+          <div class="class-item">02 医疗健康</div>
+          <div class="class-item">03 环保循环经济</div>
+          <div class="class-item">04 AI与科技</div>
+          <div class="class-item">05 商务会议</div>
+          <div class="class-item">06 个人成长与学习</div>
+          <div class="class-item">07 生活杂记</div>
+          <div class="class-item">08 其他</div>
+          <div class="class-item">09 会议录音</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📂</div>
+        <div class="card-title">01_专栏文章 子文件夹</div>
+        <div class="card-desc">
+          <strong class="series-hard">硬编码系列</strong><br>
+          • 快刀青衣_AI龙虾十日谈<br>
+          • 共读_预测之书<br>
+          • 共读_人比AI凶<br>
+          • OpenClaw_上手准备<br>
+          • 快刀青衣_专栏<br><br>
+          <strong class="series-auto">自动检测系列</strong><br>
+          • 万维钢_现代思维工具100讲<br>
+          • （未来新课程自动新增）
+        </div>
+        <span class="card-tag tag-auto">自动扩展</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">▼</div>
+
+  <!-- Phase 4: 存储与使用 -->
+  <div class="phase phase-4">
+    <div class="phase-label">PHASE 4 — 存储与使用</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">💾</div>
+        <div class="card-title">本机 Markdown 文件</div>
+        <div class="card-desc">
+          路径：get_笔记/notes/{分类}/<br>
+          格式：YAML frontmatter + MD<br>
+          文件名：{title}_{note_id}.md<br>
+          含 _series_meta.json 索引
+        </div>
+        <span class="card-tag tag-auto">自动产生</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <div class="card-title">云端同步</div>
+        <div class="card-desc">
+          桌机本机文件自动同步到云端<br>
+          多装置存取<br>
+          离线备份保障
+        </div>
+        <span class="card-tag tag-auto">自动同步</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <div class="card-title">Cowork 即时互动</div>
+        <div class="card-desc">
+          「搜一下」→ 语义搜索<br>
+          「记一下」→ 新建笔记<br>
+          「最近的笔记」→ 列表浏览<br>
+          「知识库」→ 知识库管理
+        </div>
+        <span class="card-tag tag-skill">getnote skill</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#059669;"></div>自动执行</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div>手动操作</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;"></div>定时任务</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d97706;"></div>Cowork Skill</div>
+</div>
+
+<a class="back-link" href="/articles/knowledge-pipeline-not-discipline">← 回到文章：知识管理不靠自律，靠管线</a>
+
+</body>
+</html>

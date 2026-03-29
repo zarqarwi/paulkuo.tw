@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Get筆記知識整理フローチャート</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Noto Sans TC', sans-serif; background: #ffffff; color: #1e293b; padding: 40px 20px; }
+
+  h1 { text-align: center; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+  .subtitle { text-align: center; font-size: 14px; color: #94a3b8; margin-bottom: 48px; }
+
+  .flow-container { max-width: 1100px; margin: 0 auto; position: relative; }
+
+  /* Main vertical line */
+  .flow-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+    transform: translateX(-50%);
+    z-index: 0;
+  }
+
+  .phase { position: relative; margin-bottom: 60px; }
+
+  .phase-label {
+    position: relative;
+    z-index: 2;
+    width: 200px;
+    margin: 0 auto 24px;
+    padding: 10px 20px;
+    border-radius: 24px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .phase-1 .phase-label { background: #eff6ff; border: 2px solid #3b82f6; color: #1d4ed8; }
+  .phase-2 .phase-label { background: #f5f3ff; border: 2px solid #8b5cf6; color: #6d28d9; }
+  .phase-3 .phase-label { background: #ecfeff; border: 2px solid #06b6d4; color: #0e7490; }
+  .phase-4 .phase-label { background: #ecfdf5; border: 2px solid #10b981; color: #065f46; }
+
+  .cards { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; position: relative; z-index: 1; }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    width: 240px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+  .card-desc { font-size: 12.5px; color: #64748b; line-height: 1.6; }
+  .card-tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .tag-auto { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+  .tag-manual { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+  .tag-cron { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+  .tag-skill { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+
+  .arrow-down {
+    text-align: center;
+    font-size: 24px;
+    color: #cbd5e1;
+    margin: 12px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Legend */
+  .legend {
+    max-width: 700px;
+    margin: 40px auto 0;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin: 32px auto 0;
+    font-size: 14px;
+    color: #3b82f6;
+    text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .lang-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+  .lang-switcher a {
+    color: #64748b;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+  }
+  .lang-switcher a:hover { background: #f1f5f9; }
+  .lang-switcher a.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+
+  /* Classification grid */
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .class-item {
+    padding: 6px 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #475569;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+  }
+
+  .wide-card { width: 520px; }
+
+  .layer-label { color: #0e7490; font-weight: 700; }
+  .series-auto { color: #d97706; font-weight: 700; }
+  .series-hard { color: #0e7490; font-weight: 700; }
+
+  @media (max-width: 768px) {
+    .cards { flex-direction: column; align-items: center; }
+    .wide-card { width: 240px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lang-switcher">
+  <a href="/knowledge-pipeline-flowchart.html">中文</a>
+  <a href="/knowledge-pipeline-flowchart-en.html">English</a>
+  <a href="/knowledge-pipeline-flowchart-ja.html" class="active">日本語</a>
+  <a href="/knowledge-pipeline-flowchart-zh-cn.html">简体中文</a>
+</div>
+
+<h1>Get筆記 知識整理フローチャート</h1>
+<p class="subtitle">収集 → 同期 → 分類 → 利用の完全自動化パイプライン</p>
+
+<div class="flow-container">
+
+  <!-- Phase 1: 収集 -->
+  <div class="phase phase-1">
+    <div class="phase-label">PHASE 1 — 収集</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">Get筆記 App</div>
+        <div class="card-desc">
+          日常の収集エントリーポイント：リンク、音声、画像、テキストメモを保存。得到 App のコース記事は Get筆記に自動同期。
+        </div>
+        <span class="card-tag tag-manual">手動収集</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎓</div>
+        <div class="card-title">得到 App コース</div>
+        <div class="card-desc">
+          快刀青衣コラム、萬維鋼現代思考ツール100講、共読シリーズなど。リンク付きメモは自動的にオリジナルテキストと AI サマリーを抽出。
+        </div>
+        <span class="card-tag tag-auto">自動抽出</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎙️</div>
+        <div class="card-title">音声メモ / 会議録音</div>
+        <div class="card-desc">
+          ビジネス会議、プロジェクト議論の自動録音・文字起こし。Get筆記 AI が自動的にサマリーとタグを生成。
+        </div>
+        <span class="card-tag tag-auto">自動文字起こし</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">▼</div>
+
+  <!-- Phase 2: 同期 -->
+  <div class="phase phase-2">
+    <div class="phase-label">PHASE 2 — ローカルに同期</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <div class="card-title">Get筆記 OpenAPI</div>
+        <div class="card-desc">
+          Base URL: openapi.biji.com<br>
+          認証：API Key + Client ID<br>
+          レート制限：2 QPS / 5000回/日
+        </div>
+        <span class="card-tag tag-auto">REST API</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏰</div>
+        <div class="card-title">毎日スケジュール同期</div>
+        <div class="card-desc">
+          cron 毎日 23:00 に sync_notes.py を実行<br>
+          差分同期（新しいメモのみ取得）<br>
+          notes/ フォルダ + sync.log に書き込み
+        </div>
+        <span class="card-tag tag-cron">crontab 23:00</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">Cowork Skill リアルタイムアクセス</div>
+        <div class="card-desc">
+          osascript → curl 経由で API を呼び出し<br>
+          リアルタイム検索、詳細閲覧、メモ保存<br>
+          スケジュールを待たず、随時クエリ可能
+        </div>
+        <span class="card-tag tag-skill">getnote skill</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">▼</div>
+
+  <!-- Phase 3: 分類 -->
+  <div class="phase phase-3">
+    <div class="phase-label">PHASE 3 — 自動分類</div>
+    <div class="cards">
+      <div class="card wide-card">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">三層分類エンジン（sync_notes.py）</div>
+        <div class="card-desc" style="margin-bottom: 16px;">
+          <strong class="layer-label">Layer 1 — 音声メモ検出</strong><br>
+          タグに「音声メモ」を含む → 09_会議録音/{プロジェクト}/<br>
+          キーワードで 8 つのプロジェクトサブフォルダに自動分類<br><br>
+
+          <strong class="layer-label">Layer 2 — コースシリーズ検出</strong><br>
+          URL の courseArticleId を解析して自動クラスタリング<br>
+          _course_registry.json で動的にコースリストを維持<br>
+          新しいコースは自動的にフォルダを作成、手動操作不要<br><br>
+
+          <strong class="layer-label">Layer 3 — キーワード分類</strong><br>
+          タイトル + 本文の最初 300 字をキーワード辞書と照合
+        </div>
+        <div class="class-grid">
+          <div class="class-item">01 コラム記事</div>
+          <div class="class-item">02 医療と健康</div>
+          <div class="class-item">03 環保とサーキュラーエコノミー</div>
+          <div class="class-item">04 AI と技術</div>
+          <div class="class-item">05 ビジネス会議</div>
+          <div class="class-item">06 自己成長と学習</div>
+          <div class="class-item">07 生活雑記</div>
+          <div class="class-item">08 その他</div>
+          <div class="class-item">09 会議録音</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📂</div>
+        <div class="card-title">01_コラム記事 サブフォルダ</div>
+        <div class="card-desc">
+          <strong class="series-hard">ハードコード化シリーズ</strong><br>
+          • 快刀青衣_AI龙虾十日谈<br>
+          • 共読_预测之书<br>
+          • 共読_人比AI凶<br>
+          • OpenClaw_上手准备<br>
+          • 快刀青衣_コラム<br><br>
+          <strong class="series-auto">自動検出シリーズ</strong><br>
+          • 萬維鋼_現代思考ツール100講<br>
+          • （今後の新コースは自動追加）
+        </div>
+        <span class="card-tag tag-auto">自動拡張</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">▼</div>
+
+  <!-- Phase 4: 保存と利用 -->
+  <div class="phase phase-4">
+    <div class="phase-label">PHASE 4 — 保存と利用</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">💾</div>
+        <div class="card-title">ローカル Markdown ファイル</div>
+        <div class="card-desc">
+          パス：get_筆記/notes/{分類}/<br>
+          形式：YAML frontmatter + MD<br>
+          ファイル名：{title}_{note_id}.md<br>
+          _series_meta.json インデックス含む
+        </div>
+        <span class="card-tag tag-auto">自動生成</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <div class="card-title">クラウド同期</div>
+        <div class="card-desc">
+          デスクトップローカルファイルが自動的にクラウドに同期<br>
+          マルチデバイスアクセス<br>
+          オフラインバックアップ保護
+        </div>
+        <span class="card-tag tag-auto">自動同期</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <div class="card-title">Cowork リアルタイムインタラクション</div>
+        <div class="card-desc">
+          「検索」→ セマンティック検索<br>
+          「記録」→ 新規メモ作成<br>
+          「最近のメモ」→ リスト閲覧<br>
+          「知識庫」→ 知識庫管理
+        </div>
+        <span class="card-tag tag-skill">getnote skill</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#059669;"></div>自動実行</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div>手動操作</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;"></div>スケジュールタスク</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d97706;"></div>Cowork Skill</div>
+</div>
+
+<a class="back-link" href="/articles/knowledge-pipeline-not-discipline">← 記事に戻る：知識管理は自律ではなく、パイプラインに頼る</a>
+
+</body>
+</html>
