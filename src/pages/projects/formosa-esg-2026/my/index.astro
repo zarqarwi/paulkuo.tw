@@ -247,6 +247,71 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
   var rank = getTitle(checkins, km);
 
+  // ── Background OG Image Upload (canvas → R2) ──
+  // Auto-generate and upload when checkins ≥ 2, at most once per hour
+  if (checkins >= 2 && lineUserId && !isViewingOther) {
+    var lastUpload = parseInt(localStorage.getItem('formosa_og_uploaded_at') || '0');
+    if (Date.now() - lastUpload >= 3600000) {
+      setTimeout(function() {
+        var W = 1200, H = 630;
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var ctx = c.getContext('2d');
+        var grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#1a1a2e');
+        grad.addColorStop(1, '#16213e');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(0, 0, W, 6);
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.fillText('白沙屯媽祖 ESG 進香 2026', 60, 70);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 64px sans-serif';
+        ctx.fillText(rank.current.icon + ' ' + rank.current.name, 60, 180);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '28px sans-serif';
+        ctx.fillText(rank.current.sub, 60, 225);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = 'bold 48px sans-serif';
+        ctx.fillText(km.toFixed(1) + ' 公里', 60, 340);
+        ctx.fillText(checkins + ' 打卡', 420, 340);
+        ctx.fillText(carbon.toFixed(1) + ' kg CO₂e', 720, 340);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '22px sans-serif';
+        ctx.fillText('總里程', 60, 375);
+        ctx.fillText('打卡次數', 420, 375);
+        ctx.fillText('碳足跡', 720, 375);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(60, 420);
+        ctx.lineTo(W - 60, 420);
+        ctx.stroke();
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 26px sans-serif';
+        ctx.fillText('點擊加入活動 →', 60, 470);
+        ctx.fillStyle = '#475569';
+        ctx.font = '20px sans-serif';
+        ctx.fillText('paulkuo.tw/projects/formosa-esg-2026/tracker/', 60, 590);
+        c.toBlob(function(blob) {
+          if (!blob || blob.size > 2 * 1024 * 1024) return;
+          fetch(API_BASE + '/api/formosa/og-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'image/png', 'X-User-Id': lineUserId },
+            body: blob
+          }).then(function(r) { return r.json(); }).then(function(d) {
+            if (d.ok) {
+              localStorage.setItem('formosa_og_uploaded_at', String(Date.now()));
+              console.log('OG image uploaded from my/ page:', d.url);
+            }
+          }).catch(function() {});
+        }, 'image/png');
+      }, 3000);
+    }
+  }
+
   // Fill rank section
   document.getElementById('rankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:120px;height:120px;object-fit:contain;" alt="' + rank.current.name + '">';
   document.getElementById('rankName').textContent = rank.current.name;

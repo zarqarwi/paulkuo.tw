@@ -908,7 +908,10 @@ import AuthGate from '../_components/AuthGate.astro';
     if (!lineUserId) return;
     var checkins = getSavedCheckins();
     var km = getSavedKm();
-    if (checkins <= 0 && km <= 0) return;
+    if (checkins < 2) return;
+    // Deduplicate: at most once per hour
+    var lastUpload = parseInt(localStorage.getItem('formosa_og_uploaded_at') || '0');
+    if (Date.now() - lastUpload < 3600000) return;
     var t = getTitle(checkins, km);
     var carbon = parseFloat(localStorage.getItem('formosa_carbon') || '0');
 
@@ -1002,7 +1005,10 @@ import AuthGate from '../_components/AuthGate.astro';
           headers: { 'Content-Type': 'image/png', 'X-User-Id': lineUserId },
           body: blob
         }).then(function(r) { return r.json(); }).then(function(d) {
-          if (d.ok) console.log('OG image uploaded:', d.url);
+          if (d.ok) {
+            localStorage.setItem('formosa_og_uploaded_at', String(Date.now()));
+            console.log('OG image uploaded:', d.url);
+          }
         }).catch(function(e) { console.warn('OG upload failed:', e); });
       }, 'image/png');
     }
