@@ -45,10 +45,10 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
   <div id="kpiGrid" class="kpi-grid"></div>
 
   <div id="quotaSection" class="quota-section" style="display:none">
-    <h3>免費額度監控</h3>
+    <h3>服務費用監控</h3>
     <div class="quota-grid">
       <div class="quota-card" id="quotaDg">
-        <div class="quota-header"><span class="quota-icon">🎙️</span><span class="quota-name">Deepgram</span><span class="quota-pct" id="dgPct">—</span></div>
+        <div class="quota-header"><span class="quota-icon">🎙️</span><span class="quota-name">Deepgram (付費)</span><span class="quota-pct" id="dgPct">—</span></div>
         <div class="quota-bar"><div class="quota-fill" id="dgFill"></div></div>
         <div class="quota-detail" id="dgDetail">—</div>
       </div>
@@ -228,39 +228,38 @@ function render(records) {
     <div class="kpi"><span class="kpi-label">Token 總量</span><span class="kpi-value kpi-purple">${(totalTokens/1000).toFixed(0)}K</span><span class="kpi-sub">input + output</span></div>
   `;
 
-  // === Free Quota Monitoring ===
-  var DG_FREE = 200.00;    // Deepgram $200 free credit
+  // === 服務費用監控 ===
   var QWEN_FREE = 36000;   // Qwen 10 hours = 36,000 seconds
-  // Claude: paid account with auto-reload ($10→$30), no quota limit
 
   var dgUsed = records.filter(function(r){ return r.service === 'deepgram'; }).reduce(function(s,r){ return s + r.costUSD; }, 0);
+  var dgThisMonth = records.filter(function(r){ return r.service === 'deepgram' && r.timestamp.startsWith(thisMonth); }).reduce(function(s,r){ return s + r.costUSD; }, 0);
   var qwenSec = records.filter(function(r){ return r.service === 'qwen-asr'; }).reduce(function(s,r){ return s + (r.durationSec || 0); }, 0);
+  var qwenUsed = records.filter(function(r){ return r.service === 'qwen-asr'; }).reduce(function(s,r){ return s + r.costUSD; }, 0);
+  var qwenThisMonth = records.filter(function(r){ return r.service === 'qwen-asr' && r.timestamp.startsWith(thisMonth); }).reduce(function(s,r){ return s + r.costUSD; }, 0);
   var claudeUsed = records.filter(function(r){ return r.service === 'anthropic'; }).reduce(function(s,r){ return s + r.costUSD; }, 0);
   var claudeThisMonth = records.filter(function(r){ return r.service === 'anthropic' && r.timestamp.startsWith(thisMonth); }).reduce(function(s,r){ return s + r.costUSD; }, 0);
 
-  var dgRemain = Math.max(0, DG_FREE - dgUsed);
-  var dgPctVal = (dgRemain / DG_FREE) * 100;
+  // Qwen: 免費額度模式
   var qwenRemain = Math.max(0, QWEN_FREE - qwenSec);
   var qwenPctVal = (qwenRemain / QWEN_FREE) * 100;
-  // Claude: no quota limit (auto-reload), show monthly spend instead
-  var claudePctVal = 100; // always green
-
   function quotaColor(pct) { return pct <= 20 ? '#dc2626' : pct <= 50 ? '#f59e0b' : '#059669'; }
   function quotaClass(pct) { return pct <= 20 ? 'quota-danger' : pct <= 50 ? 'quota-warn' : ''; }
 
   document.getElementById('quotaSection').style.display = 'block';
-  document.getElementById('dgPct').textContent = dgPctVal.toFixed(0) + '%';
-  document.getElementById('dgPct').className = 'quota-pct ' + quotaClass(dgPctVal);
-  document.getElementById('dgFill').style.width = dgPctVal + '%';
-  document.getElementById('dgFill').style.background = quotaColor(dgPctVal);
-  document.getElementById('dgDetail').textContent = '剩餘 $' + dgRemain.toFixed(2) + ' / $' + DG_FREE + '（已用 ' + (dgUsed / DG_FREE * 100).toFixed(1) + '%）';
+
+  // Deepgram: 付費方案，顯示實際花費
+  document.getElementById('dgPct').textContent = '$' + dgUsed.toFixed(2);
+  document.getElementById('dgPct').className = 'quota-pct';
+  document.getElementById('dgFill').style.width = '100%';
+  document.getElementById('dgFill').style.background = '#13EF93';
+  document.getElementById('dgDetail').textContent = '本月 $' + dgThisMonth.toFixed(2) + ' · 累計 $' + dgUsed.toFixed(2);
 
   document.getElementById('qwenPct').textContent = qwenPctVal.toFixed(0) + '%';
   document.getElementById('qwenPct').className = 'quota-pct ' + quotaClass(qwenPctVal);
   document.getElementById('qwenFill').style.width = qwenPctVal + '%';
   document.getElementById('qwenFill').style.background = quotaColor(qwenPctVal);
   var qwenHrs = (qwenRemain / 3600).toFixed(1);
-  document.getElementById('qwenDetail').textContent = '剩餘 ' + qwenHrs + ' hr / 10 hr（已用 ' + (qwenSec / 60).toFixed(0) + ' 分鐘）';
+  document.getElementById('qwenDetail').textContent = '剩餘 ' + qwenHrs + ' hr / 10 hr（已用 ' + (qwenSec / 60).toFixed(0) + ' 分鐘 · $' + qwenUsed.toFixed(2) + '）';
 
   document.getElementById('claudePct').textContent = '$' + claudeUsed.toFixed(2);
   document.getElementById('claudePct').className = 'quota-pct';

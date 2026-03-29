@@ -1,0 +1,409 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="香客使用說明 — 2026 白沙屯媽祖 ESG 永續進香"
+  description="白沙屯媽祖 ESG 進香追蹤系統香客使用說明書"
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/guide/"
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+>
+
+<article class="guide-content">
+
+<h1>白沙屯媽祖 ESG 進香追蹤 — 香客使用說明</h1>
+<p class="guide-meta"><strong>版本 v0.5</strong> ｜ 2026-03-29 ｜ 碳足跡簡化為兩種情境估算</p>
+
+<blockquote>
+  <p>這是一份給所有參加進香的朋友看的說明書。</p>
+  <p>不管你幾歲、會不會用手機，照著步驟做就可以了。</p>
+  <p>有問題隨時問身邊的志工！</p>
+</blockquote>
+
+<hr />
+
+<h2>這個系統在做什麼？</h2>
+
+<p>你走路進香的每一步，手機會自動幫你記下來。</p>
+
+<p>走了幾公里、打卡幾次——系統靠 GPS 軌跡全部自動算好，還會幫你估算減少了多少碳排放。你不需要手動填報交通方式，系統會根據移動速度自動分成「零排放」（走路、騎腳踏車）和「搭乘交通工具」兩種情境來估算碳足跡。</p>
+
+<p>走越多、打卡越多，等級越高，最後還能產生一張專屬的「進香成就卡」，分享給親朋好友。</p>
+
+<p>成就卡的發放有三個條件：<strong>打卡至少 3 次、完成問卷、有留下電話號碼</strong>。不一定要走完全程，只要達標就有，等級會反映你實際的參與程度。</p>
+
+<p>成就卡也是一種<strong>參與證明</strong>——你可以憑成就卡和路徑圖兌換合作商家的贈品或參加抽獎活動。</p>
+
+<hr />
+
+<h2>第一步：掃碼，用 LINE 登入</h2>
+
+<p>有兩種方式可以進入系統：</p>
+
+<h3>方法一：掃 QR Code（最簡單）</h3>
+
+<p>活動現場會有 QR Code 海報，用手機相機對著掃一下，就會自動打開。</p>
+
+<h3>方法二：從 LINE 進入</h3>
+
+<ol>
+  <li>打開 LINE</li>
+  <li>搜尋好友「@539fkwjd」，加入好友</li>
+  <li>點選選單中的連結</li>
+</ol>
+
+<p>進入後，系統會請你用 LINE 帳號登入。按下登入按鈕，照著畫面提示操作就好。</p>
+
+<p>登入之後系統就認得你是誰，換手機或重新打開都不會丟資料。</p>
+
+<hr />
+
+<h2>第二步：同意隱私權聲明</h2>
+
+<p>LINE 登入之後，系統會先顯示一頁「隱私權聲明」，說明我們會蒐集哪些資料、怎麼使用、保留多久。</p>
+
+<p>主要蒐集的資料包括：LINE 帳號資訊、GPS 定位軌跡、問卷回答、每日善足跡回報。手機號碼和照片座標是選填的。</p>
+
+<p><strong>照片本身不會上傳到伺服器</strong>，系統只讀取裡面的 GPS 座標。你關掉頁面之後，GPS 追蹤也會停止。</p>
+
+<p>請閱讀後按下「我同意」才能繼續使用。如果不同意，就無法使用打卡和路徑追蹤功能。</p>
+
+<p>你隨時可以撤回同意——按「完成進香」就會停止所有資料蒐集，也可以來信要求刪除你的資料。</p>
+
+<hr />
+
+<h2>第三步：填問卷（第一次進入時）</h2>
+
+<p>第一次使用會先跑一份問卷，完成後才會進入打卡模式。</p>
+
+<p>問卷用卡片方式呈現，一次一題，上方有進度條。總共分三個部份：</p>
+
+<h3>善行與感動（Q1～Q3）</h3>
+<ul>
+  <li>參與了哪些善行活動？（多選）</li>
+  <li>進香途中被什麼事情感動？（多選）</li>
+  <li>想分享感動故事的話，可以自由填寫（選填）</li>
+  <li>是否加深對「行善」的理解？（1-5 分）</li>
+</ul>
+
+<h3>活動後的改變（Q4～Q6）</h3>
+<ul>
+  <li>日常生活中會延續行善嗎？</li>
+  <li>未來計畫做哪些善行？（多選）</li>
+  <li>你的企業或組織是否會轉化為 CSR 行動？</li>
+</ul>
+
+<h3>基本資料（Q7～Q11）</h3>
+<ul>
+  <li>你的參與身分（主辦方 / 參與人）</li>
+  <li>上傳照片（系統會自動讀取照片中的 GPS 座標，照片本身不會上傳到伺服器）</li>
+  <li>手機號碼（選填，用於日後抽獎活動通知，不會作為其他用途）</li>
+  <li>確認送出</li>
+</ul>
+
+<p>不用緊張，大部分是選擇題，用點的就好。</p>
+
+<hr />
+
+<h2>第四步：開始打卡</h2>
+
+<p>問卷完成後就進入打卡模式。</p>
+
+<p>手機會跳出一個小視窗問你：「是否允許取用你的位置？」</p>
+
+<p><strong>請按「允許」。</strong> 這是最重要的一步！</p>
+
+<p>按了之後，系統就會在背景自動記錄你走過的路線和公里數。畫面上方會出現一個綠色小圓點在閃，表示正在定位中。</p>
+
+<p>要手動打卡的話，按畫面上的「打卡 📍」按鈕就行了。每次打卡，系統會計算你跟上次打卡之間的步行距離。</p>
+
+<p>你也可以用<strong>拍照打卡</strong>——拍張照片或從相簿選一張，系統會自動讀取照片裡的 GPS 座標，當作一個路徑紀錄。照片只會讀取座標，不會上傳到伺服器，你可以放心。拍照的話，也可以選擇同時存到手機相簿。</p>
+
+<p>小提醒：</p>
+<ul>
+  <li>走路的時候不用一直開著畫面，但<strong>不要關掉瀏覽器</strong></li>
+  <li>如果不小心關掉了，重新打開就好，之前的紀錄都還在</li>
+</ul>
+
+<hr />
+
+<h2>第五步：每日善足跡回報</h2>
+
+<p>打卡頁面下方有一個「🌱 今日善足跡回報」的面板，每天都可以填。</p>
+
+<p><strong>交通方式不用手動填！</strong> 系統會根據 GPS 軌跡的移動速度，自動把你的移動分成「零排放」（步行、腳踏車）和「搭乘交通工具」兩種情境來估算碳足跡。你只需要打卡，碳足跡就會自動更新。</p>
+
+<p>每日回報只需要填 GPS 追蹤不到的項目：</p>
+
+<h3>到場交通</h3>
+<p>第一天可以填你是怎麼到白沙屯的（開車 / 搭高鐵 / 搭火車等），大約幾公里。這段是 GPS 追蹤開始之前的路程。</p>
+
+<h3>環境影響</h3>
+<p>今天喝了幾瓶瓶裝水？回收了幾瓶？有沒有住宿？</p>
+
+<p>同一天可以多次送出，系統會覆蓋更新。再次打開時會自動帶入今天已填的資料。</p>
+
+<hr />
+
+<h2>第六步：查看你的成就</h2>
+
+<h3>等級系統</h3>
+
+<p>系統有 9 個等級，根據你的步行公里數和祝福（打卡）次數來升級：</p>
+
+<table>
+  <thead>
+    <tr><th>等級</th><th>稱號</th><th>公里數</th><th>祝福次數</th><th>大約對應</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>煉氣香客</td><td>0 km</td><td>1 次</td><td>第一次祝福</td></tr>
+    <tr><td>2</td><td>築基香客</td><td>15 km</td><td>5 次</td><td>1 天</td></tr>
+    <tr><td>3</td><td>金丹香客</td><td>45 km</td><td>10 次</td><td>2 天</td></tr>
+    <tr><td>4</td><td>元嬰香客</td><td>90 km</td><td>15 次</td><td>3 天</td></tr>
+    <tr><td>5</td><td>化神香客</td><td>135 km</td><td>20 次</td><td>4 天</td></tr>
+    <tr><td>6</td><td>煉虛香客</td><td>180 km</td><td>25 次</td><td>5 天</td></tr>
+    <tr><td>7</td><td>合體香客</td><td>225 km</td><td>30 次</td><td>6 天</td></tr>
+    <tr><td>8</td><td>大乘香客</td><td>270 km</td><td>35 次</td><td>7 天</td></tr>
+    <tr><td>9</td><td>飛升香客</td><td>300 km</td><td>40 次</td><td>全程走完</td></tr>
+  </tbody>
+</table>
+
+<p>每天送出 7 次祝福可以最快升級，但只要每天 5 次以上就能跟上進度。</p>
+
+<p>每個等級都有專屬的粉紅頭巾香客公仔圖，升級時會跳出通知。</p>
+
+<h3>個人進香足跡頁</h3>
+
+<p>你的個人頁面會顯示：</p>
+<ul>
+  <li>目前等級和公仔圖</li>
+  <li>打卡次數、步行公里數、碳足跡與碳節省量</li>
+  <li>零排放移動和搭乘交通工具各幾公里</li>
+  <li>你走過的路線地圖（Leaflet 地圖 + 路線連線）</li>
+  <li>距離下一級還差多少</li>
+</ul>
+
+<hr />
+
+<h2>第七步：分享給朋友</h2>
+
+<p>達到三個條件（打卡至少 3 次 + 完成問卷 + 有留電話號碼）後，系統會幫你產生一張「進香成就卡」，上面有：</p>
+
+<ul>
+  <li>你的等級公仔</li>
+  <li>走了幾公里、打卡幾次</li>
+  <li>碳足跡與碳節省量</li>
+  <li>你走過的路線地圖</li>
+  <li>一個 QR Code（掃了可以看到你的個人頁）</li>
+</ul>
+
+<p>成就卡上的 QR Code 同時也是你的<strong>參與證明</strong>。合作商家可以掃這個 QR Code 確認你的身分和參與程度，達標的香客可以憑此兌換贈品或參加抽獎。</p>
+
+<p>分享管道：</p>
+
+<ul>
+  <li><strong>LINE</strong> — 直接傳給好友或群組</li>
+  <li><strong>Facebook</strong> — 分享到臉書（會自動產生預覽圖）</li>
+  <li><strong>複製連結</strong> — 複製網址，貼到任何地方</li>
+  <li><strong>手機內建分享</strong> — 支援 Web Share API，可以分享到任何 App</li>
+</ul>
+
+<p>按下分享按鈕，選你要的方式就好。</p>
+
+<hr />
+
+<h2>暫離與完成進香</h2>
+
+<p>不是每個人都會一路走完全程。你可能走兩天先回去，週末再來，或最後一天回來接駕——系統都支援。</p>
+
+<h3>暫時離開</h3>
+
+<p>按下「暫離」按鈕，推播會暫停、GPS 追蹤也會停止，不會再打擾你。想回來的時候，重新打開 tracker 就好，系統會自動恢復追蹤，之前的資料接著累計，等級也繼續算。</p>
+
+<h3>完成進香</h3>
+
+<p>確定不再回來了，可以按「完成進香」。系統會幫你產生一張最終成就卡，以當下的等級和數據定版。個人頁面會永久保留，之後隨時可以回來看自己的紀錄。</p>
+
+<p>如果你一直沒有按任何按鈕，活動結束時系統會統一幫所有人結算。</p>
+
+<p>不管走了多遠，每一步都算數。</p>
+
+<hr />
+
+<h2>LINE Bot 小幫手</h2>
+
+<p>加入 LINE 好友「@539fkwjd」之後，Bot 會自動傳送歡迎訊息，裡面有功能按鈕。</p>
+
+<p>你也可以直接傳訊息給它：</p>
+<ul>
+  <li>傳「打卡」→ 開啟打卡頁面</li>
+  <li>傳「問卷」→ 開啟問卷</li>
+  <li>傳「排行」→ 查看排行榜</li>
+  <li>傳「幫助」→ 取得使用說明</li>
+</ul>
+
+<p>底部的 Rich Menu 也有常用功能入口，直接點就好。</p>
+
+<p>活動期間，Bot 也會推播進度更新和提醒訊息到你的 LINE。</p>
+
+<hr />
+
+<h2>常見問題</h2>
+
+<div class="faq">
+  <h3>Q：我需要輸入什麼密碼嗎？</h3>
+  <p>A：不用。香客只要用 LINE 登入就好，不需要任何通行碼。</p>
+
+  <h3>Q：手機一直沒有出現綠色閃爍的點？</h3>
+  <p>A：可能是按到「不允許」定位了。關掉網頁重新打開，這次記得按「允許」。</p>
+
+  <h3>Q：中途關掉手機了，紀錄會不見嗎？</h3>
+  <p>A：不會。之前走的紀錄都存在系統裡，重新打開會接著記。</p>
+
+  <h3>Q：拍的照片會被上傳嗎？</h3>
+  <p>A：不會。系統只會讀取照片中的 GPS 座標來記錄位置，照片本身留在你手機裡。</p>
+
+  <h3>Q：走了很多但等級沒升？</h3>
+  <p>A：等級要同時看公里數和打卡次數。記得沿途多按幾次「打卡」按鈕。</p>
+
+  <h3>Q：每日善足跡回報一定要填嗎？</h3>
+  <p>A：交通方式不用填，系統會從 GPS 自動估算。但住宿和瓶裝水的部分如果有填，碳足跡會更完整。</p>
+
+  <h3>Q：碳足跡是怎麼算的？</h3>
+  <p>A：系統會根據你移動的速度，簡化成兩種情境來估算：慢速移動（步行、騎腳踏車）算零排放，快速移動（搭車）統一用大眾交通工具的碳排係數估算。這不是精確的碳盤查數字，而是一個幫助你了解減排效果的參考值。走越多，碳足跡越低。</p>
+
+  <h3>Q：碳節省量是什麼意思？</h3>
+  <p>A：如果你走的這些路程全部改成搭車，大約會排放多少碳。系統幫你算出你用雙腳「省下」了多少二氧化碳。</p>
+
+  <h3>Q：我沒有智慧型手機怎麼辦？</h3>
+  <p>A：可以跟同行的朋友共用一支手機，或找現場志工幫忙。</p>
+
+  <h3>Q：問卷可以改答案嗎？</h3>
+  <p>A：問卷送出後就固定了。每日善足跡回報則可以每天重新填寫。</p>
+</div>
+
+<hr />
+
+<h2>重要提醒</h2>
+
+<ol>
+  <li><strong>進香途中注意安全，走路不要一直看手機</strong></li>
+  <li>手機電量記得充飽，最好帶行動電源</li>
+  <li>手機放在口袋就好，系統會自動記錄</li>
+  <li>遇到任何問題，找穿背心的志工就對了</li>
+</ol>
+
+<hr />
+
+<footer class="guide-footer">
+  <p>白沙屯媽祖 ESG 進香 2026</p>
+  <p>每一步都算數，一起為地球走一程 🌱</p>
+</footer>
+
+</article>
+
+</BaseLayout>
+
+<style>
+  .guide-content {
+    max-width: 720px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+  .guide-content h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .guide-meta {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+  }
+  .guide-content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+  .guide-content blockquote {
+    border-left: 4px solid var(--accent-faith);
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    background: rgba(180,83,9,0.04);
+    border-radius: 0 8px 8px 0;
+  }
+  .guide-content blockquote p {
+    margin: 0.25rem 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+  }
+  .guide-content h2 {
+    font-size: 1.25rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .guide-content h3 {
+    font-size: 1.05rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .guide-content p {
+    margin: 0.75rem 0;
+    font-size: 0.95rem;
+  }
+  .guide-content ul, .guide-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+  }
+  .guide-content li {
+    margin: 0.35rem 0;
+    font-size: 0.95rem;
+  }
+  .guide-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 1rem 0;
+  }
+  .guide-content th, .guide-content td {
+    border: 1px solid var(--border);
+    padding: 0.5rem;
+  }
+  .guide-content th {
+    background: var(--bg-card);
+    font-weight: 600;
+  }
+  .guide-content .faq h3 {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+  .guide-content .faq p {
+    margin-top: 0.25rem;
+  }
+  .guide-footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 2rem;
+    padding: 1.5rem 0;
+  }
+  .guide-footer p {
+    margin: 0.25rem 0;
+  }
+  @media (max-width: 768px) {
+    .guide-content {
+      padding: 0 1rem;
+    }
+    .guide-content h1 {
+      font-size: 1.3rem;
+    }
+    .guide-content table {
+      font-size: 0.78rem;
+    }
+    .guide-content th, .guide-content td {
+      padding: 0.35rem;
+    }
+  }
+</style>
