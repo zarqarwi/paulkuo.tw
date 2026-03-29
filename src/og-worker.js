@@ -31,9 +31,8 @@ export default {
 <meta property="og:image:height" content="630" />
 <meta property="og:url" content="${trackerUrl}" />
 <meta property="og:type" content="website" />
-<meta http-equiv="refresh" content="0;url=${trackerUrl}">
 </head>
-<body><p>Redirecting...</p></body>
+<body><p>2026 白沙屯媽祖 ESG 進香</p></body>
 </html>`;
 
       return new Response(html, {

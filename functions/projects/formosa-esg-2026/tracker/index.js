@@ -51,9 +51,8 @@ export async function onRequest(context) {
 <meta name="twitter:title" content="${title}" />
 <meta name="twitter:description" content="${description}" />
 <meta name="twitter:image" content="${ogImageUrl}" />
-<meta http-equiv="refresh" content="0;url=${trackerUrl}">
 </head>
-<body><p>Redirecting...</p></body>
+<body><p>2026 白沙屯媽祖 ESG 進香</p></body>
 </html>`;
 
     return new Response(html, {
@@ -77,9 +76,8 @@ export async function onRequest(context) {
 <meta property="og:image:height" content="630" />
 <meta property="og:url" content="${trackerUrl}" />
 <meta property="og:type" content="website" />
-<meta http-equiv="refresh" content="0;url=${trackerUrl}">
 </head>
-<body><p>Redirecting...</p></body>
+<body><p>2026 白沙屯媽祖 ESG 進香</p></body>
 </html>`;
 
     return new Response(html, {
