@@ -13,7 +13,6 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script is:inline src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
-<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 
 <div class="my-dashboard">
   <nav class="my-breadcrumb">
@@ -127,8 +126,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
             </div>
           </div>
           <div class="sc-bottom-right">
-            <canvas id="shareQrCode" width="88" height="88" style="border-radius:4px;background:#fff;"></canvas>
-            <div style="font-size:0.45rem;color:#888;margin-top:2px;text-align:center;">掃碼驗證</div>
+            <img src="/images/formosa/logo-netzero.jpg" alt="NET-ZERO" style="width:88px;height:88px;border-radius:50%;object-fit:cover;background:#fff;" />
           </div>
         </div>
       </div>
@@ -372,35 +370,9 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     '<span>🚗 少開車 ' + km.toFixed(1) + ' km</span>' +
     '<span>🌳 ' + treesEquiv + ' 棵樹年吸收量</span>';
 
-  // Generate QR code for share card verification
-  if (lineUserId && typeof qrcode !== 'undefined') {
-    try {
-      var personalUrl = getPersonalShareUrl();
-      var qr = qrcode(0, 'M');
-      qr.addData(personalUrl);
-      qr.make();
-      var qrCanvas = document.getElementById('shareQrCode');
-      if (qrCanvas) {
-        var qrCtx = qrCanvas.getContext('2d');
-        var qrSize = 88;
-        var modCount = qr.getModuleCount();
-        var cellSize = qrSize / modCount;
-        qrCtx.fillStyle = '#ffffff';
-        qrCtx.fillRect(0, 0, qrSize, qrSize);
-        qrCtx.fillStyle = '#1a1510';
-        for (var qrR = 0; qrR < modCount; qrR++) {
-          for (var qrC = 0; qrC < modCount; qrC++) {
-            if (qr.isDark(qrR, qrC)) {
-              qrCtx.fillRect(Math.floor(qrC * cellSize), Math.floor(qrR * cellSize), Math.ceil(cellSize), Math.ceil(cellSize));
-            }
-          }
-        }
-      }
-    } catch(e) { console.warn('QR generation failed:', e); }
-  }
 
-  // Update SHARE_URL to personal URL
-  SHARE_URL = getPersonalShareUrl();
+  // Share URL always points to tracker entry page
+  // (personal URL is only for viewing someone's journey, not for sharing)
 
   // Create share map with leaflet-image for static screenshot
   var shareMapReady = false;

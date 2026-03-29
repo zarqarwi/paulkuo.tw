@@ -317,11 +317,6 @@ import AuthGate from '../_components/AuthGate.astro';
         <p style="margin-bottom:0.5rem;color:#aaa;font-size:0.72rem;">照片不會上傳到伺服器，僅讀取 GPS 定位資訊作為路徑紀錄</p>
         <div class="photo-action-row">
           <button type="button" class="photo-btn photo-btn-camera" id="cameraBtnMini">📷 拍照</button>
-          <label class="photo-save-toggle" id="photoSaveToggleLabel">
-            <input type="checkbox" id="photoSaveToggle" checked>
-            <span class="toggle-slider"></span>
-            <span class="toggle-text">存到相簿</span>
-          </label>
         </div>
         <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" capture="environment" id="photoCameraMini" style="display:none">
         <div id="photoStatusMini" class="photo-status"></div>
@@ -1258,7 +1253,7 @@ import AuthGate from '../_components/AuthGate.astro';
     // User feedback
     if (saved) {
       if (isLineBrowser) {
-        showPhotoToast('💡 照片已下載，長按照片可儲存到相簿', 4000);
+        showPhotoToast('如需保存照片，請長按上方照片 → 儲存圖片', 4000);
       } else {
         showPhotoToast('📸 照片已儲存', 3000);
       }
@@ -1332,10 +1327,8 @@ import AuthGate from '../_components/AuthGate.astro';
       // Show success text
       updatePhotoStatusDisplay();
 
-      // Auto-save to album if toggle is on
-      if (document.getElementById('photoSaveToggle') && document.getElementById('photoSaveToggle').checked) {
-        await autoSavePhotos();
-      }
+      // Auto-save photos
+      await autoSavePhotos();
 
       // Update stats display
       var km = getSavedKm();
@@ -1808,10 +1801,10 @@ import AuthGate from '../_components/AuthGate.astro';
   /* Photo Save Toast */
   .photo-toast {
     position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-    background: rgba(0,0,0,0.85); color: #fff; padding: 0.75rem 1.25rem;
-    border-radius: 10px; font-size: 0.82rem; z-index: 9999;
+    background: rgba(30,58,38,0.9); color: #d1fae5; padding: 0.5rem 1rem;
+    border-radius: 8px; font-size: 0.78rem; z-index: 9999;
     opacity: 0; transition: opacity 0.3s;
-    pointer-events: none; white-space: nowrap;
+    pointer-events: none; max-width: 85vw;
   }
   .photo-toast.show { opacity: 1; }
 
