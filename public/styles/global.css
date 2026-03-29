@@ -575,7 +575,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
 .article-info time { font-weight: 500; }
 
 /* Article body — shared across all languages */
-.article-body { font-family: var(--font-cjk); }
+.article-body { font-family: var(--font-cjk); max-width: 650px; }
 .article-body h2 { font-family: var(--font-cjk); font-size: 1.4rem; font-weight: 700; color: var(--brand-navy); margin: 56px 0 20px; padding-top: 20px; border-top: 1px solid var(--border-light); }
 .article-body h3 { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 40px 0 16px; }
 .article-body blockquote { margin: 32px 0; padding: 20px 24px; border-left: 3px solid var(--accent-faith); background: var(--bg-section); border-radius: 0 8px 8px 0; font-style: italic; color: var(--text-secondary); }

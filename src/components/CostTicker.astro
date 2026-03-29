@@ -4,7 +4,6 @@
  * Apple Stocks widget 風格：迷你折線圖 + 數字
  * 資料來源：純 client-side fetch api.paulkuo.tw/ticker
  */
-import { version } from '../../package.json';
 ---
 
 <a href="/#feed" class="cost-ticker" id="costTicker" style="text-decoration:none;color:inherit;display:block">
@@ -13,7 +12,7 @@ import { version } from '../../package.json';
   </div>
 </a>
 
-<script is:inline define:vars={{ version }}>
+<script is:inline>
 function drawSparkline(vals) {
   var canvas = document.getElementById('tickerSpark');
   if (!canvas || !vals || vals.length < 2) return;
@@ -47,24 +46,13 @@ function drawSparkline(vals) {
 function buildTickerHTML(d) {
   var c = d.costs || {};
   var monthUSD = c.monthUSD != null ? c.monthUSD : 0;
-  var avgDay = c.avgPerDay != null ? c.avgPerDay : 0;
-  var calls = c.totalCalls != null ? c.totalCalls : 0;
-  var tokens = c.totalTokens != null ? c.totalTokens : 0;
-  var totalUSD = c.totalUSD != null ? c.totalUSD : 0;
   var chgPct = c.changePercent != null ? c.changePercent : 0;
   var chgUp = chgPct >= 0;
   var chgCls = chgUp ? 'up' : 'down';
   var chgArrow = chgUp ? '\u25b2' : '\u25bc';
   var steps = d.fitbit ? d.fitbit.steps : 0;
-  var aiToday = d.timing ? (Math.round((d.timing.todayHours || d.timing.ai_hours_today || 0) * 10) / 10) : 0;
-  var aiMonth = d.timing ? Math.round(d.timing.monthHours || d.timing.ai_hours_month || 0) : 0;
 
-  var html = '<div class="ticker-item ticker-version" title="paulkuo.tw 網站版本">'
-    + '<span class="ticker-label">VER</span>'
-    + '<span class="ticker-value">' + version + '</span>'
-    + '</div>'
-    + '<div class="ticker-sep"></div>'
-    + '<div class="ticker-item ticker-primary" title="本月 AI API 費用">'
+  var html = '<div class="ticker-item ticker-primary" title="本月 AI API 費用">'
     + '<span class="ticker-label">本月 API</span>'
     + '<span class="ticker-value" id="liveMonthUSD">$' + monthUSD.toFixed(2) + '</span>'
     + '<span class="ticker-sub" id="liveMonthTWD">NT$' + Math.round(monthUSD * 32.5) + '</span>'
@@ -72,17 +60,7 @@ function buildTickerHTML(d) {
     + '<span class="ticker-change ' + chgCls + '" id="liveChangePercent">' + chgArrow + ' ' + Math.abs(chgPct).toFixed(0) + '%</span>'
     + '</div>'
     + '<div class="ticker-sep"></div>'
-    + '<div class="ticker-item" title="每日平均 API 費用"><span class="ticker-label">日均</span><span class="ticker-value" id="liveAvgDay">$' + avgDay.toFixed(3) + '</span></div>'
-    + '<div class="ticker-sep"></div>'
-    + '<div class="ticker-item" title="API 呼叫總次數"><span class="ticker-label">API 呼叫</span><span class="ticker-value" id="liveCalls">' + calls.toLocaleString() + '</span></div>'
-    + '<div class="ticker-sep"></div>'
-    + '<div class="ticker-item" title="Token 總量"><span class="ticker-label">Token</span><span class="ticker-value" id="liveTokens">' + Math.round(tokens / 1000) + 'K</span></div>'
-    + '<div class="ticker-sep"></div>'
-    + '<div class="ticker-item" title="累計 API 費用"><span class="ticker-label">累計</span><span class="ticker-value" id="liveTotalUSD">$' + totalUSD.toFixed(2) + '</span></div>'
-    + '<div class="ticker-sep"></div>'
-    + '<div class="ticker-item" title="今日 Fitbit 步數"><span class="ticker-label">\ud83d\udeb6 步數</span><span class="ticker-value" id="liveSteps">' + steps.toLocaleString() + '</span></div>'
-    + '<div class="ticker-sep"></div>'
-    + '<div class="ticker-item" title="AI 協作時間"><span class="ticker-label">\u23f1 AI 協作</span><span class="ticker-value">' + aiToday + 'h</span><span class="ticker-sub">月' + aiMonth + 'h</span></div>';
+    + '<div class="ticker-item" title="今日 Fitbit 步數"><span class="ticker-label">\ud83d\udeb6 步數</span><span class="ticker-value" id="liveSteps">' + steps.toLocaleString() + '</span></div>';
 
   if (d.stock && d.stock.price) {
     var su = d.stock.changePercent >= 0;
@@ -158,10 +136,7 @@ function buildTickerHTML(d) {
   .ticker-change.down { background: rgba(220,38,38,0.15); }
   .ticker-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.15); flex-shrink: 0; margin: 0 4px; }
   @media (max-width: 768px) {
-    .ticker-inner { padding: 0 16px; height: 38px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .ticker-inner::-webkit-scrollbar { display: none; }
+    .ticker-inner { padding: 0 16px; height: 38px; justify-content: center; overflow-x: visible; }
     .ticker-item { padding: 0 10px; gap: 6px; flex-shrink: 0; }
-    .ticker-version { display: none; }
-    .ticker-version + .ticker-sep { display: none; }
   }
 </style>
