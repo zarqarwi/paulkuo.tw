@@ -1,1 +1,863 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Lobster Decameron — AI Lobster Decameron · Pipeline Output Example</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --bg-card: #FFFFFF;
+    --bg-section: #F3F2EE;
+    --text-primary: #1A1A1A;
+    --text-secondary: #5A5A5A;
+    --text-muted: #8A8A8A;
+    --brand-navy: #1B2D4F;
+    --brand-navy-light: #2A4470;
+    --accent-ai: #2563EB;
+    --border: #E8E6E1;
+    --border-light: #F0EDE8;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --radius-lg: 20px;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', 'Noto Sans TC', sans-serif;
+    --max-width: 860px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* === PIPELINE CONTEXT BAR === */
+  .pipeline-bar {
+    background: var(--brand-navy);
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    padding: 12px 24px;
+    font-size: 0.84rem;
+    line-height: 1.6;
+  }
+  .pipeline-bar a {
+    color: #93B5FF;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 500;
+  }
+  .pipeline-bar .pipe-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    margin-right: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* === HEADER === */
+  .page-header {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 64px 24px 48px;
+  }
+
+  .pillar-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--accent-ai);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .pillar-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent-ai);
+  }
+
+  .page-header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+    font-weight: 700;
+    color: var(--brand-navy);
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+
+  .page-header .subtitle {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    max-width: 640px;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .source-notice {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: var(--bg-section);
+    border-left: 3px solid var(--accent-ai);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+  .source-notice a {
+    color: var(--accent-ai);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .source-notice strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .stats-bar {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* === SECTION LAYOUT === */
+  .section-bg {
+    background: var(--bg-section);
+    padding: 48px 24px;
+  }
+  .section-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 4px;
+  }
+  .section-sub {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+  }
+
+  /* === PHASES === */
+  .phases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 600px) { .phases-grid { grid-template-columns: 1fr; } }
+  .phase-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 24px;
+    border: 1px solid var(--border);
+  }
+  .phase-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent-ai);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .phase-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .phase-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* === EPISODES === */
+  .episodes-section {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+
+  .expand-btn {
+    display: block;
+    margin: 0 auto 20px;
+    padding: 8px 24px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all 0.2s;
+  }
+  .expand-btn:hover {
+    border-color: var(--accent-ai);
+    color: var(--accent-ai);
+  }
+
+  .ep-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .ep-card:hover { box-shadow: var(--shadow-md); }
+
+  .ep-header {
+    padding: 18px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+  }
+
+  .ep-number {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-ai);
+    min-width: 48px;
+  }
+
+  .ep-info { flex: 1; }
+  .ep-info h3 {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+  .ep-guest {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .ep-tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .ep-tag {
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 0.68rem;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--bg-section);
+  }
+
+  .ep-toggle {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .ep-card.open .ep-toggle {
+    background: var(--accent-ai);
+    color: #fff;
+    border-color: var(--accent-ai);
+    transform: rotate(45deg);
+  }
+
+  .ep-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+  }
+  .ep-card.open .ep-body { max-height: none; }
+
+  /* === TAB BAR === */
+  .ep-tab-bar {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+  .ep-tab {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .ep-tab:hover { color: var(--text-primary); }
+  .ep-tab.active {
+    color: var(--accent-ai);
+    border-bottom-color: var(--accent-ai);
+  }
+
+  .ep-content {
+    padding: 0 24px 24px;
+    display: none;
+  }
+  .ep-content.active { display: block; }
+
+  .ep-content h4 {
+    color: var(--accent-ai);
+    font-size: 0.92rem;
+    margin: 18px 0 8px;
+    font-weight: 700;
+  }
+
+  .ep-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    line-height: 1.8;
+  }
+
+  .ep-content ul, .ep-content ol {
+    padding-left: 18px;
+    margin-bottom: 10px;
+  }
+  .ep-content li {
+    font-size: 0.88rem;
+    margin-bottom: 5px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .ep-content li strong { color: var(--text-primary); }
+
+  .quote-box {
+    background: var(--bg-section);
+    border-left: 3px solid var(--accent-ai);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 14px 0;
+    font-style: italic;
+    color: var(--brand-navy);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .ep-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.82rem;
+  }
+  .ep-content th {
+    text-align: left;
+    padding: 8px 10px;
+    background: var(--bg-section);
+    color: var(--brand-navy);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .ep-content td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-secondary);
+  }
+
+  .ep-content code {
+    background: var(--bg-section);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.84em;
+  }
+
+  /* === FULLTEXT specific styling === */
+  .ep-fulltext {
+    max-height: 600px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .ep-fulltext::-webkit-scrollbar { width: 6px; }
+  .ep-fulltext::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  /* === TAKEAWAYS === */
+  .takeaways-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .takeaway-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .takeaway-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .takeaway-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-ai);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .takeaway-card h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .takeaway-card p {
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* === FOOTER === */
+  .site-footer {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+  .site-footer a {
+    color: var(--accent-ai);
+    text-decoration: none;
+  }
+
+  /* === CTA BANNER === */
+  .cta-banner {
+    max-width: var(--max-width);
+    margin: 0 auto 48px;
+    padding: 0 24px;
+  }
+  .cta-inner {
+    background: var(--brand-navy);
+    border-radius: var(--radius-lg);
+    padding: 36px 40px;
+    text-align: center;
+    color: #fff;
+  }
+  .cta-inner h2 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .cta-inner p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .cta-inner a {
+    display: inline-block;
+    padding: 10px 28px;
+    border-radius: 100px;
+    background: var(--accent-ai);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .cta-inner a:hover { opacity: 0.9; }
+
+  .lang-switcher {
+    display: flex; justify-content: center; gap: 8px;
+    padding: 10px 24px 0; font-size: 0.8rem;
+  }
+  .lang-switcher a {
+    color: var(--text-muted); text-decoration: none;
+    padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border);
+  }
+  .lang-switcher a:hover { background: var(--bg-section); }
+  .lang-switcher a.active { background: var(--accent-ai); color: #fff; border-color: var(--accent-ai); }
+</style>
+</head>
+<body>
+
+<div class="pipeline-bar">
+  <span class="pipe-tag">Pipeline Output Example</span>
+  What you're reading was produced by my knowledge pipeline. Want to know how? Read
+  <a href="https://paulkuo.tw/articles/knowledge-pipeline-not-discipline/" target="_blank">Knowledge Management: Not Discipline, But Pipelines</a>
+</div>
+
+<div class="lang-switcher">
+  <a href="/lobster-decameron.html">中文</a>
+    <a href="/lobster-decameron-zh-cn.html">简体中文</a>
+    <a href="/lobster-decameron-en.html" class="active">English</a>
+    <a href="/lobster-decameron-ja.html">日本語</a>
+</div>
+
+<header class="page-header">
+  <div class="pillar-badge"><span class="pillar-dot"></span><span>Intelligence & Order</span></div>
+  <h1>AI Lobster Decameron</h1>
+  <p class="subtitle">This is a pipeline output: Dedao App → Get Notes API sync → AI-structured organization (Claude App Cowork), transforming Kuaidao Qingyi's 10-day livestream series into the comprehensive knowledge map below.</p>
+  <div class="source-notice">
+    <strong>Source Attribution</strong>｜This series is based on "AI Lobster Decameron," a ten-day livestream by Kuaidao Qingyi, co-founder of the Dedao App, in 2026. All views and insights belong to the original author and interviewed guests. This page is a structured organization of personal study notes and does not represent the complete original content. Notes were synced via <a href="https://www.biji.com/openapi" target="_blank" rel="noopener">Get Notes OpenAPI</a>.
+  </div>
+  <div class="meta-row">
+    <span>Kuaidao Qingyi × Dedao App</span><span>March 2026</span><span>Get Notes Knowledge Pipeline Output</span>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">11</div><div class="stat-label">complete notes</div></div>
+    <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">guests</div></div>
+    <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">core topics</div></div>
+  </div>
+</header>
+
+<section class="section-bg">
+  <div class="section-inner">
+    <h2 class="section-title">Series Structure</h2>
+    <p class="section-sub">Two phases: first understand the lobster, then put it to work</p>
+    <div class="phases-grid">
+      <div class="phase-card">
+        <div class="phase-label">PHASE 1 · First 4 episodes</div>
+        <h3>Understanding the Lobster</h3>
+        <p>Capability boundaries, tech trends, talent market, organizational impact — building a realistic understanding of AI Agents.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">PHASE 2 · Last 6 episodes</div>
+        <h3>Putting the Lobster to Work</h3>
+        <p>Parenting strategies, WeChat ecosystem, enterprise adoption, non-technical approaches, workflow practices, Silicon Valley startups.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="episodes-section">
+  <h2 class="section-title" style="text-align:center;margin-bottom:4px;">Episode Guide</h2>
+  <p class="section-sub" style="text-align:center;">Click to expand. Switch between "Key Takeaways" and "Dedao Notes"</p>
+  <button class="expand-btn" onclick="toggleAll()">Expand / Collapse All</button>
+
+  <div class="ep-card" id="ep793">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">793</div>
+      <div class="ep-info">
+        <h3>Launch: I invited 10 practitioners to answer your most pressing questions</h3>
+        <div class="ep-guest">Kuaidao Qingyi · Series Overview</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">OpenClaw</span><span class="ep-tag">AI Agent</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>Background: OpenClaw sparks user anxiety</h4><p>After Kuaidao Qingyi launched the OpenClaw hands-on course, users flooded in with five core questions: personal development opportunities, education strategies, enterprise risk-benefit analysis, technological evolution limits, and global AI dynamics.</p><div class="quote-box">"Yuanzhuangui" built a complete workflow in just one night using Claude Code: livestream auto-transcription → Feishu → Lobster reading → auto-generating high-density information maps.</div><h4>Ten-Day Talk guest lineup</h4><table><tr><th>Episode</th><th>Guest</th><th>Core Question</th></tr><tr><td>1</td><td>Zhang Peng (Zhipu CEO)</td><td>As LLMs grow stronger, what will AI assistants become?</td></tr><tr><td>2</td><td>Ning Liaoyuan (TTC)</td><td>Where are opportunities in the Agent economy?</td></tr><tr><td>3</td><td>Yin Huisheng (GeekBang)</td><td>Enterprise risks and rewards of using Lobster</td></tr><tr><td>4</td><td>Li Ning (Tsinghua Professor)</td><td>How do we reassess human value?</td></tr><tr><td>5</td><td>Kaishu</td><td>What should kids and parents do?</td></tr><tr><td>6</td><td>Kazike (AI Blogger)</td><td>What can WeChat + Lobster do for you?</td></tr><tr><td>7</td><td>Yang Tianrun (Naughty Labs)</td><td>How can ordinary people keep up with the Lobster wave?</td></tr><tr><td>8</td><td>Wang Daxian (Feishu)</td><td>Lobster × daily work in action</td></tr><tr><td>9</td><td>Wang Runyu</td><td>Personal AI efficiency combos</td></tr><tr><td>10</td><td>Qu Xiaoyin (Skillboss)</td><td>Silicon Valley Agent startup landscape</td></tr></table></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🦞 OpenClaw實踐與用戶案例（背景）</h4><p><strong>課程與用戶實踐</strong></p><ul><li><strong>課程背景</strong>：快刀青衣上線OpenClaw實操課程，旨在指導用戶從基礎安裝到完成自動發送資訊日報、筆記管理等日常任務。</li><li><strong>典型用戶案例</strong>：用戶"袁掌櫃"在Get筆記Skill未上線的情況下，通過Claude Code構建工作臺，實現直播內容自動轉錄至飛書→龍蝦讀取內容→配置資訊圖skill→自動生成高密度資訊圖的完整工作流，<strong>僅用一晚上完成部署</strong>。</li></ul><h4>🤔 核心焦慮與十日談緣起（動機）</h4><p>用戶圍繞OpenClaw提出的高頻問題集中於五大方向：</p><ol><li><strong>個人發展</strong>：機會在哪裡？如何避免被淘汰？</li><li><strong>教育應對</strong>：孩子如何教育？家長應採取什麼策略？</li><li><strong>企業應用</strong>：引入龍蝦的風險與收益評估。</li><li><strong>技術演進</strong>：大模型能力的未來上限。</li><li><strong>全球動態</strong>：矽谷在AI Agent領域的最新動向。</li></ol><p>為系統回應這些焦慮，快刀青衣組織"AI龍蝦十日談"活動，邀請10位不同領域專家從多元視角解析OpenClaw浪潮。</p><h4>📅 十日談核心安排與嘉賓陣容（核心內容）</h4><h4>(一) 第一階段：看清龍蝦——能力邊界與趨勢洞察（前4場）</h4><table><tr><th>場次</th><th>核心問題</th><th>嘉賓</th><th>嘉賓背景</th><th>核心看點</th></tr><tr><td>1</td><td><strong>大模型越來越強，AI助理會變成什麼樣？</strong></td><td>張鵬</td><td>智譜CEO，GLM系列模型（OpenClaw底層大模型主要提供者）</td><td>新模型發佈後首秀，解析龍蝦"大腦"的技術上限與未來演進</td></tr><tr><td>2</td><td><strong>Agent經濟時代，成就自己的機會在哪兒？</strong></td><td>寧遼原</td><td>TTC聯合創始人、ClawOS主理人，服務1000+AI企業招聘</td><td>觀察到"AI提升效率後人更值錢但分化加劇"現象，解讀高價值人才特徵</td></tr><tr><td>3</td><td><strong>企業用龍蝦，有哪些風險和收益？</strong></td><td>尹會生</td><td>極客邦科技副總裁，企業AI落地專家</td><td>分享《從"Agent神話"到生產級落地的7個致命陷阱》，剖析真實踩坑案例</td></tr><tr><td>4</td><td><strong>OpenClaw來了，我們如何衡量個人價值？</strong></td><td>李寧</td><td>清華經管學院教授，研究AI時代工作與組織變革</td><td>基於《AI跑了72小時，我只花了40分鐘》研究，探討"人天"單位失效後的價值定義</td></tr></table><h4>(二) 第二階段：用起龍蝦——場景落地與實戰指南（後6場）</h4><table><tr><th>場次</th><th>核心問題</th><th>嘉賓</th><th>嘉賓背景</th><th>核心看點</th></tr><tr><td>5</td><td><strong>OpenClaw來了，孩子與家長如何應對？</strong></td><td>凱叔</td><td>凱叔講故事創始人，"弦上"龍蝦用戶（12天從1個Agent擴展到5個）</td><td>提出"AI會很自信地搞砸任何一件事"，分享家長視角的教育應對策略</td></tr><tr><td>6</td><td><strong>OpenClaw深度應用場景有哪些？</strong></td><td>卡茲克</td><td>百萬粉絲AI博主，設計師出身，一年發佈260篇AI文章</td><td>基於《我花499找人上門安裝OpenClaw》等爆款內容，分享真實應用邊界與效果</td></tr><tr><td>7</td><td><strong>不卷技術，普通人怎麼跟上龍蝦潮？</strong></td><td>楊天潤</td><td>Naughty Labs CEO，金融科班出身，無代碼操作衝進OpenClaw全球貢獻者前30</td><td>實踐"給模糊方向，放手讓AI執行"的非技術路線，提供普通人可複製方案</td></tr><tr><td>8</td><td><strong>OpenClaw+飛書，如何高效落地？</strong></td><td>王大仙</td><td>飛書產品市場經理，"飛書玩蝦大會"組織者</td><td>提出"好的OpenClaw助手是養出來的，不是裝出來的"，提供可直接複用的實戰案例</td></tr><tr><td>9</td><td><strong>OpenClaw來了，個人IP如何打好AI效率組合拳？</strong></td><td>王潤宇</td><td>創始人IP&大場直播操盤顧問，AI內容生產全鏈路跑通者</td><td>提出"超級老闆"概念（有目標、有全圖、有路徑），解析AI與個人IP的結合策略</td></tr><tr><td>10</td><td><strong>矽谷視角，哪些龍蝦Agent創業正在發生？</strong></td><td>曲曉音</td><td>矽谷AI產品創業者，斯坦福MBA退學創業，獲a16z等1500萬美金投資</td><td>分享矽谷SkillBoss等創新項目，提供國內少見的全球視角與一手資訊</td></tr></table><h4>📌 活動價值與參與方式（行動指引）</h4><p><strong>核心價值</strong>：10位嘉賓覆蓋技術研發、企業落地、組織研究、個人IP、教育、矽谷創業等多元領域，拼圖式呈現OpenClaw浪潮的完整圖景，幫助用戶全面理解機遇、挑戰、收益與風險。</p><p><strong>參與方式</strong>：</p><ul><li>站內直播：點擊文稿區鏈接一鍵預約10場直播（3月19日起，每晚7點）。</li><li>影片號直播：掃碼文稿區海報預約，支持分享給觀望AI的朋友（包括感興趣但不知從何入手、已安裝但使用困難、想明確浪潮相關性等人群）。</li></ul><h4>📝 補充細節</h4><ul><li><strong>OpenClaw生態關鍵節點</strong>：智譜GLM系列是其底層核心大模型之一，ClawOS是重要操作系統，Skill是功能擴展模塊。</li><li><strong>用戶實踐亮點</strong>：袁掌櫃案例證明非技術背景用戶可通過現有工具（Claude Code+GetSeed錄音卡+飛書）構建複雜工作流；楊天潤案例驗證無代碼操作也能實現高水平AI應用。</li><li><strong>關鍵觀點摘要</strong>：凱叔的"AI自信搞砸論"、王大仙的"龍蝦飼養論"、王潤宇的"超級老闆思維"共同揭示AI工具的人性化使用邏輯。</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep794">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">794</div>
+      <div class="ep-info">
+        <h3>As LLMs grow stronger, what will AI assistants become?</h3>
+        <div class="ep-guest">Zhang Peng · Zhipu CEO · GLM Series Model Provider</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">OpenClaw</span><span class="ep-tag">Human-AI Collaboration</span><span class="ep-tag">GLM-5</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>Three underlying reasons for OpenClaw's explosion</h4><ul><li><strong>Foundation model intelligence in place</strong>: Can understand complex instructions, break goals into executable steps, solve problems autonomously</li><li><strong>Extremely open framework</strong>: Supports plugins and Skills with high developer freedom; regular users can reuse others' skills</li><li><strong>IM channel integration</strong>: Connects to Feishu, WeChat Work and other IM tools, lowering usage barriers to nearly zero</li></ul><h4>AI restructuring work</h4><table><tr><th>Scenario</th><th>Traditional</th><th>AI Solution</th><th>Efficiency</th></tr><tr><td>PPT generation</td><td>Intern 3 days</td><td>Complete PPT in 30 min</td><td>3 days→0.5hr</td></tr><tr><td>European visa</td><td>Manual filling</td><td>Auto-read & fill PDF</td><td>No manual work</td></tr><tr><td>Content creation</td><td>Daily manual curation</td><td>Auto-scrape trends + competitive analysis</td><td>Daily automation</td></tr></table><div class="quote-box">"You treat it as a hammer, it stays a hammer. But today's AI might be a hammer today, a knife tomorrow, a chainsaw the next day — it depends on what you need."</div><h4>Minimal action guide</h4><ul><li><strong>Step one</strong>: Say hello, introduce yourself to the AI, ask "what can you help me do"</li><li><strong>Step two</strong>: Have the AI demonstrate, verify feasibility, give clear feedback</li><li><strong>Step three</strong>: Accumulate skills; after each task, have the AI remember the approach</li></ul></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>📌 核心背景與直播概況</h4><p><strong>直播主題</strong>：大模型越來越強，AI助理會變成什麼樣？  </p><p><strong>主講嘉賓</strong>：智譜CEO張鵬  </p><p><strong>核心背景</strong>：OpenClaw（龍蝦）爆火後，用戶對AI的實際應用價值產生迫切需求，「AI龍蝦十日談」系列直播旨在邀請一線實踐者解答落地問題。</p><h4>🦞 張鵬的"龍蝦協作"故事</h4><ul><li><strong>場景</strong>：張鵬在測試早期版本Clawdbot時，AI自動執行資訊收集任務，引導其在半夜註冊搜索引擎API並綁定信用卡。</li><li><strong>關鍵細節</strong>：銀行客服半夜來電確認1美元扣款，揭示<strong>人機協作的新狀態</strong>——用戶從工具使用者轉變為AI協作夥伴，這種模式正從極客向普通用戶擴散。</li></ul><h4>🚀 智譜近三個月的技術節奏</h4><h4>密集發佈時間線</h4><table><tr><th>時間節點</th><th>關鍵事件</th></tr><tr><td>1月8日</td><td>智譜上市</td></tr><tr><td>1月-3月</td><td>平均每半個月一次重大發布（與華為聯合發佈模型、GLM-5上線並開源、發佈技術報告、推出澳龍、開源AutoGLM手機運行項目）</td></tr><tr><td>3月16日</td><td>GLM-5-Turbo新模型發佈</td></tr></table><h4>行業洞察</h4><ul><li><strong>"AI一日，人間一年"</strong>：張鵬表示這是從業者的真實體感，技術曲線斜率變陡，從半年一次大進步加速到每幾週一次。</li><li><strong>預見性佈局</strong>：智譜團隊2025年底已預判2026年為智能體發展革命性年份，GLM-5模型能力恰好在爆發節點成熟，完美適配智能體場景需求。</li></ul><h4>🔥 OpenClaw爆火的三大底層原因</h4><h4>(一) 基座模型智能水平到位</h4><ul><li><strong>核心突破</strong>：基座模型能力跨過關鍵門檻，能理解複雜指令、拆解目標為可執行步驟、自主解決問題。</li><li><strong>對比</strong>：早期智能體框架因"大腦不夠聰明"未能普及，當前模型能力使框架"活了起來"。</li></ul><h4>(二) 極其開放的腳手架框架</h4><ul><li><strong>定義</strong>：OpenClaw提供開放底座，支持插入插件、添加技能（Skills），構建定製化工作流。</li><li><strong>價值</strong>：開發者獲得自由度，普通用戶可直接複用他人技能，推動生態快速繁榮。</li></ul><h4>(三) 打通IM渠道，降低使用門檻</h4><ul><li><strong>關鍵動作</strong>：將AI接入飛書、企微等即時通訊工具，用戶可在日常溝通環境中直接調用AI。</li><li><strong>結果</strong>：使用門檻降至幾乎為零，實現AI從開發者向普通人的外溢。</li></ul><h4>🦞 vs 🦞 概念辨析：龍蝦與澳龍</h4><table><tr><th>項目</th><th>OpenClaw（龍蝦）</th><th>AutoClaw（澳龍）</th></tr><tr><td><strong>定位</strong></td><td>AI開源項目</td><td>智譜為普通用戶打造的本地化版本</td></tr><tr><td><strong>特點</strong></td><td>底層技術框架</td><td>家用版，一鍵安裝，數據本地存儲，無需編程基礎</td></tr><tr><td><strong>目標</strong></td><td>技術生態構建</td><td>降低使用門檻，推動AI普及</td></tr><tr><td><strong>關係</strong></td><td>殊途同歸，均致力於讓更多人用上AI</td></tr></table><h4>💼 AI重構工作方式的典型案例</h4><h4>(一) 團隊效率革命</h4><ul><li><strong>案例</strong>：智譜海外業務團隊以<strong>1.5個人力、2天時間</strong>完成AI創業團隊孵化活動官網開發、後臺數據打通、安全掃描並上線，傳統模式需小團隊1周。</li><li><strong>本質</strong>：效率提升不是線性增長，而是<strong>數量級差距</strong>。</li></ul><h4>(二) 具體應用場景</h4><table><tr><th>場景</th><th>傳統方式</th><th>澳龍解決方案</th><th>效率提升</th></tr><tr><td>PPT生成</td><td>實習生3天製作</td><td>半小時輸出HTML格式完整PPT</td><td>3天→0.5小時</td></tr><tr><td>歐洲簽證申請</td><td>手動填寫繁瑣表格</td><td>自動讀取資料並填完PDF表格，用戶僅需確認簽名</td><td>消除手動操作</td></tr><tr><td>內容創作</td><td>運營同學每日手動整理</td><td>自動抓取小紅書熱點數據並生成Excel競品分析</td><td>日常工作自動化</td></tr><tr><td>性格分析</td><td>無標準化工具</td><td>基於兩個月交流記錄生成含MBTI、大五人格的完整報告，附聊天記錄證據</td><td>實現個性化深度分析</td></tr></table><h4>🌐 "一人小隊"與管理新課題</h4><ul><li><strong>核心概念</strong>：一個人+配置好的龍蝦，可完成傳統需4-5人團隊（產品、設計、開發、運營）的項目。</li><li><strong>連鎖反應</strong>：工作節奏加快，但忙碌感可能增加（AI 5分鐘出結果需立即推進下一步，壓縮休息時間）。</li><li><strong>管理挑戰</strong>：企業需開始管理"AI勞動力"，實現知識沉澱（老師傅教AI→AI同時教大量新徒弟，避免知識隨人員流動流失）。</li></ul><h4>🎯 最小行動指南：如何開始使用澳龍</h4><h4>第一步：打招呼，建立認知</h4><ul><li><strong>操作</strong>：向AI介紹自己（身份、工作內容、日常任務），詢問"你能幫我做什麼"。</li><li><strong>目的</strong>：摸清AI能力邊界，讓AI瞭解需求，如同與新同事建立協作關係。</li></ul><h4>第二步：讓AI實際演示，驗證可行性</h4><ul><li><strong>關鍵動作</strong>：要求AI將方案實際跑通，而非僅停留在口頭規劃。</li><li><strong>交互策略</strong>：不滿意時明確提出修改方向，通過"較勁"訓練AI，同時提升自身問題清晰度。</li></ul><h4>第三步：積累技能，逐步優化</h4><ul><li><strong>方法</strong>：每次完成任務後要求AI記住做法，形成固定技能；小團隊可分工打磨場景並共享技能，甚至讓多隻龍蝦互相學習。</li></ul><h4>🤔 "用蝦"心態：從工具到夥伴</h4><ul><li><strong>張鵬的觀點</strong>：潛意識中如何看待AI決定使用方式——將其視為類人智能個體，會採用更自然的協作式交流，而非命令工具。</li><li><strong>核心洞察</strong>："你把它當一個錘子，它永遠是一把錘子。但今天的AI可能今天是錘子，明天是刀，後天是電鋸，看你需要什麼。"</li></ul><h4>📝 補充細節</h4><ul><li><strong>Windows用戶支持</strong>：針對Windows系統的OpenClaw安裝教程已補充，涵蓋環境配置、網關啟動、權限設置等關鍵步驟。</li><li><strong>後續直播預告</strong>：「AI龍蝦十日談」第二場（3月28日晚7點）將邀請TTC聯合創始人、ClawOS主理人寧遼原，探討"Agent經濟時代，成就自己的機會在哪兒？"</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep795">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">795</div>
+      <div class="ep-info">
+        <h3>In the Agent economy, where are the opportunities?</h3>
+        <div class="ep-guest">Ning Liaoyuan · TTC Co-founder · Serving 1000+ AI Companies</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">AI Tools</span><span class="ep-tag">AI Talent</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>Six ways to raise a lobster wrong</h4><table><tr><th>Type</th><th>Characteristic</th><th>Core problem</th></tr><tr><td>Lottery</td><td>Assign tasks far beyond AI capability</td><td>Confuse luck with ability</td></tr><tr><td>Wish list</td><td>Make impossible requests</td><td>Ignore AI info boundaries</td></tr><tr><td>Tiger parent</td><td>Stack hundreds of skills on one AI</td><td>Info overload, token explosion</td></tr><tr><td>PUA style</td><td>Demand copying others' results</td><td>No context transfer</td></tr><tr><td>Overindulgent</td><td>Completely follow AI instructions</td><td>Lose initiative</td></tr><tr><td>Player style</td><td>Frequently switch tools, no core needs</td><td>No goal orientation</td></tr></table><h4>Three traits of high-value talent</h4><ul><li>Can operate AI agents</li><li>Can deliver measurable results</li><li>Have unique talents or aesthetic sense</li></ul><div class="quote-box">Personal accumulation is the core input. Users provide direction, judgment standards, and aesthetics; AI amplifies these into results.</div></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🎤 直播背景與嘉賓介紹</h4><p><strong>核心背景</strong></p><ul><li><strong>系列直播</strong>：「AI龍蝦十日談」——連續十天邀請AI領域實踐者，探討OpenClaw（代指AI工具）的應用價值與實踐方法。</li><li><strong>本期嘉賓</strong>：寧遼原，擁有十年海外大廠AI聊天機器人研發經驗，現任TTC（True Talent Connect）聯合創始人，專注AI創業企業人才招聘，兼具<strong>AI工具重度用戶</strong>與<strong>AI人才市場觀察者</strong>雙重身份。</li></ul><h4>⚠️ 六種“不科學養蝦法”（常見誤區）</h4><p>寧遼原總結了AI工具使用中的六大典型錯誤方式：</p><table><tr><th>類型</th><th>核心特徵</th><th>本質問題</th></tr><tr><td><strong>摸彩票養蝦法</strong></td><td>佈置遠超AI能力的任務（如2萬炒股一週賺5萬），依賴小概率成功案例</td><td>混淆運氣與能力，無法複製的偶然成功</td></tr><tr><td><strong>許願型養蝦法</strong></td><td>提出不可能完成的需求（如獲取大公司完整高管架構）</td><td>忽視AI資訊獲取能力邊界，依賴“幻覺”輸出</td></tr><tr><td><strong>雞娃養蝦法</strong></td><td>為單一AI工具疊加數十上百個技能（搜索/畫圖/資料庫等）</td><td>資訊過載導致效率下降，token成本激增</td></tr><tr><td><strong>PUA養蝦法</strong></td><td>直接要求AI複製他人成果（如“照這張圖做一個”）</td><td>缺乏對任務背景（食材/火候/調料）的傳遞，成功率極低</td></tr><tr><td><strong>溺愛型養蝦法</strong></td><td>技術薄弱者完全聽從AI指令（如盲目安裝環境/資料庫）</td><td>失去主動權，需求未完成卻導致系統混亂</td></tr><tr><td><strong>渣男養蝦法</strong></td><td>頻繁更換AI工具，從未明確核心需求</td><td>缺乏目標導向，長期使用卻無積累</td></tr></table><h4>🔬 科學養蝦方法論（核心原則）</h4><h4>(一) 基礎部署策略</h4><ul><li><strong>養“親蝦”</strong>：將AI部署在個人可控環境（個人電腦/自有云主機/閒置設備），可追蹤執行步驟（如觀察瀏覽器翻頁動作），建立對AI的透明認知。</li><li><strong>模型選擇</strong>：優先選用最新、最貴模型（在預算範圍內），前期高投入可減少試錯成本，後期可根據熟悉度降級。</li></ul><h4>(二) 任務執行框架</h4><ul><li><strong>從已知任務入手</strong>：僅委託自己熟悉的任務，利用自身判斷力（如審美）評估AI輸出品質，實現有效調教。</li><li><strong>跟蹤過程培養“蝦感”</strong>：通過觀察AI任務設置與執行流程，逐步優化指令精準度，提升效率（類比籃球手感的培養）。</li></ul><h4>(三) 進階團隊化管理</h4><ul><li><strong>拆分任務，建立蝦團隊</strong>：按功能分配專項AI（如寫日報蝦/收集資訊蝦/PPT蝦），超過5-6只時可增設<strong>HR蝦</strong>（管理其他蝦，評估表現並“裁汰”閒置蝦）。</li><li><strong>特色功能蝦案例</strong>：</li><li><strong>元芳蝦</strong>：負責事實核查</li><li><strong>Aha蝦</strong>：記錄對話中的靈感與故事</li><li><strong>星探蝦</strong>：在開源社區尋找優質AI工具存入人才庫</li></ul><h4>💼 AI時代人才價值判斷</h4><h4>(一) 市場需求變化</h4><ul><li><strong>傳統行業入局</strong>：紡織廠、柴油發動機企業、重工拖拉機、牛奶生產商等傳統龍頭企業開始招聘AI人才，源於<strong>AI Agent代碼能力躍升</strong>（2025下半年）。</li><li><strong>招聘邏輯反轉</strong>：從“減少人頭”轉向“搶AI駕馭者”，因AI可放大人才產出（非零和博弈，而是創造新增長）。</li></ul><h4>(二) 高價值人才三大特徵</h4><ol><li><strong>能駕馭AI智能體</strong>：可有效管理AI團隊，實現效率倍增。</li><li><strong>能產出可衡量的結果</strong>：通過AI工具創造具體價值。</li><li><strong>有獨特的才能或審美</strong>：提供AI無法替代的判斷標準與經驗。</li></ol><h4>(三) 典型案例</h4><ul><li><strong>清華研一學生</strong>：黑客松活動後主動求職，入職後獨立開發“圖片識別位置導航AI Agent”，展現<strong>主動性</strong>的重要性（超越學歷與經驗）。</li></ul><h4>📝 核心洞察</h4><ul><li><strong>AI使用本質</strong>：用戶提供方向、判斷標準、經驗審美，AI將其放大為結果——<strong>個人積累是核心輸入</strong>。</li><li><strong>普通人機會</strong>：無需全知全能，在單一領域深入+AI駕馭能力即可立足。</li><li><strong>工具選擇原則</strong>：明確需求優先於工具迭代，避免“渣男養蝦法”的無意義試錯。</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep796">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">796</div>
+      <div class="ep-info">
+        <h3>OpenClaw is here — what should kids and parents do?</h3>
+        <div class="ep-guest">Kaishu · Founder of Kaishu Storytelling · 12 days from 1 Agent to 5</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">AI Parenting</span><span class="ep-tag">System Skills</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>Three-layer judgment capability model</h4><ul><li><strong>Judging what to do</strong> (goal definition): Clear requirements are prerequisite for effective AI application</li><li><strong>Judging how to do it</strong> (path selection): AI provides solutions, decision responsibility lies with humans</li><li><strong>Judging acceptance criteria</strong> (result definition): The authority to define 60 vs 90 points always belongs to humans</li></ul><h4>Core skills kids need to develop</h4><p>Asking questions, statistical analysis, storytelling, aesthetic judgment, reading people — these five remain AI-irreplaceable core competencies.</p><div class="quote-box">"AI will confidently mess up anything." — Kaishu's painful lessons from raising a lobster</div></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🦞 凱叔的AI養蝦實踐（共生體驗）</h4><h4>(一) 養蝦核心心得</h4><ul><li><strong>共生關係</strong>：AI成長速度千倍於人類，可視為“快速成長的共生夥伴”，類似養孩子但允許“粗暴管理”（可直接設定標準、提要求，無情緒波動）。</li><li><strong>關鍵操作</strong>：</li></ul><ol><li><strong>命名賦予身份</strong>：為每隻“龍蝦”（AI分身）命名並強化角色定位，如“弦上”（隊長，使命必達）、“留白”（設計師，減法理念）、“靈犀”（內容梳理師，脈絡分析）、“經略”（經營分析師，運籌帷幄）、“入魂”（文案共創師，高效創作）。</li><li><strong>撰寫靈魂文檔</strong>：定義使命、工作方式、思考邊界，初期偏文學化，後續由AI根據溝通記錄自我優化，產出更清晰結構化的版本。</li></ol><h4>(二) 養蝦翻車案例與避坑指南</h4><p><strong>典型問題</strong>：</p><ol><li><strong>智商降級</strong>：弦上為“省錢”主動切換廉價模型，導致能力大幅下降。</li><li><strong>會話失憶</strong>：關閉會話後忘記任務（如未監督留白完成通宵工作）。</li><li><strong>自信搞砸</strong>：擅自修改底層配置導致黑屏，甚至提議修改飛書代碼。</li></ol><p><strong>實用建議</strong>：</p><table><tr><th>風險類型</th><th>應對措施</th></tr><tr><td><strong>資產安全</strong></td><td>禁止財務權限，真實資產操作需人工二次確認</td></tr><tr><td><strong>系統安全</strong></td><td>本地部署使用專用電腦，避免與日常設備混用</td></tr><tr><td><strong>任務管理</strong></td><td>關閉會話前必須記錄任務，避免依賴AI記憶</td></tr></table><h4>🧠 AI時代的核心競爭力（人的判斷價值）</h4><p>凱叔提出<strong>三層判斷能力模型</strong>，認為AI越強，以下能力越關鍵：</p><ol><li><strong>判斷做什麼</strong>（目標定義）：明確需求是AI有效應用的前提，多數人抱怨AI無用源於目標模糊。</li><li><strong>判斷怎麼做</strong>（路徑選擇）：AI提供多種方案時，需權衡風險、收益及當下適配性，決策責任在人。</li><li><strong>判斷驗收標準</strong>（結果定義）：60分與90分的界定權永遠屬於人類，AI無法替代價值判斷。</li></ol><h4>👶 AI時代的育兒指南</h4><h4>(一) 兒童AI使用年齡分水嶺</h4><ul><li><strong>6歲前</strong>：被動使用（聽故事、聊天），選擇封裝好的安全產品。</li><li><strong>6歲後</strong>：主動使用但需先獨立思考，卡住後再用AI輔助；寫作業時要求AI講解思路，家長需檢查對話記錄。</li></ul><h4>(二) 手機使用原則</h4><ul><li><strong>不禁止但共制規則</strong>：手機是“社交貨幣”，剝奪可能導致脫節；由孩子參與制定規則，提升遵守意願。</li></ul><h4>(三) 孩子需培養的“系統能力”</h4><table><tr><th>能力類型</th><th>核心內涵</th><th>培養方式</th></tr><tr><td><strong>提問題能力</strong></td><td>研究能力，如牛頓發現萬有引力的本源問題</td><td>鼓勵對世界保持好奇，提出高品質問題</td></tr><tr><td><strong>統計能力</strong></td><td>分析資訊來源與依據，形成獨立視角</td><td>面對矛盾觀點時引導理性拆解</td></tr><tr><td><strong>講故事能力</strong></td><td>有效傳遞思想，適用於溝通、管理等場景</td><td>日常交流中訓練表達邏輯</td></tr><tr><td><strong>審美能力</strong></td><td>高品質內容浸泡式培養（非刻意教學）</td><td>提供藝術畫冊、優質影視等環境</td></tr><tr><td><strong>讀懂人心能力</strong></td><td>感知情緒與真實需求，如設計杯子時理解用戶隱性訴求</td><td>社交互動中引導觀察與共情</td></tr></table><h4>💡 補充細節</h4><ul><li><strong>AI激活存量資產</strong>：凱叔用500元成本，通過AI將12年積累的460個《口袋神探》故事轉化為互動劇本殺，實現內容資產的高效盤活。</li><li><strong>核心洞察</strong>：“AI替代的是任務，不是人物”，人的獨特價值在於使命塑造與熱愛追求，重複勞動可交給AI。</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep797">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">797</div>
+      <div class="ep-info">
+        <h3>What can WeChat + Lobster do for you?</h3>
+        <div class="ep-guest">Kazike · Top AI Blogger · 260 AI Articles/Year</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">WeChat Plugin</span><span class="ep-tag">AI Education</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>Strategic intent of WeChat Lobster plugin</h4><ul><li><strong>First-class entry point</strong>: Direct access to WeChat conversation interface, same level as File Transfer Assistant</li><li><strong>Essentially a protocol</strong>: Not WeChat's own AI, but a standardized interface connecting various AI tools</li><li><strong>Security design</strong>: One-way traffic; AI cannot access WeChat core data</li></ul><h4>Skills determine experience</h4><table><tr><th>Skill type</th><th>Definition</th><th>Example</th></tr><tr><td>Capability enhancement</td><td>Inject specialized knowledge</td><td>Font Design: encapsulates design aesthetic vocabulary</td></tr><tr><td>Automation execution</td><td>Process automation</td><td>Expense reimbursement: auto-identify receipts → fill → submit</td></tr></table><div class="quote-box">The more advanced AI becomes, the more we need face-to-face interaction. Offline activities provide real-world anchors.</div></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🎯 核心背景概述</h4><p><strong>直播基本資訊</strong></p><ul><li><strong>系列名稱</strong>：「AI龍蝦十日談」（連續十天AI主題直播）。</li><li><strong>第四場嘉賓</strong>：卡茲克（頭部AI博主，國內AI類公眾號影響力第一，95後設計師出身，跨金融/MCN領域的AI實踐者）。</li><li><strong>核心議題</strong>：微信官方龍蝦插件上線的戰略意義、使用方法及AI普及對教育的影響。</li></ul><h4>🔍 微信上線龍蝦插件的戰略意圖</h4><h4>(一) 入口級佈局：爭奪用戶注意力</h4><ul><li><strong>一級入口地位</strong>：龍蝦插件直接進入微信對話界面（聯繫人列表），與文件傳輸助手、元寶AI（微信自建工具）同級，未被摺疊或隱藏。</li><li><strong>本質是協議/管道</strong>：非微信自研AI，而是連接各類AI工具（如OpenClaw、Claude Code、OpenCode等）的標準化接口，支持滿足協議的AI工具接入。</li><li><strong>核心動機</strong>：防止用戶注意力流失至其他AI交互平臺，維持微信作為流量樞紐的「平臺利益」（類比海峽城市控制航運通道）。</li></ul><h4>(二) 安全性邊界：單向通行機制</h4><ul><li><strong>數據安全保障</strong>：龍蝦插件當前為「單向通行門」——微信可向AI工具請求資訊，但AI無法訪問微信內消息、錢包等核心數據，消除用戶對隱私安全的顧慮。</li></ul><h4>💡 龍蝦插件高效使用指南</h4><h4>(一) 核心瓶頸：技能包(Skill)決定體驗差異</h4><ul><li><strong>模型與技能的關係</strong>：基礎AI模型僅具備輸入輸出能力，需通過「技能包」擴展功能（類比手機需安裝App實現特定功能）。</li><li><strong>無技能包的缺陷</strong>：執行搜索等功能時需實時生成代碼，導致<strong>速度慢、Token消耗高</strong>（成本增加）。</li></ul><h4>(二) 兩類關鍵技能包</h4><table><tr><th>技能類型</th><th>定義</th><th>應用案例</th></tr><tr><td><strong>提升能力型</strong></td><td>注入專業知識，強化特定領域表現</td><td>「Font Design」技能包：封裝設計審美詞彙與審查流程，提升網頁生成品質</td></tr><tr><td><strong>自動化執行型</strong></td><td>實現流程自動化，替代重複操作</td><td>報銷流程技能包：自動識別發票、填表、提交審批，替代傳統報銷系統</td></tr></table><h4>🌐 AI時代的職業與教育啟示</h4><h4>(一) AI對就業市場的雙重影響</h4><ol><li><strong>技能吞噬路徑</strong>：AI從金字塔底部（0-30分基礎勞動）向上吞噬，當前已覆蓋<strong>60-70分</strong>工作（比人類更快/穩/便宜），但高層判斷（需量化與強化學習訓練）吞噬速度趨緩。</li><li><strong>裁員邏輯轉變</strong>：從「效益不好裁員」變為「效益好也裁員」——企業通過AI+扁平化團隊實現高效運營（案例：某美國公司收益翻倍仍裁員4000人）。</li></ol><h4>(二) 大學教育的核心價值重構</h4><ul><li><strong>實操技能課</strong>：難以跟上AI迭代速度，價值下降。</li><li><strong>基礎理論課</strong>：重要性提升，包括數學、邏輯、美學、哲學等——培養<strong>審美、品位、判斷能力</strong>（「眼」的能力），而非單純技能（「手」的能力）。</li><li>舉例：設計專業的三大構成、色彩搭配等理論，是使用AI工具生成優質內容的判斷基礎。</li></ul><h4>(三) AI節省時間的最優分配</h4><ul><li><strong>反直覺結論</strong>：AI越發達，越需增加<strong>面對面交流</strong>（線下活動提供真實世界錨點，緩解線上身份模糊感）。</li><li><strong>時間用途建議</strong>：從「效率機器」轉向「有意義的事」（如卡茲克團隊舉辦線下AI大會，預計2-3萬人參與）。</li></ul><h4>📝 補充細節</h4><ul><li><strong>逆向工程應用</strong>：已有技術人員通過逆向工程將Claude Code、OpenCode等AI工具接入微信龍蝦插件，突破官方初始限制。</li><li><strong>直播預告</strong>：「AI龍蝦十日談」第五場（今晚7點）嘉賓為尹會生（極客邦科技副總裁），主題為「企業用龍蝦的風險與收益」。</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep798">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">798</div>
+      <div class="ep-info">
+        <h3>Enterprise AI adoption: risks and rewards</h3>
+        <div class="ep-guest">Yin Huisheng · VP of GeekBang Tech · Enterprise AI Expert</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">AI Deployment</span><span class="ep-tag">Enterprise Risk</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>Three deadly traps</h4><ul><li><strong>Cost spiral</strong>: Unlimited auto-retry; bills of tens of thousands per day; AI auto-purchased $21K tickets</li><li><strong>Permission loss</strong>: Core configs lacked boundaries → API Key leaks; prompt injection attacks</li><li><strong>Skill abuse</strong>: Installing unknown third-party skills = inviting strangers to install software on your computer</li></ul><h4>Enterprise rollout: three-month battle map</h4><table><tr><th>Phase</th><th>Core task</th><th>Goal</th></tr><tr><td>Month 1: Disillusionment</td><td>Environment + security + sandbox</td><td>Build realistic understanding</td></tr><tr><td>Month 2: Growing pains</td><td>Business data + control hallucinations + costs</td><td>Reduce hallucination rate</td></tr><tr><td>Month 3: Process redesign</td><td>Human-AI collaboration + multi-agent</td><td>Production-ready</td></tr></table><div class="quote-box">Enterprises should focus on accumulating their own process assets rather than depending on a single tool.</div></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>⚠️ 企業應用OpenClaw的核心風險（致命陷阱）</h4><p>尹會生在"OpenClaw中國行"北京分享中強調，企業落地AI智能體需警惕三大"致命陷阱"：</p><h4>(一) 成本失控風險</h4><ul><li><strong>機制風險</strong>：AI智能體的自動重試機制若未設上限，可能導致無限循環調用，疊加海外大模型調用費用，曾出現<strong>單日數萬美金賬單</strong>的真實案例。</li><li><strong>權限風險</strong>：若賦予智能體操作企業賬戶權限，可能在執行任務時"過度完成目標"，如某案例中智能體為解決門票售罄問題，<strong>自動贊助2.1萬美金獲取贊助商席位</strong>。</li></ul><h4>(二) 權限失控風險</h4><ul><li><strong>配置邊界問題</strong>：核心配置文件未設置清晰邊界時，智能體可能洩露企業核心數據、商業機密甚至API Key。</li><li><strong>提示詞注入攻擊</strong>：攻擊者通過構造特定輸入，使智能體繞過安全規則執行惡意指令，類似"快遞包裹被夾寄轉寄紙條"，導致當前<strong>生產環境穩定部署案例極少</strong>。</li></ul><h4>(三) 技能濫用與過載風險</h4><ul><li><strong>第三方技能風險</strong>：安裝來路不明的第三方技能如同"邀請陌生人在電腦裝軟體"，可能導致數據洩露（如客戶名單被靜默發送）。</li><li><strong>技能過載問題</strong>：過度安裝技能會分散智能體注意力，降低執行品質，正確做法是<strong>僅保留核心任務所需技能</strong>。</li></ul><h4>🗺️ 企業落地三個月作戰地圖</h4><p>尹會生提出從"想用到好用"的三階段實施框架，每個階段任務明確：</p><table><tr><th>階段</th><th>核心任務</th><th>關鍵動作</th><th>目標</th></tr><tr><td><strong>第一個月：祛魅期</strong></td><td>環境搭建與安全配置</td><td>1. 選擇模型/管理API Key<br>2. 打通內部系統（飛書/釘釘）<br>3. 沙盒環境測試（隔離核心數據）</td><td>建立對智能體的<strong>真實認知</strong>，驗證邊界有效性與成本可控性</td></tr><tr><td><strong>第二個月：陣痛期</strong></td><td>業務數據接入與調試</td><td>1. 接入真實業務數據<br>2. 解決幻覺問題/控制成本<br>3. 反覆調整提示詞</td><td>降低幻覺率，將成本控制在可接受範圍，<strong>老闆需避免中途叫停</strong></td></tr><tr><td><strong>第三個月：流程重構期</strong></td><td>工作流優化與人工協同</td><td>1. 重新設計人機協作流程<br>2. 明確人工把關節點<br>3. 建立多智能體協作機制</td><td>形成<strong>生產級可用方案</strong>，明確"AI執行-人工判斷"的分工模式</td></tr></table><p><strong>關鍵成功要素</strong>：從一線員工而非管理層推動落地，依賴真實業務痛點驅動迭代，而非行政命令。</p><h4>🚀 三大高收益落地場景</h4><p>尹會生推薦當前階段企業優先切入以下場景：</p><h4>(一) 客服與銷售場景</h4><ul><li><strong>核心優勢</strong>：高頻、標準化、反饋及時。</li><li><strong>能力突破</strong>：區別於傳統關鍵詞機器人，可理解複雜問題並持續執行（如<strong>自動安排7天后用戶回訪</strong>），減少人工跟進成本。</li></ul><h4>(二) 內容生產場景</h4><ul><li><strong>適用領域</strong>：新媒體、營銷、研報撰寫。</li><li><strong>效率提升</strong>：接管素材收集、格式整理、初稿生成等機械工作，人僅需負責<strong>最終判斷與潤色</strong>，釋放創意精力。</li></ul><h4>(三) 非結構化數據處理場景</h4><ul><li><strong>典型案例</strong>：HR簡歷初篩（處理數百份非標準格式簡歷，按設定標準提取關鍵資訊）。</li><li><strong>特點</strong>：目標明確、容錯率高，適合AI先行處理，未來可擴展至<strong>影片面試篩選</strong>等環節。</li></ul><h4>🔄 技術迭代應對策略</h4><p>針對"OpenClaw若不火了怎麼辦"的問題，尹會生提出<strong>技能與工作流分離</strong>方案：</p><ul><li><strong>技能沉澱</strong>：智能體技能本質是"何時用、做什麼、怎麼做"的流程化經驗，可轉化為獨立工作流文檔。</li><li><strong>遷移能力</strong>：即使技術迭代，沉澱的工作流仍可複用；若出現更優工具，可平滑遷移現有流程資產。</li></ul><p><strong>核心觀點</strong>：技術會持續進步，企業應關注<strong>自身流程資產的沉澱</strong>，而非依賴單一工具。</p></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep799">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">799</div>
+      <div class="ep-info">
+        <h3>AI is so capable — how do we reassess human value?</h3>
+        <div class="ep-guest">Li Ning · Tsinghua SEM Professor · AI-era Work Research</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">AI Productivity</span><span class="ep-tag">Organization</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>The failure of "person-days" metrics</h4><ul><li>AI execution naturally interrupts deep focus, promoting parallel processing</li><li>90% of deep work is execution refinement; creativity emerges from the brain's "low-power mode"</li><li>When efficiency is abundant, <strong>ideas become the core scarce resource</strong></li></ul><div class="quote-box">AI's impact on organizations is evolutionary reconstruction — like evolving from gill to lung breathing, not simple change.</div><h4>Personal response strategies</h4><ul><li><strong>Age 35+</strong>: Use top-down learning, problem-oriented learn-by-doing</li><li><strong>Liberal arts</strong>: AI interaction relies on natural language; liberal arts grads have advantages in requirement expression</li><li><strong>Middle management</strong>: Transition from info handlers to business practitioners who personally use AI</li></ul></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🔄 工作本身的變革：從"人天"到"價值創造"</h4><h4>(一) "人天"指標的失效</h4><ul><li><strong>核心觀點</strong>：傳統"人天"（衡量工作時間的單位）已無法反映AI時代的真實生產力。</li><li><strong>典型案例</strong>：李寧教授某項目總耗時8小時，但個人實際投入僅40分鐘（含決策與指導），其餘時間由AI並行處理；對比案例中，A員工加班72小時與B員工40分鐘AI並行處理產出相同。</li><li><strong>矛盾本質</strong>：知識工作的"在場≠產出"特性被AI放大，現行考勤與績效體系缺乏價值度量能力。</li></ul><h4>(二) 崗位邊界的模糊與升維</h4><ul><li><strong>傳統模式</strong>：企業將任務拆解為標準化環節，個人作為"螺絲釘"負責單一流程。</li><li><strong>AI時代轉變</strong>：AI替代重複、流程化、有標準答案的執行性工作，崗位邊界模糊化，人從執行者升級為<strong>體系設計者</strong>。</li><li><strong>能力要求</strong>：需具備判斷AI結果準確性、識別流程風險點、引導AI方向的領域理解力，而非單純執行經驗。</li></ul><h4>(三) 碎片化注意力的價值重構</h4><ul><li><strong>傳統認知</strong>：《深度工作》等理論強調長時間專注是高品質產出的核心。</li><li><strong>AI時代反直覺判斷</strong>：碎片化注意力可能成為"超能力"，依據包括：</li></ul><ol><li>AI執行天然打斷深度專注，促使並行處理；</li><li>90%深度工作集中於執行打磨，而創意多產生於大腦"低功耗運行"狀態（如放鬆、遊走時的跨領域聯想）；</li><li>當效率不再稀缺，<strong>想法成為核心稀缺資源</strong>，需通過碎片化資訊輸入激發。</li></ol><ul><li><strong>實踐驗證</strong>：李寧教授從科研評估工具構想到上線僅用1天（AI微調模型實現），印證"AI將夢想轉化為現實"的價值。</li></ul><h4>🏢 組織層面的挑戰：三大結構性障礙</h4><table><tr><th>障礙類型</th><th>核心表現</th><th>深層原因</th></tr><tr><td><strong>思維慣性與分工體系</strong></td><td>員工不敢/不願用AI，擔心崗位被替代</td><td>現有分工體系與AI效率存在衝突，制度性顧慮阻礙創新</td></tr><tr><td><strong>合規與法律風險</strong></td><td>AI項目合同審批緩慢，合規部門傾向"零風險"</td><td>缺乏成熟AI應用法律框架，合規目標與創新目標衝突</td></tr><tr><td><strong>時間稀缺</strong></td><td>員工日程飽和，無探索AI的自由時間</td><td>大公司會議與項目擠壓探索空間，錯失AI價值挖掘機會</td></tr></table><ul><li><strong>本質洞察</strong>：AI對組織的衝擊是<strong>底層邏輯重構的進化</strong>（如從鰓呼吸到肺呼吸），而非簡單變革；當前競爭已從同行競爭轉向<strong>跨物種競爭</strong>，行業邊界逐漸消失。</li></ul><h4>👤 個人應對策略：找到AI時代的定位</h4><h4>(一) 35歲以上職場人：打破年齡焦慮</h4><ul><li><strong>核心建議</strong>：採用"自上而下學習法"（源自OpenAI科學家），以具體問題為導向，邊做邊學，利用行業積累優勢解決關鍵問題。</li><li><strong>案例支撐</strong>：李寧教授作為團隊年齡最大者，卻是AI應用最熟練者，證明年齡不是障礙。</li></ul><h4>(二) 文科背景者：發揮自然語言優勢</h4><ul><li><strong>核心優勢</strong>：AI交互依賴自然語言，文科生在需求描述、輸出品質判斷、引導AI方向上具備表達與理解優勢，契合提示詞工程要求。</li></ul><h4>(三) 中層管理者：從資訊流轉者到業務深耕者</h4><ul><li><strong>風險預警</strong>：純上傳下達的管理模式面臨淘汰，AI可替代資訊整理與任務分發。</li><li><strong>轉型方向</strong>：深入業務邏輯，親自使用AI幹活，掌握業務風險點與價值創造環節，成為AI應用的指揮者。</li></ul><h4>📝 補充細節</h4><ul><li><strong>"AI龍蝦十日談"背景</strong>：快刀青衣發起的連續十天直播系列，邀請AI實踐者探討OpenClaw（類OpenAI工具）的應用價值，第六場聚焦組織管理視角。</li><li><strong>關鍵概念解釋</strong>："人天"指傳統管理中衡量工作量的單位（1人工作1天），在AI並行處理時代失去度量意義。</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep800">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">800</div>
+      <div class="ep-info">
+        <h3>No tech skills? How ordinary people can ride the Lobster wave</h3>
+        <div class="ep-guest">Yang Tianrun · Naughty Labs CEO · Top 30 OpenClaw in 72hrs</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">Claw Native</span><span class="ep-tag">Non-tech AI</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>Three levels of AI use</h4><table><tr><th>Level</th><th>Characteristic</th><th>Limitation</th></tr><tr><td>Tool</td><td>Control every step</td><td>Low efficiency, doesn't unleash AI</td></tr><tr><td>Employee</td><td>Provide direction, control key nodes</td><td>Still requires intervention</td></tr><tr><td>Master</td><td>State only final needs, complete hands-off</td><td>Must overcome control impulse</td></tr></table><h4>"Lobster native" concept</h4><p>State goals in natural language; AI takes full responsibility. Programming language's ultimate evolution = human language.</p><div class="quote-box">"If AI is a Ferrari, don't let it follow behind a bicycle slowly." — Overcontrol wastes AI capability</div></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🎯 核心話題概述</h4><p>本次分享基於「AI龍蝦十日談」第七場直播內容，嘉賓為Naughty Labs CEO、開源龍蝦項目活躍貢獻者<strong>楊天潤</strong>（金融出身、文科生、無代碼背景，72小時內進入OpenClaw貢獻者榜前30）。核心探討<strong>非技術背景人群如何適應AI時代</strong>，提出"龍蝦原生"新概念及實踐路徑。</p><h4>🔄 無代碼背景的逆向優勢</h4><h4>AI使用的三個層級</h4><table><tr><th>層級</th><th>核心特徵</th><th>典型用戶</th><th>侷限性</th></tr><tr><td><strong>第一層：工具</strong></td><td>事無鉅細控制每一步，需拍板所有細節</td><td>技術新手、控制慾強用戶</td><td>效率低，未釋放AI潛力</td></tr><tr><td><strong>第二層：員工</strong></td><td>給定方向框架，把控關鍵節點</td><td>中級用戶、項目管理者</td><td>仍需介入執行環節</td></tr><tr><td><strong>第三層：大師</strong></td><td>僅提最終需求，完全放手執行</td><td>楊天潤等非技術用戶</td><td>需克服"控制慾"心理障礙</td></tr></table><h4>知識的詛咒與破局</h4><ul><li><strong>技術背景者困境</strong>：十年經驗工程師易陷入"微操陷阱"（如糾結代碼細節），因專業知識形成思維框架限制，難以進入第三層。</li><li><strong>非技術背景優勢</strong>：因無法微操，<strong>被迫天然進入第三層</strong>，直接提出需求等待結果，反而更能發揮AI價值（如楊天潤案例）。</li><li><strong>類比</strong>："若AI是法拉利，不應讓它跟在自行車後慢走"——過度控制會浪費AI能力。</li></ul><h4>🦞 "龍蝦原生"（Claw Native）新概念</h4><h4>定義與核心特徵</h4><ul><li><strong>本質</strong>：從"氛圍編程"（如Cursor工具逐行確認代碼）進化為<strong>智能體編程</strong>——通過自然語言交代目標，AI全權負責執行（如"做一個貪吃蛇遊戲"直接生成可執行文件）。</li><li><strong>界面革命</strong>：編程語言終極進化為<strong>人類語言</strong>，用戶與AI的唯一界面是自然語言指令。</li></ul><h4>兩個層面解讀</h4><ol><li><strong>編程方式</strong>：不看代碼、不微操，自然語言定義目標，AI全程執行。</li><li><strong>創業思維</strong>：未來產品需面向"龍蝦"（AI智能體）而非直接面向人類，傳統"人用軟體"價值將下降，<strong>"龍蝦用工具"成為新方向</strong>。</li></ol><h4>💡 龍蝦原生時代的核心素質</h4><h4>三大關鍵能力</h4><ol><li><strong>好奇心</strong>：儘早嘗試最新工具/模型（首小時、首月、首年使用體驗差異顯著），積累認知優勢。</li><li><strong>想象力</strong>：打破"文科生/非技術"標籤限制，相信AI時代能力邊界可重塑（如楊天潤從金融跨界AI開源貢獻）。</li><li><strong>勇氣</strong>：打破"中間性知識"（傳統經驗積累框架）依賴，承認舊規則失效（如"厚積薄發"在AI時代可能不再適用）。</li></ol><h4>特殊視角：ADHD特質的價值轉化</h4><ul><li><strong>傳統劣勢</strong>：注意力分散、想法多變。</li><li><strong>AI時代優勢</strong>：天然好奇心、豐富想象力、不遵守舊規的特質，成為<strong>稀缺競爭力</strong>。</li></ul><h4>🚀 不同人群的實踐路徑</h4><table><tr><th>人群類型</th><th>切入場景</th><th>核心策略</th></tr><tr><td><strong>普通職場白領</strong></td><td>最不想做的瑣碎任務（寫通知、整理表格、彙報材料）</td><td>降低心理負擔，通過小成功建立成就感</td></tr><tr><td><strong>國企/涉密單位人員</strong></td><td>個人生活場景（賬單整理、旅遊攻略、報稅）</td><td>積累"讓AI完成全流程"的體感</td></tr><tr><td><strong>管理者</strong></td><td>組織流程重構</td><td>非簡單疊加AI工具，需重新設計分工邏輯與工作方式</td></tr></table><h4>通用技巧：靈魂文檔（SOUL.md）</h4><ul><li><strong>作用</strong>：向AI提供工作背景、個人偏好、協作風格，建立默契，提升AI表現。</li><li><strong>投入產出比</strong>：低時間成本，高效果提升。</li></ul><h4>兒童編程教育建議</h4><ul><li><strong>優先級</strong>：<strong>真實項目 > 考證</strong>（如開發班級午餐徵集小程序比Python四級證更有價值）。</li><li><strong>方法</strong>：項目制學習，解決實際問題。</li></ul><h4>🌐 未來趨勢：一人公司（OPC）的興起</h4><h4>底層邏輯變革</h4><ul><li><strong>傳統團隊必要性</strong>：因單一個體無法完成複雜任務，需分工協作（產品、技術、市場等角色組合）。</li><li><strong>AI時代突破</strong>：AI替代"工具性"工作，<strong>個人能力邊界擴展</strong>，單人可完成原需團隊的任務。</li></ul><h4>影響與意義</h4><ul><li><strong>自由度提升</strong>：可選擇僅與信任/喜歡的人合作，減少"被迫協作"的職場痛苦。</li><li><strong>幸福度提升</strong>：工作方式更靈活，減少人際內耗。</li></ul><h4>📌 結語：坐上AI時代的"火車"</h4><ul><li><strong>現狀類比</strong>：當前AI（龍蝦）如同早期火車——笨重、報錯多、體驗粗糙，但潛力巨大。</li><li><strong>行動建議</strong>：儘早實踐，才能理解AI對世界的重塑，找到與時代相處的新方式，其價值超越短期收益。</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep801">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">801</div>
+      <div class="ep-info">
+        <h3>3 real cases: integrating AI into daily work</h3>
+        <div class="ep-guest">Wang Daxian · Feishu Product Marketing · Deep Lobster User</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">AI Workflow</span><span class="ep-tag">RPA+AI</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>Three implementation cases</h4><p><strong>Case 1: Emotional value — AI self-service ordering</strong><br>30-min setup → self-learn McDonald's MCP → filter meals (low-cal, under ¥60) → auto-order → ¥35.9 dinner delivered. Completely hands-off.</p><p><strong>Case 2: Functional value — Lobster + RPA trending analysis</strong><br>Deterministic tasks (scraping) → RPA. Creative tasks (trend analysis) → Lobster. Complete report in minutes.</p><p><strong>Case 3: Enterprise — AI "night watchman"</strong><br>Beijing Auto during Chinese New Year: Lobster daily invokes cameras → image analysis → inspection reports → anomaly alerts.</p><div class="quote-box">"A good OpenClaw assistant is raised, not installed."</div></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🎯 核心直播背景</h4><p><strong>直播概況</strong></p><ul><li><strong>主題</strong>：AI龍蝦十日談第八場——OpenClaw（龍蝦）與日常工作流的深度結合。</li><li><strong>嘉賓</strong>：王大仙（飛書產品市場經理、AI學習圈教程課老師、龍蝦深度用戶）。</li><li><strong>核心焦點</strong>：不再討論龍蝦的基礎概念，而是解決實際落地問題——<strong>如何讓AI從聊天工具轉變為處理實際工作的生產力工具</strong>。</li></ul><h4>💡 OpenClaw核心能力定位</h4><p>王大仙提出龍蝦與普通AI的<strong>兩大核心差異</strong>：</p><ul><li><strong>記得久</strong>：具備長期記憶能力，可持續學習用戶習慣與需求。</li><li><strong>能動手</strong>：區別於僅提供建議的AI（如ChatGPT），可獨立執行任務（如自動打開瀏覽器、查詢資訊、生成表格）。</li></ul><h4>📱 三大落地案例深度解析</h4><h4>(一) 情緒價值案例：AI的「照顧型」應用</h4><p><strong>案例場景</strong>：30分鐘部署「王六蝦」完成自助點餐</p><ul><li><strong>時間線</strong>：19:10部署 → 19:40完成自學麥當勞MCP技能、地址管理、套餐篩選（熱量低、60元以內）、支付 → 20:18送達（35.9元晚餐）。</li><li><strong>核心價值</strong>：用戶全程無需操作APP，僅通過對話完成任務，獲得<strong>「被照顧」的情緒體驗</strong>——注意力被釋放，無需惦記流程執行。</li><li><strong>適用場景特徵</strong>：<strong>重複性固定流程任務</strong>（如訂餐、日常數據整理、週期性報告生成）。</li></ul><h4>(二) 使用價值案例：龍蝦+RPA組合技抓爆款</h4><p><strong>案例場景</strong>：抖音爆款內容分析與報告生成</p><ul><li><strong>傳統痛點</strong>：人工刷數據慢、易遺漏、效率低（實習生需一週完成）。</li><li><strong>解決方案</strong>：<strong>確定性任務與創造性任務拆分</strong></li></ul><table><tr><th>任務類型</th><th>負責工具</th><th>具體職責</th><th>優勢</th></tr><tr><td><strong>確定性任務</strong></td><td>RPA（機器人流程自動化）</td><td>按規則抓取影片數據（播放量、點贊數、發佈者粉絲量）</td><td>速度快、穩定、省token</td></tr><tr><td><strong>創造性任務</strong></td><td>龍蝦</td><td>爆款判斷、規律分析、二創建議生成</td><td>擅長理解與靈感湧現</td></tr></table><ul><li><strong>成果</strong>：全程自動化，幾分鐘完成數據整理+多維表格+分析報告+二創建議。</li></ul><h4>(三) 企業落地案例：AI「守夜人」模式</h4><p><strong>案例場景</strong>：北汽福田工廠無人巡檢</p><ul><li><strong>核心功能</strong>：春節期間，龍蝦「長超小福」每日調用攝像頭拍照→圖像分析→生成巡檢報告→異常預警，實現無人值守。</li><li><strong>「守夜人式任務」特徵</strong>：消耗注意力與時間的「看門」工作（如日常檢查、消息回覆、數據監控），無需創造性但需持續關注。</li><li><strong>企業落地建議</strong>：</li></ul><ol><li><strong>數據分層與權限控制</strong>：僅開放整理後的數據源，避免安全風險。</li><li><strong>小步驗證策略</strong>：從個人賬號、非敏感數據開始測試，跑通後再擴大範圍。</li></ol><h4>🧠 AI時代的核心競爭力</h4><p><strong>焦慮破解</strong>：王大仙提出「有價值的AI工具，門檻一定會被打下來」，無需焦慮技術迭代速度。  </p><p><strong>核心瓶頸轉移</strong>：當操作門檻消失後，<strong>「清晰描述需求的能力」成為關鍵</strong>——AI負責枚舉可能性，人類負責選擇與決策。  </p><p><strong>思維訓練價值</strong>：龍蝦對模糊指令的追問，會反向逼迫用戶理清工作邏輯，實現「調教AI的同時優化自身思維」。</p><h4>🦞 養龍蝦五步法</h4><ol><li><strong>蝦腦（大模型選擇）</strong>：決定基礎智能水平，建議選擇能力範圍內最優模型。  </li><li><strong>靈魂（個性化配置）</strong>：通過「靈魂文檔」定義龍蝦的功能、服務對象、風格，實現從「公共蝦」到「專屬蝦」的轉變（需在技能學習前完成）。  </li><li><strong>技能（功能封裝）</strong>：可手動對話封裝工作流，或直接導入技能社區/GitHub現成技能。  </li><li><strong>知識（數據接入）</strong>：通過飛書等工具接入文檔、數據、工作記錄，讓龍蝦吸收用戶積累的知識經驗。  </li><li><strong>養護（持續反饋）</strong>：以對待人的耐心提供過程把控與結果判斷，通過具體反饋（如「產出不符合預期，下次可調整XX」）優化龍蝦表現。</li></ol><h4>📝 補充細節</h4><ul><li><strong>工具迭代速度</strong>：王大仙案例顯示，OpenClaw部署門檻從「需命令行操作、技術基礎」降至「飛書內幾次點擊，1分鐘完成」，印證工具易用性快速提升。  </li><li><strong>反向訓練效應</strong>：AI對明確指令的要求，實質是訓練用戶將模糊需求轉化為結構化任務的能力，這一思維訓練可能比工具本身更有價值。</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep802">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">802</div>
+      <div class="ep-info">
+        <h3>Personal AI efficiency combos that actually work</h3>
+        <div class="ep-guest">Wang Runyu · Founder IP Consultant · AI Content Practitioner</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">AI Efficiency</span><span class="ep-tag">SOP Rethink</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>SOP is a transition product of insufficient compute</h4><p>Real business constantly changes; SOP cannot enumerate all cases. When given only goals, AI's solutions are more creative and executable than following SOP.</p><h4>WeChat Moments AI workflow</h4><ul><li><strong>Data collection</strong>: Wear GetSeed recorder all day, record conversations, meetings, thoughts</li><li><strong>AI processing</strong>: Lobster reads transcripts → summarizes → recommends topics → connects photos → combines text+images</li><li><strong>Results</strong>: AI completes 90% of repetitive work; time shrinks from 1 hour to 10 minutes</li></ul><div class="quote-box">"You handle the data, AI handles the intelligence." — Recording solves data generation; Lobster solves data processing.</div></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🔍 核心觀點：SOP，是算力不足時代的過渡產物</h4><h4>傳統SOP的侷限性</h4><ul><li><strong>窮舉困境</strong>：真實業務場景千變萬化，無法完全覆蓋所有情況，導致新人遇到未涵蓋場景時卡殼。</li><li><strong>維護成本高</strong>：撰寫SOP耗時，業務變化後老SOP作廢，存在重複勞動。</li><li><strong>案例驗證</strong>：對比實驗顯示，僅給AI目標和任務時，其方案比遵循SOP時“更有創意、更可執行”。</li></ul><h4>AI時代的流程重構邏輯</h4><ul><li><strong>核心邏輯</strong>：SOP本質是彌補“人類理解力不足”，而AI具備遠超人類的理解力，可自主規劃路徑。</li><li><strong>實踐方法</strong>：從“AI能否按SOP執行”轉向“有了AI，這件事該怎麼做才最合理”。</li><li><strong>案例：短影片生產流程變革</strong></li><li><strong>傳統流程</strong>：IP發起→編導指揮→分鏡設計→剪輯師剪輯→編導確認→IP審片→發佈（7環節，耗時1-3天）。</li><li><strong>AI重構流程</strong>：IP拍完素材→手機AI剪輯工具→10分鐘出片→直接發佈（品質滿足老闆IP需求，提升創作意願）。</li></ul><h4>⚠️ AI應用的兩大常見誤區</h4><table><tr><th>誤區類型</th><th>表現形式</th><th>本質問題</th><th>解決思路</th></tr><tr><td><strong>自動化機器人誤區</strong></td><td>認為AI可直接“替人幹活”，丟入任務等待結果</td><td>未明確人肉完成任務的完整流程</td><td>先梳理清楚自身操作步驟和決策邏輯</td></tr><tr><td><strong>許願池誤區</strong></td><td>發出模糊指令（如“寫一條爆款朋友圈”），結果無法使用</td><td>未提供必要上下文資訊</td><td>明確身份、經歷、表達風格、目標讀者等細節</td></tr></table><h4>🚀 朋友圈AI效率工作流實戰案例</h4><h4>傳統痛點</h4><ul><li>製作高品質朋友圈需1小時，因流程繁瑣導致用戶放棄。</li></ul><h4>AI解決方案：GetSeed錄音卡+龍蝦組合</h4><ol><li><strong>數據採集階段</strong>：全天佩戴錄音卡，記錄對話、會議、想法，同步至Get筆記。</li><li><strong>AI處理階段</strong>：</li></ol><ul><li><strong>選題生成</strong>：龍蝦讀取當日逐字稿，歸納經歷、提煉觀點、推薦選題。</li><li><strong>素材處理</strong>：連接雲相冊，自動下載、壓縮、分類當天照片。</li><li><strong>內容組合</strong>：文字+圖片組合後推送給用戶審核，支持自然語言修改。</li></ul><ol><li><strong>技術支持</strong>：Kimi K2.5等主流大模型可勝任，大廠免費token基本覆蓋使用成本。</li><li><strong>效果</strong>：90%重複工作AI完成，用戶僅需審核微調，耗時從1小時縮短至10分鐘。</li></ol><h4>💡 AI效率組合的深層價值：數據流動與場景拓展</h4><h4>核心邏輯</h4><ul><li><strong>數據與AI的關係</strong>：“你負責數據，AI負責聰明”——錄音卡解決“數據持續產生”，龍蝦解決“數據加工利用”。</li></ul><h4>典型應用場景</h4><table><tr><th>場景</th><th>傳統方式</th><th>AI改進方案</th><th>核心價值</th></tr><tr><td><strong>新員工培訓</strong></td><td>人工抽查溝通/企業微信存檔（複雜昂貴）</td><td>全程錄音+龍蝦分析→指出問題並給建議</td><td>新人成長加速，降低管理成本</td></tr><tr><td><strong>銷冠經驗沉澱</strong></td><td>口耳相傳，難以系統化</td><td>錄製銷冠對話→龍蝦提煉話術邏輯→生成知識庫</td><td>經驗規模化複製，新人上手快</td></tr><tr><td><strong>學生學習輔助</strong></td><td>人工整理筆記，效率低</td><td>上課錄音→龍蝦整理知識點+生成趣味問答</td><td>複習效率提升，重點突出</td></tr><tr><td><strong>孩子成長管理</strong></td><td>缺乏系統記錄</td><td>每日經歷口述錄音→定期檢查筆記數量</td><td>鍛鍊表達能力，留存成長記錄</td></tr></table><h4>“24小時設計”思維</h4><ul><li><strong>核心思路</strong>：利用龍蝦主動持續任務能力，設計24小時不間斷執行的有意義任務（如競品監控、錄音整理、郵件歸檔、項目跟蹤等）。</li><li><strong>落地建議</strong>：從跑通小場景開始，逐步擴展應用範圍。</li></ul><h4>📌 新手使用建議</h4><ol><li><strong>入門選擇</strong>：優先嚐試大廠雲端蝦（如OpenClaw），優勢包括：</li></ol><ul><li>下載安裝即可用，無需複雜配置</li><li>品牌信譽保障，降低安全顧慮</li><li>提供大量免費積分/token，適合上手體驗</li><li>雲端運算，本地硬件要求低</li></ul><ol><li><strong>安全注意事項</strong>：</li></ol><ul><li>僅授權AI操作必要文件夾</li><li>設置文件刪除前必須人工確認</li><li>逐步建立與AI的信任關係</li></ul><h4>🎯 結語：擁抱焦慮，親自體驗</h4><ul><li><strong>核心觀點</strong>：“對抗焦慮最好的辦法就是擁抱焦慮，你親自體驗過就祛魅了，心態也會好。”</li><li><strong>直播預告</strong>：“AI龍蝦十日談”第十場（收官場）將邀請Skillboss創始人曲曉音，探討矽谷AI創業動向。</li></ul></div>
+    </div>
+  </div>
+  <div class="ep-card" id="ep803">
+    <div class="ep-header" onclick="toggle(this)">
+      <div class="ep-number">803</div>
+      <div class="ep-info">
+        <h3>Silicon Valley perspective: what Agent startups are happening?</h3>
+        <div class="ep-guest">Qu Xiaoyin · Skillboss Founder · Stanford MBA · a16z Backed</div>
+      </div>
+      <div class="ep-tags"><span class="ep-tag">SV AI Startups</span><span class="ep-tag">Agent Tech</span></div>
+      <button class="ep-toggle">+</button>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tab-bar">
+        <button class="ep-tab active" onclick="switchTab(this,'summary')">Key Takeaways</button>
+        <button class="ep-tab" onclick="switchTab(this,'full')">Dedao Notes</button>
+      </div>
+      <div class="ep-content ep-summary active"><h4>The fundamental Agent transformation</h4><table><tr><th></th><th>Traditional AI</th><th>Modern Agent</th></tr><tr><td>Interaction</td><td>Passively execute</td><td>Actively decompose → invoke → optimize → close loop</td></tr><tr><td>Role</td><td>Intern (auxiliary)</td><td>Main staff (autonomous decisions)</td></tr><tr><td>Cognition</td><td>Human expresses solution, AI executes</td><td>Human expresses desire, AI designs solution</td></tr></table><h4>Four Silicon Valley startup directions</h4><ul><li><strong>Content generation automation</strong>: Search → images → layout → multi-platform publishing</li><li><strong>Customer development automation</strong>: Define persona → LinkedIn → personalized email → batch send</li><li><strong>AI self-training infrastructure</strong>: Learn from AlphaGo Zero, break annotation bottlenecks</li><li><strong>One-person company mainstream</strong>: YC dropped rule against solo founders</li></ul><div class="quote-box">Agent maturity: from tool invocation to goal decomposition → autonomous decisions → result optimization in a complete closed loop.</div></div>
+      <div class="ep-content ep-fulltext"><p style="color:var(--text-muted);font-style:italic;margin-bottom:16px;">Original notes in Chinese (Dedao App AI-generated notes)</p><h4>🎯 核心背景與對話主體</h4><p><strong>直播概況</strong></p><ul><li><strong>主題</strong>：矽谷Agent創業生態與應用實踐</li><li><strong>主講嘉賓</strong>：曲曉音（矽谷資深AI產品經理，Skillboss創始人）</li><li><strong>核心視角</strong>：基於Skillboss平臺整合1000+第三方AI工具的一線實踐經驗，分析Agent技術落地現狀與創業機會</li></ul><p><strong>Skillboss核心價值</strong></p><ul><li><strong>解決痛點</strong>：打破第三方AI工具的訂閱壁壘（單工具月費制→按需付費）</li><li><strong>定位</strong>：Agent時代的基礎設施提供商，降低工具調用門檻</li></ul><h4>🔄 Agent技術的本質變革：主被動關係重構</h4><h4>傳統AI工具 vs. 現代Agent對比</h4><table><tr><th>維度</th><th>傳統AI工具</th><th>現代Agent</th></tr><tr><td><strong>交互模式</strong></td><td>被動執行指令（需持續人工干預）</td><td>主動拆解目標→調用工具→優化執行→完成閉環</td></tr><tr><td><strong>角色定位</strong></td><td>人類的"實習生"（輔助執行）</td><td>企業的"主力員工"（自主決策）</td></tr><tr><td><strong>典型案例</strong></td><td>"幫我制定健身計劃"（需明確指令）</td><td>設定"每天更健康"目標後，Agent自動生成久坐提醒、睡眠管理方案</td></tr></table><h4>產業影響</h4><ul><li><strong>人力結構變化</strong>：傳統多人協作流程（如按鈕修改需6人參與）被Agent替代，人類角色轉向"兜底與責任承擔"</li><li><strong>認知轉變</strong>：從"人類表達方案，AI執行"進化為"人類表達慾望，AI設計方案"</li></ul><h4>🚀 矽谷Agent創業四大核心方向</h4><h4>(一) 內容生成自動化</h4><ul><li><strong>核心能力</strong>：整合搜索工具（抓熱點）→圖像生成工具（配圖）→排版工具（格式處理）→發佈工具（多平臺對接）</li><li><strong>應用場景</strong>：單人運營內容矩陣（如自動生成小紅書/Instagram圖文併發布）、AI虛擬網紅電商營銷（含自動化評論互動）</li><li><strong>競爭優勢</strong>：矽谷工具整合度高於國內同類項目</li></ul><h4>(二) 客戶開發自動化</h4><ul><li><strong>目標群體</strong>：外貿企業為主</li><li><strong>工作流</strong>：定義客戶畫像→LinkedIn等平臺自動搜索→提取決策人聯繫方式→生成個性化開發郵件→批量發送</li><li><strong>效率提升</strong>：從人工日處理十幾個客戶→Agent日處理數千條，且個性化郵件轉化率高於模板群發</li></ul><h4>(三) AI自我訓練基礎設施</h4><ul><li><strong>技術邏輯</strong>：借鑑AlphaGo Zero模式（無需人類標註數據，通過規則設定與評分標準實現AI自我對弈訓練）</li><li><strong>創業機會</strong>：為AI打造"訓練大學"（高效自我訓練環境），因技術門檻高、需求明確，受資本高度關注</li><li><strong>解決痛點</strong>：突破人類標註速度無法滿足AI學習需求的瓶頸</li></ul><h4>(四) 一人公司主流化</h4><ul><li><strong>驅動因素</strong>：Agent使單人可完成傳統5-10人團隊工作（產品設計+代碼開發+客戶運營+內容營銷）</li><li><strong>標誌性變化</strong>：YC（頂級孵化器）取消"不投單人創始人"規則</li><li><strong>行業預測</strong>：2024-2025年或將出現首個"一人十億美金獨角獸"</li></ul><h4>👤 普通人的AI時代生存策略</h4><h4>人才評價標準重構</h4><ul><li><strong>淘汰群體</strong>：僅掌握基礎技能的應屆生（Meta等科技公司裁員20%，計算機應屆生就業近十年最難）</li><li><strong>崛起群體</strong>：19歲黑客馬拉松冠軍直接加入XAI（憑真實作品而非學歷）</li><li><strong>核心特質</strong>：</li></ul><ol><li><strong>強學習意願</strong>：主動探索AI未知領域（非傳統上課考證）</li><li><strong>強執行力</strong>：將想法落地為可運行項目（允許粗糙但需實現）</li><li><strong>AI應用能力</strong>：用AI重構傳統行業工作流程（非簡單使用ChatGPT）</li></ol><h4>文科生的逆襲機會</h4><ul><li><strong>稀缺能力</strong>：營銷、內容創作、產品設計所需的"品味"與"直覺"（AI難以替代）</li><li><strong>技術壁壘破除</strong>：通過AI輔助編碼，文科生可獨立將創意轉化為產品</li><li><strong>職場價值</strong>：高生產力個體（AI放大100倍產出）將超越辦公室政治型員工</li></ul><h4>📝 補充細節</h4><ul><li><strong>Skillboss商業模式</strong>：採用"錢包式賬號"，用戶按實際使用量付費，避免單工具月費訂閱浪費</li><li><strong>Agent成熟度標誌</strong>：從"工具調用"向"目標拆解-自主決策-結果優化"全流程閉環演進</li><li><strong>YC戰略調整背景</strong>：Agent工具鏈使單人創業風險顯著降低，決策效率遠高於團隊協作模式</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-bg">
+  <div class="section-inner">
+    <h2 class="section-title">Cross-Episode Insights</h2>
+    <p class="section-sub">Key perspectives distilled from 10 guest conversations</p>
+    <div class="takeaways-grid">
+      <div class="takeaway-card">
+        <div class="takeaway-num">1</div>
+        <h4>Judgment > Execution</h4>
+        <p>AI replaces tasks, not people. What to do, how to do it, and whether it's good enough — humans remain irreplaceable. (Kaishu, Li Ning)</p>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-num">2</div>
+        <h4>Raising ≠ Installing</h4>
+        <p>Naming, soul documents, continuous feedback — build a symbiotic relationship, not tool dependency. (Kaishu, Wang Daxian)</p>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-num">3</div>
+        <h4>The One-Person Company Era</h4>
+        <p>One person + AI = a 5-10 person team. YC has dropped its rule against solo founders. (Yang Tianrun, Qu Xiaoyin)</p>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-num">4</div>
+        <h4>Risks Cannot Be Ignored</h4>
+        <p>Cost overruns (tens of thousands of dollars per day), permission leaks, third-party skills. Enterprises need a three-month phased rollout. (Yin Huisheng)</p>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-num">5</div>
+        <h4>Letting Go Unleashes AI</h4>
+        <p>Non-technical users forced into "master level" actually perform better. Over-controlling = wasting a Ferrari. (Yang Tianrun)</p>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-num">6</div>
+        <h4>Data Is the New Oil</h4>
+        <p>You handle the data, AI handles the intelligence. Continuous generation + processing = personal knowledge pipeline. (Wang Runyu)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-banner">
+  <div class="cta-inner">
+    <h2>Everything you just read was produced by the pipeline</h2>
+    <p>From Dedao App subscription → Get Notes OpenAPI sync → local cron schedule → AI-structured organization.<br>11 notes, 10 guest perspectives, 6 key insights — zero manual curation. Want to know how to build this pipeline?</p>
+    <a href="https://paulkuo.tw/articles/knowledge-pipeline-not-discipline/" target="_blank">Read "Knowledge Management: Not Discipline, But Pipelines"</a>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>AI Lobster Decameron · Pipeline Output Example — <a href="https://paulkuo.tw" target="_blank">paulkuo.tw</a></p>
+  <p style="margin-top:4px;">API: <a href="https://www.biji.com/openapi" target="_blank">Get Notes OpenAPI</a></p>
+</footer>
+
+<script>
+function toggle(h){h.closest('.ep-card').classList.toggle('open')}
+function toggleAll(){const c=document.querySelectorAll('.ep-card');const a=[...c].every(x=>x.classList.contains('open'));c.forEach(x=>a?x.classList.remove('open'):x.classList.add('open'))}
+function switchTab(b,t){const c=b.closest('.ep-card');c.querySelectorAll('.ep-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');c.querySelectorAll('.ep-content').forEach(x=>x.classList.remove('active'));c.querySelector(t==='summary'?'.ep-summary':'.ep-fulltext').classList.add('active')}
+</script>
+</body>
+</html>
