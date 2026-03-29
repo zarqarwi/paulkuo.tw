@@ -14,6 +14,11 @@ import AuthGate from '../_components/AuthGate.astro';
 
 <div class="tracker">
 
+  <!-- Test Mode Banner -->
+  <div class="test-banner" id="testBanner" style="display:none">
+    🔧 測試模式 — 資料可能隨時清除，正式活動 4/12 開始
+  </div>
+
   <!-- Breadcrumb -->
   <nav class="tracker-breadcrumb">
     <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
@@ -305,6 +310,7 @@ import AuthGate from '../_components/AuthGate.astro';
         <span class="checkin-big-icon">📍</span>
         <span>立即打卡</span>
       </button>
+      <div class="test-checkin-label" id="testCheckinLabel" style="display:none">（測試中）</div>
 
       <div class="checkin-upload-section">
         <p style="margin-bottom:0.25rem;color:#888;font-size:0.85rem;">或拍照記錄位置</p>
@@ -403,6 +409,9 @@ import AuthGate from '../_components/AuthGate.astro';
 
 </div>
 
+<!-- Photo Save Toast -->
+<div class="photo-toast" id="photoToast"></div>
+
 </AuthGate>
 
 <!-- Leaflet CSS + JS -->
@@ -413,7 +422,16 @@ import AuthGate from '../_components/AuthGate.astro';
 <script is:inline>
 (function() {
   // ── Config ──
+  var TEST_MODE = true; // 4/12 正式上線時改為 false
   var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+
+  // ── Test Mode Banner ──
+  if (TEST_MODE) {
+    var tb = document.getElementById('testBanner');
+    if (tb) tb.style.display = 'block';
+    var tcl = document.getElementById('testCheckinLabel');
+    if (tcl) tcl.style.display = 'block';
+  }
 
   // ── LINE User Identity (set by AuthGate LIFF login) ──
   var lineUserId = window.__lineUserId || localStorage.getItem('formosa_line_user_id') || null;
@@ -1190,20 +1208,34 @@ import AuthGate from '../_components/AuthGate.astro';
     statusEl.innerHTML = '<span class="photo-status-text">📷 已記錄 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
   }
 
-  // ── Save photo to device: show prompt after processing ──
+  // ── Toast helper ──
+  function showPhotoToast(msg, duration) {
+    var el = document.getElementById('photoToast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function() { el.classList.remove('show'); }, duration || 3000);
+  }
+
+  // ── Save photo to device ──
   var pendingSaveFiles = [];
+  var isLineBrowser = /Line/i.test(navigator.userAgent);
 
   async function autoSavePhotos() {
     if (pendingSaveFiles.length === 0) return;
 
+    var saved = false;
     for (var i = 0; i < pendingSaveFiles.length; i++) {
       var f = pendingSaveFiles[i];
       try {
         var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         var ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
         var shareFile = new File([f], 'formosa-' + ts + '-' + i + '.' + ext, { type: f.type });
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+
+        // LINE browser: canShare({ files }) is unreliable, skip to fallback
+        if (!isLineBrowser && navigator.share && navigator.canShare && navigator.canShare({ files: [shareFile] })) {
           await navigator.share({ files: [shareFile] });
+          saved = true;
         } else {
           // Fallback: trigger download
           var url = URL.createObjectURL(f);
@@ -1214,12 +1246,23 @@ import AuthGate from '../_components/AuthGate.astro';
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
+          saved = true;
         }
       } catch (e) {
-        if (e.name === 'AbortError') break;
+        if (e.name === 'AbortError') { saved = false; break; }
+        console.warn('Photo save failed:', e);
       }
     }
     pendingSaveFiles = [];
+
+    // User feedback
+    if (saved) {
+      if (isLineBrowser) {
+        showPhotoToast('💡 照片已下載，長按照片可儲存到相簿', 4000);
+      } else {
+        showPhotoToast('📸 照片已儲存', 3000);
+      }
+    }
   }
 
   async function handlePhotos(files, statusEl) {
@@ -1291,7 +1334,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
       // Auto-save to album if toggle is on
       if (document.getElementById('photoSaveToggle') && document.getElementById('photoSaveToggle').checked) {
-        autoSavePhotos();
+        await autoSavePhotos();
       }
 
       // Update stats display
@@ -1749,6 +1792,28 @@ import AuthGate from '../_components/AuthGate.astro';
     margin: 0 auto;
     padding: 0 1rem 4rem;
   }
+
+  /* Test Mode Banner */
+  .test-banner {
+    position: sticky; top: 0; z-index: 100;
+    background: #f59e0b; color: #78350f;
+    text-align: center; padding: 0.6rem 1rem;
+    font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .test-checkin-label {
+    color: #f59e0b; font-size: 0.78rem; font-weight: 600; margin-top: 0.25rem;
+  }
+
+  /* Photo Save Toast */
+  .photo-toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.85); color: #fff; padding: 0.75rem 1.25rem;
+    border-radius: 10px; font-size: 0.82rem; z-index: 9999;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; white-space: nowrap;
+  }
+  .photo-toast.show { opacity: 1; }
 
   /* Breadcrumb */
   .tracker-breadcrumb { padding: 1.5rem 0; }
