@@ -27,18 +27,42 @@ async function handleTicker(request, env) {
     fetchFitbitData(env.TICKER_KV, env).catch(() => null), fetchStockData(env.TICKER_KV).catch(() => null),
     (async () => {
       const now = new Date(); let monthUSD = 0, totalCalls = 0, totalTokens = 0;
-      const twNow = new Date(now.getTime() + 8 * 3600 * 1000); const thisMonth = twNow.toISOString().slice(0, 7); const dailyMap = {};
-      // Scan last 14 days for sparkline + current month
-      for (let i = 0; i < 14; i++) { const dateStr = twDateStr(new Date(now.getTime() - i * 86400000)); try { const raw = await env.TICKER_KV.get(`costs_${dateStr}`); if (!raw) continue; JSON.parse(raw).forEach(e => { const cost = e.costUSD || 0; if (dateStr.startsWith(thisMonth)) { monthUSD += cost; totalCalls++; totalTokens += (e.inputTokens || 0) + (e.outputTokens || 0); } dailyMap[dateStr] = (dailyMap[dateStr] || 0) + cost; }); } catch (e) {} }
+      const twNow = new Date(now.getTime() + 8 * 3600 * 1000); const thisMonth = twNow.toISOString().slice(0, 7);
+      const dailyMap = {}; const byService = {}; const bySource = {}; const byAction = {}; const dailyBySource = {};
+      // Scan entire current month + extra days for sparkline context
+      const monthDay = twNow.getDate(); const scanDays = Math.max(monthDay, 14);
+      for (let i = 0; i < scanDays; i++) {
+        const dateStr = twDateStr(new Date(now.getTime() - i * 86400000));
+        try {
+          const raw = await env.TICKER_KV.get(`costs_${dateStr}`);
+          if (!raw) continue;
+          JSON.parse(raw).forEach(e => {
+            const cost = e.costUSD || 0;
+            const inMonth = dateStr.startsWith(thisMonth);
+            if (inMonth) {
+              monthUSD += cost; totalCalls++;
+              totalTokens += (e.inputTokens || 0) + (e.outputTokens || 0);
+              byService[e.service || 'unknown'] = (byService[e.service || 'unknown'] || 0) + cost;
+              bySource[e.source || 'unknown'] = (bySource[e.source || 'unknown'] || 0) + cost;
+              byAction[e.action || 'unknown'] = (byAction[e.action || 'unknown'] || 0) + cost;
+              if (!dailyBySource[dateStr]) dailyBySource[dateStr] = {};
+              dailyBySource[dateStr][e.source || 'unknown'] = (dailyBySource[dateStr][e.source || 'unknown'] || 0) + cost;
+            }
+            dailyMap[dateStr] = (dailyMap[dateStr] || 0) + cost;
+          });
+        } catch (e) {}
+      }
       // Read cumulative summary (written by sync_costs_to_kv.py)
       let totalUSD = 0, summaryTokens = 0, summaryCalls = 0;
       try { const sumRaw = await env.TICKER_KV.get('costs_summary'); if (sumRaw) { const s = JSON.parse(sumRaw); totalUSD = s.totalUSD || 0; summaryTokens = s.totalTokens || 0; summaryCalls = s.totalCalls || 0; } } catch (e) {}
-      // If summary is missing or stale (total < current month), fall back to month values
       if (totalUSD < monthUSD) { totalUSD = monthUSD; summaryTokens = totalTokens; summaryCalls = totalCalls; }
       const sortedDays = Object.keys(dailyMap).sort().slice(-14); const dailyValues = sortedDays.map(d => +(dailyMap[d] || 0).toFixed(4));
       const avgPerDay = dailyValues.length > 0 ? dailyValues.reduce((a, b) => a + b, 0) / dailyValues.length : 0;
       const last7Total = sortedDays.slice(-7).reduce((s, d) => s + (dailyMap[d] || 0), 0); const prev7Total = sortedDays.slice(-14, -7).reduce((s, d) => s + (dailyMap[d] || 0), 0);
-      return { totalUSD: +totalUSD.toFixed(4), monthUSD: +monthUSD.toFixed(4), totalCalls: summaryCalls, totalTokens: summaryTokens, avgPerDay: +avgPerDay.toFixed(4), changePercent: +(prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0).toFixed(1), dailyValues };
+      // Round breakdown values
+      for (const o of [byService, bySource, byAction]) Object.keys(o).forEach(k => o[k] = +o[k].toFixed(4));
+      for (const d of Object.keys(dailyBySource)) Object.keys(dailyBySource[d]).forEach(s => dailyBySource[d][s] = +dailyBySource[d][s].toFixed(4));
+      return { totalUSD: +totalUSD.toFixed(4), monthUSD: +monthUSD.toFixed(4), totalCalls: summaryCalls || totalCalls, totalTokens: summaryTokens || totalTokens, avgPerDay: +avgPerDay.toFixed(4), changePercent: +(prev7Total > 0 ? ((last7Total - prev7Total) / prev7Total * 100) : 0).toFixed(1), dailyValues, byService, bySource, byAction, dailyBySource };
     })()
   ]);
   const data = {

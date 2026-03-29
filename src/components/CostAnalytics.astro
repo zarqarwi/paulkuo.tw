@@ -2,25 +2,12 @@
 /**
  * CostAnalytics.astro — 消息頁上方的費用分析區塊
  * 完整圖表：每日趨勢、服務商分佈、來源分佈、動作類型
- * v2: Chart.js lazy-loaded via IntersectionObserver for better LCP
+ * v3: 改為 client-side fetch /ticker，與 Ticker bar 共用同一 KV 數據源
+ *     不再 build-time 讀 costs.jsonl，確保數據即時且對齊
+ * Chart.js lazy-loaded via IntersectionObserver for better LCP
  */
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
-
-const costsPath = join(process.cwd(), 'data', 'costs.jsonl');
-let records: any[] = [];
-if (existsSync(costsPath)) {
-  records = readFileSync(costsPath, 'utf-8')
-    .split('\n').filter(Boolean)
-    .map(line => { try { return JSON.parse(line); } catch { return null; } })
-    .filter(Boolean);
-}
-
-const hasData = records.length > 0;
-const analyticsData = JSON.stringify(records);
 ---
 
-{hasData && (
 <div class="cost-analytics" id="costAnalytics">
   <div class="analytics-header">
     <div>
@@ -30,7 +17,12 @@ const analyticsData = JSON.stringify(records);
     <a href="/dashboard" class="analytics-link">完整儀表板 →</a>
   </div>
 
-  <div class="analytics-kpis" id="analyticsKpis"></div>
+  <div class="analytics-kpis" id="analyticsKpis">
+    <div class="ak"><span class="ak-v ak-skeleton">&nbsp;</span><span class="ak-l">本月費用</span></div>
+    <div class="ak"><span class="ak-v ak-skeleton">&nbsp;</span><span class="ak-l">日均</span></div>
+    <div class="ak"><span class="ak-v ak-skeleton">&nbsp;</span><span class="ak-l">API 呼叫</span></div>
+    <div class="ak"><span class="ak-v ak-skeleton">&nbsp;</span><span class="ak-l">Token</span></div>
+  </div>
 
   <div class="analytics-charts">
     <div class="analytics-chart-main">
@@ -46,112 +38,155 @@ const analyticsData = JSON.stringify(records);
     </div>
   </div>
 </div>
-)}
 
-<script define:vars={{ analyticsData, hasData }} is:inline>
+<script is:inline>
 (function() {
-  if (!hasData) return;
-
   var el = document.getElementById('costAnalytics');
   if (!el) return;
 
-  // Render KPIs immediately (no Chart.js needed)
-  var records = JSON.parse(analyticsData);
-  if (!records.length) return;
+  // Fetch from /ticker — same source as Ticker bar
+  fetch('https://api.paulkuo.tw/ticker')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var c = data.costs;
+      if (!c) { el.style.display = 'none'; return; }
 
-  var totalUSD = records.reduce(function(s,r) { return s + r.costUSD; }, 0);
-  var thisMonth = new Date().toISOString().slice(0,7);
-  var monthUSD = records.filter(function(r) { return r.timestamp.startsWith(thisMonth); }).reduce(function(s,r) { return s + r.costUSD; }, 0);
-  var days = []; records.forEach(function(r) { var d = r.timestamp.slice(0,10); if (days.indexOf(d) === -1) days.push(d); }); days.sort();
-  var avgPerDay = totalUSD / (days.length || 1);
-  var totalTokens = records.reduce(function(s,r) { return s + (r.inputTokens||0) + (r.outputTokens||0); }, 0);
+      // ── KPIs ──
+      var monthUSD = c.monthUSD || 0;
+      var avgPerDay = c.avgPerDay || 0;
+      var totalCalls = c.totalCalls || 0;
+      var totalTokens = c.totalTokens || 0;
 
-  document.getElementById('analyticsKpis').innerHTML =
-    '<div class="ak"><span class="ak-v" style="color:var(--brand-navy)">$' + monthUSD.toFixed(2) + '</span><span class="ak-l">本月費用</span></div>' +
-    '<div class="ak"><span class="ak-v" style="color:var(--accent-circular)">$' + avgPerDay.toFixed(3) + '</span><span class="ak-l">日均</span></div>' +
-    '<div class="ak"><span class="ak-v" style="color:var(--accent-ai)">' + records.length + '</span><span class="ak-l">API 呼叫</span></div>' +
-    '<div class="ak"><span class="ak-v" style="color:var(--accent-life)">' + (totalTokens/1000).toFixed(0) + 'K</span><span class="ak-l">Token</span></div>';
+      document.getElementById('analyticsKpis').innerHTML =
+        '<div class="ak"><span class="ak-v" style="color:var(--brand-navy)">$' + monthUSD.toFixed(2) + '</span><span class="ak-l">本月費用</span></div>' +
+        '<div class="ak"><span class="ak-v" style="color:var(--accent-circular)">$' + avgPerDay.toFixed(3) + '</span><span class="ak-l">日均</span></div>' +
+        '<div class="ak"><span class="ak-v" style="color:var(--accent-ai)">' + totalCalls.toLocaleString() + '</span><span class="ak-l">API 呼叫</span></div>' +
+        '<div class="ak"><span class="ak-v" style="color:var(--accent-life)">' + (totalTokens / 1000).toFixed(0) + 'K</span><span class="ak-l">Token</span></div>';
 
-  // Lazy load Chart.js only when section scrolls into view
-  var chartsRendered = false;
-  function renderCharts() {
-    if (chartsRendered) return;
-    chartsRendered = true;
+      // ── Lazy load Chart.js when section scrolls into view ──
+      var chartsRendered = false;
+      function renderCharts() {
+        if (chartsRendered) return;
+        chartsRendered = true;
 
-    var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-    script.onload = function() {
-      var SVC_CLR = { anthropic:'#6366f1', openai:'#10b981', google:'#3b82f6', xai:'#f97316', perplexity:'#8b5cf6' };
-      var SRC_CLR = { 'debate-engine':'#f59e0b', 'translate-article':'#3b82f6', 'publish-social':'#ec4899', 'debate-to-article':'#06b6d4' };
-      var ACT_CLR = { debate:'#f59e0b', 'translate-en':'#3b82f6', 'translate-ja':'#60a5fa', 'translate-zh-cn':'#93c5fd',
-        'social-summary':'#ec4899', 'image-gen':'#10b981', 'debate-to-article':'#06b6d4', factcheck:'#8b5cf6' };
-      var ACT_LABEL = { debate:'辯論', 'translate-en':'EN', 'translate-ja':'JA', 'translate-zh-cn':'簡中',
-        'social-summary':'摘要', 'image-gen':'配圖', 'debate-to-article':'轉文章', factcheck:'查核' };
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+        script.onload = function() {
+          var SVC_CLR = { anthropic:'#6366f1', openai:'#10b981', google:'#3b82f6', xai:'#f97316', perplexity:'#8b5cf6' };
+          var SRC_CLR = { 'debate-engine':'#f59e0b', 'translate-article':'#3b82f6', 'publish-social':'#ec4899', 'debate-to-article':'#06b6d4', translator:'#10b981', scorecard:'#f97316' };
+          var ACT_CLR = { debate:'#f59e0b', 'translate-en':'#3b82f6', 'translate-ja':'#60a5fa', 'translate-zh-cn':'#93c5fd',
+            'social-summary':'#ec4899', 'image-gen':'#10b981', 'debate-to-article':'#06b6d4', factcheck:'#8b5cf6' };
+          var ACT_LABEL = { debate:'辯論', 'translate-en':'EN', 'translate-ja':'JA', 'translate-zh-cn':'簡中',
+            'social-summary':'摘要', 'image-gen':'配圖', 'debate-to-article':'轉文章', factcheck:'查核' };
 
-      var chartFont = { family: "'DM Sans', sans-serif" };
-      var gridColor = '#E8E6E1';
+          var chartFont = { family: "'DM Sans', sans-serif" };
+          var gridColor = '#E8E6E1';
 
-      // Daily stacked bar (last 30 days)
-      var last30 = days.slice(-30);
-      var sources = []; records.forEach(function(r) { if (sources.indexOf(r.source) === -1) sources.push(r.source); });
-      var dailyData = {}; last30.forEach(function(d) { dailyData[d] = {}; sources.forEach(function(s) { dailyData[d][s] = 0; }); });
-      records.forEach(function(r) { var d = r.timestamp.slice(0,10); if (dailyData[d]) dailyData[d][r.source] += r.costUSD; });
-      new Chart(document.getElementById('analyticsDailyChart'), {
-        type: 'bar',
-        data: { labels: last30.map(function(d) { return d.slice(5); }),
-          datasets: sources.map(function(s) { return { label: s, data: last30.map(function(d) { return +(dailyData[d][s]||0).toFixed(4); }),
-            backgroundColor: SRC_CLR[s] || '#8A8A8A', borderRadius: 2 }; }) },
-        options: { responsive:true, maintainAspectRatio:false,
-          scales: { x:{stacked:true,grid:{display:false},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},maxRotation:0,autoSkip:true,maxTicksLimit:10}},
-            y:{stacked:true,grid:{color:gridColor},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},callback:function(v){return '$'+v.toFixed(2);}}} },
-          plugins: { legend:{position:'bottom',labels:{color:'#5A5A5A',font:{...chartFont,size:10},padding:8,boxWidth:10}},
-            tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': $'+ctx.raw.toFixed(4);}}} } },
-      });
+          // ── Daily stacked bar (from dailyBySource) ──
+          var dailyBySource = c.dailyBySource || {};
+          var days = Object.keys(dailyBySource).sort();
+          var sources = [];
+          days.forEach(function(d) {
+            Object.keys(dailyBySource[d]).forEach(function(s) {
+              if (sources.indexOf(s) === -1) sources.push(s);
+            });
+          });
 
-      // Service doughnut
-      var bySvc = {}; records.forEach(function(r) { bySvc[r.service] = (bySvc[r.service]||0) + r.costUSD; });
-      var sk = Object.keys(bySvc).sort(function(a,b) { return bySvc[b]-bySvc[a]; });
-      new Chart(document.getElementById('analyticsServiceChart'), {
-        type: 'doughnut',
-        data: { labels: sk, datasets: [{ data: sk.map(function(k) { return +bySvc[k].toFixed(4); }),
-          backgroundColor: sk.map(function(k) { return SVC_CLR[k]||'#8A8A8A'; }), borderWidth: 2, borderColor: '#FFFFFF' }] },
-        options: { responsive:true, maintainAspectRatio:false, cutout:'55%',
-          plugins: { legend:{position:'bottom',labels:{color:'#5A5A5A',font:{...chartFont,size:10},padding:6,boxWidth:10}},
-            tooltip:{callbacks:{label:function(ctx){return ctx.label+': $'+ctx.raw.toFixed(4);}}} } },
-      });
+          if (days.length > 0) {
+            new Chart(document.getElementById('analyticsDailyChart'), {
+              type: 'bar',
+              data: {
+                labels: days.map(function(d) { return d.slice(5); }),
+                datasets: sources.map(function(s) {
+                  return {
+                    label: s,
+                    data: days.map(function(d) { return dailyBySource[d][s] || 0; }),
+                    backgroundColor: SRC_CLR[s] || '#8A8A8A',
+                    borderRadius: 2
+                  };
+                })
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                  x: { stacked: true, grid: { display: false }, ticks: { color: '#8A8A8A', font: { ...chartFont, size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+                  y: { stacked: true, grid: { color: gridColor }, ticks: { color: '#8A8A8A', font: { ...chartFont, size: 9 }, callback: function(v) { return '$' + v.toFixed(2); } } }
+                },
+                plugins: {
+                  legend: { position: 'bottom', labels: { color: '#5A5A5A', font: { ...chartFont, size: 10 }, padding: 8, boxWidth: 10 } },
+                  tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': $' + ctx.raw.toFixed(4); } } }
+                }
+              }
+            });
+          }
 
-      // Action horizontal bar
-      var byAct = {}; records.forEach(function(r) { byAct[r.action] = (byAct[r.action]||0) + r.costUSD; });
-      var ak = Object.keys(byAct).sort(function(a,b) { return byAct[b]-byAct[a]; }).slice(0, 6);
-      new Chart(document.getElementById('analyticsActionChart'), {
-        type: 'bar',
-        data: { labels: ak.map(function(k) { return ACT_LABEL[k]||k; }),
-          datasets: [{ data: ak.map(function(k) { return +byAct[k].toFixed(4); }),
-            backgroundColor: ak.map(function(k) { return ACT_CLR[k]||'#8A8A8A'; }), borderRadius: 3 }] },
-        options: { responsive:true, maintainAspectRatio:false, indexAxis:'y',
-          scales: { x:{grid:{color:gridColor},ticks:{color:'#8A8A8A',font:{...chartFont,size:9},callback:function(v){return '$'+v.toFixed(2);}}},
-            y:{grid:{display:false},ticks:{color:'#5A5A5A',font:{...chartFont,size:10}}} },
-          plugins: { legend:{display:false} } },
-      });
-    };
-    document.head.appendChild(script);
-  }
+          // ── Service doughnut (from byService) ──
+          var byService = c.byService || {};
+          var sk = Object.keys(byService).sort(function(a, b) { return byService[b] - byService[a]; });
+          if (sk.length > 0) {
+            new Chart(document.getElementById('analyticsServiceChart'), {
+              type: 'doughnut',
+              data: {
+                labels: sk,
+                datasets: [{
+                  data: sk.map(function(k) { return byService[k]; }),
+                  backgroundColor: sk.map(function(k) { return SVC_CLR[k] || '#8A8A8A'; }),
+                  borderWidth: 2, borderColor: '#FFFFFF'
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false, cutout: '55%',
+                plugins: {
+                  legend: { position: 'bottom', labels: { color: '#5A5A5A', font: { ...chartFont, size: 10 }, padding: 6, boxWidth: 10 } },
+                  tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': $' + ctx.raw.toFixed(4); } } }
+                }
+              }
+            });
+          }
 
-  // Use IntersectionObserver to lazy-load charts
-  if ('IntersectionObserver' in window) {
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          renderCharts();
-          observer.disconnect();
-        }
-      });
-    }, { rootMargin: '200px' }); // Start loading 200px before visible
-    observer.observe(el);
-  } else {
-    // Fallback for old browsers
-    renderCharts();
-  }
+          // ── Action horizontal bar (from byAction) ──
+          var byAction = c.byAction || {};
+          var ak = Object.keys(byAction).sort(function(a, b) { return byAction[b] - byAction[a]; }).slice(0, 6);
+          if (ak.length > 0) {
+            new Chart(document.getElementById('analyticsActionChart'), {
+              type: 'bar',
+              data: {
+                labels: ak.map(function(k) { return ACT_LABEL[k] || k; }),
+                datasets: [{
+                  data: ak.map(function(k) { return byAction[k]; }),
+                  backgroundColor: ak.map(function(k) { return ACT_CLR[k] || '#8A8A8A'; }),
+                  borderRadius: 3
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                scales: {
+                  x: { grid: { color: gridColor }, ticks: { color: '#8A8A8A', font: { ...chartFont, size: 9 }, callback: function(v) { return '$' + v.toFixed(2); } } },
+                  y: { grid: { display: false }, ticks: { color: '#5A5A5A', font: { ...chartFont, size: 10 } } }
+                },
+                plugins: { legend: { display: false } }
+              }
+            });
+          }
+        };
+        document.head.appendChild(script);
+      }
+
+      // Lazy load charts via IntersectionObserver
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) { renderCharts(); observer.disconnect(); }
+          });
+        }, { rootMargin: '200px' });
+        observer.observe(el);
+      } else {
+        renderCharts();
+      }
+    })
+    .catch(function() {
+      el.style.display = 'none';
+    });
 })();
 </script>
 
@@ -203,6 +238,17 @@ const analyticsData = JSON.stringify(records);
     font-weight: 700;
     font-family: var(--font-body);
     letter-spacing: -0.02em;
+  }
+  .ak-skeleton {
+    background: var(--border-light);
+    border-radius: 4px;
+    width: 60px;
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
   }
   .ak-l {
     font-size: 0.65rem;
