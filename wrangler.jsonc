@@ -1,8 +1,10 @@
 {
 	"name": "paulkuo-tw",
+	"main": "src/og-worker.js",
 	"compatibility_date": "2026-02-20",
 	"assets": {
 		"directory": "dist",
+		"binding": "ASSETS",
 		"not_found_handling": "none"
 	},
 	"d1_databases": [

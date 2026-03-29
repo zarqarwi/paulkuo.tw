@@ -522,7 +522,10 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   };
 
   window.shareFB = function() {
-    var shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL) + '&quote=' + encodeURIComponent(getShareText());
+    // FB share includes userId so crawler can serve personalized OG image
+    var fbUrl = SHARE_URL;
+    if (lineUserId) fbUrl = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/?u=' + encodeURIComponent(lineUserId);
+    var shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fbUrl) + '&quote=' + encodeURIComponent(getShareText());
     window.open(shareUrl, '_blank');
   };
 
