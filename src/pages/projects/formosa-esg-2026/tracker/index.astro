@@ -918,9 +918,7 @@ import AuthGate from '../_components/AuthGate.astro';
   function getCarbonStatsHtml() {
     var carbon = localStorage.getItem('formosa_carbon') || '0';
     var saved = localStorage.getItem('formosa_carbon_saved') || '0';
-    var tb = null;
-    try { tb = JSON.parse(localStorage.getItem('formosa_transport_breakdown')); } catch(e) {}
-    var html = '<div class="done-stat"><strong>' + carbon + '</strong><span>kg CO₂e</span></div>';
+    var html = '<div class="done-stat"><strong>' + carbon + '</strong><span>kg CO₂e（估算）</span></div>';
     if (parseFloat(saved) > 0) {
       html += '<div class="done-stat" style="color:#059669"><strong>' + saved + '</strong><span>kg 已省下</span></div>';
     }
@@ -931,13 +929,12 @@ import AuthGate from '../_components/AuthGate.astro';
     var tb = null;
     try { tb = JSON.parse(localStorage.getItem('formosa_transport_breakdown')); } catch(e) {}
     if (!tb) return '';
-    var icons = { walk: '🚶', bike: '🚲', scooter: '🛵', car: '🚗', hsr: '🚄' };
-    var labels = { walk: '步行', bike: '腳踏車', scooter: '機車', car: '汽車', hsr: '高鐵' };
     var parts = [];
-    for (var mode in tb) {
-      if (tb[mode] > 0) parts.push(icons[mode] + ' ' + labels[mode] + ' ' + tb[mode].toFixed(1) + ' km');
-    }
-    return parts.length > 0 ? '<div class="transport-summary" style="font-size:0.8rem;color:#6b7280;margin-top:0.25rem;">' + parts.join(' | ') + '</div>' : '';
+    if (tb.zero_emission > 0) parts.push('🚶 零排放移動 ' + tb.zero_emission.toFixed(1) + ' km');
+    if (tb.motorized > 0) parts.push('🚌 交通工具 ' + tb.motorized.toFixed(1) + ' km');
+    var html = parts.length > 0 ? '<div class="transport-summary" style="font-size:0.8rem;color:#6b7280;margin-top:0.25rem;">' + parts.join(' | ') + '</div>' : '';
+    html += '<div style="font-size:0.7rem;color:#9ca3af;margin-top:0.25rem;">📝 碳排數據為簡化估算，以步行/腳踏車（零排放）與大眾交通工具兩種情境計算，目的是提醒減排與鼓勵共乘，非精確碳盤查數據。</div>';
+    return html;
   }
 
   function updateCarbonStatsDisplay() {

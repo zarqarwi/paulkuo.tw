@@ -648,11 +648,8 @@ function haversine(lat1, lng1, lat2, lng2) {
 }
 
 const SPEED_THRESHOLDS = [
-  { maxSpeed: 8,        mode: 'walk',    gwp: 0 },
-  { maxSpeed: 20,       mode: 'bike',    gwp: 0.01220 },
-  { maxSpeed: 40,       mode: 'scooter', gwp: 0.13734 },
-  { maxSpeed: 80,       mode: 'car',     gwp: 0.30479 },
-  { maxSpeed: Infinity, mode: 'hsr',     gwp: 0.07487 }
+  { maxSpeed: 15,       mode: 'zero_emission', gwp: 0 },          // ≤ 15 km/h → 步行/腳踏車，零排放
+  { maxSpeed: Infinity, mode: 'motorized',     gwp: 0.47515 }     // > 15 km/h → 統一用巴士係數
 ];
 
 function inferTransportMode(speedKmh) {
@@ -678,7 +675,7 @@ export async function handleFormosaUser(request, env, userId) {
     const pts = points?.results || [];
     let totalKm = 0;
     let totalCarbon = 0;
-    const transportBreakdown = { walk: 0, bike: 0, scooter: 0, car: 0, hsr: 0 };
+    const transportBreakdown = { zero_emission: 0, motorized: 0 };
 
     for (let i = 1; i < pts.length; i++) {
       const dist = haversine(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
@@ -707,8 +704,8 @@ export async function handleFormosaUser(request, env, userId) {
     const hotelWaterCarbon = 0; // TODO: aggregate hotel/water from daily reports separately if needed
     const carbonKg = gpsCarbon + hotelWaterCarbon;
 
-    // Carbon saved: if entire GPS distance were driven by car
-    const carbonSaved = totalKm * GWP_FACTORS.car - gpsCarbon;
+    // Carbon saved: if entire distance were motorized (bus coefficient)
+    const carbonSaved = totalKm * GWP_FACTORS.bus - gpsCarbon;
 
     return jsonResponse({
       user: user || { display_name: 'Anonymous', created_at: null },
@@ -1124,7 +1121,7 @@ async function buildStatsMessage(userId, env) {
 function buildCarbonInfoMessage() {
   return {
     type: 'text',
-    text: '🌱 碳足跡小知識（Ecoinvent 3.10）\n\n進香途中的碳排放來源：\n🚗 開車：0.30 kg/km\n🛵 機車：0.14 kg/km\n🚌 公車：0.48 kg/km\n🚂 火車：0.08 kg/km\n🚄 高鐵：0.07 kg/km\n🚇 捷運：0.08 kg/km\n🚶 步行：0 kg/km ✨\n\n💧 每瓶瓶裝水：0.11 kg\n♻️ 每瓶回收：-0.003 kg\n🏨 每晚旅宿：12.5 kg\n\n📍 前往填寫：\n' + TRACKER_URL
+    text: '🌱 碳足跡小知識\n\n進香途中我們用兩種方式估算你的碳足跡：\n🚶 步行/腳踏車 → 零排放 ✨\n🚌 搭乘交通工具 → 約 0.48 kg CO₂e/km\n\n走越多、搭越少，碳足跡越低！\n🌿 鼓勵大家多走路、多共乘，一起愛護地球 🌍\n\n📝 此為簡化估算，目的是提醒減排意識\n\n📍 前往記錄：\n' + TRACKER_URL
   };
 }
 
