@@ -332,20 +332,8 @@ import AuthGate from '../_components/AuthGate.astro';
         <div class="daily-report-body" id="dailyReportBody" style="display:none">
           <p class="daily-report-hint">每天花 30 秒記錄，碳足跡更精確</p>
 
-          <div class="daily-section-label">交通方式</div>
-          <div class="transport-grid daily-grid">
-            <div class="transport-item"><label class="transport-label">🚶 步行</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_walk" value="0" min="0" step="0.1" /><span class="transport-unit">KM</span></div></div>
-            <div class="transport-item"><label class="transport-label">🚗 開車</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_car" value="0" min="0" step="0.1" /><span class="transport-unit">KM</span></div></div>
-            <div class="transport-item"><label class="transport-label">🚗 共乘人數</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_carpool" value="1" min="1" step="1" /><span class="transport-unit">人</span></div></div>
-            <div class="transport-item"><label class="transport-label">🏍️ 機車</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_scooter" value="0" min="0" step="0.1" /><span class="transport-unit">KM</span></div></div>
-            <div class="transport-item"><label class="transport-label">🚲 腳踏車</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_bike" value="0" min="0" step="0.1" /><span class="transport-unit">KM</span></div></div>
-            <div class="transport-item"><label class="transport-label">🚌 公車</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_bus" value="0" min="0" step="0.1" /><span class="transport-unit">KM</span></div></div>
-            <div class="transport-item"><label class="transport-label">🚇 捷運</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_mrt" value="0" min="0" step="0.1" /><span class="transport-unit">KM</span></div></div>
-            <div class="transport-item"><label class="transport-label">🚂 火車</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_train" value="0" min="0" step="0.1" /><span class="transport-unit">KM</span></div></div>
-            <div class="transport-item"><label class="transport-label">🚄 高鐵</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_hsr" value="0" min="0" step="0.1" /><span class="transport-unit">KM</span></div></div>
-          </div>
-
           <div class="daily-section-label">環境影響</div>
+          <p class="daily-report-hint" style="font-size:0.85rem;color:#6b7280;margin:0 0 0.5rem;">交通碳排由 GPS 軌跡自動推算，不需手動填寫</p>
           <div class="transport-grid daily-grid cols-2">
             <div class="transport-item"><label class="transport-label">🧴 瓶裝水</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_water" value="0" min="0" step="1" /><span class="transport-unit">瓶</span></div></div>
             <div class="transport-item"><label class="transport-label">♻️ 回收水瓶</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_recycle" value="0" min="0" step="1" /><span class="transport-unit">瓶</span></div></div>
@@ -655,16 +643,8 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   function calcDailyCarbon() {
-    var carpool = Math.max(1, getDrVal('dr_carpool'));
+    // Transport is now GPS-inferred; daily report only covers non-transport items
     var breakdown = {};
-    breakdown.walk = getDrVal('dr_walk') * DR_FACTORS.walk;
-    breakdown.car = (getDrVal('dr_car') * DR_FACTORS.car) / carpool;
-    breakdown.scooter = getDrVal('dr_scooter') * DR_FACTORS.scooter;
-    breakdown.bike = getDrVal('dr_bike') * DR_FACTORS.bike;
-    breakdown.bus = getDrVal('dr_bus') * DR_FACTORS.bus;
-    breakdown.mrt = getDrVal('dr_mrt') * DR_FACTORS.mrt;
-    breakdown.train = getDrVal('dr_train') * DR_FACTORS.train;
-    breakdown.hsr = getDrVal('dr_hsr') * DR_FACTORS.hsr;
     breakdown.water = getDrVal('dr_water') * DR_FACTORS.water;
     breakdown.recycle = getDrVal('dr_recycle') * DR_FACTORS.recycle;
     breakdown.hotel = getDrVal('dr_hotel') * DR_FACTORS.hotel;
@@ -731,15 +711,6 @@ import AuthGate from '../_components/AuthGate.astro';
     var payload = {
       line_user_id: userId,
       report_date: today,
-      walk: getDrVal('dr_walk'),
-      car: getDrVal('dr_car'),
-      carpool: Math.max(1, getDrVal('dr_carpool')),
-      scooter: getDrVal('dr_scooter'),
-      bike: getDrVal('dr_bike'),
-      bus: getDrVal('dr_bus'),
-      mrt: getDrVal('dr_mrt'),
-      train: getDrVal('dr_train'),
-      hsr: getDrVal('dr_hsr'),
       water_bottles: getDrVal('dr_water'),
       recycle_bottles: getDrVal('dr_recycle'),
       hotel: getDrVal('dr_hotel')
@@ -790,7 +761,7 @@ import AuthGate from '../_components/AuthGate.astro';
       var todayReport = data.reports.find(function(r) { return r.report_date === today; });
       if (todayReport) {
         var r = todayReport;
-        var fields = { dr_walk: r.transport_walk, dr_car: r.transport_car, dr_carpool: r.transport_carpool, dr_scooter: r.transport_scooter, dr_bike: r.transport_bike, dr_bus: r.transport_bus, dr_mrt: r.transport_mrt, dr_train: r.transport_train, dr_hsr: r.transport_hsr, dr_water: r.water_bottles, dr_recycle: r.recycle_bottles };
+        var fields = { dr_water: r.water_bottles, dr_recycle: r.recycle_bottles };
         for (var id in fields) {
           var el = document.getElementById(id);
           if (el && fields[id]) el.value = fields[id];
@@ -921,6 +892,64 @@ import AuthGate from '../_components/AuthGate.astro';
     var n = getSavedCheckins() + 1;
     localStorage.setItem('formosa_checkins', n);
     return n;
+  }
+
+  // ── Load GPS-derived carbon stats from user API ──
+  async function loadUserStats() {
+    var userId = lineUserId || localStorage.getItem('formosa_user_id') || '';
+    if (!userId) return;
+    try {
+      var resp = await fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(userId));
+      if (!resp.ok) return;
+      var data = await resp.json();
+      if (!data || !data.stats) return;
+      var s = data.stats;
+      localStorage.setItem('formosa_carbon', s.carbon_kg.toFixed(2));
+      localStorage.setItem('formosa_carbon_saved', (s.carbon_saved_kg || 0).toFixed(2));
+      localStorage.setItem('formosa_km', s.total_km.toFixed(2));
+      localStorage.setItem('formosa_checkins', s.checkins);
+      if (s.transport_breakdown) {
+        localStorage.setItem('formosa_transport_breakdown', JSON.stringify(s.transport_breakdown));
+      }
+      updateCarbonStatsDisplay();
+    } catch (e) { /* offline */ }
+  }
+
+  function getCarbonStatsHtml() {
+    var carbon = localStorage.getItem('formosa_carbon') || '0';
+    var saved = localStorage.getItem('formosa_carbon_saved') || '0';
+    var tb = null;
+    try { tb = JSON.parse(localStorage.getItem('formosa_transport_breakdown')); } catch(e) {}
+    var html = '<div class="done-stat"><strong>' + carbon + '</strong><span>kg CO₂e</span></div>';
+    if (parseFloat(saved) > 0) {
+      html += '<div class="done-stat" style="color:#059669"><strong>' + saved + '</strong><span>kg 已省下</span></div>';
+    }
+    return html;
+  }
+
+  function getTransportBreakdownHtml() {
+    var tb = null;
+    try { tb = JSON.parse(localStorage.getItem('formosa_transport_breakdown')); } catch(e) {}
+    if (!tb) return '';
+    var icons = { walk: '🚶', bike: '🚲', scooter: '🛵', car: '🚗', hsr: '🚄' };
+    var labels = { walk: '步行', bike: '腳踏車', scooter: '機車', car: '汽車', hsr: '高鐵' };
+    var parts = [];
+    for (var mode in tb) {
+      if (tb[mode] > 0) parts.push(icons[mode] + ' ' + labels[mode] + ' ' + tb[mode].toFixed(1) + ' km');
+    }
+    return parts.length > 0 ? '<div class="transport-summary" style="font-size:0.8rem;color:#6b7280;margin-top:0.25rem;">' + parts.join(' | ') + '</div>' : '';
+  }
+
+  function updateCarbonStatsDisplay() {
+    var statsEl = document.getElementById('checkinStats');
+    if (!statsEl) return;
+    var checkins = getSavedCheckins();
+    var km = getSavedKm();
+    statsEl.innerHTML = '<div class="done-stats">' +
+      '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
+      '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
+      getCarbonStatsHtml() +
+      '</div>' + getTransportBreakdownHtml();
   }
 
   // ── Participant Status (pause / complete) ──
@@ -1277,8 +1306,8 @@ import AuthGate from '../_components/AuthGate.astro';
         statsEl2.innerHTML = '<div class="done-stats">' +
           '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
           '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
-          '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
-          '</div>';
+          getCarbonStatsHtml() +
+          '</div>' + getTransportBreakdownHtml();
       }
       updateCheckinProgress(t);
 
@@ -1313,11 +1342,14 @@ import AuthGate from '../_components/AuthGate.astro';
     var statsHtml = '<div class="done-stats">' +
       '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
       '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
-      '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
-      '</div>';
+      getCarbonStatsHtml() +
+      '</div>' + getTransportBreakdownHtml();
     document.getElementById('checkinStats').innerHTML = statsHtml;
 
     updateCheckinProgress(t);
+
+    // Fetch GPS-derived carbon stats from server
+    loadUserStats();
 
     var cameraBtn = document.getElementById('cameraBtnMini');
     var cameraInput = document.getElementById('photoCameraMini');
@@ -1416,8 +1448,8 @@ import AuthGate from '../_components/AuthGate.astro';
           statsEl.innerHTML = '<div class="done-stats">' +
             '<div class="done-stat"><strong>' + n + '</strong><span>打卡次數</span></div>' +
             '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
-            '<div class="done-stat"><strong>' + (localStorage.getItem('formosa_carbon') || '0') + '</strong><span>kg CO₂e</span></div>' +
-            '</div>';
+            getCarbonStatsHtml() +
+            '</div>' + getTransportBreakdownHtml();
         }
 
         updateCheckinProgress(t);

@@ -647,6 +647,20 @@ function haversine(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+const SPEED_THRESHOLDS = [
+  { maxSpeed: 8,        mode: 'walk',    gwp: 0 },
+  { maxSpeed: 20,       mode: 'bike',    gwp: 0.01220 },
+  { maxSpeed: 40,       mode: 'scooter', gwp: 0.13734 },
+  { maxSpeed: 80,       mode: 'car',     gwp: 0.30479 },
+  { maxSpeed: Infinity, mode: 'hsr',     gwp: 0.07487 }
+];
+
+function inferTransportMode(speedKmh) {
+  for (const t of SPEED_THRESHOLDS) {
+    if (speedKmh <= t.maxSpeed) return t;
+  }
+}
+
 // ── Per-User Dashboard API ──
 export async function handleFormosaUser(request, env, userId) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
@@ -663,15 +677,38 @@ export async function handleFormosaUser(request, env, userId) {
 
     const pts = points?.results || [];
     let totalKm = 0;
+    let totalCarbon = 0;
+    const transportBreakdown = { walk: 0, bike: 0, scooter: 0, car: 0, hsr: 0 };
+
     for (let i = 1; i < pts.length; i++) {
-      totalKm += haversine(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
+      const dist = haversine(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
+      const timeDiffHours = (new Date(pts[i].timestamp) - new Date(pts[i-1].timestamp)) / 3600000;
+
+      // Filter noise: skip tiny distances, zero/negative time gaps, GPS drift
+      if (dist < 0.01 || timeDiffHours <= 0 || timeDiffHours < 1/120) continue; // <10m, or <30s
+
+      const speed = dist / timeDiffHours;
+      if (speed > 300) continue; // GPS drift anomaly
+
+      const transport = inferTransportMode(speed);
+      totalKm += dist;
+      totalCarbon += dist * transport.gwp;
+      transportBreakdown[transport.mode] += dist;
     }
 
     const checkins = pts.filter(p => p.source === 'manual').length || Math.max(pts.length, 1);
     const rank = computeRank(totalKm, checkins);
 
-    // Use daily reports if available, fallback to survey carbon
-    const carbonKg = dailyAgg?.total_gwp > 0 ? dailyAgg.total_gwp : (survey?.carbon_total_kg || 0);
+    // GPS-inferred transport carbon + daily report non-transport carbon (hotel, water)
+    const gpsCarbon = totalCarbon;
+    const dailyNonTransport = (dailyAgg?.total_gwp || 0) > 0
+      ? 0  // daily reports already include transport; avoid double-counting if user also filed reports
+      : 0;
+    const hotelWaterCarbon = 0; // TODO: aggregate hotel/water from daily reports separately if needed
+    const carbonKg = gpsCarbon + hotelWaterCarbon;
+
+    // Carbon saved: if entire GPS distance were driven by car
+    const carbonSaved = totalKm * GWP_FACTORS.car - gpsCarbon;
 
     return jsonResponse({
       user: user || { display_name: 'Anonymous', created_at: null },
@@ -681,9 +718,11 @@ export async function handleFormosaUser(request, env, userId) {
         total_points: pts.length,
         total_km: +totalKm.toFixed(2),
         carbon_kg: +carbonKg.toFixed(2),
+        carbon_saved_kg: +Math.max(0, carbonSaved).toFixed(2),
         carbon_wu: +(dailyAgg?.total_wu || 0).toFixed(2),
         report_days: dailyAgg?.report_days || 0,
         checkins,
+        transport_breakdown: Object.fromEntries(Object.entries(transportBreakdown).map(([k, v]) => [k, +v.toFixed(2)])),
         rank: rank.current,
         next_rank: rank.next ? { name: rank.next.name, icon: rank.next.icon, km_needed: +(rank.next.km - totalKm).toFixed(1), checkins_needed: Math.max(0, rank.next.checkins - checkins) } : null
       }
@@ -738,7 +777,7 @@ export async function handleFormosaAdminCarbon(request, env) {
     const data = rows?.results || [];
 
     const modes = ['walk','car','scooter','bus','mrt','train','hsr'];
-    const factors = { walk: 0, car: 0.21, scooter: 0.05, bus: 0.04, mrt: 0.02, train: 0.04, hsr: 0.03 };
+    const factors = { walk: GWP_FACTORS.walk, car: GWP_FACTORS.car, scooter: GWP_FACTORS.scooter, bus: GWP_FACTORS.bus, mrt: GWP_FACTORS.mrt, train: GWP_FACTORS.train, hsr: GWP_FACTORS.hsr };
     const totals = {};
     modes.forEach(m => { totals[m] = { km: 0, users: 0 }; });
     let waterTotal = 0, hotelTotal = 0, carbonTotal = 0;
@@ -753,9 +792,9 @@ export async function handleFormosaAdminCarbon(request, env) {
       carbonTotal += r.carbon_total_kg || 0;
     });
 
-    // Calculate carbon saved: if all walk km were driven by car
+    // Calculate carbon saved: if all walk km were driven by car (Ecoinvent 3.10)
     const walkKm = totals.walk.km;
-    const hypothetical = walkKm * 0.21;
+    const hypothetical = walkKm * GWP_FACTORS.car;
     const carbonSaved = Math.max(0, hypothetical);
 
     return jsonResponse({
@@ -1085,7 +1124,7 @@ async function buildStatsMessage(userId, env) {
 function buildCarbonInfoMessage() {
   return {
     type: 'text',
-    text: '🌱 碳足跡小知識\n\n進香途中的碳排放來源：\n🚗 開車：0.21 kg/km\n🛵 機車：0.05 kg/km\n🚌 公車：0.04 kg/km\n🚂 火車：0.04 kg/km\n🚄 高鐵：0.03 kg/km\n🚇 捷運：0.02 kg/km\n🚶 步行：0 kg/km ✨\n\n💧 每瓶瓶裝水：0.08 kg\n🏨 每晚旅宿：10 kg\n\n填寫問卷即可計算您的碳足跡！\n\n📍 前往填寫：\n' + TRACKER_URL
+    text: '🌱 碳足跡小知識（Ecoinvent 3.10）\n\n進香途中的碳排放來源：\n🚗 開車：0.30 kg/km\n🛵 機車：0.14 kg/km\n🚌 公車：0.48 kg/km\n🚂 火車：0.08 kg/km\n🚄 高鐵：0.07 kg/km\n🚇 捷運：0.08 kg/km\n🚶 步行：0 kg/km ✨\n\n💧 每瓶瓶裝水：0.11 kg\n♻️ 每瓶回收：-0.003 kg\n🏨 每晚旅宿：12.5 kg\n\n📍 前往填寫：\n' + TRACKER_URL
   };
 }
 
