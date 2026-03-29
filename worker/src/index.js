@@ -243,7 +243,7 @@ async function handleRequest(request, env) {
   if (path === '/api/formosa/admin/richmenu' && method === 'POST') return handleFormosaRichMenu(request, env);
   if (path === '/api/formosa/daily-report') return handleFormosaDailyReport(request, env);
   if (path === '/api/formosa/og-image' && method === 'POST') return handleFormosaOgImage(request, env);
-  if (path.startsWith('/api/formosa/og/') && path.endsWith('.png') && method === 'GET') {
+  if (path.startsWith('/api/formosa/og/') && path.endsWith('.png') && (method === 'GET' || method === 'HEAD')) {
     const ogUserId = decodeURIComponent(path.replace('/api/formosa/og/', '').replace('.png', ''));
     if (ogUserId) return handleFormosaOgServe(request, env, ogUserId);
   }

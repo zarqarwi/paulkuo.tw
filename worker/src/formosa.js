@@ -1656,8 +1656,15 @@ export async function handleFormosaOgServe(request, env, userId) {
     const object = await env.FORMOSA_OG.get(r2Key);
 
     if (!object) {
-      // Fallback to default OG image
-      return Response.redirect('https://paulkuo.tw/images/formosa-esg-2026-og.png', 302);
+      // Proxy fallback image directly (302 redirects break Facebook crawler)
+      const fallback = await fetch('https://paulkuo.tw/images/formosa-esg-2026-og.png');
+      return new Response(fallback.body, {
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=3600',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
     }
 
     return new Response(object.body, {
@@ -1668,7 +1675,15 @@ export async function handleFormosaOgServe(request, env, userId) {
       }
     });
   } catch (e) {
-    return Response.redirect('https://paulkuo.tw/images/formosa-esg-2026-og.png', 302);
+    // Proxy fallback image directly (302 redirects break Facebook crawler)
+    const fallback = await fetch('https://paulkuo.tw/images/formosa-esg-2026-og.png');
+    return new Response(fallback.body, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*',
+      }
+    });
   }
 }
 
