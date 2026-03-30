@@ -110,7 +110,7 @@ body::after {
 }
 
 /* ===== SMART HEADER ===== */
-nav {
+#main-nav {
   position: fixed; top: 0; left: 0; right: 0;
   height: var(--nav-height);
   background: rgba(250,250,248,0.92);
@@ -121,10 +121,10 @@ nav {
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.3s cubic-bezier(0.23,1,0.32,1), background 0.3s;
 }
-nav.nav-hidden {
+#main-nav.nav-hidden {
   transform: translateY(-100%);
 }
-nav.nav-scrolled {
+#main-nav.nav-scrolled {
   background: rgba(250,250,248,0.97);
   box-shadow: 0 1px 8px rgba(0,0,0,0.06);
 }
