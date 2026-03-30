@@ -7,6 +7,7 @@ import FontToggle from '../components/FontToggle.astro';
 import I18nClient from '../components/I18nClient.astro';
 import FocusMode from '../components/FocusMode.astro';
 import ReadingTracker from '../components/ReadingTracker.astro';
+import MobileTabBar from '../components/MobileTabBar.astro';
 
 interface Props {
   title: string;
@@ -119,6 +120,8 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   </main>
 
   <SiteFooter />
+
+  <MobileTabBar {langPrefix} {langSwitchLinks} {currentLang} />
 
   <script>
     (() => {
