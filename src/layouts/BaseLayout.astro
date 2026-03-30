@@ -17,10 +17,12 @@ interface Props {
   schemaJson?: string;
   canonicalUrl?: string;
   showTicker?: boolean;
+  /** Show ticker only when a target section (e.g. #feed) is in viewport */
+  tickerFeedOnly?: boolean;
 }
 
-const { 
-  title, 
+const {
+  title,
   description = 'Paul Kuo（郭曜郎）— 在技術與文明的交匯處，以 AI 策略、循環經濟與人文視角重建秩序。深度文章涵蓋智能趨勢、廢棄物資源化與文明反思。',
   ogType = 'website',
   ogUrl = 'https://paulkuo.tw',
@@ -28,7 +30,10 @@ const {
   schemaJson,
   canonicalUrl,
   showTicker = false,
+  tickerFeedOnly = false,
 } = Astro.props;
+
+const renderTicker = showTicker || tickerFeedOnly;
 
 const canonical = canonicalUrl || Astro.url.href.replace(/\/$/, '') || ogUrl;
 
@@ -96,8 +101,15 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
 
   <NavBar {langPrefix} {langSwitchLinks} {currentLang} />
 
-  {showTicker && (
-    <aside class="global-ticker" id="globalTicker" role="complementary" aria-label="即時資料" data-nosnippet>
+  {renderTicker && (
+    <aside
+      class={`global-ticker ${tickerFeedOnly ? 'ticker-hidden' : ''}`}
+      id="globalTicker"
+      role="complementary"
+      aria-label="即時資料"
+      data-nosnippet
+      data-feed-only={tickerFeedOnly ? 'true' : undefined}
+    >
       <CostTicker />
     </aside>
   )}
@@ -137,6 +149,24 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   <FocusMode />
   <ReadingTracker />
 
+  <script is:inline>
+  (function() {
+    var ticker = document.getElementById('globalTicker');
+    if (!ticker || ticker.getAttribute('data-feed-only') !== 'true') return;
+    var feed = document.getElementById('feed');
+    if (!feed) return;
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          ticker.classList.remove('ticker-hidden');
+        } else {
+          ticker.classList.add('ticker-hidden');
+        }
+      });
+    }, { threshold: 0.05 });
+    observer.observe(feed);
+  })();
+  </script>
   <script is:inline>
   if (document.querySelector('.contact-section')) { document.body.classList.add('has-contact-section'); }
   </script>

@@ -12,7 +12,7 @@ const articles = (await getCollection('articles', ({ data, id }) => !data.draft 
   .slice(0, 3);
 
 ---
-<BaseLayout title={SITE.title} showTicker={true}>
+<BaseLayout title={SITE.title} tickerFeedOnly={true}>
 
   <!-- HERO -->
   <section class="hero">
@@ -34,36 +34,6 @@ const articles = (await getCollection('articles', ({ data, id }) => !data.draft 
           <a href="/blog" class="btn-primary">閱讀思想</a>
           <a href="/about" class="btn-secondary">認識 Paul</a>
         </div>
-      </div>
-
-      <!-- Hero 右側：人像 + 精選文章 -->
-      <div class="hero-right">
-        <div class="hero-portrait">
-          <img
-            src="/paul-photo.jpg"
-            alt="Paul Kuo 郭曜郎"
-            width="480"
-            height="480"
-            loading="eager"
-            class="portrait-img"
-          />
-        </div>
-
-        {articles[0] && (() => {
-          const fa = articles[0];
-          const fp = PILLAR_MAP[fa.data.pillar];
-          return (
-            <a href={`/articles/${fa.id.replace(/\.md$/, "")}`} class="hero-featured-card">
-              <span class="featured-label">最新文章</span>
-              <span class="featured-pillar" style={`color:${fp.color}`}>
-                <span class="pillar-dot" style={`background:${fp.color}`}></span>
-                {fp.label}
-              </span>
-              <h3>{fa.data.title}</h3>
-              <p>{fa.data.description}</p>
-            </a>
-          );
-        })()}
       </div>
     </div>
   </section>
