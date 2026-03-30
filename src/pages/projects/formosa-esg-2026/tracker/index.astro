@@ -402,7 +402,8 @@ import AuthGate from '../_components/AuthGate.astro';
   }, { passive: false });
 
   // ── Config ──
-  var TEST_MODE = new URLSearchParams(location.search).has('test');
+  var LAUNCH_DATE = new Date('2026-04-12T00:00:00+08:00');
+  var TEST_MODE = new Date() < LAUNCH_DATE || new URLSearchParams(location.search).has('test');
   var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
 
   // ── Safe localStorage helpers (LINE in-app privacy mode safe) ──
@@ -438,6 +439,69 @@ import AuthGate from '../_components/AuthGate.astro';
     gpsTrackPoints = saved.map(function(p) { return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source || 'saved' }; });
   } catch(e) {}
   var gpsReady = false;
+
+  // ── GP-1: Periodic auto-track persist to localStorage ──
+  var autoSaveCounter = 0;
+  var autoSaveTimer = null;
+
+  function persistAutoTrack() {
+    try {
+      var savedTrack = JSON.parse(lsGet('formosa_gps_track') || '[]');
+      var unsaved = gpsTrackPoints.filter(function(p) {
+        return p.source === 'auto' && !p._saved;
+      });
+      if (unsaved.length === 0) return;
+      unsaved.forEach(function(p) {
+        savedTrack.push({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: 'auto' });
+        p._saved = true;
+      });
+      // localStorage 容量保護：最多 5000 筆，超過丟最早的 auto 點
+      if (savedTrack.length > 5000) {
+        var autoPoints = savedTrack.filter(function(p) { return p.source === 'auto'; });
+        var otherPoints = savedTrack.filter(function(p) { return p.source !== 'auto'; });
+        autoPoints = autoPoints.slice(-3000);
+        savedTrack = otherPoints.concat(autoPoints).sort(function(a, b) {
+          return (a.datetime || '').localeCompare(b.datetime || '');
+        });
+      }
+      lsSet('formosa_gps_track', JSON.stringify(savedTrack));
+    } catch(e) {}
+    autoSaveCounter = 0;
+  }
+
+  // ── GP-6: Failed checkin retry queue ──
+  function queueFailedCheckin(payload) {
+    var queue = JSON.parse(lsGet('formosa_checkin_queue') || '[]');
+    if (queue.length >= 50) queue.shift();
+    queue.push(payload);
+    lsSet('formosa_checkin_queue', JSON.stringify(queue));
+  }
+
+  function flushCheckinQueue(userId) {
+    var queue = JSON.parse(lsGet('formosa_checkin_queue') || '[]');
+    if (queue.length === 0 || !userId) return;
+    fetch(API_BASE + '/api/formosa/track/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Line-User-Id': userId },
+      body: JSON.stringify({ user_id: userId, points: queue })
+    }).then(function(res) {
+      if (res.ok) lsSet('formosa_checkin_queue', '[]');
+    }).catch(function() {});
+  }
+
+  // ── GP-3: Get unuploaded track points for batch upload ──
+  function getUnuploadedTrackPoints() {
+    var points = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+    if (points.length > 1000) points = points.slice(-1000);
+    return points.map(function(p) {
+      return {
+        lat: Math.round(p.lat * 100000) / 100000,
+        lng: Math.round(p.lng * 100000) / 100000,
+        datetime: p.datetime,
+        source: p.source
+      };
+    });
+  }
 
   function startGPSTracking() {
     var statusEl = document.getElementById('gpsStatus');
@@ -478,6 +542,12 @@ import AuthGate from '../_components/AuthGate.astro';
         }
 
         gpsTrackPoints.push(pt);
+        // GP-1: periodic auto-save to localStorage
+        autoSaveCounter++;
+        if (autoSaveCounter >= 10) persistAutoTrack();
+        if (!autoSaveTimer) {
+          autoSaveTimer = setInterval(persistAutoTrack, 60000);
+        }
         if (statusEl) statusEl.textContent = '📍 追蹤中';
         if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
       },
@@ -507,31 +577,35 @@ import AuthGate from '../_components/AuthGate.astro';
       btn.textContent = '📍 定位中...';
     }
 
+    function doBasicCheckin(lat, lng, alt, acc) {
+      gpsTrackPoints.push({
+        lat: lat, lng: lng, altitude: alt, accuracy: acc,
+        datetime: new Date().toISOString(), source: 'manual',
+        filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
+      });
+      persistAutoTrack();
+      var countEl = document.getElementById('gpsCount');
+      if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
+      if (btn) {
+        btn.textContent = '✓ 已打卡';
+        btn.disabled = true;
+        setTimeout(function() { btn.textContent = btn.dataset.origText || '打卡 📍'; btn.disabled = false; }, 1500);
+      }
+    }
+
+    // GP-5: use existing position if available
+    if (gpsReady && gpsTrackPoints.length > 0) {
+      var lastPt = gpsTrackPoints[gpsTrackPoints.length - 1];
+      doBasicCheckin(lastPt.lat, lastPt.lng, lastPt.altitude, lastPt.accuracy);
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       function(pos) {
-        gpsTrackPoints.push({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          altitude: pos.coords.altitude,
-          accuracy: pos.coords.accuracy,
-          datetime: new Date().toISOString(),
-          source: 'manual',
-          filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
-        });
-        var countEl = document.getElementById('gpsCount');
-        countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
-
-        if (btn) {
-          btn.textContent = '✓ 已打卡';
-          btn.disabled = true;
-          setTimeout(function() { btn.textContent = btn.dataset.origText || '打卡 📍'; btn.disabled = false; }, 1500);
-        }
+        doBasicCheckin(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, pos.coords.accuracy);
       },
       function(err) {
-        if (btn) {
-          btn.textContent = btn.dataset.origText || '打卡 📍';
-          btn.disabled = false;
-        }
+        if (btn) { btn.textContent = btn.dataset.origText || '打卡 📍'; btn.disabled = false; }
         if (err.code === 1) {
           alert('定位權限被拒絕，請到手機設定開啟定位權限。');
         } else if (err.code === 3) {
@@ -540,7 +614,7 @@ import AuthGate from '../_components/AuthGate.astro';
           showPhotoToast('📍 暫時無法定位，請稍後再試', 3000);
         }
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 20000 }
     );
   };
 
@@ -1545,8 +1619,12 @@ import AuthGate from '../_components/AuthGate.astro';
       cumulativePhotoCount += count;
       lsSet('formosa_photo_count', cumulativePhotoCount);
 
-      // Increment on server
+      // GP-2: warn if no userId
       var userId = lineUserId || lsGet('formosa_user_id') || '';
+      if (!userId) {
+        showPhotoToast('⚠️ 尚未登入，照片紀錄僅保存在本機', 4000);
+      }
+      // Increment on server
       if (userId) {
         try {
           await fetch(API_BASE + '/api/formosa/photos/count', {
@@ -1640,6 +1718,123 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   // Override manualCheckin to calculate distance and update stats
+  // GP-5: processCheckin extracted so we can skip getCurrentPosition when watchPosition is ready
+  function processCheckin(lat, lng, altitude, accuracy, activeBtn) {
+    // Calculate distance from last check-in
+    var last = getLastCheckinCoords();
+    if (last) {
+      var dist = haversine(last.lat, last.lng, lat, lng);
+      if (dist > 0.01) addKm(dist);
+    }
+    saveLastCheckinCoords(lat, lng);
+
+    // Push to GPS track
+    var newPt = {
+      lat: lat, lng: lng,
+      altitude: altitude,
+      accuracy: accuracy,
+      datetime: new Date().toISOString(),
+      source: 'manual',
+      filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
+    };
+    gpsTrackPoints.push(newPt);
+
+    // Persist to localStorage for route map
+    var savedTrack = JSON.parse(lsGet('formosa_gps_track') || '[]');
+    savedTrack.push({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
+    lsSet('formosa_gps_track', JSON.stringify(savedTrack));
+
+    // GP-1: also persist any pending auto points
+    persistAutoTrack();
+
+    // GP-2: userId empty → warn user, still update local UI
+    var userId = lineUserId || lsGet('formosa_user_id') || '';
+    if (!userId) {
+      showPhotoToast('⚠️ 尚未登入，打卡紀錄僅保存在本機', 4000);
+    }
+
+    // Sync checkin to server (GP-3: include batch track_points)
+    if (userId) {
+      var checkinPayload = {
+        user_id: userId,
+        lat: lat, lng: lng,
+        altitude: altitude,
+        accuracy: accuracy,
+        source: 'manual',
+        checkins: getSavedCheckins() + 1,
+        km: getSavedKm(),
+        track_points: getUnuploadedTrackPoints()
+      };
+      fetch(API_BASE + '/api/formosa/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(checkinPayload)
+      }).then(function(res) {
+        if (res.ok) {
+          // Mark all points as uploaded
+          gpsTrackPoints.forEach(function(p) { p._uploaded = true; });
+          // GP-6: flush any queued failed checkins
+          flushCheckinQueue(userId);
+        } else {
+          console.warn('打卡 API 回應異常:', res.status);
+          if (res.status === 429) {
+            showPhotoToast('⏳ 打卡太頻繁，請稍後再試', 3000);
+          }
+        }
+      }).catch(function(err) {
+        console.warn('打卡 API 失敗（離線？）:', err);
+        // GP-6: queue for retry
+        queueFailedCheckin({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
+      });
+    }
+
+    var countEl = document.getElementById('gpsCount');
+    if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
+
+    // Button success feedback
+    if (activeBtn) {
+      activeBtn.textContent = userId ? '✓ 已打卡' : '✓ 已記錄（本機）';
+      activeBtn.disabled = true;
+      setTimeout(function() {
+        activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
+        activeBtn.disabled = false;
+      }, 1500);
+    }
+
+    // Update stats
+    var n = incrementCheckins();
+    var km = getSavedKm();
+    var t = getTitle(n, km);
+
+    var badgeEl = document.getElementById('checkinBadge');
+    if (badgeEl) badgeEl.innerHTML = '<img src="' + MASCOT_BASE + t.current.img + '" class="mascot-badge" alt="' + t.current.name + '"><span>' + t.current.name + '</span>';
+
+    var statsEl = document.getElementById('checkinStats');
+    if (statsEl) {
+      statsEl.innerHTML = '<div class="done-stats">' +
+        '<div class="done-stat"><strong>' + n + '</strong><span>打卡次數</span></div>' +
+        '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
+        getCarbonStatsHtml() +
+        '</div>' + getTransportBreakdownHtml();
+    }
+
+    updateCheckinProgress(t);
+  }
+
+  function handleCheckinError(err, activeBtn) {
+    if (activeBtn) {
+      activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
+      activeBtn.disabled = false;
+    }
+    if (err.code === 1) {
+      alert('定位權限被拒絕，請到手機設定開啟定位權限。');
+    } else if (err.code === 3) {
+      showPhotoToast('📍 GPS 訊號弱，請到空曠處再試', 3000);
+    } else {
+      showPhotoToast('📍 暫時無法定位，請稍後再試', 3000);
+    }
+  }
+
   window.manualCheckin = function() {
     // Immediate loading feedback on both buttons
     var btn = document.getElementById('gpsCheckinBtn');
@@ -1651,111 +1846,20 @@ import AuthGate from '../_components/AuthGate.astro';
       activeBtn.textContent = '📍 定位中...';
     }
 
+    // GP-5: if watchPosition already has a fix, use it instantly
+    if (gpsReady && gpsTrackPoints.length > 0) {
+      var lastPt = gpsTrackPoints[gpsTrackPoints.length - 1];
+      processCheckin(lastPt.lat, lastPt.lng, lastPt.altitude, lastPt.accuracy, activeBtn);
+      return;
+    }
+
+    // Fallback: getCurrentPosition with longer timeout (GP-5: 20s instead of 10s)
     navigator.geolocation.getCurrentPosition(
       function(pos) {
-        var lat = pos.coords.latitude;
-        var lng = pos.coords.longitude;
-
-        // Calculate distance from last check-in
-        var last = getLastCheckinCoords();
-        if (last) {
-          var dist = haversine(last.lat, last.lng, lat, lng);
-          if (dist > 0.01) { // ignore < 10m (noise)
-            addKm(dist);
-          }
-        }
-        saveLastCheckinCoords(lat, lng);
-
-        // Push to GPS track
-        var newPt = {
-          lat: lat, lng: lng,
-          altitude: pos.coords.altitude,
-          accuracy: pos.coords.accuracy,
-          datetime: new Date().toISOString(),
-          source: 'manual',
-          filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
-        };
-        gpsTrackPoints.push(newPt);
-
-        // Persist to localStorage for route map
-        var savedTrack = JSON.parse(lsGet('formosa_gps_track') || '[]');
-        savedTrack.push({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
-        lsSet('formosa_gps_track', JSON.stringify(savedTrack));
-
-        // Sync checkin to server
-        var userId = lineUserId || lsGet('formosa_user_id') || '';
-        if (userId) {
-          fetch(API_BASE + '/api/formosa/checkin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              user_id: userId,
-              lat: lat, lng: lng,
-              altitude: pos.coords.altitude,
-              accuracy: pos.coords.accuracy,
-              source: 'manual',
-              checkins: getSavedCheckins() + 1,
-              km: getSavedKm()
-            })
-          }).then(function(res) {
-            if (!res.ok) {
-              console.warn('打卡 API 回應異常:', res.status);
-              if (res.status === 429) {
-                showPhotoToast('⏳ 打卡太頻繁，請稍後再試', 3000);
-              }
-            }
-          }).catch(function(err) {
-            console.warn('打卡 API 失敗（離線？）:', err);
-          });
-        }
-
-        var countEl = document.getElementById('gpsCount');
-        if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
-
-        // Button success feedback
-        if (activeBtn) {
-          activeBtn.textContent = '✓ 已打卡';
-          activeBtn.disabled = true;
-          setTimeout(function() {
-            activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
-            activeBtn.disabled = false;
-          }, 1500);
-        }
-
-        // Update stats
-        var n = incrementCheckins();
-        var km = getSavedKm();
-        var t = getTitle(n, km);
-
-        var badgeEl = document.getElementById('checkinBadge');
-        if (badgeEl) badgeEl.innerHTML = '<img src="' + MASCOT_BASE + t.current.img + '" class="mascot-badge" alt="' + t.current.name + '"><span>' + t.current.name + '</span>';
-
-        var statsEl = document.getElementById('checkinStats');
-        if (statsEl) {
-          statsEl.innerHTML = '<div class="done-stats">' +
-            '<div class="done-stat"><strong>' + n + '</strong><span>打卡次數</span></div>' +
-            '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
-            getCarbonStatsHtml() +
-            '</div>' + getTransportBreakdownHtml();
-        }
-
-        updateCheckinProgress(t);
+        processCheckin(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, pos.coords.accuracy, activeBtn);
       },
-      function(err) {
-        // Restore button on failure
-        if (activeBtn) {
-          activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
-          activeBtn.disabled = false;
-        }
-        if (err.code === 1) {
-          alert('定位權限被拒絕，請到手機設定開啟定位權限。');
-        } else if (err.code === 3) {
-          showPhotoToast('📍 GPS 訊號弱，請到空曠處再試', 3000);
-        } else {
-          showPhotoToast('📍 暫時無法定位，請稍後再試', 3000);
-        }
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
+      function(err) { handleCheckinError(err, activeBtn); },
+      { enableHighAccuracy: true, timeout: 20000 }
     );
   };
 
@@ -2040,6 +2144,39 @@ import AuthGate from '../_components/AuthGate.astro';
 
     setTimeout(function() { map.invalidateSize(); }, 100);
   }
+
+  // ── GP-7: visibilitychange — restart tracking, persist, flush queue ──
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+      if (!window.__gpsWatchId && lsGet('formosa_participant_status') !== 'completed') startGPSTracking();
+      persistAutoTrack();
+      var userId = lineUserId || lsGet('formosa_user_id') || '';
+      if (userId) flushCheckinQueue(userId);
+    } else {
+      persistAutoTrack();
+    }
+  });
+
+  // ── GP-8: beforeunload / pagehide — rescue data before page closes ──
+  window.addEventListener('beforeunload', function() {
+    persistAutoTrack();
+  });
+  window.addEventListener('pagehide', function() {
+    persistAutoTrack();
+    // Use sendBeacon for track/sync if available (survives page close)
+    var userId = lineUserId || lsGet('formosa_user_id') || '';
+    if (userId && navigator.sendBeacon) {
+      var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+      if (unsent.length > 0) {
+        navigator.sendBeacon(API_BASE + '/api/formosa/track/sync', new Blob([JSON.stringify({
+          user_id: userId,
+          points: unsent.slice(-500).map(function(p) {
+            return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source };
+          })
+        })], { type: 'application/json' }));
+      }
+    }
+  });
 
   } // end trackerInit
 

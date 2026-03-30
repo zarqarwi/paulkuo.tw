@@ -354,15 +354,99 @@ export async function handleFormosaCheckin(request, env) {
       blessing_id: data.blessing_id || null
     }), { expirationTtl: 86400 });
 
+    // GP-3: Batch track_points from frontend (optional, backward-compatible)
+    let batchWritten = 0;
+    if (data.track_points && Array.isArray(data.track_points)) {
+      const raw = data.track_points;
+      const capped = raw.length > 1000 ? raw.slice(-1000) : raw;
+      const validPts = capped.filter(pt => validateGPS(pt.lat, pt.lng));
+      for (const pt of validPts) {
+        const ptTs = pt.datetime || new Date().toISOString();
+        const ptKey = `gps:${ptTs}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
+        await env.TICKER_KV.put(ptKey, JSON.stringify({
+          user_id: userId, lat: pt.lat, lng: pt.lng,
+          altitude: null, accuracy: null,
+          source: pt.source || 'auto', timestamp: ptTs
+        }), { expirationTtl: 86400 });
+        batchWritten++;
+      }
+    }
+
     // Approximate point count from KV (updated by cron flush)
     const countKey = `gps_count:${userId}`;
     const cachedCount = await env.TICKER_KV.get(countKey);
-    const approxCount = cachedCount ? parseInt(cachedCount, 10) + 1 : 1;
+    const approxCount = cachedCount ? parseInt(cachedCount, 10) + 1 + batchWritten : 1 + batchWritten;
     await env.TICKER_KV.put(countKey, String(approxCount), { expirationTtl: 86400 * 30 });
 
-    return jsonResponse({ ok: true, total_points: approxCount, in_range: inRange, buffered: true }, 200, request);
+    return jsonResponse({ ok: true, total_points: approxCount, in_range: inRange, buffered: true, batch: batchWritten }, 200, request);
   } catch (e) {
     console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
+  }
+}
+
+// ── GP-4: Track Sync Endpoint (batch GPS point upload) ──
+export async function handleFormosaTrackSync(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Method not allowed' }, 405, request);
+  }
+
+  try {
+    const actStatus = await getFormosaStatus(env.TICKER_KV);
+    if (actStatus.status === 'paused' || actStatus.status === 'ended') {
+      return jsonResponse({ error: actStatus.message || '活動暫停或已結束' }, 403, request);
+    }
+
+    // Support both JSON and sendBeacon (which sends as text)
+    let data;
+    const ct = request.headers.get('Content-Type') || '';
+    if (ct.includes('application/json') || ct.includes('text/plain')) {
+      data = await request.json();
+    } else {
+      const text = await request.text();
+      data = JSON.parse(text);
+    }
+
+    const headerUserId = request.headers.get('X-Line-User-Id');
+    const userId = data.user_id || headerUserId;
+    if (!userId) {
+      return jsonResponse({ error: 'Missing user_id' }, 400, request);
+    }
+
+    // Rate limit: 10 sync requests per minute per user
+    const rateLimited = await checkRateLimitKV(env.TICKER_KV, `sync:${userId}`, 60, 10);
+    if (rateLimited) {
+      return jsonResponse({ error: '同步太頻繁', rate_limited: true }, 429, request);
+    }
+
+    const points = Array.isArray(data.points) ? data.points : [];
+    const capped = points.length > 1000 ? points.slice(-1000) : points;
+    const validPts = capped.filter(pt => validateGPS(pt.lat, pt.lng));
+
+    let synced = 0;
+    for (const pt of validPts) {
+      const ptTs = pt.datetime || new Date().toISOString();
+      const ptKey = `gps:${ptTs}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
+      await env.TICKER_KV.put(ptKey, JSON.stringify({
+        user_id: userId, lat: pt.lat, lng: pt.lng,
+        altitude: null, accuracy: null,
+        source: pt.source || 'auto', timestamp: ptTs
+      }), { expirationTtl: 86400 });
+      synced++;
+    }
+
+    // Update approximate count
+    const countKey = `gps_count:${userId}`;
+    const cachedCount = await env.TICKER_KV.get(countKey);
+    const approxCount = cachedCount ? parseInt(cachedCount, 10) + synced : synced;
+    await env.TICKER_KV.put(countKey, String(approxCount), { expirationTtl: 86400 * 30 });
+
+    return jsonResponse({ ok: true, synced }, 200, request);
+  } catch (e) {
+    console.error('Track sync error:', e);
+    return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
