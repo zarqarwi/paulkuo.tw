@@ -389,6 +389,18 @@ import AuthGate from '../_components/AuthGate.astro';
 <!-- All logic (LIFF SDK loaded by AuthGate) -->
 <script is:inline>
 (function() {
+  // ── LINE LIFF pull-to-close prevention ──
+  var lastTouchY = 0;
+  document.addEventListener('touchstart', function(e) {
+    lastTouchY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e) {
+    var touchY = e.touches[0].clientY;
+    if (window.scrollY === 0 && touchY > lastTouchY) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
   // ── Config ──
   var TEST_MODE = new URLSearchParams(location.search).has('test');
   var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
@@ -596,14 +608,20 @@ import AuthGate from '../_components/AuthGate.astro';
 
     var checked = card.querySelectorAll('input[name="' + name + '"]:checked');
     if (checked.length === 0) {
-      // Show inline error
+      // Show inline error with scroll + shake animation
       var existing = card.querySelector('.q-error');
       if (!existing) {
         var err = document.createElement('div');
-        err.className = 'q-error';
+        err.className = 'q-error q-error-shake';
         err.textContent = '⚠ 請至少選擇一個選項';
         req.parentNode.insertBefore(err, req.nextSibling);
+      } else {
+        existing.classList.remove('q-error-shake');
+        void existing.offsetWidth;
+        existing.classList.add('q-error-shake');
       }
+      var errEl2 = card.querySelector('.q-error');
+      if (errEl2) errEl2.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return false;
     }
     // Clear error if exists
@@ -2024,6 +2042,11 @@ import AuthGate from '../_components/AuthGate.astro';
 </BaseLayout>
 
 <style>
+  /* Prevent LINE LIFF pull-to-close gesture */
+  html, body {
+    overscroll-behavior-y: contain;
+  }
+
   .tracker {
     max-width: 720px;
     margin: 0 auto;
@@ -2152,6 +2175,16 @@ import AuthGate from '../_components/AuthGate.astro';
     margin-top: 0.75rem;
     font-size: 0.82rem;
     color: #DC2626;
+  }
+  .q-error-shake {
+    animation: qShake 0.4s ease;
+  }
+  @keyframes qShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
   }
 
   .q-nav {
