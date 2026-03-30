@@ -62,8 +62,8 @@ const {
       </div>
     ) : (
       <!-- Password Mode (admin pages) -->
-      <p>{subtitle || '請輸入管理密碼'}</p>
-      <input type="password" id="authInput" placeholder="Access Code" autofocus />
+      <p class="auth-subtitle">僅限管理團隊存取</p>
+      <input type="password" id="authInput" placeholder="管理密碼" autofocus />
       <button id="authBtn">進入</button>
     )}
   </div>
@@ -347,6 +347,17 @@ const {
     max-width: 400px;
     width: 100%;
     box-shadow: var(--shadow-md);
+    overflow: hidden;
+    position: relative;
+  }
+  .formosa-auth .auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--brand-navy), var(--accent-faith));
   }
   .formosa-auth .auth-icon { font-size: 3rem; margin-bottom: 1rem; }
   .formosa-auth .auth-card h2 {
@@ -360,6 +371,12 @@ const {
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
+  }
+  .formosa-auth .auth-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
   .formosa-auth .auth-card input[type="password"] {
     width: 100%;

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import '../../../../styles/guide-template.css';
 ---
 
 <BaseLayout
@@ -20,9 +21,29 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   <p>有問題隨時問身邊的志工！</p>
 </blockquote>
 
+<nav class="guide-toc">
+  <details open>
+    <summary>📑 目錄</summary>
+    <ol>
+      <li><a href="#section-1">這個系統在做什麼？</a></li>
+      <li><a href="#section-2">第一步：掃碼，用 LINE 登入</a></li>
+      <li><a href="#section-3">第二步：同意隱私權聲明</a></li>
+      <li><a href="#section-4">第三步：填問卷（第一次進入時）</a></li>
+      <li><a href="#section-5">第四步：開始打卡</a></li>
+      <li><a href="#section-6">第五步：每日善足跡回報</a></li>
+      <li><a href="#section-7">第六步：查看你的成就</a></li>
+      <li><a href="#section-8">第七步：分享給朋友</a></li>
+      <li><a href="#section-9">暫離與完成進香</a></li>
+      <li><a href="#section-10">LINE Bot 小幫手</a></li>
+      <li><a href="#section-11">常見問題</a></li>
+      <li><a href="#section-12">重要提醒</a></li>
+    </ol>
+  </details>
+</nav>
+
 <hr />
 
-<h2>這個系統在做什麼？</h2>
+<h2 id="section-1">這個系統在做什麼？</h2>
 
 <p>你走路進香的每一步，手機會自動幫你記下來。</p>
 
@@ -36,7 +57,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>第一步：掃碼，用 LINE 登入</h2>
+<h2 id="section-2"><span class="step-badge">1</span>第一步：掃碼，用 LINE 登入</h2>
 
 <p>有兩種方式可以進入系統：</p>
 
@@ -58,13 +79,16 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>第二步：同意隱私權聲明</h2>
+<h2 id="section-3"><span class="step-badge">2</span>第二步：同意隱私權聲明</h2>
 
 <p>LINE 登入之後，系統會先顯示一頁「隱私權聲明」，說明我們會蒐集哪些資料、怎麼使用、保留多久。</p>
 
 <p>主要蒐集的資料包括：LINE 帳號資訊、GPS 定位軌跡、問卷回答、每日善足跡回報。手機號碼和照片座標是選填的。</p>
 
-<p><strong>照片本身不會上傳到伺服器</strong>，系統只讀取裡面的 GPS 座標。你關掉頁面之後，GPS 追蹤也會停止。</p>
+<div class="callout callout-info">
+  <span class="callout-icon">ℹ️</span>
+  <p>照片本身不會上傳到伺服器，系統只讀取裡面的 GPS 座標。</p>
+</div>
 
 <p>請閱讀後按下「我同意」才能繼續使用。如果不同意，就無法使用打卡和路徑追蹤功能。</p>
 
@@ -72,7 +96,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>第三步：填問卷（第一次進入時）</h2>
+<h2 id="section-4"><span class="step-badge">3</span>第三步：填問卷（第一次進入時）</h2>
 
 <p>第一次使用會先跑一份問卷，完成後才會進入打卡模式。</p>
 
@@ -105,13 +129,16 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>第四步：開始打卡</h2>
+<h2 id="section-5"><span class="step-badge">4</span>第四步：開始打卡</h2>
 
 <p>問卷完成後就進入打卡模式。</p>
 
 <p>手機會跳出一個小視窗問你：「是否允許取用你的位置？」</p>
 
-<p><strong>請按「允許」。</strong> 這是最重要的一步！</p>
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠️</span>
+  <p>請按「允許」。這是最重要的一步！</p>
+</div>
 
 <p>按了之後，系統就會在背景自動記錄你走過的路線和公里數。畫面上方會出現一個綠色小圓點在閃，表示正在定位中。</p>
 
@@ -121,13 +148,17 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <p>小提醒：</p>
 <ul>
-  <li>走路的時候不用一直開著畫面，但<strong>不要關掉瀏覽器</strong></li>
-  <li>如果不小心關掉了，重新打開就好，之前的紀錄都還在</li>
+  <li>走路的時候不用一直開著畫面，但：</li>
 </ul>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠️</span>
+  <p>不要關掉瀏覽器！如果不小心關掉了，重新打開就好，之前的紀錄都還在。</p>
+</div>
 
 <hr />
 
-<h2>第五步：每日善足跡回報</h2>
+<h2 id="section-6"><span class="step-badge">5</span>第五步：每日善足跡回報</h2>
 
 <p>打卡頁面下方有一個「🌱 今日善足跡回報」的面板，每天都可以填。</p>
 
@@ -145,12 +176,13 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>第六步：查看你的成就</h2>
+<h2 id="section-7"><span class="step-badge">6</span>第六步：查看你的成就</h2>
 
 <h3>等級系統</h3>
 
 <p>系統有 9 個等級，根據你的步行公里數和祝福（打卡）次數來升級：</p>
 
+<div class="table-wrapper">
 <table>
   <thead>
     <tr><th>等級</th><th>稱號</th><th>公里數</th><th>祝福次數</th><th>大約對應</th></tr>
@@ -167,6 +199,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     <tr><td>9</td><td>飛升香客</td><td>300 km</td><td>40 次</td><td>全程走完</td></tr>
   </tbody>
 </table>
+</div>
 
 <p>每天送出 7 次祝福可以最快升級，但只要每天 5 次以上就能跟上進度。</p>
 
@@ -185,7 +218,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>第七步：分享給朋友</h2>
+<h2 id="section-8"><span class="step-badge">7</span>第七步：分享給朋友</h2>
 
 <p>達到三個條件（打卡至少 3 次 + 完成問卷 + 有留電話號碼）後，系統會幫你產生一張「進香成就卡」，上面有：</p>
 
@@ -205,7 +238,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>暫離與完成進香</h2>
+<h2 id="section-9">暫離與完成進香</h2>
 
 <p>不是每個人都會一路走完全程。你可能走兩天先回去，週末再來，或最後一天回來接駕——系統都支援。</p>
 
@@ -223,7 +256,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>LINE Bot 小幫手</h2>
+<h2 id="section-10">LINE Bot 小幫手</h2>
 
 <p>加入 LINE 好友「@539fkwjd」之後，Bot 會自動傳送歡迎訊息，裡面有功能按鈕。</p>
 
@@ -241,43 +274,63 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 <hr />
 
-<h2>常見問題</h2>
+<h2 id="section-11">常見問題</h2>
 
 <div class="faq">
-  <h3>Q：我需要輸入什麼密碼嗎？</h3>
-  <p>A：不用。香客只要用 LINE 登入就好，不需要任何通行碼。</p>
+  <details class="faq-item">
+    <summary>我需要輸入什麼密碼嗎？</summary>
+    <p>不用。香客只要用 LINE 登入就好，不需要任何通行碼。</p>
+  </details>
 
-  <h3>Q：手機一直沒有出現綠色閃爍的點？</h3>
-  <p>A：可能是按到「不允許」定位了。關掉網頁重新打開，這次記得按「允許」。</p>
+  <details class="faq-item">
+    <summary>手機一直沒有出現綠色閃爍的點？</summary>
+    <p>可能是按到「不允許」定位了。關掉網頁重新打開，這次記得按「允許」。</p>
+  </details>
 
-  <h3>Q：中途關掉手機了，紀錄會不見嗎？</h3>
-  <p>A：不會。之前走的紀錄都存在系統裡，重新打開會接著記。</p>
+  <details class="faq-item">
+    <summary>中途關掉手機了，紀錄會不見嗎？</summary>
+    <p>不會。之前走的紀錄都存在系統裡，重新打開會接著記。</p>
+  </details>
 
-  <h3>Q：拍的照片會被上傳嗎？</h3>
-  <p>A：不會。系統只會讀取照片中的 GPS 座標來記錄位置，照片本身留在你手機裡。</p>
+  <details class="faq-item">
+    <summary>拍的照片會被上傳嗎？</summary>
+    <p>不會。系統只會讀取照片中的 GPS 座標來記錄位置，照片本身留在你手機裡。</p>
+  </details>
 
-  <h3>Q：走了很多但等級沒升？</h3>
-  <p>A：等級要同時看公里數和打卡次數。記得沿途多按幾次「打卡」按鈕。</p>
+  <details class="faq-item">
+    <summary>走了很多但等級沒升？</summary>
+    <p>等級要同時看公里數和打卡次數。記得沿途多按幾次「打卡」按鈕。</p>
+  </details>
 
-  <h3>Q：每日善足跡回報一定要填嗎？</h3>
-  <p>A：交通方式不用填，系統會從 GPS 自動估算。但住宿和瓶裝水的部分如果有填，碳足跡會更完整。</p>
+  <details class="faq-item">
+    <summary>每日善足跡回報一定要填嗎？</summary>
+    <p>交通方式不用填，系統會從 GPS 自動估算。但住宿和瓶裝水的部分如果有填，碳足跡會更完整。</p>
+  </details>
 
-  <h3>Q：碳足跡是怎麼算的？</h3>
-  <p>A：系統會根據你移動的速度，簡化成兩種情境來估算：慢速移動（步行、騎腳踏車）算零排放，快速移動（搭車）統一用大眾交通工具的碳排係數估算。這不是精確的碳盤查數字，而是一個幫助你了解減排效果的參考值。走越多，碳足跡越低。</p>
+  <details class="faq-item">
+    <summary>碳足跡是怎麼算的？</summary>
+    <p>系統會根據你移動的速度，簡化成兩種情境來估算：慢速移動（步行、騎腳踏車）算零排放，快速移動（搭車）統一用大眾交通工具的碳排係數估算。這不是精確的碳盤查數字，而是一個幫助你了解減排效果的參考值。走越多，碳足跡越低。</p>
+  </details>
 
-  <h3>Q：碳節省量是什麼意思？</h3>
-  <p>A：如果你走的這些路程全部改成搭車，大約會排放多少碳。系統幫你算出你用雙腳「省下」了多少二氧化碳。</p>
+  <details class="faq-item">
+    <summary>碳節省量是什麼意思？</summary>
+    <p>如果你走的這些路程全部改成搭車，大約會排放多少碳。系統幫你算出你用雙腳「省下」了多少二氧化碳。</p>
+  </details>
 
-  <h3>Q：我沒有智慧型手機怎麼辦？</h3>
-  <p>A：可以跟同行的朋友共用一支手機，或找現場志工幫忙。</p>
+  <details class="faq-item">
+    <summary>我沒有智慧型手機怎麼辦？</summary>
+    <p>可以跟同行的朋友共用一支手機，或找現場志工幫忙。</p>
+  </details>
 
-  <h3>Q：問卷可以改答案嗎？</h3>
-  <p>A：問卷送出後就固定了。每日善足跡回報則可以每天重新填寫。</p>
+  <details class="faq-item">
+    <summary>問卷可以改答案嗎？</summary>
+    <p>問卷送出後就固定了。每日善足跡回報則可以每天重新填寫。</p>
+  </details>
 </div>
 
 <hr />
 
-<h2>重要提醒</h2>
+<h2 id="section-12">重要提醒</h2>
 
 <ol>
   <li><strong>進香途中注意安全，走路不要一直看手機</strong></li>
@@ -291,6 +344,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 <footer class="guide-footer">
   <p>白沙屯媽祖 ESG 進香 2026</p>
   <p>每一步都算數，一起為地球走一程 🌱</p>
+  <a href="https://line.me/R/ti/p/@539fkwjd" class="guide-cta">立即加入 LINE</a>
 </footer>
 
 </article>
@@ -298,105 +352,5 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <style>
-  .guide-content {
-    max-width: 720px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
-    line-height: 1.8;
-    color: var(--text-primary);
-  }
-  .guide-content h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .guide-meta {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    margin-bottom: 2rem;
-  }
-  .guide-content hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 1.5rem 0;
-  }
-  .guide-content blockquote {
-    border-left: 4px solid var(--accent-faith);
-    padding: 0.75rem 1rem;
-    margin: 1rem 0;
-    background: rgba(180,83,9,0.04);
-    border-radius: 0 8px 8px 0;
-  }
-  .guide-content blockquote p {
-    margin: 0.25rem 0;
-    color: var(--text-secondary);
-    font-size: 0.92rem;
-  }
-  .guide-content h2 {
-    font-size: 1.25rem;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-  }
-  .guide-content h3 {
-    font-size: 1.05rem;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-  .guide-content p {
-    margin: 0.75rem 0;
-    font-size: 0.95rem;
-  }
-  .guide-content ul, .guide-content ol {
-    margin: 0.5rem 0;
-    padding-left: 1.5rem;
-  }
-  .guide-content li {
-    margin: 0.35rem 0;
-    font-size: 0.95rem;
-  }
-  .guide-content table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    margin: 1rem 0;
-  }
-  .guide-content th, .guide-content td {
-    border: 1px solid var(--border);
-    padding: 0.5rem;
-  }
-  .guide-content th {
-    background: var(--bg-card);
-    font-weight: 600;
-  }
-  .guide-content .faq h3 {
-    margin-top: 1.5rem;
-    font-size: 0.95rem;
-    font-weight: 700;
-  }
-  .guide-content .faq p {
-    margin-top: 0.25rem;
-  }
-  .guide-footer {
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-top: 2rem;
-    padding: 1.5rem 0;
-  }
-  .guide-footer p {
-    margin: 0.25rem 0;
-  }
-  @media (max-width: 768px) {
-    .guide-content {
-      padding: 0 1rem;
-    }
-    .guide-content h1 {
-      font-size: 1.3rem;
-    }
-    .guide-content table {
-      font-size: 0.78rem;
-    }
-    .guide-content th, .guide-content td {
-      padding: 0.35rem;
-    }
-  }
+  html { scroll-behavior: smooth; }
 </style>

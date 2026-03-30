@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import AuthGate from '../../_components/AuthGate.astro';
+import '../../../../../styles/guide-template.css';
 ---
 
 <BaseLayout
@@ -22,9 +23,27 @@ import AuthGate from '../../_components/AuthGate.astro';
   <p>香客端的操作方式請看「<a href="/projects/formosa-esg-2026/guide/">香客使用說明書</a>」。</p>
 </blockquote>
 
+<nav class="guide-toc">
+  <details open>
+    <summary>📑 目錄</summary>
+    <ol>
+      <li><a href="#section-1">數據儀表板</a></li>
+      <li><a href="#section-2">推播通知</a></li>
+      <li><a href="#section-3">參與者管理</a></li>
+      <li><a href="#section-4">活動控制</a></li>
+      <li><a href="#section-5">頁面總覽</a></li>
+      <li><a href="#section-6">碳足跡怎麼算的</a></li>
+      <li><a href="#section-7">個人資料保護</a></li>
+      <li><a href="#section-8">系統安全防護</a></li>
+      <li><a href="#section-9">QR Code 與成就卡</a></li>
+      <li><a href="#section-10">志工角色（目前是預留功能）</a></li>
+    </ol>
+  </details>
+</nav>
+
 <hr />
 
-<h2>一、數據儀表板</h2>
+<h2 id="section-1">一、數據儀表板</h2>
 
 <p>進入後台後，第一眼看到的是六個數字：</p>
 
@@ -67,7 +86,7 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <hr />
 
-<h2>二、推播通知</h2>
+<h2 id="section-2">二、推播通知</h2>
 
 <h3>手動發推播</h3>
 
@@ -77,7 +96,10 @@ import AuthGate from '../../_components/AuthGate.astro';
   <li>按「發送推播」</li>
 </ol>
 
-<p>按下去就直接送到香客的 LINE，沒有「確認」按鈕，所以發之前請再看一次。</p>
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠️</span>
+  <p>按下去就直接送到香客的 LINE，沒有「確認」按鈕，所以發之前請再看一次。</p>
+</div>
 
 <p>「暫離中」跟「已完成」的人不會收到，系統會自動跳過。</p>
 
@@ -87,12 +109,13 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <hr />
 
-<h2>三、參與者管理</h2>
+<h2 id="section-3">三、參與者管理</h2>
 
 <p>後台有一個使用者列表，可以看每個人的名稱、打卡次數、碳排數據、最後活躍時間、角色。上方有搜尋欄，點表頭可以排序。</p>
 
 <h3>角色</h3>
 
+<div class="table-wrapper">
 <table>
   <thead>
     <tr><th>角色</th><th>差別在哪</th></tr>
@@ -103,11 +126,13 @@ import AuthGate from '../../_components/AuthGate.astro';
     <tr><td>管理者</td><td>可以進後台</td></tr>
   </tbody>
 </table>
+</div>
 
 <p>要改角色的話，目前要透過 API 操作，請找工程師協助。</p>
 
 <h3>使用者狀態</h3>
 
+<div class="table-wrapper">
 <table>
   <thead>
     <tr><th>狀態</th><th>代表什麼</th></tr>
@@ -118,15 +143,17 @@ import AuthGate from '../../_components/AuthGate.astro';
     <tr><td>已完成</td><td>香客按了「完成進香」，成就卡定版，不再收到推播</td></tr>
   </tbody>
 </table>
+</div>
 
 <p>活動結束時，系統會把所有還在「活躍」或「暫離」的人統一結算為「已完成」。</p>
 
 <hr />
 
-<h2>四、活動控制</h2>
+<h2 id="section-4">四、活動控制</h2>
 
 <p>活動有三種狀態：</p>
 
+<div class="table-wrapper">
 <table>
   <thead>
     <tr><th>狀態</th><th>效果</th></tr>
@@ -137,6 +164,7 @@ import AuthGate from '../../_components/AuthGate.astro';
     <tr><td>結束</td><td>活動結束，所有功能關閉</td></tr>
   </tbody>
 </table>
+</div>
 
 <p>什麼時候用暫停：颱風天、系統維護、突發狀況。</p>
 <p>什麼時候用結束：活動正式結束。</p>
@@ -145,7 +173,7 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <hr />
 
-<h2>五、頁面總覽</h2>
+<h2 id="section-5">五、頁面總覽</h2>
 
 <p><strong>專案總覽首頁</strong> — 給所有人看的入口頁面，介紹整個 ESG 進香計畫。<br />
 → <a href="/projects/formosa-esg-2026/">/projects/formosa-esg-2026/</a></p>
@@ -176,7 +204,7 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <hr />
 
-<h2>六、碳足跡怎麼算的</h2>
+<h2 id="section-6">六、碳足跡怎麼算的</h2>
 
 <p>系統用兩個簡單的規則來估算碳排放：</p>
 
@@ -196,12 +224,13 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <hr />
 
-<h2>七、個人資料保護</h2>
+<h2 id="section-7">七、個人資料保護</h2>
 
 <p>本系統蒐集的個人資料受台灣《個人資料保護法》規範。</p>
 
 <h3>蒐集了什麼</h3>
 
+<div class="table-wrapper">
 <table>
   <thead>
     <tr><th>資料</th><th>是否必要</th></tr>
@@ -215,6 +244,7 @@ import AuthGate from '../../_components/AuthGate.astro';
     <tr><td>手機號碼（抽獎通知用）</td><td>選填</td></tr>
   </tbody>
 </table>
+</div>
 
 <h3>同意機制</h3>
 
@@ -240,7 +270,7 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <hr />
 
-<h2>八、系統安全防護</h2>
+<h2 id="section-8">八、系統安全防護</h2>
 
 <p>本系統在設計上已將資料安全納入考量。以下說明目前的防護機制，讓管理者了解系統是如何保護參與者的資料。</p>
 
@@ -284,13 +314,19 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <h3>管理者的安全責任</h3>
 
-<ul>
-  <li><strong>管理密碼不要分享</strong>給非管理者，更不要用通訊軟體傳送</li>
-  <li><strong>不要在公開場合展示後台</strong>，如果需要展示請用 Demo 模式（網址加 <code>?demo=1</code>）</li>
-  <li><strong>匯出的資料要妥善保管</strong>，不要放在公開的雲端空間或共用資料夾</li>
-  <li><strong>手機號碼等個資只限活動用途</strong>，不得用於行銷或提供給第三方</li>
-  <li>如果發現異常（例如不明的大量打卡、資料異常），請立即通知工程師</li>
-</ul>
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠️</span>
+  <div>
+    <p><strong>安全責任清單：</strong></p>
+    <ul style="margin:0.25rem 0 0;padding-left:1.25rem;font-size:0.92rem">
+      <li>管理密碼不要分享給非管理者，更不要用通訊軟體傳送</li>
+      <li>不要在公開場合展示後台，如果需要展示請用 Demo 模式（網址加 <code>?demo=1</code>）</li>
+      <li>匯出的資料要妥善保管，不要放在公開的雲端空間或共用資料夾</li>
+      <li>手機號碼等個資只限活動用途，不得用於行銷或提供給第三方</li>
+      <li>如果發現異常（例如不明的大量打卡、資料異常），請立即通知工程師</li>
+    </ul>
+  </div>
+</div>
 
 <h3>安全事件處理</h3>
 
@@ -303,7 +339,7 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <hr />
 
-<h2>九、QR Code 與成就卡</h2>
+<h2 id="section-9">九、QR Code 與成就卡</h2>
 
 <p>香客達到以下三個條件後，系統才會產生成就卡：</p>
 
@@ -328,7 +364,7 @@ import AuthGate from '../../_components/AuthGate.astro';
 
 <hr />
 
-<h2>十、志工角色（目前是預留功能）</h2>
+<h2 id="section-10">十、志工角色（目前是預留功能）</h2>
 
 <p>資料庫已經有「志工」這個角色，管理者可以指派。</p>
 
@@ -341,6 +377,7 @@ import AuthGate from '../../_components/AuthGate.astro';
 <footer class="guide-footer">
   <p>白沙屯媽祖 ESG 進香 2026</p>
   <p>每一步都算數，一起為地球走一程 🌱</p>
+  <a href="/projects/formosa-esg-2026/dashboard/" class="guide-cta">前往管理儀表板</a>
 </footer>
 
 </article>
@@ -350,113 +387,5 @@ import AuthGate from '../../_components/AuthGate.astro';
 </BaseLayout>
 
 <style>
-  .guide-content {
-    max-width: 720px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
-    line-height: 1.8;
-    color: var(--text-primary);
-  }
-  .guide-content h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .guide-meta {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    margin-bottom: 2rem;
-  }
-  .guide-content hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 1.5rem 0;
-  }
-  .guide-content blockquote {
-    border-left: 4px solid var(--accent-faith);
-    padding: 0.75rem 1rem;
-    margin: 1rem 0;
-    background: rgba(180,83,9,0.04);
-    border-radius: 0 8px 8px 0;
-  }
-  .guide-content blockquote p {
-    margin: 0.25rem 0;
-    color: var(--text-secondary);
-    font-size: 0.92rem;
-  }
-  .guide-content blockquote a {
-    color: var(--accent-faith);
-  }
-  .guide-content h2 {
-    font-size: 1.25rem;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-  }
-  .guide-content h3 {
-    font-size: 1.05rem;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-  .guide-content p {
-    margin: 0.75rem 0;
-    font-size: 0.95rem;
-  }
-  .guide-content ul, .guide-content ol {
-    margin: 0.5rem 0;
-    padding-left: 1.5rem;
-  }
-  .guide-content li {
-    margin: 0.35rem 0;
-    font-size: 0.95rem;
-  }
-  .guide-content table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    margin: 1rem 0;
-  }
-  .guide-content th, .guide-content td {
-    border: 1px solid var(--border);
-    padding: 0.5rem;
-  }
-  .guide-content th {
-    background: var(--bg-card);
-    font-weight: 600;
-  }
-  .guide-content a {
-    color: var(--accent-faith);
-    text-decoration: none;
-  }
-  .guide-content a:hover {
-    text-decoration: underline;
-  }
-  .guide-content code {
-    background: var(--bg-card);
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-  }
-  .guide-footer {
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-top: 2rem;
-    padding: 1.5rem 0;
-  }
-  .guide-footer p {
-    margin: 0.25rem 0;
-  }
-  @media (max-width: 768px) {
-    .guide-content {
-      padding: 0 1rem;
-    }
-    .guide-content h1 {
-      font-size: 1.3rem;
-    }
-    .guide-content table {
-      font-size: 0.78rem;
-    }
-    .guide-content th, .guide-content td {
-      padding: 0.35rem;
-    }
-  }
+  html { scroll-behavior: smooth; }
 </style>
