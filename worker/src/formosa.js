@@ -964,6 +964,11 @@ async function routeKeyword(text, userId, env) {
     return [await buildStatsMessage(userId, env)];
   }
 
+  // 分享
+  if (/分享|share|推薦/.test(t)) {
+    return [{ type: 'text', text: `📤 分享你的進香足跡給朋友：\n${TRACKER_URL}\n\n打開後點「📸 分享我的進香足跡」按鈕，就能分享到 LINE、Facebook 等平台！` }];
+  }
+
   // 碳足跡 / 碳排
   if (/碳|carbon|co2|排放/.test(t)) {
     return [buildCarbonInfoMessage()];
@@ -1008,7 +1013,7 @@ function buildWelcomeMessage() {
           ]},
           { type: 'separator', margin: 'lg' },
           { type: 'text', text: '輸入關鍵字快速操作：', size: 'xs', color: '#999999', margin: 'lg' },
-          { type: 'text', text: '「打卡」「說明」「等級」「碳足跡」「回報」', size: 'xs', color: '#999999', margin: 'xs' }
+          { type: 'text', text: '「打卡」「說明」「等級」「碳足跡」「分享」「回報」', size: 'xs', color: '#999999', margin: 'xs' }
         ]
       },
       footer: {
