@@ -69,10 +69,11 @@ const {
   </div>
 </div>
 
-<!-- Protected content slot (hidden until verified) -->
-<div id="mainContent" style="display:none">
+<!-- Protected content slot (kept in <template> until verified — not in DOM, not crawlable) -->
+<template id="mainContentTpl">
   <slot />
-</div>
+</template>
+<div id="mainContent"></div>
 
 <script is:inline define:vars={{ lineLogin, liffId }}>
 (function() {
@@ -90,6 +91,9 @@ const {
 
   function unlock() {
     authGate.style.display = 'none';
+    // Inject content from <template> into DOM (content was not in DOM until now)
+    var tpl = document.getElementById('mainContentTpl');
+    if (tpl) mainContent.appendChild(tpl.content.cloneNode(true));
     mainContent.style.display = 'block';
     if (nav) nav.style.display = '';
     var f = document.querySelector('footer'); if (f) f.style.display = '';

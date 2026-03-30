@@ -212,6 +212,54 @@
   margin: 1rem 0;
 }
 
+/* ── Version Badge ── */
+.guide-version-badge {
+  display: inline-block;
+  background: var(--accent-faith);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}
+.guide-meta time {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-left: 0.5rem;
+}
+.guide-changelog {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-left: 0.25rem;
+}
+.guide-changelog::before { content: '— '; }
+
+/* ── LINE CTA ── */
+.guide-cta-line {
+  display: inline-block;
+  background: #06c755;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  margin: 1rem 0;
+  transition: opacity 0.2s;
+  font-size: 0.95rem;
+}
+.guide-cta-line:hover { opacity: 0.85; color: #fff; }
+
+/* ── Conditions List ── */
+.guide-conditions {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+.guide-conditions li {
+  margin: 0.25rem 0;
+}
+
 /* ── Footer & CTA ── */
 .guide-footer {
   text-align: center;
@@ -238,6 +286,25 @@
 .guide-cta:hover {
   opacity: 0.85;
   text-decoration: none !important;
+}
+.guide-cta-secondary {
+  background: transparent;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border);
+}
+.guide-cta-secondary:hover {
+  color: var(--text-primary) !important;
+  border-color: var(--text-secondary);
+}
+.guide-footer-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.guide-footer-actions .guide-cta {
+  margin-top: 0;
 }
 
 /* ── Responsive ── */

@@ -37,12 +37,12 @@ const n = navI18n[currentLang] || navI18n['zh-Hant'];
       <!-- Auth: login/avatar -->
       <div class="nav-auth-mobile" id="navAuthMobile"></div>
       <div class="mobile-lang-divider"></div>
-      <div class="mobile-lang-group">
+      <nav class="mobile-lang-group" aria-label="語言切換（行動版）">
         <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
         <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
         <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
         <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
-      </div>
+      </nav>
       <div class="mobile-font-group" aria-label={n.fontSize}>
         <span class="mobile-font-label">{n.fontSize}</span>
         <button class="mobile-font-btn" data-size="small" aria-label="A-">A-</button>
@@ -83,12 +83,12 @@ const n = navI18n[currentLang] || navI18n['zh-Hant'];
       </div>
     </div>
 
-    <div class="lang-switcher">
+    <nav class="lang-switcher" aria-label="語言切換">
       <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
       <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
       <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
       <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
-    </div>
+    </nav>
     <button class="nav-hamburger" id="hamburger-btn" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
