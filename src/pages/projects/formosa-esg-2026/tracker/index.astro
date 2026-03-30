@@ -416,6 +416,12 @@ import AuthGate from '../_components/AuthGate.astro';
     try { localStorage.removeItem(key); } catch(e) {}
   }
 
+  // ── LINE User Identity (set by AuthGate LIFF login) ──
+  var lineUserId = window.__lineUserId || lsGet('formosa_line_user_id') || null;
+
+  // ── Defer all DOM-dependent init until AuthGate unlocks the <template> ──
+  function trackerInit() {
+
   // ── Test Mode Banner ──
   if (TEST_MODE) {
     var tb = document.getElementById('testBanner');
@@ -423,9 +429,6 @@ import AuthGate from '../_components/AuthGate.astro';
     var tcl = document.getElementById('testCheckinLabel');
     if (tcl) tcl.style.display = 'block';
   }
-
-  // ── LINE User Identity (set by AuthGate LIFF login) ──
-  var lineUserId = window.__lineUserId || lsGet('formosa_line_user_id') || null;
 
   // ── Background GPS Tracking ──
   // Restore saved GPS track from localStorage
@@ -443,16 +446,16 @@ import AuthGate from '../_components/AuthGate.astro';
     var checkinBtn = document.getElementById('gpsCheckinBtn');
 
     if (!navigator.geolocation) {
-      statusEl.textContent = '⚠️ 此裝置不支援定位';
-      pulseEl.classList.add('off');
+      if (statusEl) statusEl.textContent = '⚠️ 此裝置不支援定位';
+      if (pulseEl) pulseEl.classList.add('off');
       return;
     }
 
     window.__gpsWatchId = navigator.geolocation.watchPosition(
       function(pos) {
         gpsReady = true;
-        pulseEl.classList.add('active');
-        checkinBtn.style.display = 'inline-block';
+        if (pulseEl) pulseEl.classList.add('active');
+        if (checkinBtn) checkinBtn.style.display = 'inline-block';
 
         var pt = {
           lat: pos.coords.latitude,
@@ -469,25 +472,24 @@ import AuthGate from '../_components/AuthGate.astro';
           var dist = haversine(last.lat, last.lng, pt.lat, pt.lng);
           var timeDiff = new Date(pt.datetime) - new Date(last.datetime);
           if (dist < 0.01 && timeDiff < 30000) {
-            statusEl.textContent = '📍 追蹤中 — 等待移動...';
+            if (statusEl) statusEl.textContent = '📍 追蹤中 — 等待移動...';
             return;
           }
         }
 
         gpsTrackPoints.push(pt);
-        statusEl.textContent = '📍 追蹤中';
-        countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
+        if (statusEl) statusEl.textContent = '📍 追蹤中';
+        if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
       },
       function(err) {
         if (err.code === 1) {
           // Permission denied — show clear warning
-          pulseEl.classList.remove('active');
-          pulseEl.classList.add('off');
-          statusEl.textContent = '⚠️ 定位權限被拒絕，請到設定開啟';
-          checkinBtn.style.display = 'none';
+          if (pulseEl) { pulseEl.classList.remove('active'); pulseEl.classList.add('off'); }
+          if (statusEl) statusEl.textContent = '⚠️ 定位權限被拒絕，請到設定開啟';
+          if (checkinBtn) checkinBtn.style.display = 'none';
         } else {
           // Temporary failure (signal weak / timeout) — keep calm
-          if (!gpsReady) {
+          if (!gpsReady && statusEl) {
             statusEl.textContent = '📍 GPS 搜尋中...';
           }
           // watchPosition will auto-retry, no action needed
@@ -571,13 +573,16 @@ import AuthGate from '../_components/AuthGate.astro';
     });
 
     // Update progress bar
+    var progressFill = document.getElementById('qProgressFill');
+    var progressText = document.getElementById('qProgressText');
+    var progressBar = document.getElementById('qProgress');
     if (typeof q === 'number' && q >= 1 && q <= totalQ) {
       var pct = ((q - 1) / (totalQ - 1)) * 100;
-      document.getElementById('qProgressFill').style.width = pct + '%';
-      document.getElementById('qProgressText').textContent = '第 ' + q + ' / ' + totalQ + ' 題';
-      document.getElementById('qProgress').style.display = '';
+      if (progressFill) progressFill.style.width = pct + '%';
+      if (progressText) progressText.textContent = '第 ' + q + ' / ' + totalQ + ' 題';
+      if (progressBar) progressBar.style.display = '';
     } else {
-      document.getElementById('qProgress').style.display = 'none';
+      if (progressBar) progressBar.style.display = 'none';
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2034,6 +2039,16 @@ import AuthGate from '../_components/AuthGate.astro';
     else if (bounds.length > 1) map.fitBounds(bounds, { padding: [30, 30] });
 
     setTimeout(function() { map.invalidateSize(); }, 100);
+  }
+
+  } // end trackerInit
+
+  // If DOM is already unlocked (AuthGate already ran), init immediately;
+  // otherwise wait for the formosa-unlocked event from AuthGate.
+  if (document.querySelector('.q-card[data-q]')) {
+    trackerInit();
+  } else {
+    document.addEventListener('formosa-unlocked', trackerInit, { once: true });
   }
 
 })();

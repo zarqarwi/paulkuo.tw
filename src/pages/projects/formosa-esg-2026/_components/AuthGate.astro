@@ -97,6 +97,8 @@ const {
     mainContent.style.display = 'block';
     if (nav) nav.style.display = '';
     var f = document.querySelector('footer'); if (f) f.style.display = '';
+    // Notify child scripts that protected DOM is now available
+    document.dispatchEvent(new CustomEvent('formosa-unlocked'));
   }
 
   // ── Password verification (admin pages + admin fallback) ──
