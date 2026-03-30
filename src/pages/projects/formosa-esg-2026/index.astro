@@ -98,14 +98,17 @@ const schemaJson = JSON.stringify({
       <div class="formosa-metric">
         <span class="metric-number">100K+</span>
         <span class="metric-label">香燈腳註冊</span>
+        <span class="metric-context">相當於 3 座小巨蛋滿座</span>
       </div>
       <div class="formosa-metric">
         <span class="metric-number">500+</span>
         <span class="metric-label">噸減碳目標</span>
+        <span class="metric-context">等同種植 25,000 棵樹一年的碳吸收量</span>
       </div>
       <div class="formosa-metric">
         <span class="metric-number">No.1</span>
         <span class="metric-label">全球首創 ESG 零碳進香</span>
+        <span class="metric-context">全球宗教活動首例 ESG 認證進香</span>
       </div>
     </div>
   </section>
@@ -361,6 +364,21 @@ const schemaJson = JSON.stringify({
   .formosa-vision-arrow {
     display: none;
   }
+  @media (min-width: 769px) {
+    .formosa-vision-card {
+      position: relative;
+    }
+    .formosa-vision-card:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -1rem;
+      top: 50%;
+      transform: translate(50%, -50%);
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      z-index: 1;
+    }
+  }
 
   /* Engine Cards */
   .formosa-engines-grid {
@@ -446,6 +464,11 @@ const schemaJson = JSON.stringify({
     font-size: 0.95rem;
     color: var(--text-secondary);
     font-weight: 500;
+  }
+  .metric-context {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-style: italic;
   }
 
   /* Sub-projects */
@@ -603,7 +626,7 @@ const schemaJson = JSON.stringify({
   /* Collaboration */
   .formosa-collab-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.25rem;
   }
   .formosa-collab-card {
@@ -667,22 +690,37 @@ const schemaJson = JSON.stringify({
     background: rgba(180,83,9,0.06);
   }
 
-  /* Responsive */
+  /* Responsive — Tablet */
   @media (max-width: 768px) {
     .formosa-hero h1 { font-size: 1.7rem; }
-    .formosa-hero { padding: 60px 1rem 40px; }
+    .formosa-hero { padding: 40px 1rem 32px; }
     .formosa-vision-grid,
-    .formosa-engines-grid,
-    .formosa-metrics-grid,
     .formosa-subprojects-grid { grid-template-columns: 1fr; }
+    .formosa-engines-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .formosa-engines-grid .formosa-engine-card:last-child {
+      grid-column: 1 / -1;
+    }
+    .formosa-metrics-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
     .formosa-collab-grid { grid-template-columns: repeat(2, 1fr); }
     .metric-number { font-size: 2.2rem; }
     .partners-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
     .partners-grid.dense { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
   }
 
+  /* Responsive — Mobile */
   @media (max-width: 480px) {
     .formosa-collab-grid { grid-template-columns: 1fr; }
+    .formosa-engines-grid { grid-template-columns: 1fr; }
+    .formosa-metrics-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .metric-number { font-size: 2rem; }
   }
 </style>
 
