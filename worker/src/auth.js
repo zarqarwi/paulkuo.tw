@@ -137,6 +137,16 @@ export async function handleAdminMembers(request, env) {
 
 export async function handleValidateCode(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'POST required' }, 405, request);
+
+  // Rate limit: 每 IP 每分鐘 5 次
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rlKey = `rl:validate:${ip}:${Math.floor(Date.now() / 60000)}`;
+  const attempts = parseInt(await env.TICKER_KV.get(rlKey) || '0');
+  if (attempts >= 5) {
+    return jsonResponse({ error: 'Too many attempts, please wait' }, 429, request);
+  }
+  await env.TICKER_KV.put(rlKey, String(attempts + 1), { expirationTtl: 120 });
+
   let body; try { body = await request.json(); } catch (e) { return jsonResponse({ error: 'Invalid JSON' }, 400, request); }
   const result = await validateCode(body.code, env.TICKER_KV);
   if (result) {

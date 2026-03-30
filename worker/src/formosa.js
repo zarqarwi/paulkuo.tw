@@ -263,9 +263,11 @@ export async function handleFormosaSubmit(request, env) {
       }
     }
 
-    // Save GPS points (with coordinate validation)
+    // Save GPS points (with coordinate validation + length cap)
     if (data.gps_points && data.gps_points.length > 0) {
-      const validPts = data.gps_points.filter(pt => validateGPS(pt.lat, pt.lng));
+      const raw = Array.isArray(data.gps_points) ? data.gps_points : [];
+      const capped = raw.length > 1000 ? raw.slice(-1000) : raw;
+      const validPts = capped.filter(pt => validateGPS(pt.lat, pt.lng));
       if (validPts.length > 0) {
         const stmts = validPts.map(pt =>
           env.AUTH_DB.prepare(
@@ -341,7 +343,7 @@ export async function handleFormosaCheckin(request, env) {
     const source = inRange ? (data.source || 'checkin') : 'remote';
 
     const ts = data.timestamp || new Date().toISOString();
-    const bufferKey = `gps:${ts}:${userId}:${Math.random().toString(36).slice(2, 8)}`;
+    const bufferKey = `gps:${ts}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
 
     // Write to KV buffer (single atomic write, no lock contention)
     await env.TICKER_KV.put(bufferKey, JSON.stringify({
@@ -366,8 +368,19 @@ export async function handleFormosaCheckin(request, env) {
 
 // ── Cron: Flush KV GPS Buffer → D1 (batch INSERT OR IGNORE) ──
 export async function handleFormosaFlushBuffer(env) {
+  const kv = env.TICKER_KV;
   const startTime = Date.now();
   let flushed = 0, skipped = 0, errors = 0;
+
+  // ── 分散式鎖（TTL 90 秒，cover 一次 flush 的最長時間）──
+  const lockKey = 'formosa:flush_lock';
+  const existingLock = await kv.get(lockKey);
+  if (existingLock) {
+    console.log('Flush skipped: lock held by', existingLock);
+    return { skipped: true, reason: 'lock_held' };
+  }
+  const lockId = crypto.randomUUID();
+  await kv.put(lockKey, lockId, { expirationTtl: 90 });
 
   try {
     await migrateFormosa(env.AUTH_DB);
@@ -453,6 +466,12 @@ export async function handleFormosaFlushBuffer(env) {
   } catch (e) {
     console.error('Flush fatal:', e.message);
     return { flushed, skipped, errors: errors + 1, error: e.message, duration_ms: Date.now() - startTime };
+  } finally {
+    // 只有自己持有的鎖才刪（避免刪到下一輪的鎖）
+    const currentLock = await kv.get(lockKey);
+    if (currentLock === lockId) {
+      await kv.delete(lockKey);
+    }
   }
 }
 
@@ -1776,7 +1795,7 @@ export async function handleFormosaFeedbackUpload(request, env) {
     if (blob.byteLength > 5 * 1024 * 1024) return jsonResponse({ error: 'Image too large (max 5MB)' }, 413, request);
 
     const ts = Date.now();
-    const rand = Math.random().toString(36).slice(2, 8);
+    const rand = crypto.randomUUID().slice(0, 8);
     const r2Key = `feedback/${ts}-${rand}.png`;
 
     await env.FORMOSA_OG.put(r2Key, blob, {
