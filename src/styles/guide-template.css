@@ -74,11 +74,18 @@
 
 /* ── TOC ── */
 .guide-toc {
+  position: static;
+  display: block;
+  height: auto;
+  z-index: auto;
+  box-shadow: none;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1rem 1.25rem;
   margin: 1.5rem 0;
+  transform: none;
+  transition: none;
 }
 .guide-toc summary {
   font-weight: 600;
