@@ -581,7 +581,7 @@ footer { text-align: center; padding: 40px; font-size: 0.82rem; color: var(--tex
   .nav-links.mobile-open { display: flex; max-height: calc(100vh - var(--nav-height)); overflow-y: auto; }
   .nav-links a {
     padding: 6px 0;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: rgba(255,255,255,0.85);
     border-bottom: 1px solid rgba(255,255,255,0.1);
     width: 100%;
@@ -1253,6 +1253,10 @@ footer {
     display: flex;
     gap: 6px;
     width: 100%;
+    order: -1;
+    margin-top: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
   /* P4: Touch targets — increase tap area for lang buttons */
   .mobile-lang-group .lang-btn {
