@@ -457,12 +457,18 @@ import AuthGate from '../_components/AuthGate.astro';
         countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
       },
       function(err) {
-        pulseEl.classList.add('off');
         if (err.code === 1) {
-          statusEl.textContent = '⚠️ 定位權限被拒絕';
+          // Permission denied — show clear warning
+          pulseEl.classList.remove('active');
+          pulseEl.classList.add('off');
+          statusEl.textContent = '⚠️ 定位權限被拒絕，請到設定開啟';
           checkinBtn.style.display = 'none';
         } else {
-          statusEl.textContent = '⚠️ 無法取得定位';
+          // Temporary failure (signal weak / timeout) — keep calm
+          if (!gpsReady) {
+            statusEl.textContent = '📍 GPS 搜尋中...';
+          }
+          // watchPosition will auto-retry, no action needed
         }
       },
       { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
@@ -470,6 +476,13 @@ import AuthGate from '../_components/AuthGate.astro';
   }
 
   window.manualCheckin = function() {
+    var btn = document.getElementById('gpsCheckinBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.dataset.origText = btn.textContent;
+      btn.textContent = '📍 定位中...';
+    }
+
     navigator.geolocation.getCurrentPosition(
       function(pos) {
         gpsTrackPoints.push({
@@ -484,12 +497,25 @@ import AuthGate from '../_components/AuthGate.astro';
         var countEl = document.getElementById('gpsCount');
         countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
 
-        var btn = document.getElementById('gpsCheckinBtn');
-        btn.textContent = '✓ 已打卡';
-        btn.disabled = true;
-        setTimeout(function() { btn.textContent = '打卡 📍'; btn.disabled = false; }, 1500);
+        if (btn) {
+          btn.textContent = '✓ 已打卡';
+          btn.disabled = true;
+          setTimeout(function() { btn.textContent = btn.dataset.origText || '打卡 📍'; btn.disabled = false; }, 1500);
+        }
       },
-      function() { alert('無法取得定位，請確認已開啟定位權限。'); },
+      function(err) {
+        if (btn) {
+          btn.textContent = btn.dataset.origText || '打卡 📍';
+          btn.disabled = false;
+        }
+        if (err.code === 1) {
+          alert('定位權限被拒絕，請到手機設定開啟定位權限。');
+        } else if (err.code === 3) {
+          showPhotoToast('📍 GPS 訊號弱，請到空曠處再試', 3000);
+        } else {
+          showPhotoToast('📍 暫時無法定位，請稍後再試', 3000);
+        }
+      },
       { enableHighAccuracy: true, timeout: 10000 }
     );
   };
@@ -1579,6 +1605,16 @@ import AuthGate from '../_components/AuthGate.astro';
 
   // Override manualCheckin to calculate distance and update stats
   window.manualCheckin = function() {
+    // Immediate loading feedback on both buttons
+    var btn = document.getElementById('gpsCheckinBtn');
+    var bigBtn = document.querySelector('.checkin-big-btn');
+    var activeBtn = bigBtn || btn;
+    if (activeBtn) {
+      activeBtn.disabled = true;
+      activeBtn.dataset.origText = activeBtn.textContent;
+      activeBtn.textContent = '📍 定位中...';
+    }
+
     navigator.geolocation.getCurrentPosition(
       function(pos) {
         var lat = pos.coords.latitude;
@@ -1625,18 +1661,29 @@ import AuthGate from '../_components/AuthGate.astro';
               checkins: getSavedCheckins() + 1,
               km: getSavedKm()
             })
-          }).catch(function() {});
+          }).then(function(res) {
+            if (!res.ok) {
+              console.warn('打卡 API 回應異常:', res.status);
+              if (res.status === 429) {
+                showPhotoToast('⏳ 打卡太頻繁，請稍後再試', 3000);
+              }
+            }
+          }).catch(function(err) {
+            console.warn('打卡 API 失敗（離線？）:', err);
+          });
         }
 
         var countEl = document.getElementById('gpsCount');
         if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
 
-        // Button feedback
-        var btn = document.getElementById('gpsCheckinBtn');
-        if (btn) {
-          btn.textContent = '✓ 已打卡';
-          btn.disabled = true;
-          setTimeout(function() { btn.textContent = '打卡 📍'; btn.disabled = false; }, 1500);
+        // Button success feedback
+        if (activeBtn) {
+          activeBtn.textContent = '✓ 已打卡';
+          activeBtn.disabled = true;
+          setTimeout(function() {
+            activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
+            activeBtn.disabled = false;
+          }, 1500);
         }
 
         // Update stats
@@ -1658,7 +1705,20 @@ import AuthGate from '../_components/AuthGate.astro';
 
         updateCheckinProgress(t);
       },
-      function() { alert('無法取得定位，請確認已開啟定位權限。'); },
+      function(err) {
+        // Restore button on failure
+        if (activeBtn) {
+          activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
+          activeBtn.disabled = false;
+        }
+        if (err.code === 1) {
+          alert('定位權限被拒絕，請到手機設定開啟定位權限。');
+        } else if (err.code === 3) {
+          showPhotoToast('📍 GPS 訊號弱，請到空曠處再試', 3000);
+        } else {
+          showPhotoToast('📍 暫時無法定位，請稍後再試', 3000);
+        }
+      },
       { enableHighAccuracy: true, timeout: 10000 }
     );
   };
