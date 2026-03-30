@@ -142,7 +142,8 @@ import AuthGate from '../_components/AuthGate.astro';
 <script is:inline>
 (function() {
   var API = 'https://paulkuo-ticker.paul-4bf.workers.dev';
-  var ADMIN_HEADERS = { 'X-Admin-Token': 'formosa-admin-2026' };
+  // Read admin token from sessionStorage (set by AuthGate on login)
+  var ADMIN_HEADERS = { 'X-Admin-Token': sessionStorage.getItem('formosa_esg_code') || '' };
   var TITLES = [
     { km: 0,   checkins: 1,  icon: '🔥', name: '煉氣香客' },
     { km: 15,  checkins: 3,  icon: '🧱', name: '築基香客' },
@@ -163,7 +164,7 @@ import AuthGate from '../_components/AuthGate.astro';
   async function fetchAll() {
     try {
       var [dataRes, carbonRes, timelineRes, usersRes, surveyRes] = await Promise.all([
-        fetch(API + '/api/formosa/data').then(r => r.json()),
+        fetch(API + '/api/formosa/data', { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/carbon', { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/timeline', { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/users', { headers: ADMIN_HEADERS }).then(r => r.json()),

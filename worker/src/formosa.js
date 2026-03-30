@@ -12,19 +12,11 @@ async function getFormosaStatus(kv) {
   try { return JSON.parse(raw); } catch { return { status: 'active', message: '' }; }
 }
 
-// ── Rate Limit Helper ──
-async function checkRateLimit(db, userId, windowMinutes, maxRequests) {
-  const result = await db.prepare(
-    `SELECT COUNT(*) as cnt FROM formosa_gps_points WHERE user_id = ? AND created_at >= datetime('now', '-' || ? || ' minutes')`
-  ).bind(userId, windowMinutes).first();
-  return (result?.cnt || 0) >= maxRequests;
-}
-
 // ── Admin Auth Helper ──
-const ADMIN_TOKEN = 'formosa-admin-2026';
-function requireAdmin(request) {
-  const auth = request.headers.get('X-Admin-Token') || new URL(request.url).searchParams.get('token');
-  if (auth !== ADMIN_TOKEN) {
+function requireAdmin(request, env) {
+  // Only accept header-based auth (query params leak in logs/referrer/history)
+  const auth = request.headers.get('X-Admin-Token');
+  if (!auth || auth !== env.FORMOSA_ADMIN_TOKEN) {
     return jsonResponse({ error: 'Unauthorized' }, 401, request);
   }
   return null; // authorized
@@ -40,7 +32,7 @@ export async function handleFormosaAdminStatus(request, env) {
   }
 
   // POST — set status (requires admin)
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
   try {
     const body = await request.json();
@@ -209,11 +201,9 @@ export async function handleFormosaSubmit(request, env) {
     // Use LINE user ID if available, otherwise fallback
     const userId = data.line_user_id || data.user_id || 'anonymous_' + Date.now();
 
-    // Rate limit: max 2 survey submissions per 10 minutes
-    const surveyCount = await env.AUTH_DB.prepare(
-      `SELECT COUNT(*) as cnt FROM formosa_surveys WHERE user_id = ? AND created_at >= datetime('now', '-10 minutes')`
-    ).bind(userId).first();
-    if ((surveyCount?.cnt || 0) >= 2) {
+    // Rate limit: max 2 survey submissions per 10 minutes (KV-based)
+    const surveyRateLimited = await checkRateLimitKV(env.TICKER_KV, `survey:${userId}`, 600, 2);
+    if (surveyRateLimited) {
       return jsonResponse({ error: '提交太頻繁，請稍後再試', rate_limited: true }, 429, request);
     }
 
@@ -273,14 +263,17 @@ export async function handleFormosaSubmit(request, env) {
       }
     }
 
-    // Save GPS points
+    // Save GPS points (with coordinate validation)
     if (data.gps_points && data.gps_points.length > 0) {
-      const stmts = data.gps_points.map(pt =>
-        env.AUTH_DB.prepare(
-          `INSERT INTO formosa_gps_points (user_id, lat, lng, altitude, accuracy, source, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)`
-        ).bind(userId, pt.lat, pt.lng, pt.altitude || null, pt.accuracy || null, pt.source || 'checkin', pt.timestamp || new Date().toISOString())
-      );
-      await env.AUTH_DB.batch(stmts);
+      const validPts = data.gps_points.filter(pt => validateGPS(pt.lat, pt.lng));
+      if (validPts.length > 0) {
+        const stmts = validPts.map(pt =>
+          env.AUTH_DB.prepare(
+            `INSERT INTO formosa_gps_points (user_id, lat, lng, altitude, accuracy, source, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)`
+          ).bind(userId, pt.lat, pt.lng, pt.altitude || null, pt.accuracy || null, pt.source || 'checkin', pt.timestamp || new Date().toISOString())
+        );
+        await env.AUTH_DB.batch(stmts);
+      }
     }
 
     return jsonResponse({ ok: true, user_id: userId, message: '資料已儲存' }, 200, request);
@@ -288,6 +281,14 @@ export async function handleFormosaSubmit(request, env) {
     console.error('Submit error:', e.message);
     return jsonResponse({ error: e.message }, 500, request);
   }
+}
+
+// ── GPS Coordinate Validation ──
+function validateGPS(lat, lng) {
+  if (typeof lat !== 'number' || typeof lng !== 'number') return false;
+  if (isNaN(lat) || isNaN(lng)) return false;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
+  return true;
 }
 
 // ── KV-based Rate Limit (no D1 dependency) ──
@@ -329,9 +330,13 @@ export async function handleFormosaCheckin(request, env) {
       return jsonResponse({ error: '打卡太頻繁，請稍後再試', rate_limited: true }, 429, request);
     }
 
-    // Geofence: 白沙屯↔北港路線範圍（含緩衝）
     const lat = data.lat;
     const lng = data.lng;
+    if (!validateGPS(lat, lng)) {
+      return jsonResponse({ error: 'Invalid GPS coordinates' }, 400, request);
+    }
+
+    // Geofence: 白沙屯↔北港路線範圍（含緩衝）
     const inRange = lat >= 23.4 && lat <= 24.9 && lng >= 120.1 && lng <= 121.0;
     const source = inRange ? (data.source || 'checkin') : 'remote';
 
@@ -415,7 +420,13 @@ export async function handleFormosaFlushBuffer(env) {
         } catch (e) {
           console.error('Flush batch error:', e.message);
           errors += valid.length;
-          continue; // Don't delete on error — retry next cron
+          // D1 write failed — extend KV TTL to prevent data loss
+          await Promise.all(valid.map(async (entry) => {
+            try {
+              await env.TICKER_KV.put(entry.key, JSON.stringify(entry.data), { expirationTtl: 86400 });
+            } catch {}
+          }));
+          continue;
         }
       }
 
@@ -448,7 +459,7 @@ export async function handleFormosaFlushBuffer(env) {
 // ── Admin: Role Management ──
 export async function handleFormosaAdminRoles(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
 
   try {
@@ -479,7 +490,7 @@ export async function handleFormosaAdminRoles(request, env) {
 
 // ── Push Notification: Send to users by role ──
 export async function handleFormosaPush(request, env) {
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
   if (request.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405, request);
@@ -577,11 +588,14 @@ export async function handleFormosaScheduledPush(env) {
   return { sent: userIds.length, message: msg.title };
 }
 
-// ── Data Dashboard API ──
+// ── Data Dashboard API (admin only) ──
 export async function handleFormosaData(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
+
+  const authErr = requireAdmin(request, env);
+  if (authErr) return authErr;
 
   try {
     // KV cache: avoid D1 read storm during high traffic
@@ -662,6 +676,10 @@ function inferTransportMode(speedKmh) {
 export async function handleFormosaUser(request, env, userId) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   try {
+    // Ownership check: full data for owner/admin, limited public view otherwise
+    const callerId = request.headers.get('X-Line-User-Id');
+    const isOwner = callerId === userId;
+    const isAdmin = !requireAdmin(request, env);
     await migrateFormosa(env.AUTH_DB);
     const user = await env.AUTH_DB.prepare('SELECT display_name, picture_url, role, created_at FROM formosa_users WHERE line_user_id = ?').bind(userId).first();
     const points = await env.AUTH_DB.prepare('SELECT lat, lng, altitude, accuracy, source, timestamp FROM formosa_gps_points WHERE user_id = ? ORDER BY timestamp ASC').bind(userId).all();
@@ -707,22 +725,34 @@ export async function handleFormosaUser(request, env, userId) {
     // Carbon saved: if entire distance were motorized (bus coefficient)
     const carbonSaved = totalKm * GWP_FACTORS.bus - gpsCarbon;
 
+    const stats = {
+      total_points: pts.length,
+      total_km: +totalKm.toFixed(2),
+      carbon_kg: +carbonKg.toFixed(2),
+      carbon_saved_kg: +Math.max(0, carbonSaved).toFixed(2),
+      carbon_wu: +(dailyAgg?.total_wu || 0).toFixed(2),
+      report_days: dailyAgg?.report_days || 0,
+      checkins,
+      transport_breakdown: Object.fromEntries(Object.entries(transportBreakdown).map(([k, v]) => [k, +v.toFixed(2)])),
+      rank: rank.current,
+      next_rank: rank.next ? { name: rank.next.name, icon: rank.next.icon, km_needed: +(rank.next.km - totalKm).toFixed(1), checkins_needed: Math.max(0, rank.next.checkins - checkins) } : null
+    };
+
+    // Non-owner/non-admin: return public stats only (no survey, no raw GPS)
+    if (!isOwner && !isAdmin) {
+      return jsonResponse({
+        user: { display_name: user?.display_name || 'Anonymous', created_at: null },
+        gps_points: pts.map(p => ({ lat: p.lat, lng: p.lng, timestamp: p.timestamp, source: p.source })),
+        survey: null,
+        stats
+      }, 200, request);
+    }
+
     return jsonResponse({
       user: user || { display_name: 'Anonymous', created_at: null },
       gps_points: pts,
       survey: survey || null,
-      stats: {
-        total_points: pts.length,
-        total_km: +totalKm.toFixed(2),
-        carbon_kg: +carbonKg.toFixed(2),
-        carbon_saved_kg: +Math.max(0, carbonSaved).toFixed(2),
-        carbon_wu: +(dailyAgg?.total_wu || 0).toFixed(2),
-        report_days: dailyAgg?.report_days || 0,
-        checkins,
-        transport_breakdown: Object.fromEntries(Object.entries(transportBreakdown).map(([k, v]) => [k, +v.toFixed(2)])),
-        rank: rank.current,
-        next_rank: rank.next ? { name: rank.next.name, icon: rank.next.icon, km_needed: +(rank.next.km - totalKm).toFixed(1), checkins_needed: Math.max(0, rank.next.checkins - checkins) } : null
-      }
+      stats
     }, 200, request);
   } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
 }
@@ -730,7 +760,7 @@ export async function handleFormosaUser(request, env, userId) {
 // ── Admin: Survey Aggregations ──
 export async function handleFormosaAdminSurveys(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
@@ -766,7 +796,7 @@ export async function handleFormosaAdminSurveys(request, env) {
 // ── Admin: Carbon Analytics ──
 export async function handleFormosaAdminCarbon(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
@@ -810,7 +840,7 @@ export async function handleFormosaAdminCarbon(request, env) {
 // ── Admin: Activity Timeline ──
 export async function handleFormosaAdminTimeline(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
@@ -837,7 +867,7 @@ export async function handleFormosaAdminTimeline(request, env) {
 // ── Admin: User Table ──
 export async function handleFormosaAdminUsers(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
@@ -879,7 +909,7 @@ export async function handleFormosaAdminUsers(request, env) {
 // ── Admin: Server-side GPS Grid Clustering ──
 export async function handleFormosaAdminClusters(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
   try {
     await migrateFormosa(env.AUTH_DB);
@@ -1148,7 +1178,7 @@ function buildMenuMessage() {
 // ── Rich Menu Setup ──
 export async function handleFormosaRichMenu(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
 
   const token = env.FORMOSA_LINE_TOKEN;
@@ -1359,6 +1389,13 @@ export async function handleFormosaPhotoCount(request, env) {
       const count = data.count || 1;
       if (!userId) return jsonResponse({ error: 'line_user_id required' }, 400, request);
 
+      // Verify caller identity
+      const callerId = request.headers.get('X-Line-User-Id');
+      if (callerId !== userId) {
+        const adminCheck = requireAdmin(request, env);
+        if (adminCheck) return jsonResponse({ error: 'Forbidden' }, 403, request);
+      }
+
       await env.AUTH_DB.prepare(
         `UPDATE formosa_users SET photo_count = photo_count + ?, updated_at = datetime('now') WHERE line_user_id = ?`
       ).bind(count, userId).run();
@@ -1501,7 +1538,7 @@ export async function handleFormosaParticipantStatus(request, env) {
 // ── Admin: End Activity (batch complete all participants) ──
 export async function handleFormosaAdminEndActivity(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request);
+  const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed' }, 405, request);
 

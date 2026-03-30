@@ -911,7 +911,9 @@ import AuthGate from '../_components/AuthGate.astro';
     var userId = lineUserId || localStorage.getItem('formosa_user_id') || '';
     if (!userId) return;
     try {
-      var resp = await fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(userId));
+      var resp = await fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(userId), {
+        headers: { 'X-Line-User-Id': userId }
+      });
       if (!resp.ok) return;
       var data = await resp.json();
       if (!data || !data.stats) return;
@@ -1515,7 +1517,7 @@ import AuthGate from '../_components/AuthGate.astro';
         try {
           await fetch(API_BASE + '/api/formosa/photos/count', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-Line-User-Id': userId },
             body: JSON.stringify({ line_user_id: userId, count: count })
           });
         } catch (e) { /* offline — localStorage is source of truth */ }
