@@ -14,9 +14,9 @@ import '../../../../styles/guide-template.css';
 
 <h1>白沙屯媽祖 ESG 進香追蹤 — 香客使用說明</h1>
 <div class="guide-meta">
-  <span class="guide-version-badge">v0.6</span>
-  <time datetime="2026-03-30">2026-03-30</time>
-  <span class="guide-changelog">分享功能簡化 + FB 個人化預覽</span>
+  <span class="guide-version-badge">v0.7</span>
+  <time datetime="2026-03-31">2026-03-31</time>
+  <span class="guide-changelog">等級系統加入九種公仔圖</span>
 </div>
 
 <blockquote>
@@ -191,30 +191,101 @@ import '../../../../styles/guide-template.css';
 
 <h3>等級系統</h3>
 
-<p>系統有 9 個等級，根據你的步行公里數和祝福（打卡）次數來升級：</p>
+<p>系統有 9 個等級，根據你的步行公里數和祝福（打卡）次數來升級。每個等級都有專屬的粉紅頭巾香客公仔：</p>
 
-<div class="table-wrapper">
-<table>
-  <thead>
-    <tr><th scope="col">等級</th><th scope="col">稱號</th><th scope="col">公里數</th><th scope="col">祝福次數</th><th scope="col">大約對應</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>煉氣香客</td><td>0 km</td><td>1 次</td><td>第一次祝福</td></tr>
-    <tr><td>2</td><td>築基香客</td><td>15 km</td><td>5 次</td><td>1 天</td></tr>
-    <tr><td>3</td><td>金丹香客</td><td>45 km</td><td>10 次</td><td>2 天</td></tr>
-    <tr><td>4</td><td>元嬰香客</td><td>90 km</td><td>15 次</td><td>3 天</td></tr>
-    <tr><td>5</td><td>化神香客</td><td>135 km</td><td>20 次</td><td>4 天</td></tr>
-    <tr><td>6</td><td>煉虛香客</td><td>180 km</td><td>25 次</td><td>5 天</td></tr>
-    <tr><td>7</td><td>合體香客</td><td>225 km</td><td>30 次</td><td>6 天</td></tr>
-    <tr><td>8</td><td>大乘香客</td><td>270 km</td><td>35 次</td><td>7 天</td></tr>
-    <tr><td>9</td><td>飛升香客</td><td>300 km</td><td>40 次</td><td>全程走完</td></tr>
-  </tbody>
-</table>
+<div class="level-grid">
+  <div class="level-card">
+    <img src="/images/formosa/level-1.webp" alt="煉氣香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge">Lv.1</span>
+      <strong>煉氣香客</strong>
+      <span class="level-req">0 km ・ 1 次祝福</span>
+      <span class="level-desc">第一次祝福</span>
+    </div>
+  </div>
+
+  <div class="level-card">
+    <img src="/images/formosa/level-2.webp" alt="築基香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge">Lv.2</span>
+      <strong>築基香客</strong>
+      <span class="level-req">15 km ・ 5 次祝福</span>
+      <span class="level-desc">≈ 1 天</span>
+    </div>
+  </div>
+
+  <div class="level-card">
+    <img src="/images/formosa/level-3.webp" alt="金丹香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge">Lv.3</span>
+      <strong>金丹香客</strong>
+      <span class="level-req">45 km ・ 10 次祝福</span>
+      <span class="level-desc">≈ 2 天</span>
+    </div>
+  </div>
+
+  <div class="level-card">
+    <img src="/images/formosa/level-4.webp" alt="元嬰香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge">Lv.4</span>
+      <strong>元嬰香客</strong>
+      <span class="level-req">90 km ・ 15 次祝福</span>
+      <span class="level-desc">≈ 3 天</span>
+    </div>
+  </div>
+
+  <div class="level-card">
+    <img src="/images/formosa/level-5.webp" alt="化神香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge">Lv.5</span>
+      <strong>化神香客</strong>
+      <span class="level-req">135 km ・ 20 次祝福</span>
+      <span class="level-desc">≈ 4 天</span>
+    </div>
+  </div>
+
+  <div class="level-card">
+    <img src="/images/formosa/level-6.webp" alt="煉虛香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge">Lv.6</span>
+      <strong>煉虛香客</strong>
+      <span class="level-req">180 km ・ 25 次祝福</span>
+      <span class="level-desc">≈ 5 天</span>
+    </div>
+  </div>
+
+  <div class="level-card">
+    <img src="/images/formosa/level-7.webp" alt="合體香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge">Lv.7</span>
+      <strong>合體香客</strong>
+      <span class="level-req">225 km ・ 30 次祝福</span>
+      <span class="level-desc">≈ 6 天</span>
+    </div>
+  </div>
+
+  <div class="level-card">
+    <img src="/images/formosa/level-8.webp" alt="大乘香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge">Lv.8</span>
+      <strong>大乘香客</strong>
+      <span class="level-req">270 km ・ 35 次祝福</span>
+      <span class="level-desc">≈ 7 天</span>
+    </div>
+  </div>
+
+  <div class="level-card level-card-max">
+    <img src="/images/formosa/level-9.webp" alt="飛升香客公仔" class="level-mascot" width="120" height="120" loading="lazy" />
+    <div class="level-info">
+      <span class="level-badge level-badge-max">Lv.9</span>
+      <strong>飛升香客</strong>
+      <span class="level-req">300 km ・ 40 次祝福</span>
+      <span class="level-desc">全程走完 ✨</span>
+    </div>
+  </div>
 </div>
 
-<p>每天送出 7 次祝福可以最快升級，但只要每天 5 次以上就能跟上進度。</p>
-
-<p>每個等級都有專屬的粉紅頭巾香客公仔圖，升級時會跳出通知。</p>
+<p>每天送出 7 次祝福可以最快升級，但只要每天 5 次以上就能跟上進度。升級時會跳出通知。</p>
 
 <h3>個人進香足跡頁</h3>
 
@@ -364,4 +435,118 @@ import '../../../../styles/guide-template.css';
 
 <style>
   html { scroll-behavior: smooth; }
+
+  /* ── Level Grid ── */
+  .level-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .level-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem 0.75rem;
+    border: 1px solid #e9ecef;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .level-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .level-card-max {
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border-color: #ffc107;
+  }
+
+  .level-mascot {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+  }
+
+  .level-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .level-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    background: #1a3a5c;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    align-self: center;
+    letter-spacing: 0.5px;
+  }
+  .level-badge-max {
+    background: linear-gradient(135deg, #d4a017, #f5c842);
+    color: #333;
+  }
+
+  .level-info strong {
+    font-size: 0.95rem;
+    color: #1a3a5c;
+  }
+
+  .level-req {
+    font-size: 0.78rem;
+    color: #666;
+  }
+
+  .level-desc {
+    font-size: 0.75rem;
+    color: #999;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .level-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    .level-mascot {
+      width: 72px;
+      height: 72px;
+    }
+    .level-info strong {
+      font-size: 0.85rem;
+    }
+    .level-req {
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .level-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .level-card {
+      padding: 0.6rem 0.4rem;
+    }
+    .level-mascot {
+      width: 60px;
+      height: 60px;
+    }
+    .level-info strong {
+      font-size: 0.78rem;
+    }
+    .level-req {
+      font-size: 0.65rem;
+    }
+    .level-desc {
+      font-size: 0.65rem;
+    }
+  }
 </style>
