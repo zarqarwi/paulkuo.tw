@@ -263,7 +263,7 @@
 /* ── Footer & CTA ── */
 .guide-footer {
   text-align: center;
-  color: var(--text-secondary);
+  color: #fff;
   font-size: 0.9rem;
   margin-top: 2rem;
   padding: 1.5rem 0;
