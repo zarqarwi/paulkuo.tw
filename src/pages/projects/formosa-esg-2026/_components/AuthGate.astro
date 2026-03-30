@@ -37,18 +37,18 @@ const {
         </button>
       </div>
 
-      <!-- LINE Profile (hidden until login) -->
+      <!-- LINE Profile + Privacy Consent (merged into one step) -->
       <div id="lineProfileSection" style="display:none">
         <img id="lineAvatar" class="line-avatar" src="" alt="" />
         <div id="lineDisplayName" class="line-name"></div>
-        <button id="lineEnterBtn" class="line-enter-btn">進入活動</button>
-      </div>
-
-      <!-- Privacy Consent (hidden until needed) -->
-      <div id="privacyConsentSection" style="display:none">
-        <div class="privacy-scroll" id="privacyScrollBox"></div>
-        <button id="privacyAgreeBtn" class="line-enter-btn privacy-agree-btn">我同意</button>
-        <button id="privacyDeclineBtn" class="privacy-decline-btn">不同意</button>
+        <div id="privacySummary" class="privacy-summary">
+          <p class="privacy-summary-text">進入活動即表示您同意我們依據<a href="/projects/formosa-esg-2026/privacy/" target="_blank" rel="noopener">隱私權聲明</a>處理您的資料，用於進香足跡記錄與碳足跡計算。</p>
+          <label class="privacy-checkbox-label">
+            <input type="checkbox" id="privacyCheckbox" />
+            <span>我已閱讀並同意隱私權聲明</span>
+          </label>
+        </div>
+        <button id="lineEnterBtn" class="line-enter-btn" disabled>進入活動</button>
         <div id="privacyDeclineMsg" class="privacy-decline-msg" style="display:none">需要同意隱私權聲明才能使用打卡功能</div>
       </div>
 
@@ -58,7 +58,10 @@ const {
       </div>
       <div id="adminLoginSection" style="display:none">
         <input type="password" id="authInput" placeholder="管理員密碼" />
-        <button id="authBtn" class="admin-login-btn">驗證</button>
+        <div class="admin-btn-row">
+          <button id="authBtn" class="admin-login-btn">驗證</button>
+          <button id="adminCancelBtn" class="admin-cancel-btn">取消</button>
+        </div>
       </div>
     ) : (
       <!-- Password Mode (admin pages) -->
@@ -168,6 +171,14 @@ const {
         adminLoginSection.style.display = adminLoginSection.style.display === 'none' ? 'block' : 'none';
       });
     }
+    // Admin cancel button
+    var adminCancelBtn = document.getElementById('adminCancelBtn');
+    if (adminCancelBtn) {
+      adminCancelBtn.addEventListener('click', function() {
+        adminLoginSection.style.display = 'none';
+        if (authInput) { authInput.value = ''; authInput.style.borderColor = ''; }
+      });
+    }
 
     function showProfile(profile) {
       lineLoginSection.style.display = 'none';
@@ -181,6 +192,9 @@ const {
       localStorage.setItem('formosa_line_user_id', profile.userId);
       localStorage.setItem('formosa_line_display_name', profile.displayName);
       localStorage.setItem('formosa_line_picture', profile.pictureUrl || '');
+
+      // Check if privacy already agreed
+      checkExistingPrivacy();
 
       // Sync to server
       fetch(WORKER + '/api/formosa/user/sync', {
@@ -203,76 +217,50 @@ const {
       }).catch(function() {});
     }
 
-    // Privacy consent flow
-    var privacyConsentSection = document.getElementById('privacyConsentSection');
-    var privacyScrollBox = document.getElementById('privacyScrollBox');
-    var privacyAgreeBtn = document.getElementById('privacyAgreeBtn');
-    var privacyDeclineBtn = document.getElementById('privacyDeclineBtn');
+    // Privacy checkbox enables/disables enter button
+    var privacyCheckbox = document.getElementById('privacyCheckbox');
+    var lineEnterBtn = document.getElementById('lineEnterBtn');
     var privacyDeclineMsg = document.getElementById('privacyDeclineMsg');
+    var privacySummary = document.getElementById('privacySummary');
 
-    function showPrivacyConsent() {
-      lineProfileSection.style.display = 'none';
-      lineLoginSection.style.display = 'none';
-      privacyConsentSection.style.display = 'block';
-      // Load privacy content
-      fetch('/projects/formosa-esg-2026/privacy/')
-        .then(function(r) { return r.text(); })
-        .then(function(html) {
-          var tmp = document.createElement('div');
-          tmp.innerHTML = html;
-          var content = tmp.querySelector('.privacy-content') || tmp.querySelector('article') || tmp.querySelector('main');
-          privacyScrollBox.innerHTML = content ? content.innerHTML : '<p>隱私權聲明載入中...</p>';
-        })
-        .catch(function() {
-          privacyScrollBox.innerHTML = '<p>隱私權聲明載入失敗，請重新整理頁面。</p>';
-        });
+    // If user already agreed, skip checkbox
+    function checkExistingPrivacy() {
+      var localAgreed = localStorage.getItem('formosa_privacy_agreed');
+      if (localAgreed === '1') {
+        privacySummary.style.display = 'none';
+        lineEnterBtn.disabled = false;
+      }
     }
 
-    if (privacyAgreeBtn) {
-      privacyAgreeBtn.addEventListener('click', function() {
-        var userId = window.__lineUserId || localStorage.getItem('formosa_line_user_id');
-        if (!userId) return;
-        privacyAgreeBtn.textContent = '處理中…';
-        privacyAgreeBtn.disabled = true;
-        fetch(WORKER + '/api/formosa/privacy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ line_user_id: userId })
-        }).then(function(r) { return r.json(); }).then(function(data) {
-          if (data.ok) {
-            localStorage.setItem('formosa_privacy_agreed', '1');
-            unlock();
-          }
-        }).catch(function() {
-          privacyAgreeBtn.textContent = '我同意';
-          privacyAgreeBtn.disabled = false;
-        });
+    if (privacyCheckbox) {
+      privacyCheckbox.addEventListener('change', function() {
+        lineEnterBtn.disabled = !privacyCheckbox.checked;
+        if (privacyCheckbox.checked) privacyDeclineMsg.style.display = 'none';
       });
     }
 
-    if (privacyDeclineBtn) {
-      privacyDeclineBtn.addEventListener('click', function() {
-        privacyDeclineMsg.style.display = 'block';
-      });
-    }
-
-    // Enter button: check privacy consent first
-    document.getElementById('lineEnterBtn').addEventListener('click', function() {
+    // Enter button: agree privacy + unlock
+    lineEnterBtn.addEventListener('click', function() {
       var userId = window.__lineUserId || localStorage.getItem('formosa_line_user_id');
       var localAgreed = localStorage.getItem('formosa_privacy_agreed');
       if (localAgreed === '1') { unlock(); return; }
-      // Check server
-      fetch(WORKER + '/api/formosa/privacy?user_id=' + encodeURIComponent(userId))
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data.agreed) {
-            localStorage.setItem('formosa_privacy_agreed', '1');
-            unlock();
-          } else {
-            showPrivacyConsent();
-          }
-        })
-        .catch(function() { unlock(); }); // fallback: don't block on network error
+      // Record privacy consent
+      lineEnterBtn.textContent = '處理中…';
+      lineEnterBtn.disabled = true;
+      fetch(WORKER + '/api/formosa/privacy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ line_user_id: userId })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.ok) {
+          localStorage.setItem('formosa_privacy_agreed', '1');
+          unlock();
+        }
+      }).catch(function() {
+        // Fallback: don't block on network error
+        localStorage.setItem('formosa_privacy_agreed', '1');
+        unlock();
+      });
     });
 
     // LIFF init
@@ -487,5 +475,56 @@ const {
     margin-top: 0.75rem;
     color: #ef4444;
     font-size: 0.85rem;
+  }
+  .privacy-summary {
+    margin: 1rem 0;
+    text-align: left;
+  }
+  .privacy-summary-text {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+  .privacy-summary-text a {
+    color: var(--accent-faith);
+    text-decoration: underline;
+  }
+  .privacy-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .privacy-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-faith);
+    cursor: pointer;
+  }
+  .admin-btn-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .admin-btn-row .admin-login-btn {
+    flex: 1;
+    margin-top: 0;
+  }
+  .admin-cancel-btn {
+    flex: 1;
+    margin-top: 0 !important;
+    padding: 0.5rem !important;
+    background: transparent !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px;
+    font-size: 0.85rem !important;
+    cursor: pointer;
+  }
+  .admin-cancel-btn:hover {
+    background: var(--bg-section) !important;
   }
 </style>

@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import AuthGate from './_components/AuthGate.astro';
 import partners from './_data/partners.json';
 
 const schemaJson = JSON.stringify({
@@ -13,7 +12,8 @@ const schemaJson = JSON.stringify({
   "location": { "@type": "Place", "name": "白沙屯拱天宮", "address": "苗栗縣通霄鎮白沙屯" },
   "organizer": [
     { "@type": "Organization", "name": "環球境地" },
-    { "@type": "Organization", "name": "台北天后獅子會" }
+    { "@type": "Organization", "name": "1.5度科學減碳協會" },
+    { "@type": "Organization", "name": "Paulkuo.tw" }
   ],
   "about": ["ESG", "永續發展", "碳足跡", "媽祖進香"]
 });
@@ -27,16 +27,15 @@ const schemaJson = JSON.stringify({
   schemaJson={schemaJson}
 >
 
-<AuthGate lineLogin={true}>
-
 <div class="formosa-hub">
 
   <!-- Section 1: Hero -->
   <section class="formosa-hero">
     <div class="formosa-hero-inner">
-      <div class="formosa-hero-badge">環球境地 × 天后獅子會</div>
+      <div class="formosa-hero-badge">環球境地 x 1.5度科學減碳協會 x Paulkuo.tw</div>
       <h1>2026 白沙屯媽祖進香<br /><span class="formosa-hero-accent">低碳行善・善行天下</span></h1>
       <p class="formosa-hero-subtitle">構建永續行善・民間共善平台</p>
+      <a href="/projects/formosa-esg-2026/guide/" class="formosa-hero-cta">📖 香客使用說明</a>
       <div class="formosa-hero-advisors">
         <span>指導單位：白沙屯拱天宮・環境部</span>
       </div>
@@ -231,8 +230,6 @@ const schemaJson = JSON.stringify({
 
 </div>
 
-</AuthGate>
-
 </BaseLayout>
 
 <style>
@@ -287,6 +284,22 @@ const schemaJson = JSON.stringify({
     font-size: 1.15rem;
     color: var(--text-secondary);
     margin-bottom: 1rem;
+  }
+  .formosa-hero-cta {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent-faith), var(--accent-circular));
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .formosa-hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(180,83,9,0.3);
   }
   .formosa-hero-advisors {
     font-size: 0.85rem;
@@ -437,7 +450,7 @@ const schemaJson = JSON.stringify({
   /* Sub-projects */
   .formosa-subprojects-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
   }
   .formosa-subproject-card {
