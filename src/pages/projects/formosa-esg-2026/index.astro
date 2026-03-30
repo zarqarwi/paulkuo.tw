@@ -146,17 +146,11 @@ const schemaJson = JSON.stringify({
     <h2 class="formosa-section-title">參與單位</h2>
 
     <div class="formosa-partners-block">
-      <h3 class="partners-category">主辦單位</h3>
+      <h3 class="partners-category">主辦 / 指導單位</h3>
       <div class="partners-row organizers">
         {partners.organizers.map(p => (
           <div class="partner-chip primary">{p.name}</div>
         ))}
-      </div>
-    </div>
-
-    <div class="formosa-partners-block">
-      <h3 class="partners-category">指導單位</h3>
-      <div class="partners-row">
         {partners.advisors.map(p => (
           <div class="partner-chip advisor">{p.name}</div>
         ))}
@@ -174,11 +168,16 @@ const schemaJson = JSON.stringify({
 
     <div class="formosa-partners-block">
       <h3 class="partners-category">參與企業</h3>
-      <div class="partners-grid dense">
-        {partners.enterprises.map(name => (
-          <div class="partner-chip small">{name}</div>
+      <div class="partners-grid dense" id="enterpriseGrid">
+        {partners.enterprises.map((name, i) => (
+          <div class:list={["partner-chip small", { "enterprise-hidden": i >= 10 }]}>{name}</div>
         ))}
       </div>
+      {partners.enterprises.length > 10 && (
+        <button class="enterprise-toggle" id="enterpriseToggle" data-total={partners.enterprises.length}>
+          展開全部 ({partners.enterprises.length})
+        </button>
+      )}
     </div>
 
     <div class="formosa-partners-block">
@@ -243,15 +242,17 @@ const schemaJson = JSON.stringify({
   /* Hero */
   .formosa-hero {
     text-align: center;
-    padding: 80px 2rem 60px;
-    margin-bottom: 2rem;
+    padding: 100px 2rem 80px;
+    margin-bottom: 3rem;
     position: relative;
+    background: linear-gradient(180deg, rgba(180,83,9,0.04) 0%, rgba(5,150,105,0.03) 50%, transparent 100%);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   }
   .formosa-hero::before {
     content: '';
     position: absolute;
     top: 0; left: 50%; transform: translateX(-50%);
-    width: 120px; height: 4px;
+    width: 200px; height: 4px;
     background: linear-gradient(90deg, var(--accent-faith), var(--accent-circular));
     border-radius: 2px;
   }
@@ -470,7 +471,7 @@ const schemaJson = JSON.stringify({
     border-color: var(--accent-faith);
   }
   .formosa-subproject-card.coming-soon {
-    opacity: 0.6;
+    opacity: 1;
   }
   .subproject-icon {
     font-size: 1.8rem;
@@ -495,11 +496,15 @@ const schemaJson = JSON.stringify({
     color: var(--accent-faith);
   }
   .subproject-status {
+    display: inline-block;
     margin-top: 1rem;
     font-size: 0.78rem;
     font-weight: 600;
     color: var(--text-muted);
     letter-spacing: 0.04em;
+    background: var(--bg-section);
+    padding: 4px 10px;
+    border-radius: 12px;
   }
 
   /* Partners */
@@ -572,6 +577,27 @@ const schemaJson = JSON.stringify({
     font-size: 0.75rem;
     font-weight: 400;
     color: var(--text-muted);
+  }
+
+  /* Enterprise toggle */
+  .enterprise-hidden {
+    display: none;
+  }
+  .enterprise-toggle {
+    display: block;
+    margin: 0.75rem auto 0;
+    padding: 6px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .enterprise-toggle:hover {
+    border-color: var(--accent-faith);
+    color: var(--accent-faith);
   }
 
   /* Collaboration */
@@ -659,3 +685,19 @@ const schemaJson = JSON.stringify({
     .formosa-collab-grid { grid-template-columns: 1fr; }
   }
 </style>
+
+<script is:inline>
+(function() {
+  var btn = document.getElementById('enterpriseToggle');
+  if (!btn) return;
+  var expanded = false;
+  btn.addEventListener('click', function() {
+    expanded = !expanded;
+    var items = document.querySelectorAll('.enterprise-hidden');
+    items.forEach(function(el) {
+      el.style.display = expanded ? '' : 'none';
+    });
+    btn.textContent = expanded ? '收合' : '展開全部 (' + btn.dataset.total + ')';
+  });
+})();
+</script>
