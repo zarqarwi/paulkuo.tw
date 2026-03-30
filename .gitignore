@@ -47,3 +47,15 @@ scripts/*.log
 *.xls
 .git-corrupt/
 scripts/auto_update.log.tmp
+
+# Auto-generated timestamps
+scripts/.last_push_ts
+
+# Original high-res images (only keep optimized versions)
+public/images/formosa/original-300px/
+
+# Local dev artifacts
+Paukuo網站/
+
+# Deprecated v1 rich menu image (replaced by v2)
+public/images/formosa/rich-menu.jpg
