@@ -18,7 +18,7 @@ import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
-import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaDailyReport, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity } from './formosa.js';
+import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaDailyReport, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackUpload, handleFormosaFeedbackImageServe } from './formosa.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -262,6 +262,12 @@ async function handleRequest(request, env) {
   if (path === '/api/formosa/privacy') return handleFormosaPrivacyAgree(request, env);
   if (path === '/api/formosa/participant-status' && method === 'POST') return handleFormosaParticipantStatus(request, env);
   if (path === '/api/formosa/admin/end-activity' && method === 'POST') return handleFormosaAdminEndActivity(request, env);
+  if (path === '/api/formosa/feedback' && method === 'POST') return handleFormosaFeedback(request, env);
+  if (path === '/api/formosa/feedback-upload' && method === 'POST') return handleFormosaFeedbackUpload(request, env);
+  if (path.startsWith('/api/formosa/feedback-image/') && path.endsWith('.png')) {
+    const fname = path.replace('/api/formosa/feedback-image/', '');
+    return handleFormosaFeedbackImageServe(request, env, fname);
+  }
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
   if (path === '/social/status') return handleSocialStatus(request, env);

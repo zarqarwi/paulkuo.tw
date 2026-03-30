@@ -954,8 +954,13 @@ async function routeKeyword(text, userId, env) {
     return [buildUsageMessage()];
   }
 
-  // 等級 / 紀錄 / 我的
-  if (/等級|紀錄|我的|成就|level|stats/.test(t)) {
+  // 回報 / 問題 / bug
+  if (/回報|問題|bug|反饋|建議/.test(t)) {
+    return [{ type: 'text', text: '📝 回報問題請到這裡：\nhttps://paulkuo.tw/projects/formosa-esg-2026/feedback/\n\n也可以直接在這裡打字描述，我們會看到！' }];
+  }
+
+  // 等級 / 紀錄 / 我的 / 排行
+  if (/等級|紀錄|我的|成就|level|stats|排行/.test(t)) {
     return [await buildStatsMessage(userId, env)];
   }
 
@@ -1003,7 +1008,7 @@ function buildWelcomeMessage() {
           ]},
           { type: 'separator', margin: 'lg' },
           { type: 'text', text: '輸入關鍵字快速操作：', size: 'xs', color: '#999999', margin: 'lg' },
-          { type: 'text', text: '「打卡」「說明」「等級」「碳足跡」', size: 'xs', color: '#999999', margin: 'xs' }
+          { type: 'text', text: '「打卡」「說明」「等級」「碳足跡」「回報」', size: 'xs', color: '#999999', margin: 'xs' }
         ]
       },
       footer: {
@@ -1684,6 +1689,80 @@ export async function handleFormosaOgServe(request, env, userId) {
         'Access-Control-Allow-Origin': '*',
       }
     });
+  }
+}
+
+// ── Feedback / Bug Report ──
+export async function handleFormosaFeedback(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Method not allowed' }, 405, request);
+  }
+
+  try {
+    const body = await request.json();
+    const { category, description, screenshot_url, device_info, user_agent, line_user_id } = body;
+
+    if (!category || !description) {
+      return jsonResponse({ error: 'category and description are required' }, 400, request);
+    }
+
+    await env.DB.prepare(
+      `INSERT INTO feedback (category, description, screenshot_url, device_info, user_agent, line_user_id) VALUES (?, ?, ?, ?, ?, ?)`
+    ).bind(category, description, screenshot_url || null, device_info || null, user_agent || null, line_user_id || null).run();
+
+    return jsonResponse({ ok: true }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── Feedback Screenshot Upload to R2 ──
+export async function handleFormosaFeedbackUpload(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Method not allowed' }, 405, request);
+  }
+
+  try {
+    const blob = await request.arrayBuffer();
+    if (!blob || blob.byteLength === 0) return jsonResponse({ error: 'Empty body' }, 400, request);
+    if (blob.byteLength > 5 * 1024 * 1024) return jsonResponse({ error: 'Image too large (max 5MB)' }, 413, request);
+
+    const ts = Date.now();
+    const rand = Math.random().toString(36).slice(2, 8);
+    const r2Key = `feedback/${ts}-${rand}.png`;
+
+    await env.FORMOSA_OG.put(r2Key, blob, {
+      httpMetadata: { contentType: 'image/png', cacheControl: 'public, max-age=31536000' },
+    });
+
+    const url = `https://api.paulkuo.tw/api/formosa/feedback-image/${ts}-${rand}.png`;
+    return jsonResponse({ ok: true, url }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── Serve Feedback Screenshot from R2 ──
+export async function handleFormosaFeedbackImageServe(request, env, filename) {
+  try {
+    const r2Key = `feedback/${filename}`;
+    const object = await env.FORMOSA_OG.get(r2Key);
+    if (!object) return new Response('Not found', { status: 404 });
+    return new Response(object.body, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=31536000',
+        'Access-Control-Allow-Origin': '*',
+      }
+    });
+  } catch (e) {
+    return new Response('Error', { status: 500 });
   }
 }
 

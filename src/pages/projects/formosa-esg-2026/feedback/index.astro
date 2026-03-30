@@ -1,0 +1,346 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="回報問題 — 2026 白沙屯媽祖 ESG 進香"
+  description="回報使用上遇到的問題，幫助我們改善體驗。"
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/feedback/"
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+>
+
+<div class="feedback-page">
+  <nav class="fb-breadcrumb">
+    <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+  </nav>
+
+  <header class="fb-header">
+    <h1>📝 回報問題</h1>
+    <p>遇到問題？請告訴我們，我們會盡快處理。</p>
+  </header>
+
+  <form id="feedbackForm" class="fb-form">
+    <!-- 1. Category -->
+    <label class="fb-label" for="fbCategory">哪一步卡住？<span class="fb-required">*</span></label>
+    <select id="fbCategory" class="fb-select" required>
+      <option value="">請選擇</option>
+      <option value="登入（LINE 登入）">登入（LINE 登入）</option>
+      <option value="填問卷">填問卷</option>
+      <option value="打卡 / GPS 定位">打卡 / GPS 定位</option>
+      <option value="分享給朋友">分享給朋友</option>
+      <option value="查看進香足跡">查看進香足跡</option>
+      <option value="其他">其他</option>
+    </select>
+
+    <!-- 2. Description -->
+    <label class="fb-label" for="fbDesc">發生什麼事？<span class="fb-required">*</span></label>
+    <textarea id="fbDesc" class="fb-textarea" rows="5" placeholder="請描述你遇到的問題，越具體越好" required></textarea>
+
+    <!-- 3. Screenshot -->
+    <label class="fb-label">截圖（選填）</label>
+    <div class="fb-upload-area" id="uploadArea">
+      <input type="file" id="fbFile" accept="image/png,image/jpeg,image/jpg" style="display:none">
+      <div id="uploadPlaceholder" class="fb-upload-placeholder">
+        <span>📷 點擊或拖曳上傳截圖</span>
+        <span class="fb-upload-hint">PNG / JPG，上限 5MB</span>
+      </div>
+      <div id="uploadPreview" class="fb-upload-preview" style="display:none">
+        <img id="previewImg" alt="preview" />
+        <button type="button" class="fb-upload-remove" onclick="removeScreenshot()">✕</button>
+      </div>
+    </div>
+
+    <!-- 4. Device Info -->
+    <label class="fb-label">裝置資訊（自動偵測）</label>
+    <div class="fb-device" id="deviceInfo">偵測中...</div>
+
+    <!-- Submit -->
+    <button type="submit" id="fbSubmit" class="fb-submit" disabled>送出回報</button>
+  </form>
+</div>
+
+<style>
+  .feedback-page {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: var(--font-cjk, 'Noto Sans TC', sans-serif);
+  }
+  .fb-breadcrumb {
+    margin-bottom: 1.5rem;
+  }
+  .fb-breadcrumb a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+  .fb-breadcrumb a:hover { color: #1a5c2a; }
+  .fb-header {
+    margin-bottom: 2rem;
+  }
+  .fb-header h1 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+    color: #1a5c2a;
+  }
+  .fb-header p {
+    color: #666;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .fb-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .fb-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+  }
+  .fb-required { color: #e53e3e; margin-left: 2px; }
+  .fb-select, .fb-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  .fb-select:focus, .fb-textarea:focus {
+    outline: none;
+    border-color: #1a5c2a;
+  }
+  .fb-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .fb-upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .fb-upload-area:hover, .fb-upload-area.dragover {
+    border-color: #1a5c2a;
+  }
+  .fb-upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 1.5rem;
+    color: #999;
+    font-size: 0.95rem;
+  }
+  .fb-upload-hint { font-size: 0.8rem; }
+  .fb-upload-preview {
+    position: relative;
+    padding: 0.5rem;
+  }
+  .fb-upload-preview img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+  .fb-upload-remove {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .fb-device {
+    background: #f7f7f7;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #666;
+  }
+  .fb-submit {
+    margin-top: 1rem;
+    padding: 0.9rem;
+    background: #1a5c2a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+    font-family: inherit;
+  }
+  .fb-submit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .fb-submit:not(:disabled):hover {
+    background: #145222;
+  }
+  .fb-submit.success {
+    background: #059669;
+  }
+</style>
+
+<script is:inline>
+(function() {
+  var API = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+  var screenshotUrl = null;
+
+  // Device info
+  var ua = navigator.userAgent;
+  var isLine = /Line/i.test(ua);
+  var isSafari = /Safari/i.test(ua) && !/Chrome/i.test(ua);
+  var isChrome = /Chrome/i.test(ua);
+  var browser = isLine ? 'LINE 內建瀏覽器' : isSafari ? 'Safari' : isChrome ? 'Chrome' : 'Other';
+  var platform = /iPhone|iPad/.test(ua) ? 'iPhone' : /Android/.test(ua) ? 'Android' : navigator.platform || 'Unknown';
+  var screenSize = screen.width + 'x' + screen.height;
+  var deviceStr = platform + ' / ' + browser + ' / ' + screenSize;
+  document.getElementById('deviceInfo').textContent = deviceStr;
+
+  // Validate form
+  var catEl = document.getElementById('fbCategory');
+  var descEl = document.getElementById('fbDesc');
+  var submitBtn = document.getElementById('fbSubmit');
+
+  function validate() {
+    submitBtn.disabled = !(catEl.value && descEl.value.trim());
+  }
+  catEl.addEventListener('change', validate);
+  descEl.addEventListener('input', validate);
+
+  // File upload
+  var fileInput = document.getElementById('fbFile');
+  var uploadArea = document.getElementById('uploadArea');
+  var placeholder = document.getElementById('uploadPlaceholder');
+  var preview = document.getElementById('uploadPreview');
+  var previewImg = document.getElementById('previewImg');
+
+  uploadArea.addEventListener('click', function() {
+    if (!screenshotUrl) fileInput.click();
+  });
+  uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault(); uploadArea.classList.add('dragover');
+  });
+  uploadArea.addEventListener('dragleave', function() {
+    uploadArea.classList.remove('dragover');
+  });
+  uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault(); uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  });
+
+  function handleFile(file) {
+    if (!file.type.match(/image\/(png|jpe?g)/)) {
+      alert('請上傳 PNG 或 JPG 圖片');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('圖片大小不能超過 5MB');
+      return;
+    }
+
+    // Show preview
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      placeholder.style.display = 'none';
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to R2
+    fetch(API + '/api/formosa/feedback-upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'image/png' },
+      body: file
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.ok) {
+        screenshotUrl = data.url;
+      } else {
+        alert('截圖上傳失敗: ' + (data.error || '未知錯誤'));
+        removeScreenshot();
+      }
+    })
+    .catch(function() {
+      alert('截圖上傳失敗，請稍後再試');
+      removeScreenshot();
+    });
+  }
+
+  window.removeScreenshot = function() {
+    screenshotUrl = null;
+    fileInput.value = '';
+    placeholder.style.display = '';
+    preview.style.display = 'none';
+    previewImg.src = '';
+  };
+
+  // Submit
+  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (submitBtn.disabled) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '送出中...';
+
+    var lineUserId = localStorage.getItem('formosa_line_user_id') || null;
+
+    fetch(API + '/api/formosa/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        category: catEl.value,
+        description: descEl.value.trim(),
+        screenshot_url: screenshotUrl,
+        device_info: deviceStr,
+        user_agent: ua,
+        line_user_id: lineUserId
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.ok) {
+        submitBtn.textContent = '✅ 已送出，感謝回報！';
+        submitBtn.classList.add('success');
+        setTimeout(function() {
+          catEl.value = '';
+          descEl.value = '';
+          removeScreenshot();
+          submitBtn.textContent = '送出回報';
+          submitBtn.classList.remove('success');
+          submitBtn.disabled = true;
+        }, 3000);
+      } else {
+        alert('送出失敗: ' + (data.error || '未知錯誤'));
+        submitBtn.disabled = false;
+        submitBtn.textContent = '送出回報';
+      }
+    })
+    .catch(function() {
+      alert('送出失敗，請稍後再試');
+      submitBtn.disabled = false;
+      submitBtn.textContent = '送出回報';
+    });
+  });
+})();
+</script>
+
+</BaseLayout>
