@@ -40,7 +40,7 @@ export async function handleFormosaAdminStatus(request, env) {
     const message = body.message || '';
     await env.TICKER_KV.put(FORMOSA_STATUS_KEY, JSON.stringify({ status, message, updated: new Date().toISOString() }));
     return jsonResponse({ ok: true, status, message }, 200, request);
-  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+  } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
 // ── D1 Schema Migration ──
@@ -279,7 +279,7 @@ export async function handleFormosaSubmit(request, env) {
     return jsonResponse({ ok: true, user_id: userId, message: '資料已儲存' }, 200, request);
   } catch (e) {
     console.error('Submit error:', e.message);
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -360,7 +360,7 @@ export async function handleFormosaCheckin(request, env) {
 
     return jsonResponse({ ok: true, total_points: approxCount, in_range: inRange, buffered: true }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -485,7 +485,7 @@ export async function handleFormosaAdminRoles(request, env) {
       'UPDATE formosa_users SET role = ?, updated_at = datetime(\'now\') WHERE line_user_id = ?'
     ).bind(body.role, body.user_id).run();
     return jsonResponse({ ok: true, user_id: body.user_id, role: body.role }, 200, request);
-  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+  } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
 // ── Push Notification: Send to users by role ──
@@ -537,7 +537,7 @@ export async function handleFormosaPush(request, env) {
     return jsonResponse({ ok: true, sent: userIds.length, role: targetRole, line_results: lineResults }, 200, request);
   } catch (e) {
     console.error('Push error:', e.message);
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -625,7 +625,7 @@ export async function handleFormosaData(request, env) {
     await env.TICKER_KV.put(cacheKey, JSON.stringify(payload), { expirationTtl: 60 });
     return jsonResponse(payload, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -754,7 +754,7 @@ export async function handleFormosaUser(request, env, userId) {
       survey: survey || null,
       stats
     }, 200, request);
-  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+  } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
 // ── Admin: Survey Aggregations ──
@@ -790,7 +790,7 @@ export async function handleFormosaAdminSurveys(request, env) {
       q6_csr: aggregate('q6_csr', false),
       role_distribution: aggregate('role_type', false)
     }, 200, request);
-  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+  } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
 // ── Admin: Carbon Analytics ──
@@ -834,7 +834,7 @@ export async function handleFormosaAdminCarbon(request, env) {
       water_bottles_total: waterTotal,
       hotel_nights_total: hotelTotal
     }, 200, request);
-  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+  } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
 // ── Admin: Activity Timeline ──
@@ -861,7 +861,7 @@ export async function handleFormosaAdminTimeline(request, env) {
       active_today: activeToday?.cnt || 0,
       total_gps_points: totalPts?.cnt || 0
     }, 200, request);
-  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+  } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
 // ── Admin: User Table ──
@@ -903,7 +903,7 @@ export async function handleFormosaAdminUsers(request, env) {
     });
 
     return jsonResponse({ users }, 200, request);
-  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+  } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
 // ── Admin: Server-side GPS Grid Clustering ──
@@ -963,7 +963,7 @@ export async function handleFormosaAdminClusters(request, env) {
     const lost = latestPoints.filter(p => p.created_at < twoHoursAgo).length;
 
     return jsonResponse({ clusters, front, tail, spread_km, lost }, 200, request);
-  } catch (e) { return jsonResponse({ error: e.message }, 500, request); }
+  } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
 // ── Keyword Router ──
@@ -1238,7 +1238,7 @@ export async function handleFormosaRichMenu(request, env) {
       set_default: defaultRes.ok
     }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1370,7 +1370,7 @@ export async function handleFormosaUserSync(request, env) {
       gps_track: pts.map(p => ({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source }))
     }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1421,7 +1421,7 @@ export async function handleFormosaPhotoCount(request, env) {
 
     return jsonResponse({ error: 'Method not allowed' }, 405, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1447,7 +1447,7 @@ export async function handleFormosaPhoneUpdate(request, env) {
 
     return jsonResponse({ ok: true }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1469,7 +1469,7 @@ export async function handleFormosaPrivacyAgree(request, env) {
 
       return jsonResponse({ ok: true, privacy_agreed_at: new Date().toISOString() }, 200, request);
     } catch (e) {
-      return jsonResponse({ error: e.message }, 500, request);
+      console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
     }
   }
   // GET — check consent status
@@ -1486,7 +1486,7 @@ export async function handleFormosaPrivacyAgree(request, env) {
 
       return jsonResponse({ agreed: !!user?.privacy_agreed_at, privacy_agreed_at: user?.privacy_agreed_at || null }, 200, request);
     } catch (e) {
-      return jsonResponse({ error: e.message }, 500, request);
+      console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
     }
   }
   return jsonResponse({ error: 'Method not allowed' }, 405, request);
@@ -1531,7 +1531,7 @@ export async function handleFormosaParticipantStatus(request, env) {
 
     return jsonResponse({ ok: true, participant_status: status }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1553,7 +1553,7 @@ export async function handleFormosaAdminEndActivity(request, env) {
 
     return jsonResponse({ ok: true, updated: result?.meta?.changes || 0 }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1658,7 +1658,7 @@ export async function handleFormosaDailyReport(request, env) {
 
     return jsonResponse({ ok: true, report_date: reportDate, gwp: Math.round(gwp * 1000) / 1000, wu: Math.round(wu * 1000) / 1000, breakdown }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1688,7 +1688,7 @@ export async function handleFormosaOgImage(request, env) {
     const url = `https://api.paulkuo.tw/api/formosa/og/${encodeURIComponent(userId)}.png`;
     return jsonResponse({ ok: true, url }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1757,7 +1757,7 @@ export async function handleFormosaFeedback(request, env) {
 
     return jsonResponse({ ok: true }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
@@ -1786,7 +1786,7 @@ export async function handleFormosaFeedbackUpload(request, env) {
     const url = `https://api.paulkuo.tw/api/formosa/feedback-image/${ts}-${rand}.png`;
     return jsonResponse({ ok: true, url }, 200, request);
   } catch (e) {
-    return jsonResponse({ error: e.message }, 500, request);
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 

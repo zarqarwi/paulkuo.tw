@@ -233,6 +233,10 @@ async function handleRequest(request, env) {
   if (path === '/api/tqef/youtube-transcript' && method === 'POST') return handleTqefYoutubeTranscript(request, env);
   if (path === '/api/tqef/youtube-corpus' && method === 'POST') return handleTqefYoutubeCorpus(request, env);
   // ── Formosa ESG 2026 API ──
+  if (path.startsWith('/api/formosa/') && method === 'POST') {
+    const cl = parseInt(request.headers.get('content-length') || '0');
+    if (cl > 102400) return jsonResponse({ error: 'Payload too large' }, 413, request);
+  }
   if (path === '/api/formosa/webhook') return handleFormosaWebhook(request, env);
   if (path === '/api/formosa/submit' && method === 'POST') return handleFormosaSubmit(request, env);
   if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env);

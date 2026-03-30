@@ -2,8 +2,8 @@ import { ALLOWED_ORIGINS } from './config.js';
 
 export function corsHeaders(request) {
   const origin = request.headers.get('Origin') || '';
-  const allowed = ALLOWED_ORIGINS.find(o => origin === o || origin.startsWith(o)) ||
-    (origin.endsWith('.paulkuo-tw.pages.dev') ? origin : null) ||
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin :
+    /^https:\/\/[a-z0-9\-]+\.paulkuo-tw\.pages\.dev$/.test(origin) ? origin :
     ALLOWED_ORIGINS[0];
   return {
     'Access-Control-Allow-Origin': allowed,
@@ -27,7 +27,10 @@ const rateLimitMap = new Map();
 export function checkRateLimit(ip, limit) {
   const now = Date.now();
   const key = ip + '_' + Math.floor(now / 60000);
-  if (rateLimitMap.size > 1000) rateLimitMap.clear();
+  if (rateLimitMap.size > 1000) {
+    const keys = [...rateLimitMap.keys()].slice(0, 500);
+    keys.forEach(k => rateLimitMap.delete(k));
+  }
   const count = rateLimitMap.get(key) || 0;
   if (count >= limit) return false;
   rateLimitMap.set(key, count + 1);
