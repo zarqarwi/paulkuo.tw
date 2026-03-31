@@ -3,6 +3,40 @@
 
 const CF_GRAPHQL_ENDPOINT = 'https://api.cloudflare.com/client/v4/graphql';
 
+// ── AI/Bot Crawler 分類 ──
+
+const AI_CRAWLERS = [
+  { pattern: /GPTBot/i, name: 'GPTBot' },
+  { pattern: /ChatGPT-User/i, name: 'ChatGPT' },
+  { pattern: /ClaudeBot/i, name: 'ClaudeBot' },
+  { pattern: /Claude-Web/i, name: 'Claude' },
+  { pattern: /anthropic-ai/i, name: 'Anthropic' },
+  { pattern: /Google-Extended/i, name: 'Google-Extended' },
+  { pattern: /Googlebot/i, name: 'Googlebot' },
+  { pattern: /Bingbot/i, name: 'Bingbot' },
+  { pattern: /Bytespider/i, name: 'Bytespider' },
+  { pattern: /PetalBot/i, name: 'PetalBot' },
+  { pattern: /Applebot/i, name: 'Applebot' },
+  { pattern: /PerplexityBot/i, name: 'PerplexityBot' },
+  { pattern: /Cohere-ai/i, name: 'Cohere' },
+  { pattern: /Meta-ExternalAgent/i, name: 'Meta' },
+  { pattern: /CCBot/i, name: 'CCBot' },
+  { pattern: /DataForSeoBot/i, name: 'DataForSeo' },
+  { pattern: /AhrefsBot/i, name: 'Ahrefs' },
+  { pattern: /SemrushBot/i, name: 'Semrush' },
+];
+
+const GENERIC_BOT_RE = /bot|crawler|spider|scraper|curl|wget|python|go-http|headless|phantom|selenium/i;
+
+function classifyBot(ua) {
+  if (!ua || ua === 'unknown') return { isBot: true, type: 'unknown', name: 'unknown' };
+  for (const c of AI_CRAWLERS) {
+    if (c.pattern.test(ua)) return { isBot: true, type: 'ai', name: c.name };
+  }
+  if (GENERIC_BOT_RE.test(ua)) return { isBot: true, type: 'generic', name: 'other' };
+  return { isBot: false, type: 'human', name: null };
+}
+
 /**
  * 從 Cloudflare Analytics 撈昨天的 unique visitors
  * 寫入 KV key: site_visitors
@@ -418,21 +452,23 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
 
   // ?refresh=1 → 強制拉最新數據（跳過節流）
   if (refresh) {
-    const [fresh, rum, dur] = await Promise.all([
+    const [fresh, rum, dur, botSummary] = await Promise.all([
       fetchAnalyticsOverview(env, { force: true }),
       fetchRumAnalytics(env),
       fetchDurationAnalytics(env),
+      aggregateBotAnalytics(env),
     ]);
     if (fresh) {
       const merged = { ...fresh, ...(rum || {}) };
       if (dur) merged.duration = dur;
+      merged.botTraffic = botSummary || null;
       return new Response(JSON.stringify(merged), {
         headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) },
       });
     }
   }
 
-  const [overviewRaw, countriesRaw, lastFetch, referersRaw, topPagesRaw, devicesRaw, durationRaw] = await Promise.all([
+  const [overviewRaw, countriesRaw, lastFetch, referersRaw, topPagesRaw, devicesRaw, durationRaw, botSummaryRaw] = await Promise.all([
     env.TICKER_KV.get('analytics:overview'),
     env.TICKER_KV.get('analytics:countries'),
     env.TICKER_KV.get('analytics:lastFetch'),
@@ -440,6 +476,7 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
     env.TICKER_KV.get('analytics:top-pages'),
     env.TICKER_KV.get('analytics:devices'),
     env.TICKER_KV.get('analytics:duration'),
+    env.TICKER_KV.get('analytics:bot-summary'),
   ]);
 
   if (!overviewRaw) {
@@ -457,6 +494,7 @@ export async function handleAnalytics(request, env, corsHeadersFn) {
     topPages: JSON.parse(topPagesRaw || '{"pages":[]}'),
     devices: devicesRaw ? JSON.parse(devicesRaw) : null,
     duration: durationRaw ? JSON.parse(durationRaw) : null,
+    botTraffic: botSummaryRaw ? JSON.parse(botSummaryRaw) : null,
   };
 
   return new Response(JSON.stringify(result), {
@@ -609,8 +647,23 @@ export async function handleVisitBeacon(request, env, corsHeadersFn) {
   const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || 'unknown';
   const ua = request.headers.get('user-agent') || 'unknown';
 
-  // 簡單 bot 過濾：沒有 UA 或已知 bot pattern 就跳過
-  if (ua === 'unknown' || /bot|crawler|spider|scraper|curl|wget|python|go-http/i.test(ua)) {
+  // Bot 分類與計數
+  const botInfo = classifyBot(ua);
+  if (botInfo.isBot) {
+    const today = new Date().toISOString().split('T')[0];
+    const botKey = `analytics:bot-visits:${today}`;
+    let botData;
+    try {
+      const raw = await env.TICKER_KV.get(botKey);
+      botData = raw ? JSON.parse(raw) : { total: 0, ai: 0, generic: 0, byName: {} };
+    } catch { botData = { total: 0, ai: 0, generic: 0, byName: {} }; }
+
+    botData.total += 1;
+    if (botInfo.type === 'ai') botData.ai += 1;
+    else botData.generic += 1;
+    botData.byName[botInfo.name] = (botData.byName[botInfo.name] || 0) + 1;
+
+    await env.TICKER_KV.put(botKey, JSON.stringify(botData), { expirationTtl: 86400 * 35 });
     return new Response(null, { status: 204, headers: corsHeadersFn(request) });
   }
 
@@ -713,6 +766,68 @@ export async function fetchZoneUniqueVisitors(env) {
   await env.TICKER_KV.put(`analytics:zone-uniques:${dateStr}`, JSON.stringify({ uniques, date: dateStr }), { expirationTtl: 86400 * 35 });
   console.log(`zone-uniques: ${dateStr} → ${uniques}`);
   return { date: dateStr, uniques };
+}
+
+/**
+ * Cron: 彙整 30 天 bot 數據 → analytics:bot-summary
+ */
+export async function aggregateBotAnalytics(env) {
+  const now = new Date();
+  const daily = [];
+  let total30d = { total: 0, ai: 0, generic: 0 };
+  const byNameAll = {};
+
+  for (let i = 0; i < 31; i++) {
+    const d = new Date(now);
+    d.setUTCDate(d.getUTCDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    try {
+      const raw = await env.TICKER_KV.get(`analytics:bot-visits:${dateStr}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        daily.unshift({ date: dateStr, total: parsed.total, ai: parsed.ai, generic: parsed.generic });
+        total30d.total += parsed.total;
+        total30d.ai += parsed.ai;
+        total30d.generic += parsed.generic;
+        if (parsed.byName) {
+          for (const [name, count] of Object.entries(parsed.byName)) {
+            byNameAll[name] = (byNameAll[name] || 0) + count;
+          }
+        }
+      } else {
+        daily.unshift({ date: dateStr, total: 0, ai: 0, generic: 0 });
+      }
+    } catch {}
+  }
+
+  const topCrawlers = Object.entries(byNameAll)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15)
+    .map(([name, count]) => ({
+      name,
+      count,
+      percent: total30d.total > 0 ? +(count / total30d.total * 100).toFixed(1) : 0,
+    }));
+
+  const sum = (arr) => arr.reduce((acc, d) => ({
+    total: acc.total + d.total, ai: acc.ai + d.ai, generic: acc.generic + d.generic
+  }), { total: 0, ai: 0, generic: 0 });
+
+  const total7d = sum(daily.slice(-7));
+  const total1d = sum(daily.slice(-1));
+
+  const result = {
+    daily,
+    total1d,
+    total7d,
+    total30d,
+    topCrawlers,
+    updatedAt: new Date().toISOString(),
+  };
+
+  await env.TICKER_KV.put('analytics:bot-summary', JSON.stringify(result));
+  console.log(`bot-analytics: aggregated, 30d total=${total30d.total}, ai=${total30d.ai}`);
+  return result;
 }
 
 /**

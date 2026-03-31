@@ -52,6 +52,7 @@
     <div class="ta-pages" id="taPages"></div>
     <div class="ta-devices" id="taDevices"></div>
     <div class="ta-duration" id="taDuration"></div>
+    <div class="ta-bot-traffic" id="taBotTraffic"></div>
   </div>
 
   <!-- Error state -->
@@ -408,6 +409,78 @@
       document.getElementById('taDuration').innerHTML =
         '<h4 class="ta-section-title">平均停留時間</h4>' +
         durLegend + durRows;
+    }
+
+    // --- AI/Bot Traffic ---
+    var botData = data.botTraffic;
+    if (botData && botData.total30d && botData.total30d.total > 0) {
+      var bt = botData;
+      var AI_NAMES = ['GPTBot','ChatGPT','ClaudeBot','Claude','Anthropic','Google-Extended','Bytespider','PerplexityBot','Cohere','Meta','CCBot'];
+
+      function updateBotView(range) {
+        var totals = range === 1 ? bt.total1d : range === 7 ? bt.total7d : bt.total30d;
+        var sliced = range === 1 ? bt.daily.slice(-1) : range === 7 ? bt.daily.slice(-7) : bt.daily;
+        var aiPct = totals.total > 0 ? (totals.ai / totals.total * 100).toFixed(1) : 0;
+
+        var botKpiHtml =
+          '<div class="ta-bot-kpis">' +
+            '<div class="ak"><span class="ak-v" style="color:#f59e0b">' + fmt(totals.total) + '</span><span class="ak-l">Bot 總訪問</span></div>' +
+            '<div class="ak"><span class="ak-v" style="color:#ef4444">' + fmt(totals.ai) + '</span><span class="ak-l">AI Crawler (' + aiPct + '%)</span></div>' +
+            '<div class="ak"><span class="ak-v" style="color:#8b5cf6">' + fmt(totals.generic) + '</span><span class="ak-l">一般爬蟲</span></div>' +
+          '</div>';
+
+        var maxBotDay = 1;
+        sliced.forEach(function(d) { if (d.total > maxBotDay) maxBotDay = d.total; });
+
+        var barsHtml = sliced.map(function(d) {
+          var h = Math.max(2, (d.total / maxBotDay * 60));
+          var aiH = d.total > 0 ? (d.ai / d.total * h) : 0;
+          var genH = h - aiH;
+          var label = d.date.slice(5).replace('-', '/');
+          return '<div class="ta-bot-bar-col">' +
+            '<div class="ta-bot-bar-stack" style="height:' + h.toFixed(0) + 'px">' +
+              '<div class="ta-bot-bar-ai" style="height:' + aiH.toFixed(0) + 'px"></div>' +
+              '<div class="ta-bot-bar-gen" style="height:' + genH.toFixed(0) + 'px"></div>' +
+            '</div>' +
+            (sliced.length <= 7 ? '<span class="ta-bot-bar-label">' + label + '</span>' : '') +
+          '</div>';
+        }).join('');
+
+        var chartHtml = '<div class="ta-bot-bars">' + barsHtml + '</div>' +
+          '<div class="ta-bot-legend">' +
+            '<span class="ta-legend-item"><span class="ta-dot" style="background:#ef4444"></span>AI Crawler</span>' +
+            '<span class="ta-legend-item"><span class="ta-dot" style="background:#8b5cf6"></span>一般爬蟲</span>' +
+          '</div>';
+
+        var crawlerRows = '';
+        if (bt.topCrawlers && bt.topCrawlers.length > 0) {
+          var maxCrawlerPct = bt.topCrawlers[0].percent || 1;
+          crawlerRows = '<h4 class="ta-bot-sub">Top Crawlers (30d)</h4>' +
+            bt.topCrawlers.slice(0, 10).map(function(c) {
+              var barW = (c.percent / maxCrawlerPct * 100).toFixed(1);
+              var isAI = AI_NAMES.indexOf(c.name) >= 0;
+              var dotColor = isAI ? '#ef4444' : '#8b5cf6';
+              return '<div class="ta-bot-crawler-row">' +
+                '<span class="ta-ref-cat-dot" style="background:' + dotColor + '"></span>' +
+                '<span class="ta-page-name">' + c.name + '</span>' +
+                '<div class="ta-country-bar-bg"><div class="ta-country-bar" style="width:' + barW + '%"></div></div>' +
+                '<span class="ta-country-pct">' + c.percent + '%</span>' +
+              '</div>';
+            }).join('');
+        }
+
+        document.getElementById('taBotTraffic').innerHTML =
+          '<h4 class="ta-section-title">\u{1F916} AI / Bot \u6D41\u91CF</h4>' +
+          botKpiHtml + chartHtml + crawlerRows;
+      }
+
+      toggle.addEventListener('click', function(e) {
+        var btn = e.target.closest('.ta-btn');
+        if (!btn) return;
+        updateBotView(parseInt(btn.dataset.range));
+      });
+
+      updateBotView(7);
     }
 
     // Show content, hide loading
@@ -876,6 +949,64 @@
 
   /* Error state */
   .ta-error .ta-subtitle { color: var(--text-muted); }
+
+  /* Bot Traffic section */
+  .ta-bot-traffic {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-light, #e8e6e1);
+  }
+  .ta-bot-traffic :global(.ta-bot-kpis) {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+  }
+  .ta-bot-traffic :global(.ta-bot-bars) {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 70px;
+    margin-bottom: 8px;
+  }
+  .ta-bot-traffic :global(.ta-bot-bar-col) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .ta-bot-traffic :global(.ta-bot-bar-stack) {
+    width: 100%;
+    max-width: 20px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .ta-bot-traffic :global(.ta-bot-bar-ai) { background: #ef4444; }
+  .ta-bot-traffic :global(.ta-bot-bar-gen) { background: #8b5cf6; }
+  .ta-bot-traffic :global(.ta-bot-bar-label) {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .ta-bot-traffic :global(.ta-bot-legend) {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .ta-bot-traffic :global(.ta-bot-sub) {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 12px 0 8px 0;
+  }
+  .ta-bot-traffic :global(.ta-bot-crawler-row) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+  }
 
   @media (max-width: 768px) {
     .traffic-analytics { padding: 1.25rem; }
