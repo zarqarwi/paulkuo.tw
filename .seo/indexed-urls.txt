@@ -301,7 +301,9 @@ https://paulkuo.tw/projects/formosa-esg-2026/dashboard/
 https://paulkuo.tw/projects/formosa-esg-2026/data/
 https://paulkuo.tw/projects/formosa-esg-2026/feedback/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/
+https://paulkuo.tw/projects/formosa-esg-2026/guide/admin-flow/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/admin/
+https://paulkuo.tw/projects/formosa-esg-2026/guide/user-flow/
 https://paulkuo.tw/projects/formosa-esg-2026/my/
 https://paulkuo.tw/projects/formosa-esg-2026/privacy/
 https://paulkuo.tw/projects/formosa-esg-2026/tracker/
