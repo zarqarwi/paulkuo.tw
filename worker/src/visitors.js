@@ -785,7 +785,7 @@ export async function aggregateBotAnalytics(env) {
       const raw = await env.TICKER_KV.get(`analytics:bot-visits:${dateStr}`);
       if (raw) {
         const parsed = JSON.parse(raw);
-        daily.unshift({ date: dateStr, total: parsed.total, ai: parsed.ai, generic: parsed.generic });
+        daily.unshift({ date: dateStr, total: parsed.total, ai: parsed.ai, generic: parsed.generic, estimated: parsed.estimated || 0, backfilled: !!parsed.backfilled });
         total30d.total += parsed.total;
         total30d.ai += parsed.ai;
         total30d.generic += parsed.generic;
@@ -828,6 +828,92 @@ export async function aggregateBotAnalytics(env) {
   await env.TICKER_KV.put('analytics:bot-summary', JSON.stringify(result));
   console.log(`bot-analytics: aggregated, 30d total=${total30d.total}, ai=${total30d.ai}`);
   return result;
+}
+
+/**
+ * 一次性回填：用 Zone Analytics uniques - beacon unique visits 推算歷史 bot 總量
+ * 只回填還沒有 bot-visits 數據的日期（不覆蓋已有的細分數據）
+ * GET /analytics/backfill?key=FORMOSA_ADMIN_TOKEN
+ */
+export async function handleBotBackfill(request, env, corsHeadersFn) {
+  const url = new URL(request.url);
+  const key = url.searchParams.get('key');
+  if (key !== env.FORMOSA_ADMIN_TOKEN) {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 403, headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) }
+    });
+  }
+
+  const results = [];
+  let backfilled = 0;
+  let skipped = 0;
+
+  for (let i = 1; i <= 35; i++) {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+
+    const existingBot = await env.TICKER_KV.get(`analytics:bot-visits:${dateStr}`);
+    if (existingBot) {
+      skipped++;
+      continue;
+    }
+
+    let zoneUniques = 0;
+    try {
+      const raw = await env.TICKER_KV.get(`analytics:zone-uniques:${dateStr}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        zoneUniques = parsed.uniques || 0;
+      }
+    } catch {}
+
+    let beaconUnique = 0;
+    try {
+      const raw = await env.TICKER_KV.get(`analytics:visits:${dateStr}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        beaconUnique = parsed.unique || 0;
+      }
+    } catch {}
+
+    if (zoneUniques === 0 && beaconUnique === 0) {
+      results.push({ date: dateStr, status: 'no_data' });
+      continue;
+    }
+
+    const botTotal = Math.max(0, zoneUniques - beaconUnique);
+
+    const botData = {
+      total: botTotal,
+      ai: 0,
+      generic: 0,
+      estimated: botTotal,
+      byName: {},
+      backfilled: true,
+      source: { zoneUniques, beaconUnique },
+    };
+
+    await env.TICKER_KV.put(
+      `analytics:bot-visits:${dateStr}`,
+      JSON.stringify(botData),
+      { expirationTtl: 86400 * 35 }
+    );
+
+    backfilled++;
+    results.push({ date: dateStr, botTotal, zoneUniques, beaconUnique });
+  }
+
+  await aggregateBotAnalytics(env);
+
+  return new Response(JSON.stringify({
+    ok: true,
+    backfilled,
+    skipped,
+    details: results,
+  }), {
+    headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) }
+  });
 }
 
 /**
