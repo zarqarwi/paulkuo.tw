@@ -680,27 +680,69 @@ export async function handleFormosaScheduledPush(env) {
   const status = await getFormosaStatus(env.TICKER_KV);
   if (status.status !== 'active') return { skipped: true, reason: 'activity ' + status.status };
 
-  // Pick message based on hour
+  // Pick message index based on hour
   const msgIdx = Math.min(pushHours.indexOf(hour), PUSH_MESSAGES.length - 1);
-  const msg = PUSH_MESSAGES[msgIdx];
 
-  const users = await env.AUTH_DB.prepare("SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL AND (participant_status IS NULL OR participant_status = 'active')").all();
-  if (!users.results?.length) return { skipped: true, reason: 'no users' };
+  // ── 按語言分組推播 ──
+  const localeConfigs = [
+    {
+      locale: 'zh-Hant',
+      query: `SELECT line_user_id FROM formosa_users
+              WHERE line_user_id IS NOT NULL
+              AND (participant_status IS NULL OR participant_status = 'active')
+              AND (language IS NULL OR language LIKE 'zh-TW%' OR language LIKE 'zh-Hant%' OR language = 'zh')`,
+      bind: [],
+    },
+    {
+      locale: 'en',
+      query: `SELECT line_user_id FROM formosa_users
+              WHERE line_user_id IS NOT NULL
+              AND (participant_status IS NULL OR participant_status = 'active')
+              AND language LIKE ?`,
+      bind: ['en%'],
+    },
+    {
+      locale: 'ja',
+      query: `SELECT line_user_id FROM formosa_users
+              WHERE line_user_id IS NOT NULL
+              AND (participant_status IS NULL OR participant_status = 'active')
+              AND language LIKE ?`,
+      bind: ['ja%'],
+    },
+    {
+      locale: 'zh-Hans',
+      query: `SELECT line_user_id FROM formosa_users
+              WHERE line_user_id IS NOT NULL
+              AND (participant_status IS NULL OR participant_status = 'active')
+              AND (language = 'zh-CN' OR language LIKE 'zh-Hans%')`,
+      bind: [],
+    },
+  ];
 
-  const userIds = users.results.map(u => u.line_user_id);
-  const message = {
-    type: 'template',
-    altText: msg.title,
-    template: {
-      type: 'buttons',
-      title: msg.title,
-      text: msg.text,
-      actions: [{ type: 'uri', label: '立即打卡 📍', uri: 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/' }]
-    }
-  };
+  const trackerUrl = 'https://mazu.today/tracker/';
+  let totalSent = 0;
 
-  await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [message]);
-  return { sent: userIds.length, message: msg.title };
+  for (const { locale, query, bind } of localeConfigs) {
+    const stmt = env.AUTH_DB.prepare(query);
+    const users = bind.length > 0
+      ? await stmt.bind(...bind).all()
+      : await stmt.all();
+
+    if (!users.results?.length) continue;
+
+    const pushMessages = BOT_MESSAGES[locale].push;
+    const msg = pushMessages[Math.min(msgIdx, pushMessages.length - 1)];
+    const localizedUrl = localizeUrl(trackerUrl, locale);
+    const userIds = users.results.map(u => u.line_user_id);
+
+    await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [
+      { type: 'text', text: `${msg.title}\n\n${msg.text}\n\n📍 ${localizedUrl}` }
+    ]);
+
+    totalSent += userIds.length;
+  }
+
+  return { sent: totalSent };
 }
 
 // ── Data Dashboard API (admin only) ──
