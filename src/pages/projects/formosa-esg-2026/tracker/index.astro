@@ -265,7 +265,7 @@ import AuthGate from '../_components/AuthGate.astro';
     <!-- 善行者獎勵卡 -->
     <div class="reward-card" id="rewardCard">
       <div class="reward-card-inner">
-        <div class="reward-badge"><img src="/images/formosa/level-1.png" class="mascot-reward" alt="煉氣香客"></div>
+        <div class="reward-badge"><img src="/images/formosa/level-1.webp" class="mascot-reward" width="150" height="150" alt="煉氣香客"></div>
         <div class="reward-title">✦ 煉氣香客 ✦</div>
         <div class="reward-subtitle">白沙屯媽祖 ESG 進香 2026</div>
         <div class="reward-stats" id="rewardStats"></div>
@@ -286,7 +286,7 @@ import AuthGate from '../_components/AuthGate.astro';
   <!-- ═══════════════════════════════════════════ -->
   <div class="q-card" data-q="checkin" id="stepCheckin" style="text-align:center">
     <div class="checkin-mode">
-      <div class="checkin-badge" id="checkinBadge"><img src="/images/formosa/level-1.png" class="mascot-badge" alt="煉氣香客"><span>煉氣香客</span></div>
+      <div class="checkin-badge" id="checkinBadge"><img src="/images/formosa/level-1.webp" class="mascot-badge" width="120" height="120" alt="煉氣香客"><span>煉氣香客</span></div>
       <h2>歡迎回來！</h2>
       <p class="checkin-subtitle">問卷已完成。您可以繼續打卡記錄足跡。</p>
 
@@ -952,15 +952,15 @@ import AuthGate from '../_components/AuthGate.astro';
   // ── Gamification: 9-Level Pilgrim Ranking ──
   var MASCOT_BASE = '/images/formosa/';
   var TITLES = [
-    { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.png', name: '煉氣香客', sub: '啟程入門者' },
-    { km: 15,  checkins: 5,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
-    { km: 45,  checkins: 10, icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
-    { km: 90,  checkins: 15, icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
-    { km: 135, checkins: 20, icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
-    { km: 180, checkins: 25, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
-    { km: 225, checkins: 30, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
-    { km: 270, checkins: 35, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
-    { km: 300, checkins: 40, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
+    { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.webp', name: '煉氣香客', sub: '啟程入門者' },
+    { km: 15,  checkins: 5,  icon: '🧱', img: 'level-2.webp', name: '築基香客', sub: '開始上路者' },
+    { km: 45,  checkins: 10, icon: '💛', img: 'level-3.webp', name: '金丹香客', sub: '穩定行腳者' },
+    { km: 90,  checkins: 15, icon: '👶', img: 'level-4.webp', name: '元嬰香客', sub: '深度參與者' },
+    { km: 135, checkins: 20, icon: '✨', img: 'level-5.webp', name: '化神香客', sub: '高里程行者' },
+    { km: 180, checkins: 25, icon: '🌀', img: 'level-6.webp', name: '煉虛香客', sub: '進階完成者' },
+    { km: 225, checkins: 30, icon: '🤝', img: 'level-7.webp', name: '合體香客', sub: '高階完成者' },
+    { km: 270, checkins: 35, icon: '🏆', img: 'level-8.webp', name: '大乘香客', sub: '榮譽進階者' },
+    { km: 300, checkins: 40, icon: '🚀', img: 'level-9.webp', name: '飛升香客', sub: '圓滿認證者' }
   ];
 
   function getTitle(checkins, km) {
@@ -1433,7 +1433,7 @@ import AuthGate from '../_components/AuthGate.astro';
 
     // Update reward card with current title
     var initT = getTitle(1, 0); // first checkin, 0 km
-    document.querySelector('.reward-badge').innerHTML = '<img src="' + MASCOT_BASE + initT.current.img + '" class="mascot-reward" alt="' + initT.current.name + '">';
+    document.querySelector('.reward-badge').innerHTML = '<img src="' + MASCOT_BASE + initT.current.img + '" class="mascot-reward" width="150" height="150" alt="' + initT.current.name + '">';
     document.querySelector('.reward-title').textContent = '✦ ' + initT.current.name + ' ✦';
     var nextEl = document.querySelector('.reward-next');
     if (nextEl && initT.next) {
@@ -1677,7 +1677,7 @@ import AuthGate from '../_components/AuthGate.astro';
     var km = getSavedKm();
     var t = getTitle(checkins, km);
 
-    document.getElementById('checkinBadge').innerHTML = '<img src="' + MASCOT_BASE + t.current.img + '" class="mascot-badge" alt="' + t.current.name + '"><span>' + t.current.name + '</span>';
+    document.getElementById('checkinBadge').innerHTML = '<img src="' + MASCOT_BASE + t.current.img + '" class="mascot-badge" width="120" height="120" alt="' + t.current.name + '"><span>' + t.current.name + '</span>';
 
     // Hide GPS banner check-in button (replaced by big button in checkin mode)
     var gpsBannerBtn = document.getElementById('gpsCheckinBtn');
@@ -1807,7 +1807,7 @@ import AuthGate from '../_components/AuthGate.astro';
     var t = getTitle(n, km);
 
     var badgeEl = document.getElementById('checkinBadge');
-    if (badgeEl) badgeEl.innerHTML = '<img src="' + MASCOT_BASE + t.current.img + '" class="mascot-badge" alt="' + t.current.name + '"><span>' + t.current.name + '</span>';
+    if (badgeEl) badgeEl.innerHTML = '<img src="' + MASCOT_BASE + t.current.img + '" class="mascot-badge" width="120" height="120" alt="' + t.current.name + '"><span>' + t.current.name + '</span>';
 
     var statsEl = document.getElementById('checkinStats');
     if (statsEl) {
@@ -1874,7 +1874,7 @@ import AuthGate from '../_components/AuthGate.astro';
       if (needCheckins > 0) parts.push('打卡 ' + needCheckins + ' 次');
       progEl.innerHTML = '<p style="color:#b45309;margin-top:1.5rem;">再' + parts.join('、') + '升級為 <img src="' + MASCOT_BASE + t.next.img + '" style="width:28px;height:28px;vertical-align:middle;"> ' + t.next.name + '</p>';
     } else {
-      progEl.innerHTML = '<p style="color:#059669;margin-top:1.5rem;"><img src="' + MASCOT_BASE + 'level-9.png" style="width:28px;height:28px;vertical-align:middle;"> 恭喜飛升！已達最高等級！</p>';
+      progEl.innerHTML = '<p style="color:#059669;margin-top:1.5rem;"><img src="' + MASCOT_BASE + 'level-9.webp" style="width:28px;height:28px;vertical-align:middle;"> 恭喜飛升！已達最高等級！</p>';
     }
   }
 
@@ -2851,12 +2851,12 @@ import AuthGate from '../_components/AuthGate.astro';
     border-radius: 20px;
     padding: 0.3rem 1rem;
   }
-  .mascot-badge {
+  :global(.mascot-badge) {
     width: 120px;
     height: 120px;
     object-fit: contain;
   }
-  .mascot-reward {
+  :global(.mascot-reward) {
     width: 150px;
     height: 150px;
     object-fit: contain;
