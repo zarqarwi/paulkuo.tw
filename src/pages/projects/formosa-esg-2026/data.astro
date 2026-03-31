@@ -11,6 +11,20 @@ import AuthGate from './_components/AuthGate.astro';
   eventMode={true}
 >
 
+<style is:global>
+  .formosa-auth {
+    align-items: flex-start !important;
+    padding-top: 15vh !important;
+  }
+  .formosa-auth .auth-card .auth-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+  }
+  .formosa-auth .auth-card .auth-note a {
+    color: var(--accent-faith);
+  }
+</style>
 <AuthGate title="繞境數據收集系統" subtitle="請輸入管理密碼">
 
 <div class="formosa-data">

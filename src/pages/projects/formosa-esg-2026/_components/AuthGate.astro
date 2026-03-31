@@ -50,6 +50,7 @@ const {
         </div>
         <button id="lineEnterBtn" class="line-enter-btn" disabled>進入活動</button>
         <div id="privacyDeclineMsg" class="privacy-decline-msg" style="display:none">需要同意隱私權聲明才能使用打卡功能</div>
+        <div id="privacyFetchFallback" class="privacy-fetch-fallback" style="display:none">網路連線異常，如無法進入請<a href="/projects/formosa-esg-2026/tracker/?demo=1">點此重試</a>。</div>
       </div>
 
       <!-- Admin fallback -->
@@ -68,6 +69,7 @@ const {
       <p class="auth-subtitle">僅限管理團隊存取</p>
       <input type="password" id="authInput" placeholder="管理密碼" autofocus />
       <button id="authBtn">進入</button>
+      <p class="auth-note">這是管理團隊的數據後台，香客請前往<a href="/projects/formosa-esg-2026/my/">足跡頁面</a>。</p>
     )}
   </div>
 </div>
@@ -257,7 +259,12 @@ const {
           unlock();
         }
       }).catch(function() {
-        // Fallback: don't block on network error
+        // Fallback: show manual link instead of blocking
+        lineEnterBtn.textContent = '進入活動';
+        lineEnterBtn.disabled = false;
+        var fallback = document.getElementById('privacyFetchFallback');
+        if (fallback) fallback.style.display = 'block';
+        // Also allow entry on network failure
         localStorage.setItem('formosa_privacy_agreed', '1');
         unlock();
       });
@@ -285,12 +292,15 @@ const {
     // LINE login button click
     if (lineLoginBtn) {
       lineLoginBtn.addEventListener('click', function() {
+        lineLoginBtn.disabled = true;
+        lineLoginBtn.innerHTML = '<span class="line-spinner"></span> 登入中…';
         if (typeof liff !== 'undefined' && window.__liffReady) {
           liff.login({ redirectUri: window.location.href });
         } else {
           initLIFF();
           setTimeout(function() {
             if (typeof liff !== 'undefined') liff.login({ redirectUri: window.location.href });
+            else { lineLoginBtn.disabled = false; lineLoginBtn.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="white" style="vertical-align:middle;margin-right:8px"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> 用 LINE 登入'; }
           }, 1000);
         }
       });
@@ -526,5 +536,38 @@ const {
   }
   .admin-cancel-btn:hover {
     background: var(--bg-section) !important;
+  }
+  .line-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: line-spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes line-spin { to { transform: rotate(360deg); } }
+  .line-login-btn:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+  .privacy-fetch-fallback {
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  .privacy-fetch-fallback a {
+    color: var(--accent-faith);
+    text-decoration: underline;
+  }
+  .auth-note {
+    font-size: 0.8rem !important;
+    color: var(--text-muted) !important;
+    margin-top: 1.5rem !important;
+  }
+  .auth-note a {
+    color: var(--accent-faith);
   }
 </style>

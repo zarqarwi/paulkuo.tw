@@ -108,6 +108,7 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
   <slot name="head" />
 </head>
 <body>
+  <a href="#main-content" class="skip-link">跳到主要內容</a>
   {isArticlePage && <div class="reading-progress" id="reading-progress"></div>}
 
   {eventMode ? <EventHeader {langPrefix} {langSwitchLinks} {currentLang} /> : !hideNav && <NavBar {langPrefix} {langSwitchLinks} {currentLang} />}
@@ -125,7 +126,7 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
     </aside>
   )}
 
-  <main>
+  <main id="main-content">
     <slot />
   </main>
 

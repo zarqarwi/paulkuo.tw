@@ -33,17 +33,17 @@ const formosaBase = `${langPrefix}/projects/formosa-esg-2026`;
 
 {eventMode ? (
 <nav class="mobile-tab-bar" aria-label="活動導覽">
-  <a href={`${formosaBase}/tracker/`} class="tab-item" data-tab="checkin">
+  <a href={`${formosaBase}/tracker/`} class="tab-item" data-tab="checkin" aria-label={et.checkin}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    <span>{et.checkin}</span>
+    <span class="tab-label">{et.checkin}</span>
   </a>
-  <a href={`${formosaBase}/my/`} class="tab-item" data-tab="track">
+  <a href={`${formosaBase}/my/`} class="tab-item" data-tab="track" aria-label={et.track}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 7 8 11.7z"/></svg>
-    <span>{et.track}</span>
+    <span class="tab-label">{et.track}</span>
   </a>
-  <a href={`${formosaBase}/guide/`} class="tab-item" data-tab="guide">
+  <a href={`${formosaBase}/guide/`} class="tab-item" data-tab="guide" aria-label={et.guide}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-    <span>{et.guide}</span>
+    <span class="tab-label">{et.guide}</span>
   </a>
   <button class="tab-item tab-more" data-tab="more" aria-label={et.more}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
@@ -66,17 +66,17 @@ const formosaBase = `${langPrefix}/projects/formosa-esg-2026`;
 </div>
 ) : (
 <nav class="mobile-tab-bar" aria-label="主要導覽">
-  <a href={langPrefix + '/'} class="tab-item" data-tab="home">
+  <a href={langPrefix + '/'} class="tab-item" data-tab="home" aria-label={t.home}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <span>{t.home}</span>
+    <span class="tab-label">{t.home}</span>
   </a>
-  <a href={langPrefix + '/blog'} class="tab-item" data-tab="blog">
+  <a href={langPrefix + '/blog'} class="tab-item" data-tab="blog" aria-label={t.blog}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-    <span>{t.blog}</span>
+    <span class="tab-label">{t.blog}</span>
   </a>
-  <a href={langPrefix + '/projects'} class="tab-item" data-tab="projects">
+  <a href={langPrefix + '/projects'} class="tab-item" data-tab="projects" aria-label={t.projects}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-    <span>{t.projects}</span>
+    <span class="tab-label">{t.projects}</span>
   </a>
   <button class="tab-item tab-more" data-tab="more" aria-label={t.more}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
@@ -184,8 +184,11 @@ const formosaBase = `${langPrefix}/projects/formosa-esg-2026`;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      min-height: 48px;
+      padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
       gap: 2px;
       font-size: 0.65rem;
+      font-weight: 500;
       color: var(--text-secondary, #6b7280);
       text-decoration: none;
       background: none;
@@ -195,12 +198,17 @@ const formosaBase = `${langPrefix}/projects/formosa-esg-2026`;
     }
 
     .tab-item.active {
-      color: var(--brand-navy, #1b2d4f);
+      color: var(--accent-faith, #b45309);
+      font-weight: 600;
     }
 
     .tab-item svg {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
+    }
+
+    .tab-item.active svg {
+      color: var(--accent-faith, #b45309);
     }
 
     /* Hamburger hidden when tab bar is active */

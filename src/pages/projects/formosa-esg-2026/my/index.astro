@@ -22,11 +22,30 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
   </nav>
 
   <!-- No data state -->
-  <div id="noData" style="display:none;text-align:center;padding:4rem 1rem;">
-    <p style="font-size:1.5rem;">🙏</p>
+  <div id="noData" class="empty-state" style="display:none;">
+    <div class="empty-icon">🙏</div>
     <h2>尚未有打卡紀錄</h2>
-    <p style="color:#888;margin:1rem 0;">前往打卡頁面開始記錄你的進香足跡</p>
-    <a href="/projects/formosa-esg-2026/tracker/" class="my-cta-btn">📍 前往打卡</a>
+    <p>參與進香活動時，到各站點掃碼即可記錄你的足跡。</p>
+
+    <div class="quick-steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <span>到站點掃描 QR Code</span>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <span>用 LINE 登入確認身份</span>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <span>累積善足跡與成就</span>
+      </div>
+    </div>
+
+    <div class="empty-cta-row">
+      <a href="/projects/formosa-esg-2026/guide/" class="my-cta-btn secondary">📖 完整使用說明</a>
+      <a href="/projects/formosa-esg-2026/tracker/" class="my-cta-btn">📍 前往打卡</a>
+    </div>
   </div>
 
   <!-- Main content -->
@@ -622,6 +641,53 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
     text-decoration: none;
     font-weight: 600;
     margin-top: 1rem;
+  }
+  .my-cta-btn.secondary {
+    background: transparent;
+    color: #B45309;
+    border: 1px solid #B45309;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .empty-state h2 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+  .empty-state > p { color: #888; margin-bottom: 1.5rem; }
+  .quick-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 280px;
+    margin: 0 auto 1.5rem;
+    text-align: left;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+  }
+  .step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #FAF6F1;
+    color: #B45309;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .empty-cta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
   }
 
   /* Rank */

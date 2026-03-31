@@ -1593,26 +1593,23 @@ footer a:focus-visible,
   outline-offset: 3px;
 }
 
-/* === Skip to Content (optional — add later if needed) === */
-/*
+/* === Skip to Content === */
 .skip-link {
   position: absolute;
-  top: -100%;
-  left: 16px;
-  padding: 12px 24px;
+  left: -9999px;
+  z-index: 9999;
+  padding: 8px 16px;
   background: var(--brand-navy);
-  color: #fff;
-  border-radius: 0 0 8px 8px;
+  color: white;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
   font-size: 0.9rem;
   font-weight: 600;
-  z-index: 10001;
-  text-decoration: none;
-  transition: top 0.2s;
 }
 .skip-link:focus {
+  left: 0;
   top: 0;
 }
-*/
 
 /* ===== MOBILE UI PRESSURE RELIEF (2026-03-06) ===== */
 /* Hide floating font toggle and focus mode on mobile — controls moved to nav */

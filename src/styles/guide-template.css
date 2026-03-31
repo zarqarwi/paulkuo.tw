@@ -212,7 +212,7 @@
   margin: 1rem 0;
 }
 
-/* ── Version Badge ── */
+/* ── Version Badge (legacy) ── */
 .guide-version-badge {
   display: inline-block;
   background: var(--accent-faith);
@@ -223,6 +223,10 @@
   border-radius: 4px;
   letter-spacing: 0.02em;
   vertical-align: middle;
+}
+.guide-last-updated {
+  font-size: 0.82rem;
+  color: var(--text-muted);
 }
 .guide-meta time {
   font-size: 0.85rem;

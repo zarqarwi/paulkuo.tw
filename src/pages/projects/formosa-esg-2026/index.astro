@@ -249,10 +249,23 @@ const schemaJson = JSON.stringify({
     padding: 100px 2rem 80px;
     margin-bottom: 3rem;
     position: relative;
-    background: linear-gradient(180deg, rgba(180,83,9,0.04) 0%, rgba(5,150,105,0.03) 50%, transparent 100%);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    min-height: 70vh;
+    overflow: hidden;
+    clip-path: ellipse(150% 100% at 50% 0%);
   }
   .formosa-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      hsl(35, 40%, 92%) 0%,
+      hsl(30, 50%, 88%) 40%,
+      hsl(25, 35%, 85%) 100%
+    );
+    z-index: -2;
+  }
+  .formosa-hero::after {
     content: '';
     position: absolute;
     top: 0; left: 50%; transform: translateX(-50%);
@@ -297,7 +310,8 @@ const schemaJson = JSON.stringify({
     font-size: 1rem;
     font-weight: 600;
     color: #fff;
-    background: linear-gradient(135deg, var(--accent-faith), var(--accent-circular));
+    background: linear-gradient(135deg, hsl(25, 70%, 40%) 0%, hsl(140, 45%, 32%) 100%);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     border-radius: 10px;
     text-decoration: none;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -496,6 +510,16 @@ const schemaJson = JSON.stringify({
   }
   .formosa-subproject-card.coming-soon {
     opacity: 1;
+    cursor: default;
+  }
+  .formosa-subproject-card.coming-soon .subproject-status {
+    display: inline-block;
+    background: var(--bg-section);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
   }
   .subproject-icon {
     font-size: 1.8rem;
@@ -657,38 +681,43 @@ const schemaJson = JSON.stringify({
     line-height: 1.65;
   }
 
-  /* Contact */
+  /* Contact / CTA */
   .formosa-contact-card {
     text-align: center;
-    background: var(--bg-card);
-    border: 1px solid var(--border-light);
+    background: linear-gradient(135deg, var(--brand-navy) 0%, #2a4a7f 100%);
+    color: white;
     border-radius: var(--radius-lg);
-    padding: 3rem 2rem;
+    padding: 4rem 2rem;
   }
   .formosa-contact-card h2 {
     font-family: var(--font-cjk);
-    font-size: 1.4rem;
+    font-size: 1.8rem;
     font-weight: 700;
+    color: white;
     margin-bottom: 0.5rem;
   }
   .formosa-contact-card p {
-    color: var(--text-secondary);
+    color: rgba(255,255,255,0.8);
     font-size: 0.9rem;
     margin-bottom: 1rem;
   }
   .formosa-contact-email {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     font-size: 1rem;
     font-weight: 600;
-    color: var(--accent-faith);
+    background: white;
+    color: var(--brand-navy);
     text-decoration: none;
-    padding: 10px 24px;
-    border: 1px solid rgba(180,83,9,0.3);
-    border-radius: 8px;
-    transition: all 0.2s;
+    padding: 14px 28px;
+    border-radius: 999px;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
   }
   .formosa-contact-email:hover {
-    background: rgba(180,83,9,0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
 
   /* Responsive — Tablet */

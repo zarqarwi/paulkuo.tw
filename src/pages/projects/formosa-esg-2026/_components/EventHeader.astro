@@ -23,10 +23,10 @@ const eventName = eventNames[currentLang] || eventNames['zh-Hant'];
   <div class="event-nav-inner">
     <a href={`${langPrefix}/projects/formosa-esg-2026/`} class="event-nav-logo">{eventName}</a>
     <nav class="event-lang-switcher" aria-label="語言切換">
-      <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
-      <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
-      <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
-      <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
+      <a href={langSwitchLinks['zh-Hant']} hreflang="zh-Hant" class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
+      <a href={langSwitchLinks['zh-CN']} hreflang="zh-Hans" class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
+      <a href={langSwitchLinks['en']} hreflang="en" class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
+      <a href={langSwitchLinks['ja']} hreflang="ja" class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
     </nav>
   </div>
 </nav>
@@ -73,16 +73,25 @@ const eventName = eventNames[currentLang] || eventNames['zh-Hant'];
   }
 
   .event-nav-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-family: var(--font-cjk, 'Noto Sans TC', sans-serif);
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--text-primary, #1f2937);
     text-decoration: none;
     white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+
+  .event-nav-logo::before {
+    content: '⛩️';
+    font-size: 1.2em;
   }
 
   .event-nav-logo:hover {
-    color: var(--brand-navy, #1b2d4f);
+    opacity: 0.7;
   }
 
   .event-lang-switcher {
@@ -91,23 +100,25 @@ const eventName = eventNames[currentLang] || eventNames['zh-Hant'];
   }
 
   .lang-btn {
-    padding: 4px 10px;
-    font-size: 0.8rem;
-    color: var(--text-secondary, #6b7280);
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted, #9ca3af);
     text-decoration: none;
-    border: 1px solid var(--border, #e5e5e5);
+    border: none;
+    background: transparent;
     border-radius: 4px;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.2s, color 0.2s;
   }
 
   .lang-btn:hover {
-    background: var(--bg-secondary, #f3f4f6);
+    background: var(--bg-section, #f3f4f6);
+    color: var(--text-primary, #1f2937);
   }
 
   .lang-btn.active {
     background: var(--brand-navy, #1b2d4f);
     color: #fff;
-    border-color: var(--brand-navy, #1b2d4f);
+    font-weight: 600;
   }
 
   @media (max-width: 768px) {
