@@ -72,11 +72,40 @@ npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangl
 
 ✅ Code session 可直接跑 `wrangler deploy` 和 `wrangler d1 execute`（2026-03-27 驗證通過）。
 
+### 部署後驗證（每次 deploy 必做）
+
+每次跑完 `wrangler deploy` 後，**立刻跑 Level 1 Smoke Test**，結果寫進 worklog。
+
+驗證方式：用 `curl` 或瀏覽器確認頁面能載入、關鍵功能正常。
+
+**Level 1 驗證項目（只驗這次改動碰到的區塊）：**
+
+| 區塊 | 驗證方式 |
+|------|---------|
+| 進入流程 | 密碼解鎖正常、頁面能載入 |
+| GPS | banner 出現、打卡按鈕可按 |
+| 公仔/等級 | 圖片大小正常（120×120px）、等級名稱有顯示 |
+| 問卷 | 卡片能翻頁、進度條更新 |
+| 獎勵卡 | 公仔大小正常（150×150px）、統計有帶入 |
+| 碳足跡 | 展開/收合正常、欄位可填 |
+| 足跡頁 | /my/ 能載入、地圖有渲染 |
+
+**Worklog 記錄格式：**
+```markdown
+## Smoke Test
+- ✅ 進入流程：密碼解鎖正常
+- ✅ 公仔/等級：圖片 120×120px 正常
+- ❌ 獎勵卡：分享按鈕無反應 → 開 issue 追蹤
+```
+
+任何 fail 項目 → 當場修 → 重新 deploy → 再驗一次。不要留著等下次。
+
 ### Git
 
 - commit + push 要原子操作（cron 每 10 分鐘跑 git stash/pop，避免衝突）
 - 部署前必查：`grep -rn "<<<<<<" worker/src/`
 - Semver：MAJOR=架構, MINOR=功能, PATCH=修復
+- 一個 commit 只做一件事，不要混改 CSS + JS 邏輯 + HTML 結構
 
 ### D1 / KV
 
@@ -89,9 +118,15 @@ npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangl
 - 根目錄 `wrangler.jsonc`（paulkuo-tw 靜態站）會覆蓋 `worker/wrangler.toml`（paulkuo-ticker API）
 - 部署 Worker 時**必須**帶 `--config wrangler.toml`
 
+### Astro 陷阱
+
+- `<style>` 預設是 scoped，動態產生的 DOM 元素匹配不到 → 被 JS innerHTML 建立的元素要用 `:global()` 或 `is:inline`
+- AuthGate 頁面的 DOM 操作必須延遲到 `formosa-unlocked` 事件
+
 ### CDN
 
 - `max-age=3600`，新部署最多等 1 小時生效
+- 驗證時務必 hard refresh（Ctrl+Shift+R / Cmd+Shift+R）
 
 ---
 
