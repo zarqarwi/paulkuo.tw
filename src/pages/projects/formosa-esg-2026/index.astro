@@ -145,6 +145,21 @@ const schemaJson = JSON.stringify({
     </div>
   </section>
 
+  <!-- Section: 歷屆紀錄 -->
+  <section class="formosa-section">
+    <h2 class="formosa-section-title">歷屆紀錄</h2>
+    <div class="formosa-editions-grid">
+      <a href="https://esg-bc8hhzy.gamma.site/" target="_blank" rel="noopener" class="formosa-edition-card">
+        <div class="edition-year">2025</div>
+        <div class="edition-body">
+          <h3>白沙屯媽祖 ESG 永續進香計畫書</h3>
+          <p>首屆 ESG 進香完整企劃，涵蓋碳盤查框架、社區共善機制與數據治理藍圖。</p>
+          <span class="edition-cta">閱讀計畫書 ↗</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
   <!-- Section 6: Partners -->
   <section class="formosa-section">
     <h2 class="formosa-section-title">參與單位</h2>
@@ -553,6 +568,73 @@ const schemaJson = JSON.stringify({
     background: var(--bg-section);
     padding: 4px 10px;
     border-radius: 12px;
+  }
+
+  /* Editions */
+  .formosa-editions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  .formosa-edition-card {
+    display: flex;
+    align-items: stretch;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s;
+  }
+  .formosa-edition-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-faith);
+  }
+  .edition-year {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    background: linear-gradient(135deg, var(--accent-faith), var(--accent-circular));
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .edition-body {
+    padding: 1.5rem;
+    flex: 1;
+  }
+  .edition-body h3 {
+    font-family: var(--font-cjk);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .edition-body p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+  }
+  .edition-cta {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-faith);
+  }
+
+  @media (max-width: 480px) {
+    .formosa-edition-card {
+      flex-direction: column;
+    }
+    .edition-year {
+      min-width: unset;
+      padding: 0.75rem;
+      font-size: 1.3rem;
+    }
   }
 
   /* Partners */
