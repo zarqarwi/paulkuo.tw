@@ -478,7 +478,7 @@ const prefix = LOCALE_PREFIX[lang];
   // ── Config ──
   var LAUNCH_DATE = new Date('2026-04-12T00:00:00+08:00');
   var TEST_MODE = new Date() < LAUNCH_DATE || new URLSearchParams(location.search).has('test');
-  var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+  var API_BASE = 'https://api.paulkuo.tw';
 
   // ── i18n: read translations from data attribute ──
   var _trackerEl = document.querySelector('.tracker');
@@ -501,6 +501,11 @@ const prefix = LOCALE_PREFIX[lang];
 
   // ── Defer all DOM-dependent init until AuthGate unlocks the <template> ──
   function trackerInit() {
+
+  // Re-read i18n from DOM — was inside <template> before AuthGate unlock
+  _trackerEl = document.querySelector('.tracker');
+  _i18n = _trackerEl ? JSON.parse(_trackerEl.dataset.i18n || '{}') : {};
+  _lang = _trackerEl ? (_trackerEl.dataset.lang || 'zh-Hant') : 'zh-Hant';
 
   // ── Test Mode Banner ──
   if (TEST_MODE) {
