@@ -2,13 +2,15 @@
 
 Claude Code 開啟此 repo 時自動讀取。這是 Paul 與 Claude 協作的核心規則。
 
+各子專案有自己的 `CLAUDE.md`（如 `src/pages/projects/formosa-esg-2026/CLAUDE.md`），
+Code session 工作時會自動讀取路徑上所有層級的 CLAUDE.md，不需手動指定。
+
 ---
 
 ## 專案概覽
 
 - 網站：https://paulkuo.tw（Astro + Cloudflare Pages）
 - Worker API：`worker/` 目錄（Cloudflare Workers + D1）
-- 子專案：Formosa ESG 2026（進香 tracker）、Builder's Scorecard、TQEF 翻譯器
 - Repo 路徑：`~/Desktop/01_專案進行中/paulkuo.tw`
 
 ---
@@ -70,32 +72,17 @@ cd worker && wrangler deploy --config wrangler.toml
 npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangler.toml
 ```
 
-✅ Code session 可直接跑 `wrangler deploy` 和 `wrangler d1 execute`（2026-03-27 驗證通過）。
-
 ### 部署後驗證（每次 deploy 必做）
 
-每次跑完 `wrangler deploy` 後，**立刻跑 Level 1 Smoke Test**，結果寫進 worklog。
+每次跑完 `wrangler deploy` 後，**立刻跑 Smoke Test**，結果寫進 worklog。
 
-驗證方式：用 `curl` 或瀏覽器確認頁面能載入、關鍵功能正常。
-
-**Level 1 驗證項目（只驗這次改動碰到的區塊）：**
-
-| 區塊 | 驗證方式 |
-|------|---------|
-| 進入流程 | 密碼解鎖正常、頁面能載入 |
-| GPS | banner 出現、打卡按鈕可按 |
-| 公仔/等級 | 圖片大小正常（120×120px）、等級名稱有顯示 |
-| 問卷 | 卡片能翻頁、進度條更新 |
-| 獎勵卡 | 公仔大小正常（150×150px）、統計有帶入 |
-| 碳足跡 | 展開/收合正常、欄位可填 |
-| 足跡頁 | /my/ 能載入、地圖有渲染 |
+**具體驗什麼由各專案的 CLAUDE.md 定義。** 如果該專案沒有 CLAUDE.md，至少確認頁面能載入、console 無報錯。
 
 **Worklog 記錄格式：**
 ```markdown
 ## Smoke Test
-- ✅ 進入流程：密碼解鎖正常
-- ✅ 公仔/等級：圖片 120×120px 正常
-- ❌ 獎勵卡：分享按鈕無反應 → 開 issue 追蹤
+- ✅ {驗證項目}：{結果}
+- ❌ {驗證項目}：{問題描述} → {處理方式}
 ```
 
 任何 fail 項目 → 當場修 → 重新 deploy → 再驗一次。不要留著等下次。
@@ -104,7 +91,6 @@ npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangl
 
 - commit + push 要原子操作（cron 每 10 分鐘跑 git stash/pop，避免衝突）
 - 部署前必查：`grep -rn "<<<<<<" worker/src/`
-- Semver：MAJOR=架構, MINOR=功能, PATCH=修復
 - 一個 commit 只做一件事，不要混改 CSS + JS 邏輯 + HTML 結構
 
 ### D1 / KV
@@ -150,21 +136,3 @@ Code 做事 → 自動寫 worklogs/ → Paul 開 Cowork → Cowork 讀 worklogs/
 1. 讀 `worklogs/` 最新檔案，確認上次做到哪裡
 2. 如果有 `worklogs/` 裡的待辦快照，從那裡接續
 3. 不確定就問 Paul
-
----
-
-## 子專案速查
-
-### Formosa ESG 2026（進香 Tracker）
-- 路徑：`src/pages/projects/formosa-esg-2026/` + `worker/`
-- Tracker：https://paulkuo.tw/projects/formosa-esg-2026/tracker/
-- LINE Bot：@539fkwjd / LIFF ID: 2009588321-rXVntTKg
-- 4/12 起駕
-
-### Builder's Scorecard
-- 路徑：`src/pages/builders-scorecard/`
-- Phase 5 執行中
-
-### TQEF 翻譯器
-- Worker 路徑：`worker/src/`
-- D1：paulkuo-auth
