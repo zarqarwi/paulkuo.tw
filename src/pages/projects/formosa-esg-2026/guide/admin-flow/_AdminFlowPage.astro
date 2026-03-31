@@ -1,0 +1,544 @@
+---
+import type { Locale } from '@/i18n/config';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import AuthGate from '../../_components/AuthGate.astro';
+
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const prefix = LOCALE_PREFIX[lang];
+---
+
+<BaseLayout
+  title={t(lang, 'adminFlow.title')}
+  description={t(lang, 'adminFlow.description')}
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/guide/admin-flow/"
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<AuthGate title={t(lang, 'adminFlow.authTitle')} subtitle={t(lang, 'adminFlow.authSubtitle')} lang={lang}>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --green: #2E7D32;
+    --green-light: #E8F5E9;
+    --green-border: #66BB6A;
+    --orange: #E65100;
+    --orange-light: #FFF3E0;
+    --orange-border: #FF9800;
+    --blue: #1565C0;
+    --blue-light: #E3F2FD;
+    --blue-border: #42A5F5;
+    --purple: #6A1B9A;
+    --purple-light: #F3E5F5;
+    --purple-border: #AB47BC;
+    --red: #C62828;
+    --red-light: #FFEBEE;
+    --red-border: #EF5350;
+    --gray: #455A64;
+    --gray-light: #ECEFF1;
+    --gray-border: #90A4AE;
+    --teal: #00695C;
+    --teal-light: #E0F2F1;
+    --teal-border: #26A69A;
+    --flow-bg: #FAFAFA;
+    --flow-text: #212121;
+    --flow-text-sub: #616161;
+    --flow-radius: 14px;
+  }
+
+  .flow-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    font-family: 'Noto Sans TC', -apple-system, sans-serif;
+    color: var(--flow-text);
+    line-height: 1.6;
+  }
+
+  .flow-header { text-align: center; margin-bottom: 48px; }
+  .flow-header h1 { font-size: 28px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+  .flow-header .meta { font-size: 13px; color: var(--flow-text-sub); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 40px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--flow-text-sub); }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; border: 2px solid; }
+  .legend-dot.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .legend-dot.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .legend-dot.teal { background: var(--teal-light); border-color: var(--teal-border); }
+  .legend-dot.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .legend-dot.red { background: var(--red-light); border-color: var(--red-border); }
+
+  .section-label {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--flow-text-sub);
+    letter-spacing: 2px;
+    padding: 12px 0;
+    margin: 32px 0 16px;
+    border-top: 1.5px dashed #ccc;
+    border-bottom: 1.5px dashed #ccc;
+  }
+
+  .connector { display: flex; justify-content: center; padding: 12px 0; }
+  .connector .arrow {
+    width: 3px; height: 36px;
+    background: linear-gradient(to bottom, #bbb, #999);
+    position: relative; border-radius: 2px;
+  }
+  .connector .arrow::after {
+    content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+    border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 8px solid #999;
+  }
+
+  .step {
+    border-radius: var(--flow-radius);
+    padding: 24px 28px;
+    border: 2px solid;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .step:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .step-number {
+    position: absolute; top: -14px; left: 24px;
+    font-size: 12px; font-weight: 700; padding: 2px 12px; border-radius: 20px; color: white;
+  }
+  .step-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .step-subtitle { font-size: 13px; color: var(--flow-text-sub); margin-bottom: 14px; }
+
+  .step.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .step.blue .step-number { background: var(--blue); }
+  .step.blue .step-title { color: var(--blue); }
+
+  .step.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .step.orange .step-number { background: var(--orange); }
+  .step.orange .step-title { color: var(--orange); }
+
+  .step.teal { background: var(--teal-light); border-color: var(--teal-border); }
+  .step.teal .step-number { background: var(--teal); }
+  .step.teal .step-title { color: var(--teal); }
+
+  .step.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .step.purple .step-number { background: var(--purple); }
+  .step.purple .step-title { color: var(--purple); }
+
+  .step.red { background: var(--red-light); border-color: var(--red-border); }
+  .step.red .step-number { background: var(--red); }
+  .step.red .step-title { color: var(--red); }
+
+  .step.gray { background: var(--gray-light); border-color: var(--gray-border); }
+  .step.gray .step-number { background: var(--gray); }
+  .step.gray .step-title { color: var(--gray); }
+
+  .sub-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px; margin-top: 14px;
+  }
+  .sub-item { background: rgba(255,255,255,0.7); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+  .sub-item .sub-label { font-weight: 600; margin-bottom: 2px; }
+  .sub-item .sub-desc { color: var(--flow-text-sub); font-size: 12px; }
+
+  .info-box {
+    background: white; border: 1.5px dashed #ccc; border-radius: 10px;
+    padding: 16px 20px; margin-top: 14px; font-size: 13px; color: var(--flow-text-sub);
+  }
+  .info-box strong { color: var(--flow-text); }
+
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 12px; margin-left: 8px; vertical-align: middle;
+  }
+  .badge.cli { background: #263238; color: #B2FF59; }
+  .badge.manual { background: var(--orange-light); color: var(--orange); }
+  .badge.auto { background: var(--teal-light); color: var(--teal); }
+
+  .cmd-block {
+    background: #263238; color: #E0E0E0; border-radius: 8px;
+    padding: 14px 18px; margin-top: 10px; font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12.5px; line-height: 1.8; overflow-x: auto;
+  }
+  .cmd-block .comment { color: #78909C; }
+  .cmd-block .cmd { color: #B2FF59; }
+  .cmd-block .flag { color: #80DEEA; }
+
+  .parallel-box {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-top: 8px;
+  }
+
+  .flow-footer {
+    text-align: center; margin-top: 48px; padding-top: 24px;
+    border-top: 1px solid #eee; font-size: 12px; color: var(--flow-text-sub);
+  }
+  .flow-footer a {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: var(--blue);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .flow-footer a:hover { opacity: 0.9; }
+
+  @media (max-width: 600px) {
+    .flow-container { padding: 24px 12px 60px; }
+    .flow-header h1 { font-size: 22px; }
+    .step { padding: 20px 18px; }
+    .sub-grid, .parallel-box { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="flow-container">
+
+  <div class="flow-header">
+    <h1>{t(lang, 'adminFlow.heading')}</h1>
+    <div class="meta">{t(lang, 'adminFlow.meta')}</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot blue"></div>{t(lang, 'adminFlow.legendLogin')}</div>
+    <div class="legend-item"><div class="legend-dot orange"></div>{t(lang, 'adminFlow.legendDaily')}</div>
+    <div class="legend-item"><div class="legend-dot teal"></div>{t(lang, 'adminFlow.legendMonitor')}</div>
+    <div class="legend-item"><div class="legend-dot purple"></div>{t(lang, 'adminFlow.legendDeploy')}</div>
+    <div class="legend-item"><div class="legend-dot red"></div>{t(lang, 'adminFlow.legendEmergency')}</div>
+  </div>
+
+  <!-- ===== Section 1: Daily Management ===== -->
+  <div class="section-label">{t(lang, 'adminFlow.sectionDaily')}</div>
+
+  <div class="step blue" style="margin-top:20px;">
+    <div class="step-number">1</div>
+    <div class="step-title">{t(lang, 'adminFlow.step1Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.step1Subtitle')}</div>
+    <div class="step-content">
+      <div class="info-box" set:html={t(lang, 'adminFlow.step1Info')} />
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step teal">
+    <div class="step-number">2</div>
+    <div class="step-title">{t(lang, 'adminFlow.step2Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.step2Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step2KpiLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step2KpiDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step2MapLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step2MapDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step2AnalyticsLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step2AnalyticsDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step2ProgressLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step2ProgressDesc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step orange">
+    <div class="step-number">3</div>
+    <div class="step-title">{t(lang, 'adminFlow.step3Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.step3Subtitle')}</div>
+    <div class="parallel-box">
+      <div class="sub-item">
+        <div class="sub-label" set:html={`${t(lang, 'adminFlow.step3ManualLabel')} <span class="badge manual">${t(lang, 'adminFlow.step3ManualBadge')}</span>`} />
+        <div class="sub-desc" set:html={t(lang, 'adminFlow.step3ManualDesc')} />
+      </div>
+      <div class="sub-item">
+        <div class="sub-label" set:html={`${t(lang, 'adminFlow.step3AutoLabel')} <span class="badge auto">${t(lang, 'adminFlow.step3AutoBadge')}</span>`} />
+        <div class="sub-desc" set:html={t(lang, 'adminFlow.step3AutoDesc')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step orange">
+    <div class="step-number">4</div>
+    <div class="step-title">{t(lang, 'adminFlow.step4Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.step4Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step4UsersLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step4UsersDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step4RolesLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step4RolesDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step4StatusLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step4StatusDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step4SearchLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step4SearchDesc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step orange">
+    <div class="step-number">5</div>
+    <div class="step-title">{t(lang, 'adminFlow.step5Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.step5Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step5ActiveLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step5ActiveDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step5PauseLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step5PauseDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step5EndLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step5EndDesc')}</div>
+      </div>
+    </div>
+    <div class="info-box">
+      {t(lang, 'adminFlow.step5Info')}
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step teal">
+    <div class="step-number">6</div>
+    <div class="step-title">{t(lang, 'adminFlow.step6Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.step6Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step6ExportLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.step6ExportDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.step6QrLabel')}</div>
+        <div class="sub-desc" set:html={t(lang, 'adminFlow.step6QrDesc')} />
+      </div>
+    </div>
+    <div class="info-box" set:html={t(lang, 'adminFlow.step6Info')} />
+  </div>
+
+  <!-- ===== Section 2: Deploy & Ops ===== -->
+  <div class="section-label">{t(lang, 'adminFlow.sectionDeploy')}</div>
+
+  <div class="step purple" style="margin-top:20px;">
+    <div class="step-number">D1</div>
+    <div class="step-title" set:html={`${t(lang, 'adminFlow.d1Title')} <span class="badge cli">${t(lang, 'adminFlow.d1Badge')}</span>`} />
+    <div class="step-subtitle">{t(lang, 'adminFlow.d1Subtitle')}</div>
+    <div class="cmd-block">
+      <span class="comment">{t(lang, 'adminFlow.d1Cmd1Comment')}</span><br>
+      <span class="cmd">{t(lang, 'adminFlow.d1Cmd1')}</span> {t(lang, 'adminFlow.d1Cmd1Path')}<br><br>
+      <span class="comment">{t(lang, 'adminFlow.d1Cmd2Comment')}</span><br>
+      <span class="cmd">{t(lang, 'adminFlow.d1Cmd2')}</span> <span class="flag">{t(lang, 'adminFlow.d1Cmd2Flag')}</span> <span class="cmd">{t(lang, 'adminFlow.d1Cmd2b')}</span>
+    </div>
+    <div class="info-box" set:html={t(lang, 'adminFlow.d1Info')} />
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step purple">
+    <div class="step-number">D2</div>
+    <div class="step-title" set:html={`${t(lang, 'adminFlow.d2Title')} <span class="badge cli">${t(lang, 'adminFlow.d2Badge')}</span>`} />
+    <div class="step-subtitle">{t(lang, 'adminFlow.d2Subtitle')}</div>
+    <div class="cmd-block">
+      <span class="comment">{t(lang, 'adminFlow.d2Cmd1Comment')}</span><br>
+      <span class="cmd">{t(lang, 'adminFlow.d2Cmd1')}</span> {t(lang, 'adminFlow.d2Cmd1Path')}<span class="flag">{t(lang, 'adminFlow.d2Cmd1Flag')}</span><br><br>
+      <span class="comment">{t(lang, 'adminFlow.d2Cmd2Comment')}</span><br>
+      <span class="cmd">{t(lang, 'adminFlow.d2Cmd2')}</span> <span class="flag">{t(lang, 'adminFlow.d2Cmd2Flag')}</span>
+    </div>
+    <div class="info-box" set:html={t(lang, 'adminFlow.d2Info')} />
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step purple">
+    <div class="step-number">D3</div>
+    <div class="step-title">{t(lang, 'adminFlow.d3Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.d3Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.d3Check1Label')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.d3Check1Desc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.d3Check2Label')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.d3Check2Desc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.d3Check3Label')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.d3Check3Desc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.d3Check4Label')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.d3Check4Desc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Section 3: Monitoring & Emergency ===== -->
+  <div class="section-label">{t(lang, 'adminFlow.sectionMonitor')}</div>
+
+  <div class="step teal" style="margin-top:20px;">
+    <div class="step-number">M1</div>
+    <div class="step-title">{t(lang, 'adminFlow.m1Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.m1Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m1CfLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m1CfDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m1MapLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m1MapDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m1LineLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m1LineDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m1BackupLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m1BackupDesc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step red">
+    <div class="step-number">M2</div>
+    <div class="step-title">{t(lang, 'adminFlow.m2Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.m2Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m2ApiLabel')}</div>
+        <div class="sub-desc" set:html={t(lang, 'adminFlow.m2ApiDesc')} />
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m2CheckinLabel')}</div>
+        <div class="sub-desc" set:html={t(lang, 'adminFlow.m2CheckinDesc')} />
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m2LineLabel')}</div>
+        <div class="sub-desc" set:html={t(lang, 'adminFlow.m2LineDesc')} />
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m2DataLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m2DataDesc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step gray">
+    <div class="step-number">M3</div>
+    <div class="step-title">{t(lang, 'adminFlow.m3Title')}</div>
+    <div class="step-subtitle">{t(lang, 'adminFlow.m3Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m3SettleLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m3SettleDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m3BackupLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m3BackupDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m3ReportLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m3ReportDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.m3RetainLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.m3RetainDesc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Tech Notes ===== -->
+  <div class="section-label">{t(lang, 'adminFlow.sectionTech')}</div>
+
+  <div class="step gray" style="margin-top:20px;">
+    <div class="step-number">⚙️</div>
+    <div class="step-title">{t(lang, 'adminFlow.techTitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.techFrontendLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.techFrontendDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.techApiLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.techApiDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.techDbLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.techDbDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.techKvLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.techKvDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.techR2Label')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.techR2Desc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.techLineLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.techLineDesc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step gray" style="margin-top:20px;">
+    <div class="step-number">⚠️</div>
+    <div class="step-title">{t(lang, 'adminFlow.trapsTitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.trapWranglerLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.trapWranglerDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.trapCdnLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.trapCdnDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.trapLineLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.trapLineDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'adminFlow.trapCronLabel')}</div>
+        <div class="sub-desc">{t(lang, 'adminFlow.trapCronDesc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-footer">
+    {t(lang, 'adminFlow.footerOrg')}<br>
+    {t(lang, 'adminFlow.footerTech')}
+    <br>
+    <a href={`${prefix}/projects/formosa-esg-2026/guide/admin/`}>{t(lang, 'adminFlow.backToAdmin')}</a>
+  </div>
+
+</div>
+
+</AuthGate>
+
+</BaseLayout>

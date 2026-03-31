@@ -1,0 +1,658 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  lang?: Locale;
+}
+
+const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const prefix = LOCALE_PREFIX[lang];
+---
+
+<BaseLayout
+  title={t(lang, 'userFlow.title')}
+  description={t(lang, 'userFlow.description')}
+  ogUrl={`https://paulkuo.tw${prefix}/projects/formosa-esg-2026/guide/user-flow/`}
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --green: #2E7D32;
+    --green-light: #E8F5E9;
+    --green-border: #66BB6A;
+    --orange: #E65100;
+    --orange-light: #FFF3E0;
+    --orange-border: #FF9800;
+    --blue: #1565C0;
+    --blue-light: #E3F2FD;
+    --blue-border: #42A5F5;
+    --purple: #6A1B9A;
+    --purple-light: #F3E5F5;
+    --purple-border: #AB47BC;
+    --gray: #455A64;
+    --gray-light: #ECEFF1;
+    --gray-border: #90A4AE;
+    --gold: #F57F17;
+    --gold-light: #FFFDE7;
+    --gold-border: #FFCA28;
+    --flow-bg: #FAFAFA;
+    --flow-text: #212121;
+    --flow-text-sub: #616161;
+    --flow-radius: 14px;
+  }
+
+  .flow-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    font-family: 'Noto Sans TC', -apple-system, sans-serif;
+    color: var(--flow-text);
+    line-height: 1.6;
+  }
+
+  .flow-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .flow-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .flow-header .meta {
+    font-size: 13px;
+    color: var(--flow-text-sub);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--flow-text-sub);
+  }
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    border: 2px solid;
+  }
+  .legend-dot.green { background: var(--green-light); border-color: var(--green-border); }
+  .legend-dot.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .legend-dot.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .legend-dot.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .legend-dot.gold { background: var(--gold-light); border-color: var(--gold-border); }
+
+  .connector {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0;
+  }
+  .connector .arrow {
+    width: 3px;
+    height: 36px;
+    background: linear-gradient(to bottom, #bbb, #999);
+    position: relative;
+    border-radius: 2px;
+  }
+  .connector .arrow::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 8px solid #999;
+  }
+
+  .step {
+    border-radius: var(--flow-radius);
+    padding: 24px 28px;
+    border: 2px solid;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .step:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  .step-number {
+    position: absolute;
+    top: -14px;
+    left: 24px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 12px;
+    border-radius: 20px;
+    color: white;
+  }
+  .step-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-subtitle {
+    font-size: 13px;
+    color: var(--flow-text-sub);
+    margin-bottom: 14px;
+  }
+  .step-content { font-size: 14px; }
+
+  .step.green { background: var(--green-light); border-color: var(--green-border); }
+  .step.green .step-number { background: var(--green); }
+  .step.green .step-title { color: var(--green); }
+
+  .step.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .step.orange .step-number { background: var(--orange); }
+  .step.orange .step-title { color: var(--orange); }
+
+  .step.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .step.blue .step-number { background: var(--blue); }
+  .step.blue .step-title { color: var(--blue); }
+
+  .step.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .step.purple .step-number { background: var(--purple); }
+  .step.purple .step-title { color: var(--purple); }
+
+  .step.gold { background: var(--gold-light); border-color: var(--gold-border); }
+  .step.gold .step-number { background: var(--gold); }
+  .step.gold .step-title { color: var(--gold); }
+
+  .step.gray { background: var(--gray-light); border-color: var(--gray-border); }
+  .step.gray .step-number { background: var(--gray); }
+  .step.gray .step-title { color: var(--gray); }
+
+  .sub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .sub-item {
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  .sub-item .sub-label { font-weight: 600; margin-bottom: 2px; }
+  .sub-item .sub-desc { color: var(--flow-text-sub); font-size: 12px; }
+
+  .decision {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0;
+  }
+  .diamond {
+    background: white;
+    border: 2px solid var(--green-border);
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--green);
+  }
+  .diamond-branches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .branch {
+    background: white;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    text-align: center;
+  }
+  .branch-label { font-weight: 600; font-size: 12px; margin-bottom: 4px; }
+  .branch-label.yes { color: var(--green); }
+  .branch-label.no { color: var(--orange); }
+
+  .info-box {
+    background: white;
+    border: 1.5px dashed #ccc;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--flow-text-sub);
+  }
+  .info-box strong { color: var(--flow-text); }
+
+  .level-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 4px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .level-table th {
+    text-align: left;
+    padding: 6px 10px;
+    font-weight: 600;
+    color: var(--flow-text-sub);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .level-table td {
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.7);
+  }
+  .level-table tr td:first-child { border-radius: 6px 0 0 6px; }
+  .level-table tr td:last-child { border-radius: 0 6px 6px 0; }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .badge.server { background: var(--blue-light); color: var(--blue); }
+  .badge.liff { background: var(--green-light); color: var(--green); }
+  .badge.client { background: var(--orange-light); color: var(--orange); }
+
+  .conditions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .condition {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .condition .check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .loop-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 12px;
+    color: var(--flow-text-sub);
+  }
+  .loop-line { height: 1.5px; width: 40px; background: #ccc; }
+
+  .flow-footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    color: var(--flow-text-sub);
+  }
+  .flow-footer a {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: var(--green);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .flow-footer a:hover { opacity: 0.9; }
+
+  @media (max-width: 600px) {
+    .flow-container { padding: 24px 12px 60px; }
+    .flow-header h1 { font-size: 22px; }
+    .step { padding: 20px 18px; }
+    .sub-grid { grid-template-columns: 1fr; }
+    .diamond-branches { grid-template-columns: 1fr; }
+    .conditions { flex-direction: column; }
+  }
+</style>
+
+<div class="flow-container">
+
+  <div class="flow-header">
+    <h1>{t(lang, 'userFlow.title')}</h1>
+    <div class="meta">{t(lang, 'userFlow.meta')}</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot green"></div>{t(lang, 'userFlow.legendLine')}</div>
+    <div class="legend-item"><div class="legend-dot orange"></div>{t(lang, 'userFlow.legendMain')}</div>
+    <div class="legend-item"><div class="legend-dot blue"></div>{t(lang, 'userFlow.legendData')}</div>
+    <div class="legend-item"><div class="legend-dot purple"></div>{t(lang, 'userFlow.legendLevel')}</div>
+    <div class="legend-item"><div class="legend-dot gold"></div>{t(lang, 'userFlow.legendCarbon')}</div>
+  </div>
+
+  <!-- Step 1: Entry -->
+  <div class="step orange">
+    <div class="step-number">1</div>
+    <div class="step-title">{t(lang, 'userFlow.step1Title')}</div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step1Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'userFlow.step1QrLabel')}</div>
+        <div class="sub-desc">{t(lang, 'userFlow.step1QrDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'userFlow.step1LineLabel')}</div>
+        <div class="sub-desc">{t(lang, 'userFlow.step1LineDesc')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 2: LINE Login -->
+  <div class="step green">
+    <div class="step-number">2</div>
+    <div class="step-title">{t(lang, 'userFlow.step2Title')} <span class="badge liff">LIFF SDK</span></div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step2Subtitle')}</div>
+    <div class="step-content">
+      <div class="info-box">
+        <Fragment set:html={t(lang, 'userFlow.step2Info')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Decision: logged in? -->
+  <div class="decision">
+    <div class="diamond">{t(lang, 'userFlow.decisionLoggedIn')}</div>
+  </div>
+  <div class="diamond-branches">
+    <div class="branch">
+      <div class="branch-label yes">✅ Yes</div>
+      {t(lang, 'userFlow.branchYes')}
+    </div>
+    <div class="branch">
+      <div class="branch-label no">❌ No</div>
+      {t(lang, 'userFlow.branchNo')}
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 3: Privacy Consent -->
+  <div class="step orange">
+    <div class="step-number">3</div>
+    <div class="step-title">{t(lang, 'userFlow.step3Title')}</div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step3Subtitle')}</div>
+    <div class="step-content">
+      <div class="info-box">
+        <Fragment set:html={t(lang, 'userFlow.step3Info')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 4: Survey -->
+  <div class="step orange">
+    <div class="step-number">4</div>
+    <div class="step-title">{t(lang, 'userFlow.step4Title')}<span class="badge client">{t(lang, 'userFlow.step4Badge')}</span></div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step4Subtitle')}</div>
+    <div class="step-content">
+      <div class="sub-grid">
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step4Q1Label')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step4Q1Desc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step4Q2Label')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step4Q2Desc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step4Q3Label')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step4Q3Desc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step4Q4Label')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step4Q4Desc')}</div>
+        </div>
+      </div>
+      <div class="info-box" style="margin-top:12px;">
+        <Fragment set:html={t(lang, 'userFlow.step4Info')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 5: Submit -->
+  <div class="step blue">
+    <div class="step-number">5</div>
+    <div class="step-title">{t(lang, 'userFlow.step5Title')} <span class="badge server">{t(lang, 'userFlow.step5Badge')}</span></div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step5Subtitle')}</div>
+    <div class="step-content">
+      <div class="info-box">
+        <Fragment set:html={t(lang, 'userFlow.step5Info')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 6: Check-in Mode -->
+  <div class="step orange">
+    <div class="step-number">6</div>
+    <div class="step-title">{t(lang, 'userFlow.step6Title')}</div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step6Subtitle')}</div>
+    <div class="step-content">
+      <div class="sub-grid">
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step6GpsLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step6GpsDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step6ManualLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step6ManualDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step6PhotoLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step6PhotoDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step6PauseLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step6PauseDesc')}</div>
+        </div>
+      </div>
+      <div class="info-box" style="margin-top:12px;">
+        <Fragment set:html={t(lang, 'userFlow.step6Info')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-indicator">
+    <div class="loop-line"></div>
+    <span>{t(lang, 'userFlow.loopIndicator')}</span>
+    <div class="loop-line"></div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 6.5: Daily Carbon Report -->
+  <div class="step gold">
+    <div class="step-number">6.5</div>
+    <div class="step-title">{t(lang, 'userFlow.step65Title')}</div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step65Subtitle')}</div>
+    <div class="step-content">
+      <div class="sub-grid">
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step65ZeroLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step65ZeroDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step65TransitLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step65TransitDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step65DailyLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step65DailyDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step65CalcLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step65CalcDesc')}</div>
+        </div>
+      </div>
+      <div class="info-box" style="margin-top:12px;">
+        <Fragment set:html={t(lang, 'userFlow.step65Info')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 7: Level System -->
+  <div class="step purple">
+    <div class="step-number">7</div>
+    <div class="step-title">{t(lang, 'userFlow.step7Title')}</div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step7Subtitle')}</div>
+    <div class="step-content">
+      <table class="level-table">
+        <thead>
+          <tr><th>{t(lang, 'userFlow.step7ThLevel')}</th><th>{t(lang, 'userFlow.step7ThName')}</th><th>{t(lang, 'userFlow.step7ThKm')}</th><th>{t(lang, 'userFlow.step7ThCheckin')}</th><th>{t(lang, 'userFlow.step7ThApprox')}</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Lv.1</td><td>🔥 {t(lang, 'levels.1.name')}</td><td>0</td><td>1</td><td>{t(lang, 'userFlow.step7Start')}</td></tr>
+          <tr><td>Lv.2</td><td>🧱 {t(lang, 'levels.2.name')}</td><td>15</td><td>3</td><td>≈ Day 1</td></tr>
+          <tr><td>Lv.3</td><td>💛 {t(lang, 'levels.3.name')}</td><td>45</td><td>5</td><td>≈ Day 2</td></tr>
+          <tr><td>Lv.4</td><td>👶 {t(lang, 'levels.4.name')}</td><td>90</td><td>6</td><td>≈ Day 3</td></tr>
+          <tr><td>Lv.5</td><td>✨ {t(lang, 'levels.5.name')}</td><td>135</td><td>8</td><td>≈ Day 4</td></tr>
+          <tr><td>Lv.6</td><td>🌀 {t(lang, 'levels.6.name')}</td><td>180</td><td>10</td><td>≈ Day 5</td></tr>
+          <tr><td>Lv.7</td><td>🤝 {t(lang, 'levels.7.name')}</td><td>225</td><td>12</td><td>≈ Day 6</td></tr>
+          <tr><td>Lv.8</td><td>🏆 {t(lang, 'levels.8.name')}</td><td>270</td><td>14</td><td>≈ Day 7</td></tr>
+          <tr><td>Lv.9</td><td>🚀 {t(lang, 'levels.9.name')}</td><td>300</td><td>14+</td><td>{t(lang, 'userFlow.step7FullJourney')}</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box" style="margin-top:12px;">
+        <Fragment set:html={t(lang, 'userFlow.step7Info')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 8: Achievement Card -->
+  <div class="step purple">
+    <div class="step-number">8</div>
+    <div class="step-title">{t(lang, 'userFlow.step8Title')}</div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step8Subtitle')}</div>
+    <div class="step-content">
+      <div class="conditions">
+        <div class="condition">
+          <div class="check" style="background:#E8F5E9;color:#2E7D32;">✓</div>
+          {t(lang, 'userFlow.step8Cond1')}
+        </div>
+        <div class="condition">
+          <div class="check" style="background:#E3F2FD;color:#1565C0;">✓</div>
+          {t(lang, 'userFlow.step8Cond2')}
+        </div>
+        <div class="condition">
+          <div class="check" style="background:#F3E5F5;color:#6A1B9A;">✓</div>
+          {t(lang, 'userFlow.step8Cond3')}
+        </div>
+      </div>
+      <div class="sub-grid" style="margin-top:14px;">
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step8CardLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step8CardDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step8QrLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step8QrDesc')}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 9: Share -->
+  <div class="step green">
+    <div class="step-number">9</div>
+    <div class="step-title">{t(lang, 'userFlow.step9Title')} <span class="badge liff">{t(lang, 'userFlow.step9Badge')}</span></div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step9Subtitle')}</div>
+    <div class="step-content">
+      <div class="sub-grid">
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step9ShareLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step9ShareDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step9OgLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step9OgDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step9LinkLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step9LinkDesc')}</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">{t(lang, 'userFlow.step9CrawlerLabel')}</div>
+          <div class="sub-desc">{t(lang, 'userFlow.step9CrawlerDesc')}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- Step 10: Complete -->
+  <div class="step gray">
+    <div class="step-number">10</div>
+    <div class="step-title">{t(lang, 'userFlow.step10Title')}</div>
+    <div class="step-subtitle">{t(lang, 'userFlow.step10Subtitle')}</div>
+    <div class="step-content">
+      <div class="info-box">
+        <Fragment set:html={t(lang, 'userFlow.step10Info')} />
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-footer">
+    {t(lang, 'userFlow.footerOrg')}<br>
+    {t(lang, 'userFlow.footerTech')}
+    <br>
+    <a href={`${prefix}/projects/formosa-esg-2026/guide/`}>{t(lang, 'userFlow.backToGuide')}</a>
+  </div>
+
+</div>
+
+</BaseLayout>

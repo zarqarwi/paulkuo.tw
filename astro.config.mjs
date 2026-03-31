@@ -7,6 +7,13 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://paulkuo.tw',
   output: 'static',
+  i18n: {
+    defaultLocale: 'zh-Hant',
+    locales: ['zh-Hant', 'en', 'ja', 'zh-Hans'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   vite: {
     ssr: {
       external: ['sharp'],

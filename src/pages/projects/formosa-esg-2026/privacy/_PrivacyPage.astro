@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  lang?: Locale;
+}
+
+const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const prefix = LOCALE_PREFIX[lang];
+---
+
+<BaseLayout
+  title={t(lang, 'privacyPage.pageTitle')}
+  description={t(lang, 'privacyPage.pageDesc')}
+  ogUrl={`https://paulkuo.tw${prefix}/projects/formosa-esg-2026/privacy/`}
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<article class="privacy-content" style="max-width:720px;margin:2rem auto;padding:0 1.5rem;line-height:1.8;color:var(--text-primary);">
+
+<h1 style="font-size:clamp(1.3rem, 5vw, 2rem);margin-bottom:0.5rem;word-break:keep-all;overflow-wrap:break-word;">{t(lang, 'privacyPage.mainTitle')}</h1>
+<p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:2rem;"><strong>{t(lang, 'privacyPage.versionLine')}</strong> ｜ {t(lang, 'privacyPage.dateLine')} ｜ {t(lang, 'privacyPage.legalBasis')}</p>
+
+<hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0;" />
+
+<h2>{t(lang, 'privacyPage.s1Title')}</h2>
+<p><Fragment set:html={t(lang, 'privacyPage.s1Body')} /></p>
+<p>{t(lang, 'privacyPage.s1Contact')}</p>
+
+<h2>{t(lang, 'privacyPage.s2Title')}</h2>
+<p>{t(lang, 'privacyPage.s2Intro')}</p>
+<ol>
+  <li><Fragment set:html={t(lang, 'privacyPage.s2Item1')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s2Item2')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s2Item3')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s2Item4')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s2Item5')} /></li>
+</ol>
+
+<h2>{t(lang, 'privacyPage.s3Title')}</h2>
+<table style="width:100%;border-collapse:collapse;font-size:0.85rem;margin:1rem 0;">
+  <thead>
+    <tr style="background:var(--bg-card);"><th style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3ThCat')}</th><th style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3ThItems')}</th><th style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3ThMethod')}</th><th style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3ThReq')}</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R1Cat')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R1Items')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R1Method')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R1Req')}</td></tr>
+    <tr><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R2Cat')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R2Items')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R2Method')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R2Req')}</td></tr>
+    <tr><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R3Cat')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R3Items')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R3Method')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R3Req')}</td></tr>
+    <tr><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R4Cat')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R4Items')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R4Method')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R4Req')}</td></tr>
+    <tr><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R5Cat')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R5Items')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R5Method')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R5Req')}</td></tr>
+    <tr><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R6Cat')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R6Items')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R6Method')}</td><td style="border:1px solid var(--border);padding:0.5rem;">{t(lang, 'privacyPage.s3R6Req')}</td></tr>
+  </tbody>
+</table>
+<p><strong>{t(lang, 'privacyPage.s3Note')}</strong>：</p>
+<ul>
+  <li><Fragment set:html={t(lang, 'privacyPage.s3NotePhoto')} /></li>
+  <li>{t(lang, 'privacyPage.s3NoteGps')}</li>
+</ul>
+
+<h2>{t(lang, 'privacyPage.s4Title')}</h2>
+
+<h3>{t(lang, 'privacyPage.s4PeriodTitle')}</h3>
+<ul>
+  <li><Fragment set:html={t(lang, 'privacyPage.s4Period1')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s4Period2')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s4Period3')} /></li>
+</ul>
+
+<h3>{t(lang, 'privacyPage.s4RegionTitle')}</h3>
+<p>{t(lang, 'privacyPage.s4RegionBody')}</p>
+
+<h3>{t(lang, 'privacyPage.s4TargetTitle')}</h3>
+<ul>
+  <li>{t(lang, 'privacyPage.s4Target1')}</li>
+  <li>{t(lang, 'privacyPage.s4Target2')}</li>
+  <li>{t(lang, 'privacyPage.s4Target3')}</li>
+</ul>
+
+<h3>{t(lang, 'privacyPage.s4MethodTitle')}</h3>
+<ul>
+  <li>{t(lang, 'privacyPage.s4Method1')}</li>
+  <li>{t(lang, 'privacyPage.s4Method2')}</li>
+  <li>{t(lang, 'privacyPage.s4Method3')}</li>
+  <li>{t(lang, 'privacyPage.s4Method4')}</li>
+</ul>
+
+<h2>{t(lang, 'privacyPage.s5Title')}</h2>
+<p>{t(lang, 'privacyPage.s5Intro')}</p>
+<ol>
+  <li><Fragment set:html={t(lang, 'privacyPage.s5Item1')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s5Item2')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s5Item3')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s5Item4')} /></li>
+  <li><Fragment set:html={t(lang, 'privacyPage.s5Item5')} /></li>
+</ol>
+<p>{t(lang, 'privacyPage.s5Contact')}</p>
+
+<h2>{t(lang, 'privacyPage.s6Title')}</h2>
+<ul>
+  <li>{t(lang, 'privacyPage.s6Item1')}</li>
+  <li>{t(lang, 'privacyPage.s6Item2')}</li>
+  <li>{t(lang, 'privacyPage.s6Item3')}</li>
+  <li>{t(lang, 'privacyPage.s6Item4')}</li>
+</ul>
+
+<h2>{t(lang, 'privacyPage.s7Title')}</h2>
+<p>{t(lang, 'privacyPage.s7Intro')}</p>
+<ul>
+  <li>{t(lang, 'privacyPage.s7Item1')}</li>
+  <li>{t(lang, 'privacyPage.s7Item2')}</li>
+  <li>{t(lang, 'privacyPage.s7Item3')}</li>
+  <li>{t(lang, 'privacyPage.s7Item4')}</li>
+</ul>
+
+<h2>{t(lang, 'privacyPage.s8Title')}</h2>
+<p>{t(lang, 'privacyPage.s8Body')}</p>
+
+<h2>{t(lang, 'privacyPage.s9Title')}</h2>
+<p>{t(lang, 'privacyPage.s9Body')}</p>
+
+<h2>{t(lang, 'privacyPage.s10Title')}</h2>
+<p>{t(lang, 'privacyPage.s10Intro')}</p>
+<ul>
+  <li>{t(lang, 'privacyPage.s10Email')}</li>
+  <li>{t(lang, 'privacyPage.s10Line')}</li>
+</ul>
+
+<hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0;" />
+<p style="color:var(--text-secondary);font-size:0.8rem;"><em>{t(lang, 'privacyPage.lastUpdated')}</em></p>
+
+</article>
+
+</BaseLayout>

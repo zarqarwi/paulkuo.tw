@@ -1,0 +1,484 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import '../../../../styles/guide-template.css';
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  lang?: Locale;
+}
+
+const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const prefix = LOCALE_PREFIX[lang];
+---
+
+<BaseLayout
+  title={`${t(lang, 'guidePage.title')}`}
+  description={t(lang, 'guidePage.description')}
+  ogUrl={`https://paulkuo.tw${prefix}/projects/formosa-esg-2026/guide/`}
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<article class="guide-content">
+
+<h1>{t(lang, 'guidePage.title')}</h1>
+<div class="guide-meta">
+  <span class="guide-last-updated">{t(lang, 'guidePage.lastUpdated')}</span>
+  <span class="guide-changelog">{t(lang, 'guidePage.changelog')}</span>
+</div>
+
+<blockquote>
+  <p>{t(lang, 'guidePage.introP1')}</p>
+  <p>{t(lang, 'guidePage.introP2')}</p>
+  <p>{t(lang, 'guidePage.introP3')}</p>
+</blockquote>
+
+<p style="margin:1.5rem 0;font-size:1.05rem;">👉 <strong><a href={`${prefix}/projects/formosa-esg-2026/guide/user-flow/`}>{t(lang, 'guidePage.userFlowLink')}</a></strong> — {t(lang, 'guidePage.userFlowDesc')}</p>
+
+<nav class="guide-toc">
+  <details open>
+    <summary>📑 {t(lang, 'guidePage.tocTitle')}</summary>
+    <ol>
+      <li><a href="#section-1">{t(lang, 'guidePage.toc1')}</a></li>
+      <li><a href="#section-2">{t(lang, 'guidePage.toc2')}</a></li>
+      <li><a href="#section-3">{t(lang, 'guidePage.toc3')}</a></li>
+      <li><a href="#section-4">{t(lang, 'guidePage.toc4')}</a></li>
+      <li><a href="#section-5">{t(lang, 'guidePage.toc5')}</a></li>
+      <li><a href="#section-6">{t(lang, 'guidePage.toc6')}</a></li>
+      <li><a href="#section-7">{t(lang, 'guidePage.toc7')}</a></li>
+      <li><a href="#section-8">{t(lang, 'guidePage.toc8')}</a></li>
+      <li><a href="#section-9">{t(lang, 'guidePage.toc9')}</a></li>
+      <li><a href="#section-10">{t(lang, 'guidePage.toc10')}</a></li>
+      <li><a href="#section-11">{t(lang, 'guidePage.toc11')}</a></li>
+      <li><a href="#section-12">{t(lang, 'guidePage.toc12')}</a></li>
+    </ol>
+  </details>
+</nav>
+
+<hr />
+
+<h2 id="section-1">{t(lang, 'guidePage.s1Title')}</h2>
+
+<p>{t(lang, 'guidePage.s1P1')}</p>
+
+<p>{t(lang, 'guidePage.s1P2')}</p>
+
+<p>{t(lang, 'guidePage.s1P3')}</p>
+
+<p>{t(lang, 'guidePage.s1ConditionsIntro')}</p>
+<ol class="guide-conditions">
+  <li><Fragment set:html={t(lang, 'guidePage.s1Condition1')} /></li>
+  <li>{t(lang, 'guidePage.s1Condition2')}</li>
+  <li>{t(lang, 'guidePage.s1Condition3')}</li>
+</ol>
+<p>{t(lang, 'guidePage.s1ConditionsNote')}</p>
+
+<p><Fragment set:html={t(lang, 'guidePage.s1ProofNote')} /></p>
+
+<hr />
+
+<h2 id="section-2"><span class="step-badge">1</span>{t(lang, 'guidePage.s2Title')}</h2>
+
+<p>{t(lang, 'guidePage.s2Intro')}</p>
+
+<h3>{t(lang, 'guidePage.s2Method1')}</h3>
+
+<p>{t(lang, 'guidePage.s2Method1Desc')}</p>
+
+<h3>{t(lang, 'guidePage.s2Method2')}</h3>
+
+<ol>
+  <li>{t(lang, 'guidePage.s2Method2Step1')}</li>
+  <li>{t(lang, 'guidePage.s2Method2Step2')}</li>
+  <li>{t(lang, 'guidePage.s2Method2Step3')}</li>
+</ol>
+
+<a href="https://line.me/R/ti/p/@539fkwjd" class="guide-cta-line" target="_blank" rel="noopener">
+  {t(lang, 'guidePage.s2AddLineFriend')}
+</a>
+
+<p>{t(lang, 'guidePage.s2AfterLogin')}</p>
+
+<p>{t(lang, 'guidePage.s2DataSafe')}</p>
+
+<hr />
+
+<h2 id="section-3"><span class="step-badge">2</span>{t(lang, 'guidePage.s3Title')}</h2>
+
+<p>{t(lang, 'guidePage.s3P1')}</p>
+
+<p>{t(lang, 'guidePage.s3P2')}</p>
+
+<div class="callout callout-info">
+  <span class="callout-icon">ℹ️</span>
+  <p>{t(lang, 'guidePage.s3PhotoNote')}</p>
+</div>
+
+<p>{t(lang, 'guidePage.s3P3')}</p>
+
+<p>{t(lang, 'guidePage.s3P4')}</p>
+
+<hr />
+
+<h2 id="section-4"><span class="step-badge">3</span>{t(lang, 'guidePage.s4Title')}</h2>
+
+<p>{t(lang, 'guidePage.s4P1')}</p>
+
+<p>{t(lang, 'guidePage.s4P2')}</p>
+
+<h3>{t(lang, 'guidePage.s4Part1Title')}</h3>
+<ul>
+  <li>{t(lang, 'guidePage.s4Part1Item1')}</li>
+  <li>{t(lang, 'guidePage.s4Part1Item2')}</li>
+  <li>{t(lang, 'guidePage.s4Part1Item3')}</li>
+  <li>{t(lang, 'guidePage.s4Part1Item4')}</li>
+</ul>
+
+<h3>{t(lang, 'guidePage.s4Part2Title')}</h3>
+<ul>
+  <li>{t(lang, 'guidePage.s4Part2Item1')}</li>
+  <li>{t(lang, 'guidePage.s4Part2Item2')}</li>
+  <li>{t(lang, 'guidePage.s4Part2Item3')}</li>
+</ul>
+
+<h3>{t(lang, 'guidePage.s4Part3Title')}</h3>
+<ul>
+  <li>{t(lang, 'guidePage.s4Part3Item1')}</li>
+  <li>{t(lang, 'guidePage.s4Part3Item2')}</li>
+  <li>{t(lang, 'guidePage.s4Part3Item3')}</li>
+  <li>{t(lang, 'guidePage.s4Part3Item4')}</li>
+</ul>
+
+<p>{t(lang, 'guidePage.s4P3')}</p>
+
+<hr />
+
+<h2 id="section-5"><span class="step-badge">4</span>{t(lang, 'guidePage.s5Title')}</h2>
+
+<p>{t(lang, 'guidePage.s5P1')}</p>
+
+<p>{t(lang, 'guidePage.s5P2')}</p>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠️</span>
+  <p>{t(lang, 'guidePage.s5Warning')}</p>
+</div>
+
+<p>{t(lang, 'guidePage.s5P3')}</p>
+
+<p>{t(lang, 'guidePage.s5P4')}</p>
+
+<p><Fragment set:html={t(lang, 'guidePage.s5P5')} /></p>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">⚠️</span>
+  <p><Fragment set:html={t(lang, 'guidePage.s5WarningBrowser')} /></p>
+</div>
+
+<hr />
+
+<h2 id="section-6"><span class="step-badge">5</span>{t(lang, 'guidePage.s6Title')}</h2>
+
+<p>{t(lang, 'guidePage.s6P1')}</p>
+
+<p><Fragment set:html={t(lang, 'guidePage.s6P2')} /></p>
+
+<p>{t(lang, 'guidePage.s6P3')}</p>
+
+<h3>{t(lang, 'guidePage.s6TransportTitle')}</h3>
+<p>{t(lang, 'guidePage.s6TransportDesc')}</p>
+
+<h3>{t(lang, 'guidePage.s6EnvTitle')}</h3>
+<p>{t(lang, 'guidePage.s6EnvDesc')}</p>
+
+<p>{t(lang, 'guidePage.s6P4')}</p>
+
+<hr />
+
+<h2 id="section-7"><span class="step-badge">6</span>{t(lang, 'guidePage.s7Title')}</h2>
+
+<h3>{t(lang, 'guidePage.s7LevelTitle')}</h3>
+
+<p>{t(lang, 'guidePage.s7LevelIntro')}</p>
+
+<div class="level-grid">
+  {[1,2,3,4,5,6,7,8,9].map((n) => (
+    <div class:list={['level-card', { 'level-card-max': n === 9 }]}>
+      <img src={`/images/formosa/level-${n}.webp`} alt={`${t(lang, `levels.${n}.name`)}${t(lang, 'levels.mascot')}`} class="level-mascot" width="120" height="120" loading="lazy" />
+      <div class="level-info">
+        <span class:list={['level-badge', { 'level-badge-max': n === 9 }]}>Lv.{n}</span>
+        <strong>{t(lang, `levels.${n}.name`)}</strong>
+        <span class="level-req">{t(lang, `levels.${n}.req`)}</span>
+        <span class="level-desc">{t(lang, `levels.${n}.approxDays`)}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+<p>{t(lang, 'guidePage.s7LevelTip')}</p>
+
+<h3>{t(lang, 'guidePage.s7MyPageTitle')}</h3>
+
+<p>{t(lang, 'guidePage.s7MyPageIntro')}</p>
+<ul>
+  <li>{t(lang, 'guidePage.s7MyPageItem1')}</li>
+  <li>{t(lang, 'guidePage.s7MyPageItem2')}</li>
+  <li>{t(lang, 'guidePage.s7MyPageItem3')}</li>
+  <li>{t(lang, 'guidePage.s7MyPageItem4')}</li>
+  <li>{t(lang, 'guidePage.s7MyPageItem5')}</li>
+</ul>
+
+<hr />
+
+<h2 id="section-8"><span class="step-badge">7</span>{t(lang, 'guidePage.s8Title')}</h2>
+
+<p>{t(lang, 'guidePage.s8P1')}</p>
+
+<ul>
+  <li>{t(lang, 'guidePage.s8Item1')}</li>
+  <li>{t(lang, 'guidePage.s8Item2')}</li>
+  <li>{t(lang, 'guidePage.s8Item3')}</li>
+  <li>{t(lang, 'guidePage.s8Item4')}</li>
+  <li>{t(lang, 'guidePage.s8Item5')}</li>
+</ul>
+
+<p><Fragment set:html={t(lang, 'guidePage.s8ProofNote')} /></p>
+
+<p><Fragment set:html={t(lang, 'guidePage.s8HowToShare')} /></p>
+
+<p><Fragment set:html={t(lang, 'guidePage.s8FbPreview')} /></p>
+
+<hr />
+
+<h2 id="section-9">{t(lang, 'guidePage.s9Title')}</h2>
+
+<p>{t(lang, 'guidePage.s9P1')}</p>
+
+<h3>{t(lang, 'guidePage.s9PauseTitle')}</h3>
+
+<p>{t(lang, 'guidePage.s9PauseDesc')}</p>
+
+<h3>{t(lang, 'guidePage.s9CompleteTitle')}</h3>
+
+<p>{t(lang, 'guidePage.s9CompleteDesc')}</p>
+
+<p>{t(lang, 'guidePage.s9AutoComplete')}</p>
+
+<p>{t(lang, 'guidePage.s9EveryStep')}</p>
+
+<hr />
+
+<h2 id="section-10">{t(lang, 'guidePage.s10Title')}</h2>
+
+<p>{t(lang, 'guidePage.s10P1')}</p>
+
+<p>{t(lang, 'guidePage.s10P2')}</p>
+<ul>
+  <li>{t(lang, 'guidePage.s10Cmd1')}</li>
+  <li>{t(lang, 'guidePage.s10Cmd2')}</li>
+  <li>{t(lang, 'guidePage.s10Cmd3')}</li>
+  <li>{t(lang, 'guidePage.s10Cmd4')}</li>
+</ul>
+
+<p>{t(lang, 'guidePage.s10P3')}</p>
+
+<p>{t(lang, 'guidePage.s10P4')}</p>
+
+<hr />
+
+<h2 id="section-11">{t(lang, 'guidePage.s11Title')}</h2>
+
+<div class="faq">
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_password')}</summary>
+    <p>{t(lang, 'faq.a_password')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_noGreenDot')}</summary>
+    <p>{t(lang, 'faq.a_noGreenDot')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_closePhone')}</summary>
+    <p>{t(lang, 'faq.a_closePhone')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_photoUpload')}</summary>
+    <p>{t(lang, 'faq.a_photoUpload')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_noLevelUp')}</summary>
+    <p>{t(lang, 'faq.a_noLevelUp')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_dailyReport')}</summary>
+    <p>{t(lang, 'faq.a_dailyReport')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_carbonCalc')}</summary>
+    <p>{t(lang, 'faq.a_carbonCalc')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_carbonSaved')}</summary>
+    <p>{t(lang, 'faq.a_carbonSaved')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_noSmartphone')}</summary>
+    <p>{t(lang, 'faq.a_noSmartphone')}</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>{t(lang, 'faq.q_changeSurvey')}</summary>
+    <p>{t(lang, 'faq.a_changeSurvey')}</p>
+  </details>
+</div>
+
+<hr />
+
+<h2 id="section-12">{t(lang, 'guidePage.s12Title')}</h2>
+
+<ol>
+  <li><Fragment set:html={t(lang, 'guidePage.s12Item1')} /></li>
+  <li>{t(lang, 'guidePage.s12Item2')}</li>
+  <li>{t(lang, 'guidePage.s12Item3')}</li>
+  <li>{t(lang, 'guidePage.s12Item4')}</li>
+</ol>
+
+<hr />
+
+<footer class="guide-footer">
+  <p>{t(lang, 'guidePage.footerOrg')}</p>
+  <p>{t(lang, 'guidePage.footerSlogan')}</p>
+  <a href="https://line.me/R/ti/p/@539fkwjd" class="guide-cta">{t(lang, 'guidePage.footerCta')}</a>
+</footer>
+
+</article>
+
+</BaseLayout>
+
+<style>
+  html { scroll-behavior: smooth; }
+
+  /* ── Level Grid ── */
+  .level-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .level-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem 0.75rem;
+    border: 1px solid #e9ecef;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .level-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .level-card-max {
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border-color: #ffc107;
+  }
+
+  .level-mascot {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+  }
+
+  .level-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .level-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    background: #1a3a5c;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    align-self: center;
+    letter-spacing: 0.5px;
+  }
+  .level-badge-max {
+    background: linear-gradient(135deg, #d4a017, #f5c842);
+    color: #333;
+  }
+
+  .level-info strong {
+    font-size: 0.95rem;
+    color: #1a3a5c;
+  }
+
+  .level-req {
+    font-size: 0.78rem;
+    color: #666;
+  }
+
+  .level-desc {
+    font-size: 0.75rem;
+    color: #999;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .level-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    .level-mascot {
+      width: 72px;
+      height: 72px;
+    }
+    .level-info strong {
+      font-size: 0.85rem;
+    }
+    .level-req {
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .level-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .level-card {
+      padding: 0.6rem 0.4rem;
+    }
+    .level-mascot {
+      width: 60px;
+      height: 60px;
+    }
+    .level-info strong {
+      font-size: 0.78rem;
+    }
+    .level-req {
+      font-size: 0.65rem;
+    }
+    .level-desc {
+      font-size: 0.65rem;
+    }
+  }
+</style>

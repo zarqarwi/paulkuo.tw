@@ -3,19 +3,39 @@
  * AuthGate — Client-side auth gate for Formosa ESG 2026 pages
  * Supports LINE login (for participants) and password (for admins)
  */
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+
 interface Props {
   title?: string;
   subtitle?: string;
   lineLogin?: boolean;
   liffId?: string;
+  lang?: Locale;
 }
 
 const {
-  title = '2026 白沙屯媽祖 ESG 永續進香',
+  title,
   subtitle = '',
   lineLogin = false,
-  liffId = '2009588321-rXVntTKg'
+  liffId = '2009588321-rXVntTKg',
+  lang = 'zh-Hant',
 } = Astro.props;
+
+const authTitle = title || t(lang, 'brand.systemName');
+const prefix = LOCALE_PREFIX[lang];
+
+// Build i18n strings for client-side JS
+const authI18n = {
+  verify: t(lang, 'auth.verify'),
+  verifying: t(lang, 'auth.verifying'),
+  invalidPassword: t(lang, 'auth.invalidPassword'),
+  processing: t(lang, 'auth.processing'),
+  loggingIn: t(lang, 'auth.loggingIn'),
+  enterEvent: t(lang, 'auth.enterEvent'),
+  lineLoginBtn: t(lang, 'auth.lineLoginBtn'),
+};
 ---
 
 <!-- LIFF SDK (only for LINE login mode) -->
@@ -25,15 +45,15 @@ const {
 <div id="authGate" class="formosa-auth">
   <div class="auth-card">
     <div class="auth-icon">⛩️</div>
-    <h2>{title}</h2>
+    <h2>{authTitle}</h2>
 
     {lineLogin ? (
       <!-- LINE Login Mode -->
       <div id="lineLoginSection">
-        <p>使用 LINE 帳號登入以記錄您的進香足跡</p>
+        <p>{t(lang, 'auth.lineLoginDesc')}</p>
         <button id="lineLoginBtn" class="line-login-btn">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="white" style="vertical-align:middle;margin-right:8px"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-          用 LINE 登入
+          {t(lang, 'auth.lineLoginBtn')}
         </button>
       </div>
 
@@ -42,34 +62,34 @@ const {
         <img id="lineAvatar" class="line-avatar" src="" alt="" />
         <div id="lineDisplayName" class="line-name"></div>
         <div id="privacySummary" class="privacy-summary">
-          <p class="privacy-summary-text">進入活動即表示您同意我們依據<a href="/projects/formosa-esg-2026/privacy/" target="_blank" rel="noopener">隱私權聲明</a>處理您的資料，用於進香足跡記錄與碳足跡計算。</p>
+          <p class="privacy-summary-text" set:html={t(lang, 'auth.privacyConsentText').replace('{link}', `<a href="${prefix}/projects/formosa-esg-2026/privacy/" target="_blank" rel="noopener">${t(lang, 'privacy.title')}</a>`)} />
           <label class="privacy-checkbox-label">
             <input type="checkbox" id="privacyCheckbox" />
-            <span>我已閱讀並同意隱私權聲明</span>
+            <span>{t(lang, 'auth.privacyCheckboxLabel')}</span>
           </label>
         </div>
-        <button id="lineEnterBtn" class="line-enter-btn" disabled>進入活動</button>
-        <div id="privacyDeclineMsg" class="privacy-decline-msg" style="display:none">需要同意隱私權聲明才能使用打卡功能</div>
-        <div id="privacyFetchFallback" class="privacy-fetch-fallback" style="display:none">網路連線異常，如無法進入請<a href="/projects/formosa-esg-2026/tracker/?demo=1">點此重試</a>。</div>
+        <button id="lineEnterBtn" class="line-enter-btn" disabled>{t(lang, 'auth.enterEvent')}</button>
+        <div id="privacyDeclineMsg" class="privacy-decline-msg" style="display:none">{t(lang, 'auth.privacyRequired')}</div>
+        <div id="privacyFetchFallback" class="privacy-fetch-fallback" style="display:none" set:html={t(lang, 'auth.networkError').replace('{link}', `<a href="${prefix}/projects/formosa-esg-2026/tracker/?demo=1">${t(lang, 'ui.retry')}</a>`)} />
       </div>
 
       <!-- Admin fallback -->
       <div class="admin-fallback">
-        <a href="#" id="showAdminLogin">管理員登入</a>
+        <a href="#" id="showAdminLogin">{t(lang, 'auth.adminLogin')}</a>
       </div>
       <div id="adminLoginSection" style="display:none">
-        <input type="password" id="authInput" placeholder="管理員密碼" />
+        <input type="password" id="authInput" placeholder={t(lang, 'auth.adminPassword')} />
         <div class="admin-btn-row">
-          <button id="authBtn" class="admin-login-btn">驗證</button>
-          <button id="adminCancelBtn" class="admin-cancel-btn">取消</button>
+          <button id="authBtn" class="admin-login-btn">{t(lang, 'auth.verify')}</button>
+          <button id="adminCancelBtn" class="admin-cancel-btn">{t(lang, 'auth.cancel')}</button>
         </div>
       </div>
     ) : (
       <!-- Password Mode (admin pages) -->
-      <p class="auth-subtitle">僅限管理團隊存取</p>
-      <input type="password" id="authInput" placeholder="管理密碼" autofocus />
-      <button id="authBtn">進入</button>
-      <p class="auth-note">這是管理團隊的數據後台，香客請前往<a href="/projects/formosa-esg-2026/my/">足跡頁面</a>。</p>
+      <p class="auth-subtitle">{t(lang, 'auth.adminOnly')}</p>
+      <input type="password" id="authInput" placeholder={t(lang, 'auth.password')} autofocus />
+      <button id="authBtn">{t(lang, 'auth.enter')}</button>
+      <p class="auth-note" set:html={t(lang, 'auth.adminNote').replace('{link}', `<a href="${prefix}/projects/formosa-esg-2026/my/">${t(lang, 'page.my')}</a>`)} />
     )}
   </div>
 </div>
@@ -80,12 +100,12 @@ const {
 </template>
 <div id="mainContent"></div>
 
-<script is:inline define:vars={{ lineLogin, liffId }}>
+<script is:inline define:vars={{ lineLogin, liffId, authI18n }}>
 (function() {
-  const WORKER = 'https://api.paulkuo.tw';
-  const STORAGE_KEY = 'formosa_esg_code';
-  const authGate = document.getElementById('authGate');
-  const mainContent = document.getElementById('mainContent');
+  var WORKER = 'https://api.paulkuo.tw';
+  var STORAGE_KEY = 'formosa_esg_code';
+  var authGate = document.getElementById('authGate');
+  var mainContent = document.getElementById('mainContent');
 
   // Hide NavBar and Footer while auth gate is showing
   var nav = document.getElementById('main-nav');
@@ -126,7 +146,7 @@ const {
 
   if (authBtn) {
     authBtn.addEventListener('click', async function() {
-      authBtn.textContent = '驗證中…';
+      authBtn.textContent = authI18n.verifying;
       authBtn.disabled = true;
       var code = authInput.value.trim().toLowerCase();
       var result = await verifyCode(code);
@@ -136,8 +156,8 @@ const {
       } else {
         authInput.style.borderColor = '#ef4444';
         authInput.value = '';
-        authInput.placeholder = '密碼無效';
-        authBtn.textContent = '驗證';
+        authInput.placeholder = authI18n.invalidPassword;
+        authBtn.textContent = authI18n.verify;
         authBtn.disabled = false;
       }
     });
@@ -247,7 +267,7 @@ const {
       var localAgreed = localStorage.getItem('formosa_privacy_agreed');
       if (localAgreed === '1') { unlock(); return; }
       // Record privacy consent
-      lineEnterBtn.textContent = '處理中…';
+      lineEnterBtn.textContent = authI18n.processing;
       lineEnterBtn.disabled = true;
       fetch(WORKER + '/api/formosa/privacy', {
         method: 'POST',
@@ -260,7 +280,7 @@ const {
         }
       }).catch(function() {
         // Fallback: show manual link instead of blocking
-        lineEnterBtn.textContent = '進入活動';
+        lineEnterBtn.textContent = authI18n.enterEvent;
         lineEnterBtn.disabled = false;
         var fallback = document.getElementById('privacyFetchFallback');
         if (fallback) fallback.style.display = 'block';
@@ -293,14 +313,14 @@ const {
     if (lineLoginBtn) {
       lineLoginBtn.addEventListener('click', function() {
         lineLoginBtn.disabled = true;
-        lineLoginBtn.innerHTML = '<span class="line-spinner"></span> 登入中…';
+        lineLoginBtn.innerHTML = '<span class="line-spinner"></span> ' + authI18n.loggingIn;
         if (typeof liff !== 'undefined' && window.__liffReady) {
           liff.login({ redirectUri: window.location.href });
         } else {
           initLIFF();
           setTimeout(function() {
             if (typeof liff !== 'undefined') liff.login({ redirectUri: window.location.href });
-            else { lineLoginBtn.disabled = false; lineLoginBtn.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="white" style="vertical-align:middle;margin-right:8px"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> 用 LINE 登入'; }
+            else { lineLoginBtn.disabled = false; lineLoginBtn.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="white" style="vertical-align:middle;margin-right:8px"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> ' + authI18n.lineLoginBtn; }
           }, 1000);
         }
       });

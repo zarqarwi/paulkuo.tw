@@ -1,0 +1,895 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  lang?: Locale;
+}
+
+const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const prefix = LOCALE_PREFIX[lang];
+
+// Collect all JS-facing translations into a single object for define:vars
+const i18nMyPage = JSON.stringify({
+  backToProject: t(lang, 'myPageContent.backToProject'),
+  goCheckin: t(lang, 'myPageContent.goCheckin'),
+  eventName: t(lang, 'myPageContent.eventName'),
+  checkins: t(lang, 'myPageContent.checkins'),
+  km: t(lang, 'myPageContent.km'),
+  goodDeeds: t(lang, 'myPageContent.goodDeeds'),
+  rankProgress: t(lang, 'myPageContent.rankProgress'),
+  startPoint: t(lang, 'myPageContent.startPoint'),
+  latestLocation: t(lang, 'myPageContent.latestLocation'),
+  noGpsData: t(lang, 'myPageContent.noGpsData'),
+  goCheckinRecord: t(lang, 'myPageContent.goCheckinRecord'),
+  cannotLoadMap: t(lang, 'myPageContent.cannotLoadMap'),
+  locPoints: t(lang, 'myPageContent.locPoints'),
+  equivDriveLess: t(lang, 'myPageContent.equivDriveLess'),
+  equivTrees: t(lang, 'myPageContent.equivTrees'),
+  treesAnnual: t(lang, 'myPageContent.treesAnnual'),
+  shareKm: t(lang, 'myPageContent.shareKm'),
+  shareCheckin: t(lang, 'myPageContent.shareCheckin'),
+  shareDriveLess: t(lang, 'myPageContent.shareDriveLess'),
+  shareTrees: t(lang, 'myPageContent.shareTrees'),
+  shareTreesUnit: t(lang, 'myPageContent.shareTreesUnit'),
+  shareText: t(lang, 'myPageContent.shareText'),
+  shareTitle: t(lang, 'myPageContent.shareTitle'),
+  firstCheckin: t(lang, 'myPageContent.firstCheckin'),
+  checkinUnit: t(lang, 'myPageContent.checkinUnit'),
+  upgradeHint: t(lang, 'myPageContent.upgradeHint'),
+  walkMore: t(lang, 'myPageContent.walkMore'),
+  checkinMore: t(lang, 'myPageContent.checkinMore'),
+  maxLevelMsg: t(lang, 'myPageContent.maxLevelMsg'),
+  ogTitle: t(lang, 'myPageContent.ogTitle'),
+  ogTotalKm: t(lang, 'myPageContent.ogTotalKm'),
+  ogCheckins: t(lang, 'myPageContent.ogCheckins'),
+  ogCarbon: t(lang, 'myPageContent.ogCarbon'),
+  ogJoinCta: t(lang, 'myPageContent.ogJoinCta'),
+  mapStart: t(lang, 'myPageContent.mapStart'),
+  mapNow: t(lang, 'myPageContent.mapNow'),
+  viewerTitle: t(lang, 'myPageContent.viewerTitle'),
+  copied: t(lang, 'myPageContent.copied'),
+});
+
+const linkPrefix = prefix;
+---
+
+<BaseLayout
+  title={`${t(lang, 'page.my')} — ${t(lang, 'brand.shortName')}`}
+  description={t(lang, 'brand.tagline')}
+  ogUrl={`https://paulkuo.tw${prefix}/projects/formosa-esg-2026/my/`}
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script is:inline src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
+
+<div class="my-dashboard" data-prefix={linkPrefix} data-i18n={i18nMyPage}>
+  <nav class="my-breadcrumb">
+    <a href={`${prefix}/projects/formosa-esg-2026/`}>{t(lang, 'myPageContent.backToProject')}</a>
+    <a href={`${prefix}/projects/formosa-esg-2026/tracker/`} class="my-breadcrumb-right">{t(lang, 'myPageContent.goCheckin')}</a>
+  </nav>
+
+  <!-- No data state -->
+  <div id="noData" class="empty-state" style="display:none;">
+    <div class="empty-icon">🙏</div>
+    <h2>{t(lang, 'myPageContent.noDataTitle')}</h2>
+    <p>{t(lang, 'myPageContent.noDataDesc')}</p>
+
+    <div class="quick-steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <span>{t(lang, 'myPageContent.step1')}</span>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <span>{t(lang, 'myPageContent.step2')}</span>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <span>{t(lang, 'myPageContent.step3')}</span>
+      </div>
+    </div>
+
+    <div class="empty-cta-row">
+      <a href={`${prefix}/projects/formosa-esg-2026/guide/`} class="my-cta-btn secondary">{t(lang, 'myPageContent.fullGuide')}</a>
+      <a href={`${prefix}/projects/formosa-esg-2026/tracker/`} class="my-cta-btn">{t(lang, 'myPageContent.goCheckinBtn')}</a>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div id="mainContent" style="display:none;">
+
+    <!-- Rank Badge -->
+    <div class="my-rank-section">
+      <div class="my-rank-icon" id="rankIcon">🔥</div>
+      <h1 class="my-rank-name" id="rankName"></h1>
+      <p class="my-rank-sub" id="rankSub"></p>
+      <p class="my-rank-event">{t(lang, 'myPageContent.eventName')}</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="my-stats-grid">
+      <div class="my-stat-card">
+        <div class="my-stat-num" id="statCheckins">0</div>
+        <div class="my-stat-label">{t(lang, 'myPageContent.checkins')}</div>
+      </div>
+      <div class="my-stat-card">
+        <div class="my-stat-num" id="statKm">0</div>
+        <div class="my-stat-label">{t(lang, 'myPageContent.km')}</div>
+      </div>
+      <div class="my-stat-card">
+        <div class="my-stat-num" id="statDeeds">0</div>
+        <div class="my-stat-label">{t(lang, 'myPageContent.goodDeeds')}</div>
+      </div>
+      <div class="my-stat-card">
+        <div class="my-stat-num" id="statCarbon">0</div>
+        <div class="my-stat-label">kg CO₂e</div>
+      </div>
+    </div>
+
+    <!-- Rank Progress -->
+    <div class="my-progress-section">
+      <h3>{t(lang, 'myPageContent.rankProgress')}</h3>
+      <div class="my-progress-track" id="progressTrack"></div>
+      <p class="my-progress-hint" id="progressHint"></p>
+    </div>
+
+    <!-- Route Map -->
+    <div class="my-map-section">
+      <h3>{t(lang, 'myPageContent.myRouteMap')}</h3>
+      <div id="myMap" class="my-map"></div>
+      <p class="my-map-note" id="mapNote"></p>
+    </div>
+
+    <!-- Carbon Card -->
+    <div class="my-carbon-section">
+      <h3>{t(lang, 'myPageContent.carbonFootprint')}</h3>
+      <div class="my-carbon-main" id="carbonMain"></div>
+    </div>
+
+    <!-- Share Section (simplified) -->
+    <div class="my-share-section">
+      <button class="my-share-primary" onclick="generateShareImage()">{t(lang, 'myPageContent.shareMyJourney')}</button>
+      <div class="my-share-toast" id="shareToast" style="display:none;">{t(lang, 'myPageContent.copied')}</div>
+    </div>
+
+    <!-- Hidden share card for html2canvas -->
+    <div id="shareCard" class="share-card" style="position:fixed;left:-9999px;top:0;">
+      <div class="share-card-inner">
+        <!-- Top: Header + Rank -->
+        <div class="sc-top">
+          <div class="sc-header">{t(lang, 'myPageContent.eventName')}</div>
+          <div class="sc-rank-row">
+            <div class="sc-mascot" id="shareRankIcon"></div>
+            <div class="sc-rank-info">
+              <div class="sc-title" id="shareRankName"></div>
+              <div class="sc-sub" id="shareRankSub"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Middle: Map (full width) -->
+        <div class="sc-map-wrap">
+          <div id="shareMapContainer" style="width:560px;height:220px;border-radius:8px;overflow:hidden;"></div>
+          <img id="shareMapImg" style="width:560px;height:220px;border-radius:8px;display:none;" />
+        </div>
+        <!-- Bottom: Stats left + QR right -->
+        <div class="sc-bottom">
+          <div class="sc-bottom-left">
+            <div class="sc-stats">
+              <div class="sc-stat"><span id="shareKm">0</span><small id="shareKmLabel"></small></div>
+              <div class="sc-divider"></div>
+              <div class="sc-stat"><span id="shareCheckins">0</span><small id="shareCheckinsLabel"></small></div>
+              <div class="sc-divider"></div>
+              <div class="sc-stat"><span id="shareCarbon">0</span><small>kg CO₂e</small></div>
+            </div>
+            <div class="sc-carbon" id="shareCarbonCompare">
+            </div>
+          </div>
+          <div class="sc-bottom-right">
+            <img src="/images/formosa/logo-netzero.jpg" alt="NET-ZERO" style="width:88px;height:88px;border-radius:50%;object-fit:cover;background:#fff;" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ i18nMyPage, linkPrefix }}>
+(async function() {
+  var _t = JSON.parse(i18nMyPage);
+  var _prefix = linkPrefix;
+  var MASCOT_BASE = '/images/formosa/';
+  var TITLES = [
+    { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.png', name: '煉氣香客', sub: '啟程入門者' },
+    { km: 15,  checkins: 3,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
+    { km: 45,  checkins: 5,  icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
+    { km: 90,  checkins: 6,  icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
+    { km: 135, checkins: 8,  icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
+    { km: 180, checkins: 10, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
+    { km: 225, checkins: 12, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
+    { km: 270, checkins: 14, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
+    { km: 300, checkins: 14, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
+  ];
+
+  var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+
+  // ── Detect ?u= param (shared profile view, e.g. from Facebook) ──
+  var urlParams = new URLSearchParams(window.location.search);
+  var viewUserId = urlParams.get('u');
+  var isViewingOther = false;
+
+  // Read data from localStorage (fallback)
+  var checkins = parseInt(localStorage.getItem('formosa_checkins') || '0');
+  var km = parseFloat(localStorage.getItem('formosa_km') || '0');
+  var carbon = parseFloat(localStorage.getItem('formosa_carbon') || '0');
+  var surveyDone = localStorage.getItem('formosa_survey_done') === 'true';
+  var serverGpsTrack = null;
+
+  // Try sync from server if LINE user is available
+  var lineUserId = localStorage.getItem('formosa_line_user_id');
+
+  function getPersonalShareUrl() {
+    return lineUserId
+      ? 'https://paulkuo.tw' + _prefix + '/projects/formosa-esg-2026/tracker/?u=' + encodeURIComponent(lineUserId)
+      : 'https://paulkuo.tw' + _prefix + '/projects/formosa-esg-2026/tracker/';
+  }
+  var SHARE_URL = getPersonalShareUrl();
+
+  // If ?u= is present and it's a different user (or no local user), fetch their public data
+  if (viewUserId && viewUserId !== lineUserId) {
+    isViewingOther = true;
+    try {
+      var viewResp = await fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(viewUserId));
+      var viewData = await viewResp.json();
+      if (viewData && viewData.stats) {
+        checkins = viewData.stats.checkins || 0;
+        km = viewData.stats.total_km || 0;
+        carbon = viewData.stats.carbon_kg || 0;
+        surveyDone = viewData.survey ? true : checkins > 0;
+        if (viewData.gps_points && viewData.gps_points.length > 0) {
+          serverGpsTrack = viewData.gps_points.map(function(p) {
+            return { lat: p.lat, lng: p.lng, datetime: p.timestamp, source: p.source || 'gps' };
+          });
+        }
+        // Update page title for shared view
+        if (viewData.user && viewData.user.display_name && viewData.user.display_name !== 'Anonymous') {
+          document.title = viewData.user.display_name + _t.viewerTitle;
+        }
+      }
+    } catch(e) { /* API unavailable */ }
+  } else if (lineUserId) {
+    // Normal: sync own data
+    try {
+      var syncResp = await fetch(API_BASE + '/api/formosa/user/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          line_user_id: lineUserId,
+          display_name: localStorage.getItem('formosa_line_display_name') || '',
+          picture_url: localStorage.getItem('formosa_line_picture') || ''
+        })
+      });
+      var syncData = await syncResp.json();
+      if (syncData.ok) {
+        if (syncData.checkins > checkins) checkins = syncData.checkins;
+        if (syncData.km > km) km = syncData.km;
+        if (syncData.carbon > carbon) carbon = syncData.carbon;
+        if (syncData.survey_done) surveyDone = true;
+        if (syncData.gps_track && syncData.gps_track.length > 0) {
+          localStorage.setItem('formosa_gps_track', JSON.stringify(syncData.gps_track));
+        }
+        // Update localStorage with server values
+        localStorage.setItem('formosa_checkins', checkins);
+        localStorage.setItem('formosa_km', km);
+        if (carbon > 0) localStorage.setItem('formosa_carbon', carbon.toFixed(2));
+      }
+    } catch(e) { /* server unavailable, use localStorage */ }
+  } else if (viewUserId) {
+    // ?u= is present but same as local user — treat as own page, already loaded from localStorage
+  }
+
+  if (!surveyDone && checkins === 0) {
+    document.getElementById('noData').style.display = 'block';
+    return;
+  }
+
+  // Hide share buttons when viewing someone else's profile
+  if (isViewingOther) {
+    var shareSection = document.querySelector('.my-share-section');
+    if (shareSection) shareSection.style.display = 'none';
+  }
+
+  document.getElementById('mainContent').style.display = 'block';
+
+  // Compute rank
+  function getTitle(c, k) {
+    var current = TITLES[0], next = null;
+    for (var i = TITLES.length - 1; i >= 0; i--) {
+      if (k >= TITLES[i].km && c >= TITLES[i].checkins) { current = TITLES[i]; break; }
+    }
+    for (var j = 0; j < TITLES.length; j++) {
+      if (k < TITLES[j].km || c < TITLES[j].checkins) { next = TITLES[j]; break; }
+    }
+    return { current: current, next: next };
+  }
+
+  var rank = getTitle(checkins, km);
+
+  // ── Background OG Image Upload (canvas → R2) ──
+  // Auto-generate and upload when checkins ≥ 2, at most once per hour
+  if (checkins >= 2 && lineUserId && !isViewingOther) {
+    var lastUpload = parseInt(localStorage.getItem('formosa_og_uploaded_at') || '0');
+    if (Date.now() - lastUpload >= 3600000) {
+      setTimeout(function() {
+        var W = 1200, H = 630;
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var ctx = c.getContext('2d');
+        var grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#1a1a2e');
+        grad.addColorStop(1, '#16213e');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(0, 0, W, 6);
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.fillText(_t.ogTitle, 60, 70);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 64px sans-serif';
+        ctx.fillText(rank.current.icon + ' ' + rank.current.name, 60, 180);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '28px sans-serif';
+        ctx.fillText(rank.current.sub, 60, 225);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = 'bold 48px sans-serif';
+        ctx.fillText(km.toFixed(1) + ' ' + _t.km, 60, 340);
+        ctx.fillText(checkins + ' ' + _t.shareCheckin, 420, 340);
+        ctx.fillText(carbon.toFixed(1) + ' kg CO₂e', 720, 340);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '22px sans-serif';
+        ctx.fillText(_t.ogTotalKm, 60, 375);
+        ctx.fillText(_t.ogCheckins, 420, 375);
+        ctx.fillText(_t.ogCarbon, 720, 375);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(60, 420);
+        ctx.lineTo(W - 60, 420);
+        ctx.stroke();
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 26px sans-serif';
+        ctx.fillText(_t.ogJoinCta, 60, 470);
+        ctx.fillStyle = '#475569';
+        ctx.font = '20px sans-serif';
+        ctx.fillText('paulkuo.tw' + _prefix + '/projects/formosa-esg-2026/tracker/', 60, 590);
+        c.toBlob(function(blob) {
+          if (!blob || blob.size > 2 * 1024 * 1024) return;
+          fetch(API_BASE + '/api/formosa/og-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'image/png', 'X-User-Id': lineUserId },
+            body: blob
+          }).then(function(r) { return r.json(); }).then(function(d) {
+            if (d.ok) {
+              localStorage.setItem('formosa_og_uploaded_at', String(Date.now()));
+              console.log('OG image uploaded from my/ page:', d.url);
+            }
+          }).catch(function() {});
+        }, 'image/png');
+      }, 3000);
+    }
+  }
+
+  // Fill rank section
+  document.getElementById('rankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:120px;height:120px;object-fit:contain;" alt="' + rank.current.name + '">';
+  document.getElementById('rankName').textContent = rank.current.name;
+  document.getElementById('rankSub').textContent = rank.current.sub;
+
+  // Fill stats
+  document.getElementById('statCheckins').textContent = checkins;
+  document.getElementById('statKm').textContent = km.toFixed(1);
+  document.getElementById('statCarbon').textContent = carbon.toFixed(2);
+
+  // Deeds count from survey data
+  try {
+    var deedsRaw = localStorage.getItem('formosa_deeds');
+    document.getElementById('statDeeds').textContent = deedsRaw ? JSON.parse(deedsRaw).length : (surveyDone ? '✓' : '0');
+  } catch(e) { document.getElementById('statDeeds').textContent = surveyDone ? '✓' : '0'; }
+
+  // Rank progress bar
+  var progressTrack = document.getElementById('progressTrack');
+  var currentIdx = 0;
+  for (var i = 0; i < TITLES.length; i++) {
+    if (km >= TITLES[i].km && checkins >= TITLES[i].checkins) currentIdx = i;
+  }
+  var html = '<div class="progress-list">';
+  for (var i = 0; i < TITLES.length; i++) {
+    var cls = i < currentIdx ? 'pl-done' : (i === currentIdx ? 'pl-current' : 'pl-locked');
+    var condition = TITLES[i].km > 0
+      ? TITLES[i].km + ' km + ' + TITLES[i].checkins + ' ' + _t.checkinUnit
+      : _t.firstCheckin;
+    html += '<div class="pl-row ' + cls + '">' +
+      '<div class="pl-icon">' + TITLES[i].icon + '</div>' +
+      '<div class="pl-info">' +
+        '<div class="pl-name">' + TITLES[i].name + '</div>' +
+        '<div class="pl-sub">' + TITLES[i].sub + '　' + condition + '</div>' +
+      '</div>' +
+      '<div class="pl-badge">' + (i < currentIdx ? '✓' : (i === currentIdx ? '▶' : '🔒')) + '</div>' +
+    '</div>';
+  }
+  html += '</div>';
+  progressTrack.innerHTML = html;
+
+  var hintEl = document.getElementById('progressHint');
+  if (rank.next) {
+    var parts = [];
+    var needKm = Math.max(0, rank.next.km - km);
+    var needC = Math.max(0, rank.next.checkins - checkins);
+    if (needKm > 0) parts.push(_t.walkMore.replace('{km}', needKm.toFixed(1)));
+    if (needC > 0) parts.push(_t.checkinMore.replace('{n}', needC));
+    hintEl.textContent = _t.upgradeHint.replace('{conditions}', parts.join('、')).replace('{icon}', rank.next.icon).replace('{name}', rank.next.name);
+  } else {
+    hintEl.textContent = _t.maxLevelMsg;
+    hintEl.style.color = '#059669';
+  }
+
+  // Route map — use server GPS data if viewing other user, else localStorage
+  var map = null;
+  try {
+    var trackPoints = serverGpsTrack || [];
+    if (!trackPoints.length) {
+      var trackRaw = localStorage.getItem('formosa_gps_track');
+      trackPoints = trackRaw ? JSON.parse(trackRaw) : [];
+    }
+
+    if (trackPoints.length > 0) {
+      map = L.map('myMap').setView([trackPoints[0].lat, trackPoints[0].lng], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OSM', maxZoom: 19
+      }).addTo(map);
+
+      var latlngs = trackPoints.map(function(p) { return [p.lat, p.lng]; });
+
+      // Polyline
+      L.polyline(latlngs, { color: '#B45309', weight: 3, opacity: 0.8 }).addTo(map);
+
+      // Start marker
+      L.circleMarker(latlngs[0], { radius: 8, color: '#059669', fillColor: '#059669', fillOpacity: 1 })
+        .bindPopup(_t.startPoint).addTo(map);
+
+      // End marker
+      if (latlngs.length > 1) {
+        L.circleMarker(latlngs[latlngs.length - 1], { radius: 8, color: '#DC2626', fillColor: '#DC2626', fillOpacity: 1 })
+          .bindPopup(_t.latestLocation).addTo(map);
+      }
+
+      // Fit bounds
+      if (latlngs.length > 1) map.fitBounds(latlngs, { padding: [30, 30] });
+      else map.setView(latlngs[0], 15);
+
+      document.getElementById('mapNote').textContent = trackPoints.length + ' ' + _t.locPoints + km.toFixed(1) + ' ' + _t.km;
+    } else {
+      document.getElementById('myMap').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;flex-direction:column;gap:0.5rem;"><span>' + _t.noGpsData + '</span><a href="' + _prefix + '/projects/formosa-esg-2026/tracker/" style="color:#B45309;font-size:0.85rem;">' + _t.goCheckinRecord + '</a></div>';
+    }
+  } catch (e) {
+    document.getElementById('myMap').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">' + _t.cannotLoadMap + '</div>';
+  }
+
+  // Carbon card
+  var carbonMain = document.getElementById('carbonMain');
+  var savedKm = km; // walk km saved vs driving
+  var carbonSaved = (savedKm * 0.21).toFixed(2);
+  carbonMain.innerHTML =
+    '<div class="carbon-big">' + carbon.toFixed(2) + ' <small>kg CO₂e</small></div>' +
+    '<p class="carbon-compare">' + _t.equivDriveLess + ' ' + savedKm.toFixed(1) + ' ' + _t.km + '</p>' +
+    '<p class="carbon-compare">' + _t.equivTrees + ' ' + Math.max(0.01, savedKm * 0.21 / 22).toFixed(2) + ' ' + _t.treesAnnual + '</p>';
+
+  // Share card data
+  document.getElementById('shareRankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:56px;height:56px;object-fit:contain;" alt="' + rank.current.name + '">';
+  document.getElementById('shareRankName').textContent = rank.current.name;
+  document.getElementById('shareRankSub').textContent = rank.current.sub;
+  document.getElementById('shareKm').textContent = km.toFixed(1);
+  document.getElementById('shareKmLabel').textContent = _t.shareKm;
+  document.getElementById('shareCheckins').textContent = checkins;
+  document.getElementById('shareCheckinsLabel').textContent = _t.shareCheckin;
+  document.getElementById('shareCarbon').textContent = carbon.toFixed(2);
+  var treesEquiv = Math.max(0.01, km * 0.21 / 22).toFixed(2);
+  document.getElementById('shareCarbonCompare').innerHTML =
+    '<span>' + _t.shareDriveLess + ' ' + km.toFixed(1) + ' km</span>' +
+    '<span>' + _t.shareTrees + ' ' + treesEquiv + ' ' + _t.shareTreesUnit + '</span>';
+
+
+  // Share URL always points to tracker entry page
+
+  // Create share map with leaflet-image for static screenshot
+  var shareMapReady = false;
+  try {
+    var sharePts = serverGpsTrack || [];
+    if (!sharePts.length) {
+      var trackRaw2 = localStorage.getItem('formosa_gps_track');
+      sharePts = trackRaw2 ? JSON.parse(trackRaw2) : [];
+    }
+    var shareMapContainer = document.getElementById('shareMapContainer');
+
+    if (shareMapContainer && sharePts.length >= 1) {
+      // Temporarily make container visible for Leaflet to render
+      var shareCard = document.getElementById('shareCard');
+      shareCard.style.left = '0';
+      shareCard.style.top = '0';
+      shareCard.style.position = 'fixed';
+      shareCard.style.zIndex = '-1';
+      shareCard.style.opacity = '0.01';
+
+      var shareMap = L.map(shareMapContainer, {
+        zoomControl: false,
+        attributionControl: false,
+        dragging: false,
+        scrollWheelZoom: false,
+        preferCanvas: true
+      });
+      window._shareMapInstance = shareMap;
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(shareMap);
+
+      // Draw route — glow + main line
+      var latLngs = sharePts.map(function(p) { return [p.lat, p.lng]; });
+      L.polyline(latLngs, {
+        color: '#f59e0b', weight: 10, opacity: 0.3
+      }).addTo(shareMap);
+      var polyline = L.polyline(latLngs, {
+        color: '#f59e0b', weight: 5, opacity: 1
+      }).addTo(shareMap);
+
+      // Start marker (green)
+      L.circleMarker([sharePts[0].lat, sharePts[0].lng], {
+        radius: 8, color: '#fff', fillColor: '#10b981', fillOpacity: 1, weight: 3
+      }).addTo(shareMap).bindTooltip(_t.mapStart, { permanent: true, direction: 'right', className: 'map-label' });
+
+      // End marker (gold)
+      var lastPt = sharePts[sharePts.length - 1];
+      L.circleMarker([lastPt.lat, lastPt.lng], {
+        radius: 8, color: '#fff', fillColor: '#f59e0b', fillOpacity: 1, weight: 3
+      }).addTo(shareMap).bindTooltip(_t.mapNow, { permanent: true, direction: 'right', className: 'map-label' });
+
+      // Fit bounds
+      shareMap.fitBounds(polyline.getBounds().pad(0.15));
+
+      // Keep map alive — html2canvas will capture it directly when sharing
+      // Just wait for tiles, then hide card
+      setTimeout(function() {
+        shareMapReady = true;
+        shareCard.style.left = '-9999px';
+        shareCard.style.opacity = '1';
+        shareCard.style.zIndex = '';
+      }, 3000);
+    }
+  } catch(e) { console.warn('Share map error:', e); }
+
+  // Partner logos loaded via <img> tags — no QR code needed
+
+  // Share functions
+  function getShareText() {
+    return _t.shareText.replace('{km}', km.toFixed(1)).replace('{icon}', rank.current.icon).replace('{name}', rank.current.name);
+  }
+
+  window.generateShareImage = function() {
+    var card = document.getElementById('shareCard');
+    var mapContainer = document.getElementById('shareMapContainer');
+
+    // Show card so map tiles can render
+    card.style.left = '0';
+    card.style.top = '0';
+    card.style.position = 'fixed';
+    card.style.zIndex = '9999';
+    card.style.opacity = '0.01'; // nearly invisible but rendered
+
+    // Invalidate map size so tiles reload
+    if (window._shareMapInstance) {
+      window._shareMapInstance.invalidateSize();
+    }
+
+    // Wait for map tiles to fully load, then capture
+    setTimeout(function() {
+      card.style.opacity = '1'; // make visible briefly for capture
+      var inner = card.querySelector('.share-card-inner');
+
+      html2canvas(inner, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#1a1510',
+        width: 600,
+        height: inner.scrollHeight,
+        logging: false
+      }).then(function(canvas) {
+        card.style.left = '-9999px';
+        canvas.toBlob(function(blob) {
+          // Upload to R2 for personalized OG image (non-blocking)
+          if (lineUserId && blob.size < 2 * 1024 * 1024) {
+            fetch(API_BASE + '/api/formosa/og-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'image/png', 'X-User-Id': lineUserId },
+              body: blob
+            }).then(function(r) { return r.json(); }).then(function(d) {
+              if (d.ok) console.log('OG image uploaded:', d.url);
+            }).catch(function(e) { console.warn('OG upload failed:', e); });
+          }
+
+          // Share via native share or download
+          if (navigator.share && navigator.canShare) {
+            var file = new File([blob], 'formosa-journey.png', { type: 'image/png' });
+            if (navigator.canShare({ files: [file] })) {
+              navigator.share({ files: [file], title: _t.shareTitle, text: getShareText(), url: SHARE_URL }).catch(function(){});
+              return;
+            }
+          }
+          // Fallback: download
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = 'formosa-journey.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      });
+    }, 2000); // Wait 2s for tiles
+  };
+
+  window.shareNative = function() {
+    if (navigator.share) {
+      navigator.share({ title: _t.shareTitle, text: getShareText(), url: SHARE_URL }).catch(function(){});
+    }
+  };
+  if (navigator.share) document.getElementById('shareNativeBtn').style.display = '';
+
+  window.shareLine = function() {
+    var text = encodeURIComponent(getShareText() + '\n' + SHARE_URL);
+    window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(SHARE_URL) + '&text=' + text, '_blank');
+  };
+
+  window.shareFB = function() {
+    // FB share includes userId so crawler can serve personalized OG image
+    var fbUrl = SHARE_URL;
+    if (lineUserId) fbUrl = 'https://paulkuo.tw' + _prefix + '/projects/formosa-esg-2026/tracker/?u=' + encodeURIComponent(lineUserId);
+    var shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fbUrl) + '&quote=' + encodeURIComponent(getShareText());
+    window.open(shareUrl, '_blank');
+  };
+
+  window.shareCopy = function() {
+    var text = getShareText() + '\n' + SHARE_URL;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function() {
+        var t = document.getElementById('shareToast');
+        t.style.display = 'block';
+        setTimeout(function() { t.style.display = 'none'; }, 2000);
+      });
+    }
+  };
+})();
+</script>
+
+<style is:global>
+  .my-dashboard {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .my-breadcrumb { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .my-breadcrumb a { color: #888; text-decoration: none; font-size: 0.85rem; }
+  .my-breadcrumb-right { background: #FAF6F1; padding: 0.3rem 0.75rem; border-radius: 8px; font-weight: 600; }
+
+  .my-cta-btn {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: #B45309;
+    color: #fff;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 1rem;
+  }
+  .my-cta-btn.secondary {
+    background: transparent;
+    color: #B45309;
+    border: 1px solid #B45309;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .empty-state h2 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+  .empty-state > p { color: #888; margin-bottom: 1.5rem; }
+  .quick-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 280px;
+    margin: 0 auto 1.5rem;
+    text-align: left;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+  }
+  .step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #FAF6F1;
+    color: #B45309;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .empty-cta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* Rank */
+  .my-rank-section { text-align: center; padding: 2rem 0 1rem; }
+  .my-rank-icon { font-size: 4rem; }
+  .my-rank-name { font-size: 2rem; font-weight: 800; margin: 0.5rem 0 0.25rem; color: #1a1a1a; }
+  .my-rank-sub { color: #B45309; font-size: 1rem; margin: 0; }
+  .my-rank-event { color: #888; font-size: 0.8rem; margin-top: 0.5rem; }
+
+  /* Stats */
+  .my-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+  .my-stat-card {
+    background: #FAF6F1;
+    border-radius: 12px;
+    padding: 1rem 0.5rem;
+    text-align: center;
+  }
+  .my-stat-num { font-size: 1.5rem; font-weight: 800; color: #1a1a1a; }
+  .my-stat-label { font-size: 0.7rem; color: #888; margin-top: 0.25rem; }
+
+  /* Progress */
+  .my-progress-section { margin: 2rem 0; }
+  .my-progress-section h3 { font-size: 1rem; color: #555; margin-bottom: 1rem; }
+  .progress-list { display: flex; flex-direction: column; gap: 0; }
+  .pl-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-radius: 10px;
+    transition: background 0.2s;
+  }
+  .pl-row + .pl-row { border-top: 1px solid rgba(0,0,0,0.04); }
+  .pl-icon { font-size: 1.5rem; width: 2rem; text-align: center; flex-shrink: 0; }
+  .pl-info { flex: 1; min-width: 0; }
+  .pl-name { font-size: 0.95rem; font-weight: 700; color: #333; }
+  .pl-sub { font-size: 0.7rem; color: #999; margin-top: 0.1rem; }
+  .pl-badge { font-size: 0.8rem; flex-shrink: 0; width: 1.5rem; text-align: center; }
+
+  .pl-current { background: rgba(180,83,9,0.08); border-radius: 10px; }
+  .pl-current .pl-name { color: #B45309; }
+  .pl-current .pl-badge { color: #B45309; }
+  .pl-done .pl-name { color: #059669; }
+  .pl-done .pl-badge { color: #059669; }
+  .pl-locked { opacity: 0.45; }
+  .pl-locked .pl-icon { filter: grayscale(1); }
+  .my-progress-hint { color: #B45309; font-size: 0.85rem; text-align: center; margin-top: 1rem; }
+
+  /* Map */
+  .my-map-section { margin: 2rem 0; }
+  .my-map-section h3 { font-size: 1rem; color: #555; margin-bottom: 0.75rem; }
+  .my-map { height: 350px; border-radius: 12px; overflow: hidden; background: #e5e5e5; }
+  .my-map-note { font-size: 0.8rem; color: #888; text-align: center; margin-top: 0.5rem; }
+
+  /* Carbon */
+  .my-carbon-section { margin: 2rem 0; background: #f0fdf4; border-radius: 16px; padding: 1.5rem; }
+  .my-carbon-section h3 { font-size: 1rem; color: #2E7D32; margin-bottom: 1rem; }
+  .carbon-big { font-size: 2.5rem; font-weight: 800; color: #2E7D32; text-align: center; }
+  .carbon-big small { font-size: 1rem; font-weight: 400; }
+  .carbon-compare { color: #555; font-size: 0.85rem; text-align: center; margin: 0.5rem 0 0; }
+
+  /* Share */
+  .my-share-section { margin: 2rem 0; text-align: center; }
+  .my-share-primary {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #B45309, #92400e);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  .my-share-toast {
+    color: #059669;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Share card (hidden, for html2canvas) */
+  .share-card-inner {
+    width: 600px;
+    background: linear-gradient(180deg, #1a1510 0%, #2d1f0e 40%, #1a1510 100%);
+    color: #fff;
+    font-family: -apple-system, sans-serif;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .sc-top {
+    padding: 1.2rem 1.5rem 0.8rem;
+  }
+  .sc-header {
+    font-size: 0.65rem;
+    color: #B45309;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .sc-rank-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .sc-mascot img { width: 56px; height: 56px; object-fit: contain; }
+  .sc-title { font-size: 1.4rem; font-weight: 800; line-height: 1.2; }
+  .sc-sub { font-size: 0.7rem; color: #B45309; margin-top: 0.15rem; }
+  .sc-map-wrap {
+    padding: 0 1.2rem;
+  }
+  #shareMapImg { border-radius: 8px; object-fit: cover; }
+  .map-label { background: none !important; border: none !important; box-shadow: none !important; font-weight: bold; font-size: 11px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
+  .sc-bottom {
+    padding: 0.8rem 1.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .sc-bottom-left { flex: 1; }
+  .sc-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+  .sc-stat { text-align: center; }
+  .sc-stat span { font-size: 1.3rem; font-weight: 800; display: block; }
+  .sc-stat small { font-size: 0.6rem; color: #aaa; }
+  .sc-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.15); }
+  .sc-carbon {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.4rem;
+  }
+  .sc-carbon span { font-size: 0.6rem; color: #8fbc8f; }
+  .sc-bottom-right {
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .sc-logo-main { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+
+  @media (max-width: 480px) {
+    .my-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .my-map { height: 280px; }
+  }
+</style>
+
+</BaseLayout>
