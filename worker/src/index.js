@@ -115,16 +115,38 @@ async function handleMazuToday(request, url) {
     });
   }
 
-  // Paths that already include the prefix (from internal links in HTML) — pass through
-  if (path.startsWith('/projects/formosa-esg-2026')) {
+  // Paths that already include the full prefix — pass through (including i18n)
+  if (path.startsWith('/projects/formosa-esg-2026') ||
+      path.startsWith('/en/projects/formosa-esg-2026') ||
+      path.startsWith('/ja/projects/formosa-esg-2026') ||
+      path.startsWith('/zh-cn/projects/formosa-esg-2026')) {
     return fetch(new URL(path + url.search, 'https://paulkuo.tw'), {
       method: request.method,
       headers: request.headers,
     });
   }
 
-  // Known formosa short paths — rewrite with prefix
+  // Known formosa short paths
   const formosaRoutes = ['/', '/tracker/', '/my/', '/guide/', '/guide/admin/', '/guide/admin-flow/', '/guide/user-flow/', '/privacy/', '/dashboard/', '/feedback/', '/data/'];
+
+  // i18n short paths: /en/tracker/ → /en/projects/formosa-esg-2026/tracker/
+  const I18N_PREFIXES = ['/en', '/ja', '/zh-cn'];
+  const langMatch = I18N_PREFIXES.find(p => path === p || path.startsWith(p + '/'));
+  if (langMatch) {
+    const rest = path.slice(langMatch.length) || '/';
+    let normalizedRest = rest;
+    if (rest !== '/' && !rest.includes('.') && !rest.endsWith('/')) normalizedRest = rest + '/';
+
+    if (formosaRoutes.includes(normalizedRest)) {
+      const rewrittenPath = langMatch + '/projects/formosa-esg-2026' + normalizedRest;
+      return fetch(new URL(rewrittenPath + url.search, 'https://paulkuo.tw'), {
+        method: request.method,
+        headers: request.headers,
+      });
+    }
+  }
+
+  // Default (zh-Hant): rewrite short path with prefix
   // Normalize: ensure trailing slash for directory-style paths (except /)
   let normalized = path;
   if (path !== '/' && !path.includes('.') && !path.endsWith('/')) normalized = path + '/';
@@ -146,6 +168,17 @@ async function handleMazuToday(request, url) {
 
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
+
+  // 302 redirect: paulkuo.tw i18n formosa paths → mazu.today
+  const formosaI18nMatch = path.match(/^\/(en|ja|zh-cn)(\/projects\/formosa-esg-2026)(\/.*)?$/);
+  if (url.hostname === 'paulkuo.tw' && formosaI18nMatch) {
+    const accept = request.headers.get('Accept') || '';
+    if (accept.includes('text/html')) {
+      const lang = formosaI18nMatch[1];
+      const shortPath = formosaI18nMatch[3] || '/';
+      return new Response(null, { status: 302, headers: { 'Location': 'https://mazu.today/' + lang + shortPath + url.search } });
+    }
+  }
 
   // 302 redirect: paulkuo.tw/projects/formosa-esg-2026/* → mazu.today (HTML only)
   if (url.hostname === 'paulkuo.tw' && path.startsWith('/projects/formosa-esg-2026')) {
