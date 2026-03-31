@@ -164,16 +164,19 @@ import AuthGate from '../_components/AuthGate.astro';
   // ── Fetch all data ──
   async function fetchAll() {
     try {
-      var [dataRes, carbonRes, timelineRes, usersRes, surveyRes] = await Promise.all([
+      var zoom = map ? map.getZoom() : 9;
+      var [dataRes, clusterRes, carbonRes, timelineRes, usersRes, surveyRes] = await Promise.all([
         fetch(API + '/api/formosa/data', { headers: ADMIN_HEADERS }).then(r => r.json()),
+        fetch(API + '/api/formosa/admin/clusters?zoom=' + zoom, { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/carbon', { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/timeline', { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/users', { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/surveys', { headers: ADMIN_HEADERS }).then(r => r.json())
       ]);
 
+      window._lastClusterRes = clusterRes;
       renderKPI(dataRes, carbonRes, timelineRes);
-      renderMap(dataRes.gps_points || []);
+      renderMap(dataRes.gps_points || [], clusterRes);
       renderCarbon(carbonRes);
       renderRanks(usersRes.users || []);
       renderSurvey(surveyRes);
@@ -257,7 +260,7 @@ import AuthGate from '../_components/AuthGate.astro';
     return Math.min(100, Math.max(0, (cumKm / ROUTE_TOTAL_KM) * 100));
   }
 
-  function renderMap(points) {
+  function renderMap(points, clusterRes) {
     if (!map) {
       map = L.map('adminMap', { zoomControl: false }).setView([24.1, 120.5], 9);
       // Dark tile layer (Carto Dark Matter)
@@ -285,6 +288,27 @@ import AuthGate from '../_components/AuthGate.astro';
           permanent: isEnd, direction: 'top', className: 'route-tooltip',
           offset: [0, -8]
         }).addTo(routeLayer);
+      });
+
+      // Debounced cluster refetch on zoom change
+      var clusterFetchTimer = null;
+      map.on('zoomend', function() {
+        if (mapMode !== 'cluster') return;
+        clearTimeout(clusterFetchTimer);
+        clusterFetchTimer = setTimeout(function() {
+          fetch(API + '/api/formosa/admin/clusters?zoom=' + map.getZoom(), { headers: ADMIN_HEADERS })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data && data.clusters) {
+                window._lastClusterRes = data;
+                buildClusterLayer(data);
+                if (mapMode === 'cluster') {
+                  if (clusterLayer) clusterLayer.addTo(map);
+                }
+              }
+            })
+            .catch(function(e) { console.error('Cluster refetch error:', e); });
+        }, 300);
       });
     }
 
@@ -337,7 +361,11 @@ import AuthGate from '../_components/AuthGate.astro';
     // Build all layers
     buildMarkerLayer(points);
     buildHeatLayer(currentPositions);
-    buildClusterLayer(currentPositions);
+    if (clusterRes && clusterRes.clusters) {
+      buildClusterLayer(clusterRes);
+    } else {
+      buildClusterLayerFallback(currentPositions);
+    }
     buildFrontTailLayer(front, tail);
 
     // Show default mode
@@ -393,7 +421,49 @@ import AuthGate from '../_components/AuthGate.astro';
     });
   }
 
-  function buildClusterLayer(positions) {
+  function buildClusterLayer(clusterData) {
+    if (clusterLayer) map.removeLayer(clusterLayer);
+    clusterLayer = L.layerGroup();
+
+    clusterData.clusters.forEach(function(c) {
+      var r = Math.max(8, Math.min(40, Math.sqrt(c.count) * 3));
+      var opacity = Math.min(0.85, 0.3 + c.count / 100);
+
+      // Outer glow
+      L.circleMarker([c.lat, c.lng], {
+        radius: r + 6, color: 'transparent', fillColor: '#f59e0b', fillOpacity: opacity * 0.2, weight: 0
+      }).addTo(clusterLayer);
+      // Bubble
+      L.circleMarker([c.lat, c.lng], {
+        radius: r, color: '#f59e0b', fillColor: '#f59e0b', fillOpacity: opacity, weight: 2
+      }).bindPopup('<span style="color:#ccc">此區域 ' + c.count + ' 筆打卡（' + (c.users || '?') + ' 人）</span>').addTo(clusterLayer);
+
+      if (c.count >= 2) {
+        var icon = L.divIcon({
+          className: 'cluster-label',
+          html: '<span>' + c.count + '</span>',
+          iconSize: [40, 20],
+          iconAnchor: [20, 10]
+        });
+        L.marker([c.lat, c.lng], { icon: icon }).addTo(clusterLayer);
+      }
+    });
+
+    // Front/tail from server data
+    if (clusterData.front) {
+      L.marker([clusterData.front.lat, clusterData.front.lng], {
+        icon: L.divIcon({ html: '👑', className: 'front-icon', iconSize: [24, 24], iconAnchor: [12, 12] })
+      }).bindPopup('前鋒').addTo(clusterLayer);
+    }
+    if (clusterData.tail) {
+      L.marker([clusterData.tail.lat, clusterData.tail.lng], {
+        icon: L.divIcon({ html: '🏮', className: 'tail-icon', iconSize: [24, 24], iconAnchor: [12, 12] })
+      }).bindPopup('殿後').addTo(clusterLayer);
+    }
+  }
+
+  // Fallback: client-side clustering if server endpoint fails
+  function buildClusterLayerFallback(positions) {
     if (clusterLayer) map.removeLayer(clusterLayer);
     clusterLayer = L.layerGroup();
 
@@ -413,11 +483,9 @@ import AuthGate from '../_components/AuthGate.astro';
       var r = Math.min(35, 10 + Math.sqrt(c.count) * 3);
       var opacity = Math.min(0.8, 0.3 + c.count / 100);
 
-      // Outer glow
       L.circleMarker([lat, lng], {
         radius: r + 6, color: 'transparent', fillColor: '#f59e0b', fillOpacity: opacity * 0.2, weight: 0
       }).addTo(clusterLayer);
-      // Bubble
       L.circleMarker([lat, lng], {
         radius: r, color: '#f59e0b', fillColor: '#f59e0b', fillOpacity: opacity, weight: 2
       }).bindPopup('<span style="color:#ccc">此區域 ' + c.count + ' 人</span>').addTo(clusterLayer);

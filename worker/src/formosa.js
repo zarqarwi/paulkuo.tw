@@ -34,6 +34,10 @@ export async function handleFormosaAdminStatus(request, env) {
   // POST — set status (requires admin)
   const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
+  const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
+  if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
+    return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  }
   try {
     const body = await request.json();
     const status = body.status || 'active'; // active | paused | ended
@@ -564,6 +568,10 @@ export async function handleFormosaAdminRoles(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
+  const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
+  if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
+    return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  }
 
   try {
     await migrateFormosa(env.AUTH_DB);
@@ -865,6 +873,10 @@ export async function handleFormosaAdminSurveys(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
+  const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
+  if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
+    return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  }
   try {
     await migrateFormosa(env.AUTH_DB);
     const rows = await env.AUTH_DB.prepare('SELECT q1_good_deeds, q2_moved_by, q3_善行value, q4_continue, q5_future_actions, q6_csr, role_type FROM formosa_surveys').all();
@@ -901,6 +913,10 @@ export async function handleFormosaAdminCarbon(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
+  const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
+  if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
+    return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  }
   try {
     await migrateFormosa(env.AUTH_DB);
     const rows = await env.AUTH_DB.prepare('SELECT transport_walk, transport_car, transport_carpool, transport_scooter, transport_bus, transport_mrt, transport_train, transport_hsr, water_bottles, hotel_nights, carbon_total_kg FROM formosa_surveys').all();
@@ -945,6 +961,10 @@ export async function handleFormosaAdminTimeline(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
+  const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
+  if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
+    return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  }
   try {
     await migrateFormosa(env.AUTH_DB);
     const byDay = await env.AUTH_DB.prepare(
@@ -972,6 +992,10 @@ export async function handleFormosaAdminUsers(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
+  const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
+  if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
+    return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  }
   try {
     await migrateFormosa(env.AUTH_DB);
     const gpsUsers = await env.AUTH_DB.prepare(`
@@ -1009,23 +1033,53 @@ export async function handleFormosaAdminUsers(request, env) {
   } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
+// ── Zoom → Grid Cell Size mapping ──
+function zoomToCellSize(zoom) {
+  const map = {
+    6: 0.2, 7: 0.1, 8: 0.05, 9: 0.025, 10: 0.012,
+    11: 0.006, 12: 0.003, 13: 0.0015,
+  };
+  return map[Math.min(Math.max(zoom, 6), 13)] || 0.025;
+}
+
 // ── Admin: Server-side GPS Grid Clustering ──
 export async function handleFormosaAdminClusters(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
+  const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
+  if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
+    return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  }
   try {
-    await migrateFormosa(env.AUTH_DB);
-    const points = await env.AUTH_DB.prepare(
-      'SELECT lat, lng, user_id, created_at FROM formosa_gps_points ORDER BY created_at ASC'
-    ).all();
-    const rows = points?.results || [];
-    if (rows.length === 0) return jsonResponse({ clusters: [], front: null, tail: null, spread_km: 0, lost: 0 }, 200, request);
+    const url = new URL(request.url);
+    const zoom = parseInt(url.searchParams.get('zoom')) || 9;
+    const since = url.searchParams.get('since') || null;
+    const cellSize = zoomToCellSize(zoom);
 
-    // Grid clustering (~2km cells)
-    const cellSize = 0.018; // ~2km
+    // KV cache (30s TTL)
+    const cacheKey = `formosa_clusters_z${zoom}_${since || 'all'}`;
+    const cached = await env.TICKER_KV.get(cacheKey, 'json');
+    if (cached) return jsonResponse(cached, 200, request);
+
+    await migrateFormosa(env.AUTH_DB);
+    let sql = 'SELECT lat, lng, user_id, created_at FROM formosa_gps_points';
+    const params = [];
+    if (since) {
+      sql += ' WHERE created_at >= ?';
+      params.push(since);
+    }
+    sql += ' ORDER BY created_at ASC';
+    const points = await env.AUTH_DB.prepare(sql).bind(...params).all();
+    const rows = points?.results || [];
+    if (rows.length === 0) {
+      const empty = { clusters: [], front: null, tail: null, spread_km: 0, lost: 0, total_points: 0, total_users: 0, zoom, cell_size: cellSize };
+      return jsonResponse(empty, 200, request);
+    }
+
     const grid = {};
     let latestByUser = {};
+    const userSet = new Set();
     rows.forEach(p => {
       const key = Math.floor(p.lat / cellSize) + ',' + Math.floor(p.lng / cellSize);
       if (!grid[key]) grid[key] = { lat: 0, lng: 0, count: 0, users: new Set() };
@@ -1033,6 +1087,7 @@ export async function handleFormosaAdminClusters(request, env) {
       grid[key].lng += p.lng;
       grid[key].count++;
       grid[key].users.add(p.user_id);
+      userSet.add(p.user_id);
       if (!latestByUser[p.user_id] || p.created_at > latestByUser[p.user_id].created_at) {
         latestByUser[p.user_id] = p;
       }
@@ -1047,11 +1102,10 @@ export async function handleFormosaAdminClusters(request, env) {
 
     // Front/tail from latest positions per user
     const latestPoints = Object.values(latestByUser);
-    latestPoints.sort((a, b) => a.lat - b.lat); // rough south→north
+    latestPoints.sort((a, b) => a.lat - b.lat);
     const front = latestPoints.length > 0 ? latestPoints[latestPoints.length - 1] : null;
     const tail = latestPoints.length > 0 ? latestPoints[0] : null;
 
-    // Spread distance (km)
     let spread_km = 0;
     if (front && tail) {
       const R = 6371;
@@ -1061,11 +1115,12 @@ export async function handleFormosaAdminClusters(request, env) {
       spread_km = +(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
     }
 
-    // Lost: users with no GPS in last 2 hours
     const twoHoursAgo = new Date(Date.now() - 2*60*60*1000).toISOString();
     const lost = latestPoints.filter(p => p.created_at < twoHoursAgo).length;
 
-    return jsonResponse({ clusters, front, tail, spread_km, lost }, 200, request);
+    const result = { clusters, front, tail, spread_km, lost, total_points: rows.length, total_users: userSet.size, zoom, cell_size: cellSize };
+    await env.TICKER_KV.put(cacheKey, JSON.stringify(result), { expirationTtl: 30 });
+    return jsonResponse(result, 200, request);
   } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
 
@@ -1643,6 +1698,10 @@ export async function handleFormosaAdminEndActivity(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   const authErr = requireAdmin(request, env);
   if (authErr) return authErr;
+  const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
+  if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
+    return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  }
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed' }, 405, request);
 
   try {
