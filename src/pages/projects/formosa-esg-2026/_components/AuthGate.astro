@@ -299,6 +299,36 @@ const authI18n = {
       liff.init({ liffId: liffId }).then(function() {
         window.__liffReady = true;
 
+        // ── i18n: auto-redirect by LINE language ──
+        (function autoRedirectByLanguage() {
+          try {
+            var lineLang = (typeof liff !== 'undefined' && typeof liff.getAppLanguage === 'function')
+              ? liff.getAppLanguage()
+              : null;
+
+            if (!lineLang) return; // 非 LIFF 環境（外部瀏覽器），不做 redirect
+
+            var langMap = {
+              'en': '/en', 'ja': '/ja',
+              'zh-CN': '/zh-cn', 'zh-Hans': '/zh-cn',
+              'zh-TW': '', 'zh-Hant': '',
+            };
+
+            // BCP 47 完整比對 → 前兩碼 fallback
+            var prefix = langMap[lineLang] !== undefined ? langMap[lineLang] : (langMap[lineLang.split('-')[0]] !== undefined ? langMap[lineLang.split('-')[0]] : null);
+            if (prefix === null || prefix === '') return; // 繁中或不支援的語言，不 redirect
+
+            var currentPath = window.location.pathname;
+            // 已經在語系路徑上了，不重複 redirect
+            if (currentPath.startsWith('/en/') || currentPath.startsWith('/ja/') || currentPath.startsWith('/zh-cn/')) return;
+
+            window.location.replace(prefix + currentPath + window.location.search + window.location.hash);
+          } catch (e) {
+            console.warn('[i18n] auto-redirect failed:', e);
+            // 失敗不影響正常使用，繼續顯示繁中版
+          }
+        })();
+
         if (liff.isLoggedIn()) {
           liff.getProfile().then(function(profile) {
             showProfile(profile);
