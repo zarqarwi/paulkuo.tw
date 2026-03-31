@@ -1664,7 +1664,7 @@ export async function handleFormosaAdminEndActivity(request, env) {
 const GWP_FACTORS = {
   walk: 0, car: 0.30479, scooter: 0.13734, bike: 0.01220,
   bus: 0.47515, mrt: 0.07575, train: 0.07575, hsr: 0.07487,
-  water: 0.10974, recycle: -0.00265, hotel: 12.5
+  water: 0.10974, recycle: -0.00265, hotel: 8.85
 };
 const WU_FACTORS = {
   walk: 0, car: 6.94836, scooter: 3.25017, bike: 0.66268,

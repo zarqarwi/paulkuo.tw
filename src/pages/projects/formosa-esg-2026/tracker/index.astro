@@ -48,3 +48,3086 @@ import AuthGate from '../_components/AuthGate.astro';
     <div class="q-progress-bar">
       <div class="q-progress-fill" id="qProgressFill"></div>
     </div>
+    <div class="q-progress-text" id="qProgressText">第 1 / 11 題</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ONE QUESTION PER CARD                      -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- Q1 -->
+  <div class="q-card active" data-q="1" data-section="善行體悟">
+    <div class="q-section-tag">第一部份：善行、行善</div>
+    <label class="form-label">Q1. 您於此次進香期間，有參與以下哪些善行活動？<span class="form-hint">（可複選，選完請按下一題）</span></label>
+    <div class="checkbox-group" data-name="q1" data-required="true">
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="環球境地志工，協助整理沿路環境設施"><span>環球境地志工，協助整理沿路環境設施</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="提供飲水/補給品給香客"><span>提供飲水/補給品給香客</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="參與環境清潔或垃圾分類"><span>參與環境清潔或垃圾分類</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助老人、小孩、安全引導"><span>協助老人、小孩、安全引導</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="默禱/祈福"><span>默禱/祈福</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助他人搬運物資"><span>協助他人搬運物資</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助環球境地夥伴-參與奉獻佈施"><span>協助環球境地夥伴 - 參與奉獻佈施</span></label>
+      <label class="checkbox-item other-item">
+        <input type="checkbox" name="q1" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+      </label>
+    </div>
+    <div class="q-nav">
+      <div></div>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" data-q="2">
+    <label class="form-label">Q2. 您於此次進香期間，被感動的事情？<span class="form-hint">（可複選，選完請按下一題）</span></label>
+    <div class="checkbox-group" data-name="q2" data-required="true">
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到或感受到媽祖的神跡"><span>看到或感受到媽祖的神跡</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到彼此扶助的行為"><span>看到彼此扶助的行為</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我約束的自律行為"><span>看到自我約束的自律行為</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我改變、改善或悔改的行為"><span>看到自我改變、改善或悔改的行為</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="善心開導、包容關愛"><span>善心開導、包容關愛</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="自備餐具容器、自覺減少垃圾"><span>自備餐具容器、自覺減少垃圾</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="協助清理垃圾、撿拾廢棄物"><span>協助清理垃圾、撿拾廢棄物</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="協助減少污染、自覺減少環境影響"><span>協助減少污染、自覺減少環境影響</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="自願共乘、互相協助解決交通問題"><span>自願共乘、互相協助解決交通問題</span></label>
+      <label class="checkbox-item other-item">
+        <input type="checkbox" name="q2" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+      </label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q2-1 -->
+  <div class="q-card" data-q="3">
+    <label class="form-label">Q2-1. 請分享您被感動幾次及最讓您感動的一次「善的經驗」？<span class="form-hint">（選填，可跳過）</span></label>
+    <textarea class="form-textarea" id="q2_1" rows="5" placeholder="在這裡分享您的故事..."></textarea>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" data-q="4">
+    <label class="form-label">Q3. 此次活動是否讓您更深刻體會到「行善」的價值？</label>
+    <div class="radio-group" data-name="q3" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q3" value="非常同意"><span>非常同意</span></label>
+      <label class="radio-item"><input type="radio" name="q3" value="同意"><span>同意</span></label>
+      <label class="radio-item"><input type="radio" name="q3" value="普通"><span>普通</span></label>
+      <label class="radio-item"><input type="radio" name="q3" value="不同意"><span>不同意</span></label>
+      <label class="radio-item"><input type="radio" name="q3" value="非常不同意"><span>非常不同意</span></label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card" data-q="5" data-section="活動後的改變">
+    <div class="q-section-tag">第二部份：活動後的改變</div>
+    <label class="form-label">Q4. 進香結束後，您是否有意願在日常生活中延續「行善」的心？</label>
+    <div class="radio-group" data-name="q4" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q4" value="有，會更積極參與"><span>有，會更積極參與</span></label>
+      <label class="radio-item"><input type="radio" name="q4" value="可能會有影響"><span>可能會有影響</span></label>
+      <label class="radio-item"><input type="radio" name="q4" value="不確定"><span>不確定</span></label>
+      <label class="radio-item"><input type="radio" name="q4" value="沒有特別改變"><span>沒有特別改變</span></label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-card" data-q="6">
+    <label class="form-label">Q5. 您計畫在未來做哪些善的行動？<span class="form-hint">（可複選，選完請按下一題）</span></label>
+    <div class="checkbox-group" data-name="q5" data-required="true">
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="志工服務"><span>志工服務</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="捐款或物資支持公益團體"><span>捐款或物資支持公益團體</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="鼓勵親友參與善行"><span>鼓勵親友參與善行</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="在公司/組織內推動CSR或ESG相關善行"><span>在公司/組織內推動 CSR 或 ESG 相關善行</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q5" value="日常生活中更多關懷他人"><span>日常生活中更多關懷他人</span></label>
+      <label class="checkbox-item other-item">
+        <input type="checkbox" name="q5" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+      </label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q-card" data-q="7">
+    <label class="form-label">Q6. 若您來自企業或組織，是否會考慮將此次體驗轉化為企業的社會責任行動？</label>
+    <div class="radio-group" data-name="q6" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q6" value="會，並已著手規劃"><span>會，並已著手規劃</span></label>
+      <label class="radio-item"><input type="radio" name="q6" value="有此想法，尚在討論"><span>有此想法，尚在討論</span></label>
+      <label class="radio-item"><input type="radio" name="q6" value="我是個人參與者，非企業身份，但願意投入"><span>我是個人參與者，非企業身份，但願意投入</span></label>
+      <label class="radio-item"><input type="radio" name="q6" value="不可能"><span>不可能</span></label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q7: 身分 -->
+  <div class="q-card" data-q="8" data-section="基本資料與環境影響">
+    <div class="q-section-tag">第三部份：基本資料與環境影響</div>
+    <label class="form-label">請問您是以什麼身分參與本活動？</label>
+    <div class="radio-group" data-name="role" data-auto="true">
+      <label class="radio-item"><input type="radio" name="role" value="主辦方"><span>主辦方</span></label>
+      <label class="radio-item"><input type="radio" name="role" value="參與人" checked><span>參與人</span></label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- (Q8-Q10 交通/碳足跡已移至每日回報，不在一次性問卷中) -->
+
+  <!-- Q11: 照片上傳 -->
+  <div class="q-card" data-q="9" data-section="照片上傳">
+    <div class="q-section-tag">第四部份：照片上傳與足跡定位</div>
+    <label class="form-label">上傳進香途中拍攝的照片<span class="form-hint">（需開啟定位，系統自動提取 GPS 座標）</span></label>
+
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">📷</div>
+      <p class="upload-text">點擊選取照片或拖曳到這裡</p>
+      <p class="upload-hint">支援 JPEG 格式，會自動讀取照片中的 GPS 資訊</p>
+      <p class="upload-hint" style="color:#aaa;font-size:0.72rem;margin-top:0.25rem">照片不會上傳到伺服器，僅讀取照片中的 GPS 定位資訊作為路徑紀錄</p>
+      <input type="file" id="photoInput" accept="image/jpeg,image/jpg" multiple hidden />
+    </div>
+
+    <div id="status" class="tracker-status" style="display:none"></div>
+
+    <section id="resultsSection" style="display:none">
+      <h3 class="form-label">提取結果</h3>
+      <div class="results-summary" id="resultsSummary"></div>
+      <div class="results-list" id="resultsList"></div>
+    </section>
+
+    <section id="mapSection" style="display:none;margin-top:1.5rem">
+      <h3 class="form-label">地圖標記</h3>
+      <div id="map" class="tracker-map"></div>
+    </section>
+
+    <div class="q-nav" style="margin-top:2rem">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q12: 手機號碼（選填） -->
+  <div class="q-card" data-q="10">
+    <label class="form-label">手機號碼<span class="form-hint">（選填）</span></label>
+    <p style="color:var(--text-secondary);font-size:0.82rem;margin-bottom:1rem;line-height:1.5">用於活動後續通知與合作夥伴優惠</p>
+    <input type="tel" id="phoneInput" class="transport-input" placeholder="0912-345-678" style="width:100%;max-width:280px;font-size:1rem;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary)">
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q13: 確認提交 -->
+  <div class="q-card" data-q="11">
+    <div style="text-align:center;padding:1rem 0">
+      <div style="font-size:3rem;margin-bottom:1rem">✅</div>
+      <label class="form-label" style="text-align:center;font-size:1.2rem">確認提交</label>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:2rem;line-height:1.6">
+        您已完成所有問題。<br>點擊下方按鈕提交您的活動紀錄。
+      </p>
+      <button class="btn btn-submit" id="submitBtn" onclick="handleSubmit()">完成提交 ✓</button>
+    </div>
+    <div class="q-nav" style="margin-top:1.5rem">
+      <button class="btn btn-back" onclick="goQ(-1)">← 回到上一題</button>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SUCCESS SCREEN                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="q-card" data-q="done" id="stepDone" style="text-align:center">
+    <div class="done-icon">🙏</div>
+    <h2 class="done-title">感謝您的參與！</h2>
+    <p class="done-text">您的活動紀錄已成功提交。<br>願媽祖保佑平安順利。</p>
+    <div class="done-summary" id="doneSummary"></div>
+    <!-- 善行者獎勵卡 -->
+    <div class="reward-card" id="rewardCard">
+      <div class="reward-card-inner">
+        <div class="reward-badge"><img src="/images/formosa/level-1.png" class="mascot-reward" alt="煉氣香客"></div>
+        <div class="reward-title">✦ 煉氣香客 ✦</div>
+        <div class="reward-subtitle">白沙屯媽祖 ESG 進香 2026</div>
+        <div class="reward-stats" id="rewardStats"></div>
+        <div class="reward-date" id="rewardDate"></div>
+        <div class="reward-next">📍 持續打卡，升級為 🧱 築基香客</div>
+      </div>
+    </div>
+    <!-- Share button (simplified) -->
+    <div class="share-section" id="shareSection">
+      <button class="share-primary-btn" id="sharePrimaryBtn" onclick="smartShare()">📤 分享給朋友一起參與</button>
+      <div class="share-toast" id="shareToast" style="display:none">已複製到剪貼簿！</div>
+    </div>
+    <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- RETURNING USER: CHECK-IN MODE               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="q-card" data-q="checkin" id="stepCheckin" style="text-align:center">
+    <div class="checkin-mode">
+      <div class="checkin-badge" id="checkinBadge"><img src="/images/formosa/level-1.png" class="mascot-badge" alt="煉氣香客"><span>煉氣香客</span></div>
+      <h2>歡迎回來！</h2>
+      <p class="checkin-subtitle">問卷已完成。您可以繼續打卡記錄足跡。</p>
+
+      <div class="checkin-stats" id="checkinStats"></div>
+
+      <button class="checkin-big-btn" onclick="manualCheckin()">
+        <span class="checkin-big-icon">📍</span>
+        <span>立即打卡</span>
+      </button>
+      <div class="test-checkin-label" id="testCheckinLabel" style="display:none">（測試中）</div>
+
+      <div class="checkin-upload-section">
+        <p style="margin-bottom:0.25rem;color:#888;font-size:0.85rem;">或拍照記錄位置</p>
+        <p style="margin-bottom:0.5rem;color:#aaa;font-size:0.72rem;">照片不會上傳到伺服器，僅讀取 GPS 定位資訊作為路徑紀錄</p>
+        <div class="photo-action-row">
+          <button type="button" class="photo-btn photo-btn-camera" id="cameraBtnMini">📷 拍照</button>
+          <button type="button" class="photo-btn photo-btn-save" id="photoSaveBtn" disabled onclick="saveLastPhoto()">📥 活動照存檔</button>
+        </div>
+        <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" capture="environment" id="photoCameraMini" style="display:none">
+        <div id="photoStatusMini" class="photo-status"></div>
+      </div>
+
+      <div class="checkin-progress" id="checkinProgress"></div>
+
+      <!-- Daily Carbon Report -->
+      <div class="daily-report-section" id="dailyReportSection">
+        <div class="daily-report-header" onclick="toggleDailyReport()">
+          <span>🌱 今日善足跡回報</span>
+          <span class="daily-report-toggle" id="dailyReportToggle">展開 ▼</span>
+        </div>
+        <div class="daily-report-body" id="dailyReportBody" style="display:none">
+          <p class="daily-report-hint">每天花 30 秒記錄，碳足跡更精確</p>
+
+          <div class="daily-section-label">環境影響</div>
+          <p class="daily-report-hint" style="font-size:0.85rem;color:#6b7280;margin:0 0 0.5rem;">交通碳排由 GPS 軌跡自動推算，不需手動填寫</p>
+          <div class="transport-grid daily-grid cols-2">
+            <div class="transport-item"><label class="transport-label">🧴 瓶裝水</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_water" value="0" min="0" step="1" /><span class="transport-unit">瓶</span></div></div>
+            <div class="transport-item"><label class="transport-label">♻️ 回收水瓶</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_recycle" value="0" min="0" step="1" /><span class="transport-unit">瓶</span></div></div>
+            <div class="transport-item"><label class="transport-label">🏨 今天有住宿</label><div class="transport-input-wrap"><label class="hotel-toggle"><input type="checkbox" id="dr_hotel" /><span class="toggle-slider"></span><span class="toggle-text">有</span></label></div></div>
+          </div>
+
+          <div class="daily-carbon-result" id="dailyCarbonResult" style="display:none">
+            <div class="carbon-title">今日碳足跡</div>
+            <div class="carbon-total" id="dailyCarbonTotal">0.00 <small>kg CO₂e</small></div>
+            <div class="carbon-breakdown" id="dailyCarbonBreakdown"></div>
+          </div>
+
+          <button class="btn btn-submit daily-submit-btn" id="dailySubmitBtn" onclick="submitDailyReport()">送出今日回報</button>
+          <div class="daily-submit-status" id="dailySubmitStatus"></div>
+
+          <div class="daily-cumulative" id="dailyCumulative" style="display:none">
+            <div class="carbon-note">累計碳足跡：<strong id="dailyCumulativeTotal">0</strong> kg CO₂e（共 <span id="dailyReportDays">0</span> 天）</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Share button (simplified) -->
+      <div class="share-section" style="margin-top:2rem">
+        <button class="share-primary-btn" onclick="smartShare()">📤 邀請朋友一起參與</button>
+        <div class="share-toast" id="shareToastCheckin" style="display:none">已複製到剪貼簿！</div>
+      </div>
+      <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
+
+      <!-- Participant Status Actions -->
+      <div class="participant-actions" id="participantActions">
+        <div class="participant-divider"></div>
+        <button class="participant-btn participant-pause-btn" id="pauseBtn" onclick="setParticipantStatus('paused')">⏸️ 暫離</button>
+        <button class="participant-btn participant-complete-btn" id="completeBtn" onclick="confirmComplete()">✅ 完成進香</button>
+        <p class="participant-hint">暫離後重新進入即恢復；完成後不可回復。</p>
+      </div>
+
+      <!-- Completed overlay (shown when status=completed) -->
+      <div class="completed-overlay" id="completedOverlay" style="display:none">
+        <div class="completed-message">
+          <div class="completed-icon">🎉</div>
+          <h3>進香圓滿完成！</h3>
+          <p>感謝您的參與，願媽祖保佑平安。</p>
+          <a href="/projects/formosa-esg-2026/my/" class="my-journey-link">📊 查看我的進香足跡</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <div class="tracker-back-link">
+    <a href="/projects/formosa-esg-2026/">← 回到專案總覽</a>
+  </div>
+
+</div>
+
+<!-- Photo Save Toast -->
+<div class="photo-toast" id="photoToast"></div>
+
+</AuthGate>
+
+<!-- Leaflet CSS + JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<!-- All logic (LIFF SDK loaded by AuthGate) -->
+<script is:inline>
+(function() {
+  // ── LINE LIFF pull-to-close prevention ──
+  var lastTouchY = 0;
+  document.addEventListener('touchstart', function(e) {
+    lastTouchY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e) {
+    var touchY = e.touches[0].clientY;
+    if (window.scrollY === 0 && touchY > lastTouchY) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // ── Config ──
+  var LAUNCH_DATE = new Date('2026-04-12T00:00:00+08:00');
+  var TEST_MODE = new Date() < LAUNCH_DATE || new URLSearchParams(location.search).has('test');
+  var API_BASE = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+
+  // ── Safe localStorage helpers (LINE in-app privacy mode safe) ──
+  function lsGet(key, fallback) {
+    try { return localStorage.getItem(key) || fallback; } catch(e) { return fallback; }
+  }
+  function lsSet(key, val) {
+    try { localStorage.setItem(key, val); } catch(e) {}
+  }
+  function lsRemove(key) {
+    try { localStorage.removeItem(key); } catch(e) {}
+  }
+
+  // ── LINE User Identity (set by AuthGate LIFF login) ──
+  var lineUserId = window.__lineUserId || lsGet('formosa_line_user_id') || null;
+
+  // ── Defer all DOM-dependent init until AuthGate unlocks the <template> ──
+  function trackerInit() {
+
+  // ── Test Mode Banner ──
+  if (TEST_MODE) {
+    var tb = document.getElementById('testBanner');
+    if (tb) tb.style.display = 'block';
+    var tcl = document.getElementById('testCheckinLabel');
+    if (tcl) tcl.style.display = 'block';
+  }
+
+  // ── Background GPS Tracking ──
+  // Restore saved GPS track from localStorage
+  var gpsTrackPoints = [];
+  try {
+    var saved = JSON.parse(lsGet('formosa_gps_track') || '[]');
+    gpsTrackPoints = saved.map(function(p) { return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source || 'saved' }; });
+  } catch(e) {}
+  var gpsReady = false;
+
+  // ── GP-1: Periodic auto-track persist to localStorage ──
+  var autoSaveCounter = 0;
+  var autoSaveTimer = null;
+
+  function persistAutoTrack() {
+    try {
+      var savedTrack = JSON.parse(lsGet('formosa_gps_track') || '[]');
+      var unsaved = gpsTrackPoints.filter(function(p) {
+        return p.source === 'auto' && !p._saved;
+      });
+      if (unsaved.length === 0) return;
+      unsaved.forEach(function(p) {
+        savedTrack.push({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: 'auto' });
+        p._saved = true;
+      });
+      // localStorage 容量保護：最多 5000 筆，超過丟最早的 auto 點
+      if (savedTrack.length > 5000) {
+        var autoPoints = savedTrack.filter(function(p) { return p.source === 'auto'; });
+        var otherPoints = savedTrack.filter(function(p) { return p.source !== 'auto'; });
+        autoPoints = autoPoints.slice(-3000);
+        savedTrack = otherPoints.concat(autoPoints).sort(function(a, b) {
+          return (a.datetime || '').localeCompare(b.datetime || '');
+        });
+      }
+      lsSet('formosa_gps_track', JSON.stringify(savedTrack));
+    } catch(e) {}
+    autoSaveCounter = 0;
+  }
+
+  // ── GP-6: Failed checkin retry queue ──
+  function queueFailedCheckin(payload) {
+    var queue = JSON.parse(lsGet('formosa_checkin_queue') || '[]');
+    if (queue.length >= 50) queue.shift();
+    queue.push(payload);
+    lsSet('formosa_checkin_queue', JSON.stringify(queue));
+  }
+
+  function flushCheckinQueue(userId) {
+    var queue = JSON.parse(lsGet('formosa_checkin_queue') || '[]');
+    if (queue.length === 0 || !userId) return;
+    fetch(API_BASE + '/api/formosa/track/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Line-User-Id': userId },
+      body: JSON.stringify({ user_id: userId, points: queue })
+    }).then(function(res) {
+      if (res.ok) lsSet('formosa_checkin_queue', '[]');
+    }).catch(function() {});
+  }
+
+  // ── GP-3: Get unuploaded track points for batch upload ──
+  function getUnuploadedTrackPoints() {
+    var points = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+    if (points.length > 1000) points = points.slice(-1000);
+    return points.map(function(p) {
+      return {
+        lat: Math.round(p.lat * 100000) / 100000,
+        lng: Math.round(p.lng * 100000) / 100000,
+        datetime: p.datetime,
+        source: p.source
+      };
+    });
+  }
+
+  function startGPSTracking() {
+    var statusEl = document.getElementById('gpsStatus');
+    var countEl = document.getElementById('gpsCount');
+    var pulseEl = document.getElementById('gpsPulse');
+    var checkinBtn = document.getElementById('gpsCheckinBtn');
+
+    if (!navigator.geolocation) {
+      if (statusEl) statusEl.textContent = '⚠️ 此裝置不支援定位';
+      if (pulseEl) pulseEl.classList.add('off');
+      return;
+    }
+
+    window.__gpsWatchId = navigator.geolocation.watchPosition(
+      function(pos) {
+        gpsReady = true;
+        if (pulseEl) pulseEl.classList.add('active');
+        if (checkinBtn) checkinBtn.style.display = 'inline-block';
+
+        var pt = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          altitude: pos.coords.altitude,
+          accuracy: pos.coords.accuracy,
+          datetime: new Date().toISOString(),
+          source: 'auto',
+          filename: 'GPS 自動追蹤'
+        };
+
+        var last = gpsTrackPoints[gpsTrackPoints.length - 1];
+        if (last) {
+          var dist = haversine(last.lat, last.lng, pt.lat, pt.lng);
+          var timeDiff = new Date(pt.datetime) - new Date(last.datetime);
+          if (dist < 0.01 && timeDiff < 30000) {
+            if (statusEl) statusEl.textContent = '📍 追蹤中 — 等待移動...';
+            return;
+          }
+        }
+
+        gpsTrackPoints.push(pt);
+        // GP-1: periodic auto-save to localStorage
+        autoSaveCounter++;
+        if (autoSaveCounter >= 10) persistAutoTrack();
+        if (!autoSaveTimer) {
+          autoSaveTimer = setInterval(persistAutoTrack, 60000);
+        }
+        if (statusEl) statusEl.textContent = '📍 追蹤中';
+        if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
+      },
+      function(err) {
+        if (err.code === 1) {
+          // Permission denied — show clear warning
+          if (pulseEl) { pulseEl.classList.remove('active'); pulseEl.classList.add('off'); }
+          if (statusEl) statusEl.textContent = '⚠️ 定位權限被拒絕，請到設定開啟';
+          if (checkinBtn) checkinBtn.style.display = 'none';
+        } else {
+          // Temporary failure (signal weak / timeout) — keep calm
+          if (!gpsReady && statusEl) {
+            statusEl.textContent = '📍 GPS 搜尋中...';
+          }
+          // watchPosition will auto-retry, no action needed
+        }
+      },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+    );
+  }
+
+  window.manualCheckin = function() {
+    var btn = document.getElementById('gpsCheckinBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.dataset.origText = btn.textContent;
+      btn.textContent = '📍 定位中...';
+    }
+
+    function doBasicCheckin(lat, lng, alt, acc) {
+      gpsTrackPoints.push({
+        lat: lat, lng: lng, altitude: alt, accuracy: acc,
+        datetime: new Date().toISOString(), source: 'manual',
+        filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
+      });
+      persistAutoTrack();
+      var countEl = document.getElementById('gpsCount');
+      if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
+      if (btn) {
+        btn.textContent = '✓ 已打卡';
+        btn.disabled = true;
+        setTimeout(function() { btn.textContent = btn.dataset.origText || '打卡 📍'; btn.disabled = false; }, 1500);
+      }
+    }
+
+    // GP-5: use existing position if available
+    if (gpsReady && gpsTrackPoints.length > 0) {
+      var lastPt = gpsTrackPoints[gpsTrackPoints.length - 1];
+      doBasicCheckin(lastPt.lat, lastPt.lng, lastPt.altitude, lastPt.accuracy);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        doBasicCheckin(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, pos.coords.accuracy);
+      },
+      function(err) {
+        if (btn) { btn.textContent = btn.dataset.origText || '打卡 📍'; btn.disabled = false; }
+        if (err.code === 1) {
+          alert('定位權限被拒絕，請到手機設定開啟定位權限。');
+        } else if (err.code === 3) {
+          showPhotoToast('📍 GPS 訊號弱，請到空曠處再試', 3000);
+        } else {
+          showPhotoToast('📍 暫時無法定位，請稍後再試', 3000);
+        }
+      },
+      { enableHighAccuracy: true, timeout: 20000 }
+    );
+  };
+
+  function haversine(lat1, lng1, lat2, lng2) {
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLng = (lng2 - lng1) * Math.PI / 180;
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLng/2) * Math.sin(dLng/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  startGPSTracking();
+
+  // ── One-Question-Per-Card System ──
+  var cards = document.querySelectorAll('.q-card[data-q]');
+  var totalQ = 11; // numbered questions (1-11, Q8-Q10 transport/carbon moved to daily report)
+  var curQ = 1;
+  var autoTimer = null;
+
+  function showCard(q) {
+    cards.forEach(function(c) {
+      var cq = c.getAttribute('data-q');
+      if (cq === String(q)) {
+        c.classList.add('active');
+      } else {
+        c.classList.remove('active');
+      }
+    });
+
+    // Update progress bar
+    var progressFill = document.getElementById('qProgressFill');
+    var progressText = document.getElementById('qProgressText');
+    var progressBar = document.getElementById('qProgress');
+    if (typeof q === 'number' && q >= 1 && q <= totalQ) {
+      var pct = ((q - 1) / (totalQ - 1)) * 100;
+      if (progressFill) progressFill.style.width = pct + '%';
+      if (progressText) progressText.textContent = '第 ' + q + ' / ' + totalQ + ' 題';
+      if (progressBar) progressBar.style.display = '';
+    } else {
+      if (progressBar) progressBar.style.display = 'none';
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Navigate: direction = +1 or -1
+  window.goQ = function(dir) {
+    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+    var next = curQ + dir;
+    if (next < 1 || next > totalQ) return;
+
+    // Validate current question before going forward
+    if (dir > 0 && !validateQuestion(curQ)) return;
+
+    curQ = next;
+    showCard(curQ);
+  };
+
+  function validateQuestion(q) {
+    var card = document.querySelector('.q-card[data-q="' + q + '"]');
+    if (!card) return true;
+
+    var req = card.querySelector('[data-required="true"]');
+    if (!req) return true;
+
+    var name = req.getAttribute('data-name');
+    if (!name) return true;
+
+    var checked = card.querySelectorAll('input[name="' + name + '"]:checked');
+    if (checked.length === 0) {
+      // Show inline error with scroll + shake animation
+      var existing = card.querySelector('.q-error');
+      if (!existing) {
+        var err = document.createElement('div');
+        err.className = 'q-error q-error-shake';
+        err.textContent = '⚠ 請至少選擇一個選項';
+        req.parentNode.insertBefore(err, req.nextSibling);
+      } else {
+        existing.classList.remove('q-error-shake');
+        void existing.offsetWidth;
+        existing.classList.add('q-error-shake');
+      }
+      var errEl2 = card.querySelector('.q-error');
+      if (errEl2) errEl2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+    // Clear error if exists
+    var errEl = card.querySelector('.q-error');
+    if (errEl) errEl.remove();
+    return true;
+  }
+
+  // Auto-advance on radio selection
+  document.querySelectorAll('.radio-group[data-auto="true"] input[type="radio"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      if (autoTimer) clearTimeout(autoTimer);
+      // Highlight selected item
+      var group = this.closest('.radio-group');
+      group.querySelectorAll('.radio-item').forEach(function(item) {
+        item.classList.remove('selected');
+      });
+      this.closest('.radio-item').classList.add('selected');
+
+      // Auto advance after 400ms
+      autoTimer = setTimeout(function() {
+        goQ(1);
+      }, 400);
+    });
+  });
+
+  // Highlight checkbox items on change
+  document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      this.closest('.checkbox-item').classList.toggle('selected', this.checked);
+    });
+  });
+
+  // Other checkbox toggle
+  document.querySelectorAll('.other-item input[type="checkbox"]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var textInput = this.closest('.other-item').querySelector('.other-input');
+      if (textInput) textInput.style.display = this.checked ? 'block' : 'none';
+    });
+  });
+
+  // ── Daily Report Carbon Calculator (SSBTi / Ecoinvent 3.10) ──
+  var DR_FACTORS = {
+    walk: 0, car: 0.30479, scooter: 0.13734, bike: 0.01220,
+    bus: 0.47515, mrt: 0.07575, train: 0.07575, hsr: 0.07487,
+    water: 0.10974, recycle: -0.00265, hotel: 12.5
+  };
+  var DR_LABELS = {
+    walk: '步行', car: '開車', scooter: '機車', bike: '腳踏車',
+    bus: '公車', mrt: '捷運', train: '火車', hsr: '高鐵',
+    water: '瓶裝水', recycle: '♻️ 回收水瓶', hotel: '旅宿'
+  };
+
+  function getDrVal(id) {
+    var el = document.getElementById(id);
+    if (!el) return 0;
+    if (el.type === 'checkbox') return el.checked ? 1 : 0;
+    return parseFloat(el.value) || 0;
+  }
+
+  function calcDailyCarbon() {
+    // Transport is now GPS-inferred; daily report only covers non-transport items
+    var breakdown = {};
+    breakdown.water = getDrVal('dr_water') * DR_FACTORS.water;
+    breakdown.recycle = getDrVal('dr_recycle') * DR_FACTORS.recycle;
+    breakdown.hotel = getDrVal('dr_hotel') * DR_FACTORS.hotel;
+
+    var total = 0;
+    for (var k in breakdown) total += breakdown[k];
+
+    // Update UI
+    var resultEl = document.getElementById('dailyCarbonResult');
+    if (resultEl) resultEl.style.display = '';
+
+    var totalEl = document.getElementById('dailyCarbonTotal');
+    if (totalEl) totalEl.innerHTML = total.toFixed(2) + ' <small>kg CO₂e</small>';
+
+    var bdEl = document.getElementById('dailyCarbonBreakdown');
+    if (bdEl) {
+      var html = '';
+      for (var k in breakdown) {
+        if (breakdown[k] > 0) {
+          html += '<div class="carbon-row"><span>' + DR_LABELS[k] + '</span><span>' + breakdown[k].toFixed(2) + ' kg</span></div>';
+        } else if (breakdown[k] < 0) {
+          html += '<div class="carbon-row carbon-offset"><span>' + DR_LABELS[k] + '</span><span>♻️ ' + breakdown[k].toFixed(4) + ' kg</span></div>';
+        }
+      }
+      bdEl.innerHTML = html;
+    }
+
+    return { total: total, breakdown: breakdown };
+  }
+
+  // Live preview carbon as user types
+  document.querySelectorAll('.dr-input').forEach(function(input) {
+    input.addEventListener('input', calcDailyCarbon);
+  });
+  // Hotel checkbox also triggers
+  var hotelCb = document.getElementById('dr_hotel');
+  if (hotelCb) hotelCb.addEventListener('change', calcDailyCarbon);
+
+  // ── Toggle daily report panel ──
+  window.toggleDailyReport = function() {
+    var body = document.getElementById('dailyReportBody');
+    var toggle = document.getElementById('dailyReportToggle');
+    if (!body) return;
+    if (body.style.display === 'none') {
+      body.style.display = '';
+      toggle.textContent = '收合 ▲';
+    } else {
+      body.style.display = 'none';
+      toggle.textContent = '展開 ▼';
+    }
+  };
+
+  // ── Submit daily report ──
+  window.submitDailyReport = async function() {
+    var userId = lineUserId || lsGet('formosa_user_id') || '';
+    if (!userId) { alert('請先完成 LINE 登入'); return; }
+
+    var btn = document.getElementById('dailySubmitBtn');
+    var statusEl = document.getElementById('dailySubmitStatus');
+    if (btn) { btn.disabled = true; btn.textContent = '送出中...'; }
+
+    var today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+    var payload = {
+      line_user_id: userId,
+      report_date: today,
+      water_bottles: getDrVal('dr_water'),
+      recycle_bottles: getDrVal('dr_recycle'),
+      hotel: getDrVal('dr_hotel')
+    };
+
+    try {
+      var resp = await fetch(API_BASE + '/api/formosa/daily-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      var result = await resp.json();
+
+      if (resp.ok) {
+        if (statusEl) statusEl.innerHTML = '<span style="color:#059669">✓ 已儲存 ' + today + ' 的回報</span>';
+        // Update local carbon cache
+        if (result.gwp !== undefined) {
+          lsSet('formosa_carbon_today', result.gwp.toFixed(2));
+        }
+        // Show cumulative
+        loadDailyCumulative(userId);
+        // Update checkin stats carbon display
+        var statsCarbon = document.querySelector('#checkinStats .done-stat:last-child strong');
+        if (statsCarbon && result.gwp !== undefined) {
+          statsCarbon.textContent = result.gwp.toFixed(1);
+        }
+      } else {
+        if (statusEl) statusEl.innerHTML = '<span style="color:#dc2626">⚠ 儲存失敗：' + (result.error || '請稍後再試') + '</span>';
+      }
+    } catch (e) {
+      if (statusEl) statusEl.innerHTML = '<span style="color:#dc2626">⚠ 網路錯誤，請稍後再試</span>';
+    }
+
+    if (btn) { btn.disabled = false; btn.textContent = '送出今日回報'; }
+  };
+
+  // ── Load existing daily report for today + cumulative ──
+  async function loadTodayReport(userId) {
+    if (!userId) return;
+    try {
+      var resp = await fetch(API_BASE + '/api/formosa/daily-report?user_id=' + encodeURIComponent(userId));
+      if (!resp.ok) return;
+      var data = await resp.json();
+      if (!data || !data.reports) return;
+
+      // Find today's report
+      var today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10); // TW timezone
+      var todayReport = data.reports.find(function(r) { return r.report_date === today; });
+      if (todayReport) {
+        var r = todayReport;
+        var fields = { dr_water: r.water_bottles, dr_recycle: r.recycle_bottles };
+        for (var id in fields) {
+          var el = document.getElementById(id);
+          if (el && fields[id]) el.value = fields[id];
+        }
+        var hotelEl = document.getElementById('dr_hotel');
+        if (hotelEl) hotelEl.checked = !!r.hotel;
+        calcDailyCarbon();
+      }
+
+      // Update cumulative display
+      if (data.reports.length > 0) {
+        var totalCarbon = data.total_gwp || 0;
+        var cumEl = document.getElementById('dailyCumulative');
+        if (cumEl) cumEl.style.display = '';
+        var totalEl = document.getElementById('dailyCumulativeTotal');
+        if (totalEl) totalEl.textContent = totalCarbon.toFixed(2);
+        var daysEl = document.getElementById('dailyReportDays');
+        if (daysEl) daysEl.textContent = data.count || data.reports.length;
+        lsSet('formosa_carbon', totalCarbon.toFixed(2));
+      }
+    } catch (e) { /* offline */ }
+  }
+
+  // Alias for backward compat
+  var loadDailyCumulative = loadTodayReport;
+
+  // ── Collect all form data ──
+  function collectCheckbox(name) {
+    var vals = [];
+    document.querySelectorAll('input[name="' + name + '"]:checked').forEach(function(cb) {
+      if (cb.value === '__other__') {
+        var t = cb.closest('.other-item').querySelector('.other-input');
+        if (t && t.value.trim()) vals.push(t.value.trim());
+      } else {
+        vals.push(cb.value);
+      }
+    });
+    return vals;
+  }
+
+  function collectRadio(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : '';
+  }
+
+  function collectAllData() {
+    return {
+      timestamp: new Date().toISOString(),
+      survey: {
+        q1: collectCheckbox('q1'),
+        q2: collectCheckbox('q2'),
+        q2_1: document.getElementById('q2_1').value.trim(),
+        q3: collectRadio('q3'),
+        q4: collectRadio('q4'),
+        q5: collectCheckbox('q5'),
+        q6: collectRadio('q6')
+      },
+      profile: {
+        role: collectRadio('role')
+      },
+      gps_points: gpsTrackPoints.concat(allPoints).sort(function(a, b) {
+        if (a.datetime && b.datetime) return a.datetime.localeCompare(b.datetime);
+        return 0;
+      }),
+      phone: (document.getElementById('phoneInput') ? document.getElementById('phoneInput').value.trim() : '') || null
+    };
+  }
+
+  // ── Gamification: 9-Level Pilgrim Ranking ──
+  var MASCOT_BASE = '/images/formosa/';
+  var TITLES = [
+    { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.png', name: '煉氣香客', sub: '啟程入門者' },
+    { km: 15,  checkins: 5,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
+    { km: 45,  checkins: 10, icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
+    { km: 90,  checkins: 15, icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
+    { km: 135, checkins: 20, icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
+    { km: 180, checkins: 25, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
+    { km: 225, checkins: 30, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
+    { km: 270, checkins: 35, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
+    { km: 300, checkins: 40, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
+  ];
+
+  function getTitle(checkins, km) {
+    if (typeof km === 'undefined') km = getSavedKm();
+    var title = TITLES[0];
+    for (var i = TITLES.length - 1; i >= 0; i--) {
+      if (km >= TITLES[i].km && checkins >= TITLES[i].checkins) {
+        title = TITLES[i];
+        break;
+      }
+    }
+    // Find next achievable level
+    var next = null;
+    for (var j = 0; j < TITLES.length; j++) {
+      if (km < TITLES[j].km || checkins < TITLES[j].checkins) {
+        next = TITLES[j];
+        break;
+      }
+    }
+    return { current: title, next: next, checkins: checkins, km: km };
+  }
+
+  function getSavedCheckins() {
+    return parseInt(lsGet('formosa_checkins') || '0');
+  }
+
+  function getSavedKm() {
+    return parseFloat(lsGet('formosa_km') || '0');
+  }
+
+  function getLastCheckinCoords() {
+    var raw = lsGet('formosa_last_coords');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch(e) { return null; }
+  }
+
+  function saveLastCheckinCoords(lat, lng) {
+    lsSet('formosa_last_coords', JSON.stringify({ lat: lat, lng: lng }));
+  }
+
+  function addKm(dist) {
+    var total = getSavedKm() + dist;
+    lsSet('formosa_km', total.toFixed(2));
+    return total;
+  }
+
+  function incrementCheckins() {
+    var n = getSavedCheckins() + 1;
+    lsSet('formosa_checkins', n);
+    return n;
+  }
+
+  // ── Load GPS-derived carbon stats from user API ──
+  async function loadUserStats() {
+    var userId = lineUserId || lsGet('formosa_user_id') || '';
+    if (!userId) return;
+    try {
+      var resp = await fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(userId), {
+        headers: { 'X-Line-User-Id': userId }
+      });
+      if (!resp.ok) return;
+      var data = await resp.json();
+      if (!data || !data.stats) return;
+      var s = data.stats;
+      lsSet('formosa_carbon', s.carbon_kg.toFixed(2));
+      lsSet('formosa_carbon_saved', (s.carbon_saved_kg || 0).toFixed(2));
+      lsSet('formosa_km', s.total_km.toFixed(2));
+      lsSet('formosa_checkins', s.checkins);
+      if (s.transport_breakdown) {
+        lsSet('formosa_transport_breakdown', JSON.stringify(s.transport_breakdown));
+      }
+      updateCarbonStatsDisplay();
+      // Upload personalized OG image for FB sharing
+      uploadOgImage();
+    } catch (e) { /* offline */ }
+  }
+
+  // ── OG Image Generation (canvas → R2) for FB sharing ──
+  function uploadOgImage() {
+    if (!lineUserId) return;
+    var checkins = getSavedCheckins();
+    var km = getSavedKm();
+    if (checkins < 2) return;
+    // Deduplicate: at most once per hour
+    var lastUpload = parseInt(lsGet('formosa_og_uploaded_at') || '0');
+    if (Date.now() - lastUpload < 3600000) return;
+    var t = getTitle(checkins, km);
+    var carbon = parseFloat(lsGet('formosa_carbon') || '0');
+
+    var W = 1200, H = 630;
+    var c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    var ctx = c.getContext('2d');
+
+    // Background gradient
+    var grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, '#1a1a2e');
+    grad.addColorStop(1, '#16213e');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Decorative top bar
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(0, 0, W, 6);
+
+    // Title
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.fillText('白沙屯媽祖 ESG 進香 2026', 60, 70);
+
+    // Level icon + name
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 64px sans-serif';
+    ctx.fillText(t.current.icon + ' ' + t.current.name, 60, 180);
+
+    // Sub title
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '28px sans-serif';
+    ctx.fillText(t.current.sub, 60, 225);
+
+    // Stats
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 48px sans-serif';
+    var statsY = 340;
+    ctx.fillText(km.toFixed(1) + ' 公里', 60, statsY);
+    ctx.fillText(checkins + ' 打卡', 420, statsY);
+    ctx.fillText(carbon.toFixed(1) + ' kg CO₂e', 720, statsY);
+
+    // Stats labels
+    ctx.fillStyle = '#64748b';
+    ctx.font = '22px sans-serif';
+    ctx.fillText('總里程', 60, statsY + 35);
+    ctx.fillText('打卡次數', 420, statsY + 35);
+    ctx.fillText('碳足跡', 720, statsY + 35);
+
+    // Divider
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(60, 420);
+    ctx.lineTo(W - 60, 420);
+    ctx.stroke();
+
+    // CTA
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 26px sans-serif';
+    ctx.fillText('點擊加入活動 →', 60, 470);
+
+    // Bottom URL
+    ctx.fillStyle = '#475569';
+    ctx.font = '20px sans-serif';
+    ctx.fillText('paulkuo.tw/projects/formosa-esg-2026/tracker/', 60, 590);
+
+    // Load and draw NET-ZERO logo
+    var logoImg = new Image();
+    logoImg.crossOrigin = 'anonymous';
+    logoImg.onload = function() {
+      var logoSize = 120;
+      // Draw circular logo
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(W - 60 - logoSize/2, 530 - logoSize/2, logoSize/2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(logoImg, W - 60 - logoSize, 530 - logoSize, logoSize, logoSize);
+      ctx.restore();
+      doUpload();
+    };
+    logoImg.onerror = function() { doUpload(); };
+    logoImg.src = '/images/formosa/logo-netzero.jpg';
+
+    function doUpload() {
+      c.toBlob(function(blob) {
+        if (!blob || blob.size > 2 * 1024 * 1024) return;
+        fetch(API_BASE + '/api/formosa/og-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'image/png', 'X-User-Id': lineUserId },
+          body: blob
+        }).then(function(r) { return r.json(); }).then(function(d) {
+          if (d.ok) {
+            lsSet('formosa_og_uploaded_at', String(Date.now()));
+            console.log('OG image uploaded:', d.url);
+          }
+        }).catch(function(e) { console.warn('OG upload failed:', e); });
+      }, 'image/png');
+    }
+  }
+
+  function getCarbonStatsHtml() {
+    var carbon = lsGet('formosa_carbon') || '0';
+    var saved = lsGet('formosa_carbon_saved') || '0';
+    var html = '<div class="done-stat"><strong>' + carbon + '</strong><span>kg CO₂e（估算）</span></div>';
+    if (parseFloat(saved) > 0) {
+      html += '<div class="done-stat" style="color:#059669"><strong>' + saved + '</strong><span>kg 已省下</span></div>';
+    }
+    return html;
+  }
+
+  function getTransportBreakdownHtml() {
+    var tb = null;
+    try { tb = JSON.parse(lsGet('formosa_transport_breakdown')); } catch(e) {}
+    if (!tb) return '';
+    var parts = [];
+    if (tb.zero_emission > 0) parts.push('🚶 零排放移動 ' + tb.zero_emission.toFixed(1) + ' km');
+    if (tb.motorized > 0) parts.push('🚌 交通工具 ' + tb.motorized.toFixed(1) + ' km');
+    var html = parts.length > 0 ? '<div class="transport-summary" style="font-size:0.8rem;color:#6b7280;margin-top:0.25rem;">' + parts.join(' | ') + '</div>' : '';
+    html += '<div style="font-size:0.7rem;color:#9ca3af;margin-top:0.25rem;">📝 碳排數據為簡化估算，以步行/腳踏車（零排放）與大眾交通工具兩種情境計算，目的是提醒減排與鼓勵共乘，非精確碳盤查數據。</div>';
+    return html;
+  }
+
+  function updateCarbonStatsDisplay() {
+    var statsEl = document.getElementById('checkinStats');
+    if (!statsEl) return;
+    var checkins = getSavedCheckins();
+    var km = getSavedKm();
+    statsEl.innerHTML = '<div class="done-stats">' +
+      '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
+      '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
+      getCarbonStatsHtml() +
+      '</div>' + getTransportBreakdownHtml();
+  }
+
+  // ── Participant Status (pause / complete) ──
+  window.setParticipantStatus = function(status) {
+    var userId = lineUserId || lsGet('formosa_line_user_id');
+    if (!userId) return;
+    var btn = status === 'paused' ? document.getElementById('pauseBtn') : document.getElementById('completeBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '處理中…'; }
+    fetch(API_BASE + '/api/formosa/participant-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ line_user_id: userId, status: status })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data.ok) {
+        lsSet('formosa_participant_status', status);
+        if (status === 'paused') {
+          if (btn) { btn.textContent = '已暫離'; }
+          // Stop GPS tracking
+          if (window.__gpsWatchId) { navigator.geolocation.clearWatch(window.__gpsWatchId); window.__gpsWatchId = null; }
+          var gpsEl = document.getElementById('gpsStatus');
+          if (gpsEl) gpsEl.textContent = '⏸️ 已暫離（重新進入即恢復）';
+        } else if (status === 'completed') {
+          showCompletedOverlay();
+        }
+      } else {
+        if (btn) { btn.textContent = data.error || '操作失敗'; }
+      }
+    }).catch(function(e) {
+      console.warn('Status sync failed:', e);
+      if (btn) { btn.disabled = false; btn.textContent = status === 'paused' ? '⏸️ 暫離' : '✅ 完成進香'; }
+    });
+  };
+
+  window.confirmComplete = function() {
+    if (confirm('確定要完成進香嗎？此操作無法復原。')) {
+      setParticipantStatus('completed');
+    }
+  };
+
+  function showCompletedOverlay() {
+    var overlay = document.getElementById('completedOverlay');
+    var actions = document.getElementById('participantActions');
+    if (overlay) overlay.style.display = 'block';
+    if (actions) actions.style.display = 'none';
+    // Hide checkin buttons
+    var checkinBtn = document.querySelector('.checkin-big-btn');
+    if (checkinBtn) checkinBtn.style.display = 'none';
+    var uploadSection = document.querySelector('.checkin-upload-section');
+    if (uploadSection) uploadSection.style.display = 'none';
+    // Stop GPS
+    if (window.__gpsWatchId) { navigator.geolocation.clearWatch(window.__gpsWatchId); window.__gpsWatchId = null; }
+  }
+
+  // Check participant status on load
+  function checkParticipantStatus() {
+    var status = lsGet('formosa_participant_status');
+    if (status === 'completed') {
+      showCompletedOverlay();
+    } else if (status === 'paused') {
+      // Auto-resume to active on page load
+      var userId = lineUserId || lsGet('formosa_line_user_id');
+      if (userId) {
+        fetch(API_BASE + '/api/formosa/participant-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ line_user_id: userId, status: 'active' })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok) lsSet('formosa_participant_status', 'active');
+        }).catch(function(e) { console.warn('Status sync failed:', e); });
+      }
+    }
+  }
+
+  // ── Share Functions ──
+  var TRACKER_URL = lineUserId
+    ? 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/?u=' + encodeURIComponent(lineUserId)
+    : 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
+  var LIFF_URL = 'https://liff.line.me/2009588321-rXVntTKg';
+  var SHARE_TITLE = '2026 白沙屯媽祖 ESG 進香';
+
+  function getShareText() {
+    var checkins = getSavedCheckins();
+    var km = getSavedKm();
+    var t = getTitle(checkins, km);
+    return '我參加了 2026 白沙屯媽祖 ESG 進香，已走 ' + km.toFixed(1) + ' 公里，獲得' + t.current.icon + '「' + t.current.name + '」稱號！一起來記錄你的進香足跡 🙏';
+  }
+
+  window.smartShare = function() {
+    var text = getShareText();
+    if (navigator.share) {
+      navigator.share({
+        title: SHARE_TITLE,
+        text: text,
+        url: TRACKER_URL
+      }).catch(function(){});
+    } else {
+      var fullText = text + '\n' + TRACKER_URL;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(fullText).then(function() {
+          showToast();
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = fullText;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast();
+      }
+    }
+  };
+
+  window.shareNative = function() {
+    if (navigator.share) {
+      navigator.share({
+        title: SHARE_TITLE,
+        text: getShareText(),
+        url: TRACKER_URL
+      }).catch(function() {});
+    }
+  };
+
+  window.shareLine = function() {
+    // Use LIFF shareTargetPicker if in LINE app
+    if (window.__liffReady && typeof liff !== 'undefined' && liff.isInClient() && liff.isApiAvailable('shareTargetPicker')) {
+      liff.shareTargetPicker([
+        {
+          type: 'text',
+          text: getShareText() + '\n' + LIFF_URL
+        }
+      ]).catch(function(e) {
+        console.warn('shareTargetPicker failed:', e);
+      });
+    } else {
+      var text = encodeURIComponent(getShareText() + '\n' + LIFF_URL);
+      window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(LIFF_URL) + '&text=' + text, '_blank');
+    }
+  };
+
+  window.shareFB = function() {
+    // FB share URL includes userId so crawler can serve personalized OG image
+    var fbUrl = TRACKER_URL;
+    if (lineUserId) fbUrl = TRACKER_URL + '?u=' + encodeURIComponent(lineUserId);
+    if (navigator.share) {
+      navigator.share({
+        title: SHARE_TITLE,
+        text: getShareText(),
+        url: fbUrl
+      }).catch(function() {});
+    } else {
+      window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fbUrl) + '&quote=' + encodeURIComponent(getShareText()), '_blank');
+    }
+  };
+
+  window.shareCopy = function() {
+    var text = getShareText() + '\n' + TRACKER_URL;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function() {
+        showToast();
+      });
+    } else {
+      // Fallback
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast();
+    }
+  };
+
+  function showToast() {
+    var toasts = document.querySelectorAll('.share-toast');
+    toasts.forEach(function(t) {
+      t.style.display = 'block';
+      setTimeout(function() { t.style.display = 'none'; }, 2000);
+    });
+  }
+
+  // Show native share button if supported
+  if (navigator.share) {
+    var nBtns = document.querySelectorAll('.share-native');
+    nBtns.forEach(function(b) { b.style.display = ''; });
+  }
+
+  // ── Submit ──
+  window.handleSubmit = async function() {
+    var data = collectAllData();
+
+    // Attach LINE identity if available
+    if (lineUserId) {
+      data.line_user_id = lineUserId;
+      data.line_display_name = (window.__lineProfile ? window.__lineProfile.displayName : null) || lsGet('formosa_line_display_name') || '';
+    }
+
+    var submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '提交中...'; }
+
+    var result = null;
+    try {
+      var resp = await fetch(API_BASE + '/api/formosa/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      result = await resp.json();
+      console.log('Submit result:', result);
+
+      // Save phone separately if provided
+      if (data.phone && lineUserId) {
+        fetch(API_BASE + '/api/formosa/user/phone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ line_user_id: lineUserId, phone: data.phone })
+        }).catch(function(e) { console.warn('Phone save failed:', e); });
+      }
+    } catch (e) {
+      console.warn('API submit failed:', e.message);
+    }
+
+    // Persist user_id from API response
+    if (result && result.user_id) {
+      lsSet('formosa_user_id', result.user_id);
+    }
+
+    lsSet('formosa_survey_done', 'true');
+    lsSet('formosa_survey_date', new Date().toISOString());
+    lsSet('formosa_deeds', JSON.stringify(data.survey.q1 || []));
+
+    // Save GPS track for route map
+    lsSet('formosa_gps_track', JSON.stringify(data.gps_points || []));
+
+    // Show done screen
+    showCard('done');
+
+    var pts = data.gps_points.length;
+    var deeds = (data.survey.q1 || []).length;
+    document.getElementById('doneSummary').innerHTML =
+      '<div class="done-stats">' +
+        '<div class="done-stat"><strong>' + pts + '</strong><span>GPS 座標點</span></div>' +
+        '<div class="done-stat"><strong>' + deeds + '</strong><span>善行參與</span></div>' +
+      '</div>';
+
+    document.getElementById('rewardStats').innerHTML =
+      '善行參與：' + deeds + ' 項';
+    document.getElementById('rewardDate').textContent =
+      '加入時間：' + new Date().toLocaleDateString('zh-TW');
+
+    // Update reward card with current title
+    var initT = getTitle(1, 0); // first checkin, 0 km
+    document.querySelector('.reward-badge').innerHTML = '<img src="' + MASCOT_BASE + initT.current.img + '" class="mascot-reward" alt="' + initT.current.name + '">';
+    document.querySelector('.reward-title').textContent = '✦ ' + initT.current.name + ' ✦';
+    var nextEl = document.querySelector('.reward-next');
+    if (nextEl && initT.next) {
+      nextEl.innerHTML = '📍 持續打卡，升級為 <img src="' + MASCOT_BASE + initT.next.img + '" style="width:24px;height:24px;vertical-align:middle;"> ' + initT.next.name;
+    }
+  };
+
+  // ── Mini Photo Upload Handler (check-in mode) ──
+  var uploadedPhotos = []; // store for sharing
+  var cumulativePhotoCount = parseInt(lsGet('formosa_photo_count') || '0', 10);
+
+  function updatePhotoStatusDisplay() {
+    var statusEl = document.getElementById('photoStatusMini');
+    if (!statusEl) return;
+    if (cumulativePhotoCount <= 0) {
+      statusEl.innerHTML = '';
+      return;
+    }
+    statusEl.innerHTML = '<span class="photo-status-text">📷 已記錄 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
+  }
+
+  // ── Toast helper ──
+  function showPhotoToast(msg, duration) {
+    var el = document.getElementById('photoToast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function() { el.classList.remove('show'); }, duration || 3000);
+  }
+
+  // ── Save photo to device ──
+  var pendingSaveFiles = [];
+  var lastSavedFile = null; // track last photo for manual save button
+  var isLineBrowser = /Line/i.test(navigator.userAgent);
+
+  function updateSaveBtn() {
+    var btn = document.getElementById('photoSaveBtn');
+    if (btn) btn.disabled = !lastSavedFile;
+  }
+
+  async function saveFileToDevice(f) {
+    var ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    var ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
+    var shareFile = new File([f], 'formosa-' + ts + '.' + ext, { type: f.type });
+
+    if (!isLineBrowser && navigator.share && navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+      await navigator.share({ files: [shareFile] });
+      return true;
+    } else {
+      var url = URL.createObjectURL(f);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = shareFile.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      return true;
+    }
+  }
+
+  async function autoSavePhotos() {
+    if (pendingSaveFiles.length === 0) return;
+
+    if (isLineBrowser) {
+      // LINE WebView 不支援自動存檔，提示使用者用按鈕長按儲存
+      lastSavedFile = pendingSaveFiles[pendingSaveFiles.length - 1];
+      pendingSaveFiles = [];
+      updateSaveBtn();
+      showPhotoToast('點「📥 活動照存檔」長按儲存照片', 3500);
+      return;
+    }
+
+    var saved = false;
+    for (var i = 0; i < pendingSaveFiles.length; i++) {
+      var f = pendingSaveFiles[i];
+      try {
+        saved = await saveFileToDevice(f);
+        lastSavedFile = f;
+      } catch (e) {
+        if (e.name === 'AbortError') { saved = false; break; }
+        console.warn('Photo save failed:', e);
+      }
+    }
+    pendingSaveFiles = [];
+    updateSaveBtn();
+
+    if (saved) {
+      showPhotoToast('📸 照片已儲存', 2500);
+    }
+  }
+
+  window.saveLastPhoto = async function() {
+    if (!lastSavedFile) return;
+
+    if (isLineBrowser) {
+      // LINE WebView 不支援 <a download>，改用長按儲存模式
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;';
+
+      var hint = document.createElement('p');
+      hint.textContent = '長按照片 → 儲存圖片';
+      hint.style.cssText = 'color:white;font-size:16px;margin-bottom:12px;';
+
+      var img = document.createElement('img');
+      img.src = URL.createObjectURL(lastSavedFile);
+      img.style.cssText = 'max-width:90%;max-height:70vh;border-radius:8px;';
+
+      var closeBtn = document.createElement('button');
+      closeBtn.textContent = '✕ 關閉';
+      closeBtn.style.cssText = 'margin-top:16px;padding:10px 24px;background:#666;color:white;border:none;border-radius:8px;font-size:16px;';
+      closeBtn.onclick = function() {
+        URL.revokeObjectURL(img.src);
+        document.body.removeChild(overlay);
+      };
+
+      overlay.appendChild(hint);
+      overlay.appendChild(img);
+      overlay.appendChild(closeBtn);
+      document.body.appendChild(overlay);
+    } else {
+      try {
+        var saved = await saveFileToDevice(lastSavedFile);
+        if (saved) {
+          showPhotoToast('📸 照片已儲存', 2500);
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') console.warn('Photo save failed:', e);
+      }
+    }
+  };
+
+  async function handlePhotos(files, statusEl) {
+    if (!statusEl) statusEl = document.getElementById('photoStatusMini');
+    if (!statusEl) return;
+    var count = 0;
+    var gpsCount = 0;
+
+    // Show uploading state
+    statusEl.innerHTML = '<span class="photo-status-text photo-status-loading">📷 讀取 GPS 中...</span>';
+
+    pendingSaveFiles = []; // reset for this batch
+    var failed = false;
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (!file.type.match(/^image\/(jpe?g|png|heic|heif)$/)) continue;
+
+      count++;
+      pendingSaveFiles.push(file);
+      lastSavedFile = file; // always track latest for manual save
+
+      // Store for sharing (keep file ref but no objectURL thumbnail)
+      uploadedPhotos.push({ file: file, name: file.name });
+
+      // Try extract GPS
+      try {
+        var buf = await readFileAsArrayBuffer(file);
+        var data = parseExifGPS(buf);
+        if (data && data.hasGPS) {
+          gpsCount++;
+
+          // Add to track points and calculate distance
+          var last = getLastCheckinCoords();
+          if (last) {
+            var dist = haversine(last.lat, last.lng, data.lat, data.lng);
+            if (dist > 0.01) addKm(dist);
+          }
+          saveLastCheckinCoords(data.lat, data.lng);
+
+          gpsTrackPoints.push({
+            lat: data.lat, lng: data.lng,
+            altitude: data.altitude,
+            datetime: data.datetime,
+            source: 'photo',
+            filename: file.name
+          });
+        }
+      } catch (e) { /* no GPS */ }
+    }
+
+    if (count > 0) {
+      // Update cumulative count
+      cumulativePhotoCount += count;
+      lsSet('formosa_photo_count', cumulativePhotoCount);
+
+      // GP-2: warn if no userId
+      var userId = lineUserId || lsGet('formosa_user_id') || '';
+      if (!userId) {
+        showPhotoToast('⚠️ 尚未登入，照片紀錄僅保存在本機', 4000);
+      }
+      // Increment on server
+      if (userId) {
+        try {
+          await fetch(API_BASE + '/api/formosa/photos/count', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Line-User-Id': userId },
+            body: JSON.stringify({ line_user_id: userId, count: count })
+          });
+        } catch (e) { /* offline — localStorage is source of truth */ }
+      }
+
+      // Show success text
+      updatePhotoStatusDisplay();
+
+      // Auto-save photos
+      await autoSavePhotos();
+
+      // Update stats display
+      var km = getSavedKm();
+      var checkins = getSavedCheckins();
+      var t = getTitle(checkins, km);
+      var statsEl2 = document.getElementById('checkinStats');
+      if (statsEl2) {
+        statsEl2.innerHTML = '<div class="done-stats">' +
+          '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
+          '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
+          getCarbonStatsHtml() +
+          '</div>' + getTransportBreakdownHtml();
+      }
+      updateCheckinProgress(t);
+
+      // Persist photo GPS points to localStorage for route map
+      try {
+        var savedTrack = JSON.parse(lsGet('formosa_gps_track') || '[]');
+        gpsTrackPoints.filter(function(p) { return p.source === 'photo'; }).forEach(function(p) {
+          var exists = savedTrack.some(function(s) { return s.lat === p.lat && s.lng === p.lng && s.source === 'photo'; });
+          if (!exists) savedTrack.push({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: 'photo' });
+        });
+        lsSet('formosa_gps_track', JSON.stringify(savedTrack));
+      } catch(e) {}
+    } else if (failed) {
+      statusEl.innerHTML = '<span class="photo-status-text photo-status-error">⚠️ 讀取失敗，請重試</span><button class="photo-retry-btn" onclick="document.getElementById(\'photoCameraMini\').click()">重試</button>';
+    }
+  }
+
+  // ── Returning User: Check-in Mode ──
+  function enterCheckinMode() {
+    showCard('checkin');
+
+    var checkins = getSavedCheckins();
+    var km = getSavedKm();
+    var t = getTitle(checkins, km);
+
+    document.getElementById('checkinBadge').innerHTML = '<img src="' + MASCOT_BASE + t.current.img + '" class="mascot-badge" alt="' + t.current.name + '"><span>' + t.current.name + '</span>';
+
+    // Hide GPS banner check-in button (replaced by big button in checkin mode)
+    var gpsBannerBtn = document.getElementById('gpsCheckinBtn');
+    if (gpsBannerBtn) gpsBannerBtn.style.display = 'none';
+
+    var statsHtml = '<div class="done-stats">' +
+      '<div class="done-stat"><strong>' + checkins + '</strong><span>打卡次數</span></div>' +
+      '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
+      getCarbonStatsHtml() +
+      '</div>' + getTransportBreakdownHtml();
+    document.getElementById('checkinStats').innerHTML = statsHtml;
+
+    updateCheckinProgress(t);
+
+    // Fetch GPS-derived carbon stats from server
+    loadUserStats();
+
+    var cameraBtn = document.getElementById('cameraBtnMini');
+    var cameraInput = document.getElementById('photoCameraMini');
+    var statusMini = document.getElementById('photoStatusMini');
+    if (cameraBtn && cameraInput) {
+      cameraBtn.addEventListener('click', function() { cameraInput.click(); });
+      cameraInput.addEventListener('change', function() {
+        if (this.files.length > 0) handlePhotos(this.files, statusMini);
+        this.value = ''; // reset so same photo can re-trigger
+      });
+    }
+
+    // Show existing photo count on page load
+    updatePhotoStatusDisplay();
+
+    // Load today's daily report data and cumulative stats
+    var drUserId = lineUserId || lsGet('formosa_user_id') || '';
+    if (drUserId) {
+      loadTodayReport(drUserId);
+      loadDailyCumulative(drUserId);
+    }
+  }
+
+  // Override manualCheckin to calculate distance and update stats
+  // GP-5: processCheckin extracted so we can skip getCurrentPosition when watchPosition is ready
+  function processCheckin(lat, lng, altitude, accuracy, activeBtn) {
+    // Calculate distance from last check-in
+    var last = getLastCheckinCoords();
+    if (last) {
+      var dist = haversine(last.lat, last.lng, lat, lng);
+      if (dist > 0.01) addKm(dist);
+    }
+    saveLastCheckinCoords(lat, lng);
+
+    // Push to GPS track
+    var newPt = {
+      lat: lat, lng: lng,
+      altitude: altitude,
+      accuracy: accuracy,
+      datetime: new Date().toISOString(),
+      source: 'manual',
+      filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
+    };
+    gpsTrackPoints.push(newPt);
+
+    // Persist to localStorage for route map
+    var savedTrack = JSON.parse(lsGet('formosa_gps_track') || '[]');
+    savedTrack.push({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
+    lsSet('formosa_gps_track', JSON.stringify(savedTrack));
+
+    // GP-1: also persist any pending auto points
+    persistAutoTrack();
+
+    // GP-2: userId empty → warn user, still update local UI
+    var userId = lineUserId || lsGet('formosa_user_id') || '';
+    if (!userId) {
+      showPhotoToast('⚠️ 尚未登入，打卡紀錄僅保存在本機', 4000);
+    }
+
+    // Sync checkin to server (GP-3: include batch track_points)
+    if (userId) {
+      var checkinPayload = {
+        user_id: userId,
+        lat: lat, lng: lng,
+        altitude: altitude,
+        accuracy: accuracy,
+        source: 'manual',
+        checkins: getSavedCheckins() + 1,
+        km: getSavedKm(),
+        track_points: getUnuploadedTrackPoints()
+      };
+      fetch(API_BASE + '/api/formosa/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(checkinPayload)
+      }).then(function(res) {
+        if (res.ok) {
+          // Mark all points as uploaded
+          gpsTrackPoints.forEach(function(p) { p._uploaded = true; });
+          // GP-6: flush any queued failed checkins
+          flushCheckinQueue(userId);
+        } else {
+          console.warn('打卡 API 回應異常:', res.status);
+          if (res.status === 429) {
+            showPhotoToast('⏳ 打卡太頻繁，請稍後再試', 3000);
+          }
+        }
+      }).catch(function(err) {
+        console.warn('打卡 API 失敗（離線？）:', err);
+        // GP-6: queue for retry
+        queueFailedCheckin({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
+      });
+    }
+
+    var countEl = document.getElementById('gpsCount');
+    if (countEl) countEl.textContent = gpsTrackPoints.length + ' 次 GPS 記錄';
+
+    // Button success feedback
+    if (activeBtn) {
+      activeBtn.textContent = userId ? '✓ 已打卡' : '✓ 已記錄（本機）';
+      activeBtn.disabled = true;
+      setTimeout(function() {
+        activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
+        activeBtn.disabled = false;
+      }, 1500);
+    }
+
+    // Update stats
+    var n = incrementCheckins();
+    var km = getSavedKm();
+    var t = getTitle(n, km);
+
+    var badgeEl = document.getElementById('checkinBadge');
+    if (badgeEl) badgeEl.innerHTML = '<img src="' + MASCOT_BASE + t.current.img + '" class="mascot-badge" alt="' + t.current.name + '"><span>' + t.current.name + '</span>';
+
+    var statsEl = document.getElementById('checkinStats');
+    if (statsEl) {
+      statsEl.innerHTML = '<div class="done-stats">' +
+        '<div class="done-stat"><strong>' + n + '</strong><span>打卡次數</span></div>' +
+        '<div class="done-stat"><strong>' + km.toFixed(1) + '</strong><span>公里</span></div>' +
+        getCarbonStatsHtml() +
+        '</div>' + getTransportBreakdownHtml();
+    }
+
+    updateCheckinProgress(t);
+  }
+
+  function handleCheckinError(err, activeBtn) {
+    if (activeBtn) {
+      activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
+      activeBtn.disabled = false;
+    }
+    if (err.code === 1) {
+      alert('定位權限被拒絕，請到手機設定開啟定位權限。');
+    } else if (err.code === 3) {
+      showPhotoToast('📍 GPS 訊號弱，請到空曠處再試', 3000);
+    } else {
+      showPhotoToast('📍 暫時無法定位，請稍後再試', 3000);
+    }
+  }
+
+  window.manualCheckin = function() {
+    // Immediate loading feedback on both buttons
+    var btn = document.getElementById('gpsCheckinBtn');
+    var bigBtn = document.querySelector('.checkin-big-btn');
+    var activeBtn = bigBtn || btn;
+    if (activeBtn) {
+      activeBtn.disabled = true;
+      activeBtn.dataset.origText = activeBtn.textContent;
+      activeBtn.textContent = '📍 定位中...';
+    }
+
+    // GP-5: if watchPosition already has a fix, use it instantly
+    if (gpsReady && gpsTrackPoints.length > 0) {
+      var lastPt = gpsTrackPoints[gpsTrackPoints.length - 1];
+      processCheckin(lastPt.lat, lastPt.lng, lastPt.altitude, lastPt.accuracy, activeBtn);
+      return;
+    }
+
+    // Fallback: getCurrentPosition with longer timeout (GP-5: 20s instead of 10s)
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        processCheckin(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, pos.coords.accuracy, activeBtn);
+      },
+      function(err) { handleCheckinError(err, activeBtn); },
+      { enableHighAccuracy: true, timeout: 20000 }
+    );
+  };
+
+  function updateCheckinProgress(t) {
+    var progEl = document.getElementById('checkinProgress');
+    if (!progEl) return;
+    if (t.next) {
+      var needKm = Math.max(0, t.next.km - t.km);
+      var needCheckins = Math.max(0, t.next.checkins - t.checkins);
+      var parts = [];
+      if (needKm > 0) parts.push('走 ' + needKm.toFixed(1) + ' 公里');
+      if (needCheckins > 0) parts.push('打卡 ' + needCheckins + ' 次');
+      progEl.innerHTML = '<p style="color:#b45309;margin-top:1.5rem;">再' + parts.join('、') + '升級為 <img src="' + MASCOT_BASE + t.next.img + '" style="width:28px;height:28px;vertical-align:middle;"> ' + t.next.name + '</p>';
+    } else {
+      progEl.innerHTML = '<p style="color:#059669;margin-top:1.5rem;"><img src="' + MASCOT_BASE + 'level-9.png" style="width:28px;height:28px;vertical-align:middle;"> 恭喜飛升！已達最高等級！</p>';
+    }
+  }
+
+  // ── Page Init ──
+
+  if (lsGet('formosa_survey_done') === 'true') {
+    enterCheckinMode();
+    checkParticipantStatus();
+  } else {
+    showCard(1);
+  }
+
+  // ── Minimal EXIF GPS parser ──
+  function readFileAsArrayBuffer(file) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function() { resolve(reader.result); };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function parseExifGPS(arrayBuffer) {
+    var view = new DataView(arrayBuffer);
+    if (view.getUint16(0) !== 0xFFD8) return null;
+
+    var offset = 2;
+    var length = view.byteLength;
+
+    while (offset < length) {
+      if (view.getUint8(offset) !== 0xFF) break;
+      var marker = view.getUint8(offset + 1);
+
+      if (marker === 0xE1) {
+        var exifLength = view.getUint16(offset + 2);
+        return parseExifBlock(view, offset + 4, exifLength - 2);
+      }
+
+      if (marker === 0xD8 || marker === 0xD9) {
+        offset += 2;
+      } else {
+        var segLen = view.getUint16(offset + 2);
+        offset += 2 + segLen;
+      }
+    }
+    return null;
+  }
+
+  function parseExifBlock(view, start, length) {
+    var exifHeader = '';
+    for (var i = 0; i < 4; i++) exifHeader += String.fromCharCode(view.getUint8(start + i));
+    if (exifHeader !== 'Exif') return null;
+
+    var tiffStart = start + 6;
+    var bigEndian = view.getUint16(tiffStart) === 0x4D4D;
+
+    function read16(off) { return view.getUint16(off, !bigEndian); }
+    function read32(off) { return view.getUint32(off, !bigEndian); }
+    function readRational(off) {
+      var num = read32(off);
+      var den = read32(off + 4);
+      return den ? num / den : 0;
+    }
+
+    var ifd0Offset = read32(tiffStart + 4);
+    var ifd0Abs = tiffStart + ifd0Offset;
+
+    var gpsIFDOffset = null;
+    var exifIFDOffset = null;
+    var numEntries = read16(ifd0Abs);
+
+    for (var i = 0; i < numEntries; i++) {
+      var entryOff = ifd0Abs + 2 + i * 12;
+      var tag = read16(entryOff);
+      if (tag === 0x8825) gpsIFDOffset = read32(entryOff + 8);
+      if (tag === 0x8769) exifIFDOffset = read32(entryOff + 8);
+    }
+
+    var result = { hasGPS: false, datetime: null };
+
+    if (exifIFDOffset !== null) {
+      try {
+        var exifAbs = tiffStart + exifIFDOffset;
+        var exifEntries = read16(exifAbs);
+        for (var i = 0; i < exifEntries; i++) {
+          var entryOff = exifAbs + 2 + i * 12;
+          var tag = read16(entryOff);
+          if (tag === 0x9003) {
+            var count = read32(entryOff + 4);
+            var valOffset = count > 4 ? tiffStart + read32(entryOff + 8) : entryOff + 8;
+            var dt = '';
+            for (var c = 0; c < Math.min(count - 1, 19); c++) dt += String.fromCharCode(view.getUint8(valOffset + c));
+            result.datetime = dt;
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (gpsIFDOffset === null) return result;
+
+    var gpsAbs = tiffStart + gpsIFDOffset;
+    var gpsEntries = read16(gpsAbs);
+    var gps = {};
+
+    for (var i = 0; i < gpsEntries; i++) {
+      try {
+        var entryOff = gpsAbs + 2 + i * 12;
+        var tag = read16(entryOff);
+
+        if (tag === 1) gps.latRef = String.fromCharCode(view.getUint8(entryOff + 8));
+        else if (tag === 2) { var off = tiffStart + read32(entryOff + 8); gps.lat = [readRational(off), readRational(off + 8), readRational(off + 16)]; }
+        else if (tag === 3) gps.lngRef = String.fromCharCode(view.getUint8(entryOff + 8));
+        else if (tag === 4) { var off = tiffStart + read32(entryOff + 8); gps.lng = [readRational(off), readRational(off + 8), readRational(off + 16)]; }
+        else if (tag === 6) { var off = tiffStart + read32(entryOff + 8); gps.altitude = readRational(off); }
+        else if (tag === 16) { var off = tiffStart + read32(entryOff + 8); gps.direction = readRational(off); }
+      } catch (e) {}
+    }
+
+    if (gps.lat && gps.lng) {
+      var lat = gps.lat[0] + gps.lat[1] / 60 + gps.lat[2] / 3600;
+      var lng = gps.lng[0] + gps.lng[1] / 60 + gps.lng[2] / 3600;
+      if (gps.latRef === 'S') lat = -lat;
+      if (gps.lngRef === 'W') lng = -lng;
+      result.hasGPS = true;
+      result.lat = lat;
+      result.lng = lng;
+      result.altitude = gps.altitude || null;
+      result.direction = gps.direction || null;
+    }
+
+    return result;
+  }
+
+  // ── Photo Upload UI ──
+  var uploadArea = document.getElementById('uploadArea');
+  var photoInput = document.getElementById('photoInput');
+  var statusEl = document.getElementById('status');
+  var resultsSection = document.getElementById('resultsSection');
+  var resultsSummary = document.getElementById('resultsSummary');
+  var resultsList = document.getElementById('resultsList');
+  var mapSection = document.getElementById('mapSection');
+  var map = null;
+  var markers = [];
+  var allPoints = [];
+
+  if (uploadArea) {
+    uploadArea.addEventListener('click', function() { photoInput.click(); });
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      uploadArea.classList.add('drag-over');
+    });
+    uploadArea.addEventListener('dragleave', function() {
+      uploadArea.classList.remove('drag-over');
+    });
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) processFiles(e.dataTransfer.files);
+    });
+  }
+
+  if (photoInput) {
+    photoInput.addEventListener('change', function() {
+      if (photoInput.files.length) processFiles(photoInput.files);
+    });
+  }
+
+  function showStatus(msg, type) {
+    statusEl.style.display = 'block';
+    statusEl.className = 'tracker-status status-' + (type || 'info');
+    statusEl.textContent = msg;
+  }
+
+  async function processFiles(files) {
+    var total = files.length;
+    var withGPS = 0;
+    var withoutGPS = 0;
+
+    showStatus('正在解析 ' + total + ' 張照片的 EXIF 資料...', 'info');
+
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (!file.type.match(/^image\/jpe?g$/)) { withoutGPS++; continue; }
+
+      try {
+        var buf = await readFileAsArrayBuffer(file);
+        var data = parseExifGPS(buf);
+
+        if (data && data.hasGPS) {
+          withGPS++;
+          allPoints.push({
+            lat: data.lat, lng: data.lng,
+            altitude: data.altitude, direction: data.direction,
+            datetime: data.datetime, filename: file.name
+          });
+        } else { withoutGPS++; }
+      } catch (e) { withoutGPS++; }
+    }
+
+    showStatus(
+      '解析完成：' + withGPS + ' 張有 GPS，' + withoutGPS + ' 張無 GPS',
+      withGPS > 0 ? 'success' : 'warn'
+    );
+
+    renderResults();
+    if (allPoints.length > 0) renderMap();
+  }
+
+  function renderResults() {
+    resultsSection.style.display = 'block';
+    resultsSummary.innerHTML =
+      '<div class="summary-stat"><strong>' + allPoints.length + '</strong><span>GPS 座標點</span></div>';
+
+    var html = '';
+    allPoints.forEach(function(pt, i) {
+      html += '<div class="result-item">' +
+        '<div class="result-num">' + (i + 1) + '</div>' +
+        '<div class="result-info">' +
+          '<div class="result-filename">' + pt.filename + '</div>' +
+          '<div class="result-coords">' + pt.lat.toFixed(6) + ', ' + pt.lng.toFixed(6) + '</div>' +
+          (pt.datetime ? '<div class="result-time">' + pt.datetime + '</div>' : '') +
+          (pt.altitude ? '<div class="result-alt">海拔 ' + pt.altitude.toFixed(1) + 'm</div>' : '') +
+        '</div>' +
+      '</div>';
+    });
+    resultsList.innerHTML = html;
+  }
+
+  function renderMap() {
+    mapSection.style.display = 'block';
+
+    if (!map) {
+      map = L.map('map').setView([24.0, 120.5], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(map);
+    }
+
+    markers.forEach(function(m) { map.removeLayer(m); });
+    markers = [];
+
+    var bounds = [];
+    allPoints.forEach(function(pt, i) {
+      var marker = L.marker([pt.lat, pt.lng]).addTo(map);
+      marker.bindPopup(
+        '<strong>#' + (i + 1) + ' ' + pt.filename + '</strong><br>' +
+        pt.lat.toFixed(6) + ', ' + pt.lng.toFixed(6) +
+        (pt.datetime ? '<br>' + pt.datetime : '') +
+        (pt.altitude ? '<br>海拔 ' + pt.altitude.toFixed(1) + 'm' : '')
+      );
+      markers.push(marker);
+      bounds.push([pt.lat, pt.lng]);
+    });
+
+    if (bounds.length > 1) {
+      var sorted = allPoints.slice().sort(function(a, b) {
+        if (a.datetime && b.datetime) return a.datetime.localeCompare(b.datetime);
+        return 0;
+      });
+      var sortedBounds = sorted.map(function(pt) { return [pt.lat, pt.lng]; });
+      L.polyline(sortedBounds, { color: '#B45309', weight: 3, opacity: 0.7 }).addTo(map);
+    }
+
+    if (bounds.length === 1) map.setView(bounds[0], 16);
+    else if (bounds.length > 1) map.fitBounds(bounds, { padding: [30, 30] });
+
+    setTimeout(function() { map.invalidateSize(); }, 100);
+  }
+
+  // ── GP-7: visibilitychange — restart tracking, persist, flush queue ──
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+      if (!window.__gpsWatchId && lsGet('formosa_participant_status') !== 'completed') startGPSTracking();
+      persistAutoTrack();
+      var userId = lineUserId || lsGet('formosa_user_id') || '';
+      if (userId) flushCheckinQueue(userId);
+    } else {
+      persistAutoTrack();
+    }
+  });
+
+  // ── GP-8: beforeunload / pagehide — rescue data before page closes ──
+  window.addEventListener('beforeunload', function() {
+    persistAutoTrack();
+  });
+  window.addEventListener('pagehide', function() {
+    persistAutoTrack();
+    // Use sendBeacon for track/sync if available (survives page close)
+    var userId = lineUserId || lsGet('formosa_user_id') || '';
+    if (userId && navigator.sendBeacon) {
+      var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+      if (unsent.length > 0) {
+        navigator.sendBeacon(API_BASE + '/api/formosa/track/sync', new Blob([JSON.stringify({
+          user_id: userId,
+          points: unsent.slice(-500).map(function(p) {
+            return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source };
+          })
+        })], { type: 'application/json' }));
+      }
+    }
+  });
+
+  } // end trackerInit
+
+  // If DOM is already unlocked (AuthGate already ran), init immediately;
+  // otherwise wait for the formosa-unlocked event from AuthGate.
+  if (document.querySelector('.q-card[data-q]')) {
+    trackerInit();
+  } else {
+    document.addEventListener('formosa-unlocked', trackerInit, { once: true });
+  }
+
+})();
+</script>
+
+</BaseLayout>
+
+<style>
+  /* Prevent LINE LIFF pull-to-close gesture */
+  html, body {
+    overscroll-behavior-y: contain;
+  }
+
+  .tracker {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1rem 4rem;
+  }
+
+  /* Test Mode Banner */
+  .test-banner {
+    position: sticky; top: 0; z-index: 100;
+    background: #f59e0b; color: #78350f;
+    text-align: center; padding: 0.6rem 1rem;
+    font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .test-checkin-label {
+    color: #f59e0b; font-size: 0.78rem; font-weight: 600; margin-top: 0.25rem;
+  }
+
+  /* Photo Save Toast */
+  .photo-toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    background: rgba(30,58,38,0.9); color: #d1fae5; padding: 0.5rem 1rem;
+    border-radius: 8px; font-size: 0.78rem; z-index: 9999;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; max-width: 85vw;
+  }
+  .photo-toast.show { opacity: 1; }
+
+  /* Breadcrumb */
+  .tracker-breadcrumb { padding: 1.5rem 0; }
+  .tracker-breadcrumb a {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .tracker-breadcrumb a:hover { color: var(--accent-faith); }
+
+  /* Header */
+  .tracker-header {
+    text-align: center;
+    padding: 2rem 0 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .tracker-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-faith);
+    background: rgba(180,83,9,0.08);
+    padding: 4px 14px;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+  }
+  .tracker-header h1 {
+    font-family: var(--font-cjk);
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+  .tracker-header p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+  }
+
+  /* ═══ Linear Progress Bar ═══ */
+  .q-progress {
+    margin-bottom: 2rem;
+    padding: 0 0.25rem;
+  }
+  .q-progress-bar {
+    height: 6px;
+    background: var(--border-light, #e5e7eb);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  .q-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-faith), #d97706);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .q-progress-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: right;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+  }
+
+  /* ═══ Question Cards ═══ */
+  .q-card {
+    display: none;
+    min-height: 50vh;
+  }
+  .q-card.active {
+    display: block;
+    animation: qFadeIn 0.35s ease;
+  }
+  @keyframes qFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-section-tag {
+    font-family: var(--font-cjk);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-faith);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(180,83,9,0.15);
+  }
+
+  .q-error {
+    background: rgba(220,38,38,0.08);
+    border: 1px solid rgba(220,38,38,0.2);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    color: #DC2626;
+  }
+  .q-error-shake {
+    animation: qShake 0.4s ease;
+  }
+  @keyframes qShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .q-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+  }
+
+  /* ── GPS Tracking Banner ── */
+  .gps-banner {
+    background: linear-gradient(135deg, #065F46, #047857);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    color: white;
+  }
+  .gps-banner-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .gps-pulse {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #6EE7B7;
+    flex-shrink: 0;
+  }
+  .gps-pulse.active {
+    animation: pulse 2s infinite;
+  }
+  .gps-pulse.off {
+    background: #F87171;
+    animation: none;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(110,231,183,0.6); }
+    50% { box-shadow: 0 0 0 8px rgba(110,231,183,0); }
+  }
+  .gps-banner-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  .gps-count {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+  .gps-checkin-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    font-weight: 600;
+  }
+  .gps-checkin-btn:hover { background: rgba(255,255,255,0.3); }
+  .gps-checkin-btn:disabled { opacity: 0.6; cursor: default; }
+
+  /* ── Form Elements ── */
+  .form-label {
+    display: block;
+    font-family: var(--font-cjk);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary) !important;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  .tracker .form-group label {
+    color: var(--text-primary);
+    margin-bottom: 0;
+  }
+  .tracker .form-group input,
+  .tracker .form-group textarea {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-primary) !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  .form-hint {
+    font-weight: 400;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* Checkbox & Radio */
+  .checkbox-group, .radio-group {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .checkbox-item, .radio-item {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text-primary) !important;
+    margin-bottom: 0 !important;
+  }
+  .checkbox-item:hover, .radio-item:hover {
+    border-color: var(--accent-faith);
+    background: rgba(180,83,9,0.02);
+  }
+  .checkbox-item.selected, .radio-item.selected {
+    border-color: var(--accent-faith);
+    background: rgba(180,83,9,0.06);
+    transform: scale(1.01);
+  }
+  .checkbox-item input[type="checkbox"],
+  .checkbox-item input[type="radio"],
+  .radio-item input[type="checkbox"],
+  .radio-item input[type="radio"] {
+    width: auto !important;
+    padding: 0 !important;
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: var(--accent-faith);
+    background: none !important;
+    border: none !important;
+  }
+  .other-input {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    outline: none;
+  }
+  .other-input:focus { border-color: var(--accent-faith); }
+
+  /* Textarea */
+  .form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+  .form-textarea:focus { border-color: var(--accent-faith); }
+
+  /* ── Transport Grid ── */
+  .transport-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .transport-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .transport-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+  }
+  .transport-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .transport-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .transport-input {
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'DM Sans', sans-serif;
+    text-align: right;
+    outline: none;
+    box-sizing: border-box;
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+  .transport-input:focus { border-color: var(--accent-faith); }
+  .transport-unit {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Carbon Card ── */
+  .carbon-card {
+    background: linear-gradient(135deg, rgba(5,150,105,0.06), rgba(5,150,105,0.02));
+    border: 1px solid rgba(5,150,105,0.2);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .carbon-title {
+    font-family: var(--font-cjk);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #059669;
+    margin-bottom: 0.75rem;
+  }
+  .carbon-total {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #059669;
+    margin-bottom: 1rem;
+  }
+  .carbon-total small {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .carbon-breakdown {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+  .carbon-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(5,150,105,0.08);
+  }
+  .carbon-row.carbon-offset { color: #059669; font-weight: 600; }
+  .carbon-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* ── Navigation Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-cjk);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-next {
+    background: var(--accent-faith);
+    color: white;
+  }
+  .btn-next:hover { background: #9a4408; }
+  .btn-back {
+    background: var(--bg-section);
+    color: var(--text-secondary);
+  }
+  .btn-back:hover { background: var(--border-light); }
+  .btn-submit {
+    background: #059669;
+    color: white;
+    padding: 0.9rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 14px;
+  }
+  .btn-submit:hover { background: #047857; }
+  .btn-submit:disabled { opacity: 0.6; cursor: default; }
+
+  /* ── Upload Area ── */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--bg-card);
+    margin-bottom: 1.5rem;
+  }
+  .upload-area:hover,
+  .upload-area.drag-over {
+    border-color: var(--accent-faith);
+    background: rgba(180,83,9,0.03);
+  }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .upload-text {
+    font-family: var(--font-cjk);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .upload-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* Status */
+  .tracker-status {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .status-info { background: rgba(37,99,235,0.08); color: var(--accent-ai); }
+  .status-success { background: rgba(5,150,105,0.08); color: #059669; }
+  .status-warn { background: rgba(245,158,11,0.08); color: #B45309; }
+
+  /* Results */
+  .summary-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .summary-stat strong {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-faith);
+  }
+  .summary-stat span { font-size: 0.85rem; color: var(--text-secondary); }
+
+  .results-list { display: grid; gap: 0.5rem; }
+  .result-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+  }
+  .result-num {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    background: var(--accent-faith);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .result-filename { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .result-coords { font-family: 'DM Sans', monospace; font-size: 0.8rem; color: var(--accent-ai); }
+  .result-time, .result-alt { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* Map */
+  .tracker-map {
+    height: 400px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+  }
+
+  /* ── Done Screen ── */
+  .done-icon { font-size: 4rem; margin-bottom: 1rem; margin-top: 2rem; }
+  .done-title {
+    font-family: var(--font-cjk);
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+  .done-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .done-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .done-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--bg-section);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+  }
+  .done-stat strong {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-faith);
+  }
+  .done-stat span { font-size: 0.8rem; color: var(--text-secondary); }
+
+  /* Back link */
+  .tracker-back-link { text-align: center; margin-top: 1rem; }
+  .tracker-back-link a {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .tracker-back-link a:hover { color: var(--accent-faith); }
+
+  /* ── Reward Card ── */
+  .reward-card {
+    margin: 1.5rem auto;
+    max-width: 340px;
+  }
+  .reward-card-inner {
+    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 50%, #fef3c7 100%);
+    border: 2px solid #d97706;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(217, 119, 6, 0.15);
+  }
+  .reward-badge { margin-bottom: 0.5rem; text-align: center; }
+  .reward-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 0.25rem;
+  }
+  .reward-subtitle {
+    font-size: 0.8rem;
+    color: #b45309;
+    margin-bottom: 1rem;
+  }
+  .reward-stats {
+    font-size: 0.82rem;
+    color: #78350f;
+    margin-bottom: 0.5rem;
+  }
+  .reward-date {
+    font-size: 0.78rem;
+    color: #a16207;
+    margin-bottom: 1rem;
+  }
+  .reward-next {
+    font-size: 0.78rem;
+    color: #b45309;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(217, 119, 6, 0.2);
+  }
+
+  /* ── Share Section ── */
+  .share-section {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+  }
+  .share-primary-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #B45309, #92400e);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .share-toast {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #059669;
+    font-weight: 600;
+    animation: qFadeIn 0.3s ease;
+  }
+
+  /* ── Check-in Mode (Returning User) ── */
+  .checkin-mode { padding: 1rem 0; }
+  .checkin-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .checkin-badge span {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #92400e;
+    background: linear-gradient(135deg, #fef3c7, #fffbeb);
+    border: 1px solid #d97706;
+    border-radius: 20px;
+    padding: 0.3rem 1rem;
+  }
+  .mascot-badge {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+  }
+  .mascot-reward {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+  }
+  .checkin-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .checkin-big-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 300px;
+    margin: 1.5rem auto;
+    padding: 1.2rem 2rem;
+    background: #059669;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .checkin-big-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+  }
+  .checkin-big-icon { font-size: 1.6rem; }
+  .checkin-upload-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .upload-zone-mini {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  .upload-zone-mini:hover { border-color: var(--accent-faith); }
+  .photo-action-row {
+    display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;
+  }
+  .photo-btn {
+    flex: 1; padding: 0.75rem 0.5rem; border: 2px solid var(--border);
+    border-radius: 12px; background: var(--bg-card); cursor: pointer;
+    font-size: 0.95rem; color: var(--text-primary); transition: all 0.2s;
+  }
+  .photo-btn:active { transform: scale(0.97); }
+  .photo-btn-camera { border-color: var(--accent-faith); color: var(--accent-faith); font-weight: 600; }
+  .photo-btn-camera:hover { background: rgba(76,175,80,0.08); }
+  .photo-btn-save { border-color: #f59e0b; color: #f59e0b; font-weight: 600; font-size: 0.88rem; }
+  .photo-btn-save:hover { background: rgba(245,158,11,0.08); }
+  .photo-btn-save:disabled { opacity: 0.35; pointer-events: none; }
+  .photo-save-toggle {
+    display: flex; align-items: center; gap: 0.5rem;
+    cursor: pointer; white-space: nowrap; user-select: none;
+  }
+  .photo-save-toggle input { display: none; }
+  .toggle-slider {
+    width: 44px; height: 24px; background: #ccc; border-radius: 12px;
+    position: relative; transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle-slider::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; background: white; border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .photo-save-toggle input:checked + .toggle-slider {
+    background: #059669;
+  }
+  .photo-save-toggle input:checked + .toggle-slider::after {
+    transform: translateX(20px);
+  }
+  .toggle-text {
+    font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);
+  }
+
+  /* Photo status text (replaces thumbnails) */
+  .photo-status {
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+  .photo-status-text {
+    display: block;
+    font-size: 0.82rem;
+    color: #888;
+  }
+  .photo-status-check {
+    color: #059669;
+    font-weight: 600;
+  }
+  .photo-status-thanks {
+    display: block;
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 0.15rem;
+  }
+  .photo-status-loading {
+    color: #666;
+  }
+  .photo-status-error {
+    color: #dc2626;
+  }
+  .photo-retry-btn {
+    display: inline-block;
+    margin-top: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    border: 1px solid #dc2626;
+    border-radius: 6px;
+    background: transparent;
+    color: #dc2626;
+    cursor: pointer;
+  }
+  .photo-retry-btn:hover { background: rgba(220,38,38,0.08); }
+
+  .my-journey-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #B45309, #92400e);
+    color: #fff;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .checkin-stats { margin: 1rem 0; }
+
+  /* ── Daily Report Section ── */
+  .daily-report-section {
+    margin-top: 2rem;
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bg-card);
+  }
+  .daily-report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    background: linear-gradient(135deg, rgba(5,150,105,0.06), rgba(5,150,105,0.02));
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #059669;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .daily-report-header:hover {
+    background: linear-gradient(135deg, rgba(5,150,105,0.1), rgba(5,150,105,0.04));
+  }
+  .daily-report-toggle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .daily-report-body {
+    padding: 1rem;
+  }
+  .daily-report-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .daily-section-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    margin-top: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .daily-grid {
+    gap: 0.5rem;
+  }
+  .daily-grid .transport-item {
+    padding: 0.6rem 0.7rem;
+  }
+  .daily-grid .transport-label {
+    font-size: 0.78rem;
+    margin-bottom: 0.35rem;
+  }
+  .daily-carbon-result {
+    background: linear-gradient(135deg, rgba(5,150,105,0.06), rgba(5,150,105,0.02));
+    border: 1px solid rgba(5,150,105,0.15);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  .daily-submit-btn {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  .daily-submit-status {
+    text-align: center;
+    font-size: 0.82rem;
+    margin-top: 0.5rem;
+    min-height: 1.2em;
+  }
+  .daily-cumulative {
+    text-align: center;
+    margin-top: 0.75rem;
+    padding: 0.6rem;
+    background: rgba(5,150,105,0.04);
+    border-radius: 8px;
+  }
+  .hotel-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .hotel-toggle input { display: none; }
+  .hotel-toggle input:checked + .toggle-slider {
+    background: #059669;
+  }
+  .hotel-toggle input:checked + .toggle-slider::after {
+    transform: translateX(20px);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .tracker-map { height: 300px; }
+    .upload-area { padding: 2rem 1rem; }
+    .transport-grid { grid-template-columns: 1fr; }
+    .transport-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+    .daily-grid { grid-template-columns: 1fr 1fr; }
+    .done-stats { flex-direction: column; align-items: center; }
+  }
+
+  /* Participant Status Actions */
+  .participant-actions { margin-top: 2rem; text-align: center; }
+  .participant-divider { border-top: 1px solid var(--border); margin-bottom: 1.5rem; }
+  .participant-btn {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin: 0 0.25rem;
+    transition: background 0.2s;
+  }
+  .participant-pause-btn { background: #f3f4f6; color: #666; border: 1px solid var(--border); }
+  .participant-pause-btn:hover { background: #e5e7eb; }
+  .participant-complete-btn { background: var(--accent-faith); color: white; }
+  .participant-complete-btn:hover { background: #9a4408; }
+  .participant-hint { color: var(--text-secondary); font-size: 0.75rem; margin-top: 0.75rem; }
+  .completed-overlay {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 12px;
+    text-align: center;
+  }
+  .completed-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+  .completed-message h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #92400e; }
+  .completed-message p { color: #78350f; font-size: 0.9rem; margin-bottom: 1rem; }
+</style>
