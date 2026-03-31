@@ -49,9 +49,6 @@ const schemaJson = JSON.stringify({
       <h1>{t(lang, 'homepage.heroTitle')}<br /><span class="formosa-hero-accent">{t(lang, 'homepage.heroAccent')}</span></h1>
       <p class="formosa-hero-subtitle">{t(lang, 'homepage.heroSubtitle')}</p>
       <a href={`${prefix}/projects/formosa-esg-2026/guide/`} class="formosa-hero-cta">{t(lang, 'homepage.heroCta')}</a>
-      <div class="formosa-hero-advisors">
-        <span>{t(lang, 'homepage.heroAdvisors')}</span>
-      </div>
       <div class="formosa-hero-badge">{t(lang, 'homepage.heroBadge')}</div>
     </div>
   </section>
@@ -182,9 +179,6 @@ const schemaJson = JSON.stringify({
       <div class="partners-row organizers">
         {partners.organizers.map(p => (
           <div class="partner-chip primary">{p.name}</div>
-        ))}
-        {partners.advisors.map(p => (
-          <div class="partner-chip advisor">{p.name}</div>
         ))}
       </div>
     </div>
@@ -348,11 +342,6 @@ const schemaJson = JSON.stringify({
     transform: translateY(-2px);
     box-shadow: 0 4px 14px rgba(180,83,9,0.3);
   }
-  .formosa-hero-advisors {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
   /* Sections */
   .formosa-section {
     margin-bottom: 3.5rem;
@@ -697,12 +686,6 @@ const schemaJson = JSON.stringify({
     color: var(--accent-faith);
     font-weight: 600;
     font-size: 0.95rem;
-  }
-  .partner-chip.advisor {
-    background: rgba(5,150,105,0.06);
-    border-color: rgba(5,150,105,0.2);
-    color: var(--accent-circular);
-    font-weight: 600;
   }
   .partner-chip.small {
     font-size: 0.78rem;
