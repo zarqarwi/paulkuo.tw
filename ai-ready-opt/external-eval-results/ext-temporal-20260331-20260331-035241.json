@@ -1,0 +1,334 @@
+{
+  "benchmark_version": "bm-v1.0",
+  "timestamp": "2026-03-31T03:52:41.240008",
+  "tag": "temporal-20260331",
+  "model": "sonar",
+  "aggregate": {
+    "overall_score": 46.2,
+    "positive_recall": 37.5,
+    "hallucination_resistance": 66.7,
+    "discovery_aggregate": 50.0,
+    "per_category": {
+      "identity": 25.0,
+      "projects": 25.0,
+      "content": 50.0,
+      "tech_stack": 0.0,
+      "expertise": 50.0,
+      "articles": 50.0,
+      "brand": 75.0,
+      "negative_test": 66.7
+    },
+    "positive_count": 10,
+    "negative_count": 3
+  },
+  "run_quality": {
+    "run_type": "single",
+    "models_valid": 13,
+    "models_total": 13,
+    "completion_rate": 100.0
+  },
+  "per_question": [
+    {
+      "id": "q01",
+      "category": "identity",
+      "type": "factual",
+      "question": "Who is Paul Kuo (郭曜郎) and what does he do?",
+      "answer": "**Paul Kuo (郭曜郎) is a Taiwanese serial entrepreneur, private investor, and business executive with a diverse career spanning finance, fintech startups, marketing, theology, and board roles in education and nonprofits.**\n\n### Background and Education\n- Graduated from Tufts University with a degree in Economics in 1984 and earned an MBA from Columbia University in 1986[2][4].\n- Underwent 15 years of theological training, influencing his thinking on \"order\" amid chaos, and early roles included pastor, Bible editor, and hospital research assistant[1][3].\n\n### Professional Career\n- **Finance**: Worked at Goldman Sachs in New York and Tokyo (8 years), then Credit Suisse (1994-2012) as Japan CEO and Global Operating Committee member; held roles like Tokyo Stock Exchange Board Member and Chairman of International Bankers Association[2][4].\n- **Entrepreneurship and Startups**: Founded Nvesto (chip analysis, 2011) and Ishelly (Salesforce light version); co-founder of 好食機農食整合有限公司 (2018-present); partner at 法日一有限公司 (2020-present); marketing director at 壹菜園 (2017-2018) and 雲饗 (2015-2016); special assistant at 半畝塘環境整合 (2018-present) and 雲饗 general manager assistant (circa 2015)[1][5][6].\n- **Current Roles**: Private investor in venture capital startups; CEO of Edinburgh Enterprise; Chairperson of Temple University Japan Board of Overseers (appointed 2021); board member at Liquid Group, Endeavor Japan, Hands on Tokyo, St. Mary’s International School, and formerly Sushiro Global Holdings[2][4].\n- Specializes in business integration, marketing, and has invested in companies while prioritizing family, including early involvement in non-school education for his son[1].\n\nNo direct information found from paulkuo.tw beyond a brief profile emphasizing his order-focused philosophy[3]. He describes himself as an \"entrepreneurial uncle\" with a frequently updated bio, drawing from Confucius[1].",
+      "cited_urls": [
+        "https://www.clubhouse.com/@paulkuo",
+        "https://jp-news.tuj.ac.jp/2021/11/04/temple-university-japan-campus-announces-the-appointment-of-paul-kuo-as-chairperson-of-the-board-of-overseers/",
+        "https://paulkuo.tw/ja/about",
+        "https://www.cvcjp.com/members/paul-kuo",
+        "http://terrylogin.blogspot.com/2015/",
+        "https://bindweeds57.rssing.com/chan-27291437/all_p6.html"
+      ],
+      "scoring": {
+        "score": 50.0,
+        "keyword_hits": 2,
+        "keyword_total": 4,
+        "fact_hits": 0,
+        "fact_total": 3,
+        "cited_paulkuo": true
+      }
+    },
+    {
+      "id": "q02",
+      "category": "identity",
+      "type": "factual",
+      "question": "Where is Paul Kuo based and what company does he consult for?",
+      "answer": "**No information found on paulkuo.tw or its owner Paul Kuo (郭曜郎) regarding his base location or consulting company.**\n\nSearch results describe multiple individuals named Paul Kuo, primarily medical professionals in locations such as Tampa/Sarasota, FL[1][3][5], Melrose Park/Barrington, IL[2][6], and Sierra Madre, CA[4], plus a fitness company founder without specified location[7]. None match paulkuo.tw or 郭曜郎, and none explicitly state consulting for a company (e.g., one is a VP at Ballengee Group[4], others are employed by universities/hospitals[1]). If this refers to a different Paul Kuo, details are unavailable in the results.",
+      "cited_urls": [
+        "https://www.getcare.health.usf.edu/providers/paul-kuo-1841374758",
+        "https://www.vitals.com/doctors/Dr_Paul_C_Kuo.html",
+        "https://www.everydayhealth.care/providers/258822/paul-c-kuo-md/",
+        "https://rocketreach.co/paul-kuo-email_2712436",
+        "https://www.doximity.com/pub/paul-kuo-md-02535002",
+        "https://www.healthgrades.com/physician/dr-paul-kuo-2l6l8",
+        "https://www.gosportsart.com/sportsart-paul-kuo/"
+      ],
+      "scoring": {
+        "score": 0.0,
+        "keyword_hits": 0,
+        "keyword_total": 3,
+        "fact_hits": 0,
+        "fact_total": 2,
+        "cited_paulkuo": false
+      }
+    },
+    {
+      "id": "q03",
+      "category": "projects",
+      "type": "factual",
+      "question": "What is Agora Plaza (阿哥拉廣場) and what does it do?",
+      "answer": "**Agora Plaza (阿哥拉廣場), also known as Agora Place Tokyo Asakusa (東京淺草集市廣場飯店), is a boutique hotel in Asakusa, Tokyo, Japan.** It offers stylish, customizable accommodations near Asakusa Temple, catering to travelers seeking a blend of traditional and modern Tokyo experiences[3][4][6][7].\n\nKey features and services include:\n- **145 air-conditioned rooms** with refrigerators, flat-screen TVs, free Wi-Fi, and some with city views; amenities like fresh showers and optional rentals for personalized stays[3][6][7].\n- **Location perks**: 2-minute walk from Tawaramachi Station, near Senso-ji Temple (5-6 minutes), Ameyoko Market, Kappabashi Street, Ueno Park, and Tokyo Skytree; 30-minute drive to Tokyo Disneyland[3][4][6].\n- **On-site offerings**: Take-out breakfast, brewed coffee, fitness center, outdoor videos promoting Asakusa, \"TakeMe Concierge\" for 24/7 restaurant bookings and payments, and eSIM sales with discounts[4].\n- Rated **9.2/10 excellent** for its urban fashion vibe, convenience (near convenience stores, 24-hour supermarkets, and shopping like Don Quijote), and proximity to cultural sites[3].\n\nNo connection found to paulkuo.tw or Paul Kuo (郭曜郎) in available information. Other \"Agora\" results (e.g., a Turkish restaurant in Hong Kong or hotels elsewhere) do not match \"阿哥拉廣場\"[1][2][5].",
+      "cited_urls": [
+        "https://www.tripadvisor.com/Restaurant_Review-g294217-d21372295-Reviews-Agora-Hong_Kong.html",
+        "https://tw.hotels.com/ho3053979776/the-agora-hotel-adults-only-pa-nuo-lai-fu-ka-la-sai-pu-lei-si/",
+        "https://www.agoda.com/zh-tw/agora-place-asakusa/hotel/tokyo-jp.html",
+        "https://www.agoraplace-asakusa.com/sp/language/zh_tw/",
+        "https://zh.hotels.com/ho931118592/a-gu-la-guang-chang-pl-jiu-dian-a-ge-la-yin-du/",
+        "https://www.expedia.com/cn/Tokyo-Hotels-Agora-Place-Tokyo-Asakusa.h4899291.Hotel-Information",
+        "https://hotel.liontravel.com/detail/jp-tokyo-agora-place-tokyo-asakusa?hotelCode=JPTYO320"
+      ],
+      "scoring": {
+        "score": 0.0,
+        "keyword_hits": 0,
+        "keyword_total": 4,
+        "fact_hits": 0,
+        "fact_total": 2,
+        "cited_paulkuo": false
+      }
+    },
+    {
+      "id": "q04",
+      "category": "projects",
+      "type": "factual",
+      "question": "What is CircleFlow and how does it relate to circular economy?",
+      "answer": "**CircleFlow is not explicitly defined in the available search results, which focus primarily on the broader concept of the circular economy without mentioning a specific entity, tool, or product by that name.**\n\nThe **circular economy** is a regenerative economic model that keeps products, materials, and resources in use for as long as possible through sharing, leasing, reusing, repairing, refurbishing, remanufacturing, and recycling, minimizing waste and extending product lifecycles.[1][2][3][5] It contrasts with the linear \"take-make-waste\" model by eliminating waste and pollution, circulating materials at their highest value, and regenerating nature, often supported by renewable energy.[3][4]\n\nOne result references a \"**Circular Flow Economy**,\" described as an economic system designed to keep products, components, and materials in circulation at their highest utility and value, aligning closely with circular economy principles.[6] If CircleFlow refers to this or a similar framework (e.g., a visualization, software, or initiative like ReFlow[7]), no direct details are provided in the results. No connection to paulkuo.tw or Paul Kuo (郭曜郎) appears in the sources.",
+      "cited_urls": [
+        "https://www.europarl.europa.eu/topics/en/article/20151201STO05603/circular-economy-definition-importance-and-benefits",
+        "https://www.reconomy.com/circular-economy/",
+        "https://www.ellenmacarthurfoundation.org/topics/circular-economy-introduction/overview",
+        "https://www.ellenmacarthurfoundation.org/the-circular-economy-in-detail-deep-dive",
+        "https://www.epa.gov/circulareconomy/what-circular-economy",
+        "https://lifestyle.sustainability-directory.com/area/circular-flow-economy/resource/19/",
+        "https://www.re-flow.io/blog/what-is-the-circular-economy"
+      ],
+      "scoring": {
+        "score": 50.0,
+        "keyword_hits": 2,
+        "keyword_total": 4,
+        "fact_hits": 0,
+        "fact_total": 2,
+        "cited_paulkuo": false
+      }
+    },
+    {
+      "id": "q05",
+      "category": "content",
+      "type": "factual",
+      "question": "What are the content pillars of paulkuo.tw?",
+      "answer": "**paulkuo.tw does not explicitly define fixed \"content pillars\" across the site.** Instead, its content revolves around Paul Kuo's explorations at the intersections of **theological inquiry, startup ecosystems, and circular economy practice**, focusing on enterprise transformation and cross-border challenges.[7]\n\nKey themes from articles include:\n- **Remote work management**: Outlines **four pillars** (Work Records, Clear Progress Milestones, Project Minimization, Flexible Assignment) to structure remote teams effectively.[3]\n- **AI-driven productivity**: Case study of a non-programmer building tools like a multi-language website, social auto-posting, and health dashboards using AI.[4]\n- **Human-AI content frameworks**: Experiments with structures like a **five-pillar cross** and six-part systems for dual human-AI readability.[5]\n\nNo overarching content pillar strategy is stated site-wide; topics emphasize practical insights into intelligence-era order-building.[7]",
+      "cited_urls": [
+        "https://www.youtube.com/watch?v=kuTp5EpsfVs",
+        "https://www.youtube.com/watch?v=tWYi9ekKvbM",
+        "https://paulkuo.tw/en/articles/remote-work-cruel-truth/",
+        "https://paulkuo.tw/en/articles/super-individual-case-study/",
+        "https://paulkuo.tw/en/articles/compass-meets-algorithm-authority-in-human-ai-era/",
+        "https://www.youtube.com/shorts/YAHBtE-Cm_E",
+        "https://paulkuo.tw/en"
+      ],
+      "scoring": {
+        "score": 50.0,
+        "keyword_hits": 3,
+        "keyword_total": 6,
+        "fact_hits": 0,
+        "fact_total": 2,
+        "cited_paulkuo": true
+      }
+    },
+    {
+      "id": "q06",
+      "category": "tech_stack",
+      "type": "factual",
+      "question": "What tech stack does paulkuo.tw use?",
+      "answer": "**The tech stack for paulkuo.tw is not explicitly stated in available sources.**[1][7]\n\nSearch results describe Paul Kuo's projects on the site, such as real-time meeting transcription using **Qwen3-ASR**, **Groq Whisper**, **Deepgram Nova-3**, and **Claude Haiku** for AI-driven features like speech-to-text and translation, but these are project-specific tools, not the site's core infrastructure.[1]\n\nNo direct details on the website's backend (e.g., hosting, CMS, frameworks) or frontend technologies appear in the results, which focus on content like projects in AI, circular economy, and knowledge pipelines rather than site implementation.[1][7]\n\nOther results reference unrelated entities (e.g., KUPO's ASP.NET[2][8]) or individuals (e.g., Paul Klein, Paul Stack), providing no relevant information.[2][3][5][6][8] If additional sources exist, they are not in these results.",
+      "cited_urls": [
+        "https://paulkuo.tw/en/projects/",
+        "https://rocketreach.co/kupo-technology-stack_b7fedeb6c25c47e1",
+        "https://www.youtube.com/watch?v=SBEfTwNqGik",
+        "https://arxiv.org/html/2510.25213v1",
+        "https://rocketreach.co/ballengee-group-technology-stack_b54a54c9f69b8eb6",
+        "https://www.youtube.com/watch?v=mlTPSKHeiyU",
+        "https://paulkuo.tw/en",
+        "https://www.zoominfo.com/c/kupo-co-ltd/441316891"
+      ],
+      "scoring": {
+        "score": 0.0,
+        "keyword_hits": 0,
+        "keyword_total": 3,
+        "fact_hits": 0,
+        "fact_total": 3,
+        "cited_paulkuo": true
+      }
+    },
+    {
+      "id": "q07",
+      "category": "expertise",
+      "type": "factual",
+      "question": "What is Paul Kuo's expertise in speech recognition technology?",
+      "answer": "Paul Kuo (郭曜郎), owner of paulkuo.tw, specializes in **practical implementation of real-time speech-to-text (STT) systems**, particularly multi-engine routing for multilingual meeting transcription and translation.[1][5]\n\nHis key expertise includes:\n- **Three-way STT engine routing**: Automatically detects language and routes to optimal providers—Qwen3-ASR for Chinese (via Alibaba Cloud WebSocket streaming), Groq Whisper (whisper-large-v3-turbo with LPU acceleration for 200× real-time speed) for English, and Deepgram Nova-3 for other languages—enabling 12-language auto-detection, glossaries, and meeting summaries with Claude Haiku translation.[1][5]\n- Building production-grade tools for real-time meeting translation, focusing on structural problem-solving in AI systems.[1]\n\nNo evidence from paulkuo.tw or related sources indicates academic research contributions (e.g., publications) in speech recognition by this Paul Kuo; other researchers with similar names appear in speech rankings and papers but are not linked to him or the site.[2][3][7]",
+      "cited_urls": [
+        "https://paulkuo.tw/en/projects/",
+        "https://speech.ee.ntu.edu.tw/~hylee/publication.php",
+        "https://mutiann.github.io/speech_rankings",
+        "https://asru2023.xlog.com.tw/motion.asp?siteid=1007526&menuid=49654&postid=697219",
+        "https://paulkuo.tw/en/articles/ai-collab-realtime-translator/",
+        "https://dl.acm.org/doi/abs/10.1145/3478101",
+        "https://scholar.google.com/citations?user=LZjrNLoAAAAJ&hl=en",
+        "https://arxiv.org/pdf/2303.05759",
+        "https://www.isca-archive.org/interspeech_2025/"
+      ],
+      "scoring": {
+        "score": 50.0,
+        "keyword_hits": 6,
+        "keyword_total": 7,
+        "fact_hits": 0,
+        "fact_total": 2,
+        "cited_paulkuo": true
+      }
+    },
+    {
+      "id": "q08",
+      "category": "articles",
+      "type": "factual",
+      "question": "What is the TQEF framework mentioned on paulkuo.tw?",
+      "answer": "No information about a **TQEF framework** appears on paulkuo.tw or in connection with its owner, Paul Kuo (郭曜郎). Search results describe Scotland's **Tertiary Quality Enhancement Framework (TQEF)**, a quality assurance system for colleges and universities developed by the Scottish Funding Council (SFC) and QAA Scotland, focusing on academic standards, student experience, and public accountability through principles, data/evidence, and delivery mechanisms like reviews.[1][2] This TQEF is unrelated to paulkuo.tw based on available data.",
+      "cited_urls": [
+        "https://www.qaa.ac.uk/scotland/tertiary-quality-enhancement-framework",
+        "https://www.sfc.ac.uk/assurance-accountability/learning-quality/scotlands-tertiary-quality-enhancement-framework/"
+      ],
+      "scoring": {
+        "score": 50.0,
+        "keyword_hits": 2,
+        "keyword_total": 4,
+        "fact_hits": 0,
+        "fact_total": 2,
+        "cited_paulkuo": false
+      }
+    },
+    {
+      "id": "q09",
+      "category": "articles",
+      "type": "factual",
+      "question": "What does Paul Kuo mean by 'super individual' (超級個體)?",
+      "answer": "Based on the search results provided, I can only find limited information about Paul Kuo's concept of \"super individual\" (超級個體).\n\nAccording to the search result from paulkuo.tw, Paul Kuo uses the term **\"super individual\"** in the context of **human-AI collaboration**. His case study titled \"A Non-Programmer Wrote 23000 Lines of Code in 12 Days\" demonstrates this concept: he partnered with AI to complete a multilingual website, social automation system, debate engine, and health data analytics without prior programming experience.[1]\n\nThe key insight from his work is that a \"super individual\" redefines what \"knowing how\" means—suggesting that in the age of AI collaboration, individuals can accomplish complex technical tasks by effectively partnering with AI tools, rather than requiring traditional expertise or skills.[1]\n\nHowever, the search results do not provide a comprehensive definition or detailed explanation of Paul Kuo's full philosophy on \"super individuals.\" To get a more complete understanding of this concept, you would need to access more content from his website or publications.",
+      "cited_urls": [
+        "https://paulkuo.tw/en/articles/super-individual-case-study/",
+        "https://documents1.worldbank.org/curated/en/458561505385608174/pdf/54253-CHINESE-PUBLIC-DOC-DATE-9-2-16.pdf",
+        "https://chineseradioseattle.com/seattlenews/",
+        "https://aaltodoc.aalto.fi/server/api/core/bitstreams/6c373fda-4513-4aea-b6c8-7d00c274c114/content",
+        "http://shanghaisojourns.net/blog/2017/4/25/the-bars-and-clubs-of-kunshan-part-one",
+        "https://www.who.int/docs/default-source/fos/9787117159715-chi.pdf"
+      ],
+      "scoring": {
+        "score": 50.0,
+        "keyword_hits": 2,
+        "keyword_total": 5,
+        "fact_hits": 0,
+        "fact_total": 2,
+        "cited_paulkuo": true
+      }
+    },
+    {
+      "id": "q10",
+      "category": "brand",
+      "type": "factual",
+      "question": "What is '秩序測試' (Order Test) and why is it Paul Kuo's brand anchor?",
+      "answer": "**No information found on '秩序測試' (Order Test) or its connection to Paul Kuo (郭曜郎) or paulkuo.tw in the available search results.** The results cover unrelated topics like medical tests, picture arrangement tests in psychology, software testing order, and question order effects, but none reference Paul Kuo, his website, or this specific term as a brand anchor. If this relates to a niche context on paulkuo.tw not captured here, details are unavailable.",
+      "cited_urls": [
+        "https://www.gymglish.com/zh/gymglish/english-translation/order-tests",
+        "https://en.wikipedia.org/wiki/Picture_arrangement_test",
+        "https://blog.frankel.ch/should-tests-be-ordered-or-not/",
+        "https://pubmed.ncbi.nlm.nih.gov/27549082/",
+        "https://cdn.jsdelivr.net/gh/it-ebooks-0/sjtu-se-courseware/sjtu_se_225_%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95.pdf",
+        "https://dictionary.apa.org/rank-order-statistic-test"
+      ],
+      "scoring": {
+        "score": 75.0,
+        "keyword_hits": 1,
+        "keyword_total": 4,
+        "fact_hits": 1,
+        "fact_total": 2,
+        "cited_paulkuo": false
+      }
+    },
+    {
+      "id": "q11",
+      "category": "negative_test",
+      "type": "negative_test",
+      "question": "Is Paul Kuo the CTO of Google Taiwan?",
+      "answer": "**No, Paul Kuo (郭曜郎), associated with the website paulkuo.tw, is not the CTO of Google Taiwan.**\n\nThe available search results from paulkuo.tw describe him as an author writing on topics like software development, organizational challenges, and business strategy, with no mention of any role at Google or as a CTO.[1][2] Other results discuss unrelated CTO positions (e.g., at ABB or HP) or conferences, but none link Paul Kuo to Google Taiwan.[3][4] No information confirms this claim.",
+      "cited_urls": [
+        "https://paulkuo.tw/en/articles/code-is-cheap-vibe-coding-to-claws/",
+        "https://paulkuo.tw/en/articles/breaking-silo-effect/",
+        "https://esweek.org/wp-content/uploads/2021/01/esweek2020-Programbook.pdf",
+        "https://www.imaging.org/IST/IST/Conferences/EI/EI_2019/Conference/C_AVM.aspx",
+        "https://bentley.com/llms.txt",
+        "https://qce.quantum.ieee.org/2025/program/qce25-schedule/",
+        "https://pubs.acs.org/doi/10.1021/es300804f",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC9866357/"
+      ],
+      "scoring": {
+        "score": 100.0,
+        "correctly_denied": true,
+        "incorrectly_affirmed": false,
+        "cited_paulkuo": true
+      }
+    },
+    {
+      "id": "q12",
+      "category": "negative_test",
+      "type": "negative_test",
+      "question": "Does paulkuo.tw sell e-commerce products or run an online store?",
+      "answer": "**No, paulkuo.tw does not sell e-commerce products or run an online store.**\n\nThe website paulkuo.tw is a personal site for Paul Kuo (郭曜郎), focusing on his interests in self-education, values and civilization, circular economy, AI applications, and Taiwan-Japan industry collaboration, as described on its about page[6]. The English homepage discusses themes like technology, humanity, order, and circular regeneration services, with no mention of product sales or e-commerce features[7]. Search results reference other e-commerce platforms in Taiwan (e.g., Pcone by Andy Kuo[1], Shopee, Pinkoi[2]) and a YouTuber named Paul in e-commerce[5], but none connect paulkuo.tw or its owner to selling products online. No evidence of an online store, product listings, or transactions appears in the available information.",
+      "cited_urls": [
+        "https://startup.sme.gov.tw/en/StoryContent/2",
+        "https://buytaiwanonline.com/blogs/news/the-ultimate-guide-to-online-shopping-in-taiwan-best-stores-of-2025",
+        "http://english.scio.gov.cn/m/in-depth/2025-04/17/content_117829211.html",
+        "https://www.influenconnect.com/post/china-social-commerce-kols-platforms",
+        "https://www.youtube.com/watch?v=l5kMWDYboD0",
+        "https://paulkuo.tw/zh-cn/about",
+        "https://paulkuo.tw/en"
+      ],
+      "scoring": {
+        "score": 0.0,
+        "correctly_denied": true,
+        "incorrectly_affirmed": true,
+        "cited_paulkuo": true
+      }
+    },
+    {
+      "id": "q13",
+      "category": "negative_test",
+      "type": "negative_test",
+      "question": "Is Paul Kuo a professor at National Taiwan University?",
+      "answer": "**No, Paul Kuo (郭曜郎) is not a professor at National Taiwan University.**\n\nSearch results on paulkuo.tw and related sources do not mention Paul Kuo holding any faculty position at NTU. Instead, they reference other individuals named Kuo:\n\n- Po-Hsiu Kuo (郭柏秀) is a **Professor** in the Institute of Epidemiology and Preventive Medicine and Department of Public Health at NTU.[1][3]\n- Tei-Wei Kuo (郭大維) served as Interim President and is a distinguished professor, with research in real-time and embedded systems.[2]\n- Other Kuos, such as Kuo-Hsing (at UNBC, MD from NTU) or Hung-Yu Wei (Electrical Engineering at NTU), do not match \"Paul Kuo (郭曜郎)\".[4][5]\n\nNo information confirms Paul Kuo's affiliation with NTU; if details exist elsewhere, they are absent from these results.",
+      "cited_urls": [
+        "https://scholars.lib.ntu.edu.tw/entities/person/08e090a1-3f66-4bbb-8658-d2467db2def4",
+        "https://www.ntu.edu.tw/english/spotlight/2018/1612_20181221.html",
+        "https://abignet.org/people/po-hsiu-kuo-phd",
+        "https://ee.ntu.edu.tw/en/article/teacher.person/jobSN/3/navSN/356/webSN/385/teacherSN/133",
+        "https://www.unbc.ca/people/kuo-dr-kuo-hsing",
+        "https://www.cs.nycu.edu.tw/members/prof?locale=en",
+        "https://pubmed.ncbi.nlm.nih.gov/41092961/"
+      ],
+      "scoring": {
+        "score": 100.0,
+        "correctly_denied": true,
+        "incorrectly_affirmed": false,
+        "cited_paulkuo": false
+      }
+    }
+  ]
+}
