@@ -130,7 +130,8 @@ const COLUMN_MIGRATIONS = [
   `CREATE UNIQUE INDEX IF NOT EXISTS idx_gps_user_ts ON formosa_gps_points(user_id, timestamp)`,
   `ALTER TABLE formosa_users ADD COLUMN privacy_agreed_at TEXT DEFAULT NULL`,
   `ALTER TABLE formosa_users ADD COLUMN participant_status TEXT DEFAULT 'active'`,
-  `ALTER TABLE formosa_users ADD COLUMN completed_at TEXT DEFAULT NULL`
+  `ALTER TABLE formosa_users ADD COLUMN completed_at TEXT DEFAULT NULL`,
+  `ALTER TABLE formosa_users ADD COLUMN language TEXT DEFAULT NULL`
 ];
 
 // ── Run migration ──
@@ -162,9 +163,10 @@ export async function handleFormosaWebhook(request, env) {
       // Upsert user for any event type
       if (userId) {
         const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
+        const userLang = profile?.language || null;
         await env.AUTH_DB.prepare(
-          `INSERT INTO formosa_users (line_user_id, display_name, picture_url, updated_at) VALUES (?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, updated_at=datetime('now')`
-        ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '').run();
+          `INSERT INTO formosa_users (line_user_id, display_name, picture_url, language, updated_at) VALUES (?, ?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, language=excluded.language, updated_at=datetime('now')`
+        ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '', userLang).run();
       }
 
       // ── Follow: Welcome Flex Message ──
