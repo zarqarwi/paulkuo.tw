@@ -59,8 +59,8 @@ const linkPrefix = prefix;
 <BaseLayout
   title={`${t(lang, 'page.my')} — ${t(lang, 'brand.shortName')}`}
   description={t(lang, 'brand.tagline')}
-  ogUrl={`https://paulkuo.tw${prefix}/projects/formosa-esg-2026/my/`}
-  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+  ogUrl="https://mazu.today/my/"
+  ogImage="https://mazu.today/images/formosa-esg-2026-og.png"
   eventMode={true}
 >
 
@@ -236,8 +236,8 @@ const linkPrefix = prefix;
 
   function getPersonalShareUrl() {
     return lineUserId
-      ? 'https://paulkuo.tw' + _prefix + '/projects/formosa-esg-2026/tracker/?u=' + encodeURIComponent(lineUserId)
-      : 'https://paulkuo.tw' + _prefix + '/projects/formosa-esg-2026/tracker/';
+      ? 'https://mazu.today/tracker/?u=' + encodeURIComponent(lineUserId)
+      : 'https://mazu.today/tracker/';
   }
   var SHARE_URL = getPersonalShareUrl();
 
@@ -368,7 +368,7 @@ const linkPrefix = prefix;
         ctx.fillText(_t.ogJoinCta, 60, 470);
         ctx.fillStyle = '#475569';
         ctx.font = '20px sans-serif';
-        ctx.fillText('paulkuo.tw' + _prefix + '/projects/formosa-esg-2026/tracker/', 60, 590);
+        ctx.fillText('mazu.today/tracker/', 60, 590);
         c.toBlob(function(blob) {
           if (!blob || blob.size > 2 * 1024 * 1024) return;
           fetch(API_BASE + '/api/formosa/og-image', {
@@ -657,7 +657,7 @@ const linkPrefix = prefix;
   window.shareFB = function() {
     // FB share includes userId so crawler can serve personalized OG image
     var fbUrl = SHARE_URL;
-    if (lineUserId) fbUrl = 'https://paulkuo.tw' + _prefix + '/projects/formosa-esg-2026/tracker/?u=' + encodeURIComponent(lineUserId);
+    if (lineUserId) fbUrl = 'https://mazu.today/tracker/?u=' + encodeURIComponent(lineUserId);
     var shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(fbUrl) + '&quote=' + encodeURIComponent(getShareText());
     window.open(shareUrl, '_blank');
   };

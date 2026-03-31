@@ -32,3 +32,8 @@ bucket_name = "tqef-audio"
 [[r2_buckets]]
 binding = "FORMOSA_OG"
 bucket_name = "formosa-og"
+
+# mazu.today reverse proxy route
+[[routes]]
+pattern = "mazu.today/*"
+zone_name = "mazu.today"

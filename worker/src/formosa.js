@@ -1125,9 +1125,9 @@ export async function handleFormosaAdminClusters(request, env) {
 }
 
 // ── Keyword Router ──
-const TRACKER_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/';
-const PROJECT_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/';
-const GUIDE_URL = 'https://paulkuo.tw/projects/formosa-esg-2026/guide/';
+const TRACKER_URL = 'https://mazu.today/tracker/';
+const PROJECT_URL = 'https://mazu.today/';
+const GUIDE_URL = 'https://mazu.today/guide/';
 
 async function routeKeyword(text, userId, env) {
   const t = text.toLowerCase();
@@ -1144,7 +1144,7 @@ async function routeKeyword(text, userId, env) {
 
   // 回報 / 問題 / bug
   if (/回報|問題|bug|反饋|建議/.test(t)) {
-    return [{ type: 'text', text: '📝 回報問題請到這裡：\nhttps://paulkuo.tw/projects/formosa-esg-2026/feedback/\n\n也可以直接在這裡打字描述，我們會看到！' }];
+    return [{ type: 'text', text: '📝 回報問題請到這裡：\nhttps://mazu.today/feedback/\n\n也可以直接在這裡打字描述，我們會看到！' }];
   }
 
   // 等級 / 紀錄 / 我的 / 排行
@@ -1401,7 +1401,7 @@ export async function handleFormosaRichMenu(request, env) {
 }
 
 // Rich Menu image: fetch pre-built PNG from site
-const RICH_MENU_IMAGE_URL = 'https://paulkuo.tw/images/formosa/rich-menu-v2.png';
+const RICH_MENU_IMAGE_URL = 'https://mazu.today/images/formosa/rich-menu-v2.png';
 
 async function fetchRichMenuImage() {
   const res = await fetch(RICH_MENU_IMAGE_URL);
@@ -1866,7 +1866,7 @@ export async function handleFormosaOgServe(request, env, userId) {
 
     if (!object) {
       // Proxy fallback image directly (302 redirects break Facebook crawler)
-      const fallback = await fetch('https://paulkuo.tw/images/formosa-esg-2026-og.png');
+      const fallback = await fetch('https://mazu.today/images/formosa-esg-2026-og.png');
       return new Response(fallback.body, {
         headers: {
           'Content-Type': 'image/png',
@@ -1885,7 +1885,7 @@ export async function handleFormosaOgServe(request, env, userId) {
     });
   } catch (e) {
     // Proxy fallback image directly (302 redirects break Facebook crawler)
-    const fallback = await fetch('https://paulkuo.tw/images/formosa-esg-2026-og.png');
+    const fallback = await fetch('https://mazu.today/images/formosa-esg-2026-og.png');
     return new Response(fallback.body, {
       headers: {
         'Content-Type': 'image/png',

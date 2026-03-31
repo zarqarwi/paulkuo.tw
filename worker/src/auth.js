@@ -26,8 +26,8 @@ export async function checkBudget(auth, env) {
   return { ok: total < INVITE_BUDGET_SEC, usedSec: +total.toFixed(1), budgetSec: INVITE_BUDGET_SEC, remainingSec: +Math.max(0, INVITE_BUDGET_SEC - total).toFixed(1) };
 }
 
-function setSessionCookie(sid) { return `session=${sid}; Path=/; HttpOnly; Secure; SameSite=Lax; Domain=.paulkuo.tw; Max-Age=${SESSION_MAX_AGE}`; }
-function clearSessionCookie() { return 'session=; Path=/; HttpOnly; Secure; SameSite=Lax; Domain=.paulkuo.tw; Max-Age=0'; }
+function setSessionCookie(sid) { return `session=${sid}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_MAX_AGE}`; }
+function clearSessionCookie() { return 'session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0'; }
 function getSessionFromCookie(request) { const m = (request.headers.get('Cookie') || '').match(/(?:^|;\s*)session=([^\s;]+)/); return m ? m[1] : null; }
 
 async function upsertUser(db, { email, name, avatar, provider, providerId }) {

@@ -104,8 +104,61 @@ async function handleHealth(request, env) {
 
 const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/visit','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/feed/sync','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/scorecard/submit','/api/scorecard/feed','/api/scorecard/eval/:id','/api/scorecard/badge/:id','/api/scorecard/history/:projectName','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];
 
+async function handleMazuToday(request, url) {
+  const path = url.pathname;
+
+  // Static assets (Astro bundles, fonts, images, favicon) — fetch from Pages as-is
+  if (path.startsWith('/_astro/') || path.startsWith('/fonts/') || path.startsWith('/images/') || path.startsWith('/styles/') || path === '/favicon.svg' || path === '/favicon.ico') {
+    return fetch(new URL(path + url.search, 'https://paulkuo.tw'), {
+      method: request.method,
+      headers: request.headers,
+    });
+  }
+
+  // Paths that already include the prefix (from internal links in HTML) — pass through
+  if (path.startsWith('/projects/formosa-esg-2026')) {
+    return fetch(new URL(path + url.search, 'https://paulkuo.tw'), {
+      method: request.method,
+      headers: request.headers,
+    });
+  }
+
+  // Known formosa short paths — rewrite with prefix
+  const formosaRoutes = ['/', '/tracker/', '/my/', '/guide/', '/guide/admin/', '/guide/admin-flow/', '/guide/user-flow/', '/privacy/', '/dashboard/', '/feedback/', '/data/'];
+  // Normalize: ensure trailing slash for directory-style paths (except /)
+  let normalized = path;
+  if (path !== '/' && !path.includes('.') && !path.endsWith('/')) normalized = path + '/';
+
+  if (formosaRoutes.includes(normalized)) {
+    const rewrittenPath = '/projects/formosa-esg-2026' + normalized;
+    return fetch(new URL(rewrittenPath + url.search, 'https://paulkuo.tw'), {
+      method: request.method,
+      headers: request.headers,
+    });
+  }
+
+  // Non-formosa path — 404
+  return new Response('<!DOCTYPE html><html><head><meta charset="utf-8"><title>mazu.today</title><meta http-equiv="refresh" content="3;url=/"></head><body style="font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;"><p>找不到此頁面，正在返回首頁⋯</p></body></html>', {
+    status: 404,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  });
+}
+
 async function handleRequest(request, env) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
+
+  // 302 redirect: paulkuo.tw/projects/formosa-esg-2026/* → mazu.today (HTML only)
+  if (url.hostname === 'paulkuo.tw' && path.startsWith('/projects/formosa-esg-2026')) {
+    const accept = request.headers.get('Accept') || '';
+    if (accept.includes('text/html') && !path.startsWith('/projects/formosa-esg-2026/_astro/')) {
+      const shortPath = path.replace('/projects/formosa-esg-2026', '') || '/';
+      return new Response(null, { status: 302, headers: { 'Location': 'https://mazu.today' + shortPath + url.search } });
+    }
+  }
+
+  // mazu.today reverse proxy — fetch rewrite to paulkuo.tw Pages
+  if (url.hostname === 'mazu.today') return handleMazuToday(request, url);
+
   if (method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   if (path === '/health') return handleHealth(request, env);
   if (path === '/ticker' && method === 'GET') return handleTicker(request, env);
