@@ -3,6 +3,7 @@
  * 白沙屯媽祖繞境數據系統
  */
 import { corsHeaders, jsonResponse } from './utils.js';
+import { mapLineLanguageToLocale, localizeUrl, botMsg, BOT_MESSAGES } from './formosa-i18n.js';
 
 // ── Activity Status Helper ──
 const FORMOSA_STATUS_KEY = 'formosa_status';
@@ -171,7 +172,8 @@ export async function handleFormosaWebhook(request, env) {
 
       // ── Follow: Welcome Flex Message ──
       if (event.type === 'follow' && userId) {
-        await sendLineMessage(userId, env.FORMOSA_LINE_TOKEN, [buildWelcomeMessage()]);
+        const locale = await getUserLocale(userId, env);
+        await sendLineMessage(userId, env.FORMOSA_LINE_TOKEN, [buildWelcomeMessage(locale)]);
       }
 
       // ── Message: Keyword Router ──
@@ -1127,57 +1129,75 @@ export async function handleFormosaAdminClusters(request, env) {
 }
 
 // ── Keyword Router ──
+async function getUserLocale(userId, env) {
+  if (!userId) return 'zh-Hant';
+  try {
+    const row = await env.AUTH_DB.prepare(
+      'SELECT language FROM formosa_users WHERE line_user_id = ?'
+    ).bind(userId).first();
+    return mapLineLanguageToLocale(row?.language);
+  } catch {
+    return 'zh-Hant';
+  }
+}
+
 const TRACKER_URL = 'https://mazu.today/tracker/';
 const PROJECT_URL = 'https://mazu.today/';
 const GUIDE_URL = 'https://mazu.today/guide/';
 
 async function routeKeyword(text, userId, env) {
+  const locale = await getUserLocale(userId, env);
   const t = text.toLowerCase();
 
-  // 打卡
-  if (/打卡|checkin|check.?in|記錄/.test(t)) {
-    return [{ type: 'text', text: `📍 立即打卡記錄足跡：\n${TRACKER_URL}` }];
+  const trackerUrl = localizeUrl(TRACKER_URL, locale);
+  const projectUrl = localizeUrl(PROJECT_URL, locale);
+  const guideUrl = localizeUrl(GUIDE_URL, locale);
+  const feedbackUrl = localizeUrl('https://mazu.today/feedback/', locale);
+
+  // 打卡 — 同時支援中英日關鍵字
+  if (/打卡|checkin|check.?in|記錄|チェックイン/.test(t)) {
+    return [{ type: 'text', text: botMsg(locale, 'checkin', { url: trackerUrl }) }];
   }
 
-  // 說明 / 使用 / 幫助
-  if (/說明|使用|幫助|help|怎麼用|功能/.test(t)) {
-    return [buildUsageMessage()];
+  // 說明 / 幫助
+  if (/說明|使用|幫助|help|怎麼用|功能|ヘルプ|使い方/.test(t)) {
+    return [{ type: 'text', text: botMsg(locale, 'help', { url: guideUrl }) }];
   }
 
-  // 回報 / 問題 / bug
-  if (/回報|問題|bug|反饋|建議/.test(t)) {
-    return [{ type: 'text', text: '📝 回報問題請到這裡：\nhttps://mazu.today/feedback/\n\n也可以直接在這裡打字描述，我們會看到！' }];
+  // 回報 / bug
+  if (/回報|問題|bug|反饋|建議|report|フィードバック/.test(t)) {
+    return [{ type: 'text', text: botMsg(locale, 'bug', { feedbackUrl }) }];
   }
 
-  // 等級 / 紀錄 / 我的 / 排行
-  if (/等級|紀錄|我的|成就|level|stats|排行/.test(t)) {
-    return [await buildStatsMessage(userId, env)];
+  // 等級 / 紀錄
+  if (/等級|紀錄|我的|成就|level|stats|排行|rank|レベル|記録/.test(t)) {
+    return [await buildStatsMessage(userId, env, locale)];
   }
 
   // 分享
-  if (/分享|share|推薦/.test(t)) {
-    return [{ type: 'text', text: `📤 分享你的進香足跡給朋友：\n${TRACKER_URL}\n\n打開後點「📸 分享我的進香足跡」按鈕，就能分享到 LINE、Facebook 等平台！` }];
+  if (/分享|share|推薦|シェア/.test(t)) {
+    return [{ type: 'text', text: botMsg(locale, 'share', { url: trackerUrl }) }];
   }
 
-  // 碳足跡 / 碳排
-  if (/碳|carbon|co2|排放/.test(t)) {
-    return [buildCarbonInfoMessage()];
+  // 碳足跡
+  if (/碳|carbon|co2|排放|CO₂/.test(t)) {
+    return [{ type: 'text', text: botMsg(locale, 'carbon', { url: trackerUrl }) }];
   }
 
-  // 關於 / 專案 / ESG
-  if (/關於|專案|esg|永續|什麼/.test(t)) {
-    return [{ type: 'text', text: `🌱 2026 白沙屯媽祖 ESG 永續進香\n\n台灣首份進香永續數據計畫，記錄參與者的足跡、碳足跡與善行故事。\n\n📖 了解更多：\n${PROJECT_URL}` }];
+  // 關於 / 專案
+  if (/關於|專案|esg|永續|什麼|about|プロジェクト/.test(t)) {
+    return [{ type: 'text', text: botMsg(locale, 'about', { url: projectUrl }) }];
   }
 
-  // Default: 功能選單
-  return [buildMenuMessage()];
+  // 預設：功能選單
+  return [{ type: 'text', text: botMsg(locale, 'menu') }];
 }
 
 // ── Welcome Flex Message (follow event) ──
-function buildWelcomeMessage() {
+function buildWelcomeMessage(locale = 'zh-Hant') {
   return {
     type: 'flex',
-    altText: '🙏 歡迎加入白沙屯媽祖 ESG 永續進香！',
+    altText: botMsg(locale, 'welcome_alt'),
     contents: {
       type: 'bubble',
       size: 'mega',
@@ -1267,7 +1287,7 @@ function buildUsageMessage() {
 }
 
 // ── Stats Message (from DB) ──
-async function buildStatsMessage(userId, env) {
+async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
   if (!userId) return { type: 'text', text: '請先透過 LINE 登入 tracker 建立帳號。' };
 
   try {
@@ -1287,7 +1307,7 @@ async function buildStatsMessage(userId, env) {
     const carbon = survey?.carbon_total_kg || 0;
     const photos = user?.photo_count || 0;
 
-    // Calculate level
+    // Calculate level (等級名稱保持繁中，各語系共用)
     const TITLES = [
       { km: 0, checkins: 1, name: '煉氣香客', icon: '🔥' },
       { km: 15, checkins: 5, name: '築基香客', icon: '🧱' },
@@ -1307,10 +1327,10 @@ async function buildStatsMessage(userId, env) {
     const lines = [
       `${title.icon} ${title.name}`,
       '',
-      `📍 打卡次數：${checkins}`,
-      `📷 上傳照片：${photos} 張`,
-      `🌱 碳足跡：${carbon.toFixed(2)} kg CO₂e`,
-      survey ? '📋 問卷：已完成' : '📋 問卷：尚未填寫'
+      botMsg(locale, 'stats_checkins', { count: checkins }),
+      `📷 ${photos}`,
+      botMsg(locale, 'stats_carbon', { carbon: carbon.toFixed(2) }),
+      survey ? botMsg(locale, 'stats_survey_done') : botMsg(locale, 'stats_survey_pending')
     ];
 
     return { type: 'text', text: lines.join('\n') };
