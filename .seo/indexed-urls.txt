@@ -296,6 +296,7 @@ https://paulkuo.tw/ja/blog/
 https://paulkuo.tw/ja/projects/
 https://paulkuo.tw/projects/
 https://paulkuo.tw/projects/formosa-esg-2026/
+https://paulkuo.tw/projects/formosa-esg-2026/CLAUDE/
 https://paulkuo.tw/projects/formosa-esg-2026/dashboard/
 https://paulkuo.tw/projects/formosa-esg-2026/data/
 https://paulkuo.tw/projects/formosa-esg-2026/feedback/
