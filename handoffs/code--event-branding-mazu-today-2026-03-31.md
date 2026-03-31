@@ -72,12 +72,14 @@ hideMobileTabBar?: boolean;
 
 eventMode 下的內容替換：
 - 品牌區: 「Paul Kuo」→「白沙屯媽祖 ESG 進香」
-- tagline: 「在技術與文明的交匯處...」→「環球境地 x 1.5度科學減碳協會 x Paulkuo.tw」
+- tagline: 「在技術與文明的交匯處...」→「環球境地 x 1.5度科學減碳協會」
 - 社群連結: 隱藏 7 個個人社群，改放活動連結：
   - 使用說明 → /projects/formosa-esg-2026/guide/
   - 隱私權聲明 → /projects/formosa-esg-2026/privacy/
   - 問題回報 → /projects/formosa-esg-2026/feedback/
-- 版權: 「© 2026 Paul Kuo. Built with conviction.」→「© 2026 環球境地 x 1.5度科學減碳協會 x Paulkuo.tw」
+- 版權區改為兩行：
+  - 主行: 「© 2026 環球境地 x 1.5度科學減碳協會」
+  - 副行: 「Powered by [Paulkuo.tw](https://paulkuo.tw)」— 字體 0.75rem、顏色 var(--text-muted)、超連結可點擊
 - 隱藏 RSS 連結和 AI-ready 指示器
 
 **方案 B（備選）**: 直接用 `hideFooter` 隱藏原生 footer，在各 formosa 頁面底部自己加一個簡化的 footer section。
@@ -184,7 +186,7 @@ if (url.hostname === 'mazu.today') {
 - [ ] `mazu.today/tracker/` 顯示 EventHeader（無 Paul logo）
 - [ ] 語言切換（繁/简/EN/日）在 EventHeader 正常運作
 - [ ] MobileTabBar 顯示活動導航（打卡/足跡/說明/更多）
-- [ ] Footer 顯示活動品牌（無個人社群連結）
+- [ ] Footer 顯示活動品牌 + Powered by Paulkuo.tw（無個人社群連結）
 - [ ] 9 個頁面之間的內部連結不會跳到 paulkuo.tw
 - [ ] `paulkuo.tw/projects/formosa-esg-2026/` 仍可正常存取（向後相容）
 - [ ] API 呼叫（打卡、問卷等）從 mazu.today 發出時 CORS 通過
@@ -208,3 +210,4 @@ if (url.hostname === 'mazu.today') {
 - **向後相容**: `paulkuo.tw/projects/formosa-esg-2026/` 路徑繼續可用，但也顯示活動品牌（不再顯示個人 Nav）。
 - **可複用**: `hideNav` / `eventMode` 的 prop 設計讓日後其他公共專案可以比照使用。
 - **多語系**: EventHeader 的活動名稱、MobileTabBar 的 tab 標籤都要支援 4 語。
+- **署名權**: Footer 副行「Powered by Paulkuo.tw」保留技術方署名，低調但可點擊。
