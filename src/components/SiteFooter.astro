@@ -2,9 +2,38 @@
 /**
  * SiteFooter.astro — 網站頁尾元件
  * 包含品牌、社群連結、版權宣告、AI-ready 指示器
+ * eventMode: 活動品牌模式（隱藏個人社群，顯示活動資訊）
  */
+interface Props {
+  eventMode?: boolean;
+  langPrefix?: string;
+}
+const { eventMode = false, langPrefix = '' } = Astro.props;
 ---
 
+{eventMode ? (
+<footer role="contentinfo" class="event-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href={`${langPrefix}/projects/formosa-esg-2026/`} class="footer-logo">白沙屯媽祖 ESG 進香</a>
+      <p class="footer-tagline">環球境地 x 1.5度科學減碳協會</p>
+    </div>
+    <div class="footer-social">
+      <div class="footer-social-links">
+        <a href={`${langPrefix}/projects/formosa-esg-2026/guide/`}>使用說明</a>
+        <a href={`${langPrefix}/projects/formosa-esg-2026/privacy/`}>隱私權聲明</a>
+        <a href={`${langPrefix}/projects/formosa-esg-2026/feedback/`}>問題回報</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 環球境地 x 1.5度科學減碳協會</span>
+    </div>
+    <div class="footer-powered">
+      Powered by <a href="https://paulkuo.tw" target="_blank" rel="noopener">Paulkuo.tw</a>
+    </div>
+  </div>
+</footer>
+) : (
 <footer role="contentinfo">
   <div class="footer-inner">
     <div class="footer-brand">
@@ -30,3 +59,4 @@
     </div>
   </div>
 </footer>
+)}

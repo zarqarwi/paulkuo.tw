@@ -1,0 +1,128 @@
+---
+/**
+ * EventHeader.astro — 活動專屬導航列
+ * 取代 NavBar，只保留活動名稱 + 語言切換
+ */
+interface Props {
+  langPrefix: string;
+  langSwitchLinks: Record<string, string>;
+  currentLang: string;
+}
+const { langPrefix, langSwitchLinks, currentLang } = Astro.props;
+
+const eventNames: Record<string, string> = {
+  'zh-Hant': '白沙屯媽祖進香',
+  'zh-CN': '白沙屯妈祖进香',
+  'en': 'Baishatun Mazu Pilgrimage',
+  'ja': '白沙屯媽祖巡礼',
+};
+const eventName = eventNames[currentLang] || eventNames['zh-Hant'];
+---
+
+<nav id="event-nav">
+  <div class="event-nav-inner">
+    <a href={`${langPrefix}/projects/formosa-esg-2026/`} class="event-nav-logo">{eventName}</a>
+    <nav class="event-lang-switcher" aria-label="語言切換">
+      <a href={langSwitchLinks['zh-Hant']} class:list={['lang-btn', { active: currentLang === 'zh-Hant' }]} aria-label="繁體中文">繁</a>
+      <a href={langSwitchLinks['zh-CN']} class:list={['lang-btn', { active: currentLang === 'zh-CN' }]} aria-label="简体中文">简</a>
+      <a href={langSwitchLinks['en']} class:list={['lang-btn', { active: currentLang === 'en' }]} aria-label="English">EN</a>
+      <a href={langSwitchLinks['ja']} class:list={['lang-btn', { active: currentLang === 'ja' }]} aria-label="日本語">日</a>
+    </nav>
+  </div>
+</nav>
+
+<script>
+  (() => {
+    const nav = document.getElementById('event-nav');
+    if (!nav) return;
+    let ticking = false;
+    const updateNav = () => {
+      if (window.scrollY > 10) { nav.classList.add('nav-scrolled'); }
+      else { nav.classList.remove('nav-scrolled'); }
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(updateNav); ticking = true; }
+    }, { passive: true });
+    updateNav();
+  })();
+</script>
+
+<style>
+  #event-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-card, #fff);
+    border-bottom: 1px solid var(--border, #e5e5e5);
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  #event-nav.nav-scrolled {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .event-nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .event-nav-logo {
+    font-family: var(--font-cjk, 'Noto Sans TC', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary, #1f2937);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .event-nav-logo:hover {
+    color: var(--brand-navy, #1b2d4f);
+  }
+
+  .event-lang-switcher {
+    display: flex;
+    gap: 4px;
+  }
+
+  .lang-btn {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    color: var(--text-secondary, #6b7280);
+    text-decoration: none;
+    border: 1px solid var(--border, #e5e5e5);
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .lang-btn:hover {
+    background: var(--bg-secondary, #f3f4f6);
+  }
+
+  .lang-btn.active {
+    background: var(--brand-navy, #1b2d4f);
+    color: #fff;
+    border-color: var(--brand-navy, #1b2d4f);
+  }
+
+  @media (max-width: 768px) {
+    .event-nav-inner {
+      padding: 0 1rem;
+      height: 48px;
+    }
+
+    .event-nav-logo {
+      font-size: 0.95rem;
+    }
+
+    .lang-btn {
+      padding: 3px 8px;
+      font-size: 0.75rem;
+    }
+  }
+</style>

@@ -1,0 +1,559 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import AuthGate from '../../_components/AuthGate.astro';
+---
+
+<BaseLayout
+  title="管理者操作流程圖 — 2026 白沙屯媽祖 ESG 永續進香"
+  description="白沙屯媽祖 ESG 進香追蹤系統管理者操作流程圖"
+  ogUrl="https://paulkuo.tw/projects/formosa-esg-2026/guide/admin-flow/"
+  ogImage="https://paulkuo.tw/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<AuthGate title="管理者操作流程圖" subtitle="請輸入管理密碼">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --green: #2E7D32;
+    --green-light: #E8F5E9;
+    --green-border: #66BB6A;
+    --orange: #E65100;
+    --orange-light: #FFF3E0;
+    --orange-border: #FF9800;
+    --blue: #1565C0;
+    --blue-light: #E3F2FD;
+    --blue-border: #42A5F5;
+    --purple: #6A1B9A;
+    --purple-light: #F3E5F5;
+    --purple-border: #AB47BC;
+    --red: #C62828;
+    --red-light: #FFEBEE;
+    --red-border: #EF5350;
+    --gray: #455A64;
+    --gray-light: #ECEFF1;
+    --gray-border: #90A4AE;
+    --teal: #00695C;
+    --teal-light: #E0F2F1;
+    --teal-border: #26A69A;
+    --flow-bg: #FAFAFA;
+    --flow-text: #212121;
+    --flow-text-sub: #616161;
+    --flow-radius: 14px;
+  }
+
+  .flow-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    font-family: 'Noto Sans TC', -apple-system, sans-serif;
+    color: var(--flow-text);
+    line-height: 1.6;
+  }
+
+  .flow-header { text-align: center; margin-bottom: 48px; }
+  .flow-header h1 { font-size: 28px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+  .flow-header .meta { font-size: 13px; color: var(--flow-text-sub); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 40px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--flow-text-sub); }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; border: 2px solid; }
+  .legend-dot.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .legend-dot.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .legend-dot.teal { background: var(--teal-light); border-color: var(--teal-border); }
+  .legend-dot.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .legend-dot.red { background: var(--red-light); border-color: var(--red-border); }
+
+  .section-label {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--flow-text-sub);
+    letter-spacing: 2px;
+    padding: 12px 0;
+    margin: 32px 0 16px;
+    border-top: 1.5px dashed #ccc;
+    border-bottom: 1.5px dashed #ccc;
+  }
+
+  .connector { display: flex; justify-content: center; padding: 12px 0; }
+  .connector .arrow {
+    width: 3px; height: 36px;
+    background: linear-gradient(to bottom, #bbb, #999);
+    position: relative; border-radius: 2px;
+  }
+  .connector .arrow::after {
+    content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+    border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 8px solid #999;
+  }
+
+  .step {
+    border-radius: var(--flow-radius);
+    padding: 24px 28px;
+    border: 2px solid;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .step:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .step-number {
+    position: absolute; top: -14px; left: 24px;
+    font-size: 12px; font-weight: 700; padding: 2px 12px; border-radius: 20px; color: white;
+  }
+  .step-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .step-subtitle { font-size: 13px; color: var(--flow-text-sub); margin-bottom: 14px; }
+
+  .step.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .step.blue .step-number { background: var(--blue); }
+  .step.blue .step-title { color: var(--blue); }
+
+  .step.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .step.orange .step-number { background: var(--orange); }
+  .step.orange .step-title { color: var(--orange); }
+
+  .step.teal { background: var(--teal-light); border-color: var(--teal-border); }
+  .step.teal .step-number { background: var(--teal); }
+  .step.teal .step-title { color: var(--teal); }
+
+  .step.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .step.purple .step-number { background: var(--purple); }
+  .step.purple .step-title { color: var(--purple); }
+
+  .step.red { background: var(--red-light); border-color: var(--red-border); }
+  .step.red .step-number { background: var(--red); }
+  .step.red .step-title { color: var(--red); }
+
+  .step.gray { background: var(--gray-light); border-color: var(--gray-border); }
+  .step.gray .step-number { background: var(--gray); }
+  .step.gray .step-title { color: var(--gray); }
+
+  .sub-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px; margin-top: 14px;
+  }
+  .sub-item { background: rgba(255,255,255,0.7); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+  .sub-item .sub-label { font-weight: 600; margin-bottom: 2px; }
+  .sub-item .sub-desc { color: var(--flow-text-sub); font-size: 12px; }
+
+  .info-box {
+    background: white; border: 1.5px dashed #ccc; border-radius: 10px;
+    padding: 16px 20px; margin-top: 14px; font-size: 13px; color: var(--flow-text-sub);
+  }
+  .info-box strong { color: var(--flow-text); }
+
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 12px; margin-left: 8px; vertical-align: middle;
+  }
+  .badge.cli { background: #263238; color: #B2FF59; }
+  .badge.manual { background: var(--orange-light); color: var(--orange); }
+  .badge.auto { background: var(--teal-light); color: var(--teal); }
+
+  .cmd-block {
+    background: #263238; color: #E0E0E0; border-radius: 8px;
+    padding: 14px 18px; margin-top: 10px; font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12.5px; line-height: 1.8; overflow-x: auto;
+  }
+  .cmd-block .comment { color: #78909C; }
+  .cmd-block .cmd { color: #B2FF59; }
+  .cmd-block .flag { color: #80DEEA; }
+
+  .parallel-box {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-top: 8px;
+  }
+
+  .flow-footer {
+    text-align: center; margin-top: 48px; padding-top: 24px;
+    border-top: 1px solid #eee; font-size: 12px; color: var(--flow-text-sub);
+  }
+  .flow-footer a {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: var(--blue);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .flow-footer a:hover { opacity: 0.9; }
+
+  @media (max-width: 600px) {
+    .flow-container { padding: 24px 12px 60px; }
+    .flow-header h1 { font-size: 22px; }
+    .step { padding: 20px 18px; }
+    .sub-grid, .parallel-box { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="flow-container">
+
+  <div class="flow-header">
+    <h1>Formosa ESG 2026 — 管理者操作流程圖</h1>
+    <div class="meta">v2.0 ｜ 2026-03-30 ｜ paulkuo.tw ｜ 管理後台 + 部署維運</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot blue"></div>登入 / 認證</div>
+    <div class="legend-item"><div class="legend-dot orange"></div>日常操作</div>
+    <div class="legend-item"><div class="legend-dot teal"></div>監控 / 分析</div>
+    <div class="legend-item"><div class="legend-dot purple"></div>部署 / 維運</div>
+    <div class="legend-item"><div class="legend-dot red"></div>緊急處理</div>
+  </div>
+
+  <!-- ===== 區塊一：日常管理 ===== -->
+  <div class="section-label">—— 日常管理操作 ——</div>
+
+  <div class="step blue" style="margin-top:20px;">
+    <div class="step-number">1</div>
+    <div class="step-title">管理員登入</div>
+    <div class="step-subtitle">輸入管理密碼進入後台 Dashboard</div>
+    <div class="step-content">
+      <div class="info-box">
+        網址：<strong>/projects/formosa-esg-2026/dashboard/</strong><br>
+        密碼：儲存在 Cloudflare Secrets（不寫在程式碼裡）<br>
+        展示用途請加 <strong>?demo=1</strong>（唯讀模式，不需密碼）
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step teal">
+    <div class="step-number">2</div>
+    <div class="step-title">數據儀表板總覽</div>
+    <div class="step-subtitle">六項 KPI + 即時地圖 + 分析面板</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">📊 六項 KPI</div>
+        <div class="sub-desc">總參與人數 / 今日活躍 / 總打卡 / 總公里 / 碳足跡 / 碳節省</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">🗺️ 即時地圖</div>
+        <div class="sub-desc">三模式切換（熱力圖 / 標記 / 聚類）+ 🟢前鋒 🔴尾巴</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">📈 分析面板</div>
+        <div class="sub-desc">碳足跡統計 / 等級分佈 / 問卷洞察 / 活動時間軸</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">📏 進度條</div>
+        <div class="sub-desc">白沙屯→北港 完成百分比 + 隊伍前後距離</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step orange">
+    <div class="step-number">3</div>
+    <div class="step-title">推播通知</div>
+    <div class="step-subtitle">手動 + 自動兩種模式，活動期間持續推送</div>
+    <div class="parallel-box">
+      <div class="sub-item">
+        <div class="sub-label">✋ 手動推播 <span class="badge manual">手動</span></div>
+        <div class="sub-desc">
+          選對象（全部/香客/志工/管理者）→ 寫標題+內容 → 按「發送」<br>
+          ⚠️ 無確認彈窗，發之前請再看一次<br>
+          「暫離中」和「已完成」自動跳過
+        </div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">⏰ 自動推播 <span class="badge auto">自動</span></div>
+        <div class="sub-desc">
+          活動期間每天 5 個時段：<br>
+          6:00 / 9:00 / 12:00 / 15:00 / 18:00<br>
+          內容：進度更新、鼓勵、安全提醒
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step orange">
+    <div class="step-number">4</div>
+    <div class="step-title">參與者管理</div>
+    <div class="step-subtitle">使用者列表 + 搜尋 + 排序 + 角色管理</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">👥 使用者列表</div>
+        <div class="sub-desc">名稱、打卡次數、碳排、最後活躍時間、角色</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">🏷️ 三種角色</div>
+        <div class="sub-desc">香客（預設）/ 志工（獨立推播）/ 管理者（後台權限）</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">📋 三種狀態</div>
+        <div class="sub-desc">活躍中 / 暫離中（推播暫停）/ 已完成（成就卡定版）</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">🔍 搜尋＋排序</div>
+        <div class="sub-desc">上方搜尋欄 + 表頭排序，快速找到特定參與者</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step orange">
+    <div class="step-number">5</div>
+    <div class="step-title">活動控制</div>
+    <div class="step-subtitle">三種狀態切換，目前需透過 API 操作</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">▶️ 進行中</div>
+        <div class="sub-desc">一切正常運作</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">⏸️ 暫停</div>
+        <div class="sub-desc">香客端打卡暫停（颱風 / 維護 / 突發）</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">⏹️ 結束</div>
+        <div class="sub-desc">活動結束，全部功能關閉，統一結算</div>
+      </div>
+    </div>
+    <div class="info-box">
+      切換狀態目前需透過 API 操作，找工程師協助。切錯可以改回「進行中」。
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step teal">
+    <div class="step-number">6</div>
+    <div class="step-title">資料匯出 + QR 驗證</div>
+    <div class="step-subtitle">JSON 匯出 + 成就卡 QR Code 身分驗證</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">📦 資料匯出</div>
+        <div class="sub-desc">Data API（JSON）— 使用者、問卷、GPS、每日回報</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">🔗 QR 驗證</div>
+        <div class="sub-desc">掃香客成就卡 QR → 個人頁 /my/?u=&#123;id&#125; → 確認參與程度</div>
+      </div>
+    </div>
+    <div class="info-box">
+      成就卡解鎖條件：打卡 ≥ 3 次 + 完成問卷 + 留電話<br>
+      合作商家只能透過 QR 看有限資訊，<strong>不可</strong>分享完整資料庫
+    </div>
+  </div>
+
+  <!-- ===== 區塊二：部署與維運 ===== -->
+  <div class="section-label">—— 部署與維運 SOP ——</div>
+
+  <div class="step purple" style="margin-top:20px;">
+    <div class="step-number">D1</div>
+    <div class="step-title">前端部署 <span class="badge cli">CLI</span></div>
+    <div class="step-subtitle">Astro 專案 → Cloudflare Pages</div>
+    <div class="cmd-block">
+      <span class="comment"># 進入專案根目錄</span><br>
+      <span class="cmd">cd</span> ~/Desktop/01_專案進行中/paulkuo.tw<br><br>
+      <span class="comment"># 建構 + 部署前端</span><br>
+      <span class="cmd">npm run build</span> <span class="flag">&amp;&amp;</span> <span class="cmd">wrangler deploy</span>
+    </div>
+    <div class="info-box">
+      ⚠️ CDN 快取 max-age=3600，新部署<strong>最多等 1 小時</strong>才會全面生效<br>
+      急的話可到 Cloudflare Dashboard 手動清 cache
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step purple">
+    <div class="step-number">D2</div>
+    <div class="step-title">Worker API 部署 <span class="badge cli">CLI</span></div>
+    <div class="step-subtitle">Worker 必須用 --config 指定 wrangler.toml</div>
+    <div class="cmd-block">
+      <span class="comment"># 進入 worker 目錄</span><br>
+      <span class="cmd">cd</span> ~/Desktop/01_專案進行中/paulkuo.tw/<span class="flag">worker</span><br><br>
+      <span class="comment"># ⚠️ 一定要帶 --config，否則會被根目錄的 wrangler.jsonc 覆蓋</span><br>
+      <span class="cmd">wrangler deploy</span> <span class="flag">--config wrangler.toml</span>
+    </div>
+    <div class="info-box">
+      <strong>陷阱：</strong>根目錄有 <code>wrangler.jsonc</code>，如果不帶 <code>--config</code>，<br>
+      wrangler 會讀錯設定檔，導致部署到錯誤的 Worker<br><br>
+      <strong>Workers Paid 方案：</strong>$5/月，解決 100K/天請求上限（已升級）
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step purple">
+    <div class="step-number">D3</div>
+    <div class="step-title">部署後驗證清單</div>
+    <div class="step-subtitle">每次部署後需確認的項目</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">1. Tracker 頁面</div>
+        <div class="sub-desc">開啟 /tracker/ → 確認 LIFF 登入正常</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">2. API 回應</div>
+        <div class="sub-desc">打開 DevTools → 確認 Worker API 200 回應</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">3. Dashboard</div>
+        <div class="sub-desc">登入後台 → 確認 KPI 數字有更新</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">4. LINE Bot</div>
+        <div class="sub-desc">傳「打卡」給 Bot → 確認連結可開啟</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 區塊三：監控與緊急處理 ===== -->
+  <div class="section-label">—— 活動期間監控 ——</div>
+
+  <div class="step teal" style="margin-top:20px;">
+    <div class="step-number">M1</div>
+    <div class="step-title">日常監控項目</div>
+    <div class="step-subtitle">活動期間（4/12–4/20）每天要看的東西</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">📊 Cloudflare Dashboard</div>
+        <div class="sub-desc">Workers 請求量、錯誤率、D1 讀寫次數、KV 用量</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">🗺️ 管理後台地圖</div>
+        <div class="sub-desc">確認前鋒/尾巴位置合理、無異常座標</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">📱 LINE Bot</div>
+        <div class="sub-desc">Messaging API 用量、推播送達率</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">💾 每日備份</div>
+        <div class="sub-desc">確認離線備份有跑、檔案大小正常</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step red">
+    <div class="step-number">M2</div>
+    <div class="step-title">異常處理 SOP</div>
+    <div class="step-subtitle">發現問題時的處理步驟</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">🔴 API 大量 500 錯誤</div>
+        <div class="sub-desc">1. 查 Workers Logs<br>2. 確認 D1 連線<br>3. 必要時切「暫停」</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">🟡 打卡資料異常</div>
+        <div class="sub-desc">1. 查 KV Buffer 是否堆積<br>2. 手動觸發 flush<br>3. 檢查 rate limit 設定</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">🟠 LINE Bot 不回應</div>
+        <div class="sub-desc">1. 確認 webhook URL<br>2. 檢查 Messaging API 額度<br>3. 重啟 Worker</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">🔵 資料需要還原</div>
+        <div class="sub-desc">D1 Time Travel → 回溯 30 天內任意時間點</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <div class="step gray">
+    <div class="step-number">M3</div>
+    <div class="step-title">活動結束收尾</div>
+    <div class="step-subtitle">4/20 前後的結束流程</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">1. 統一結算</div>
+        <div class="sub-desc">活動切「結束」→ 所有人成就卡定版</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">2. 完整備份</div>
+        <div class="sub-desc">匯出全部資料（使用者、GPS、問卷、回報）</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">3. ESG 報告</div>
+        <div class="sub-desc">整理碳足跡數據、參與統計、問卷洞察</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">4. 資料保留</div>
+        <div class="sub-desc">個資保留 6 個月 → 之後匿名化或刪除</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 技術備忘 ===== -->
+  <div class="section-label">—— 技術架構備忘 ——</div>
+
+  <div class="step gray" style="margin-top:20px;">
+    <div class="step-number">⚙️</div>
+    <div class="step-title">系統架構總覽</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">前端</div>
+        <div class="sub-desc">Astro → Cloudflare Pages</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">API</div>
+        <div class="sub-desc">Cloudflare Workers</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">資料庫</div>
+        <div class="sub-desc">Cloudflare D1（SQLite）</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">快取 / Buffer</div>
+        <div class="sub-desc">Cloudflare KV（GPS 暫存 24hr TTL）</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">檔案儲存</div>
+        <div class="sub-desc">Cloudflare R2（OG 預覽圖）</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">LINE 整合</div>
+        <div class="sub-desc">LIFF SDK + Messaging API + Webhook</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step gray" style="margin-top:20px;">
+    <div class="step-number">⚠️</div>
+    <div class="step-title">已知陷阱</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">wrangler.jsonc 衝突</div>
+        <div class="sub-desc">根目錄會覆蓋 worker/wrangler.toml，部署 Worker 必須帶 --config</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">CDN 快取延遲</div>
+        <div class="sub-desc">max-age=3600，新部署最多等 1 小時生效</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">LINE localStorage 隔離</div>
+        <div class="sub-desc">LINE in-app browser 和 Safari 的 localStorage 是隔離的</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">Cron git 衝突</div>
+        <div class="sub-desc">每 10 分鐘 git stash/pop，commit + push 要原子操作</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-footer">
+    Formosa ESG 2026 白沙屯媽祖進香 GPS 追蹤系統 — 管理者操作流程<br>
+    Astro + Cloudflare Pages + Workers + D1 + KV + R2
+    <br>
+    <a href="/projects/formosa-esg-2026/guide/admin/">← 回到管理者操作指南</a>
+  </div>
+
+</div>
+
+</AuthGate>
+
+</BaseLayout>

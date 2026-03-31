@@ -8,6 +8,7 @@ import I18nClient from '../components/I18nClient.astro';
 import FocusMode from '../components/FocusMode.astro';
 import ReadingTracker from '../components/ReadingTracker.astro';
 import MobileTabBar from '../components/MobileTabBar.astro';
+import EventHeader from '../pages/projects/formosa-esg-2026/_components/EventHeader.astro';
 
 interface Props {
   title: string;
@@ -20,6 +21,11 @@ interface Props {
   showTicker?: boolean;
   /** Show ticker only when a target section (e.g. #feed) is in viewport */
   tickerFeedOnly?: boolean;
+  hideNav?: boolean;
+  hideFooter?: boolean;
+  hideMobileTabBar?: boolean;
+  /** 活動品牌模式：隱藏個人品牌元素，顯示活動品牌 */
+  eventMode?: boolean;
 }
 
 const {
@@ -32,6 +38,10 @@ const {
   canonicalUrl,
   showTicker = false,
   tickerFeedOnly = false,
+  hideNav = false,
+  hideFooter = false,
+  hideMobileTabBar = false,
+  eventMode = false,
 } = Astro.props;
 
 const renderTicker = showTicker || tickerFeedOnly;
@@ -100,7 +110,7 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
 <body>
   {isArticlePage && <div class="reading-progress" id="reading-progress"></div>}
 
-  <NavBar {langPrefix} {langSwitchLinks} {currentLang} />
+  {eventMode ? <EventHeader {langPrefix} {langSwitchLinks} {currentLang} /> : !hideNav && <NavBar {langPrefix} {langSwitchLinks} {currentLang} />}
 
   {renderTicker && (
     <aside
@@ -119,9 +129,9 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
     <slot />
   </main>
 
-  <SiteFooter />
+  {eventMode ? <SiteFooter eventMode={true} langPrefix={langPrefix} /> : !hideFooter && <SiteFooter />}
 
-  <MobileTabBar {langPrefix} {langSwitchLinks} {currentLang} />
+  {eventMode ? <MobileTabBar {langPrefix} {langSwitchLinks} {currentLang} eventMode={true} /> : !hideMobileTabBar && <MobileTabBar {langPrefix} {langSwitchLinks} {currentLang} />}
 
   <script>
     (() => {

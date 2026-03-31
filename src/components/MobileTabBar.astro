@@ -2,13 +2,15 @@
 /**
  * MobileTabBar.astro — 手機版底部固定 Tab Bar
  * 桌面版隱藏，手機版取代漢堡選單作為主要導覽
+ * eventMode: 活動品牌模式（打卡/足跡/說明/更多）
  */
 interface Props {
   langPrefix: string;
   langSwitchLinks: Record<string, string>;
   currentLang: string;
+  eventMode?: boolean;
 }
-const { langPrefix, langSwitchLinks, currentLang } = Astro.props;
+const { langPrefix, langSwitchLinks, currentLang, eventMode = false } = Astro.props;
 
 const tabI18n: Record<string, Record<string, string>> = {
   'zh-Hant': { home: '首頁', blog: '思想', projects: '專案', more: '更多', feedWall: '動態牆', graph: '知識圖譜', about: '關於', search: '搜尋', contact: '聯絡我', fontSize: '字級' },
@@ -17,8 +19,52 @@ const tabI18n: Record<string, Record<string, string>> = {
   'zh-CN': { home: '首页', blog: '思想', projects: '项目', more: '更多', feedWall: '动态墙', graph: '知识图谱', about: '关于', search: '搜索', contact: '联系我', fontSize: '字号' },
 };
 const t = tabI18n[currentLang] || tabI18n['zh-Hant'];
+
+const eventTabI18n: Record<string, Record<string, string>> = {
+  'zh-Hant': { checkin: '打卡', track: '足跡', guide: '說明', more: '更多' },
+  'en': { checkin: 'Check-in', track: 'My Track', guide: 'Guide', more: 'More' },
+  'ja': { checkin: 'チェックイン', track: '足跡', guide: 'ガイド', more: 'その他' },
+  'zh-CN': { checkin: '打卡', track: '足迹', guide: '说明', more: '更多' },
+};
+const et = eventTabI18n[currentLang] || eventTabI18n['zh-Hant'];
+
+const formosaBase = `${langPrefix}/projects/formosa-esg-2026`;
 ---
 
+{eventMode ? (
+<nav class="mobile-tab-bar" aria-label="活動導覽">
+  <a href={`${formosaBase}/tracker/`} class="tab-item" data-tab="checkin">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span>{et.checkin}</span>
+  </a>
+  <a href={`${formosaBase}/my/`} class="tab-item" data-tab="track">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 7 8 11.7z"/></svg>
+    <span>{et.track}</span>
+  </a>
+  <a href={`${formosaBase}/guide/`} class="tab-item" data-tab="guide">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    <span>{et.guide}</span>
+  </a>
+  <button class="tab-item tab-more" data-tab="more" aria-label={et.more}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+    <span>{et.more}</span>
+  </button>
+</nav>
+
+<div class="tab-more-sheet" id="tabMoreSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-grid">
+    <a href={`${formosaBase}/privacy/`}>隱私權聲明</a>
+    <a href={`${formosaBase}/feedback/`}>問題回報</a>
+  </div>
+  <div class="sheet-lang">
+    <a href={langSwitchLinks['zh-Hant']} class:list={['sheet-lang-btn', { active: currentLang === 'zh-Hant' }]}>繁</a>
+    <a href={langSwitchLinks['zh-CN']} class:list={['sheet-lang-btn', { active: currentLang === 'zh-CN' }]}>简</a>
+    <a href={langSwitchLinks['en']} class:list={['sheet-lang-btn', { active: currentLang === 'en' }]}>EN</a>
+    <a href={langSwitchLinks['ja']} class:list={['sheet-lang-btn', { active: currentLang === 'ja' }]}>日</a>
+  </div>
+</div>
+) : (
 <nav class="mobile-tab-bar" aria-label="主要導覽">
   <a href={langPrefix + '/'} class="tab-item" data-tab="home">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -61,6 +107,7 @@ const t = tabI18n[currentLang] || tabI18n['zh-Hant'];
     <button class="sheet-font-btn" data-size="large">A+</button>
   </div>
 </div>
+)}
 
 <!-- Overlay backdrop -->
 <div class="tab-more-overlay" id="tabMoreOverlay"></div>
