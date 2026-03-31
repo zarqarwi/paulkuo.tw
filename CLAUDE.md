@@ -76,7 +76,15 @@ npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangl
 
 每次跑完 `wrangler deploy` 後，**立刻跑 Smoke Test**，結果寫進 worklog。
 
-**具體驗什麼由各專案的 CLAUDE.md 定義。** 如果該專案沒有 CLAUDE.md，至少確認頁面能載入、console 無報錯。
+具體驗什麼由各專案目錄下的 `CLAUDE.md` 定義。
+
+**如果該專案目錄下沒有 CLAUDE.md，第一次 deploy 前必須先建一份。** 內容包含：
+1. 專案資訊（URL、技術棧、關鍵日期）
+2. Smoke Test checklist（根據該專案的功能模組列出驗證項目）
+3. 已知陷阱（開發過程中踩過的坑）
+4. 檔案結構速查
+
+建完後再進行部署和驗證。
 
 **Worklog 記錄格式：**
 ```markdown
