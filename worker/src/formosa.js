@@ -1119,7 +1119,7 @@ export async function handleFormosaAdminClusters(request, env) {
     const lost = latestPoints.filter(p => p.created_at < twoHoursAgo).length;
 
     const result = { clusters, front, tail, spread_km, lost, total_points: rows.length, total_users: userSet.size, zoom, cell_size: cellSize };
-    await env.TICKER_KV.put(cacheKey, JSON.stringify(result), { expirationTtl: 30 });
+    await env.TICKER_KV.put(cacheKey, JSON.stringify(result), { expirationTtl: 60 });
     return jsonResponse(result, 200, request);
   } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
