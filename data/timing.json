@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-01T00:10:04+08:00",
+  "updated": "2026-04-01T00:20:03+08:00",
   "source": "timing-sqlite-direct",
   "method": "SQLite DB + bundleIdentifier/path/title matching",
   "api_version": "v4",
   "month_summary": {
     "period": "2026-04",
-    "total_ai_hours": 0.1,
-    "active_days": 0,
-    "avg_daily": 0.1,
+    "total_ai_hours": 0.2,
+    "active_days": 1,
+    "avg_daily": 0.2,
     "platform_breakdown": {
-      "Claude": 0.1
+      "Claude": 0.24
     }
   },
   "daily": [
     {
       "date": "2026-04-01",
-      "ai_hours": 0.1,
+      "ai_hours": 0.24,
       "breakdown": {
-        "Claude": 0.1
+        "Claude": 0.24
       }
     }
   ]
