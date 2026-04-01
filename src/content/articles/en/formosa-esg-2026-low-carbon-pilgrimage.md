@@ -38,7 +38,7 @@ reading_context: |
   適合關注 ESG 數位化落地的企業永續長、對科技與傳統文化交叉感興趣的讀者、以及想了解一個人如何用 AI 工具快速打造完整系統的技術人。
 ---
 
-One weekend afternoon in early February, a friend invited me to their usual gathering place to discuss their aspirations and wishes. They hoped to build a platform for sustainable philanthropy and civil good. Time was pressing—they wanted it ready for the Baishatun Mazu Pilgrimage in April, asking if I could help? I...
+One weekend afternoon in early February, a friend invited me to their usual gathering place to discuss their aspirations and wishes. They hoped to build a platform for sustainable philanthropy and civil good. Time was pressing—they wanted it ready for the [Baishatun Mazu Pilgrimage](https://mazu.today/projects/formosa-esg-2026/) in April, asking if I could help? I...
 
 In 2025, Global Environment, in partnership with the Queen Lions Club and the Science-Based Carbon Reduction Association, had already launched the "ESG Good Footprints" project for the Baishatun pilgrimage, using Google Forms and LINE groups to collect pilgrims' low-carbon action records, connecting thirty-six companies in participation. The concept was proven, but data collection relied on manual work and carbon footprints on self-reporting—scaling the data would hit bottlenecks.
 
@@ -114,4 +114,4 @@ This time, we're simply trying to connect and integrate. Using technology to tra
 
 Integration requires many people's participation—whether material, technical, help from many volunteers, tens of thousands of lines of code written in six days, or just a check-in button on your phone. If technology has a higher purpose, it's not to replace ritual, but to let ritual leave a visible shape in this era.
 
-[Learn More: Formosa ESG 2026 Low-Carbon Philanthropy Tracking System](https://mazu.today/projects/formosa-esg-2026/)
+[Learn More: 2026 Baishatun Mazu Pilgrimage — Formosa ESG Low-Carbon Tracking System](https://mazu.today/projects/formosa-esg-2026/)
