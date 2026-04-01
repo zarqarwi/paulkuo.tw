@@ -72,7 +72,7 @@ This is why we hoped to upgrade the system through AI empowerment this year.
 
 March 23rd, twenty days before the April 12th departure. I collaborated with the 1.5°C Science-Based Targets Initiative Standards Association (SSBTi)—they provided the scientific carbon reduction methodology framework and organizational endorsement, while I handled technical development and system deployment.
 
-SSBTi is a non-profit social organization approved by the Ministry of the Interior in 2022, and a Taiwanese member of the international supply chain science-based targets initiative alliance. They participated as co-organizers in last year's good footprints initiative. This year's collaboration was more focused—they provided the scientific carbon reduction methodology framework while I transformed manual processes into more automated interfaces, integrating websites with LINE OA.
+[SSBTi](https://www.ssbti.org) is a non-profit social organization approved by the Ministry of the Interior in 2022, and a Taiwanese member of the international supply chain science-based targets initiative alliance. They participated as co-organizers in last year's good footprints initiative. This year's collaboration was more focused—they provided the scientific carbon reduction methodology framework while I transformed manual processes into more automated interfaces, integrating websites with LINE OA.
 
 The technical architecture used Astro for frontend, Cloudflare Workers + D1 + KV for backend, all running on edge computing. The reason for choosing this architecture was practical: pilgrimage activities happen while moving, with unstable mobile signals requiring extremely low latency and high availability. Cloudflare's global edge nodes perfectly solved this problem. Additionally, asking everyone to install another app wasn't realistic.
 
@@ -102,7 +102,7 @@ But we hoped the Baishatun pilgrimage could change this impression. When you put
 
 For enterprises, this data also has direct value. Companies participating as sponsors can incorporate these scientifically verified carbon reduction data into their ESG reports as social impact indicators.
 
-SSBTi's role in this project is precisely this: providing methodological credibility, ensuring data isn't just numbers imagined by engineers, but scientifically calculated with organizational endorsement.
+[SSBTi](https://www.ssbti.org)'s role in this project is precisely this: providing methodological credibility, ensuring data isn't just numbers imagined by engineers, but scientifically calculated with organizational endorsement.
 
 ## The Voice of 400,000 Feet
 
