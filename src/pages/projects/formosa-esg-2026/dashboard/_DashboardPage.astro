@@ -52,6 +52,7 @@ const i18nDash = JSON.stringify({
   mazuPopup: t(lang, 'dashboardPage.mazuPopup'),
   mazuLabel: t(lang, 'dashboardPage.mazuLabel'),
   roleFailed: t(lang, 'dashboardPage.roleFailed'),
+  roleConfirm: t(lang, 'dashboardPage.roleConfirm'),
   unknownError: t(lang, 'dashboardPage.unknownError'),
   roleParticipant: t(lang, 'dashboardPage.roleParticipant'),
   roleVolunteer: t(lang, 'dashboardPage.roleVolunteer'),
@@ -226,8 +227,9 @@ const linkPrefix = prefix;
           <tr>
             <th onclick="sortTable(0)">{t(lang, 'dashboardPage.thName')}</th>
             <th onclick="sortTable(1)">{t(lang, 'dashboardPage.thCheckins')}</th>
-            <th onclick="sortTable(2)">{t(lang, 'dashboardPage.thCarbon')}</th>
-            <th onclick="sortTable(3)">{t(lang, 'dashboardPage.thLastActive')}</th>
+            <th onclick="sortTable(2)">{t(lang, 'dashboardPage.thWalkKm')}</th>
+            <th onclick="sortTable(3)">{t(lang, 'dashboardPage.thCarbonSaved')}</th>
+            <th onclick="sortTable(4)">{t(lang, 'dashboardPage.thLastActive')}</th>
             <th>{t(lang, 'dashboardPage.thRole')}</th>
             <th>{t(lang, 'dashboardPage.thStatus')}</th>
           </tr>
@@ -848,23 +850,27 @@ const linkPrefix = prefix;
       var statusDot = isToday ? '<span class="status-dot active"></span>' : '<span class="status-dot"></span>';
       var lastTime = u.last_active ? new Date(u.last_active).toLocaleString('zh-TW', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
       var role = u.role || 'participant';
-      var roleSelect = '<select class="role-select role-' + role + '" onchange="changeRole(\'' + u.user_id + '\', this.value)">' +
+      var roleSelect = '<select class="role-select role-' + role + '" onchange="changeRole(\'' + u.user_id + '\', this.value, this)">' +
         '<option value="participant"' + (role === 'participant' ? ' selected' : '') + '>' + _t.roleParticipant + '</option>' +
         '<option value="volunteer"' + (role === 'volunteer' ? ' selected' : '') + '>' + _t.roleVolunteer + '</option>' +
         '<option value="admin"' + (role === 'admin' ? ' selected' : '') + '>' + _t.roleAdmin + '</option>' +
         '</select>';
 
+      var walkKm = parseFloat(u.walk_km) || 0;
+      var carbonSaved = parseFloat(u.carbon_saved_kg) || (walkKm * 0.47515);
+
       html += '<tr>' +
         '<td>' + (u.display_name || u.user_id.substring(0, 10)) + '</td>' +
         '<td>' + u.gps_count + '</td>' +
-        '<td>' + u.carbon_kg + '</td>' +
+        '<td>' + walkKm.toFixed(1) + '</td>' +
+        '<td>' + carbonSaved.toFixed(1) + '</td>' +
         '<td>' + lastTime + '</td>' +
         '<td>' + roleSelect + '</td>' +
         '<td>' + statusDot + '</td>' +
       '</tr>';
     });
 
-    tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:#888;">' + _t.noUsers + '</td></tr>';
+    tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:#888;">' + _t.noUsers + '</td></tr>';
   }
 
   window.filterUsers = function(q) {
@@ -878,9 +884,13 @@ const linkPrefix = prefix;
   var sortDir = 1;
   window.sortTable = function(col) {
     sortDir *= -1;
-    var keys = ['display_name', 'gps_count', 'carbon_kg', 'last_active'];
+    var keys = ['display_name', 'gps_count', 'walk_km', 'carbon_saved_kg', 'last_active'];
+    function getSortVal(u, key) {
+      if (key === 'carbon_saved_kg') return parseFloat(u.carbon_saved_kg) || (parseFloat(u.walk_km) || 0) * 0.47515;
+      return u[key] || '';
+    }
     allUsers.sort(function(a, b) {
-      var va = a[keys[col]] || '', vb = b[keys[col]] || '';
+      var va = getSortVal(a, keys[col]), vb = getSortVal(b, keys[col]);
       if (typeof va === 'number') return (va - vb) * sortDir;
       return String(va).localeCompare(String(vb)) * sortDir;
     });
@@ -920,7 +930,18 @@ const linkPrefix = prefix;
   }
 
   // ── Role Management ──
-  window.changeRole = function(userId, newRole) {
+  window.changeRole = function(userId, newRole, selectEl) {
+    var user = allUsers.find(function(u) { return u.user_id === userId; });
+    var displayName = user ? (user.display_name || user.user_id.substring(0, 10)) : userId;
+    var oldRole = user ? (user.role || 'participant') : '';
+    var roleLabels = { participant: _t.roleParticipant, volunteer: _t.roleVolunteer, admin: _t.roleAdmin };
+    var msg = _t.roleConfirm.replace('{name}', displayName).replace('{role}', roleLabels[newRole] || newRole);
+
+    if (!confirm(msg)) {
+      if (selectEl) selectEl.value = oldRole;
+      return;
+    }
+
     fetch(API + '/api/formosa/admin/roles', {
       method: 'POST',
       headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
@@ -929,8 +950,14 @@ const linkPrefix = prefix;
       if (d.ok) {
         allUsers.forEach(function(u) { if (u.user_id === userId) u.role = newRole; });
         renderUserTable(allUsers);
-      } else { alert(_t.roleFailed + (d.error || _t.unknownError)); }
-    }).catch(function(e) { alert(_t.roleFailed + e.message); });
+      } else {
+        if (selectEl) selectEl.value = oldRole;
+        alert(_t.roleFailed + (d.error || _t.unknownError));
+      }
+    }).catch(function(e) {
+      if (selectEl) selectEl.value = oldRole;
+      alert(_t.roleFailed + e.message);
+    });
   };
 
   // ── Push Notification ──
