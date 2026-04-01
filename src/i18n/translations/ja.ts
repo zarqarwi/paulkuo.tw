@@ -492,6 +492,8 @@ export const ja = {
     heroSubtitle: '持続可能な行善・民間共善プラットフォーム',
     heroCta: '📖 巡礼者ガイド',
     heroBadge: '環球境地 x 1.5度科学減碳協会 x Paulkuo.tw',
+    qrAlt: 'QRコードをスキャンしてLINE友達を追加',
+    qrLabel: 'スキャンしてLINE友達を追加し、巡礼を始めよう',
     visionTitle: '見えない祈りから見える行動へ',
     visionTraditionTitle: '伝統の底流',
     visionTraditionDesc: '白沙屯媽祖の巡礼は、300年の間に百万人の信仰エネルギーを結集させました。一歩一歩が敬虔さであり、すべての進み方が善行の具体化です。',

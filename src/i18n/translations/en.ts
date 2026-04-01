@@ -492,6 +492,8 @@ export const en = {
     heroSubtitle: 'Building Sustainable Goodwill · Civil Society Commons',
     heroCta: '📖 Pilgrim Guide',
     heroBadge: 'Global Footprints × 1.5°C Science Carbon Reduction Alliance × Paulkuo.tw',
+    qrAlt: 'Scan QR code to add LINE friend',
+    qrLabel: 'Scan to add LINE friend and start your pilgrimage',
     visionTitle: 'From Invisible Blessing to Visible Action',
     visionTraditionTitle: 'The Tradition',
     visionTraditionDesc: 'The Baishatun Mazu pilgrimage, three centuries of faith uniting a million hearts. Every step is devotion; every journey is kindness made tangible.',

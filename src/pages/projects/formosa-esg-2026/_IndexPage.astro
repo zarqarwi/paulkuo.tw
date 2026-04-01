@@ -50,6 +50,12 @@ const schemaJson = JSON.stringify({
       <p class="formosa-hero-subtitle">{t(lang, 'homepage.heroSubtitle')}</p>
       <a href={`${prefix}/projects/formosa-esg-2026/guide/`} class="formosa-hero-cta">{t(lang, 'homepage.heroCta')}</a>
       <div class="formosa-hero-badge">{t(lang, 'homepage.heroBadge')}</div>
+      <div class="formosa-hero-qr">
+        <a href="https://line.me/R/ti/p/%40539fkwjd" target="_blank" rel="noopener">
+          <img src="/images/line-qr-shan.png" alt={t(lang, 'homepage.qrAlt')} width="180" height="180" loading="lazy" />
+        </a>
+        <p class="formosa-hero-qr-label">{t(lang, 'homepage.qrLabel')}</p>
+      </div>
     </div>
   </section>
 
@@ -334,6 +340,36 @@ const schemaJson = JSON.stringify({
     transform: translateY(-2px);
     box-shadow: 0 4px 14px rgba(180,83,9,0.3);
   }
+  /* QR Code in Hero */
+  .formosa-hero-qr {
+    margin-top: 1.5rem;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .formosa-hero-qr a {
+    display: block;
+    padding: 12px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .formosa-hero-qr a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+  .formosa-hero-qr img {
+    display: block;
+    border-radius: 8px;
+  }
+  .formosa-hero-qr-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
   /* Sections */
   .formosa-section {
     margin-bottom: 3.5rem;

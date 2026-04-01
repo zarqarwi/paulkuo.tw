@@ -490,6 +490,8 @@ export const zhHans = {
     heroSubtitle: '构建永续行善・民间共善平台',
     heroCta: '📖 香客使用说明',
     heroBadge: '环球境地 x 1.5度科学减碳协会 x Paulkuo.tw',
+    qrAlt: '扫描 QR Code 添加 LINE 好友',
+    qrLabel: '扫码添加 LINE 好友，开始进香打卡',
     visionTitle: '从无形庇佑到有形行动',
     visionTraditionTitle: '传统的底蕴',
     visionTraditionDesc: '白沙屯妈祖进香，三百年来凝聚百万人的信仰能量。每一步都是虔诚，每一程都是善意的具体化。',
