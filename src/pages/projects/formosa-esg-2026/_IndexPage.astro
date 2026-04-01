@@ -52,7 +52,7 @@ const schemaJson = JSON.stringify({
       <div class="formosa-hero-badge">{t(lang, 'homepage.heroBadge')}</div>
       <div class="formosa-hero-qr">
         <a href="https://line.me/R/ti/p/%40539fkwjd" target="_blank" rel="noopener">
-          <img src="/images/line-qr-shan.png" alt={t(lang, 'homepage.qrAlt')} width="180" height="180" loading="lazy" />
+          <img src="/images/line-qr-shan.png" alt={t(lang, 'homepage.qrAlt')} width="140" height="140" loading="lazy" />
         </a>
         <p class="formosa-hero-qr-label">{t(lang, 'homepage.qrLabel')}</p>
       </div>
@@ -350,19 +350,18 @@ const schemaJson = JSON.stringify({
   }
   .formosa-hero-qr a {
     display: block;
-    padding: 12px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
     transition: transform 0.2s, box-shadow 0.2s;
   }
   .formosa-hero-qr a:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    box-shadow: none;
   }
   .formosa-hero-qr img {
     display: block;
-    border-radius: 8px;
+    border-radius: 0;
   }
   .formosa-hero-qr-label {
     font-size: 0.85rem;
