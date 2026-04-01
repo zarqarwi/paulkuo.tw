@@ -1858,5 +1858,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "formosa-esg-2026-low-carbon-pilgrimage.md": {
+    "sourceHash": "7bd9cc8886f5",
+    "translations": {
+      "en": {
+        "hash": "d7da558359fb",
+        "translatedAt": "2026-04-01T09:58:54.936Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "8e9afcd31b4a",
+        "translatedAt": "2026-04-01T10:01:09.682Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "8104d1b7123d",
+        "translatedAt": "2026-04-01T10:02:48.286Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
