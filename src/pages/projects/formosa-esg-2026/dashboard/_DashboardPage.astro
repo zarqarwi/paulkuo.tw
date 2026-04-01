@@ -91,6 +91,8 @@ const linkPrefix = prefix;
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 
 <div class="admin-dash">
   <nav class="dash-breadcrumb">
@@ -202,6 +204,14 @@ const linkPrefix = prefix;
       <div class="line-usage-info" id="lineUsageInfo">載入中⋯</div>
       <div class="line-usage-followers" id="lineUsageFollowers"></div>
     </div>
+  </section>
+
+  <!-- Feedback -->
+  <section class="dash-section">
+    <div class="dash-section-header">
+      <h2>📝 回饋紀錄</h2>
+    </div>
+    <div id="feedbackPanel" class="feedback-panel"><p style="color:#888;">載入中⋯</p></div>
   </section>
 
   <!-- User Table -->
@@ -842,6 +852,38 @@ const linkPrefix = prefix;
     renderUserTable(allUsers);
   };
 
+  // ── Feedback Panel ──
+  async function fetchFeedback() {
+    try {
+      var res = await fetch(API + '/api/formosa/feedback', { headers: ADMIN_HEADERS });
+      var data = await res.json();
+      renderFeedback(data.feedbacks || []);
+    } catch (e) {
+      document.getElementById('feedbackPanel').innerHTML = '<p style="color:#f87171;">回饋載入失敗</p>';
+      console.error('Feedback fetch error:', e);
+    }
+  }
+
+  function renderFeedback(feedbacks) {
+    var panel = document.getElementById('feedbackPanel');
+    if (!feedbacks.length) {
+      panel.innerHTML = '<p style="color:#888;">尚無回饋</p>';
+      return;
+    }
+    var html = '';
+    feedbacks.forEach(function(fb) {
+      var time = fb.created_at ? new Date(fb.created_at).toLocaleString('zh-TW', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+      var desc = DOMPurify.sanitize(marked.parse(fb.description || ''));
+      var screenshot = fb.screenshot_url ? '<a href="' + fb.screenshot_url + '" target="_blank" class="fb-screenshot">📎 截圖</a>' : '';
+      html += '<div class="fb-card">' +
+        '<div class="fb-meta"><span class="fb-category">' + (fb.category || '') + '</span><span class="fb-time">' + time + '</span>' + screenshot + '</div>' +
+        '<div class="fb-desc">' + desc + '</div>' +
+        (fb.device_info ? '<div class="fb-device">' + fb.device_info + '</div>' : '') +
+      '</div>';
+    });
+    panel.innerHTML = html;
+  }
+
   // ── Role Management ──
   window.changeRole = function(userId, newRole) {
     fetch(API + '/api/formosa/admin/roles', {
@@ -1069,7 +1111,7 @@ const linkPrefix = prefix;
   var isDemo = new URLSearchParams(window.location.search).get('demo') === '1';
 
   // ── Init + Auto-refresh ──
-  if (isDemo) { fetchAllDemo(); } else { fetchAll(); fetchLineUsage(); }
+  if (isDemo) { fetchAllDemo(); } else { fetchAll(); fetchLineUsage(); fetchFeedback(); }
   var refreshInterval = setInterval(function() {
     if (document.getElementById('autoRefresh').checked) {
       if (isDemo) fetchAllDemo(); else fetchAll();
@@ -1373,6 +1415,21 @@ const linkPrefix = prefix;
   }
   .line-usage-info { font-size: 0.9rem; color: #ccc; }
   .line-usage-followers { font-size: 0.85rem; color: #999; margin-top: 0.25rem; }
+
+  /* Feedback */
+  :global(.fb-card) { background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; }
+  :global(.fb-meta) { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; font-size: 0.8rem; color: #999; }
+  :global(.fb-category) { background: #B45309; color: #fff; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+  :global(.fb-time) { color: #888; }
+  :global(.fb-screenshot) { color: #60a5fa; text-decoration: none; font-size: 0.8rem; }
+  :global(.fb-screenshot:hover) { text-decoration: underline; }
+  :global(.fb-desc) { color: #e5e5e5; font-size: 0.9rem; line-height: 1.6; }
+  :global(.fb-desc h1, .fb-desc h2, .fb-desc h3) { font-size: 1rem; margin: 0.5rem 0 0.25rem; color: #fff; }
+  :global(.fb-desc ul, .fb-desc ol) { padding-left: 1.2rem; margin: 0.25rem 0; }
+  :global(.fb-desc code) { background: #2a2a2a; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.85em; }
+  :global(.fb-desc pre) { background: #2a2a2a; padding: 0.5rem; border-radius: 6px; overflow-x: auto; }
+  :global(.fb-desc p) { margin: 0.25rem 0; }
+  :global(.fb-device) { font-size: 0.75rem; color: #666; margin-top: 0.3rem; }
 </style>
 
 </AuthGate>
