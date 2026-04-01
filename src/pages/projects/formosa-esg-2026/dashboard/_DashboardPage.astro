@@ -122,7 +122,7 @@ const linkPrefix = prefix;
   </div>
 
   <!-- Live Map -->
-  <section class="dash-section">
+  <section class="dash-section" id="mapSection">
     <div class="dash-section-header">
       <h2>{t(lang, 'dashboardPage.liveMap')}</h2>
       <div class="map-toggles">
@@ -169,7 +169,7 @@ const linkPrefix = prefix;
   </div>
 
   <!-- Push Notification -->
-  <section class="dash-section">
+  <section class="dash-section" id="pushSection">
     <h2>{t(lang, 'dashboardPage.pushSection')}</h2>
     <div class="push-form">
       <div class="push-row">
@@ -207,7 +207,7 @@ const linkPrefix = prefix;
   </section>
 
   <!-- Feedback -->
-  <section class="dash-section">
+  <section class="dash-section" id="feedbackSection">
     <div class="dash-section-header">
       <h2>📝 回饋紀錄</h2>
     </div>
@@ -215,7 +215,7 @@ const linkPrefix = prefix;
   </section>
 
   <!-- User Table -->
-  <section class="dash-section">
+  <section class="dash-section" id="userSection">
     <div class="dash-section-header">
       <h2>{t(lang, 'dashboardPage.userSection')}</h2>
       <input type="text" class="dash-search" id="userSearch" placeholder={t(lang, 'dashboardPage.searchPlaceholder')} oninput="filterUsers(this.value)">
@@ -261,28 +261,63 @@ const linkPrefix = prefix;
   var map = null, markerLayer = null, heatLayer = null;
   var mapMode = 'markers';
   var allUsers = [];
+  var _role = 'owner'; // default, will be updated by fetchRole
+
+  // ── Role check ──
+  async function fetchRole() {
+    try {
+      var res = await fetch(API + '/api/formosa/auth/role', { headers: ADMIN_HEADERS });
+      if (res.ok) {
+        var data = await res.json();
+        _role = data.role || 'owner';
+      }
+    } catch (e) { _role = 'owner'; }
+    sessionStorage.setItem('formosa_esg_role', _role);
+    if (_role === 'volunteer') {
+      // Hide admin-only sections
+      var adminSections = ['lineUsageSection', 'pushSection', 'feedbackSection', 'userSection', 'mapSection'];
+      adminSections.forEach(function(id) { var el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    }
+    return _role;
+  }
 
   // ── Fetch all data ──
   async function fetchAll() {
     try {
       var zoom = map ? map.getZoom() : 9;
-      var [dataRes, clusterRes, carbonRes, timelineRes, usersRes, surveyRes] = await Promise.all([
+      var isAdmin = _role === 'owner' || _role === 'manager';
+
+      // Volunteer-visible endpoints (all roles)
+      var baseFetches = [
         fetch(API + '/api/formosa/data', { headers: ADMIN_HEADERS }).then(r => r.json()),
-        fetch(API + '/api/formosa/admin/clusters?zoom=' + zoom, { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/carbon', { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/timeline', { headers: ADMIN_HEADERS }).then(r => r.json()),
-        fetch(API + '/api/formosa/admin/users', { headers: ADMIN_HEADERS }).then(r => r.json()),
         fetch(API + '/api/formosa/admin/surveys', { headers: ADMIN_HEADERS }).then(r => r.json())
-      ]);
+      ];
 
-      window._lastClusterRes = clusterRes;
+      // Admin-only endpoints (owner + manager)
+      if (isAdmin) {
+        baseFetches.push(
+          fetch(API + '/api/formosa/admin/clusters?zoom=' + zoom, { headers: ADMIN_HEADERS }).then(r => r.json()),
+          fetch(API + '/api/formosa/admin/users', { headers: ADMIN_HEADERS }).then(r => r.json())
+        );
+      }
+
+      var results = await Promise.all(baseFetches);
+      var dataRes = results[0], carbonRes = results[1], timelineRes = results[2], surveyRes = results[3];
+
       renderKPI(dataRes, carbonRes, timelineRes);
-      renderMap(dataRes.gps_points || [], clusterRes);
       renderCarbon(carbonRes);
-      renderRanks(usersRes.users || []);
       renderSurvey(surveyRes);
       renderTimeline(timelineRes);
-      renderUserTable(usersRes.users || []);
+
+      if (isAdmin) {
+        var clusterRes = results[4], usersRes = results[5];
+        window._lastClusterRes = clusterRes;
+        renderMap(dataRes.gps_points || [], clusterRes);
+        renderRanks(usersRes.users || []);
+        renderUserTable(usersRes.users || []);
+      }
 
       document.getElementById('lastUpdated').textContent = _t.updated + new Date().toLocaleTimeString('zh-TW');
     } catch (e) {
@@ -1111,7 +1146,7 @@ const linkPrefix = prefix;
   var isDemo = new URLSearchParams(window.location.search).get('demo') === '1';
 
   // ── Init + Auto-refresh ──
-  if (isDemo) { fetchAllDemo(); } else { fetchAll(); fetchLineUsage(); fetchFeedback(); }
+  if (isDemo) { fetchAllDemo(); } else { fetchRole().then(function(role) { fetchAll(); if (role !== 'volunteer') { fetchLineUsage(); fetchFeedback(); } }); }
   var refreshInterval = setInterval(function() {
     if (document.getElementById('autoRefresh').checked) {
       if (isDemo) fetchAllDemo(); else fetchAll();
