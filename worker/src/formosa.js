@@ -1965,7 +1965,7 @@ export async function handleFormosaFeedbackList(request, env) {
     const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit')) || 50, 1), 200);
     const offset = Math.max(parseInt(url.searchParams.get('offset')) || 0, 0);
 
-    const rows = await env.DB.prepare(
+    const rows = await env.AUTH_DB.prepare(
       `SELECT id, category, description, screenshot_url, device_info, user_agent, line_user_id, created_at FROM feedback ORDER BY created_at DESC LIMIT ? OFFSET ?`
     ).bind(limit, offset).all();
 
@@ -1993,7 +1993,7 @@ export async function handleFormosaFeedback(request, env) {
       return jsonResponse({ error: 'category and description are required' }, 400, request);
     }
 
-    await env.DB.prepare(
+    await env.AUTH_DB.prepare(
       `INSERT INTO feedback (category, description, screenshot_url, device_info, user_agent, line_user_id) VALUES (?, ?, ?, ?, ?, ?)`
     ).bind(category, description, screenshot_url || null, device_info || null, user_agent || null, line_user_id || null).run();
 
