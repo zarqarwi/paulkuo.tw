@@ -6,7 +6,7 @@ abstract: |
   Three hundred thousand registrants, approximately 400 kilometers of walking round-trip, the Baishatun Gongtian Temple Mazu Pilgrimage route decided by Mazu herself—this is Taiwan's annual spring mass movement. What is the environmental significance of this activity? In collaboration with the 1.5°C Science-Based Carbon Reduction Initiative Standards Association, I built a GPS check-in and carbon footprint tracking system from scratch in four weeks. This article documents the entire process: why we did it, how we did it, and what this means for ESG implementation.
 date: 2026-04-01
 updated: 2026-04-01
-pillar: circular-economy
+pillar: circular
 tags:
   - 碳足跡
   - 白沙屯媽祖
