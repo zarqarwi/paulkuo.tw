@@ -986,39 +986,76 @@ export async function handleFormosaAdminCarbon(request, env) {
   }
   try {
     await migrateFormosa(env.AUTH_DB);
+
+    // GPS-derived distance and carbon (primary source)
+    const allPoints = await env.AUTH_DB.prepare(
+      'SELECT user_id, lat, lng, timestamp FROM formosa_gps_points ORDER BY user_id, timestamp ASC'
+    ).all();
+    const pts = allPoints?.results || [];
+
+    const perUser = {};
+    let prevPt = null;
+    for (const pt of pts) {
+      if (!perUser[pt.user_id]) perUser[pt.user_id] = { zero_emission: 0, motorized: 0 };
+      if (prevPt && prevPt.user_id === pt.user_id) {
+        const dist = haversine(prevPt.lat, prevPt.lng, pt.lat, pt.lng);
+        const timeDiffHours = (new Date(pt.timestamp) - new Date(prevPt.timestamp)) / 3600000;
+        if (dist >= 0.01 && timeDiffHours > 0 && timeDiffHours >= 1/120) {
+          const speed = dist / timeDiffHours;
+          if (speed <= 300) {
+            const transport = inferTransportMode(speed);
+            perUser[pt.user_id][transport.mode] += dist;
+          }
+        }
+      }
+      prevPt = pt;
+    }
+
+    let gpsWalkKm = 0, gpsMotorizedKm = 0, gpsCarbonTotal = 0;
+    const userIds = Object.keys(perUser);
+    for (const uid of userIds) {
+      gpsWalkKm += perUser[uid].zero_emission;
+      gpsMotorizedKm += perUser[uid].motorized;
+      gpsCarbonTotal += perUser[uid].motorized * 0.47515;
+    }
+    const gpsTotalKm = gpsWalkKm + gpsMotorizedKm;
+
+    // Survey data (supplementary: water, hotel, survey-reported transport)
     const rows = await env.AUTH_DB.prepare('SELECT transport_walk, transport_car, transport_carpool, transport_scooter, transport_bus, transport_mrt, transport_train, transport_hsr, water_bottles, hotel_nights, carbon_total_kg FROM formosa_surveys').all();
     const data = rows?.results || [];
 
     const modes = ['walk','car','scooter','bus','mrt','train','hsr'];
-    const factors = { walk: GWP_FACTORS.walk, car: GWP_FACTORS.car, scooter: GWP_FACTORS.scooter, bus: GWP_FACTORS.bus, mrt: GWP_FACTORS.mrt, train: GWP_FACTORS.train, hsr: GWP_FACTORS.hsr };
-    const totals = {};
-    modes.forEach(m => { totals[m] = { km: 0, users: 0 }; });
-    let waterTotal = 0, hotelTotal = 0, carbonTotal = 0;
+    const surveyTotals = {};
+    modes.forEach(m => { surveyTotals[m] = { km: 0, users: 0 }; });
+    let waterTotal = 0, hotelTotal = 0;
 
     data.forEach(r => {
       modes.forEach(m => {
         const km = r['transport_' + m] || 0;
-        if (km > 0) { totals[m].km += km; totals[m].users++; }
+        if (km > 0) { surveyTotals[m].km += km; surveyTotals[m].users++; }
       });
       waterTotal += r.water_bottles || 0;
       hotelTotal += r.hotel_nights || 0;
-      carbonTotal += r.carbon_total_kg || 0;
     });
 
-    // Calculate carbon saved: if all walk km were driven by car (Ecoinvent 3.10)
-    const walkKm = totals.walk.km;
-    const hypothetical = walkKm * GWP_FACTORS.car;
-    const carbonSaved = Math.max(0, hypothetical);
+    // Merge: use GPS-derived walk km (more accurate), keep survey transport breakdown
+    const transportTotals = { ...surveyTotals };
+    transportTotals.walk = { km: gpsWalkKm, users: userIds.length };
+
+    // Carbon saved: if all walk km were driven by bus (0.47515 kg CO2e/km)
+    const carbonSaved = Math.max(0, gpsWalkKm * GWP_FACTORS.bus);
 
     return jsonResponse({
-      total_carbon_kg: +carbonTotal.toFixed(2),
-      avg_carbon_kg: data.length ? +(carbonTotal / data.length).toFixed(2) : 0,
+      total_carbon_kg: +gpsCarbonTotal.toFixed(2),
+      avg_carbon_kg: userIds.length ? +(gpsCarbonTotal / userIds.length).toFixed(2) : 0,
       total_surveys: data.length,
-      transport_totals: totals,
+      transport_totals: transportTotals,
       carbon_saved_kg: +carbonSaved.toFixed(2),
-      hypothetical_driving_kg: +hypothetical.toFixed(2),
+      hypothetical_driving_kg: +(gpsWalkKm * GWP_FACTORS.bus).toFixed(2),
       water_bottles_total: waterTotal,
-      hotel_nights_total: hotelTotal
+      hotel_nights_total: hotelTotal,
+      gps_total_km: +gpsTotalKm.toFixed(2),
+      gps_users: userIds.length
     }, 200, request);
   } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
 }
@@ -1076,12 +1113,39 @@ export async function handleFormosaAdminUsers(request, env) {
       ORDER BY last_active DESC
     `).all();
 
+    // Fetch all GPS points to compute walk_km and carbon_kg from actual tracks
+    const allPoints = await env.AUTH_DB.prepare(
+      'SELECT user_id, lat, lng, timestamp FROM formosa_gps_points ORDER BY user_id, timestamp ASC'
+    ).all();
+    const pts = allPoints?.results || [];
+
+    // Compute per-user distance and carbon from GPS tracks
+    const gpsStats = {};
+    let prevPt = null;
+    for (const pt of pts) {
+      if (!gpsStats[pt.user_id]) gpsStats[pt.user_id] = { km: 0, carbon: 0 };
+      if (prevPt && prevPt.user_id === pt.user_id) {
+        const dist = haversine(prevPt.lat, prevPt.lng, pt.lat, pt.lng);
+        const timeDiffHours = (new Date(pt.timestamp) - new Date(prevPt.timestamp)) / 3600000;
+        if (dist >= 0.01 && timeDiffHours > 0 && timeDiffHours >= 1/120) {
+          const speed = dist / timeDiffHours;
+          if (speed <= 300) {
+            const transport = inferTransportMode(speed);
+            gpsStats[pt.user_id].km += dist;
+            gpsStats[pt.user_id].carbon += dist * transport.gwp;
+          }
+        }
+      }
+      prevPt = pt;
+    }
+
     const surveys = await env.AUTH_DB.prepare('SELECT user_id, carbon_total_kg, transport_walk FROM formosa_surveys').all();
     const surveyMap = {};
     (surveys?.results || []).forEach(s => { surveyMap[s.user_id] = s; });
 
     const users = (gpsUsers?.results || []).map(u => {
       const s = surveyMap[u.user_id];
+      const gs = gpsStats[u.user_id] || { km: 0, carbon: 0 };
       return {
         user_id: u.user_id,
         display_name: u.display_name || u.user_id.substring(0, 8),
@@ -1089,8 +1153,8 @@ export async function handleFormosaAdminUsers(request, env) {
         role: u.role || 'participant',
         gps_count: u.gps_count,
         survey_done: !!s,
-        carbon_kg: +(s?.carbon_total_kg || 0).toFixed(2),
-        walk_km: +(s?.transport_walk || 0).toFixed(1),
+        carbon_kg: +gs.carbon.toFixed(2),
+        walk_km: +gs.km.toFixed(1),
         last_active: u.last_active,
         first_active: u.first_active
       };
