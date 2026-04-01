@@ -45,6 +45,13 @@ const eventName = eventNames[currentLang] || eventNames['zh-Hant'];
       if (!ticking) { requestAnimationFrame(updateNav); ticking = true; }
     }, { passive: true });
     updateNav();
+
+    // Set flag when user manually switches locale (prevents auto-redirect back)
+    document.querySelectorAll('.event-lang-switcher .lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sessionStorage.setItem('formosa_locale_manual', '1');
+      });
+    });
   })();
 </script>
 

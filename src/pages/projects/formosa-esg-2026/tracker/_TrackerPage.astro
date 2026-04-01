@@ -41,10 +41,7 @@ const prefix = LOCALE_PREFIX[lang];
   selectAtLeastOne: t(lang, 'tracker_ui.selectAtLeastOne'),
   loginRequired: t(lang, 'tracker_ui.loginRequired'),
   sending: t(lang, 'tracker_ui.sending'),
-  dailySaved: t(lang, 'tracker_ui.dailySaved'),
-  saveFailed: t(lang, 'tracker_ui.saveFailed'),
   networkError: t(lang, 'tracker_ui.networkError'),
-  submitDailyReport: t(lang, 'tracker_ui.submitDailyReport'),
   processing: t(lang, 'tracker_ui.processing'),
   paused: t(lang, 'tracker_ui.paused'),
   pausedStatus: t(lang, 'tracker_ui.pausedStatus'),
@@ -75,6 +72,16 @@ const prefix = LOCALE_PREFIX[lang];
   longPressHint: t(lang, 'tracker_ui.longPressHint'),
   linePhotoHint: t(lang, 'tracker_ui.linePhotoHint'),
   brandShortName: t(lang, 'brand.shortName'),
+  levelUpTitle: t(lang, 'tracker_ui.levelUpTitle'),
+  levelUpMessage: t(lang, 'tracker_ui.levelUpMessage'),
+  levelUpContinue: t(lang, 'tracker_ui.levelUpContinue'),
+  milestoneTitle: t(lang, 'tracker_ui.milestoneTitle'),
+  milestoneMessage: t(lang, 'tracker_ui.milestoneMessage'),
+  milestoneDismiss: t(lang, 'tracker_ui.milestoneDismiss'),
+  achievementTitle: t(lang, 'tracker_ui.achievementTitle'),
+  achievementMessage: t(lang, 'tracker_ui.achievementMessage'),
+  achievementShare: t(lang, 'tracker_ui.achievementShare'),
+  achievementClose: t(lang, 'tracker_ui.achievementClose'),
   levels: {
     '1': t(lang, 'levels.1.name'),
     '2': t(lang, 'levels.2.name'),
@@ -122,28 +129,26 @@ const prefix = LOCALE_PREFIX[lang];
     <div class="q-progress-bar">
       <div class="q-progress-fill" id="qProgressFill"></div>
     </div>
-    <div class="q-progress-text" id="qProgressText">第 1 / 11 題</div>
+    <div class="q-progress-text" id="qProgressText">第 1 / 10 題</div>
   </div>
 
   <!-- ═══════════════════════════════════════════ -->
   <!-- ONE QUESTION PER CARD                      -->
   <!-- ═══════════════════════════════════════════ -->
 
-  <!-- Q1 -->
-  <div class="q-card active" data-q="1" data-section="善行體悟">
-    <div class="q-section-tag">第一部份：善行、行善</div>
+  <!-- Q1: 善行活動（複選） -->
+  <div class="q-card active" data-q="1">
     <label class="form-label">Q1. 您於此次進香期間，有參與以下哪些善行活動？<span class="form-hint">（可複選，選完請按下一題）</span></label>
     <div class="checkbox-group" data-name="q1" data-required="true">
-      <label class="checkbox-item"><input type="checkbox" name="q1" value="環球境地志工，協助整理沿路環境設施"><span>環球境地志工，協助整理沿路環境設施</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q1" value="提供飲水/補給品給香客"><span>提供飲水/補給品給香客</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q1" value="參與環境清潔或垃圾分類"><span>參與環境清潔或垃圾分類</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助老人、小孩、安全引導"><span>協助老人、小孩、安全引導</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q1" value="默禱/祈福"><span>默禱/祈福</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助他人搬運物資"><span>協助他人搬運物資</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q1" value="協助環球境地夥伴-參與奉獻佈施"><span>協助環球境地夥伴 - 參與奉獻佈施</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="志工（沿路照護支援）"><span>志工（沿路照護支援）</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="佈施（提供飲水／補給）"><span>佈施（提供飲水／補給）</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="整理（環境清潔／垃圾分類）"><span>整理（環境清潔／垃圾分類）</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="扶助（老弱婦孺／安全引導）"><span>扶助（老弱婦孺／安全引導）</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="默禱／祈福"><span>默禱／祈福</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q1" value="搬運（物資搬運／清運）"><span>搬運（物資搬運／清運）</span></label>
       <label class="checkbox-item other-item">
         <input type="checkbox" name="q1" value="__other__"><span>其他</span>
-        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+        <input type="text" class="other-input" placeholder="請填..." style="display:none" />
       </label>
     </div>
     <div class="q-nav">
@@ -152,22 +157,22 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </div>
 
-  <!-- Q2 -->
+  <!-- Q2: 感動事情（複選） -->
   <div class="q-card" data-q="2">
-    <label class="form-label">Q2. 您於此次進香期間，被感動的事情？<span class="form-hint">（可複選，選完請按下一題）</span></label>
+    <label class="form-label">Q2. 目前進香過程中，讓您印象深刻或感動的事情？<span class="form-hint">（可複選，選完請按下一題）</span></label>
     <div class="checkbox-group" data-name="q2" data-required="true">
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到或感受到媽祖的神跡"><span>看到或感受到媽祖的神跡</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到彼此扶助的行為"><span>看到彼此扶助的行為</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我約束的自律行為"><span>看到自我約束的自律行為</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="看到自我改變、改善或悔改的行為"><span>看到自我改變、改善或悔改的行為</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="善心開導、包容關愛"><span>善心開導、包容關愛</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="自備餐具容器、自覺減少垃圾"><span>自備餐具容器、自覺減少垃圾</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="協助清理垃圾、撿拾廢棄物"><span>協助清理垃圾、撿拾廢棄物</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="協助減少污染、自覺減少環境影響"><span>協助減少污染、自覺減少環境影響</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q2" value="自願共乘、互相協助解決交通問題"><span>自願共乘、互相協助解決交通問題</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="看見／感受到信仰力量"><span>看見／感受到信仰力量</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="彼此扶助"><span>彼此扶助</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="自律（自我約束）"><span>自律（自我約束）</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="改變／改善／悔改"><span>改變／改善／悔改</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="善心開導／包容關愛"><span>善心開導／包容關愛</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="自備餐具容器（減少垃圾）"><span>自備餐具容器（減少垃圾）</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="清理垃圾／撿拾廢棄物"><span>清理垃圾／撿拾廢棄物</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="減少污染（降低環境影響）"><span>減少污染（降低環境影響）</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q2" value="自願共乘（互助解決交通）"><span>自願共乘（互助解決交通）</span></label>
       <label class="checkbox-item other-item">
         <input type="checkbox" name="q2" value="__other__"><span>其他</span>
-        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+        <input type="text" class="other-input" placeholder="請填..." style="display:none" />
       </label>
     </div>
     <div class="q-nav">
@@ -176,60 +181,18 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </div>
 
-  <!-- Q2-1 -->
+  <!-- Q3: 到場交通方式（單選，自動跳題） -->
   <div class="q-card" data-q="3">
-    <label class="form-label">Q2-1. 請分享您被感動幾次及最讓您感動的一次「善的經驗」？<span class="form-hint">（選填，可跳過）</span></label>
-    <textarea class="form-textarea" id="q2_1" rows="5" placeholder="在這裡分享您的故事..."></textarea>
-    <div class="q-nav">
-      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
-      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
-    </div>
-  </div>
-
-  <!-- Q3 -->
-  <div class="q-card" data-q="4">
-    <label class="form-label">Q3. 此次活動是否讓您更深刻體會到「行善」的價值？</label>
-    <div class="radio-group" data-name="q3" data-required="true" data-auto="true">
-      <label class="radio-item"><input type="radio" name="q3" value="非常同意"><span>非常同意</span></label>
-      <label class="radio-item"><input type="radio" name="q3" value="同意"><span>同意</span></label>
-      <label class="radio-item"><input type="radio" name="q3" value="普通"><span>普通</span></label>
-      <label class="radio-item"><input type="radio" name="q3" value="不同意"><span>不同意</span></label>
-      <label class="radio-item"><input type="radio" name="q3" value="非常不同意"><span>非常不同意</span></label>
-    </div>
-    <div class="q-nav">
-      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
-      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
-    </div>
-  </div>
-
-  <!-- Q4 -->
-  <div class="q-card" data-q="5" data-section="活動後的改變">
-    <div class="q-section-tag">第二部份：活動後的改變</div>
-    <label class="form-label">Q4. 進香結束後，您是否有意願在日常生活中延續「行善」的心？</label>
-    <div class="radio-group" data-name="q4" data-required="true" data-auto="true">
-      <label class="radio-item"><input type="radio" name="q4" value="有，會更積極參與"><span>有，會更積極參與</span></label>
-      <label class="radio-item"><input type="radio" name="q4" value="可能會有影響"><span>可能會有影響</span></label>
-      <label class="radio-item"><input type="radio" name="q4" value="不確定"><span>不確定</span></label>
-      <label class="radio-item"><input type="radio" name="q4" value="沒有特別改變"><span>沒有特別改變</span></label>
-    </div>
-    <div class="q-nav">
-      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
-      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
-    </div>
-  </div>
-
-  <!-- Q5 -->
-  <div class="q-card" data-q="6">
-    <label class="form-label">Q5. 您計畫在未來做哪些善的行動？<span class="form-hint">（可複選，選完請按下一題）</span></label>
-    <div class="checkbox-group" data-name="q5" data-required="true">
-      <label class="checkbox-item"><input type="checkbox" name="q5" value="志工服務"><span>志工服務</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q5" value="捐款或物資支持公益團體"><span>捐款或物資支持公益團體</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q5" value="鼓勵親友參與善行"><span>鼓勵親友參與善行</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q5" value="在公司/組織內推動CSR或ESG相關善行"><span>在公司/組織內推動 CSR 或 ESG 相關善行</span></label>
-      <label class="checkbox-item"><input type="checkbox" name="q5" value="日常生活中更多關懷他人"><span>日常生活中更多關懷他人</span></label>
-      <label class="checkbox-item other-item">
-        <input type="checkbox" name="q5" value="__other__"><span>其他</span>
-        <input type="text" class="other-input" placeholder="請說明..." style="display:none" />
+    <label class="form-label">Q3. 您此次前往進香（到集合點／起點）的主要交通方式？<span class="form-hint">（單選）</span></label>
+    <div class="radio-group" data-name="q3_transport" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q3_transport" value="低碳／無排放（步行、腳踏車）"><span>低碳／無排放（步行、腳踏車）</span></label>
+      <label class="radio-item"><input type="radio" name="q3_transport" value="機車"><span>機車</span></label>
+      <label class="radio-item"><input type="radio" name="q3_transport" value="汽車（含自駕、搭乘、計程車）"><span>汽車（含自駕、搭乘、計程車）</span></label>
+      <label class="radio-item"><input type="radio" name="q3_transport" value="大眾運輸（公車／客運／火車／高鐵）"><span>大眾運輸（公車／客運／火車／高鐵）</span></label>
+      <label class="radio-item"><input type="radio" name="q3_transport" value="接駁車／遊覽車"><span>接駁車／遊覽車</span></label>
+      <label class="radio-item other-item">
+        <input type="radio" name="q3_transport" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請填..." style="display:none" />
       </label>
     </div>
     <div class="q-nav">
@@ -238,14 +201,19 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </div>
 
-  <!-- Q6 -->
-  <div class="q-card" data-q="7">
-    <label class="form-label">Q6. 若您來自企業或組織，是否會考慮將此次體驗轉化為企業的社會責任行動？</label>
-    <div class="radio-group" data-name="q6" data-required="true" data-auto="true">
-      <label class="radio-item"><input type="radio" name="q6" value="會，並已著手規劃"><span>會，並已著手規劃</span></label>
-      <label class="radio-item"><input type="radio" name="q6" value="有此想法，尚在討論"><span>有此想法，尚在討論</span></label>
-      <label class="radio-item"><input type="radio" name="q6" value="我是個人參與者，非企業身份，但願意投入"><span>我是個人參與者，非企業身份，但願意投入</span></label>
-      <label class="radio-item"><input type="radio" name="q6" value="不可能"><span>不可能</span></label>
+  <!-- Q4: 環保行為（複選） -->
+  <div class="q-card" data-q="4">
+    <label class="form-label">Q4. 此次進香期間，您有做到哪些環保行為？<span class="form-hint">（可複選，選完請按下一題）</span></label>
+    <div class="checkbox-group" data-name="q4_eco" data-required="true">
+      <label class="checkbox-item"><input type="checkbox" name="q4_eco" value="自備水壺／杯"><span>自備水壺／杯</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q4_eco" value="自備餐具／容器"><span>自備餐具／容器</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q4_eco" value="垃圾分類"><span>垃圾分類</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q4_eco" value="不亂丟垃圾（自行帶走）"><span>不亂丟垃圾（自行帶走）</span></label>
+      <label class="checkbox-item"><input type="checkbox" name="q4_eco" value="協助清理垃圾／撿拾廢棄物"><span>協助清理垃圾／撿拾廢棄物</span></label>
+      <label class="checkbox-item other-item">
+        <input type="checkbox" name="q4_eco" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請填..." style="display:none" />
+      </label>
     </div>
     <div class="q-nav">
       <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
@@ -253,10 +221,48 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </div>
 
-  <!-- Q7: 身分 -->
-  <div class="q-card" data-q="8" data-section="基本資料與環境影響">
-    <div class="q-section-tag">第三部份：基本資料與環境影響</div>
-    <label class="form-label">請問您是以什麼身分參與本活動？</label>
+  <!-- Q5: 住宿（單選，自動跳題） -->
+  <div class="q-card" data-q="5">
+    <label class="form-label">Q5. 此次進香期間，您是否有過夜住宿？<span class="form-hint">（單選）</span></label>
+    <div class="radio-group" data-name="q5_stay" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q5_stay" value="沒有（當天來回）"><span>沒有（當天來回）</span></label>
+      <label class="radio-item"><input type="radio" name="q5_stay" value="有（住親友家）"><span>有（住親友家）</span></label>
+      <label class="radio-item"><input type="radio" name="q5_stay" value="有（旅館／民宿）"><span>有（旅館／民宿）</span></label>
+      <label class="radio-item"><input type="radio" name="q5_stay" value="有（香客大樓／廟宇／活動住宿）"><span>有（香客大樓／廟宇／活動住宿）</span></label>
+      <label class="radio-item"><input type="radio" name="q5_stay" value="有（車上／帳篷／露營）"><span>有（車上／帳篷／露營）</span></label>
+      <label class="radio-item other-item">
+        <input type="radio" name="q5_stay" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請填..." style="display:none" />
+      </label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q6: 用餐方式（單選，自動跳題） -->
+  <div class="q-card" data-q="6">
+    <label class="form-label">Q6. 此次進香期間，您主要的用餐方式較接近哪一種？<span class="form-hint">（單選）</span></label>
+    <div class="radio-group" data-name="q6_meal" data-required="true" data-auto="true">
+      <label class="radio-item"><input type="radio" name="q6_meal" value="多數吃現場供餐（攤位／補給）"><span>多數吃現場供餐（攤位／補給）</span></label>
+      <label class="radio-item"><input type="radio" name="q6_meal" value="多數自備餐食"><span>多數自備餐食</span></label>
+      <label class="radio-item"><input type="radio" name="q6_meal" value="供餐與自備各半"><span>供餐與自備各半</span></label>
+      <label class="radio-item"><input type="radio" name="q6_meal" value="不確定"><span>不確定</span></label>
+      <label class="radio-item other-item">
+        <input type="radio" name="q6_meal" value="__other__"><span>其他</span>
+        <input type="text" class="other-input" placeholder="請填..." style="display:none" />
+      </label>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
+      <button class="btn btn-next" onclick="goQ(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q7: 參與身份（單選，自動跳題） -->
+  <div class="q-card" data-q="7">
+    <label class="form-label">Q7. 請問您是以什麼身份參與本活動？<span class="form-hint">（單選）</span></label>
     <div class="radio-group" data-name="role" data-auto="true">
       <label class="radio-item"><input type="radio" name="role" value="主辦方"><span>主辦方</span></label>
       <label class="radio-item"><input type="radio" name="role" value="參與人" checked><span>參與人</span></label>
@@ -267,12 +273,9 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </div>
 
-  <!-- (Q8-Q10 交通/碳足跡已移至每日回報，不在一次性問卷中) -->
-
-  <!-- Q11: 照片上傳 -->
-  <div class="q-card" data-q="9" data-section="照片上傳">
-    <div class="q-section-tag">第四部份：照片上傳與足跡定位</div>
-    <label class="form-label">上傳進香途中拍攝的照片<span class="form-hint">（需開啟定位，系統自動提取 GPS 座標）</span></label>
+  <!-- Q8: 照片上傳（選填） -->
+  <div class="q-card" data-q="8">
+    <label class="form-label">Q8. 上傳進香途中拍攝的照片<span class="form-hint">（選填）</span></label>
 
     <div class="upload-area" id="uploadArea">
       <div class="upload-icon">📷</div>
@@ -301,10 +304,10 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </div>
 
-  <!-- Q12: 手機號碼（選填） -->
-  <div class="q-card" data-q="10">
-    <label class="form-label">手機號碼<span class="form-hint">（選填）</span></label>
-    <p style="color:var(--text-secondary);font-size:0.82rem;margin-bottom:1rem;line-height:1.5">用於活動後續通知與合作夥伴優惠</p>
+  <!-- Q9: 手機號碼（選填） -->
+  <div class="q-card" data-q="9">
+    <label class="form-label">Q9. 手機號碼<span class="form-hint">（選填）</span></label>
+    <p style="color:var(--text-secondary);font-size:0.82rem;margin-bottom:1rem;line-height:1.5">用於活動後續通知</p>
     <input type="tel" id="phoneInput" class="transport-input" placeholder="0912-345-678" style="width:100%;max-width:280px;font-size:1rem;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary)">
     <div class="q-nav">
       <button class="btn btn-back" onclick="goQ(-1)">← 上一題</button>
@@ -312,15 +315,15 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </div>
 
-  <!-- Q13: 確認提交 -->
-  <div class="q-card" data-q="11">
+  <!-- Q10: 確認送出 -->
+  <div class="q-card" data-q="10">
     <div style="text-align:center;padding:1rem 0">
       <div style="font-size:3rem;margin-bottom:1rem">✅</div>
-      <label class="form-label" style="text-align:center;font-size:1.2rem">{t(lang, 'survey.confirm')}</label>
+      <label class="form-label" style="text-align:center;font-size:1.2rem">您已完成所有問題</label>
       <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:2rem;line-height:1.6">
         {t(lang, 'survey.confirm')}
       </p>
-      <button class="btn btn-submit" id="submitBtn" onclick="handleSubmit()">{t(lang, 'survey.confirm')} ✓</button>
+      <button class="btn btn-submit" id="submitBtn" onclick="handleSubmit()">完成提交 ✓</button>
     </div>
     <div class="q-nav" style="margin-top:1.5rem">
       <button class="btn btn-back" onclick="goQ(-1)">← 回到上一題</button>
@@ -385,38 +388,6 @@ const prefix = LOCALE_PREFIX[lang];
 
       <div class="checkin-progress" id="checkinProgress"></div>
 
-      <!-- Daily Carbon Report -->
-      <div class="daily-report-section" id="dailyReportSection">
-        <div class="daily-report-header" onclick="toggleDailyReport()">
-          <span>🌱 {t(lang, 'dailyReport.title')}</span>
-          <span class="daily-report-toggle" id="dailyReportToggle">{t(lang, 'tracker_ui.expandToggle')}</span>
-        </div>
-        <div class="daily-report-body" id="dailyReportBody" style="display:none">
-          <p class="daily-report-hint">{t(lang, 'tracker_ui.dailyReportHint')}</p>
-
-          <div class="daily-section-label">{t(lang, 'dailyReport.envImpact')}</div>
-          <p class="daily-report-hint" style="font-size:0.85rem;color:#6b7280;margin:0 0 0.5rem;">{t(lang, 'tracker_ui.transportAutoNote')}</p>
-          <div class="transport-grid daily-grid cols-2">
-            <div class="transport-item"><label class="transport-label">🧴 {t(lang, 'tracker_ui.waterBottle')}</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_water" value="0" min="0" step="1" /><span class="transport-unit">{t(lang, 'tracker_ui.bottleUnit')}</span></div></div>
-            <div class="transport-item"><label class="transport-label">♻️ {t(lang, 'tracker_ui.recycleBottle')}</label><div class="transport-input-wrap"><input type="number" class="transport-input dr-input" id="dr_recycle" value="0" min="0" step="1" /><span class="transport-unit">{t(lang, 'tracker_ui.bottleUnit')}</span></div></div>
-            <div class="transport-item"><label class="transport-label">🏨 {t(lang, 'tracker_ui.hotelToday')}</label><div class="transport-input-wrap"><label class="hotel-toggle"><input type="checkbox" id="dr_hotel" /><span class="toggle-slider"></span><span class="toggle-text">{t(lang, 'tracker_ui.hotelYes')}</span></label></div></div>
-          </div>
-
-          <div class="daily-carbon-result" id="dailyCarbonResult" style="display:none">
-            <div class="carbon-title">{t(lang, 'tracker_ui.todayCarbon')}</div>
-            <div class="carbon-total" id="dailyCarbonTotal">0.00 <small>kg CO₂e</small></div>
-            <div class="carbon-breakdown" id="dailyCarbonBreakdown"></div>
-          </div>
-
-          <button class="btn btn-submit daily-submit-btn" id="dailySubmitBtn" onclick="submitDailyReport()">{t(lang, 'tracker_ui.submitDailyReport')}</button>
-          <div class="daily-submit-status" id="dailySubmitStatus"></div>
-
-          <div class="daily-cumulative" id="dailyCumulative" style="display:none">
-            <div class="carbon-note">累計碳足跡：<strong id="dailyCumulativeTotal">0</strong> kg CO₂e（共 <span id="dailyReportDays">0</span> 天）</div>
-          </div>
-        </div>
-      </div>
-
       <!-- Share button (simplified) -->
       <div class="share-section" style="margin-top:2rem">
         <button class="share-primary-btn" onclick="smartShare()">📤 {t(lang, 'tracker_ui.inviteFriends')}</button>
@@ -454,7 +425,55 @@ const prefix = LOCALE_PREFIX[lang];
 <!-- Photo Save Toast -->
 <div class="photo-toast" id="photoToast"></div>
 
+<!-- ═══════════════════════════════════════════ -->
+<!-- IN-LIFF NOTIFICATIONS                       -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- Milestone Banner (top, auto-dismiss) -->
+<div class="notif-banner" id="milestoneBanner" style="display:none">
+  <span class="notif-banner-text" id="milestoneBannerText"></span>
+  <button class="notif-banner-close" id="milestoneBannerClose">&times;</button>
+</div>
+
+<!-- Level-Up Modal (fullscreen) -->
+<div class="notif-modal-overlay" id="levelUpOverlay" style="display:none">
+  <div class="notif-modal notif-modal-levelup">
+    <div class="notif-modal-mascot" id="levelUpMascot"></div>
+    <h2 class="notif-modal-title" id="levelUpTitle"></h2>
+    <p class="notif-modal-message" id="levelUpMessage"></p>
+    <button class="notif-modal-btn" id="levelUpBtn"></button>
+  </div>
+</div>
+
+<!-- Achievement Card Modal -->
+<div class="notif-modal-overlay" id="achievementOverlay" style="display:none">
+  <div class="notif-modal notif-modal-achievement">
+    <h2 class="notif-modal-title" id="achievementTitle"></h2>
+    <p class="notif-modal-message" id="achievementMessage"></p>
+    <div class="notif-modal-card" id="achievementCard"></div>
+    <div class="notif-modal-actions">
+      <button class="notif-modal-btn" id="achievementShareBtn"></button>
+      <button class="notif-modal-btn notif-modal-btn-secondary" id="achievementCloseBtn"></button>
+    </div>
+  </div>
+</div>
+
 </AuthGate>
+
+<!-- Locale auto-detect redirect (default locale only) -->
+<script is:inline>
+(function() {
+  var path = window.location.pathname;
+  if (path.startsWith('/en/') || path.startsWith('/ja/') || path.startsWith('/zh-cn/')) return;
+  if (sessionStorage.getItem('formosa_locale_manual')) return;
+  var lang = navigator.language || navigator.userLanguage || '';
+  var prefix = '';
+  if (lang.startsWith('en')) prefix = '/en';
+  else if (lang.startsWith('ja')) prefix = '/ja';
+  else if (lang === 'zh-CN' || lang === 'zh-Hans' || lang.startsWith('zh-CN') || lang.startsWith('zh-Hans')) prefix = '/zh-cn';
+  if (prefix) window.location.replace(prefix + path + window.location.search + window.location.hash);
+})();
+</script>
 
 <!-- Leaflet CSS + JS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -716,7 +735,7 @@ const prefix = LOCALE_PREFIX[lang];
 
   // ── One-Question-Per-Card System ──
   var cards = document.querySelectorAll('.q-card[data-q]');
-  var totalQ = 11; // numbered questions (1-11, Q8-Q10 transport/carbon moved to daily report)
+  var totalQ = 10; // Q1-Q10 (optimized survey)
   var curQ = 1;
   var autoTimer = null;
 
@@ -826,170 +845,24 @@ const prefix = LOCALE_PREFIX[lang];
     });
   });
 
-  // ── Daily Report Carbon Calculator (SSBTi / Ecoinvent 3.10) ──
-  var DR_FACTORS = {
-    walk: 0, car: 0.30479, scooter: 0.13734, bike: 0.01220,
-    bus: 0.47515, mrt: 0.07575, train: 0.07575, hsr: 0.07487,
-    water: 0.10974, recycle: -0.00265, hotel: 12.5
-  };
-  var DR_LABELS = {
-    walk: '步行', car: '開車', scooter: '機車', bike: '腳踏車',
-    bus: '公車', mrt: '捷運', train: '火車', hsr: '高鐵',
-    water: '瓶裝水', recycle: '♻️ 回收水瓶', hotel: '旅宿'
-  };
-
-  function getDrVal(id) {
-    var el = document.getElementById(id);
-    if (!el) return 0;
-    if (el.type === 'checkbox') return el.checked ? 1 : 0;
-    return parseFloat(el.value) || 0;
-  }
-
-  function calcDailyCarbon() {
-    // Transport is now GPS-inferred; daily report only covers non-transport items
-    var breakdown = {};
-    breakdown.water = getDrVal('dr_water') * DR_FACTORS.water;
-    breakdown.recycle = getDrVal('dr_recycle') * DR_FACTORS.recycle;
-    breakdown.hotel = getDrVal('dr_hotel') * DR_FACTORS.hotel;
-
-    var total = 0;
-    for (var k in breakdown) total += breakdown[k];
-
-    // Update UI
-    var resultEl = document.getElementById('dailyCarbonResult');
-    if (resultEl) resultEl.style.display = '';
-
-    var totalEl = document.getElementById('dailyCarbonTotal');
-    if (totalEl) totalEl.innerHTML = total.toFixed(2) + ' <small>kg CO₂e</small>';
-
-    var bdEl = document.getElementById('dailyCarbonBreakdown');
-    if (bdEl) {
-      var html = '';
-      for (var k in breakdown) {
-        if (breakdown[k] > 0) {
-          html += '<div class="carbon-row"><span>' + DR_LABELS[k] + '</span><span>' + breakdown[k].toFixed(2) + ' kg</span></div>';
-        } else if (breakdown[k] < 0) {
-          html += '<div class="carbon-row carbon-offset"><span>' + DR_LABELS[k] + '</span><span>♻️ ' + breakdown[k].toFixed(4) + ' kg</span></div>';
+  // Other radio toggle (for Q3, Q5, Q6 radio groups with "other" option)
+  document.querySelectorAll('.radio-group').forEach(function(group) {
+    group.querySelectorAll('input[type="radio"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        // Hide all other-inputs in this group
+        group.querySelectorAll('.other-item .other-input').forEach(function(inp) { inp.style.display = 'none'; });
+        // Show if this is the other item
+        if (this.value === '__other__') {
+          var textInput = this.closest('.other-item').querySelector('.other-input');
+          if (textInput) textInput.style.display = 'block';
         }
-      }
-      bdEl.innerHTML = html;
-    }
-
-    return { total: total, breakdown: breakdown };
-  }
-
-  // Live preview carbon as user types
-  document.querySelectorAll('.dr-input').forEach(function(input) {
-    input.addEventListener('input', calcDailyCarbon);
-  });
-  // Hotel checkbox also triggers
-  var hotelCb = document.getElementById('dr_hotel');
-  if (hotelCb) hotelCb.addEventListener('change', calcDailyCarbon);
-
-  // ── Toggle daily report panel ──
-  window.toggleDailyReport = function() {
-    var body = document.getElementById('dailyReportBody');
-    var toggle = document.getElementById('dailyReportToggle');
-    if (!body) return;
-    if (body.style.display === 'none') {
-      body.style.display = '';
-      toggle.textContent = _i18n.collapseToggle;
-    } else {
-      body.style.display = 'none';
-      toggle.textContent = _i18n.expandToggle;
-    }
-  };
-
-  // ── Submit daily report ──
-  window.submitDailyReport = async function() {
-    var userId = lineUserId || lsGet('formosa_user_id') || '';
-    if (!userId) { alert(_i18n.loginRequired); return; }
-
-    var btn = document.getElementById('dailySubmitBtn');
-    var statusEl = document.getElementById('dailySubmitStatus');
-    if (btn) { btn.disabled = true; btn.textContent = _i18n.sending; }
-
-    var today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-
-    var payload = {
-      line_user_id: userId,
-      report_date: today,
-      water_bottles: getDrVal('dr_water'),
-      recycle_bottles: getDrVal('dr_recycle'),
-      hotel: getDrVal('dr_hotel')
-    };
-
-    try {
-      var resp = await fetch(API_BASE + '/api/formosa/daily-report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
       });
-      var result = await resp.json();
+    });
+  });
 
-      if (resp.ok) {
-        if (statusEl) statusEl.innerHTML = '<span style="color:#059669">✓ 已儲存 ' + today + ' 的回報</span>';
-        // Update local carbon cache
-        if (result.gwp !== undefined) {
-          lsSet('formosa_carbon_today', result.gwp.toFixed(2));
-        }
-        // Show cumulative
-        loadDailyCumulative(userId);
-        // Update checkin stats carbon display
-        var statsCarbon = document.querySelector('#checkinStats .done-stat:last-child strong');
-        if (statsCarbon && result.gwp !== undefined) {
-          statsCarbon.textContent = result.gwp.toFixed(1);
-        }
-      } else {
-        if (statusEl) statusEl.innerHTML = '<span style="color:#dc2626">⚠ 儲存失敗：' + (result.error || '請稍後再試') + '</span>';
-      }
-    } catch (e) {
-      if (statusEl) statusEl.innerHTML = '<span style="color:#dc2626">⚠ ' + _i18n.networkError + '</span>';
-    }
+  // (Daily report removed — carbon data now comes from survey Q3/Q5 + GPS)
 
-    if (btn) { btn.disabled = false; btn.textContent = _i18n.submitDailyReport; }
-  };
-
-  // ── Load existing daily report for today + cumulative ──
-  async function loadTodayReport(userId) {
-    if (!userId) return;
-    try {
-      var resp = await fetch(API_BASE + '/api/formosa/daily-report?user_id=' + encodeURIComponent(userId));
-      if (!resp.ok) return;
-      var data = await resp.json();
-      if (!data || !data.reports) return;
-
-      // Find today's report
-      var today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10); // TW timezone
-      var todayReport = data.reports.find(function(r) { return r.report_date === today; });
-      if (todayReport) {
-        var r = todayReport;
-        var fields = { dr_water: r.water_bottles, dr_recycle: r.recycle_bottles };
-        for (var id in fields) {
-          var el = document.getElementById(id);
-          if (el && fields[id]) el.value = fields[id];
-        }
-        var hotelEl = document.getElementById('dr_hotel');
-        if (hotelEl) hotelEl.checked = !!r.hotel;
-        calcDailyCarbon();
-      }
-
-      // Update cumulative display
-      if (data.reports.length > 0) {
-        var totalCarbon = data.total_gwp || 0;
-        var cumEl = document.getElementById('dailyCumulative');
-        if (cumEl) cumEl.style.display = '';
-        var totalEl = document.getElementById('dailyCumulativeTotal');
-        if (totalEl) totalEl.textContent = totalCarbon.toFixed(2);
-        var daysEl = document.getElementById('dailyReportDays');
-        if (daysEl) daysEl.textContent = data.count || data.reports.length;
-        lsSet('formosa_carbon', totalCarbon.toFixed(2));
-      }
-    } catch (e) { /* offline */ }
-  }
-
-  // Alias for backward compat
-  var loadDailyCumulative = loadTodayReport;
+  // (submitDailyReport + loadTodayReport removed — dailyReport feature replaced by survey Q3-Q6)
 
   // ── Collect all form data ──
   function collectCheckbox(name) {
@@ -1010,17 +883,26 @@ const prefix = LOCALE_PREFIX[lang];
     return el ? el.value : '';
   }
 
+  function collectRadioOrOther(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    if (!el) return '';
+    if (el.value === '__other__') {
+      var t = el.closest('.other-item').querySelector('.other-input');
+      return (t && t.value.trim()) ? t.value.trim() : '';
+    }
+    return el.value;
+  }
+
   function collectAllData() {
     return {
       timestamp: new Date().toISOString(),
       survey: {
         q1: collectCheckbox('q1'),
         q2: collectCheckbox('q2'),
-        q2_1: document.getElementById('q2_1').value.trim(),
-        q3: collectRadio('q3'),
-        q4: collectRadio('q4'),
-        q5: collectCheckbox('q5'),
-        q6: collectRadio('q6')
+        q3_transport: collectRadioOrOther('q3_transport'),
+        q4_eco: collectCheckbox('q4_eco'),
+        q5_stay: collectRadioOrOther('q5_stay'),
+        q6_meal: collectRadioOrOther('q6_meal')
       },
       profile: {
         role: collectRadio('role')
@@ -1793,12 +1675,7 @@ const prefix = LOCALE_PREFIX[lang];
     // Show existing photo count on page load
     updatePhotoStatusDisplay();
 
-    // Load today's daily report data and cumulative stats
-    var drUserId = lineUserId || lsGet('formosa_user_id') || '';
-    if (drUserId) {
-      loadTodayReport(drUserId);
-      loadDailyCumulative(drUserId);
-    }
+    // (Daily report loading removed — replaced by survey Q3-Q6)
   }
 
   // Override manualCheckin to calculate distance and update stats
@@ -1903,6 +1780,9 @@ const prefix = LOCALE_PREFIX[lang];
     }
 
     updateCheckinProgress(t);
+
+    // Check for notifications after stats update
+    checkAndShowNotifications();
   }
 
   function handleCheckinError(err, activeBtn) {
@@ -1962,11 +1842,102 @@ const prefix = LOCALE_PREFIX[lang];
     }
   }
 
+  // ── In-LIFF Notification System ──
+  var MILESTONE_KMS = [50, 100, 200, 300];
+
+  function checkAndShowNotifications() {
+    var checkins = getSavedCheckins();
+    var km = getSavedKm();
+    var t = getTitle(checkins, km);
+    var currentLevelIdx = TITLES.indexOf(t.current);
+
+    // 1. Level-up notification
+    var lastNotifiedLevel = parseInt(lsGet('formosa_last_notified_level') || '0');
+    if (currentLevelIdx > lastNotifiedLevel) {
+      showLevelUpModal(t.current);
+      lsSet('formosa_last_notified_level', currentLevelIdx);
+    }
+
+    // 2. Milestone notification
+    var lastMilestoneKm = parseInt(lsGet('formosa_last_milestone_km') || '0');
+    for (var m = 0; m < MILESTONE_KMS.length; m++) {
+      if (km >= MILESTONE_KMS[m] && MILESTONE_KMS[m] > lastMilestoneKm) {
+        showMilestoneBanner(MILESTONE_KMS[m]);
+        lsSet('formosa_last_milestone_km', MILESTONE_KMS[m]);
+        break;
+      }
+    }
+
+    // 3. Achievement card unlock (checkins >= 3 + survey done + phone provided)
+    var surveyDone = lsGet('formosa_survey_done') === 'true';
+    var phoneProvided = !!lsGet('formosa_phone');
+    var achievementShown = lsGet('formosa_achievement_shown') === 'true';
+    if (surveyDone && phoneProvided && checkins >= 3 && !achievementShown) {
+      // Delay to not overlap with level-up modal
+      setTimeout(function() { showAchievementModal(t.current); }, currentLevelIdx > lastNotifiedLevel ? 2000 : 0);
+      lsSet('formosa_achievement_shown', 'true');
+    }
+  }
+
+  function showLevelUpModal(level) {
+    var overlay = document.getElementById('levelUpOverlay');
+    var mascotEl = document.getElementById('levelUpMascot');
+    var titleEl = document.getElementById('levelUpTitle');
+    var msgEl = document.getElementById('levelUpMessage');
+    var btnEl = document.getElementById('levelUpBtn');
+    if (!overlay) return;
+
+    mascotEl.innerHTML = '<img src="' + MASCOT_BASE + level.img + '" width="150" height="150" alt="' + level.name + '">';
+    titleEl.textContent = _i18n.levelUpTitle;
+    msgEl.textContent = _i18n.levelUpMessage + ' ' + level.icon + ' ' + level.name;
+    btnEl.textContent = _i18n.levelUpContinue;
+    overlay.style.display = 'flex';
+
+    btnEl.onclick = function() { overlay.style.display = 'none'; };
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.style.display = 'none'; };
+  }
+
+  function showMilestoneBanner(km) {
+    var banner = document.getElementById('milestoneBanner');
+    var textEl = document.getElementById('milestoneBannerText');
+    var closeBtn = document.getElementById('milestoneBannerClose');
+    if (!banner) return;
+
+    textEl.textContent = _i18n.milestoneTitle + ' ' + _i18n.milestoneMessage.replace('{km}', km);
+    banner.style.display = 'flex';
+
+    closeBtn.onclick = function() { banner.style.display = 'none'; };
+    setTimeout(function() { banner.style.display = 'none'; }, 5000);
+  }
+
+  function showAchievementModal(level) {
+    var overlay = document.getElementById('achievementOverlay');
+    var titleEl = document.getElementById('achievementTitle');
+    var msgEl = document.getElementById('achievementMessage');
+    var cardEl = document.getElementById('achievementCard');
+    var shareBtn = document.getElementById('achievementShareBtn');
+    var closeBtn = document.getElementById('achievementCloseBtn');
+    if (!overlay) return;
+
+    titleEl.textContent = _i18n.achievementTitle;
+    msgEl.textContent = _i18n.achievementMessage;
+    cardEl.innerHTML = '<img src="' + MASCOT_BASE + level.img + '" width="120" height="120" alt="' + level.name + '"><div>' + level.icon + ' ' + level.name + '</div>';
+    shareBtn.textContent = '📤 ' + _i18n.achievementShare;
+    closeBtn.textContent = _i18n.achievementClose;
+
+    overlay.style.display = 'flex';
+    closeBtn.onclick = function() { overlay.style.display = 'none'; };
+    shareBtn.onclick = function() { overlay.style.display = 'none'; smartShare(); };
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.style.display = 'none'; };
+  }
+
   // ── Page Init ──
 
   if (lsGet('formosa_survey_done') === 'true') {
     enterCheckinMode();
     checkParticipantStatus();
+    // Check for pending notifications after page load
+    setTimeout(checkAndShowNotifications, 500);
   } else {
     showCard(1);
   }
@@ -3080,109 +3051,12 @@ const prefix = LOCALE_PREFIX[lang];
 
   .checkin-stats { margin: 1rem 0; }
 
-  /* ── Daily Report Section ── */
-  .daily-report-section {
-    margin-top: 2rem;
-    border: 1px solid var(--border-light);
-    border-radius: 14px;
-    overflow: hidden;
-    background: var(--bg-card);
-  }
-  .daily-report-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.85rem 1rem;
-    cursor: pointer;
-    background: linear-gradient(135deg, rgba(5,150,105,0.06), rgba(5,150,105,0.02));
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #059669;
-    user-select: none;
-    transition: background 0.2s;
-  }
-  .daily-report-header:hover {
-    background: linear-gradient(135deg, rgba(5,150,105,0.1), rgba(5,150,105,0.04));
-  }
-  .daily-report-toggle {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-  .daily-report-body {
-    padding: 1rem;
-  }
-  .daily-report-hint {
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-  .daily-section-label {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-    margin-top: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .daily-grid {
-    gap: 0.5rem;
-  }
-  .daily-grid .transport-item {
-    padding: 0.6rem 0.7rem;
-  }
-  .daily-grid .transport-label {
-    font-size: 0.78rem;
-    margin-bottom: 0.35rem;
-  }
-  .daily-carbon-result {
-    background: linear-gradient(135deg, rgba(5,150,105,0.06), rgba(5,150,105,0.02));
-    border: 1px solid rgba(5,150,105,0.15);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-top: 1rem;
-  }
-  .daily-submit-btn {
-    width: 100%;
-    margin-top: 1rem;
-  }
-  .daily-submit-status {
-    text-align: center;
-    font-size: 0.82rem;
-    margin-top: 0.5rem;
-    min-height: 1.2em;
-  }
-  .daily-cumulative {
-    text-align: center;
-    margin-top: 0.75rem;
-    padding: 0.6rem;
-    background: rgba(5,150,105,0.04);
-    border-radius: 8px;
-  }
-  .hotel-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    user-select: none;
-  }
-  .hotel-toggle input { display: none; }
-  .hotel-toggle input:checked + .toggle-slider {
-    background: #059669;
-  }
-  .hotel-toggle input:checked + .toggle-slider::after {
-    transform: translateX(20px);
-  }
-
   /* ── Responsive ── */
   @media (max-width: 768px) {
     .tracker-map { height: 300px; }
     .upload-area { padding: 2rem 1rem; }
     .transport-grid { grid-template-columns: 1fr; }
     .transport-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-    .daily-grid { grid-template-columns: 1fr 1fr; }
     .done-stats { flex-direction: column; align-items: center; }
   }
 
@@ -3214,4 +3088,91 @@ const prefix = LOCALE_PREFIX[lang];
   .completed-icon { font-size: 3rem; margin-bottom: 0.5rem; }
   .completed-message h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #92400e; }
   .completed-message p { color: #78350f; font-size: 0.9rem; margin-bottom: 1rem; }
+
+  /* ── In-LIFF Notification Styles ── */
+
+  /* Milestone Banner */
+  :global(.notif-banner) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    animation: notifSlideDown 0.3s ease-out;
+  }
+  :global(.notif-banner-close) {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 0.25rem;
+    line-height: 1;
+  }
+
+  /* Modal Overlay */
+  :global(.notif-modal-overlay) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: notifFadeIn 0.3s ease-out;
+  }
+  :global(.notif-modal) {
+    background: #1a1a2e;
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 340px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    animation: notifScaleIn 0.3s ease-out;
+  }
+  :global(.notif-modal-mascot) { margin-bottom: 1rem; }
+  :global(.notif-modal-mascot img) { border-radius: 50%; background: rgba(255,255,255,0.1); padding: 0.5rem; }
+  :global(.notif-modal-title) { color: #f59e0b; font-size: 1.4rem; margin: 0 0 0.5rem; }
+  :global(.notif-modal-message) { color: #e2e8f0; font-size: 1rem; margin: 0 0 1.5rem; }
+  :global(.notif-modal-btn) {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 0 0.25rem;
+  }
+  :global(.notif-modal-btn-secondary) {
+    background: rgba(255,255,255,0.1);
+  }
+  :global(.notif-modal-card) {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #e2e8f0;
+  }
+  :global(.notif-modal-card img) { border-radius: 50%; margin-bottom: 0.5rem; }
+  :global(.notif-modal-actions) { display: flex; justify-content: center; gap: 0.5rem; }
+
+  @keyframes notifSlideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+  @keyframes notifFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes notifScaleIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 </style>

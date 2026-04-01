@@ -119,6 +119,13 @@ const n = navI18n[currentLang] || navI18n['zh-Hant'];
     }
   });
 
+  // Set flag when user manually switches locale (prevents auto-redirect back)
+  document.querySelectorAll('.lang-switcher .lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sessionStorage.setItem('formosa_locale_manual', '1');
+    });
+  });
+
   // Active link highlighting
   const path = window.location.pathname;
   document.querySelectorAll('.nav-links a').forEach(a => {
