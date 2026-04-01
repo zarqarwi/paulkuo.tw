@@ -18,7 +18,7 @@ import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors, aggregateBotAnalytics, handleBotBackfill } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
-import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaDailyReport, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackUpload, handleFormosaFeedbackImageServe } from './formosa.js';
+import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaFeedbackImageServe } from './formosa.js';
 
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
@@ -333,7 +333,7 @@ async function handleRequest(request, env) {
   if (path === '/api/formosa/user/phone' && method === 'POST') return handleFormosaPhoneUpdate(request, env);
   if (path === '/api/formosa/push' && method === 'POST') return handleFormosaPush(request, env);
   if (path === '/api/formosa/admin/richmenu' && method === 'POST') return handleFormosaRichMenu(request, env);
-  if (path === '/api/formosa/daily-report') return handleFormosaDailyReport(request, env);
+  // daily-report endpoint removed (replaced by survey Q3-Q6)
   if (path === '/api/formosa/og-image' && method === 'POST') return handleFormosaOgImage(request, env);
   if (path.startsWith('/api/formosa/og/') && path.endsWith('.png') && (method === 'GET' || method === 'HEAD')) {
     const ogUserId = decodeURIComponent(path.replace('/api/formosa/og/', '').replace('.png', ''));
@@ -354,6 +354,7 @@ async function handleRequest(request, env) {
   if (path === '/api/formosa/privacy') return handleFormosaPrivacyAgree(request, env);
   if (path === '/api/formosa/participant-status' && method === 'POST') return handleFormosaParticipantStatus(request, env);
   if (path === '/api/formosa/admin/end-activity' && method === 'POST') return handleFormosaAdminEndActivity(request, env);
+  if (path === '/api/formosa/feedback' && method === 'GET') return handleFormosaFeedbackList(request, env);
   if (path === '/api/formosa/feedback' && method === 'POST') return handleFormosaFeedback(request, env);
   if (path === '/api/formosa/feedback-upload' && method === 'POST') return handleFormosaFeedbackUpload(request, env);
   if (path.startsWith('/api/formosa/feedback-image/') && path.endsWith('.png')) {

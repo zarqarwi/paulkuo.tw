@@ -85,6 +85,10 @@ CREATE TABLE IF NOT EXISTS formosa_surveys (
   hotel_nights INTEGER DEFAULT 0,
   carbon_total_kg REAL DEFAULT 0,
   carbon_breakdown TEXT,
+  q3_transport TEXT,
+  q4_eco TEXT,
+  q5_stay TEXT,
+  q6_meal TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
@@ -132,7 +136,11 @@ const COLUMN_MIGRATIONS = [
   `ALTER TABLE formosa_users ADD COLUMN privacy_agreed_at TEXT DEFAULT NULL`,
   `ALTER TABLE formosa_users ADD COLUMN participant_status TEXT DEFAULT 'active'`,
   `ALTER TABLE formosa_users ADD COLUMN completed_at TEXT DEFAULT NULL`,
-  `ALTER TABLE formosa_users ADD COLUMN language TEXT DEFAULT NULL`
+  `ALTER TABLE formosa_users ADD COLUMN language TEXT DEFAULT NULL`,
+  `ALTER TABLE formosa_surveys ADD COLUMN q3_transport TEXT`,
+  `ALTER TABLE formosa_surveys ADD COLUMN q4_eco TEXT`,
+  `ALTER TABLE formosa_surveys ADD COLUMN q5_stay TEXT`,
+  `ALTER TABLE formosa_surveys ADD COLUMN q6_meal TEXT`
 ];
 
 // ── Run migration ──
@@ -215,39 +223,23 @@ export async function handleFormosaSubmit(request, env) {
       return jsonResponse({ error: '提交太頻繁，請稍後再試', rate_limited: true }, 429, request);
     }
 
-    // Save survey
+    // Save survey (optimized v2: Q1-Q10)
     if (data.survey) {
       const s = data.survey;
       const p = data.profile || {};
-      const t = p.transport || {};
       await env.AUTH_DB.prepare(`
         INSERT INTO formosa_surveys
-        (user_id, q1_good_deeds, q2_moved_by, q2_1_story, q3_善行value, q4_continue, q5_future_actions, q6_csr,
-         role_type, transport_walk, transport_car, transport_carpool, transport_scooter, transport_bus,
-         transport_mrt, transport_train, transport_hsr, water_bottles, hotel_nights, carbon_total_kg, carbon_breakdown)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (user_id, q1_good_deeds, q2_moved_by, q3_transport, q4_eco, q5_stay, q6_meal, role_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         userId,
         JSON.stringify(s.q1 || []),
         JSON.stringify(s.q2 || []),
-        s.q2_1 || '',
-        s.q3 || '',
-        s.q4 || '',
-        JSON.stringify(s.q5 || []),
-        s.q6 || '',
-        p.role || 'participant',
-        t.walk_km || 0,
-        t.car_km || 0,
-        t.carpool_count || 1,
-        t.scooter_km || 0,
-        t.bus_km || 0,
-        t.mrt_km || 0,
-        t.train_km || 0,
-        t.hsr_km || 0,
-        p.water_bottles || 0,
-        p.hotel_nights || 0,
-        data.carbon?.total_kg || 0,
-        JSON.stringify(data.carbon?.breakdown || {})
+        s.q3_transport || '',
+        JSON.stringify(s.q4_eco || []),
+        s.q5_stay || '',
+        s.q6_meal || '',
+        p.role || 'participant'
       ).run();
     }
 
@@ -925,7 +917,7 @@ export async function handleFormosaAdminSurveys(request, env) {
   }
   try {
     await migrateFormosa(env.AUTH_DB);
-    const rows = await env.AUTH_DB.prepare('SELECT q1_good_deeds, q2_moved_by, q3_善行value, q4_continue, q5_future_actions, q6_csr, role_type FROM formosa_surveys').all();
+    const rows = await env.AUTH_DB.prepare('SELECT q1_good_deeds, q2_moved_by, q3_transport, q4_eco, q5_stay, q6_meal, role_type FROM formosa_surveys').all();
     const data = rows?.results || [];
 
     const aggregate = (field, isJson) => {
@@ -945,10 +937,10 @@ export async function handleFormosaAdminSurveys(request, env) {
       total_surveys: data.length,
       q1_deeds: aggregate('q1_good_deeds', true),
       q2_moved: aggregate('q2_moved_by', true),
-      q3_value: aggregate('q3_善行value', false),
-      q4_continue: aggregate('q4_continue', false),
-      q5_actions: aggregate('q5_future_actions', true),
-      q6_csr: aggregate('q6_csr', false),
+      q3_transport: aggregate('q3_transport', false),
+      q4_eco: aggregate('q4_eco', true),
+      q5_stay: aggregate('q5_stay', false),
+      q6_meal: aggregate('q6_meal', false),
       role_distribution: aggregate('role_type', false)
     }, 200, request);
   } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
@@ -1957,6 +1949,30 @@ export async function handleFormosaOgServe(request, env, userId) {
         'Access-Control-Allow-Origin': '*',
       }
     });
+  }
+}
+
+// ── Feedback Admin GET ──
+export async function handleFormosaFeedbackList(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  const authErr = requireAdmin(request, env);
+  if (authErr) return authErr;
+
+  try {
+    const url = new URL(request.url);
+    const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit')) || 50, 1), 200);
+    const offset = Math.max(parseInt(url.searchParams.get('offset')) || 0, 0);
+
+    const rows = await env.DB.prepare(
+      `SELECT id, category, description, screenshot_url, device_info, user_agent, line_user_id, created_at FROM feedback ORDER BY created_at DESC LIMIT ? OFFSET ?`
+    ).bind(limit, offset).all();
+
+    return jsonResponse({ ok: true, count: rows.results.length, feedbacks: rows.results }, 200, request);
+  } catch (e) {
+    console.error('Feedback list error:', e);
+    return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
 }
 
