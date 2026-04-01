@@ -191,6 +191,19 @@ const linkPrefix = prefix;
     </div>
   </section>
 
+  <!-- LINE Usage -->
+  <section class="dash-section" id="lineUsageSection">
+    <h2>📱 LINE 訊息額度</h2>
+    <div id="lineUsagePanel" class="line-usage-panel">
+      <div class="line-usage-bar-wrap">
+        <div class="line-usage-bar" id="lineUsageBar" style="width:0%"></div>
+        <span class="line-usage-pct" id="lineUsagePct">--%</span>
+      </div>
+      <div class="line-usage-info" id="lineUsageInfo">載入中⋯</div>
+      <div class="line-usage-followers" id="lineUsageFollowers"></div>
+    </div>
+  </section>
+
   <!-- User Table -->
   <section class="dash-section">
     <div class="dash-section-header">
@@ -1027,10 +1040,36 @@ const linkPrefix = prefix;
     document.getElementById('lastUpdated').textContent = _t.demoMode + new Date().toLocaleTimeString('zh-TW') + ')';
   }
 
+  // ── LINE Usage ──
+  async function fetchLineUsage() {
+    try {
+      var res = await fetch(API + '/api/formosa/line-usage', { headers: ADMIN_HEADERS });
+      if (!res.ok) { document.getElementById('lineUsageInfo').textContent = '無法載入'; return; }
+      var d = await res.json();
+      var pct = d.usagePercent || 0;
+      var used = (d.consumption && d.consumption.totalUsage) || 0;
+      var total = (d.quota && d.quota.value) || 0;
+      var remain = d.remaining || 0;
+
+      var bar = document.getElementById('lineUsageBar');
+      bar.style.width = Math.min(pct, 100) + '%';
+      bar.className = 'line-usage-bar' + (pct > 80 ? ' danger' : pct > 50 ? ' warning' : '');
+
+      document.getElementById('lineUsagePct').textContent = pct + '%';
+      document.getElementById('lineUsageInfo').textContent =
+        used.toLocaleString() + ' / ' + total.toLocaleString() + ' 則（剩餘 ' + remain.toLocaleString() + '）— ' + d.plan;
+
+      if (d.followers && d.followers.status === 'ready') {
+        document.getElementById('lineUsageFollowers').textContent =
+          '👥 好友數：' + (d.followers.followers || 0).toLocaleString();
+      }
+    } catch (e) { console.error('LINE usage fetch error:', e); }
+  }
+
   var isDemo = new URLSearchParams(window.location.search).get('demo') === '1';
 
   // ── Init + Auto-refresh ──
-  if (isDemo) { fetchAllDemo(); } else { fetchAll(); }
+  if (isDemo) { fetchAllDemo(); } else { fetchAll(); fetchLineUsage(); }
   var refreshInterval = setInterval(function() {
     if (document.getElementById('autoRefresh').checked) {
       if (isDemo) fetchAllDemo(); else fetchAll();
@@ -1304,6 +1343,36 @@ const linkPrefix = prefix;
   @media (max-width: 480px) {
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
   }
+
+  /* LINE Usage */
+  .line-usage-panel { padding: 0.5rem 0; }
+  .line-usage-bar-wrap {
+    position: relative;
+    background: #2a2a2a;
+    border-radius: 8px;
+    height: 28px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  .line-usage-bar {
+    height: 100%;
+    border-radius: 8px;
+    background: #22c55e;
+    transition: width 0.6s ease;
+  }
+  .line-usage-bar.warning { background: #eab308; }
+  .line-usage-bar.danger { background: #ef4444; }
+  .line-usage-pct {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #fff;
+  }
+  .line-usage-info { font-size: 0.9rem; color: #ccc; }
+  .line-usage-followers { font-size: 0.85rem; color: #999; margin-top: 0.25rem; }
 </style>
 
 </AuthGate>

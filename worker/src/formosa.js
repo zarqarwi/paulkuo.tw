@@ -1952,6 +1952,54 @@ export async function handleFormosaOgServe(request, env, userId) {
   }
 }
 
+// ── LINE Usage Monitor ──
+export async function handleFormosaLineUsage(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  const authErr = requireAdmin(request, env);
+  if (authErr) return authErr;
+
+  try {
+    const lineAuth = { 'Authorization': `Bearer ${env.LINE_CHANNEL_ACCESS_TOKEN}` };
+
+    const [quotaRes, consumptionRes] = await Promise.all([
+      fetch('https://api.line.me/v2/bot/message/quota', { headers: lineAuth }),
+      fetch('https://api.line.me/v2/bot/message/quota/consumption', { headers: lineAuth }),
+    ]);
+
+    const quota = await quotaRes.json();
+    const consumption = await consumptionRes.json();
+
+    // Followers insight: use yesterday (today's data may not be ready)
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10).replace(/-/g, '');
+    let followers = null;
+    try {
+      const followersRes = await fetch(`https://api.line.me/v2/bot/insight/followers?date=${yesterday}`, { headers: lineAuth });
+      followers = await followersRes.json();
+    } catch (_) { /* optional, ignore failures */ }
+
+    const quotaValue = quota.value || 0;
+    const totalUsage = consumption.totalUsage || 0;
+    const remaining = Math.max(quotaValue - totalUsage, 0);
+    const usagePercent = quotaValue > 0 ? Math.round((totalUsage / quotaValue) * 1000) / 10 : 0;
+
+    return jsonResponse({
+      ok: true,
+      quota,
+      consumption,
+      remaining,
+      usagePercent,
+      followers,
+      plan: '中用量 NT$800/月',
+      fetchedAt: new Date().toISOString(),
+    }, 200, request);
+  } catch (e) {
+    console.error('LINE usage error:', e);
+    return jsonResponse({ error: 'Internal server error' }, 500, request);
+  }
+}
+
 // ── Feedback Admin GET ──
 export async function handleFormosaFeedbackList(request, env) {
   if (request.method === 'OPTIONS') {
