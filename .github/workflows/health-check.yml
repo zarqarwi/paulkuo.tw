@@ -1,0 +1,177 @@
+name: Formosa Health Check
+
+on:
+  schedule:
+    # Every hour. Change to '*/30 * * * *' after 4/12 event start
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    name: Service Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check main site
+        id: main_site
+        continue-on-error: true
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://paulkuo.tw/)
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Main site returned $STATUS"
+            exit 1
+          fi
+          echo "✅ Main site OK ($STATUS)"
+
+      - name: Check tracker page
+        id: tracker
+        continue-on-error: true
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://mazu.today/projects/formosa-esg-2026/tracker/)
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Tracker returned $STATUS"
+            exit 1
+          fi
+          echo "✅ Tracker OK ($STATUS)"
+
+      - name: Check feedback public API
+        id: feedback_api
+        continue-on-error: true
+        run: |
+          RESP=$(curl -s --max-time 10 https://api.paulkuo.tw/api/formosa/feedback/status)
+          echo "response=$RESP" >> $GITHUB_OUTPUT
+          if ! echo "$RESP" | grep -q '"ok":true'; then
+            echo "❌ Feedback API broken: $RESP"
+            exit 1
+          fi
+          echo "✅ Feedback API OK"
+
+      - name: Check Worker alive
+        id: worker
+        continue-on-error: true
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://api.paulkuo.tw/api/formosa/feedback)
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          if [ "$STATUS" = "404" ] || [ "$STATUS" -ge 500 ]; then
+            echo "❌ Worker may be down: $STATUS"
+            exit 1
+          fi
+          echo "✅ Worker alive ($STATUS)"
+
+      - name: Check CORS header
+        id: cors
+        continue-on-error: true
+        run: |
+          CORS=$(curl -s -I --max-time 10 -H "Origin: https://mazu.today" https://api.paulkuo.tw/api/formosa/feedback/status | grep -i "access-control-allow-origin")
+          if [ -z "$CORS" ]; then
+            echo "❌ CORS header missing"
+            exit 1
+          fi
+          echo "✅ CORS OK: $CORS"
+
+      - name: Check checkin API response time
+        id: checkin_perf
+        continue-on-error: true
+        run: |
+          TIME=$(curl -s -o /dev/null -w "%{time_total}" --max-time 10 https://api.paulkuo.tw/api/formosa/checkin)
+          echo "time=$TIME" >> $GITHUB_OUTPUT
+          SLOW=$(echo "$TIME > 3.0" | bc -l)
+          if [ "$SLOW" = "1" ]; then
+            echo "⚠️ Checkin API slow: ${TIME}s"
+            exit 1
+          fi
+          echo "✅ Checkin API response time: ${TIME}s"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Formosa Health Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Endpoint | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          FAILURES=0
+
+          if [ "${{ steps.main_site.outcome }}" = "success" ]; then
+            echo "| Main site | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Main site | ❌ FAIL (${{ steps.main_site.outputs.status }}) |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.tracker.outcome }}" = "success" ]; then
+            echo "| Tracker | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Tracker | ❌ FAIL (${{ steps.tracker.outputs.status }}) |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.feedback_api.outcome }}" = "success" ]; then
+            echo "| Feedback API | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Feedback API | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.worker.outcome }}" = "success" ]; then
+            echo "| Worker | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Worker | ❌ FAIL (${{ steps.worker.outputs.status }}) |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.cors.outcome }}" = "success" ]; then
+            echo "| CORS | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| CORS | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.checkin_perf.outcome }}" = "success" ]; then
+            echo "| Checkin perf | ✅ OK (${{ steps.checkin_perf.outputs.time }}s) |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Checkin perf | ⚠️ SLOW (${{ steps.checkin_perf.outputs.time }}s) |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Failures: $FAILURES / 6**" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$FAILURES" -gt 0 ]; then
+            echo "has_failures=true" >> $GITHUB_ENV
+          else
+            echo "has_failures=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create issue on failure
+        if: always() && env.has_failures == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'health-check',
+              per_page: 1
+            });
+
+            if (existing.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body: `⏰ Health check still failing at ${new Date().toISOString()}\n\nSee run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🚨 Health check failure — ${new Date().toISOString().slice(0,16)}`,
+                body: `## 線上服務異常\n\n自動巡檢偵測到端點異常。\n\n**Actions run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n\n請查看 run summary 了解哪些端點失敗，並依 feedback-automation-sop.md 處理。`,
+                labels: ['health-check', 'formosa-esg']
+              });
+            }
