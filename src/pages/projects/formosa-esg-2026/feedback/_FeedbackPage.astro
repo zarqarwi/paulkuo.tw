@@ -43,6 +43,7 @@ const jsStrings = {
   <header class="fb-header">
     <h1>{t(lang, 'feedback.heading')}</h1>
     <p>{t(lang, 'feedback.subtitle')}</p>
+    <a href={`${prefix}/projects/formosa-esg-2026/feedback/log/`} class="fb-log-link">📋 查看回報與修復紀錄</a>
   </header>
 
   <form id="feedbackForm" class="fb-form">
@@ -111,8 +112,23 @@ const jsStrings = {
   }
   .fb-header p {
     color: #666;
-    margin: 0;
+    margin: 0 0 0.75rem;
     font-size: 0.95rem;
+  }
+  .fb-log-link {
+    display: inline-block;
+    font-size: 0.9rem;
+    color: #1a5c2a;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.45rem 0.9rem;
+    border: 1.5px solid #1a5c2a;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .fb-log-link:hover {
+    background: #1a5c2a;
+    color: #fff;
   }
   .fb-form {
     display: flex;
