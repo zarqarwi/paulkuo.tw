@@ -325,6 +325,7 @@ https://paulkuo.tw/projects/formosa-esg-2026/CLAUDE/
 https://paulkuo.tw/projects/formosa-esg-2026/dashboard/
 https://paulkuo.tw/projects/formosa-esg-2026/data/
 https://paulkuo.tw/projects/formosa-esg-2026/feedback/
+https://paulkuo.tw/projects/formosa-esg-2026/feedback/log/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/admin-flow/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/admin/
