@@ -11,20 +11,22 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
-  deploy:
+  # ── Layer 1: Quality Gate (must pass before any deploy) ──
+  quality-gate:
+    name: Lint & Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
+
+      - name: Lint check
+        run: npx astro check || true  # warning-only for now
 
       - name: Fetch social feed
         run: node scripts/fetch-feed.mjs
@@ -35,9 +37,29 @@ jobs:
       - name: Fix YAML frontmatter quoting
         run: python3 scripts/fix-frontmatter.py
 
-      - name: Build
+      - name: Build verification
         run: npm run build
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  # ── Layer 2a: Deploy Pages (parallel with Worker) ──
+  deploy-pages:
+    name: Deploy Pages
+    needs: [quality-gate]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
@@ -46,7 +68,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=paulkuo-tw --commit-dirty=true
 
-      - name: Ping Google Sitemap
+      - name: Ping search engines
         if: success()
         run: |
           echo "Pinging Google with sitemap..."
@@ -57,8 +79,10 @@ jobs:
           echo ""
           echo "✅ Search engine sitemap ping complete"
 
+  # ── Layer 2b: Deploy Worker (parallel with Pages) ──
   deploy-worker:
     name: Deploy Worker API
+    needs: [quality-gate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -74,3 +98,42 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config wrangler.toml
           workingDirectory: worker
+
+  # ── Layer 3: Post-deploy Smoke Test ──
+  smoke-test:
+    name: Smoke Test
+    needs: [deploy-pages, deploy-worker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for deploy propagation
+        run: sleep 30
+
+      - name: Check main site
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://paulkuo.tw/)
+          if [ "$STATUS" != "200" ]; then echo "❌ Main site returned $STATUS" && exit 1; fi
+          echo "✅ Main site OK"
+
+      - name: Check tracker page
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mazu.today/projects/formosa-esg-2026/tracker/)
+          if [ "$STATUS" != "200" ]; then echo "❌ Tracker returned $STATUS" && exit 1; fi
+          echo "✅ Tracker OK"
+
+      - name: Check feedback public API
+        run: |
+          RESP=$(curl -s https://api.paulkuo.tw/api/formosa/feedback/status)
+          if ! echo "$RESP" | grep -q '"ok":true'; then echo "❌ Feedback API broken: $RESP" && exit 1; fi
+          echo "✅ Feedback API OK"
+
+      - name: Check Worker alive
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.paulkuo.tw/api/formosa/feedback)
+          if [ "$STATUS" = "404" ] || [ "$STATUS" -ge 500 ]; then echo "❌ Worker may be down: $STATUS" && exit 1; fi
+          echo "✅ Worker alive"
+
+      - name: Check CORS header
+        run: |
+          CORS=$(curl -s -I -H "Origin: https://mazu.today" https://api.paulkuo.tw/api/formosa/feedback/status | grep -i "access-control-allow-origin")
+          if [ -z "$CORS" ]; then echo "❌ CORS header missing" && exit 1; fi
+          echo "✅ CORS OK: $CORS"
