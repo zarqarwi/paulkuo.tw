@@ -23,6 +23,7 @@ interface Props {
   canonical: string;
   currentLang: string;
   hreflangs: { lang: string; href: string }[];
+  ogSiteName?: string;
 }
 
 const {
@@ -35,6 +36,7 @@ const {
   canonical,
   currentLang,
   hreflangs,
+  ogSiteName = 'Paul Kuo',
 } = Astro.props;
 
 const defaultSchema = JSON.stringify(getSiteGraph());
@@ -51,7 +53,7 @@ const defaultSchema = JSON.stringify(getSiteGraph());
 <meta property="og:url" content={ogUrl}>
 <meta property="og:image" content={ogImage}>
 <meta property="og:locale" content={currentLang === 'zh-Hant' ? 'zh_TW' : currentLang === 'zh-CN' ? 'zh_CN' : currentLang === 'ja' ? 'ja_JP' : 'en_US'} />
-<meta property="og:site_name" content="Paul Kuo">
+<meta property="og:site_name" content={ogSiteName}>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content={title}>
 <meta name="twitter:description" content={description}>
