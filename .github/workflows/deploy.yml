@@ -132,6 +132,18 @@ jobs:
           if [ "$STATUS" = "404" ] || [ "$STATUS" -ge 500 ]; then echo "❌ Worker may be down: $STATUS" && exit 1; fi
           echo "✅ Worker alive"
 
+      - name: Check mazu.today redirect
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://mazu.today/)
+          if [ "$STATUS" != "302" ] && [ "$STATUS" != "200" ]; then echo "❌ mazu.today returned $STATUS" && exit 1; fi
+          echo "✅ mazu.today OK ($STATUS)"
+
+      - name: Check mazu.today tracker
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://mazu.today/projects/formosa-esg-2026/tracker/)
+          if [ "$STATUS" != "200" ]; then echo "❌ mazu.today tracker returned $STATUS" && exit 1; fi
+          echo "✅ mazu.today tracker OK"
+
       - name: Check CORS header
         run: |
           CORS=$(curl -s -I -H "Origin: https://mazu.today" https://api.paulkuo.tw/api/formosa/feedback/status | grep -i "access-control-allow-origin")
