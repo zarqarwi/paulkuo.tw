@@ -25,8 +25,7 @@ const schemaJson = JSON.stringify({
   "location": { "@type": "Place", "name": "白沙屯拱天宮", "address": "苗栗縣通霄鎮白沙屯" },
   "organizer": [
     { "@type": "Organization", "name": "環球境地" },
-    { "@type": "Organization", "name": "1.5度科學減碳協會" },
-    { "@type": "Organization", "name": "Paulkuo.tw" }
+    { "@type": "Organization", "name": "天后獅子會" }
   ],
   "about": ["ESG", "永續發展", "碳足跡", "媽祖進香"]
 });
@@ -211,6 +210,17 @@ const schemaJson = JSON.stringify({
         </button>
       )}
     </div>
+
+    {partners.individuals && partners.individuals.length > 0 && (
+      <div class="formosa-partners-block">
+        <h3 class="partners-category">{t(lang, 'homepage.partnersIndividuals')}</h3>
+        <div class="partners-grid dense">
+          {partners.individuals.map(name => (
+            <div class="partner-chip small">{name}</div>
+          ))}
+        </div>
+      </div>
+    )}
 
     <div class="formosa-partners-block">
       <h3 class="partners-category">{t(lang, 'homepage.partnersDataPartner')}</h3>
