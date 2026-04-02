@@ -1,5 +1,8 @@
 # Cloudflare Pages rewrites for dynamic client-side routes
 /tools/builders-scorecard/eval/  /tools/builders-scorecard/eval/index/index.html  200
 
+# mazu.today 根目錄 → tracker（302 暫時導向）
+https://mazu.today/  /projects/formosa-esg-2026/tracker/  302
+
 # Formosa ESG 2026: 統一入口到 mazu.today (#90)
-/projects/formosa-esg-2026/*  https://mazu.today/:splat  301
+/projects/formosa-esg-2026/*  https://mazu.today/projects/formosa-esg-2026/:splat  301
