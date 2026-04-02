@@ -8,7 +8,7 @@ export function corsHeaders(request) {
   return {
     'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, PATCH, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token, X-Line-User-Id',
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Max-Age': '86400',
     'X-Content-Type-Options': 'nosniff',
