@@ -89,6 +89,8 @@ async function handleTicker(request, env) {
   // 附加訪客數據（Web Analytics / RUM）
   const overviewRaw = await env.TICKER_KV.get('analytics:overview');
   if (overviewRaw) { const ov = JSON.parse(overviewRaw); data.visitors = { visits: ov.total1d?.visits ?? 0, pageViews: ov.total1d?.pageViews ?? 0 }; }
+  // 附加 Claude 訂閱費用數據
+  try { const claudeSubRaw = await env.TICKER_KV.get('claude_subscription'); if (claudeSubRaw) { data.claudeSub = JSON.parse(claudeSubRaw); } } catch (e) {}
   await env.TICKER_KV.put('ticker_cache', JSON.stringify({ data, cached_at: Date.now() }));
   return new Response(JSON.stringify(data), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60', ...corsHeaders(request) } });
 }

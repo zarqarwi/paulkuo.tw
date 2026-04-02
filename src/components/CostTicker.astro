@@ -72,6 +72,20 @@ function buildTickerHTML(d) {
       + '</div>';
   }
 
+  if (d.claudeSub) {
+    var cs = d.claudeSub;
+    var totalAI = cs.planUSD + (cs.extraSpent || 0);
+    var pct = cs.extraPct || 0;
+    var barFilled = Math.round(pct / 10);
+    var bar = '\u2588'.repeat(barFilled) + '\u2591'.repeat(10 - barFilled);
+    html += '<div class="ticker-sep"></div>'
+      + '<div class="ticker-item" title="Claude Max \u8a02\u95b1 + Extra \u4f7f\u7528\u91cf">'
+      + '<span class="ticker-label">\ud83e\udd16 Claude</span>'
+      + '<span class="ticker-value">$' + totalAI.toFixed(0) + '/mo</span>'
+      + '<span class="ticker-sub" style="font-family:monospace;font-size:0.6rem;letter-spacing:-0.05em">' + bar + ' ' + pct + '%</span>'
+      + '</div>';
+  }
+
   if (d.visitors && d.visitors.visits != null) {
     html += '<div class="ticker-sep"></div>'
       + '<div class="ticker-item" title="昨日訪客數（Web Analytics 同源）">'
