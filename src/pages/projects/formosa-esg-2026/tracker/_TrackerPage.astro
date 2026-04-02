@@ -684,54 +684,8 @@ const prefix = LOCALE_PREFIX[lang];
     );
   }
 
-  window.manualCheckin = function() {
-    var btn = document.getElementById('gpsCheckinBtn');
-    if (btn) {
-      btn.disabled = true;
-      btn.dataset.origText = btn.textContent;
-      btn.textContent = '📍 ' + _i18n.locating;
-    }
-
-    function doBasicCheckin(lat, lng, alt, acc) {
-      gpsTrackPoints.push({
-        lat: lat, lng: lng, altitude: alt, accuracy: acc,
-        datetime: new Date().toISOString(), source: 'manual',
-        filename: '手動打卡 #' + (gpsTrackPoints.filter(function(p){return p.source==='manual'}).length + 1)
-      });
-      persistAutoTrack();
-      var countEl = document.getElementById('gpsCount');
-      if (countEl) countEl.textContent = gpsTrackPoints.length + ' ' + _i18n.gpsRecords;
-      if (btn) {
-        btn.textContent = '✓ ' + _i18n.checkinDone;
-        btn.disabled = true;
-        setTimeout(function() { btn.textContent = btn.dataset.origText || '打卡 📍'; btn.disabled = false; }, 1500);
-      }
-    }
-
-    // GP-5: use existing position if available
-    if (gpsReady && gpsTrackPoints.length > 0) {
-      var lastPt = gpsTrackPoints[gpsTrackPoints.length - 1];
-      doBasicCheckin(lastPt.lat, lastPt.lng, lastPt.altitude, lastPt.accuracy);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      function(pos) {
-        doBasicCheckin(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, pos.coords.accuracy);
-      },
-      function(err) {
-        if (btn) { btn.textContent = btn.dataset.origText || '打卡 📍'; btn.disabled = false; }
-        if (err.code === 1) {
-          alert(_i18n.permissionAlert);
-        } else if (err.code === 3) {
-          showPhotoToast('📍 ' + _i18n.weakSignal, 3000);
-        } else {
-          showPhotoToast('📍 ' + _i18n.locationTimeout, 3000);
-        }
-      },
-      { enableHighAccuracy: true, timeout: 20000 }
-    );
-  };
+  // [REMOVED 2026-04-03] 舊 manualCheckin/doBasicCheckin 已刪除。
+  // 唯一的打卡路徑見下方：manualCheckin → processCheckin → postCheckin
 
   function haversine(lat1, lng1, lat2, lng2) {
     var R = 6371;
@@ -1699,8 +1653,11 @@ const prefix = LOCALE_PREFIX[lang];
     // (Daily report loading removed — replaced by survey Q3-Q6)
   }
 
-  // Override manualCheckin to calculate distance and update stats
-  // GP-5: processCheckin extracted so we can skip getCurrentPosition when watchPosition is ready
+  // ── CHECKIN PATH ──
+  // 唯一的打卡路徑：manualCheckin → processCheckin → postCheckin
+  // postCheckin 帶 retry (503) + queueFailedCheckin (離線)
+  // 不要另建平行路徑。如果需要改打卡邏輯，改這裡。
+  // 2026-04-03 事故教訓：舊 doBasicCheckin 無 API call / retry / error UI，已刪除
   function processCheckin(lat, lng, altitude, accuracy, activeBtn) {
     // Calculate distance from last check-in
     var last = getLastCheckinCoords();
@@ -1762,6 +1719,9 @@ const prefix = LOCALE_PREFIX[lang];
             console.warn('打卡 API 回應異常:', res.status);
             if (res.status === 429) {
               showPhotoToast('⏳ ' + _i18n.tooFrequent, 3000);
+            } else {
+              showPhotoToast('⚠️ 打卡已記錄，同步稍後重試', 3000);
+              queueFailedCheckin({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
             }
           }
         }).catch(function(err) {
@@ -1769,6 +1729,7 @@ const prefix = LOCALE_PREFIX[lang];
             setTimeout(function() { postCheckin(payload, retries - 1); }, 1500);
           } else {
             console.warn('打卡 API 失敗（離線？）:', err);
+            showPhotoToast('⚠️ 打卡已記錄，待連線後同步', 3000);
             queueFailedCheckin({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
           }
         });
