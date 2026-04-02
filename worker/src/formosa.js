@@ -334,7 +334,7 @@ async function checkRateLimitKV(kv, userId, windowSec, maxRequests) {
 }
 
 // ── GPS Check-in Handler (KV Buffer — zero D1 writes) ──
-export async function handleFormosaCheckin(request, env) {
+export async function handleFormosaCheckin(request, env, ctx) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
@@ -374,40 +374,52 @@ export async function handleFormosaCheckin(request, env) {
     const ts = data.timestamp || new Date().toISOString();
     const bufferKey = `gps:${ts}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
 
-    // Write to KV buffer (single atomic write, no lock contention)
-    await env.TICKER_KV.put(bufferKey, JSON.stringify({
-      user_id: userId, lat, lng,
-      altitude: data.altitude || null,
-      accuracy: data.accuracy || null,
-      source, timestamp: ts,
-      blessing_id: data.blessing_id || null
-    }), { expirationTtl: 86400 });
+    // KV write work — wrapped in a promise so we can race against timeout
+    async function doKVWrites() {
+      await env.TICKER_KV.put(bufferKey, JSON.stringify({
+        user_id: userId, lat, lng,
+        altitude: data.altitude || null,
+        accuracy: data.accuracy || null,
+        source, timestamp: ts,
+        blessing_id: data.blessing_id || null
+      }), { expirationTtl: 86400 });
 
-    // GP-3: Batch track_points from frontend (optional, backward-compatible)
-    let batchWritten = 0;
-    if (data.track_points && Array.isArray(data.track_points)) {
-      const raw = data.track_points;
-      const capped = raw.length > 1000 ? raw.slice(-1000) : raw;
-      const validPts = capped.filter(pt => validateGPS(pt.lat, pt.lng));
-      for (const pt of validPts) {
-        const ptTs = pt.datetime || new Date().toISOString();
-        const ptKey = `gps:${ptTs}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
-        await env.TICKER_KV.put(ptKey, JSON.stringify({
-          user_id: userId, lat: pt.lat, lng: pt.lng,
-          altitude: null, accuracy: null,
-          source: pt.source || 'auto', timestamp: ptTs
-        }), { expirationTtl: 86400 });
-        batchWritten++;
+      let batchWritten = 0;
+      if (data.track_points && Array.isArray(data.track_points)) {
+        const raw = data.track_points;
+        const capped = raw.length > 1000 ? raw.slice(-1000) : raw;
+        const validPts = capped.filter(pt => validateGPS(pt.lat, pt.lng));
+        for (const pt of validPts) {
+          const ptTs = pt.datetime || new Date().toISOString();
+          const ptKey = `gps:${ptTs}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
+          await env.TICKER_KV.put(ptKey, JSON.stringify({
+            user_id: userId, lat: pt.lat, lng: pt.lng,
+            altitude: null, accuracy: null,
+            source: pt.source || 'auto', timestamp: ptTs
+          }), { expirationTtl: 86400 });
+          batchWritten++;
+        }
       }
+
+      const countKey = `gps_count:${userId}`;
+      const cachedCount = await env.TICKER_KV.get(countKey);
+      const approxCount = cachedCount ? parseInt(cachedCount, 10) + 1 + batchWritten : 1 + batchWritten;
+      await env.TICKER_KV.put(countKey, String(approxCount), { expirationTtl: 86400 * 30 });
+
+      return { approxCount, batchWritten };
     }
 
-    // Approximate point count from KV (updated by cron flush)
-    const countKey = `gps_count:${userId}`;
-    const cachedCount = await env.TICKER_KV.get(countKey);
-    const approxCount = cachedCount ? parseInt(cachedCount, 10) + 1 + batchWritten : 1 + batchWritten;
-    await env.TICKER_KV.put(countKey, String(approxCount), { expirationTtl: 86400 * 30 });
+    // Race KV writes against 8s timeout; if slow, respond 202 and finish in background
+    const timeout = new Promise(resolve => setTimeout(() => resolve('timeout'), 8000));
+    const work = doKVWrites();
+    const result = await Promise.race([work, timeout]);
 
-    return jsonResponse({ ok: true, total_points: approxCount, in_range: inRange, buffered: true, batch: batchWritten }, 200, request);
+    if (result === 'timeout') {
+      if (ctx) ctx.waitUntil(work);
+      return jsonResponse({ ok: true, in_range: inRange, buffered: true, accepted: true }, 202, request);
+    }
+
+    return jsonResponse({ ok: true, total_points: result.approxCount, in_range: inRange, buffered: true, batch: result.batchWritten }, 200, request);
   } catch (e) {
     console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }

@@ -168,7 +168,7 @@ async function handleMazuToday(request, url) {
   });
 }
 
-async function handleRequest(request, env) {
+async function handleRequest(request, env, ctx) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
 
   // 302 redirect: paulkuo.tw i18n formosa paths → mazu.today
@@ -328,7 +328,7 @@ async function handleRequest(request, env) {
   }
   if (path === '/api/formosa/webhook') return handleFormosaWebhook(request, env);
   if (path === '/api/formosa/submit' && method === 'POST') return handleFormosaSubmit(request, env);
-  if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env);
+  if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env, ctx);
   if (path === '/api/formosa/track/sync' && method === 'POST') return handleFormosaTrackSync(request, env);
   if (path === '/api/formosa/user/sync' && method === 'POST') return handleFormosaUserSync(request, env);
   if (path === '/api/formosa/photos/count') return handleFormosaPhotoCount(request, env);
@@ -413,6 +413,6 @@ async function handleScheduled(event, env) {
 }
 
 export default {
-  fetch: async (request, env, ctx) => { const response = await handleRequest(request, env); if (costBuffer.length >= 10) ctx.waitUntil(flushCosts(env.TICKER_KV)); return response; },
+  fetch: async (request, env, ctx) => { const response = await handleRequest(request, env, ctx); if (costBuffer.length >= 10) ctx.waitUntil(flushCosts(env.TICKER_KV)); return response; },
   scheduled: handleScheduled,
 };
