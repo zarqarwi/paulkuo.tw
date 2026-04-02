@@ -204,21 +204,24 @@ const schemaJson = JSON.stringify({
           <div class:list={["partner-chip small", { "enterprise-hidden": i >= 10 }]}>{name}</div>
         ))}
       </div>
-      {partners.enterprises.length > 10 && (
-        <button class="enterprise-toggle" id="enterpriseToggle" data-total={partners.enterprises.length}>
-          {t(lang, 'homepage.expandAll')} ({partners.enterprises.length})
-        </button>
-      )}
     </div>
 
     {partners.individuals && partners.individuals.length > 0 && (
-      <div class="formosa-partners-block">
+      <div class="formosa-partners-block" id="individualsBlock" style="display:none;">
         <h3 class="partners-category">{t(lang, 'homepage.partnersIndividuals')}</h3>
         <div class="partners-grid dense">
           {partners.individuals.map(name => (
             <div class="partner-chip small">{name}</div>
           ))}
         </div>
+      </div>
+    )}
+
+    {partners.enterprises.length > 10 && (
+      <div style="text-align:center;">
+        <button class="enterprise-toggle" id="enterpriseToggle" data-total={partners.enterprises.length}>
+          {expandAllLabel} ({partners.enterprises.length})
+        </button>
       </div>
     )}
 
@@ -873,13 +876,29 @@ const schemaJson = JSON.stringify({
 (function() {
   var btn = document.getElementById('enterpriseToggle');
   if (!btn) return;
+  var grid = document.getElementById('enterpriseGrid');
+  if (!grid) return;
   var expanded = false;
+  var individualsBlock = document.getElementById('individualsBlock');
+
   btn.addEventListener('click', function() {
     expanded = !expanded;
-    var items = document.querySelectorAll('.enterprise-hidden');
-    items.forEach(function(el) {
-      el.style.display = expanded ? '' : 'none';
+
+    var allChips = grid.querySelectorAll('.partner-chip');
+    allChips.forEach(function(el, i) {
+      if (i >= 10) {
+        if (expanded) {
+          el.classList.remove('enterprise-hidden');
+        } else {
+          el.classList.add('enterprise-hidden');
+        }
+      }
     });
+
+    if (individualsBlock) {
+      individualsBlock.style.display = expanded ? '' : 'none';
+    }
+
     btn.textContent = expanded ? collapseLabel : expandAllLabel + ' (' + btn.dataset.total + ')';
   });
 })();
