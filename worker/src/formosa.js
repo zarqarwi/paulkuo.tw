@@ -662,7 +662,7 @@ export async function handleFormosaPush(request, env) {
           {
             type: 'uri',
             label: '立即打卡 📍',
-            uri: 'https://paulkuo.tw/projects/formosa-esg-2026/tracker/'
+            uri: TRACKER_URL
           }
         ]
       }

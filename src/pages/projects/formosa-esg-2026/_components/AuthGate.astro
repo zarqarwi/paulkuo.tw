@@ -291,6 +291,33 @@ const authI18n = {
     });
 
     // LIFF init
+    var LINE_ICON_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="white" style="vertical-align:middle;margin-right:8px"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>';
+
+    function resetLoginBtn() {
+      if (lineLoginBtn) {
+        lineLoginBtn.disabled = false;
+        lineLoginBtn.innerHTML = LINE_ICON_SVG + ' ' + authI18n.lineLoginBtn;
+      }
+    }
+
+    function doLiffLogin() {
+      try {
+        liff.login({ redirectUri: window.location.href });
+      } catch (e) {
+        console.warn('liff.login error:', e);
+        resetLoginBtn();
+        // Show friendly error below the button
+        var errEl = document.getElementById('liffErrorMsg');
+        if (!errEl) {
+          errEl = document.createElement('p');
+          errEl.id = 'liffErrorMsg';
+          errEl.style.cssText = 'color:#ef4444;font-size:0.85rem;margin-top:0.75rem;line-height:1.5';
+          lineLoginBtn.parentNode.appendChild(errEl);
+        }
+        errEl.textContent = '登入時發生錯誤，請稍後再試，或在 LINE App 中開啟此連結。';
+      }
+    }
+
     function initLIFF() {
       if (typeof liff === 'undefined') {
         setTimeout(initLIFF, 200);
@@ -336,7 +363,24 @@ const authI18n = {
         } else if (liff.isInClient()) {
           liff.login();
         }
-      }).catch(function(e) { console.warn('LIFF init error:', e); });
+        // If pending login from button click, trigger it now
+        if (window.__pendingLiffLogin) {
+          window.__pendingLiffLogin = false;
+          doLiffLogin();
+        }
+      }).catch(function(e) {
+        console.warn('LIFF init error:', e);
+        resetLoginBtn();
+        // Show error message for non-LINE browsers
+        var errEl = document.getElementById('liffErrorMsg');
+        if (!errEl) {
+          errEl = document.createElement('p');
+          errEl.id = 'liffErrorMsg';
+          errEl.style.cssText = 'color:#ef4444;font-size:0.85rem;margin-top:0.75rem;line-height:1.5';
+          if (lineLoginBtn) lineLoginBtn.parentNode.appendChild(errEl);
+        }
+        errEl.textContent = 'LINE 登入初始化失敗，請重新整理頁面，或在 LINE App 中開啟此連結。';
+      });
     }
 
     // LINE login button click
@@ -344,21 +388,46 @@ const authI18n = {
       lineLoginBtn.addEventListener('click', function() {
         lineLoginBtn.disabled = true;
         lineLoginBtn.innerHTML = '<span class="line-spinner"></span> ' + authI18n.loggingIn;
+        // Clear previous error
+        var errEl = document.getElementById('liffErrorMsg');
+        if (errEl) errEl.textContent = '';
         if (typeof liff !== 'undefined' && window.__liffReady) {
-          liff.login({ redirectUri: window.location.href });
+          doLiffLogin();
         } else {
-          initLIFF();
+          // LIFF not ready yet — flag pending login and wait for init
+          window.__pendingLiffLogin = true;
+          if (!window.__liffInitStarted) {
+            window.__liffInitStarted = true;
+            initLIFF();
+          }
+          // Timeout fallback: if LIFF doesn't init within 5s, show error
           setTimeout(function() {
-            if (typeof liff !== 'undefined') liff.login({ redirectUri: window.location.href });
-            else { lineLoginBtn.disabled = false; lineLoginBtn.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="white" style="vertical-align:middle;margin-right:8px"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> ' + authI18n.lineLoginBtn; }
-          }, 1000);
+            if (!window.__liffReady) {
+              resetLoginBtn();
+              var errEl2 = document.getElementById('liffErrorMsg');
+              if (!errEl2) {
+                errEl2 = document.createElement('p');
+                errEl2.id = 'liffErrorMsg';
+                errEl2.style.cssText = 'color:#ef4444;font-size:0.85rem;margin-top:0.75rem;line-height:1.5';
+                lineLoginBtn.parentNode.appendChild(errEl2);
+              }
+              errEl2.textContent = 'LINE 登入載入逾時，請重新整理頁面再試。';
+            }
+          }, 5000);
         }
       });
     }
 
-    // Boot sequence: check stored code first, then LIFF
+    // Boot sequence: check stored code first, then shared link, then LIFF
     checkStoredCode().then(function(unlocked) {
       if (!unlocked) {
+        // Shared link guest mode: ?u= param unlocks page for viewing
+        var sharedUserId = new URLSearchParams(window.location.search).get('u');
+        if (sharedUserId) {
+          window.__guestMode = true;
+          unlock();
+          return;
+        }
         var storedLineId = localStorage.getItem('formosa_line_user_id');
         var storedName = localStorage.getItem('formosa_line_display_name');
         if (storedLineId && storedName) {

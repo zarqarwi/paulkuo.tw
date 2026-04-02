@@ -124,8 +124,20 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </div>
 
+  <!-- ═══ Survey CTA (shown before survey starts) ═══ -->
+  <div class="q-card active" data-q="cta" id="stepCta" style="text-align:center">
+    <div style="font-size:3rem;margin-bottom:1rem">🙏</div>
+    <h2 style="margin-bottom:0.5rem">{t(lang, 'tracker_ui.ctaTitle')}</h2>
+    <p style="color:var(--text-secondary);margin-bottom:1.5rem;line-height:1.6">{t(lang, 'tracker_ui.ctaDescription')}</p>
+    <button class="checkin-big-btn" id="startSurveyBtn" style="margin-bottom:1rem">
+      <span class="checkin-big-icon">📋</span>
+      <span>{t(lang, 'tracker_ui.ctaButton')}</span>
+    </button>
+    <p style="color:var(--text-tertiary);font-size:0.8rem">{t(lang, 'tracker_ui.ctaHint')}</p>
+  </div>
+
   <!-- ═══ Linear Progress Bar ═══ -->
-  <div class="q-progress" id="qProgress">
+  <div class="q-progress" id="qProgress" style="display:none">
     <div class="q-progress-bar">
       <div class="q-progress-fill" id="qProgressFill"></div>
     </div>
@@ -137,7 +149,7 @@ const prefix = LOCALE_PREFIX[lang];
   <!-- ═══════════════════════════════════════════ -->
 
   <!-- Q1: 善行活動（複選） -->
-  <div class="q-card active" data-q="1">
+  <div class="q-card" data-q="1">
     <label class="form-label">Q1. 您於此次進香期間，有參與以下哪些善行活動？<span class="form-hint">（可複選，選完請按下一題）</span></label>
     <div class="checkbox-group" data-name="q1" data-required="true">
       <label class="checkbox-item"><input type="checkbox" name="q1" value="志工（沿路照護支援）"><span>志工（沿路照護支援）</span></label>
@@ -999,6 +1011,15 @@ const prefix = LOCALE_PREFIX[lang];
         lsSet('formosa_transport_breakdown', JSON.stringify(s.transport_breakdown));
       }
       updateCarbonStatsDisplay();
+      // Sync badge and progress with fresh server data
+      var freshCheckins = getSavedCheckins();
+      var freshKm = getSavedKm();
+      var freshTitle = getTitle(freshCheckins, freshKm);
+      var badgeEl = document.getElementById('checkinBadge');
+      if (badgeEl) {
+        badgeEl.innerHTML = '<img src="' + MASCOT_BASE + freshTitle.current.img + '" class="mascot-badge" width="120" height="120" alt="' + freshTitle.current.name + '"><span>' + freshTitle.current.name + '</span>';
+      }
+      updateCheckinProgress(freshTitle);
       // Upload personalized OG image for FB sharing
       uploadOgImage();
     } catch (e) { /* offline */ }
@@ -1933,13 +1954,40 @@ const prefix = LOCALE_PREFIX[lang];
 
   // ── Page Init ──
 
-  if (lsGet('formosa_survey_done') === 'true') {
+  var sharedUserId = new URLSearchParams(window.location.search).get('u');
+  if (window.__guestMode && sharedUserId && !lineUserId) {
+    // Guest mode: show invite view for shared links
+    cards.forEach(function(c) { c.classList.remove('active'); });
+    var progressBar = document.getElementById('qProgress');
+    if (progressBar) progressBar.style.display = 'none';
+    // Create guest invite card
+    var guestCard = document.createElement('div');
+    guestCard.className = 'q-card active';
+    guestCard.style.textAlign = 'center';
+    guestCard.innerHTML = '<div style="font-size:3rem;margin-bottom:1rem">🙏</div>' +
+      '<h2 style="margin-bottom:0.5rem">2026 白沙屯媽祖 ESG 進香</h2>' +
+      '<p style="color:var(--text-secondary);margin-bottom:1.5rem;line-height:1.6">你的朋友正在參與進香永續數據計畫，<br>一起來記錄進香足跡吧！</p>' +
+      '<a href="https://liff.line.me/2009588321-rXVntTKg" class="checkin-big-btn" style="display:inline-block;text-decoration:none;margin-bottom:1rem">' +
+        '<span class="checkin-big-icon">📍</span>' +
+        '<span>加入記錄足跡</span>' +
+      '</a>' +
+      '<p style="color:var(--text-tertiary);font-size:0.8rem">透過 LINE 登入即可開始</p>';
+    var container = document.querySelector('.tracker');
+    if (container) container.appendChild(guestCard);
+  } else if (lsGet('formosa_survey_done') === 'true') {
     enterCheckinMode();
     checkParticipantStatus();
     // Check for pending notifications after page load
     setTimeout(checkAndShowNotifications, 500);
   } else {
-    showCard(1);
+    // Show CTA landing card instead of jumping straight into survey
+    showCard('cta');
+    var startBtn = document.getElementById('startSurveyBtn');
+    if (startBtn) {
+      startBtn.addEventListener('click', function() {
+        showCard(1);
+      });
+    }
   }
 
   // ── Minimal EXIF GPS parser ──
