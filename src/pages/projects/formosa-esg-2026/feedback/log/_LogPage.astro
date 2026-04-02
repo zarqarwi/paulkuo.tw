@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  lang?: Locale;
+}
+
+const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const prefix = LOCALE_PREFIX[lang];
+---
+
+<BaseLayout
+  title="回報與修復紀錄 — 2026 白沙屯媽祖 ESG 進香"
+  description="已知問題與修復進度公告"
+  ogUrl="https://mazu.today/feedback/log/"
+  ogImage="https://mazu.today/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<div class="log-page">
+  <nav class="log-breadcrumb">
+    <a href={`${prefix}/projects/formosa-esg-2026/feedback/`}>← 回報問題</a>
+  </nav>
+
+  <header class="log-header">
+    <h1>📋 回報與修復紀錄</h1>
+    <p class="log-updated">最後更新：2026-04-02</p>
+  </header>
+
+  <!-- ── 已修復 ── -->
+  <section class="log-section">
+    <h2 class="log-section-title resolved">✅ 已修復</h2>
+    <p class="log-empty">目前尚無已修復項目，團隊正在全力處理中。</p>
+  </section>
+
+  <!-- ── 處理中 ── -->
+  <section class="log-section">
+    <h2 class="log-section-title in-progress">🔧 處理中</h2>
+
+    <article class="log-item">
+      <div class="log-item-header">
+        <span class="log-tag bug">Bug</span>
+        <span class="log-date">04-02 回報</span>
+      </div>
+      <h3>LINE 點選打卡連結出現 404</h3>
+      <p>從 LINE 聊天室點擊打卡連結後，頁面顯示 404 找不到。正在修正連結路徑。</p>
+    </article>
+
+    <article class="log-item">
+      <div class="log-item-header">
+        <span class="log-tag bug">Bug</span>
+        <span class="log-date">04-02 回報</span>
+      </div>
+      <h3>分享連結給朋友，對方看到空白頁面</h3>
+      <p>按分享功能產生的連結，朋友點進去顯示空白。正在排查分享連結的目標頁面。</p>
+    </article>
+
+    <article class="log-item">
+      <div class="log-item-header">
+        <span class="log-tag bug">Bug</span>
+        <span class="log-date">04-02 回報</span>
+      </div>
+      <h3>非 LINE 瀏覽器登入異常</h3>
+      <p>在電腦版 Chrome 點選「用 LINE 登入」後出現錯誤畫面。正在修正 LIFF 在外部瀏覽器的行為。</p>
+    </article>
+
+    <article class="log-item">
+      <div class="log-item-header">
+        <span class="log-tag ux">UX 改善</span>
+        <span class="log-date">04-02 回報</span>
+      </div>
+      <h3>足跡資料與等級成就數字不同步</h3>
+      <p>打卡頁面下方的足跡統計與「我的等級成就紀錄」顯示數字不一致。正在統一資料來源。</p>
+    </article>
+
+    <article class="log-item">
+      <div class="log-item-header">
+        <span class="log-tag ux">UX 改善</span>
+        <span class="log-date">04-02 回報</span>
+      </div>
+      <h3>問卷改為按鈕觸發</h3>
+      <p>進入頁面後不再直接顯示問卷題目，改為點選「參與紀錄善足跡活動」按鈕後才展開。</p>
+    </article>
+  </section>
+
+  <!-- ── 不處理 / 說明 ── -->
+  <section class="log-section">
+    <h2 class="log-section-title noted">💬 已知 & 說明</h2>
+
+    <article class="log-item">
+      <div class="log-item-header">
+        <span class="log-tag info">說明</span>
+        <span class="log-date">04-02</span>
+      </div>
+      <h3>地圖打卡點是否會合併？圖形是否每日清除？</h3>
+      <p>打卡點不會合併，每次打卡都是獨立記錄。地圖資料不會每日清除，會持續累積顯示整趟進香足跡。</p>
+    </article>
+  </section>
+
+  <footer class="log-footer">
+    <p>遇到問題？<a href={`${prefix}/projects/formosa-esg-2026/feedback/`}>點此回報</a></p>
+  </footer>
+</div>
+
+<style>
+  .log-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: var(--font-cjk, 'Noto Sans TC', sans-serif);
+  }
+  .log-breadcrumb {
+    margin-bottom: 1.5rem;
+  }
+  .log-breadcrumb a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+  .log-breadcrumb a:hover { color: #1a5c2a; }
+  .log-header {
+    margin-bottom: 2rem;
+  }
+  .log-header h1 {
+    font-size: 1.4rem;
+    margin: 0 0 0.4rem;
+    color: #1a5c2a;
+  }
+  .log-updated {
+    color: #999;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  /* Sections */
+  .log-section {
+    margin-bottom: 2rem;
+  }
+  .log-section-title {
+    font-size: 1.05rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #eee;
+    margin: 0 0 1rem;
+  }
+  .log-section-title.resolved { border-color: #059669; color: #059669; }
+  .log-section-title.in-progress { border-color: #d97706; color: #d97706; }
+  .log-section-title.noted { border-color: #6b7280; color: #6b7280; }
+
+  .log-empty {
+    color: #999;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  /* Items */
+  .log-item {
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .log-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+  .log-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .log-tag.bug { background: #fee2e2; color: #dc2626; }
+  .log-tag.ux { background: #fef3c7; color: #d97706; }
+  .log-tag.info { background: #e5e7eb; color: #6b7280; }
+  .log-date {
+    font-size: 0.8rem;
+    color: #999;
+  }
+  .log-item h3 {
+    font-size: 0.95rem;
+    margin: 0 0 0.3rem;
+    color: #333;
+  }
+  .log-item p {
+    font-size: 0.88rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Footer */
+  .log-footer {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    margin-top: 2rem;
+  }
+  .log-footer a {
+    color: #1a5c2a;
+    font-weight: 600;
+  }
+</style>
+
+</BaseLayout>
