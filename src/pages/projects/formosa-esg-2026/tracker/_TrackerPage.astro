@@ -381,7 +381,7 @@ const prefix = LOCALE_PREFIX[lang];
 
       <div class="checkin-stats" id="checkinStats"></div>
 
-      <button class="checkin-big-btn" onclick="manualCheckin()">
+      <button class="checkin-big-btn" id="checkinBigBtn" onclick="manualCheckin()">
         <span class="checkin-big-icon">📍</span>
         <span>{t(lang, 'tracker_ui.checkinNow')}</span>
       </button>
@@ -1167,7 +1167,7 @@ const prefix = LOCALE_PREFIX[lang];
     if (overlay) overlay.style.display = 'block';
     if (actions) actions.style.display = 'none';
     // Hide checkin buttons
-    var checkinBtn = document.querySelector('.checkin-big-btn');
+    var checkinBtn = document.getElementById('checkinBigBtn');
     if (checkinBtn) checkinBtn.style.display = 'none';
     var uploadSection = document.querySelector('.checkin-upload-section');
     if (uploadSection) uploadSection.style.display = 'none';
@@ -1790,7 +1790,7 @@ const prefix = LOCALE_PREFIX[lang];
   window.manualCheckin = function() {
     // Immediate loading feedback on both buttons
     var btn = document.getElementById('gpsCheckinBtn');
-    var bigBtn = document.querySelector('.checkin-big-btn');
+    var bigBtn = document.getElementById('checkinBigBtn');
     var activeBtn = bigBtn || btn;
     if (activeBtn) {
       activeBtn.disabled = true;
