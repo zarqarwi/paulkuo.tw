@@ -154,6 +154,25 @@ export async function handleValidateCode(request, env) {
     if (result.maxUsers) { const user = await getCurrentUser(request, env); const usersRaw = await env.TICKER_KV.get('code_users_' + codeKey); const users = usersRaw ? JSON.parse(usersRaw) : []; const userId = user ? user.id : null; if (!(userId && users.includes(userId)) && users.length >= result.maxUsers) return jsonResponse({ valid: false, reason: 'quota_full', maxUsers: result.maxUsers }, 200, request); if (userId && !users.includes(userId)) { users.push(userId); await env.TICKER_KV.put('code_users_' + codeKey, JSON.stringify(users)); } }
     let budgetInfo = {};
     if (result.role !== 'admin' && !result.noBudget) { const user = await getCurrentUser(request, env); const usedSec = user ? await getCodeUsedTime(codeKey, env.TICKER_KV, user.id) : 0; budgetInfo = { budgetSec: INVITE_BUDGET_SEC, usedSec: +usedSec.toFixed(1), remainingSec: +Math.max(0, INVITE_BUDGET_SEC - usedSec).toFixed(1) }; }
+    // ── Access log（fire-and-forget）──
+    try {
+      const logDate = new Date().toISOString().slice(0, 10);
+      const logKey = `access_log:${logDate}`;
+      const logEntry = {
+        ts: new Date().toISOString(),
+        ip,
+        code: codeKey,
+        role: result.role,
+        name: result.name,
+        ua: (request.headers.get('User-Agent') || '').slice(0, 120),
+      };
+      const existing = await env.TICKER_KV.get(logKey);
+      const logs = existing ? JSON.parse(existing) : [];
+      logs.push(logEntry);
+      await env.TICKER_KV.put(logKey, JSON.stringify(logs), { expirationTtl: 30 * 86400 });
+    } catch (e) {
+      console.error('Access log write failed:', e.message);
+    }
     return jsonResponse({ valid: true, name: result.name, role: result.role, ...budgetInfo }, 200, request);
   }
   return jsonResponse({ valid: false }, 200, request);
