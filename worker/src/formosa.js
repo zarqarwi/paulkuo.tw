@@ -2191,6 +2191,81 @@ export async function handleFormosaFeedbackImageServe(request, env, filename) {
   }
 }
 
+// ── Admin: Update Feedback Status ──
+export async function handleFormosaFeedbackUpdate(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  const authErr = requireAdmin(request, env);
+  if (authErr) return authErr;
+
+  try {
+    const url = new URL(request.url);
+    const id = parseInt(url.pathname.split('/').pop());
+    if (!id || isNaN(id)) return jsonResponse({ error: 'Invalid feedback ID' }, 400, request);
+
+    const body = await request.json();
+    const { status, admin_note } = body;
+
+    const validStatuses = ['new', 'triaging', 'fixing', 'fixed', 'wontfix'];
+    if (status && !validStatuses.includes(status)) {
+      return jsonResponse({ error: 'Invalid status. Must be: ' + validStatuses.join(', ') }, 400, request);
+    }
+
+    // Build dynamic UPDATE
+    const sets = [];
+    const binds = [];
+    if (status) {
+      sets.push('status = ?');
+      binds.push(status);
+      if (status === 'fixed') {
+        sets.push("resolved_at = datetime('now')");
+      }
+    }
+    if (admin_note !== undefined) {
+      sets.push('admin_note = ?');
+      binds.push(admin_note);
+    }
+    if (sets.length === 0) return jsonResponse({ error: 'Nothing to update' }, 400, request);
+
+    binds.push(id);
+    await env.AUTH_DB.prepare(
+      `UPDATE feedback SET ${sets.join(', ')} WHERE id = ?`
+    ).bind(...binds).run();
+
+    const row = await env.AUTH_DB.prepare(
+      'SELECT id, category, description, screenshot_url, status, admin_note, resolved_at, created_at FROM feedback WHERE id = ?'
+    ).bind(id).first();
+
+    if (!row) return jsonResponse({ error: 'Feedback not found' }, 404, request);
+    return jsonResponse({ ok: true, feedback: row }, 200, request);
+  } catch (e) {
+    console.error('Feedback update error:', e);
+    return jsonResponse({ error: 'Internal server error' }, 500, request);
+  }
+}
+
+// ── Public: Feedback Status Board ──
+export async function handleFormosaFeedbackPublicStatus(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+
+  try {
+    const rows = await env.AUTH_DB.prepare(
+      `SELECT id, category, description, screenshot_url, status, admin_note, resolved_at, created_at
+       FROM feedback
+       WHERE status != 'new'
+       ORDER BY created_at DESC`
+    ).all();
+
+    return jsonResponse({ ok: true, feedbacks: rows.results || [] }, 200, request);
+  } catch (e) {
+    console.error('Feedback public status error:', e);
+    return jsonResponse({ error: 'Internal server error' }, 500, request);
+  }
+}
+
 function haversineKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;

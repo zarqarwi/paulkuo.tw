@@ -27,83 +27,136 @@ const prefix = LOCALE_PREFIX[lang];
 
   <header class="log-header">
     <h1>📋 回報與修復紀錄</h1>
-    <p class="log-updated">最後更新：2026-04-02</p>
+    <p class="log-updated" id="logUpdated">載入中...</p>
   </header>
 
-  <!-- ── 已修復 ── -->
-  <section class="log-section">
+  <!-- Dynamic sections -->
+  <section class="log-section" id="sectionFixed" style="display:none">
     <h2 class="log-section-title resolved">✅ 已修復</h2>
-
-    <article class="log-item">
-      <div class="log-item-header">
-        <span class="log-tag bug">Bug</span>
-        <span class="log-date">04-02 修復</span>
-      </div>
-      <h3>LINE 點選打卡連結出現 404</h3>
-      <p>已修正 — Bot 回覆的連結路徑已更新為正確網址。</p>
-    </article>
-
-    <article class="log-item">
-      <div class="log-item-header">
-        <span class="log-tag bug">Bug</span>
-        <span class="log-date">04-02 修復</span>
-      </div>
-      <h3>分享連結給朋友，對方看到空白頁面</h3>
-      <p>已修正 — 分享連結現在會顯示邀請頁面，不需登入也能看到內容。</p>
-    </article>
-
-    <article class="log-item">
-      <div class="log-item-header">
-        <span class="log-tag bug">Bug</span>
-        <span class="log-date">04-02 修復</span>
-      </div>
-      <h3>非 LINE 瀏覽器登入異常</h3>
-      <p>已修正 — 在電腦版瀏覽器登入時，改為跳轉 LINE 網頁登入，並加入友善的錯誤提示。</p>
-    </article>
-
-    <article class="log-item">
-      <div class="log-item-header">
-        <span class="log-tag ux">UX 改善</span>
-        <span class="log-date">04-02 修復</span>
-      </div>
-      <h3>足跡資料與等級成就數字不同步</h3>
-      <p>已修正 — 統一了資料來源，打卡統計與等級成就現在會同步顯示。</p>
-    </article>
-
-    <article class="log-item">
-      <div class="log-item-header">
-        <span class="log-tag ux">UX 改善</span>
-        <span class="log-date">04-02 修復</span>
-      </div>
-      <h3>問卷改為按鈕觸發</h3>
-      <p>已修正 — 進入頁面後先看到活動說明，點選「參與紀錄善足跡活動」按鈕後才展開問卷。</p>
-    </article>
+    <div id="listFixed"></div>
   </section>
 
-  <!-- ── 處理中 ── -->
-  <section class="log-section">
+  <section class="log-section" id="sectionInProgress" style="display:none">
     <h2 class="log-section-title in-progress">🔧 處理中</h2>
-    <p class="log-empty">目前沒有處理中的問題。</p>
+    <div id="listInProgress"></div>
   </section>
 
-  <!-- ── 不處理 / 說明 ── -->
-  <section class="log-section">
+  <section class="log-section" id="sectionNoted" style="display:none">
     <h2 class="log-section-title noted">💬 已知 & 說明</h2>
-
-    <article class="log-item">
-      <div class="log-item-header">
-        <span class="log-tag info">說明</span>
-        <span class="log-date">04-02</span>
-      </div>
-      <h3>地圖打卡點是否會合併？圖形是否每日清除？</h3>
-      <p>打卡點不會合併，每次打卡都是獨立記錄。地圖資料不會每日清除，會持續累積顯示整趟進香足跡。</p>
-    </article>
+    <div id="listNoted"></div>
   </section>
+
+  <!-- Loading / Error states -->
+  <div id="logLoading" class="log-loading">載入中...</div>
+  <div id="logError" class="log-error" style="display:none">
+    <p>⚠️ 無法載入資料，請稍後重新整理頁面。</p>
+  </div>
 
   <footer class="log-footer">
     <p>遇到問題？<a href={`${prefix}/projects/formosa-esg-2026/feedback/`}>點此回報</a></p>
   </footer>
 </div>
+
+<script is:inline>
+(function() {
+  var API = 'https://api.paulkuo.tw/api/formosa/feedback/status';
+
+  function tagClass(category) {
+    if (!category) return 'info';
+    var c = category.toLowerCase();
+    if (c.includes('bug') || c.includes('錯誤')) return 'bug';
+    if (c.includes('ux') || c.includes('改善') || c.includes('建議')) return 'ux';
+    return 'info';
+  }
+
+  function tagLabel(category) {
+    if (!category) return '說明';
+    var c = category.toLowerCase();
+    if (c.includes('bug') || c.includes('錯誤')) return 'Bug';
+    if (c.includes('ux') || c.includes('改善') || c.includes('建議')) return 'UX 改善';
+    return '說明';
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    var d = new Date(dateStr);
+    return (d.getMonth() + 1).toString().padStart(2, '0') + '-' + d.getDate().toString().padStart(2, '0');
+  }
+
+  function renderItem(fb) {
+    var dateText = '';
+    if (fb.status === 'fixed' && fb.resolved_at) {
+      dateText = formatDate(fb.resolved_at) + ' 修復';
+    } else {
+      dateText = formatDate(fb.created_at);
+    }
+
+    var note = fb.admin_note
+      ? '<p>' + fb.admin_note.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>'
+      : '<p>' + (fb.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>';
+
+    return '<article class="log-item">' +
+      '<div class="log-item-header">' +
+        '<span class="log-tag ' + tagClass(fb.category) + '">' + tagLabel(fb.category) + '</span>' +
+        '<span class="log-date">' + dateText + '</span>' +
+      '</div>' +
+      '<h3>' + ((fb.description || '').split('\n')[0] || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</h3>' +
+      (fb.admin_note ? note : '') +
+      (fb.screenshot_url ? '<img src="' + fb.screenshot_url + '" class="log-screenshot" loading="lazy" alt="截圖">' : '') +
+    '</article>';
+  }
+
+  fetch(API)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById('logLoading').style.display = 'none';
+
+      if (!data.ok || !data.feedbacks) {
+        document.getElementById('logError').style.display = 'block';
+        return;
+      }
+
+      var fixed = [];
+      var inProgress = [];
+      var noted = [];
+
+      data.feedbacks.forEach(function(fb) {
+        if (fb.status === 'fixed') fixed.push(fb);
+        else if (fb.status === 'triaging' || fb.status === 'fixing') inProgress.push(fb);
+        else if (fb.status === 'wontfix' || fb.admin_note) noted.push(fb);
+      });
+
+      if (fixed.length) {
+        document.getElementById('sectionFixed').style.display = '';
+        document.getElementById('listFixed').innerHTML = fixed.map(renderItem).join('');
+      }
+      if (inProgress.length) {
+        document.getElementById('sectionInProgress').style.display = '';
+        document.getElementById('listInProgress').innerHTML = inProgress.map(renderItem).join('');
+      }
+      if (noted.length) {
+        document.getElementById('sectionNoted').style.display = '';
+        document.getElementById('listNoted').innerHTML = noted.map(renderItem).join('');
+      }
+
+      if (!fixed.length && !inProgress.length && !noted.length) {
+        document.getElementById('logLoading').style.display = 'block';
+        document.getElementById('logLoading').textContent = '目前沒有公開的回報紀錄。';
+      }
+
+      // Update timestamp
+      var latest = data.feedbacks[0];
+      if (latest) {
+        var d = new Date(latest.resolved_at || latest.created_at);
+        document.getElementById('logUpdated').textContent = '最後更新：' + d.toLocaleDateString('zh-TW');
+      }
+    })
+    .catch(function() {
+      document.getElementById('logLoading').style.display = 'none';
+      document.getElementById('logError').style.display = 'block';
+    });
+})();
+</script>
 
 <style>
   .log-page {
@@ -149,49 +202,56 @@ const prefix = LOCALE_PREFIX[lang];
   .log-section-title.in-progress { border-color: #d97706; color: #d97706; }
   .log-section-title.noted { border-color: #6b7280; color: #6b7280; }
 
-  .log-empty {
+  .log-loading, .log-error {
+    text-align: center;
     color: #999;
     font-size: 0.9rem;
-    font-style: italic;
+    padding: 2rem 0;
   }
+  .log-error { color: #dc2626; }
 
   /* Items */
-  .log-item {
+  :global(.log-item) {
     background: #fafafa;
     border-radius: 8px;
     padding: 0.9rem 1rem;
     margin-bottom: 0.75rem;
   }
-  .log-item-header {
+  :global(.log-item-header) {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.4rem;
   }
-  .log-tag {
+  :global(.log-tag) {
     font-size: 0.75rem;
     font-weight: 600;
     padding: 2px 8px;
     border-radius: 4px;
     text-transform: uppercase;
   }
-  .log-tag.bug { background: #fee2e2; color: #dc2626; }
-  .log-tag.ux { background: #fef3c7; color: #d97706; }
-  .log-tag.info { background: #e5e7eb; color: #6b7280; }
-  .log-date {
+  :global(.log-tag.bug) { background: #fee2e2; color: #dc2626; }
+  :global(.log-tag.ux) { background: #fef3c7; color: #d97706; }
+  :global(.log-tag.info) { background: #e5e7eb; color: #6b7280; }
+  :global(.log-date) {
     font-size: 0.8rem;
     color: #999;
   }
-  .log-item h3 {
+  :global(.log-item h3) {
     font-size: 0.95rem;
     margin: 0 0 0.3rem;
     color: #333;
   }
-  .log-item p {
+  :global(.log-item p) {
     font-size: 0.88rem;
     color: #666;
     margin: 0;
     line-height: 1.5;
+  }
+  :global(.log-screenshot) {
+    max-width: 100%;
+    border-radius: 6px;
+    margin-top: 0.5rem;
   }
 
   /* Footer */
