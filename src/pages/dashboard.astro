@@ -98,6 +98,19 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
   </div>
 
   <TrafficAnalytics />
+
+  <section class="dash-section" id="claudeUsage">
+    <h3>🤖 Claude Max 使用量</h3>
+    <p class="dash-subtitle">訂閱方案費用追蹤 · <span id="claudeUpdated">載入中...</span></p>
+    <div class="claude-kpis" id="claudeKpis"></div>
+    <div class="claude-detail" id="claudeDetailSection"></div>
+    <div class="charts-row" style="margin-top:1.25rem">
+      <div class="chart-panel full-width">
+        <h3>月度費用趨勢</h3>
+        <div class="chart-wrap"><canvas id="claudeMonthlyChart"></canvas></div>
+      </div>
+    </div>
+  </section>
 </div>
 
 </BaseLayout>
@@ -194,6 +207,67 @@ async function fetchLiveCosts() {
   } catch(e) { console.warn('Failed to fetch live costs:', e); return []; }
 }
 
+async function initClaudeUsage() {
+  try {
+    const res = await fetch(WORKER + '/claude-usage?code=' + encodeURIComponent(dashCode));
+    if (!res.ok) { document.getElementById('claudeUpdated').textContent = '無法載入'; return; }
+    const data = await res.json();
+    const c = data.current;
+    if (!c) { document.getElementById('claudeUpdated').textContent = '尚無資料'; return; }
+
+    var total = c.planUSD + (c.extraSpent || 0);
+    var pct = c.extraPct || 0;
+    var pctColor = pct > 80 ? '#ef4444' : pct > 60 ? '#eab308' : '#10b981';
+
+    document.getElementById('claudeKpis').innerHTML =
+      '<div class="kpi"><span class="kpi-label">本月總費用</span><span class="kpi-value">$' + total.toFixed(0) + '</span><span class="kpi-sub">NT$' + Math.round(total * 32.5) + '</span></div>' +
+      '<div class="kpi"><span class="kpi-label">Max 方案</span><span class="kpi-value kpi-purple">$' + c.planUSD + '</span><span class="kpi-sub">/月</span></div>' +
+      '<div class="kpi"><span class="kpi-label">Extra 用量</span><span class="kpi-value" style="color:' + pctColor + '">$' + (c.extraSpent || 0).toFixed(2) + '</span><span class="kpi-sub">' + pct + '% of $' + c.extraLimit + '</span></div>' +
+      '<div class="kpi"><span class="kpi-label">餘額</span><span class="kpi-value kpi-cyan">$' + (c.balance || 0).toFixed(2) + '</span><span class="kpi-sub">續約 ' + (c.renewalDate || '—') + '</span></div>';
+
+    document.getElementById('claudeDetailSection').innerHTML =
+      '<div class="claude-progress">' +
+        '<div class="claude-progress-label">Extra 用量 $' + (c.extraSpent || 0).toFixed(2) + ' / $' + c.extraLimit + '</div>' +
+        '<div class="claude-progress-bar-bg"><div class="claude-progress-bar" style="width:' + pct + '%;background:' + pctColor + '"></div></div>' +
+      '</div>';
+
+    document.getElementById('claudeUpdated').textContent =
+      '更新：' + new Date(c.updatedAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    // Monthly trend chart
+    if (data.monthlyHistory && data.monthlyHistory.length >= 2) {
+      var labels = data.monthlyHistory.map(function(m) { return m.period; });
+      var values = data.monthlyHistory.map(function(m) { return (m.invoiceTotal != null) ? m.invoiceTotal : (m.subscriptionFee || 0) + (m.extraCharges || 0); });
+      new Chart(document.getElementById('claudeMonthlyChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '月費用 (USD)',
+            data: values,
+            backgroundColor: values.map(function(v) { return v > 200 ? 'rgba(139,92,246,0.7)' : 'rgba(99,102,241,0.5)'; }),
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#8A8A8A', font: { family: 'DM Sans', size: 10 } } },
+            y: { grid: { color: '#E8E6E1' }, ticks: { color: '#8A8A8A', font: { family: 'DM Sans', size: 10 }, callback: function(v) { return '$' + v; } } }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: function(ctx) { return '$' + ctx.raw.toFixed(2); } } }
+          }
+        }
+      });
+    }
+  } catch(e) {
+    console.warn('Failed to load Claude usage:', e);
+    document.getElementById('claudeUpdated').textContent = '載入失敗';
+  }
+}
+
 async function initDashboard() {
   const live = await fetchLiveCosts();
   // Merge: static (costs.jsonl) + live (Worker KV)
@@ -206,6 +280,7 @@ async function initDashboard() {
     seen.add(key); return true;
   });
   if (merged.length > 0) render(merged);
+  initClaudeUsage();
 }
 
 // Now safe to call after all const declarations
@@ -485,10 +560,33 @@ function render(records) {
   .quota-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease, background 0.3s; }
   .quota-detail { font-size: 0.72rem; color: var(--text-muted); }
 
+  /* Claude Usage Section */
+  .dash-section {
+    margin-top: 2rem; padding: 1.5rem;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .dash-section h3 { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.25rem; font-weight: 600; }
+  .claude-kpis {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem; margin: 1.25rem 0;
+  }
+  .claude-progress { margin-top: 0.5rem; }
+  .claude-progress-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+  .claude-progress-bar-bg {
+    height: 10px; background: var(--border); border-radius: 5px;
+    overflow: hidden; margin-top: 0.3rem;
+  }
+  .claude-progress-bar {
+    height: 100%; border-radius: 5px;
+    transition: width 0.6s ease, background 0.3s;
+  }
+
   @media (max-width: 768px) {
     .dash-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
     .charts-row { grid-template-columns: 1fr; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .quota-grid { grid-template-columns: 1fr; }
+    .claude-kpis { grid-template-columns: repeat(2, 1fr); }
   }
 </style>

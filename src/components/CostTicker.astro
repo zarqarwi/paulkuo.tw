@@ -58,19 +58,7 @@ function buildTickerHTML(d) {
     + '<span class="ticker-sub" id="liveMonthTWD">NT$' + Math.round(monthUSD * 32.5) + '</span>'
     + '<canvas class="ticker-spark" id="tickerSpark" width="80" height="28"></canvas>'
     + '<span class="ticker-change ' + chgCls + '" id="liveChangePercent">' + chgArrow + ' ' + Math.abs(chgPct).toFixed(0) + '%</span>'
-    + '</div>'
-    + '<div class="ticker-sep"></div>'
-    + '<div class="ticker-item" title="今日 Fitbit 步數"><span class="ticker-label">\ud83d\udeb6 步數</span><span class="ticker-value" id="liveSteps">' + steps.toLocaleString() + '</span></div>';
-
-  if (d.stock && d.stock.price) {
-    var su = d.stock.changePercent >= 0;
-    html += '<div class="ticker-sep"></div>'
-      + '<div class="ticker-item" title="CyberSolutions (436A.T) 即時股價">'
-      + '<span class="ticker-label">\ud83d\udcc8 ' + (d.stock.name || '') + '</span>'
-      + '<span class="ticker-value" id="liveStockPrice">\u00a5' + d.stock.price.toLocaleString() + '</span>'
-      + '<span class="ticker-change ' + (su ? 'up' : 'down') + '" id="liveStockChange">' + (su ? '\u25b2' : '\u25bc') + ' ' + Math.abs(d.stock.changePercent).toFixed(1) + '%</span>'
-      + '</div>';
-  }
+    + '</div>';
 
   if (d.claudeSub) {
     var cs = d.claudeSub;
@@ -83,6 +71,19 @@ function buildTickerHTML(d) {
       + '<span class="ticker-label">\ud83e\udd16 Claude</span>'
       + '<span class="ticker-value">$' + totalAI.toFixed(0) + '/mo</span>'
       + '<span class="ticker-sub" style="font-family:monospace;font-size:0.6rem;letter-spacing:-0.05em">' + bar + ' ' + pct + '%</span>'
+      + '</div>';
+  }
+
+  html += '<div class="ticker-sep"></div>'
+    + '<div class="ticker-item" title="今日 Fitbit 步數"><span class="ticker-label">\ud83d\udeb6 步數</span><span class="ticker-value" id="liveSteps">' + steps.toLocaleString() + '</span></div>';
+
+  if (d.stock && d.stock.price) {
+    var su = d.stock.changePercent >= 0;
+    html += '<div class="ticker-sep"></div>'
+      + '<div class="ticker-item" title="CyberSolutions (436A.T) 即時股價">'
+      + '<span class="ticker-label">\ud83d\udcc8 ' + (d.stock.name || '') + '</span>'
+      + '<span class="ticker-value" id="liveStockPrice">\u00a5' + d.stock.price.toLocaleString() + '</span>'
+      + '<span class="ticker-change ' + (su ? 'up' : 'down') + '" id="liveStockChange">' + (su ? '\u25b2' : '\u25bc') + ' ' + Math.abs(d.stock.changePercent).toFixed(1) + '%</span>'
       + '</div>';
   }
 

@@ -6,7 +6,6 @@ import SiteFooter from '../components/SiteFooter.astro';
 import FontToggle from '../components/FontToggle.astro';
 import I18nClient from '../components/I18nClient.astro';
 import FocusMode from '../components/FocusMode.astro';
-import ReadingTracker from '../components/ReadingTracker.astro';
 import MobileTabBar from '../components/MobileTabBar.astro';
 import EventHeader from '../pages/projects/formosa-esg-2026/_components/EventHeader.astro';
 
@@ -104,6 +103,7 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
     {canonical}
     {currentLang}
     {hreflangs}
+    ogSiteName={eventMode ? '白沙屯媽祖 ESG 進香 2026' : 'Paul Kuo'}
   />
   <slot name="head" />
 </head>
@@ -161,7 +161,6 @@ const langPrefix = currentLang === 'en' ? '/en' : currentLang === 'ja' ? '/ja' :
 
   <I18nClient />
   <FocusMode />
-  <ReadingTracker />
 
   <script is:inline>
   (function() {

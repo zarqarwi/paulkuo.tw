@@ -20,6 +20,43 @@ import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTq
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
 import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus } from './formosa.js';
 
+async function handleClaudeUsage(request, env, url) {
+  const auth = await authenticateRequest(request, env, url.searchParams.get('code') || '');
+  if (!auth || !auth.isAdmin) return jsonResponse({ error: 'Admin access required' }, 403, request);
+
+  const latestRaw = await env.TICKER_KV.get('claude_subscription');
+  const latest = latestRaw ? JSON.parse(latestRaw) : null;
+
+  // Daily history (last 90 days)
+  const history = [];
+  const now = new Date();
+  for (let i = 0; i < 90; i++) {
+    const d = new Date(now.getTime() - i * 86400000);
+    const dateStr = d.toISOString().slice(0, 10);
+    const raw = await env.TICKER_KV.get(`claude_sub_${dateStr}`);
+    if (raw) {
+      try { history.push({ date: dateStr, ...JSON.parse(raw) }); } catch(e) {}
+    }
+  }
+
+  // Monthly history (long-term)
+  const monthlyHistory = [];
+  const months = await env.TICKER_KV.list({ prefix: 'claude_month_' });
+  for (const key of months.keys) {
+    const raw = await env.TICKER_KV.get(key.name);
+    if (raw) {
+      try { monthlyHistory.push(JSON.parse(raw)); } catch(e) {}
+    }
+  }
+
+  return jsonResponse({
+    current: latest,
+    history: history.sort((a, b) => a.date.localeCompare(b.date)),
+    monthlyHistory: monthlyHistory.sort((a, b) => a.period.localeCompare(b.period)),
+    totalMonthly: latest ? latest.planUSD + latest.extraSpent : 0
+  }, 200, request);
+}
+
 async function handleTicker(request, env) {
   const cacheJson = await env.TICKER_KV.get('ticker_cache');
   if (cacheJson) { const cache = JSON.parse(cacheJson); if (Date.now() - cache.cached_at < TICKER_CACHE_TTL * 1000) return new Response(JSON.stringify(cache.data), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60', ...corsHeaders(request) } }); }
@@ -168,7 +205,7 @@ async function handleMazuToday(request, url) {
   });
 }
 
-async function handleRequest(request, env) {
+async function handleRequest(request, env, ctx) {
   const url = new URL(request.url); const path = url.pathname; const method = request.method;
 
   // 302 redirect: paulkuo.tw i18n formosa paths → mazu.today
@@ -215,6 +252,7 @@ async function handleRequest(request, env) {
   if (path === '/polish-transcript') return handlePolishTranscript(request, env);
   if (path === '/costs') return handleCosts(request, env);
   if (path === '/usage') return handleUsage(request, env);
+  if (path === '/claude-usage' && method === 'GET') return handleClaudeUsage(request, env, url);
   if (path === '/log-cost') return handleLogCost(request, env);
   if (path === '/feedback' && method === 'POST') return handleFeedbackPost(request, env);
   if (path === '/tqef/claude' && method === 'POST') return handleTqefClaude(request, env);
@@ -328,7 +366,7 @@ async function handleRequest(request, env) {
   }
   if (path === '/api/formosa/webhook') return handleFormosaWebhook(request, env);
   if (path === '/api/formosa/submit' && method === 'POST') return handleFormosaSubmit(request, env);
-  if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env);
+  if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env, ctx);
   if (path === '/api/formosa/track/sync' && method === 'POST') return handleFormosaTrackSync(request, env);
   if (path === '/api/formosa/user/sync' && method === 'POST') return handleFormosaUserSync(request, env);
   if (path === '/api/formosa/photos/count') return handleFormosaPhotoCount(request, env);
@@ -413,6 +451,6 @@ async function handleScheduled(event, env) {
 }
 
 export default {
-  fetch: async (request, env, ctx) => { const response = await handleRequest(request, env); if (costBuffer.length >= 10) ctx.waitUntil(flushCosts(env.TICKER_KV)); return response; },
+  fetch: async (request, env, ctx) => { const response = await handleRequest(request, env, ctx); if (costBuffer.length >= 10) ctx.waitUntil(flushCosts(env.TICKER_KV)); return response; },
   scheduled: handleScheduled,
 };

@@ -1747,27 +1747,33 @@ const prefix = LOCALE_PREFIX[lang];
         km: getSavedKm(),
         track_points: getUnuploadedTrackPoints()
       };
-      fetch(API_BASE + '/api/formosa/checkin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(checkinPayload)
-      }).then(function(res) {
-        if (res.ok) {
-          // Mark all points as uploaded
-          gpsTrackPoints.forEach(function(p) { p._uploaded = true; });
-          // GP-6: flush any queued failed checkins
-          flushCheckinQueue(userId);
-        } else {
-          console.warn('打卡 API 回應異常:', res.status);
-          if (res.status === 429) {
-            showPhotoToast('⏳ ' + _i18n.tooFrequent, 3000);
+      function postCheckin(payload, retries) {
+        fetch(API_BASE + '/api/formosa/checkin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(function(res) {
+          if (res.ok) {
+            gpsTrackPoints.forEach(function(p) { p._uploaded = true; });
+            flushCheckinQueue(userId);
+          } else if (res.status === 503 && retries > 0) {
+            setTimeout(function() { postCheckin(payload, retries - 1); }, 1500);
+          } else {
+            console.warn('打卡 API 回應異常:', res.status);
+            if (res.status === 429) {
+              showPhotoToast('⏳ ' + _i18n.tooFrequent, 3000);
+            }
           }
-        }
-      }).catch(function(err) {
-        console.warn('打卡 API 失敗（離線？）:', err);
-        // GP-6: queue for retry
-        queueFailedCheckin({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
-      });
+        }).catch(function(err) {
+          if (retries > 0) {
+            setTimeout(function() { postCheckin(payload, retries - 1); }, 1500);
+          } else {
+            console.warn('打卡 API 失敗（離線？）:', err);
+            queueFailedCheckin({ lat: lat, lng: lng, datetime: newPt.datetime, source: 'manual' });
+          }
+        });
+      }
+      postCheckin(checkinPayload, 1);
     }
 
     var countEl = document.getElementById('gpsCount');
