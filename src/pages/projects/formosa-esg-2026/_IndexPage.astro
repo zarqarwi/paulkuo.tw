@@ -15,20 +15,68 @@ const prefix = LOCALE_PREFIX[lang];
 const collapseLabel = t(lang, 'homepage.collapse');
 const expandAllLabel = t(lang, 'homepage.expandAll');
 
-const schemaJson = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Event",
-  "name": "2026 白沙屯媽祖進香：低碳行善・善行天下",
-  "description": "結合白沙屯媽祖進香傳統信仰與 ESG 永續框架，透過數據收集系統、善足跡平台與自然解方，將民間信仰能量轉化為可量化的環境與社會影響力。",
-  "url": "https://mazu.today/",
-  "startDate": "2026-04-12",
-  "location": { "@type": "Place", "name": "白沙屯拱天宮", "address": "苗栗縣通霄鎮白沙屯" },
-  "organizer": [
-    { "@type": "Organization", "name": "環球境地" },
-    { "@type": "Organization", "name": "天后獅子會" }
-  ],
-  "about": ["ESG", "永續發展", "碳足跡", "媽祖進香"]
-});
+const schemaJson = JSON.stringify([
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "2026 白沙屯媽祖進香：低碳行善・善行天下",
+    "description": "結合白沙屯媽祖進香傳統信仰與 ESG 永續框架，透過數據收集系統、善足跡平台與自然解方，將民間信仰能量轉化為可量化的環境與社會影響力。",
+    "url": "https://mazu.today/",
+    "startDate": "2026-04-12T23:55:00+08:00",
+    "endDate": "2026-04-20T18:00:00+08:00",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": {
+      "@type": "Place",
+      "name": "白沙屯拱天宮",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "中山路8號",
+        "addressLocality": "通霄鎮",
+        "addressRegion": "苗栗縣",
+        "addressCountry": "TW"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 24.5697,
+        "longitude": 120.6997
+      }
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "700",
+      "priceCurrency": "TWD",
+      "availability": "https://schema.org/InStock",
+      "validFrom": "2026-01-01"
+    },
+    "organizer": [
+      { "@type": "Organization", "name": "環球境地" },
+      { "@type": "Organization", "name": "天后獅子會" }
+    ],
+    "about": ["ESG", "永續發展", "碳足跡", "媽祖進香"],
+    "image": "https://mazu.today/images/formosa-esg-2026-og.png",
+    "inLanguage": "zh-Hant"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "白沙屯拱天宮",
+    "url": "https://baishatunmazu.org.tw",
+    "description": "白沙屯拱天宮，主祀天上聖母媽祖，每年舉辦超過200年歷史的白沙屯媽祖進香活動，2010年獲指定為國家重要無形文化資產。",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "中山路8號",
+      "addressLocality": "通霄鎮",
+      "addressRegion": "苗栗縣",
+      "addressCountry": "TW"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 24.5697,
+      "longitude": 120.6997
+    }
+  }
+]);
 ---
 
 <BaseLayout
