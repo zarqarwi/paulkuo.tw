@@ -1,0 +1,32 @@
+name: Feedback Auto Close
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  issues: read
+
+jobs:
+  auto-close-feedback:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.body, 'feedback-id:')
+    steps:
+      - name: Extract feedback ID and PATCH
+        env:
+          ADMIN_TOKEN: ${{ secrets.FORMOSA_ADMIN_TOKEN }}
+        run: |
+          BODY=$(cat <<'BODYEOF'
+          ${{ github.event.issue.body }}
+          BODYEOF
+          )
+          IDS=$(echo "$BODY" | grep -oP 'feedback-id:\s*\K\d+')
+
+          for ID in $IDS; do
+            echo "Closing feedback #$ID..."
+            RESPONSE=$(curl -s -X PATCH \
+              "https://api.paulkuo.tw/api/formosa/feedback/$ID" \
+              -H "Content-Type: application/json" \
+              -H "X-Admin-Token: $ADMIN_TOKEN" \
+              -d "{\"status\":\"fixed\",\"admin_note\":\"Auto-closed: Issue #${{ github.event.issue.number }} closed\"}")
+            echo "Response: $RESPONSE"
+          done
