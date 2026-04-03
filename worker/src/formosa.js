@@ -372,6 +372,16 @@ export async function handleFormosaCheckin(request, env, ctx) {
     const source = inRange ? (data.source || 'checkin') : 'remote';
 
     const ts = data.timestamp || new Date().toISOString();
+
+    // Idempotency: dedup by userId + timestamp (rounded to 10s) to prevent retry double-counting
+    const tsRounded = ts.slice(0, 18); // "2026-04-03T12:34:5" — ~10s granularity
+    const dedupKey = `checkin_dedup:${userId}:${tsRounded}`;
+    const existingDedup = await env.TICKER_KV.get(dedupKey);
+    if (existingDedup) {
+      const cached = JSON.parse(existingDedup);
+      return jsonResponse({ ok: true, total_points: cached.approxCount, in_range: inRange, buffered: true, batch: cached.batchWritten, deduplicated: true }, 200, request);
+    }
+
     const bufferKey = `gps:${ts}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
 
     // KV write work — wrapped in a promise so we can race against timeout
@@ -405,6 +415,9 @@ export async function handleFormosaCheckin(request, env, ctx) {
       const cachedCount = await env.TICKER_KV.get(countKey);
       const approxCount = cachedCount ? parseInt(cachedCount, 10) + 1 + batchWritten : 1 + batchWritten;
       await env.TICKER_KV.put(countKey, String(approxCount), { expirationTtl: 86400 * 30 });
+
+      // Write dedup key (TTL 60s — covers retry window)
+      await env.TICKER_KV.put(dedupKey, JSON.stringify({ approxCount, batchWritten }), { expirationTtl: 60 });
 
       return { approxCount, batchWritten };
     }
