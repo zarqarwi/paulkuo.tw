@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX, LOCALE_HTML_LANG } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  lang?: Locale;
+}
+
+const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const prefix = LOCALE_PREFIX[lang];
+const htmlLang = LOCALE_HTML_LANG[lang];
+
+const faqCategories = [
+  {
+    title: t(lang, 'faqPage.cat1'),
+    items: [
+      { q: t(lang, 'faqPage.q1'), a: t(lang, 'faqPage.a1') },
+      { q: t(lang, 'faqPage.q2'), a: t(lang, 'faqPage.a2') },
+      { q: t(lang, 'faqPage.q3'), a: t(lang, 'faqPage.a3') },
+      { q: t(lang, 'faqPage.q4'), a: t(lang, 'faqPage.a4') },
+    ],
+  },
+  {
+    title: t(lang, 'faqPage.cat2'),
+    items: [
+      { q: t(lang, 'faqPage.q5'), a: t(lang, 'faqPage.a5') },
+      { q: t(lang, 'faqPage.q6'), a: t(lang, 'faqPage.a6') },
+      { q: t(lang, 'faqPage.q7'), a: t(lang, 'faqPage.a7') },
+    ],
+  },
+  {
+    title: t(lang, 'faqPage.cat3'),
+    items: [
+      { q: t(lang, 'faqPage.q8'), a: t(lang, 'faqPage.a8') },
+      { q: t(lang, 'faqPage.q9'), a: t(lang, 'faqPage.a9') },
+      { q: t(lang, 'faqPage.q10'), a: t(lang, 'faqPage.a10') },
+      { q: t(lang, 'faqPage.q11'), a: t(lang, 'faqPage.a11') },
+    ],
+  },
+  {
+    title: t(lang, 'faqPage.cat4'),
+    items: [
+      { q: t(lang, 'faqPage.q12'), a: t(lang, 'faqPage.a12') },
+      { q: t(lang, 'faqPage.q13'), a: t(lang, 'faqPage.a13') },
+      { q: t(lang, 'faqPage.q14'), a: t(lang, 'faqPage.a14') },
+    ],
+  },
+  {
+    title: t(lang, 'faqPage.cat5'),
+    items: [
+      { q: t(lang, 'faqPage.q15'), a: t(lang, 'faqPage.a15') },
+    ],
+  },
+];
+
+// Build FAQPage JSON-LD (select 8 core questions: Q1-Q5, Q8-Q10)
+const coreIndices = [
+  { cat: 0, item: 0 }, { cat: 0, item: 1 }, { cat: 0, item: 2 }, { cat: 0, item: 3 },
+  { cat: 1, item: 0 },
+  { cat: 2, item: 0 }, { cat: 2, item: 1 }, { cat: 2, item: 2 },
+];
+const faqJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": htmlLang,
+  "mainEntity": coreIndices.map(({ cat, item }) => ({
+    "@type": "Question",
+    "name": faqCategories[cat].items[item].q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faqCategories[cat].items[item].a.replace(/<[^>]*>/g, ''),
+    },
+  })),
+});
+---
+
+<BaseLayout
+  title={`${t(lang, 'faqPage.title')} — ${t(lang, 'faqPage.subtitle')}`}
+  description={t(lang, 'faqPage.description')}
+  ogUrl={`https://mazu.today${prefix}/projects/formosa-esg-2026/faq/`}
+  ogImage="https://mazu.today/images/formosa-esg-2026-og.png"
+  schemaJson={faqJsonLd}
+  eventMode={true}
+>
+
+<article class="faq-page">
+  <h1>{t(lang, 'faqPage.title')}</h1>
+  <p class="faq-subtitle">{t(lang, 'faqPage.subtitle')}</p>
+
+  {faqCategories.map((category) => (
+    <section class="faq-category">
+      <h2>{category.title}</h2>
+      {category.items.map((item) => (
+        <details class="faq-item">
+          <summary>{item.q}</summary>
+          <div class="faq-answer" set:html={item.a} />
+        </details>
+      ))}
+    </section>
+  ))}
+
+  <footer class="faq-footer">
+    <p>{t(lang, 'faqPage.footerText')} <a href={`${prefix}/projects/formosa-esg-2026/feedback/`}>{t(lang, 'faqPage.footerLinkText')}</a> {t(lang, 'faqPage.footerSuffix')}</p>
+  </footer>
+</article>
+
+</BaseLayout>
+
+<style>
+  .faq-page {
+    max-width: 640px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 3rem;
+    color: var(--text-primary);
+  }
+  .faq-page h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .faq-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+  .faq-category {
+    margin-bottom: 2rem;
+  }
+  .faq-category h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .faq-item {
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .faq-item[open] {
+    border-color: var(--accent-faith, #b45309);
+  }
+  .faq-item summary {
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    line-height: 1.5;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary::before {
+    content: '+';
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-faith, #b45309);
+    border-radius: 50%;
+    background: rgba(180, 83, 9, 0.08);
+    transition: transform 0.2s;
+  }
+  .faq-item[open] summary::before {
+    content: '\2212';
+  }
+  .faq-answer {
+    padding: 0 1rem 1rem 2.75rem;
+    font-size: 0.92rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+  }
+  .faq-answer :global(strong) {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .faq-answer :global(a) {
+    color: var(--accent-faith, #b45309);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .faq-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+  .faq-footer a {
+    color: var(--accent-faith, #b45309);
+  }
+</style>
