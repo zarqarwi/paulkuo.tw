@@ -166,7 +166,7 @@ async function handleMazuToday(request, url) {
   }
 
   // Known formosa short paths
-  const formosaRoutes = ['/', '/tracker/', '/my/', '/guide/', '/guide/admin/', '/guide/admin-flow/', '/guide/user-flow/', '/privacy/', '/dashboard/', '/feedback/', '/data/'];
+  const formosaRoutes = ['/', '/tracker/', '/my/', '/guide/', '/guide/admin/', '/guide/admin-flow/', '/guide/user-flow/', '/privacy/', '/dashboard/', '/feedback/', '/data/', '/faq/'];
 
   // i18n short paths: /en/tracker/ → /en/projects/formosa-esg-2026/tracker/
   const I18N_PREFIXES = ['/en', '/ja', '/zh-cn'];
