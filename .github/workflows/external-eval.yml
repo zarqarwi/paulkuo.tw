@@ -61,6 +61,7 @@ jobs:
           git config user.email "bot@paulkuo.tw"
           git add ai-ready-opt/external-eval-results/
           git diff --cached --quiet || git commit -m "chore: external eval temporal baseline $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
           git push origin main
 
       - name: Notify on missing key
