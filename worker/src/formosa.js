@@ -1345,31 +1345,31 @@ function buildWelcomeMessage(locale = 'zh-Hant') {
         backgroundColor: '#1a5c2a',
         paddingAll: '20px',
         contents: [
-          { type: 'text', text: '🙏 白沙屯媽祖', color: '#ffffff', size: 'xl', weight: 'bold' },
-          { type: 'text', text: 'ESG 永續進香 2026', color: '#b8e6c8', size: 'sm', margin: 'sm' }
+          { type: 'text', text: botMsg(locale, 'welcome_header_title'), color: '#ffffff', size: 'xl', weight: 'bold' },
+          { type: 'text', text: botMsg(locale, 'welcome_header_subtitle'), color: '#b8e6c8', size: 'sm', margin: 'sm' }
         ]
       },
       body: {
         type: 'box', layout: 'vertical', spacing: 'md', paddingAll: '20px',
         contents: [
-          { type: 'text', text: '感謝加入！', weight: 'bold', size: 'lg' },
-          { type: 'text', text: '這是台灣首份進香永續數據計畫。\n進香期間，您可以：', wrap: true, size: 'sm', color: '#666666', margin: 'md' },
+          { type: 'text', text: botMsg(locale, 'welcome_thanks'), weight: 'bold', size: 'lg' },
+          { type: 'text', text: botMsg(locale, 'welcome_intro'), wrap: true, size: 'sm', color: '#666666', margin: 'md' },
           { type: 'box', layout: 'vertical', margin: 'lg', spacing: 'sm', contents: [
-            { type: 'text', text: '📍 GPS 打卡記錄足跡', size: 'sm' },
-            { type: 'text', text: '📷 上傳照片定位路徑', size: 'sm' },
-            { type: 'text', text: '🌱 計算個人碳足跡', size: 'sm' },
-            { type: 'text', text: '📊 解鎖 9 級香客等級', size: 'sm' }
+            { type: 'text', text: botMsg(locale, 'welcome_feat_gps'), size: 'sm' },
+            { type: 'text', text: botMsg(locale, 'welcome_feat_photo'), size: 'sm' },
+            { type: 'text', text: botMsg(locale, 'welcome_feat_carbon'), size: 'sm' },
+            { type: 'text', text: botMsg(locale, 'welcome_feat_level'), size: 'sm' }
           ]},
           { type: 'separator', margin: 'lg' },
-          { type: 'text', text: '輸入關鍵字快速操作：', size: 'xs', color: '#999999', margin: 'lg' },
-          { type: 'text', text: '「打卡」「說明」「等級」「碳足跡」「分享」「回報」', size: 'xs', color: '#999999', margin: 'xs' }
+          { type: 'text', text: botMsg(locale, 'welcome_keyword_hint'), size: 'xs', color: '#999999', margin: 'lg' },
+          { type: 'text', text: botMsg(locale, 'welcome_keywords'), size: 'xs', color: '#999999', margin: 'xs' }
         ]
       },
       footer: {
         type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: '15px',
         contents: [
-          { type: 'button', style: 'primary', color: '#1a5c2a', action: { type: 'uri', label: '📍 開始打卡', uri: TRACKER_URL } },
-          { type: 'button', style: 'link', action: { type: 'uri', label: '📖 使用說明', uri: GUIDE_URL } }
+          { type: 'button', style: 'primary', color: '#1a5c2a', action: { type: 'uri', label: botMsg(locale, 'welcome_btn_checkin'), uri: localizeUrl(TRACKER_URL, locale) } },
+          { type: 'button', style: 'link', action: { type: 'uri', label: botMsg(locale, 'welcome_btn_guide'), uri: localizeUrl(GUIDE_URL, locale) } }
         ]
       }
     }
@@ -1427,7 +1427,7 @@ function buildUsageMessage() {
 
 // ── Stats Message (from DB) ──
 async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
-  if (!userId) return { type: 'text', text: '請先透過 LINE 登入 tracker 建立帳號。' };
+  if (!userId) return { type: 'text', text: botMsg(locale, 'stats_no_account') };
 
   try {
     const gpsPoints = await env.AUTH_DB.prepare(
@@ -1474,7 +1474,7 @@ async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
 
     return { type: 'text', text: lines.join('\n') };
   } catch (e) {
-    return { type: 'text', text: '暫時無法讀取資料，請稍後再試。' };
+    return { type: 'text', text: botMsg(locale, 'stats_error') };
   }
 }
 
