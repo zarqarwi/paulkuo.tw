@@ -752,7 +752,7 @@ export async function handleFormosaScheduledPush(env) {
     },
   ];
 
-  const trackerUrl = 'https://mazu.today/tracker/';
+  const trackerUrl = 'https://mazu.today/tracker/?v=2';
   let totalSent = 0;
 
   for (const { locale, query, bind } of localeConfigs) {
@@ -1280,7 +1280,7 @@ async function getUserLocale(userId, env) {
   }
 }
 
-const TRACKER_URL = 'https://mazu.today/tracker/';
+const TRACKER_URL = 'https://mazu.today/tracker/?v=2';
 const PROJECT_URL = 'https://mazu.today/';
 const GUIDE_URL = 'https://mazu.today/guide/';
 
