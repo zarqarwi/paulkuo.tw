@@ -201,6 +201,7 @@ https://paulkuo.tw/en/projects/formosa-esg-2026/feedback/
 https://paulkuo.tw/en/projects/formosa-esg-2026/guide/
 https://paulkuo.tw/en/projects/formosa-esg-2026/guide/admin-flow/
 https://paulkuo.tw/en/projects/formosa-esg-2026/guide/admin/
+https://paulkuo.tw/en/projects/formosa-esg-2026/guide/feedback-flow/
 https://paulkuo.tw/en/projects/formosa-esg-2026/guide/user-flow/
 https://paulkuo.tw/en/projects/formosa-esg-2026/my/
 https://paulkuo.tw/en/projects/formosa-esg-2026/privacy/
@@ -315,6 +316,7 @@ https://paulkuo.tw/ja/projects/formosa-esg-2026/feedback/
 https://paulkuo.tw/ja/projects/formosa-esg-2026/guide/
 https://paulkuo.tw/ja/projects/formosa-esg-2026/guide/admin-flow/
 https://paulkuo.tw/ja/projects/formosa-esg-2026/guide/admin/
+https://paulkuo.tw/ja/projects/formosa-esg-2026/guide/feedback-flow/
 https://paulkuo.tw/ja/projects/formosa-esg-2026/guide/user-flow/
 https://paulkuo.tw/ja/projects/formosa-esg-2026/my/
 https://paulkuo.tw/ja/projects/formosa-esg-2026/privacy/
@@ -329,6 +331,7 @@ https://paulkuo.tw/projects/formosa-esg-2026/feedback/log/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/admin-flow/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/admin/
+https://paulkuo.tw/projects/formosa-esg-2026/guide/feedback-flow/
 https://paulkuo.tw/projects/formosa-esg-2026/guide/user-flow/
 https://paulkuo.tw/projects/formosa-esg-2026/my/
 https://paulkuo.tw/projects/formosa-esg-2026/privacy/
@@ -451,6 +454,7 @@ https://paulkuo.tw/zh-cn/projects/formosa-esg-2026/feedback/
 https://paulkuo.tw/zh-cn/projects/formosa-esg-2026/guide/
 https://paulkuo.tw/zh-cn/projects/formosa-esg-2026/guide/admin-flow/
 https://paulkuo.tw/zh-cn/projects/formosa-esg-2026/guide/admin/
+https://paulkuo.tw/zh-cn/projects/formosa-esg-2026/guide/feedback-flow/
 https://paulkuo.tw/zh-cn/projects/formosa-esg-2026/guide/user-flow/
 https://paulkuo.tw/zh-cn/projects/formosa-esg-2026/my/
 https://paulkuo.tw/zh-cn/projects/formosa-esg-2026/privacy/
