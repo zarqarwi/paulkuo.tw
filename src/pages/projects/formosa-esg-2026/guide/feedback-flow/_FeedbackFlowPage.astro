@@ -180,6 +180,12 @@ const prefix = LOCALE_PREFIX[lang];
     font-weight: 600;
   }
   .flow-footer a:hover { opacity: 0.9; }
+  .version-label {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #9E9E9E;
+    letter-spacing: 0.5px;
+  }
 
   @media (max-width: 600px) {
     .flow-container { padding: 24px 12px 60px; }
@@ -358,6 +364,7 @@ const prefix = LOCALE_PREFIX[lang];
   <div class="flow-footer">
     {t(lang, 'feedbackFlow.footerOrg')}<br>
     {t(lang, 'feedbackFlow.footerTech')}
+    <div class="version-label">v1.0 — 2026-04-03</div>
     <br>
     <a href={`${prefix}/projects/formosa-esg-2026/guide/`}>{t(lang, 'feedbackFlow.backToGuide')}</a>
   </div>
