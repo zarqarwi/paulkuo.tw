@@ -538,6 +538,7 @@ export const ja = {
     edition2025Title: '白沙屯媽祖ESG持続可能巡礼プランニング書',
     edition2025Desc: '初回のESG巡礼の完全企画で、炭素棚卸しフレームワーク、地域共善メカニズム、データガバナンスの青写真を含みます。',
     edition2025Cta: 'プランニング書を読む ↗',
+    edition2025LcaCta: 'サステナビリティ報告書（LCA）→',
     partnersTitle: '参加機関',
     partnersOrganizers: '主催機関',
     partnersCoOrganizers: '協力機関',

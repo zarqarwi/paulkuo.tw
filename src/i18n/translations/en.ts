@@ -538,6 +538,7 @@ export const en = {
     edition2025Title: 'Baishatun Mazu ESG Sustainability Pilgrimage Plan',
     edition2025Desc: 'First edition ESG pilgrimage plan, covering carbon accounting framework, community commons mechanisms, and data governance blueprint.',
     edition2025Cta: 'Read Plan ↗',
+    edition2025LcaCta: 'Sustainability Report (LCA) →',
     partnersTitle: 'Participating Organizations',
     partnersOrganizers: 'Organizers',
     partnersCoOrganizers: 'Co-Organizers',

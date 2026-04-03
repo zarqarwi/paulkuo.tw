@@ -164,14 +164,21 @@ const schemaJson = JSON.stringify({
   <section class="formosa-section">
     <h2 class="formosa-section-title">{t(lang, 'homepage.editionsTitle')}</h2>
     <div class="formosa-editions-grid">
-      <a href="https://esg-bc8hhzy.gamma.site/" target="_blank" rel="noopener" class="formosa-edition-card">
+      <div class="formosa-edition-card">
         <div class="edition-year">2025</div>
         <div class="edition-body">
           <h3>{t(lang, 'homepage.edition2025Title')}</h3>
           <p>{t(lang, 'homepage.edition2025Desc')}</p>
-          <span class="edition-cta">{t(lang, 'homepage.edition2025Cta')}</span>
+          <div class="edition-cta-group">
+            <a href="https://esg-bc8hhzy.gamma.site/" target="_blank" rel="noopener" class="edition-cta-link">
+              {t(lang, 'homepage.edition2025Cta')}
+            </a>
+            <a href="https://2025-esg-lca-rg6bov1.gamma.site/" target="_blank" rel="noopener" class="edition-cta-link edition-cta-secondary">
+              {t(lang, 'homepage.edition2025LcaCta')}
+            </a>
+          </div>
         </div>
-      </a>
+      </div>
     </div>
   </section>
 
@@ -628,6 +635,7 @@ const schemaJson = JSON.stringify({
     text-decoration: none;
     color: inherit;
     transition: all 0.3s;
+    cursor: default;
   }
   .formosa-edition-card:hover {
     transform: translateY(-4px);
@@ -666,6 +674,26 @@ const schemaJson = JSON.stringify({
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--accent-faith);
+  }
+  /* Edition CTA group */
+  .edition-cta-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+  .edition-cta-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-faith);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .edition-cta-link:hover {
+    opacity: 0.7;
+  }
+  .edition-cta-secondary {
+    color: var(--accent-circular);
   }
 
   @media (max-width: 480px) {

@@ -528,6 +528,7 @@ export const zhHant = {
     edition2025Title: '白沙屯媽祖 ESG 永續進香計畫書',
     edition2025Desc: '首屆 ESG 進香完整企劃，涵蓋碳盤查框架、社區共善機制與數據治理藍圖。',
     edition2025Cta: '閱讀計畫書 ↗',
+    edition2025LcaCta: '永續報告書（LCA）→',
     partnersTitle: '參與單位',
     partnersOrganizers: '主辦單位',
     partnersCoOrganizers: '協辦單位',

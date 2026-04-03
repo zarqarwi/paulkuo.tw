@@ -536,6 +536,7 @@ export const zhHans = {
     edition2025Title: '白沙屯妈祖 ESG 永续进香计画书',
     edition2025Desc: '首届 ESG 进香完整企划，涵盖碳盘查框架、社区共善机制与数据治理蓝图。',
     edition2025Cta: '阅读计画书 ↗',
+    edition2025LcaCta: '可持续报告书（LCA）→',
     partnersTitle: '参与单位',
     partnersOrganizers: '主办单位',
     partnersCoOrganizers: '协办单位',
