@@ -1694,12 +1694,14 @@ const prefix = LOCALE_PREFIX[lang];
 
     // Sync checkin to server (GP-3: include batch track_points)
     if (userId) {
+      var checkinTs = new Date().toISOString();
       var checkinPayload = {
         user_id: userId,
         lat: lat, lng: lng,
         altitude: altitude,
         accuracy: accuracy,
         source: 'manual',
+        timestamp: checkinTs,
         checkins: getSavedCheckins() + 1,
         km: getSavedKm(),
         track_points: getUnuploadedTrackPoints()
