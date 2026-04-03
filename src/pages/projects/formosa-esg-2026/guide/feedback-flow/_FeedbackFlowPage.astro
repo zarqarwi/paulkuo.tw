@@ -1,0 +1,369 @@
+---
+import type { Locale } from '@/i18n/config';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import AuthGate from '../../_components/AuthGate.astro';
+
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const prefix = LOCALE_PREFIX[lang];
+---
+
+<BaseLayout
+  title={t(lang, 'feedbackFlow.title')}
+  description={t(lang, 'feedbackFlow.description')}
+  ogUrl="https://mazu.today/guide/feedback-flow/"
+  ogImage="https://mazu.today/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<AuthGate title={t(lang, 'feedbackFlow.authTitle')} subtitle={t(lang, 'feedbackFlow.authSubtitle')} lang={lang}>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --green: #2E7D32;
+    --green-light: #E8F5E9;
+    --green-border: #66BB6A;
+    --orange: #E65100;
+    --orange-light: #FFF3E0;
+    --orange-border: #FF9800;
+    --blue: #1565C0;
+    --blue-light: #E3F2FD;
+    --blue-border: #42A5F5;
+    --purple: #6A1B9A;
+    --purple-light: #F3E5F5;
+    --purple-border: #AB47BC;
+    --red: #C62828;
+    --red-light: #FFEBEE;
+    --red-border: #EF5350;
+    --gray: #455A64;
+    --gray-light: #ECEFF1;
+    --gray-border: #90A4AE;
+    --teal: #00695C;
+    --teal-light: #E0F2F1;
+    --teal-border: #26A69A;
+    --flow-bg: #FAFAFA;
+    --flow-text: #212121;
+    --flow-text-sub: #616161;
+    --flow-radius: 14px;
+  }
+
+  .flow-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    font-family: 'Noto Sans TC', -apple-system, sans-serif;
+    color: var(--flow-text);
+    line-height: 1.6;
+  }
+
+  .flow-header { text-align: center; margin-bottom: 48px; }
+  .flow-header h1 { font-size: 28px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+  .flow-header .meta { font-size: 13px; color: var(--flow-text-sub); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 40px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--flow-text-sub); }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; border: 2px solid; }
+  .legend-dot.green { background: var(--green-light); border-color: var(--green-border); }
+  .legend-dot.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .legend-dot.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .legend-dot.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .legend-dot.teal { background: var(--teal-light); border-color: var(--teal-border); }
+
+  .connector { display: flex; justify-content: center; padding: 12px 0; }
+  .connector .arrow {
+    width: 3px; height: 36px;
+    background: linear-gradient(to bottom, #bbb, #999);
+    position: relative; border-radius: 2px;
+  }
+  .connector .arrow::after {
+    content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+    border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 8px solid #999;
+  }
+
+  .step {
+    border-radius: var(--flow-radius);
+    padding: 24px 28px;
+    border: 2px solid;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .step:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .step-number {
+    position: absolute; top: -14px; left: 24px;
+    font-size: 12px; font-weight: 700; padding: 2px 12px; border-radius: 20px; color: white;
+  }
+  .step-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .step-subtitle { font-size: 13px; color: var(--flow-text-sub); margin-bottom: 14px; }
+
+  .step.green { background: var(--green-light); border-color: var(--green-border); }
+  .step.green .step-number { background: var(--green); }
+  .step.green .step-title { color: var(--green); }
+
+  .step.blue { background: var(--blue-light); border-color: var(--blue-border); }
+  .step.blue .step-number { background: var(--blue); }
+  .step.blue .step-title { color: var(--blue); }
+
+  .step.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .step.orange .step-number { background: var(--orange); }
+  .step.orange .step-title { color: var(--orange); }
+
+  .step.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .step.purple .step-number { background: var(--purple); }
+  .step.purple .step-title { color: var(--purple); }
+
+  .step.teal { background: var(--teal-light); border-color: var(--teal-border); }
+  .step.teal .step-number { background: var(--teal); }
+  .step.teal .step-title { color: var(--teal); }
+
+  .step.gray { background: var(--gray-light); border-color: var(--gray-border); }
+  .step.gray .step-number { background: var(--gray); }
+  .step.gray .step-title { color: var(--gray); }
+
+  .sub-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px; margin-top: 14px;
+  }
+  .sub-item { background: rgba(255,255,255,0.7); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+  .sub-item .sub-label { font-weight: 600; margin-bottom: 2px; }
+  .sub-item .sub-desc { color: var(--flow-text-sub); font-size: 12px; }
+
+  .info-box {
+    background: white; border: 1.5px dashed #ccc; border-radius: 10px;
+    padding: 16px 20px; margin-top: 14px; font-size: 13px; color: var(--flow-text-sub);
+  }
+  .info-box strong { color: var(--flow-text); }
+
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 12px; margin-left: 8px; vertical-align: middle;
+  }
+  .badge.cli { background: #263238; color: #B2FF59; }
+  .badge.manual { background: var(--orange-light); color: var(--orange); }
+  .badge.auto { background: var(--teal-light); color: var(--teal); }
+
+  .risk-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-top: 14px;
+  }
+  .risk-card {
+    padding: 12px 16px; border-radius: 10px;
+    font-size: 13px; line-height: 1.5;
+  }
+  .risk-card .level { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .risk-l0 { background: var(--green-light); border-left: 4px solid var(--green); }
+  .risk-l1 { background: var(--blue-light); border-left: 4px solid var(--blue); }
+  .risk-l2 { background: var(--orange-light); border-left: 4px solid var(--orange); }
+  .risk-l3 { background: var(--red-light); border-left: 4px solid var(--red-border); }
+
+  .parallel-box {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-top: 8px;
+  }
+
+  .flow-footer {
+    text-align: center; margin-top: 48px; padding-top: 24px;
+    border-top: 1px solid #eee; font-size: 12px; color: var(--flow-text-sub);
+  }
+  .flow-footer a {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: var(--blue);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .flow-footer a:hover { opacity: 0.9; }
+
+  @media (max-width: 600px) {
+    .flow-container { padding: 24px 12px 60px; }
+    .flow-header h1 { font-size: 22px; }
+    .step { padding: 20px 18px; }
+    .sub-grid, .parallel-box, .risk-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="flow-container">
+
+  <div class="flow-header">
+    <h1>{t(lang, 'feedbackFlow.heading')}</h1>
+    <div class="meta">{t(lang, 'feedbackFlow.meta')}</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot green"></div>{t(lang, 'feedbackFlow.legendInput')}</div>
+    <div class="legend-item"><div class="legend-dot blue"></div>{t(lang, 'feedbackFlow.legendTriage')}</div>
+    <div class="legend-item"><div class="legend-dot orange"></div>{t(lang, 'feedbackFlow.legendRisk')}</div>
+    <div class="legend-item"><div class="legend-dot purple"></div>{t(lang, 'feedbackFlow.legendFix')}</div>
+    <div class="legend-item"><div class="legend-dot teal"></div>{t(lang, 'feedbackFlow.legendVerify')}</div>
+  </div>
+
+  <!-- ===== Step 1: 回報入口 ===== -->
+  <div class="step green">
+    <div class="step-number">1</div>
+    <div class="step-title">{t(lang, 'feedbackFlow.step1Title')}</div>
+    <div class="step-subtitle">{t(lang, 'feedbackFlow.step1Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step1LineLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step1LineDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step1TrackerLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step1TrackerDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step1PaulLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step1PaulDesc')}</div>
+      </div>
+    </div>
+    <div class="info-box">
+      {t(lang, 'feedbackFlow.step1Tech')}
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- ===== Step 2: Cowork 分類 ===== -->
+  <div class="step blue">
+    <div class="step-number">2</div>
+    <div class="step-title">{t(lang, 'feedbackFlow.step2Title')}</div>
+    <div class="step-subtitle">{t(lang, 'feedbackFlow.step2Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step2BugLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step2BugDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step2UxLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step2UxDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step2EnvLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step2EnvDesc')}</div>
+      </div>
+    </div>
+    <div class="info-box">
+      {t(lang, 'feedbackFlow.step2Tech')}
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- ===== Step 3: 風險分級 ===== -->
+  <div class="step orange">
+    <div class="step-number">3</div>
+    <div class="step-title">{t(lang, 'feedbackFlow.step3Title')}</div>
+    <div class="step-subtitle">{t(lang, 'feedbackFlow.step3Subtitle')}</div>
+    <div class="risk-grid">
+      <div class="risk-card risk-l0">
+        <div class="level">{t(lang, 'feedbackFlow.step3L0Title')}</div>
+        {t(lang, 'feedbackFlow.step3L0Desc')}
+      </div>
+      <div class="risk-card risk-l1">
+        <div class="level">{t(lang, 'feedbackFlow.step3L1Title')}</div>
+        {t(lang, 'feedbackFlow.step3L1Desc')}
+      </div>
+      <div class="risk-card risk-l2">
+        <div class="level">{t(lang, 'feedbackFlow.step3L2Title')}</div>
+        {t(lang, 'feedbackFlow.step3L2Desc')}
+      </div>
+      <div class="risk-card risk-l3">
+        <div class="level">{t(lang, 'feedbackFlow.step3L3Title')}</div>
+        {t(lang, 'feedbackFlow.step3L3Desc')}
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- ===== Step 4: Code Session 修復 ===== -->
+  <div class="step purple">
+    <div class="step-number">4</div>
+    <div class="step-title">{t(lang, 'feedbackFlow.step4Title')}</div>
+    <div class="step-subtitle">{t(lang, 'feedbackFlow.step4Subtitle')}</div>
+    <div class="parallel-box">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step4LowLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step4LowDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step4HighLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step4HighDesc')}</div>
+      </div>
+    </div>
+    <div class="info-box">
+      {t(lang, 'feedbackFlow.step4CiInfo')}
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- ===== Step 5: 驗收 ===== -->
+  <div class="step teal">
+    <div class="step-number">5</div>
+    <div class="step-title">{t(lang, 'feedbackFlow.step5Title')}</div>
+    <div class="step-subtitle">{t(lang, 'feedbackFlow.step5Subtitle')}</div>
+    <div class="risk-grid">
+      <div class="risk-card risk-l0">
+        <div class="level">{t(lang, 'feedbackFlow.step5L0Title')}</div>
+        {t(lang, 'feedbackFlow.step5L0Desc')}
+      </div>
+      <div class="risk-card risk-l1">
+        <div class="level">{t(lang, 'feedbackFlow.step5L1Title')}</div>
+        {t(lang, 'feedbackFlow.step5L1Desc')}
+      </div>
+      <div class="risk-card risk-l2">
+        <div class="level">{t(lang, 'feedbackFlow.step5L2Title')}</div>
+        {t(lang, 'feedbackFlow.step5L2Desc')}
+      </div>
+      <div class="risk-card risk-l3">
+        <div class="level">{t(lang, 'feedbackFlow.step5L3Title')}</div>
+        {t(lang, 'feedbackFlow.step5L3Desc')}
+      </div>
+    </div>
+    <div class="info-box" set:html={t(lang, 'feedbackFlow.step5FailInfo')} />
+  </div>
+
+  <div class="connector"><div class="arrow"></div></div>
+
+  <!-- ===== Step 6: 結案 ===== -->
+  <div class="step green">
+    <div class="step-number">6</div>
+    <div class="step-title">{t(lang, 'feedbackFlow.step6Title')}</div>
+    <div class="step-subtitle">{t(lang, 'feedbackFlow.step6Subtitle')}</div>
+    <div class="sub-grid">
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step6PatchLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step6PatchDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step6DashLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step6DashDesc')}</div>
+      </div>
+      <div class="sub-item">
+        <div class="sub-label">{t(lang, 'feedbackFlow.step6LogLabel')}</div>
+        <div class="sub-desc">{t(lang, 'feedbackFlow.step6LogDesc')}</div>
+      </div>
+    </div>
+    <div class="info-box" set:html={t(lang, 'feedbackFlow.step6FreezeInfo')} />
+  </div>
+
+  <div class="flow-footer">
+    {t(lang, 'feedbackFlow.footerOrg')}<br>
+    {t(lang, 'feedbackFlow.footerTech')}
+    <br>
+    <a href={`${prefix}/projects/formosa-esg-2026/guide/`}>{t(lang, 'feedbackFlow.backToGuide')}</a>
+  </div>
+
+</div>
+
+</AuthGate>
+
+</BaseLayout>

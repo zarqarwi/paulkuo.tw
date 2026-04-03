@@ -12,6 +12,7 @@ const prefix = LOCALE_PREFIX[lang];
 
 const guideLink = `${prefix}/projects/formosa-esg-2026/guide/`;
 const flowLink = `${prefix}/projects/formosa-esg-2026/guide/admin-flow/`;
+const feedbackFlowLink = `${prefix}/projects/formosa-esg-2026/guide/feedback-flow/`;
 const dashboardLink = `${prefix}/projects/formosa-esg-2026/dashboard/`;
 
 /* helper: replace {prefix} placeholders in sec5 strings */
@@ -43,6 +44,7 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 </blockquote>
 
 <p style="margin:1.5rem 0;font-size:1.05rem;" set:html={t(lang, 'adminGuidePage.flowchartIntro').replace('{flowLink}', flowLink)} />
+<p style="margin:1.5rem 0;font-size:1.05rem;">🔄 <strong><a href={feedbackFlowLink}>Bug 修復流程</a></strong> — 從回報、分類、風險分級到驗收的完整 pipeline</p>
 
 <nav class="guide-toc">
   <details open>
