@@ -150,15 +150,18 @@ Worklog 是上游事實來源，記憶是下游快取。
 
 完成後向 Paul 報告：哪些待辦被自動結案、哪些驗證通過/失敗、哪些需要人工確認。
 
-### 3.5 抽查 remote：worklog 聲稱完成 → 程式碼真的在？（v4.1 新增）
+### 3.5 抽查 remote：worklog 聲稱的關鍵變更真的在 main 上嗎？（v4.1 新增）
 
 **Worklog 說「做完了」≠ 程式碼在 GitHub main 上。**
 
-對 worklog 裡聲稱完成的程式碼變更，至少抽查一項關鍵函式或檔案：
+只查**會影響 build 或 runtime 的關鍵變更**，不查 CSS 微調、文案修改等不影響建構的項目。需要抽查的類型：
 
-- 用 `get_file_contents` 或 `search_code` 確認關鍵函式/檔案確實存在於 GitHub main
-- 如果是 Worker 變更，確認 `worker/src/` 下的對應 export 存在
-- 如果驗不過 → 標記「⚠️ worklog 聲稱完成但 remote 未確認」，不直接標 ✅
+- **新增 import / export**：有 import 但 export 不存在 → build 直接炸（這次 RFC #100 就是這樣）
+- **新增檔案**：worklog 說建了 `sw.js`、`offline.html` → 確認檔案在 repo 裡
+- **Schema 變更**：D1 migration、KV key 格式改動 → 不在就 runtime error
+- **Worker 路由 / handler**：`handleScheduled`、新 API endpoint → 不在就 cron 或請求失敗
+
+用 `get_file_contents` 或 `search_code` 確認。驗不過 → 標記「⚠️ worklog 聲稱完成但 remote 未確認」，不直接標 ✅。
 
 > **為什麼加這步：** 2026-04-05 事故。RFC #100 worklog 寫「三項全完成」，Cowork 照抄標完成，
 > 結果 `handleFormosaHealthAlert` 從未 push 到 main，直到 wrangler deploy 失敗才發現。
