@@ -2,8 +2,8 @@ name: Formosa Health Check
 
 on:
   schedule:
-    # Every hour. Change to '*/30 * * * *' after 4/12 event start
-    - cron: '0 * * * *'
+    # Every 30 minutes — activated 4/05 for burn-in before 4/12 event
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 jobs:
