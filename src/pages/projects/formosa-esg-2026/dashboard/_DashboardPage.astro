@@ -305,23 +305,24 @@ const linkPrefix = prefix;
         );
       }
 
-      var results = await Promise.all(baseFetches);
-      var dataRes = results[0], carbonRes = results[1], timelineRes = results[2], surveyRes = results[3];
+      var results = await Promise.allSettled(baseFetches);
+      function settled(r) { return r.status === 'fulfilled' ? r.value : null; }
+      var dataRes = settled(results[0]), carbonRes = settled(results[1]), timelineRes = settled(results[2]), surveyRes = settled(results[3]);
 
       renderKPI(dataRes, carbonRes, timelineRes);
-      renderCarbon(carbonRes);
-      renderSurvey(surveyRes);
-      renderTimeline(timelineRes);
+      if (carbonRes) renderCarbon(carbonRes);
+      if (surveyRes) renderSurvey(surveyRes);
+      if (timelineRes) renderTimeline(timelineRes);
 
       if (isAdmin) {
-        var clusterRes = results[4], usersRes = results[5];
+        var clusterRes = settled(results[4]), usersRes = settled(results[5]);
         window._lastClusterRes = clusterRes;
-        renderMap(dataRes.gps_points || [], clusterRes);
-        renderRanks(usersRes.users || []);
-        renderUserTable(usersRes.users || []);
+        if (dataRes || clusterRes) renderMap(dataRes ? (dataRes.gps_points || []) : [], clusterRes);
+        if (usersRes) { renderRanks(usersRes.users || []); renderUserTable(usersRes.users || []); }
       }
 
-      document.getElementById('lastUpdated').textContent = _t.updated + new Date().toLocaleTimeString('zh-TW');
+      var failCount = results.filter(function(r) { return r.status === 'rejected'; }).length;
+      document.getElementById('lastUpdated').textContent = (failCount > 0 ? '⚠ 部分載入失敗 · ' : '') + _t.updated + new Date().toLocaleTimeString('zh-TW');
     } catch (e) {
       document.getElementById('lastUpdated').textContent = _t.loadFailed;
       console.error('Dashboard fetch error:', e);

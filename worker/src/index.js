@@ -138,7 +138,24 @@ async function handleHealth(request, env) {
   const stockCache = await env.TICKER_KV.get('stock_cache');
   const fitbitLastRefresh = await env.TICKER_KV.get('fitbit_last_refresh');
   const fitbitHoursAgo = fitbitLastRefresh ? Math.round((Date.now() - new Date(fitbitLastRefresh).getTime()) / 3600000 * 10) / 10 : null;
-  return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), timestamp: new Date().toISOString() }, 200, request);
+
+  // Formosa subsystem health
+  let formosaHealth = { d1: 'unknown', kv: 'unknown' };
+  try {
+    const d1Check = await env.AUTH_DB.prepare('SELECT 1 AS ok').first();
+    formosaHealth.d1 = d1Check?.ok === 1 ? 'ok' : 'error';
+
+    const kvCheck = await env.TICKER_KV.list({ prefix: 'gps:', limit: 1 });
+    formosaHealth.kv = 'ok';
+    formosaHealth.pendingKeys = kvCheck.keys.length > 0 ? 'has_pending' : 'empty';
+
+    const lastFlush = await env.TICKER_KV.get('formosa:last_flush');
+    formosaHealth.lastFlush = lastFlush || 'never';
+  } catch (e) {
+    formosaHealth.error = e.message;
+  }
+
+  return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), formosa: formosaHealth, timestamp: new Date().toISOString() }, 200, request);
 }
 
 const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/visit','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/feed/sync','/health','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/scorecard/submit','/api/scorecard/feed','/api/scorecard/eval/:id','/api/scorecard/badge/:id','/api/scorecard/history/:projectName','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus'];

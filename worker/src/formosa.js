@@ -172,8 +172,10 @@ const COLUMN_MIGRATIONS = [
   `ALTER TABLE formosa_surveys ADD COLUMN q6_meal TEXT`
 ];
 
-// ── Run migration ──
+// ── Run migration (once per Worker instance) ──
+let _migrated = false;
 export async function migrateFormosa(db) {
+  if (_migrated) return;
   const statements = SCHEMA_SQL.split(';').filter(s => s.trim());
   for (const sql of statements) {
     try { await db.prepare(sql).run(); } catch (e) { /* table exists */ }
@@ -182,6 +184,7 @@ export async function migrateFormosa(db) {
   for (const sql of COLUMN_MIGRATIONS) {
     try { await db.prepare(sql).run(); } catch (e) { /* column already exists */ }
   }
+  _migrated = true;
 }
 
 // ── LINE Webhook Handler ──
@@ -196,31 +199,35 @@ export async function handleFormosaWebhook(request, env) {
     const events = body.events || [];
 
     for (const event of events) {
-      const userId = event.source?.userId;
+      try {
+        const userId = event.source?.userId;
 
-      // Upsert user for any event type
-      if (userId) {
-        const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
-        const userLang = profile?.language || null;
-        await env.AUTH_DB.prepare(
-          `INSERT INTO formosa_users (line_user_id, display_name, picture_url, language, updated_at) VALUES (?, ?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, language=excluded.language, updated_at=datetime('now')`
-        ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '', userLang).run();
-      }
+        // Upsert user for any event type
+        if (userId) {
+          const profile = await getLineProfile(userId, env.FORMOSA_LINE_TOKEN);
+          const userLang = profile?.language || null;
+          await env.AUTH_DB.prepare(
+            `INSERT INTO formosa_users (line_user_id, display_name, picture_url, language, updated_at) VALUES (?, ?, ?, ?, datetime('now')) ON CONFLICT(line_user_id) DO UPDATE SET display_name=excluded.display_name, picture_url=excluded.picture_url, language=excluded.language, updated_at=datetime('now')`
+          ).bind(userId, profile?.displayName || '', profile?.pictureUrl || '', userLang).run();
+        }
 
-      // ── Follow: Welcome Flex Message ──
-      if (event.type === 'follow' && userId) {
-        const locale = await getUserLocale(userId, env);
-        await sendLineMessage(userId, env.FORMOSA_LINE_TOKEN, [buildWelcomeMessage(locale)]);
-      }
+        // ── Follow: Welcome Flex Message ──
+        if (event.type === 'follow' && userId) {
+          const locale = await getUserLocale(userId, env);
+          await sendLineMessage(userId, env.FORMOSA_LINE_TOKEN, [buildWelcomeMessage(locale)]);
+        }
 
-      // ── Message: Keyword Router ──
-      if (event.type === 'message' && event.message?.type === 'text') {
-        const text = (event.message.text || '').trim();
-        const replyToken = event.replyToken;
-        if (!replyToken) continue;
+        // ── Message: Keyword Router ──
+        if (event.type === 'message' && event.message?.type === 'text') {
+          const text = (event.message.text || '').trim();
+          const replyToken = event.replyToken;
+          if (!replyToken) continue;
 
-        const reply = await routeKeyword(text, userId, env);
-        await replyLineMessage(replyToken, env.FORMOSA_LINE_TOKEN, reply);
+          const reply = await routeKeyword(text, userId, env);
+          await replyLineMessage(replyToken, env.FORMOSA_LINE_TOKEN, reply);
+        }
+      } catch (e) {
+        console.error(`Event processing error: ${e.message}`, JSON.stringify(event?.type));
       }
     }
 
@@ -392,7 +399,7 @@ export async function handleFormosaCheckin(request, env, ctx) {
         accuracy: data.accuracy || null,
         source, timestamp: ts,
         blessing_id: data.blessing_id || null
-      }), { expirationTtl: 86400 });
+      }), { expirationTtl: 259200 });
 
       let batchWritten = 0;
       if (data.track_points && Array.isArray(data.track_points)) {
@@ -406,7 +413,7 @@ export async function handleFormosaCheckin(request, env, ctx) {
             user_id: userId, lat: pt.lat, lng: pt.lng,
             altitude: null, accuracy: null,
             source: pt.source || 'auto', timestamp: ptTs
-          }), { expirationTtl: 86400 });
+          }), { expirationTtl: 259200 });
           batchWritten++;
         }
       }
@@ -487,7 +494,7 @@ export async function handleFormosaTrackSync(request, env) {
         user_id: userId, lat: pt.lat, lng: pt.lng,
         altitude: null, accuracy: null,
         source: pt.source || 'auto', timestamp: ptTs
-      }), { expirationTtl: 86400 });
+      }), { expirationTtl: 259200 });
       synced++;
     }
 
@@ -571,10 +578,10 @@ export async function handleFormosaFlushBuffer(env) {
         } catch (e) {
           console.error('Flush batch error:', e.message);
           errors += valid.length;
-          // D1 write failed — extend KV TTL to prevent data loss
+          // D1 write failed — extend KV TTL to prevent data loss (3 days)
           await Promise.all(valid.map(async (entry) => {
             try {
-              await env.TICKER_KV.put(entry.key, JSON.stringify(entry.data), { expirationTtl: 86400 });
+              await env.TICKER_KV.put(entry.key, JSON.stringify(entry.data), { expirationTtl: 259200 });
             } catch {}
           }));
           continue;
@@ -599,6 +606,9 @@ export async function handleFormosaFlushBuffer(env) {
     } catch (e) {
       console.error('Flush: count sync error:', e.message);
     }
+
+    // Record last successful flush time for /health monitoring
+    await env.TICKER_KV.put('formosa:last_flush', new Date().toISOString(), { expirationTtl: 86400 });
 
     return { flushed, skipped, errors, total_buffered: allKeys.length, duration_ms: Date.now() - startTime };
   } catch (e) {
@@ -2152,11 +2162,25 @@ export async function handleFormosaFeedback(request, env) {
   }
 
   try {
+    // Rate limit via KV: 每 IP 每分鐘最多 5 筆
+    const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+    const rateLimited = await checkRateLimitKV(env.TICKER_KV, `feedback:${ip}`, 60, 5);
+    if (rateLimited) {
+      return jsonResponse({ error: '回報次數過多，請稍後再試', rate_limited: true }, 429, request);
+    }
+
     const body = await request.json();
     const { category, description, screenshot_url, device_info, user_agent, line_user_id } = body;
 
     if (!category || !description) {
       return jsonResponse({ error: 'category and description are required' }, 400, request);
+    }
+
+    if (category.length > 100) {
+      return jsonResponse({ error: '類別名稱過長' }, 400, request);
+    }
+    if (description.length > 2000) {
+      return jsonResponse({ error: '描述文字過長，請控制在 2000 字以內' }, 400, request);
     }
 
     await env.AUTH_DB.prepare(

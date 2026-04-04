@@ -699,6 +699,9 @@ const prefix = LOCALE_PREFIX[lang];
 
   startGPSTracking();
 
+  // ── R9: Flush any queued offline checkins on page load ──
+  if (lineUserId) flushCheckinQueue(lineUserId);
+
   // ── One-Question-Per-Card System ──
   var cards = document.querySelectorAll('.q-card[data-q]');
   var totalQ = 10; // Q1-Q10 (optimized survey)
@@ -1341,7 +1344,12 @@ const prefix = LOCALE_PREFIX[lang];
         }).catch(function(e) { console.warn('Phone save failed:', e); });
       }
     } catch (e) {
-      console.warn('API submit failed:', e.message);
+      console.warn('API submit failed, queuing locally:', e.message);
+      try {
+        var sq = JSON.parse(lsGet('formosa_survey_queue') || '[]');
+        sq.push({ timestamp: new Date().toISOString(), data: data });
+        lsSet('formosa_survey_queue', JSON.stringify(sq));
+      } catch (qe) {}
     }
 
     // Persist user_id from API response
@@ -1715,6 +1723,20 @@ const prefix = LOCALE_PREFIX[lang];
           if (res.ok) {
             gpsTrackPoints.forEach(function(p) { p._uploaded = true; });
             flushCheckinQueue(userId);
+            // Flush any queued survey submissions
+            try {
+              var sq = JSON.parse(lsGet('formosa_survey_queue') || '[]');
+              if (sq.length > 0) {
+                sq.forEach(function(item) {
+                  fetch(API_BASE + '/api/formosa/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(item.data)
+                  }).catch(function() {});
+                });
+                lsSet('formosa_survey_queue', '[]');
+              }
+            } catch (sqe) {}
           } else if (res.status === 503 && retries > 0) {
             setTimeout(function() { postCheckin(payload, retries - 1); }, 1500);
           } else {

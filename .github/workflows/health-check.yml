@@ -175,3 +175,20 @@ jobs:
                 labels: ['health-check', 'formosa-esg']
               });
             }
+
+      - name: LINE push notification
+        if: always() && env.has_failures == 'true'
+        continue-on-error: true
+        run: |
+          curl -s -X POST https://api.line.me/v2/bot/message/push \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
+            -d '{
+              "to": "${{ secrets.LINE_ADMIN_USER_ID }}",
+              "messages": [
+                {
+                  "type": "text",
+                  "text": "Formosa Health Check 異常\n\n自動巡檢偵測到端點掛了。\n\nhttps://github.com/zarqarwi/paulkuo.tw/actions/runs/${{ github.run_id }}"
+                }
+              ]
+            }'
