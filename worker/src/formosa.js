@@ -2315,6 +2315,70 @@ export async function handleFormosaFeedbackPublicStatus(request, env) {
   }
 }
 
+// ── Cron: Health Alert with Exponential Backoff ──
+const BACKOFF_DELAYS = [0, 10*60, 30*60, 60*60, 2*60*60, 4*60*60]; // seconds
+
+export async function handleFormosaHealthAlert(env) {
+  if (!env.FORMOSA_ALERT_USER_ID || !env.FORMOSA_LINE_TOKEN) {
+    return { checked: false, healthy: null, alerted: false, reason: 'missing config' };
+  }
+
+  // Check D1
+  let d1Ok = false;
+  try {
+    const r = await env.AUTH_DB.prepare('SELECT 1 AS ok').first();
+    d1Ok = r?.ok === 1;
+  } catch (_) {}
+
+  // Check KV
+  let kvOk = false;
+  try {
+    await env.TICKER_KV.list({ prefix: 'gps:', limit: 1 });
+    kvOk = true;
+  } catch (_) {}
+
+  const healthy = d1Ok && kvOk;
+
+  // Read backoff state
+  const raw = await env.TICKER_KV.get('formosa:health_alert_backoff');
+  const state = raw ? JSON.parse(raw) : { level: 0, lastAlertAt: 0, wasUnhealthy: false };
+
+  if (healthy) {
+    if (state.wasUnhealthy) {
+      // Send recovery notification
+      await sendLineMessage(env.FORMOSA_ALERT_USER_ID, env.FORMOSA_LINE_TOKEN, [
+        { type: 'text', text: '✅ Formosa ESG 系統已恢復正常\n\nD1: ok\nKV: ok' }
+      ]);
+      await env.TICKER_KV.put('formosa:health_alert_backoff', JSON.stringify({ level: 0, lastAlertAt: 0, wasUnhealthy: false }));
+      return { checked: true, healthy: true, alerted: true };
+    }
+    return { checked: true, healthy: true, alerted: false };
+  }
+
+  // Unhealthy — check backoff
+  const now = Date.now() / 1000;
+  const delay = BACKOFF_DELAYS[Math.min(state.level, BACKOFF_DELAYS.length - 1)];
+  const elapsed = now - (state.lastAlertAt || 0);
+
+  if (state.wasUnhealthy && elapsed < delay) {
+    return { checked: true, healthy: false, alerted: false };
+  }
+
+  // Send alert
+  const issues = [];
+  if (!d1Ok) issues.push('D1: error');
+  if (!kvOk) issues.push('KV: error');
+
+  await sendLineMessage(env.FORMOSA_ALERT_USER_ID, env.FORMOSA_LINE_TOKEN, [
+    { type: 'text', text: `🚨 Formosa ESG 系統異常\n\n${issues.join('\n')}\n\n退避等級: ${state.level}` }
+  ]);
+
+  const nextLevel = Math.min((state.wasUnhealthy ? state.level : 0) + 1, BACKOFF_DELAYS.length - 1);
+  await env.TICKER_KV.put('formosa:health_alert_backoff', JSON.stringify({ level: nextLevel, lastAlertAt: now, wasUnhealthy: true }));
+
+  return { checked: true, healthy: false, alerted: true };
+}
+
 function haversineKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
