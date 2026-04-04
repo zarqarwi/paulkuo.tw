@@ -304,7 +304,7 @@ export const zhHant = {
     rule2Desc: '不管是搭公車、騎機車還是開車，統一用公車的碳排係數（0.47515 kg/km）來估',
     autoSpeed: '這個速度是系統從 GPS 打卡的軌跡自動算出來的',
     noManualInput: '香客不需要自己填',
-    accommodation: '住宿（12.5 kg/晚）',
+    accommodation: '住宿（8.85 kg/晚）',
     water: '瓶裝水（0.10974 kg/瓶）',
     recycling: '回收（-0.00265 kg/瓶）',
     savingsExplain: '如果你走的這些路程全部改成搭車，大約會排放多少碳？扣掉實際的碳排，差額就是省下來的',
@@ -1403,7 +1403,7 @@ export const zhHant = {
     sec6Rule1: '<strong>規則一：時速 15 以下 = 零排放。</strong> 走路、慢跑、腳踏車都算在這。',
     sec6Rule2: '<strong>規則二：時速超過 15 = 搭車。</strong> 不管是搭公車、騎機車還是開車，統一用公車的碳排係數（0.47515 kg/km）來估。',
     sec6GPS: '這個速度是系統從 GPS 打卡的軌跡自動算出來的，香客不需要自己填。',
-    sec6Daily: '另外，每日回報裡的住宿（12.5 kg/晚）、瓶裝水（0.10974 kg/瓶）、回收（-0.00265 kg/瓶）也會加進碳足跡。',
+    sec6Daily: '另外，每日回報裡的住宿（8.85 kg/晚）、瓶裝水（0.10974 kg/瓶）、回收（-0.00265 kg/瓶）也會加進碳足跡。',
     sec6Saved: '「碳節省量」的意思是：如果全程都搭車，碳排會是多少？扣掉實際的碳排，差額就是省下來的。',
     sec6Disclaimer: '這些數字是拿來提醒大家注意減碳的，不是正式的碳盤查報告。數據來源是 Ecoinvent 3.10 跟 SSBTi 善足跡。',
     // Section 7

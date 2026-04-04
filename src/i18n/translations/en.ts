@@ -315,7 +315,7 @@ export const en = {
     rule2Desc: 'All motorized travel is estimated using the public transit emission factor (0.47515 kg CO₂/km)',
     autoSpeed: 'Speed is calculated automatically from your GPS data',
     noManualInput: 'No manual input required',
-    accommodation: 'Accommodation (12.5 kg CO₂/night)',
+    accommodation: 'Accommodation (8.85 kg CO₂/night)',
     water: 'Bottled water (0.10974 kg CO₂/bottle)',
     recycling: 'Recycling credit (−0.00265 kg CO₂/bottle)',
     savingsExplain: 'Carbon saved = the CO₂ that would have been emitted if you had taken transit instead of walking, minus your actual emissions',
@@ -1413,7 +1413,7 @@ export const en = {
     sec6Rule1: '<strong>Rule 1: Speed ≤15 km/h = zero emission.</strong> Walking, jogging, biking.',
     sec6Rule2: '<strong>Rule 2: Speed >15 km/h = vehicle.</strong> Bus, scooter, car—all use bus coefficient (0.47515 kg/km).',
     sec6GPS: 'Speed auto-calculated from GPS trajectory; pilgrim doesn\'t enter it.',
-    sec6Daily: 'Daily report adds: lodging (12.5 kg/night), bottles (0.10974 kg/bottle), recycling (-0.00265 kg/bottle).',
+    sec6Daily: 'Daily report adds: lodging (8.85 kg/night), bottles (0.10974 kg/bottle), recycling (-0.00265 kg/bottle).',
     sec6Saved: '"Carbon saved" = if traveled by vehicle entire journey, minus actual emissions = difference.',
     sec6Disclaimer: 'These are reminders, not official carbon accounting. Sources: Ecoinvent 3.10, SBTi Eco-Footprint.',
     // Section 7
