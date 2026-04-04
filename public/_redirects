@@ -1,2 +1,11 @@
 # Cloudflare Pages rewrites for dynamic client-side routes
 /tools/builders-scorecard/eval/  /tools/builders-scorecard/eval/index/index.html  200
+
+# paulkuo.tw → mazu.today 入口統一（Issue #90）
+/projects/formosa-esg-2026/tracker/*  https://mazu.today/tracker/:splat  301
+/projects/formosa-esg-2026/guide/*    https://mazu.today/guide/:splat    301
+/projects/formosa-esg-2026/feedback/* https://mazu.today/feedback/:splat 301
+/projects/formosa-esg-2026/en/*       https://mazu.today/en/:splat       301
+/projects/formosa-esg-2026/ja/*       https://mazu.today/ja/:splat       301
+/projects/formosa-esg-2026/zh-cn/*    https://mazu.today/zh-cn/:splat    301
+/projects/formosa-esg-2026/           https://mazu.today/                301
