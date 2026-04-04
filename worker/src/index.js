@@ -1,5 +1,15 @@
 /**
  * paulkuo-ticker Worker — Entry Point & Router
+ * Cloudflare Dashboard: https://dash.cloudflare.com/4bf7e4b38d30ab7d4a191eefbf393133/workers-and-pages/paulkuo-ticker
+ * Routes: api.paulkuo.tw, mazu.today/*
+ *
+ * Required Secrets (set via Dashboard or `wrangler secret`):
+ *   - FORMOSA_ALERT_USER_ID: LINE User ID for health alert push
+ *   - FORMOSA_LINE_TOKEN: LINE Messaging API channel token
+ *   - FORMOSA_LINE_CHANNEL_SECRET: LINE channel secret
+ *   - FORMOSA_ADMIN_TOKEN: Admin API authentication
+ *   (see Dashboard for full list)
+ *
  * Modularized: 2026-03-08
  * Social API added: 2026-03-08
  * TQEF Admin API added: 2026-03-14
@@ -18,7 +28,7 @@ import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors, aggregateBotAnalytics, handleBotBackfill } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
-import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus } from './formosa.js';
+import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus, handleFormosaHealthAlert } from './formosa.js';
 
 async function handleClaudeUsage(request, env, url) {
   const auth = await authenticateRequest(request, env, url.searchParams.get('code') || '');
@@ -164,7 +174,7 @@ async function handleMazuToday(request, url) {
   const path = url.pathname;
 
   // Static assets (Astro bundles, fonts, images, favicon) — fetch from Pages as-is
-  if (path.startsWith('/_astro/') || path.startsWith('/fonts/') || path.startsWith('/images/') || path.startsWith('/styles/') || path === '/favicon.svg' || path === '/favicon.ico') {
+  if (path.startsWith('/_astro/') || path.startsWith('/fonts/') || path.startsWith('/images/') || path.startsWith('/styles/') || path === '/favicon.svg' || path === '/favicon.ico' || path === '/favicon.png' || path === '/sw.js' || path === '/offline.html' || path === '/manifest.json') {
     return fetch(new URL(path + url.search, 'https://paulkuo.tw'), {
       method: request.method,
       headers: request.headers,
@@ -453,6 +463,9 @@ async function handleRequest(request, env, ctx) {
 async function handleScheduled(event, env) {
   // GPS buffer flush runs on every trigger (cheap: 1 KV list if empty)
   try { const r = await handleFormosaFlushBuffer(env); console.log('Cron: formosa flush', JSON.stringify(r)); } catch (e) { console.error('Cron: formosa flush FAILED:', e.message); }
+
+  // Health alert with exponential backoff (every 5 min)
+  try { const r = await handleFormosaHealthAlert(env); console.log('Cron: health alert', JSON.stringify(r)); } catch (e) { console.error('Cron: health alert FAILED:', e.message); }
 
   // Heavy external-API tasks only run on the hourly schedule
   if (event.cron !== '*/5 * * * *') {
