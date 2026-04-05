@@ -17,18 +17,28 @@ async function getFormosaStatus(kv) {
 // Roles: owner > manager > volunteer
 const ROLE_LEVEL = { owner: 3, manager: 2, volunteer: 1 };
 
-function getAuthRole(request, env) {
+async function getAuthRole(request, env) {
   const token = request.headers.get('X-Admin-Token');
   if (!token) return null;
+  // Check Worker secrets first (fast path)
   if (token === env.FORMOSA_ADMIN_TOKEN) return 'owner';
   if (token === env.FORMOSA_MANAGER_TOKEN) return 'manager';
   if (token === env.FORMOSA_VOLUNTEER_TOKEN) return 'volunteer';
+  // Fallback: check KV invite codes (Dashboard sends invite code as X-Admin-Token)
+  try {
+    const raw = await env.TICKER_KV.get('invite_codes');
+    if (raw) {
+      const codes = JSON.parse(raw);
+      const info = codes[token.trim().toLowerCase()];
+      if (info && info.role === 'admin') return 'owner';
+    }
+  } catch (_) {}
   return null;
 }
 
 // Backward-compatible: requireAdmin still works for owner+manager endpoints
-function requireAdmin(request, env) {
-  const role = getAuthRole(request, env);
+async function requireAdmin(request, env) {
+  const role = await getAuthRole(request, env);
   if (!role || ROLE_LEVEL[role] < ROLE_LEVEL['manager']) {
     return jsonResponse({ error: 'Unauthorized' }, 401, request);
   }
@@ -36,8 +46,8 @@ function requireAdmin(request, env) {
 }
 
 // New: require any valid role (owner, manager, or volunteer)
-function requireAnyRole(request, env) {
-  const role = getAuthRole(request, env);
+async function requireAnyRole(request, env) {
+  const role = await getAuthRole(request, env);
   if (!role) {
     return jsonResponse({ error: 'Unauthorized' }, 401, request);
   }
@@ -47,7 +57,7 @@ function requireAnyRole(request, env) {
 // ── Auth Role Endpoint ──
 export async function handleFormosaAuthRole(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const role = getAuthRole(request, env);
+  const role = await getAuthRole(request, env);
   if (!role) return jsonResponse({ error: 'Unauthorized' }, 401, request);
   return jsonResponse({ role }, 200, request);
 }
@@ -62,7 +72,7 @@ export async function handleFormosaAdminStatus(request, env) {
   }
 
   // POST — set status (requires admin)
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -626,7 +636,7 @@ export async function handleFormosaFlushBuffer(env) {
 // ── Admin: Role Management ──
 export async function handleFormosaAdminRoles(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -661,7 +671,7 @@ export async function handleFormosaAdminRoles(request, env) {
 
 // ── Push Notification: Send to users by role ──
 export async function handleFormosaPush(request, env) {
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
   if (request.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405, request);
@@ -807,7 +817,7 @@ export async function handleFormosaData(request, env) {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
 
-  const authErr = requireAnyRole(request, env);
+  const authErr = await requireAnyRole(request, env);
   if (authErr) return authErr;
 
   try {
@@ -892,7 +902,7 @@ export async function handleFormosaUser(request, env, userId) {
     // Ownership check: full data for owner/admin, limited public view otherwise
     const callerId = request.headers.get('X-Line-User-Id');
     const isOwner = callerId === userId;
-    const isAdmin = !requireAdmin(request, env);
+    const isAdmin = !await requireAdmin(request, env);
     await migrateFormosa(env.AUTH_DB);
     const user = await env.AUTH_DB.prepare('SELECT display_name, picture_url, role, created_at FROM formosa_users WHERE line_user_id = ?').bind(userId).first();
     const points = await env.AUTH_DB.prepare('SELECT lat, lng, altitude, accuracy, source, timestamp FROM formosa_gps_points WHERE user_id = ? ORDER BY timestamp ASC').bind(userId).all();
@@ -973,7 +983,7 @@ export async function handleFormosaUser(request, env, userId) {
 // ── Admin: Survey Aggregations ──
 export async function handleFormosaAdminSurveys(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAnyRole(request, env);
+  const authErr = await requireAnyRole(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -1013,7 +1023,7 @@ export async function handleFormosaAdminSurveys(request, env) {
 // ── Admin: Carbon Analytics ──
 export async function handleFormosaAdminCarbon(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAnyRole(request, env);
+  const authErr = await requireAnyRole(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -1098,7 +1108,7 @@ export async function handleFormosaAdminCarbon(request, env) {
 // ── Admin: Activity Timeline ──
 export async function handleFormosaAdminTimeline(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAnyRole(request, env);
+  const authErr = await requireAnyRole(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -1129,7 +1139,7 @@ export async function handleFormosaAdminTimeline(request, env) {
 // ── Admin: User Table ──
 export async function handleFormosaAdminUsers(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -1211,7 +1221,7 @@ function zoomToCellSize(zoom) {
 // ── Admin: Server-side GPS Grid Clustering ──
 export async function handleFormosaAdminClusters(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -1520,7 +1530,7 @@ function buildMenuMessage() {
 // ── Rich Menu Setup ──
 export async function handleFormosaRichMenu(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
 
   const token = env.FORMOSA_LINE_TOKEN;
@@ -1734,7 +1744,7 @@ export async function handleFormosaPhotoCount(request, env) {
       // Verify caller identity
       const callerId = request.headers.get('X-Line-User-Id');
       if (callerId !== userId) {
-        const adminCheck = requireAdmin(request, env);
+        const adminCheck = await requireAdmin(request, env);
         if (adminCheck) return jsonResponse({ error: 'Forbidden' }, 403, request);
       }
 
@@ -1880,7 +1890,7 @@ export async function handleFormosaParticipantStatus(request, env) {
 // ── Admin: End Activity (batch complete all participants) ──
 export async function handleFormosaAdminEndActivity(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -2085,7 +2095,7 @@ export async function handleFormosaLineUsage(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
 
   try {
@@ -2133,7 +2143,7 @@ export async function handleFormosaFeedbackList(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
 
   try {
@@ -2245,7 +2255,7 @@ export async function handleFormosaFeedbackUpdate(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
-  const authErr = requireAdmin(request, env);
+  const authErr = await requireAdmin(request, env);
   if (authErr) return authErr;
 
   try {
