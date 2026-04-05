@@ -58,33 +58,27 @@ export async function handleStatus(request, env) {
   try {
     const indexStatus = await env.TICKER_KV.get('gsc:index_status', 'json');
     if (indexStatus?.sitemaps?.length) {
-      const total = indexStatus.sitemaps.reduce((s, sm) => s + (sm.submitted || 0), 0);
-      const indexed = indexStatus.sitemaps.reduce((s, sm) => s + (sm.indexed || 0), 0);
-      if (total > 0 && indexed / total < 0.5) {
+      const total = indexStatus.sitemaps.reduce((s, sm) => s + (parseInt(sm.submitted, 10) || 0), 0);
+      const indexed = indexStatus.sitemaps.reduce((s, sm) => s + (parseInt(sm.indexed, 10) || 0), 0);
+      if (total > 0 && indexed > 0 && indexed / total < 0.5) {
         alerts.push({
           level: 'info',
           msg: `索引覆蓋率 ${(indexed / total * 100).toFixed(1)}%（${indexed}/${total}）`,
           category: 'seo'
         });
       }
+      // Google deprecated the indexed field — skip alert if data unavailable
     }
   } catch (e) { console.error('[status] index error:', e.message); }
 
-  // ── 5. Worker 自身健康（self-check） ──
-  try {
-    const healthResp = await fetch('https://api.paulkuo.tw/health');
-    if (!healthResp.ok) {
-      alerts.push({ level: 'critical', msg: 'Worker /health endpoint 異常', category: 'system' });
-    }
-  } catch (e) {
-    alerts.push({ level: 'critical', msg: 'Worker health check 失敗', category: 'system' });
-  }
+  // ── 5. Worker 自身健康 ──
+  // Worker 能回應 /status 就代表自己是活的，不需要 self-fetch（會觸發 subrequest 問題）
 
   // ── 6. Cron 停擺 ──
   try {
     const lastFetch = await env.TICKER_KV.get('analytics:lastFetch');
     if (lastFetch) {
-      const hoursSince = (Date.now() - parseInt(lastFetch)) / 3600000;
+      const hoursSince = (Date.now() - new Date(lastFetch).getTime()) / 3600000;
       if (hoursSince > 12) {
         alerts.push({
           level: 'critical',
