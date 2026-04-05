@@ -4,7 +4,7 @@
  * Data stored in TICKER_KV with 24hr refresh throttle
  */
 
-const SITE_URL = 'https://paulkuo.tw';
+const SITE_URL = 'sc-domain:paulkuo.tw';
 
 // ── JWT / Auth ──────────────────────────────────────────────
 
