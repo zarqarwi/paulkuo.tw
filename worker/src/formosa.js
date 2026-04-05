@@ -1168,7 +1168,7 @@ export async function handleFormosaAdminTimeline(request, env) {
 // ── Admin: User Table ──
 export async function handleFormosaAdminUsers(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = await requireAdmin(request, env);
+  const authErr = await requireAnyRole(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -1250,7 +1250,7 @@ function zoomToCellSize(zoom) {
 // ── Admin: Server-side GPS Grid Clustering ──
 export async function handleFormosaAdminClusters(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-  const authErr = await requireAdmin(request, env);
+  const authErr = await requireAnyRole(request, env);
   if (authErr) return authErr;
   const adminToken = request.headers.get('X-Admin-Token') || 'anonymous';
   if (await checkRateLimitKV(env.TICKER_KV, `admin:${adminToken}`, 60, 30)) {
@@ -2124,7 +2124,7 @@ export async function handleFormosaLineUsage(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
-  const authErr = await requireAdmin(request, env);
+  const authErr = await requireAnyRole(request, env);
   if (authErr) return authErr;
 
   try {
@@ -2172,7 +2172,7 @@ export async function handleFormosaFeedbackList(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
-  const authErr = await requireAdmin(request, env);
+  const authErr = await requireAnyRole(request, env);
   if (authErr) return authErr;
 
   try {

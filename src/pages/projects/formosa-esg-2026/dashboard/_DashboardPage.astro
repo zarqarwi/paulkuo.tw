@@ -277,7 +277,7 @@ const linkPrefix = prefix;
     sessionStorage.setItem('formosa_esg_role', _role);
     if (_role === 'volunteer') {
       // Hide admin-only sections
-      var adminSections = ['lineUsageSection', 'pushSection', 'feedbackSection', 'userSection', 'mapSection'];
+      var adminSections = ['pushSection', 'userSection'];
       adminSections.forEach(function(id) { var el = document.getElementById(id); if (el) el.style.display = 'none'; });
     }
     return _role;
@@ -297,13 +297,11 @@ const linkPrefix = prefix;
         fetch(API + '/api/formosa/admin/surveys', { headers: ADMIN_HEADERS }).then(r => r.json())
       ];
 
-      // Admin-only endpoints (owner + manager)
-      if (isAdmin) {
-        baseFetches.push(
-          fetch(API + '/api/formosa/admin/clusters?zoom=' + zoom, { headers: ADMIN_HEADERS }).then(r => r.json()),
-          fetch(API + '/api/formosa/admin/users', { headers: ADMIN_HEADERS }).then(r => r.json())
-        );
-      }
+      // Clusters + users needed by all roles (map + rank distribution)
+      baseFetches.push(
+        fetch(API + '/api/formosa/admin/clusters?zoom=' + zoom, { headers: ADMIN_HEADERS }).then(r => r.json()),
+        fetch(API + '/api/formosa/admin/users', { headers: ADMIN_HEADERS }).then(r => r.json())
+      );
 
       var results = await Promise.allSettled(baseFetches);
       function settled(r) { return r.status === 'fulfilled' ? r.value : null; }
@@ -314,11 +312,14 @@ const linkPrefix = prefix;
       if (surveyRes) renderSurvey(surveyRes);
       if (timelineRes) renderTimeline(timelineRes);
 
-      if (isAdmin) {
-        var clusterRes = settled(results[4]), usersRes = settled(results[5]);
-        window._lastClusterRes = clusterRes;
-        if (dataRes || clusterRes) renderMap(dataRes ? (dataRes.gps_points || []) : [], clusterRes);
-        if (usersRes) { renderRanks(usersRes.users || []); renderUserTable(usersRes.users || []); }
+      var clusterRes = settled(results[4]), usersRes = settled(results[5]);
+      window._lastClusterRes = clusterRes;
+      if (dataRes || clusterRes) renderMap(dataRes ? (dataRes.gps_points || []) : [], clusterRes);
+      if (usersRes) {
+        renderRanks(usersRes.users || []);
+        if (_role === 'owner' || _role === 'manager') {
+          renderUserTable(usersRes.users || []);
+        }
       }
 
       var failCount = results.filter(function(r) { return r.status === 'rejected'; }).length;
@@ -1174,7 +1175,7 @@ const linkPrefix = prefix;
   var isDemo = new URLSearchParams(window.location.search).get('demo') === '1';
 
   // ── Init + Auto-refresh ──
-  if (isDemo) { fetchAllDemo(); } else { fetchRole().then(function(role) { fetchAll(); if (role !== 'volunteer') { fetchLineUsage(); fetchFeedback(); } }); }
+  if (isDemo) { fetchAllDemo(); } else { fetchRole().then(function(role) { fetchAll(); fetchLineUsage(); fetchFeedback(); }); }
   var refreshInterval = setInterval(function() {
     if (document.getElementById('autoRefresh').checked) {
       if (isDemo) fetchAllDemo(); else fetchAll();
