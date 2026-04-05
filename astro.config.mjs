@@ -2,11 +2,15 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
+import remarkWikilinks from './src/plugins/remark-wikilinks.mjs';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://paulkuo.tw',
   output: 'static',
+  markdown: {
+    remarkPlugins: [remarkWikilinks],
+  },
   i18n: {
     defaultLocale: 'zh-Hant',
     locales: ['zh-Hant', 'en', 'ja', 'zh-Hans'],

@@ -98,7 +98,7 @@ const schemaJson = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'DefinedTerm',
   name: title,
-  description: concept.body ? concept.body.slice(0, 200) : title,
+  description: concept.body ? concept.body.replace(/\[\[([^\]|]+\|)?([^\]]+)\]\]/g, '$2').slice(0, 200) : title,
   url: `${SITE.url}/wiki/${slug}/`,
   inDefinedTermSet: {
     '@type': 'DefinedTermSet',
@@ -466,9 +466,28 @@ const schemaJson = JSON.stringify({
   .concept-body :global(li) {
     margin: 0.3rem 0;
   }
-  /* Wikilinks [[slug]] render as plain text — style them subtly */
-  .concept-body :global(a[href^="/"]) {
+  /* Wikilinks — routable concepts/entities */
+  .concept-body :global(a.wikilink) {
     color: var(--accent-ai, #2563eb);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+  }
+  .concept-body :global(a.wikilink:hover) {
+    text-decoration-style: solid;
+  }
+  /* Wikilinks — known but non-routable (sources etc.) */
+  .concept-body :global(.wikilink-ref) {
+    color: var(--text-secondary, #64748b);
+    font-style: italic;
+  }
+  /* Wikilinks — unknown slug */
+  .concept-body :global(.wikilink-missing) {
+    color: var(--text-secondary, #94a3b8);
+    background: var(--bg-subtle, #f8fafc);
+    padding: 0 0.15rem;
+    border-radius: 2px;
+    border-bottom: 1px dashed #cbd5e1;
   }
 
   /* Sources */
