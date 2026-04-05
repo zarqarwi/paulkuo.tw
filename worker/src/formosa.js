@@ -583,8 +583,6 @@ export async function handleFormosaFlushBuffer(env) {
             await env.AUTH_DB.batch(stmts.slice(j, j + 100));
           }
           flushed += valid.length;
-          // Delete flushed keys
-          await Promise.all(valid.map(e => env.TICKER_KV.delete(e.key).catch(() => {})));
         } catch (e) {
           console.error('Flush batch error:', e.message);
           errors += valid.length;
@@ -598,9 +596,7 @@ export async function handleFormosaFlushBuffer(env) {
         }
       }
 
-      // Clean up invalid keys
       if (invalid.length > 0) {
-        await Promise.all(invalid.map(e => env.TICKER_KV.delete(e.key).catch(() => {})));
         skipped += invalid.length;
       }
     }
@@ -625,11 +621,7 @@ export async function handleFormosaFlushBuffer(env) {
     console.error('Flush fatal:', e.message);
     return { flushed, skipped, errors: errors + 1, error: e.message, duration_ms: Date.now() - startTime };
   } finally {
-    // 只有自己持有的鎖才刪（避免刪到下一輪的鎖）
-    const currentLock = await kv.get(lockKey);
-    if (currentLock === lockId) {
-      await kv.delete(lockKey);
-    }
+    // Lock 自動由 TTL 90s 過期清理，不再手動 delete
   }
 }
 
