@@ -83,6 +83,14 @@ const wiki_concepts = defineCollection({
   schema: wikiSchema,
 });
 
+const wiki_entities = defineCollection({
+  loader: glob({
+    base: 'src/content/wiki/entities',
+    pattern: '*.md',
+  }),
+  schema: wikiSchema,
+});
+
 const wiki_sources = defineCollection({
   loader: glob({
     base: 'src/content/wiki/sources',
@@ -97,5 +105,6 @@ export const collections = {
   articles_ja,
   articles_zhcn,
   wiki_concepts,
+  wiki_entities,
   wiki_sources,
 };

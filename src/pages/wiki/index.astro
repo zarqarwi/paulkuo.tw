@@ -9,8 +9,10 @@ import { PILLAR_MAP } from '../../config';
 
 const concepts = (await getCollection('wiki_concepts', ({ data }) => data.visibility === 'public'))
   .sort((a, b) => (b.data.source_count || 0) - (a.data.source_count || 0));
+const entities = (await getCollection('wiki_entities', ({ data }) => data.visibility === 'public'))
+  .sort((a, b) => (b.data.source_count || 0) - (a.data.source_count || 0));
 
-// Group by pillar
+// Group concepts by pillar
 const byPillar = new Map<string, typeof concepts>();
 for (const c of concepts) {
   const key = c.data.pillar;
@@ -66,7 +68,7 @@ const schemaJson = JSON.stringify({
         將散落的想法連結成可探索的概念網絡。
       </p>
       <div class="wiki-stats">
-        <span>{concepts.length} 個概念</span>
+        <span>{concepts.length} 個概念{entities.length > 0 ? ` · ${entities.length} 個人物` : ''}</span>
         <span class="wiki-stats-sep">·</span>
         <span>{publicGraph.nodes.length} 個節點</span>
         <span class="wiki-stats-sep">·</span>
@@ -95,6 +97,7 @@ const schemaJson = JSON.stringify({
         </label>
         <div class="graph-type-toggle" role="group" aria-label="節點類型">
           <label><input type="checkbox" data-node-type="concept" checked /><span class="dot dot-concept"></span>概念</label>
+          <label><input type="checkbox" data-node-type="entity" checked /><span class="dot dot-entity"></span>人物</label>
           <label><input type="checkbox" data-node-type="source" checked /><span class="dot dot-source"></span>來源</label>
         </div>
         <button id="wiki-graph-reset" type="button">重置</button>
@@ -152,6 +155,28 @@ const schemaJson = JSON.stringify({
         );
       })}
     </div>
+
+    {/* Entity list */}
+    {entities.length > 0 && (
+      <div class="wiki-concepts-section">
+        <h2 class="wiki-section-title">人物索引</h2>
+        <ul class="wiki-concept-list">
+          {entities.map(e => {
+            const slug = e.data.slug || e.id.replace(/\.md$/, '');
+            return (
+              <li>
+                <a href={`/wiki/${slug}/`} class="wiki-concept-link">
+                  <span class="wiki-concept-title">{e.data.title}</span>
+                  {e.data.source_count > 0 && (
+                    <span class="wiki-concept-count">{e.data.source_count} 篇來源</span>
+                  )}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    )}
   </section>
 </BaseLayout>
 

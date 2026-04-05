@@ -10,32 +10,34 @@ import { PILLAR_MAP, SITE } from '../../config';
 
 export async function getStaticPaths() {
   const concepts = await getCollection('wiki_concepts', ({ data }) => data.visibility === 'public');
+  const entities = await getCollection('wiki_entities', ({ data }) => data.visibility === 'public');
   const allSources = await getCollection('wiki_sources');
+
+  // Merge concepts + entities as routable wiki pages
+  const allPages = [...concepts, ...entities];
 
   // Load graph for mini graph
   const graphRaw = await import('../../content/wiki/meta/graph.json');
-  const pubIds = new Set(graphRaw.default.nodes.filter((n: any) => n.visibility === 'public').map((n: any) => n.id));
 
-  return concepts.map((concept) => {
-    const slug = concept.data.slug || concept.id.replace(/\.md$/, '');
+  return allPages.map((page) => {
+    const slug = page.data.slug || page.id.replace(/\.md$/, '');
 
-    // Find sources that link to this concept
+    // Find sources that link to this page
     const linkedSources = allSources.filter(s =>
       s.data.links_to.includes(slug)
     );
     const publicSources = linkedSources.filter(s => s.data.visibility === 'public');
     const internalCount = linkedSources.length - publicSources.length;
 
-    // Find linked concepts (from links_to field, only public)
-    const linkedConcepts = concept.data.links_to
-      .map(id => concepts.find(c => (c.data.slug || c.id.replace(/\.md$/, '')) === id))
+    // Find linked concepts/entities (from links_to field, only public)
+    const linkedConcepts = page.data.links_to
+      .map(id => allPages.find(c => (c.data.slug || c.id.replace(/\.md$/, '')) === id))
       .filter(Boolean);
 
-    // Build mini graph (1-hop from this concept, public only)
+    // Build mini graph (1-hop from this page, public only)
     const miniNodes = graphRaw.default.nodes.filter((n: any) => {
       if (n.visibility !== 'public') return false;
       if (n.id === slug) return true;
-      // 1-hop neighbors
       return graphRaw.default.edges.some((e: any) =>
         (e.source === slug && e.target === n.id) || (e.target === slug && e.source === n.id)
       );
@@ -48,7 +50,7 @@ export async function getStaticPaths() {
     return {
       params: { slug },
       props: {
-        concept,
+        concept: page,
         publicSources,
         internalCount,
         linkedConcepts,

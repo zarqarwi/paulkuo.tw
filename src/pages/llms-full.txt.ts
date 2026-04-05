@@ -83,6 +83,41 @@ export const GET: APIRoute = async () => {
     }
   }
 
+  // === Wiki Entities ===
+  const wikiEntities = (await getCollection('wiki_entities' as any, ({ data }: any) => data.visibility === 'public'))
+    .sort((a: any, b: any) => (b.data.source_count || 0) - (a.data.source_count || 0));
+
+  if (wikiEntities.length > 0) {
+    sections.push(
+      '# Wiki — 人物與組織',
+      '',
+      `> ${wikiEntities.length} public entities in Paul's knowledge graph.`,
+      '',
+      '---',
+      '',
+    );
+
+    for (const entity of wikiEntities) {
+      const slug = entity.data.slug || entity.id.replace(/\.md$/, '');
+      const pillar = PILLAR_MAP[entity.data.pillar as keyof typeof PILLAR_MAP];
+      const pillarLabel = pillar ? `${pillar.label} / ${pillar.labelEn}` : '';
+      const url = `${base}/wiki/${slug}/`;
+
+      sections.push(
+        `## ${entity.data.title}`,
+        '',
+        `- URL: ${url}`,
+        `- Pillar: ${pillarLabel}`,
+        `- Sources: ${entity.data.source_count || 0}`,
+        '',
+        entity.body || '(No content)',
+        '',
+        '---',
+        '',
+      );
+    }
+  }
+
   const body = sections.join('\n');
 
   return new Response(body, {
