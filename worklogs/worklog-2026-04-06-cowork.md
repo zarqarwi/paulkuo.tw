@@ -1,21 +1,28 @@
 # Worklog 2026-04-06 (Cowork Session)
 
 ## 完成日誌（最新在上）
+- 17:30 Plan A（TTL 取代 delete）本機提示詞寫好，交 Code 執行 Cowork
+- 17:00 KV 費用預估完成：3 情境模型（3K/10K/30K 用戶）+ 優化前後比較 Cowork
+- 16:30 收到 Code KV 審計結果，分析完畢：cron 佔 70-80% KV 費用 Cowork
 - 15:00 Apple Notes 儀表板同步完成 + LLM Wiki Phase 2 狀態更新 Cowork
 - 15:00 KV 成本優化 handoff 文件完成（code--kv-cost-audit-2026-04-06.md）Cowork
-- 14:30 GitHub webhook 調查完成：Cloudflare Pages webhook 完全不存在 Cowork
+- 14:30 GitHub webhook 調查完成：auto-build 正常（用 GitHub App 非 webhook）Cowork
 - 14:00 Session 開場：worklogs 掃描 + 儀表板讀取 + Step 2.5 驗證 Cowork
 
 ## 本 Session 產出
-1. **Webhook 調查結果**：GitHub repo Settings → Webhooks 頁面完全空白，沒有任何 webhook。Cloudflare Pages 不會自動觸發 build。
-2. **KV 成本審計 handoff**：`code--kv-cost-audit-2026-04-06.md`，含偵察指令、優化方向、D1 替代方案
-3. **儀表板更新**：新增 3 條完成日誌 + Formosa 待辦加上 webhook/KV 項目 + Wiki Phase 2 標記完成
+1. **Webhook 調查結論**：Cloudflare Pages 用 GitHub App 整合（非 repo-level webhook），auto-build 正常。之前 build 失敗是 wiki 243 檔案缺失。
+2. **KV 成本審計 handoff**：`code--kv-cost-audit-2026-04-06.md`
+3. **KV 費用預估**：活動期萬人場景 ~$46/月（未優化）、~$27/月（Plan A+B 優化後）
+4. **Plan A 本機提示詞**：`code-prompt-plan-a.md`（TTL 取代 delete，L0 風險）
+5. **Cron 成本發現**：cron 每 10 分鐘空轉佔 KV 費用 70-80%，是未來最大優化空間
 
-## 待 Paul 執行
-- [ ] Cloudflare Dashboard → Pages → paulkuo.tw → Settings → 重新連接 GitHub repo → 驗證: push 小 commit 看 Pages 是否自動 build
-- [ ] 把 KV 成本審計 handoff 交給 Code session 執行 → 驗證: Code 回報 KV 操作來源拆解
+## 待 Code 執行
+- [ ] Plan A：TTL 取代 KV delete → 驗證: grep -n '\.delete(' worker/src/formosa.js 應為 0
+- [ ] Plan A 部署 → 驗證: Cloudflare Dashboard KV metrics delete 計數趨近 0
 
 ## 待下個 Session
-- [ ] Code 完成 KV 審計後，根據結果決定優化方案
-- [ ] 確認 webhook 修復後 Pages auto-build 正常
+- [ ] 確認 Code 完成 Plan A + 部署
+- [ ] 討論 cron 頻率優化方向（conditional execution / 分頻率排程）
 - [ ] Worker 健康告警 dry run 驗證
+- [ ] 志工版說明書
+- [ ] mazu.today redirect rules
