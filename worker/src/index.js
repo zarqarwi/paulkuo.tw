@@ -28,6 +28,7 @@ import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './
 import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors, aggregateBotAnalytics, handleBotBackfill } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
+import { handleStatus } from './status.js';
 import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus, handleFormosaHealthAlert } from './formosa.js';
 import { fetchGscData, handleGsc } from './gsc.js';
 
@@ -261,6 +262,7 @@ async function handleRequest(request, env, ctx) {
 
   if (method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
   if (path === '/health') return handleHealth(request, env);
+  if (path === '/status' && method === 'GET') return handleStatus(request, env);
   if (path === '/gsc' && method === 'GET') return handleGsc(request, env);
   if (path === '/ticker' && method === 'GET') return handleTicker(request, env);
   if (path === '/visitors' && method === 'GET') return handleVisitors(request, env, corsHeaders);

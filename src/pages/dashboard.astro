@@ -31,6 +31,19 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
 </div>
 
 <div id="dashboardMain" class="dashboard-container" style="display:none">
+  <!-- ═══ B3：狀態總覽 ═══ -->
+  <section class="dash-alerts" id="statusAlerts">
+    <div class="dash-alerts-header">
+      <span class="dash-alerts-indicator" id="statusIndicator" data-status="loading">●</span>
+      <h3>狀態總覽</h3>
+      <span class="dash-alerts-time" id="statusTime"></span>
+    </div>
+    <div class="dash-alerts-summary" id="statusSummary"></div>
+    <div class="dash-alerts-list" id="statusList">
+      <p class="dash-alerts-loading">載入中…</p>
+    </div>
+  </section>
+
   <header class="dash-header">
     <div>
       <h1>API Cost Dashboard</h1>
@@ -98,6 +111,40 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
   </div>
 
   <TrafficAnalytics />
+
+  <!-- ═══ B2：成本 vs 效益 ═══ -->
+  <section class="dash-section" id="roiSection">
+    <h3>投入 vs 產出（本月摘要）</h3>
+    <p class="dash-subtitle">成本為即時數據；搜尋數據有 2-3 天延遲</p>
+
+    <div class="dash-roi-grid">
+      <div class="dash-roi-col">
+        <h4>投入</h4>
+        <div class="dash-roi-item"><span class="dash-roi-label">API 成本</span><span class="dash-roi-value" id="roiApiCost">—</span></div>
+        <div class="dash-roi-item"><span class="dash-roi-label">Claude 方案</span><span class="dash-roi-value" id="roiClaudeCost">—</span></div>
+        <div class="dash-roi-item"><span class="dash-roi-label">AI 協作時間</span><span class="dash-roi-value" id="roiAiTime">—</span></div>
+      </div>
+      <div class="dash-roi-col">
+        <h4>產出</h4>
+        <div class="dash-roi-item"><span class="dash-roi-label">GSC 點擊</span><span class="dash-roi-value" id="roiClicks">—</span></div>
+        <div class="dash-roi-item"><span class="dash-roi-label">GSC 曝光</span><span class="dash-roi-value" id="roiImpressions">—</span></div>
+        <div class="dash-roi-item"><span class="dash-roi-label">網站訪客</span><span class="dash-roi-value" id="roiVisitors">—</span></div>
+      </div>
+    </div>
+
+    <div class="dash-roi-unit" id="roiUnitCosts">
+      <span class="dash-roi-unit-item" id="roiCpc">—/click</span>
+      <span class="dash-roi-unit-sep">·</span>
+      <span class="dash-roi-unit-item" id="roiCpi">—/impression</span>
+      <span class="dash-roi-unit-sep">·</span>
+      <span class="dash-roi-unit-item" id="roiCpv">—/visitor</span>
+    </div>
+
+    <div class="dash-roi-chart">
+      <h4>趨勢（過去 4 週）</h4>
+      <div class="chart-wrap"><canvas id="roiTrendChart"></canvas></div>
+    </div>
+  </section>
 
   <section class="dash-section" id="claudeUsage">
     <h3>🤖 Claude Max 使用量</h3>
@@ -268,6 +315,146 @@ async function initClaudeUsage() {
   }
 }
 
+// ═══ B3：狀態總覽 ═══
+async function initStatus() {
+  try {
+    var resp = await fetch(WORKER + '/status');
+    if (!resp.ok) throw new Error('Status API error');
+    var data = await resp.json();
+
+    var indicator = document.getElementById('statusIndicator');
+    indicator.dataset.status = data.overall;
+
+    if (data.checkedAt) {
+      var t = new Date(data.checkedAt);
+      document.getElementById('statusTime').textContent =
+        t.toLocaleString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    var summary = document.getElementById('statusSummary');
+    var critCount = data.alerts.filter(function(a) { return a.level === 'critical'; }).length;
+    var warnCount = data.alerts.filter(function(a) { return a.level === 'warning'; }).length;
+    var infoCount = data.alerts.filter(function(a) { return a.level === 'info'; }).length;
+
+    var parts = [];
+    if (critCount) parts.push('\uD83D\uDD34 ' + critCount + ' \u56B4\u91CD');
+    if (warnCount) parts.push('\u26A0\uFE0F ' + warnCount + ' \u8B66\u544A');
+    if (infoCount) parts.push('\u2139\uFE0F ' + infoCount + ' \u63D0\u9192');
+    if (!parts.length) parts.push('\uD83D\uDFE2 \u6240\u6709\u7CFB\u7D71\u6B63\u5E38\u904B\u4F5C');
+    summary.innerHTML = parts.join(' \u00B7 ');
+
+    var list = document.getElementById('statusList');
+    if (data.alerts.length === 0) {
+      list.innerHTML = '<p class="dash-alerts-ok">\u2705 \u7121\u7570\u5E38\uFF0C\u6240\u6709\u6307\u6A19\u6B63\u5E38</p>';
+    } else {
+      var order = { critical: 0, warning: 1, info: 2 };
+      var sorted = data.alerts.slice().sort(function(a, b) { return (order[a.level] || 9) - (order[b.level] || 9); });
+      list.innerHTML = sorted.map(function(a) {
+        var icon = a.level === 'critical' ? '\uD83D\uDD34' : a.level === 'warning' ? '\u26A0\uFE0F' : '\u2139\uFE0F';
+        return '<div class="dash-alert dash-alert-' + a.level + '">' +
+          '<span class="dash-alert-icon">' + icon + '</span>' +
+          '<span class="dash-alert-msg">' + a.msg + '</span>' +
+          '<span class="dash-alert-cat">' + a.category + '</span></div>';
+      }).join('');
+    }
+  } catch (err) {
+    console.warn('[Status] Load failed:', err);
+    document.getElementById('statusList').innerHTML =
+      '<p class="dash-alerts-error">\u72C0\u614B\u8F09\u5165\u5931\u6557\uFF0C\u7A0D\u5F8C\u518D\u8A66</p>';
+  }
+}
+
+// ═══ B2：成本 vs 效益 ═══
+async function initRoi() {
+  try {
+    var results = await Promise.all([
+      fetch(WORKER + '/ticker'),
+      fetch(WORKER + '/gsc'),
+      fetch(WORKER + '/analytics')
+    ]);
+    var ticker = await results[0].json();
+    var gsc = await results[1].json();
+    var analytics = await results[2].json();
+
+    var apiCost = (ticker && ticker.costs && ticker.costs.monthUSD) || 0;
+    var claudePlan = (ticker && ticker.claudeSub && ticker.claudeSub.planUSD) || 0;
+    var claudeExtra = (ticker && ticker.claudeSub && ticker.claudeSub.extraSpent) || 0;
+    var claudeTotal = claudePlan + claudeExtra;
+    var aiHours = (ticker && ticker.timing && ticker.timing.monthHours) || 0;
+    var totalCost = apiCost + claudeTotal;
+
+    document.getElementById('roiApiCost').textContent = '$' + apiCost.toFixed(2);
+    document.getElementById('roiClaudeCost').textContent = '$' + claudeTotal.toFixed(0);
+    document.getElementById('roiAiTime').textContent = aiHours.toFixed(1) + 'hr';
+
+    var clicks = (gsc && gsc.analytics && gsc.analytics.clicks) || 0;
+    var impressions = (gsc && gsc.analytics && gsc.analytics.impressions) || 0;
+    var visitors = (analytics && analytics.overview && (analytics.overview.visits || analytics.overview.humanVisits)) || 0;
+
+    document.getElementById('roiClicks').textContent = clicks.toLocaleString();
+    document.getElementById('roiImpressions').textContent = impressions.toLocaleString();
+    document.getElementById('roiVisitors').textContent = visitors.toLocaleString();
+
+    var cpc = clicks > 0 ? '$' + (totalCost / clicks).toFixed(2) : '\u2014';
+    var cpi = impressions > 0 ? '$' + (totalCost / impressions).toFixed(3) : '\u2014';
+    var cpv = visitors > 0 ? '$' + (totalCost / visitors).toFixed(2) : '\u2014';
+
+    document.getElementById('roiCpc').textContent = cpc + '/click';
+    document.getElementById('roiCpi').textContent = cpi + '/impression';
+    document.getElementById('roiCpv').textContent = cpv + '/visitor';
+
+    // Trend chart
+    var dailyClicks = (gsc && gsc.analytics && gsc.analytics.dailyClicks) || [];
+    if (dailyClicks.length >= 7 && typeof Chart !== 'undefined') {
+      var weeks = [];
+      for (var i = 0; i < dailyClicks.length; i += 7) {
+        var chunk = dailyClicks.slice(i, i + 7);
+        if (chunk.length < 3) continue;
+        weeks.push({
+          label: (chunk[0].date || '').slice(5) || ('W' + (weeks.length + 1)),
+          clicks: chunk.reduce(function(s, d) { return s + d.clicks; }, 0),
+          impressions: chunk.reduce(function(s, d) { return s + d.impressions; }, 0)
+        });
+      }
+      var weeklyCost = totalCost / 4;
+      var ctx = document.getElementById('roiTrendChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: weeks.map(function(w) { return w.label; }),
+          datasets: [
+            { label: '\u9031\u6210\u672C ($)', data: weeks.map(function() { return +weeklyCost.toFixed(2); }),
+              borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.08)', yAxisID: 'yCost',
+              tension: 0.3, borderWidth: 2, pointRadius: 3 },
+            { label: '\u9031\u9EDE\u64CA', data: weeks.map(function(w) { return w.clicks; }),
+              borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', yAxisID: 'yTraffic',
+              tension: 0.3, borderWidth: 2, pointRadius: 3 },
+            { label: '\u9031\u66DD\u5149', data: weeks.map(function(w) { return w.impressions; }),
+              borderColor: '#10b981', backgroundColor: 'rgba(34,197,94,0.08)', yAxisID: 'yTraffic',
+              tension: 0.3, borderWidth: 2, borderDash: [5, 5], pointRadius: 3 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { labels: { color: '#5A5A5A', font: { size: 11, family: 'DM Sans' } } } },
+          scales: {
+            yCost: { type: 'linear', position: 'left',
+              title: { display: true, text: '\u6210\u672C ($)', color: '#ef4444' },
+              ticks: { color: '#ef4444' }, grid: { color: '#E8E6E1' } },
+            yTraffic: { type: 'linear', position: 'right',
+              title: { display: true, text: '\u6D41\u91CF', color: '#3b82f6' },
+              ticks: { color: '#3b82f6' }, grid: { drawOnChartArea: false } },
+            x: { ticks: { color: '#8A8A8A' }, grid: { color: '#E8E6E1' } }
+          }
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('[ROI] Load failed:', err);
+  }
+}
+
 async function initDashboard() {
   const live = await fetchLiveCosts();
   // Merge: static (costs.jsonl) + live (Worker KV)
@@ -281,6 +468,8 @@ async function initDashboard() {
   });
   if (merged.length > 0) render(merged);
   initClaudeUsage();
+  initStatus();
+  initRoi();
 }
 
 // Now safe to call after all const declarations
@@ -582,11 +771,141 @@ function render(records) {
     transition: width 0.6s ease, background 0.3s;
   }
 
+  /* ═══ B3：狀態總覽 ═══ */
+  .dash-alerts {
+    margin-bottom: 2rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+  .dash-alerts-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .dash-alerts-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+  }
+  .dash-alerts-indicator {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  .dash-alerts-indicator[data-status="loading"] { color: #8A8A8A; }
+  .dash-alerts-indicator[data-status="healthy"] { color: #059669; }
+  .dash-alerts-indicator[data-status="warning"] { color: #B45309; }
+  .dash-alerts-indicator[data-status="critical"] { color: #ef4444; animation: pulse-alert 1.5s infinite; }
+  @keyframes pulse-alert {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .dash-alerts-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .dash-alerts-summary {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .dash-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.85rem;
+  }
+  .dash-alert:last-child { border-bottom: none; }
+  .dash-alert-icon { flex-shrink: 0; }
+  .dash-alert-msg { flex: 1; color: var(--text-primary); }
+  .dash-alert-cat {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: var(--bg-section);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .dash-alerts-ok, .dash-alerts-loading, .dash-alerts-error {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .dash-alerts-error { color: #ef4444; }
+  .dash-alert-critical { border-left: 3px solid #ef4444; padding-left: 0.75rem; }
+  .dash-alert-warning { border-left: 3px solid #B45309; padding-left: 0.75rem; }
+  .dash-alert-info { border-left: 3px solid #3b82f6; padding-left: 0.75rem; }
+
+  /* ═══ B2：成本 vs 效益 ═══ */
+  .dash-roi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 1.25rem 0 1.5rem;
+  }
+  .dash-roi-col h4 {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .dash-roi-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .dash-roi-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .dash-roi-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .dash-roi-unit {
+    text-align: center;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: var(--bg-section);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--brand-navy);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .dash-roi-unit-item { margin: 0 0.25rem; }
+  .dash-roi-unit-sep { color: var(--text-muted); margin: 0 0.5rem; }
+  .dash-roi-chart h4 {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
   @media (max-width: 768px) {
     .dash-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
     .charts-row { grid-template-columns: 1fr; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .quota-grid { grid-template-columns: 1fr; }
     .claude-kpis { grid-template-columns: repeat(2, 1fr); }
+    .dash-roi-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .dash-roi-unit { font-size: 0.9rem; }
   }
 </style>

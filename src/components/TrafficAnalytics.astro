@@ -53,6 +53,53 @@
     <div class="ta-devices" id="taDevices"></div>
     <div class="ta-duration" id="taDuration"></div>
     <div class="ta-bot-traffic" id="taBotTraffic"></div>
+
+    <!-- ═══ B1：SEO 健康度 ═══ -->
+    <div class="ta-seo-section" id="seoHealth">
+      <h4 class="ta-section-title">搜尋表現（28 天）</h4>
+      <p class="ta-seo-delay-note">搜尋數據有 2-3 天延遲，來源：Google Search Console</p>
+
+      <div class="ta-seo-kpis" id="seoKpis">
+        <div class="ak"><span class="ak-v" id="seoClicks">—</span><span class="ak-l">點擊</span></div>
+        <div class="ak"><span class="ak-v" id="seoImpressions">—</span><span class="ak-l">曝光</span></div>
+        <div class="ak"><span class="ak-v" id="seoCtr">—</span><span class="ak-l">CTR</span></div>
+        <div class="ak"><span class="ak-v" id="seoPosition">—</span><span class="ak-l">平均排名</span></div>
+      </div>
+
+      <div class="ta-seo-sparkline" id="seoSparkline">
+        <h4 class="ta-bot-sub">每日點擊趨勢</h4>
+        <svg id="seoSparkSvg" width="100%" height="60" preserveAspectRatio="none"></svg>
+      </div>
+
+      <div class="ta-seo-tables">
+        <div class="ta-seo-table-wrap">
+          <h4 class="ta-bot-sub">熱門關鍵字</h4>
+          <div class="ta-seo-table-scroll">
+            <table id="seoQueryTable">
+              <thead><tr><th>關鍵字</th><th>點擊</th><th>曝光</th><th>排名</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="ta-seo-table-wrap">
+          <h4 class="ta-bot-sub">熱門頁面</h4>
+          <div class="ta-seo-table-scroll">
+            <table id="seoPageTable">
+              <thead><tr><th>頁面</th><th>點擊</th><th>曝光</th><th>排名</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="ta-seo-index" id="seoIndex">
+        <h4 class="ta-bot-sub">索引覆蓋率</h4>
+        <div class="ta-seo-index-bar">
+          <div class="ta-seo-index-filled" id="seoIndexFilled"></div>
+        </div>
+        <p class="ta-seo-index-detail" id="seoIndexDetail">載入中…</p>
+      </div>
+    </div>
   </div>
 
   <!-- Error state -->
@@ -482,6 +529,80 @@
 
       updateBotView(7);
     }
+
+    // ═══ B1：SEO 健康度 fetch ═══
+    (async function loadSeoHealth() {
+      try {
+        var resp = await fetch('https://api.paulkuo.tw/gsc');
+        if (!resp.ok) throw new Error('GSC API error');
+        var seoData = await resp.json();
+
+        if (seoData.analytics) {
+          var a = seoData.analytics;
+          document.getElementById('seoClicks').textContent = a.clicks.toLocaleString();
+          document.getElementById('seoClicks').style.color = '#10b981';
+          document.getElementById('seoImpressions').textContent = a.impressions.toLocaleString();
+          document.getElementById('seoImpressions').style.color = '#6366f1';
+          document.getElementById('seoCtr').textContent = (a.ctr * 100).toFixed(1) + '%';
+          document.getElementById('seoCtr').style.color = '#0891b2';
+
+          var posEl = document.getElementById('seoPosition');
+          posEl.textContent = a.avgPosition.toFixed(1);
+          if (a.avgPosition < 10) posEl.style.color = '#059669';
+          else if (a.avgPosition <= 20) posEl.style.color = '#B45309';
+          else posEl.style.color = '#ef4444';
+
+          if (a.dailyClicks && a.dailyClicks.length > 1) {
+            var svg = document.getElementById('seoSparkSvg');
+            var clicks = a.dailyClicks.map(function(d) { return d.clicks; });
+            var maxC = Math.max.apply(null, clicks) || 1;
+            var w = svg.clientWidth || 600;
+            var h = 60;
+            var pts = clicks.map(function(v, i) {
+              return ((i / (clicks.length - 1)) * w).toFixed(1) + ',' + (h - (v / maxC) * (h - 4)).toFixed(1);
+            }).join(' ');
+            svg.innerHTML =
+              '<polyline points="0,' + h + ' ' + pts + ' ' + w + ',' + h + '" fill="rgba(59,130,246,0.08)" stroke="none"/>' +
+              '<polyline points="' + pts + '" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+          }
+        }
+
+        if (seoData.topQueries && seoData.topQueries.length) {
+          var qtbody = document.querySelector('#seoQueryTable tbody');
+          qtbody.innerHTML = seoData.topQueries.slice(0, 10).map(function(q) {
+            var name = q.query.length > 20 ? q.query.slice(0, 18) + '\u2026' : q.query;
+            return '<tr><td title="' + q.query + '">' + name + '</td><td>' + q.clicks + '</td><td>' + q.impressions + '</td><td>' + q.position.toFixed(1) + '</td></tr>';
+          }).join('');
+        }
+
+        if (seoData.topPages && seoData.topPages.length) {
+          var ptbody = document.querySelector('#seoPageTable tbody');
+          ptbody.innerHTML = seoData.topPages.slice(0, 10).map(function(p) {
+            var path = p.page.replace('https://paulkuo.tw', '');
+            var display = path.length > 25 ? path.slice(0, 23) + '\u2026' : path;
+            return '<tr><td title="' + path + '">' + display + '</td><td>' + p.clicks + '</td><td>' + p.impressions + '</td><td>' + p.position.toFixed(1) + '</td></tr>';
+          }).join('');
+        }
+
+        if (seoData.indexStatus && seoData.indexStatus.sitemaps && seoData.indexStatus.sitemaps.length) {
+          var sitemaps = seoData.indexStatus.sitemaps;
+          var submitted = sitemaps.reduce(function(s, sm) { return s + (sm.submitted || 0); }, 0);
+          var indexed = sitemaps.reduce(function(s, sm) { return s + (sm.indexed || 0); }, 0);
+          var pct = submitted > 0 ? (indexed / submitted) * 100 : 0;
+          var filledEl = document.getElementById('seoIndexFilled');
+          filledEl.style.width = pct.toFixed(1) + '%';
+          if (pct >= 70) filledEl.style.backgroundColor = '#059669';
+          else if (pct >= 50) filledEl.style.backgroundColor = '#B45309';
+          else filledEl.style.backgroundColor = '#ef4444';
+          document.getElementById('seoIndexDetail').textContent =
+            '\u5DF2\u7D22\u5F15 ' + indexed + ' \u00B7 \u7E3D\u8A08 ' + submitted + '\uFF08' + pct.toFixed(1) + '%\uFF09';
+        }
+      } catch (err) {
+        console.warn('[SEO Health] Load failed:', err);
+        var seoTitle = document.querySelector('#seoHealth .ta-section-title');
+        if (seoTitle) seoTitle.textContent += '\uFF08\u8F09\u5165\u5931\u6557\uFF09';
+      }
+    })();
 
     // Show content, hide loading
     document.getElementById('taLoading').style.display = 'none';
@@ -1008,6 +1129,82 @@
     font-size: 0.8rem;
   }
 
+  /* ═══ B1：SEO 健康度 ═══ */
+  .ta-seo-section {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-light, #e8e6e1);
+  }
+  .ta-seo-section :global(.ta-seo-delay-note) {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin: 0.25rem 0 1rem;
+  }
+  .ta-seo-section :global(.ta-seo-kpis) {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-light, #e8e6e1);
+  }
+  .ta-seo-section :global(.ta-seo-sparkline) {
+    margin-bottom: 1.25rem;
+  }
+  .ta-seo-section :global(.ta-seo-tables) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .ta-seo-section :global(.ta-seo-table-scroll) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ta-seo-section :global(.ta-seo-table-scroll table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+  .ta-seo-section :global(.ta-seo-table-scroll th) {
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 2px solid var(--border, #e8e6e1);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .ta-seo-section :global(.ta-seo-table-scroll td) {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border-light, #e8e6e1);
+    color: var(--text-secondary, #5a5a5a);
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .ta-seo-section :global(.ta-seo-table-scroll tr:hover td) {
+    background: rgba(99,102,241,0.04);
+  }
+  .ta-seo-section :global(.ta-seo-index-bar) {
+    width: 100%;
+    height: 10px;
+    background: var(--bg-section, #f5f0eb);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .ta-seo-section :global(.ta-seo-index-filled) {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.6s ease;
+    background-color: #B45309;
+  }
+  .ta-seo-section :global(.ta-seo-index-detail) {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+  }
+
   @media (max-width: 768px) {
     .traffic-analytics { padding: 1.25rem; }
     .ta-kpis { gap: 1rem; flex-wrap: wrap; }
@@ -1015,5 +1212,7 @@
     .ta-chart { height: 160px; }
     .ta-header { flex-direction: column; gap: 0.5rem; }
     .ta-toggle { align-self: flex-start; }
+    .ta-seo-section :global(.ta-seo-kpis) { gap: 1rem; flex-wrap: wrap; }
+    .ta-seo-section :global(.ta-seo-tables) { grid-template-columns: 1fr; }
   }
 </style>
