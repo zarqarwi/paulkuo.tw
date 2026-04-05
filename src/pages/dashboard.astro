@@ -149,9 +149,22 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
   <!-- ═══ LINE Push Message ═══ -->
   <section class="dash-section" id="pushSection">
     <h3>LINE 推播訊息</h3>
-    <p class="dash-subtitle">發送文字訊息給 Formosa ESG 用戶（URL 會自動變成可點擊連結）</p>
+    <p class="dash-subtitle">發送文字、圖片或組合訊息給 Formosa ESG 用戶</p>
     <div class="push-form">
+      <div class="push-mode-bar">
+        <button class="push-mode-btn active" data-mode="text">文字</button>
+        <button class="push-mode-btn" data-mode="image">圖片</button>
+        <button class="push-mode-btn" data-mode="image+text">圖片+文字</button>
+        <button class="push-mode-btn" data-mode="template">模板</button>
+      </div>
       <textarea id="pushText" class="push-textarea" rows="4" placeholder="輸入訊息內容（支援多行，URL 自動轉連結）"></textarea>
+      <div id="pushImageFields" class="push-image-fields" style="display:none">
+        <input id="pushImageUrl" type="url" class="push-input" placeholder="圖片 URL（HTTPS，JPEG 或 PNG）">
+        <input id="pushPreviewUrl" type="url" class="push-input" placeholder="預覽圖 URL（選填，未填則同上）">
+        <div id="pushImagePreview" class="push-image-preview" style="display:none">
+          <img id="pushImageThumb" alt="圖片預覽">
+        </div>
+      </div>
       <div class="push-controls">
         <select id="pushRole" class="push-select">
           <option value="all">全部用戶</option>
@@ -513,19 +526,70 @@ async function initDashboard() {
   var pushModalPreview = document.getElementById('pushModalPreview');
   var pushModalCancel = document.getElementById('pushModalCancel');
   var pushModalConfirm = document.getElementById('pushModalConfirm');
+  var pushImageFields = document.getElementById('pushImageFields');
+  var pushImageUrl = document.getElementById('pushImageUrl');
+  var pushPreviewUrl = document.getElementById('pushPreviewUrl');
+  var pushImagePreview = document.getElementById('pushImagePreview');
+  var pushImageThumb = document.getElementById('pushImageThumb');
+  var modeBtns = document.querySelectorAll('.push-mode-btn');
   var pendingSend = null;
+  var currentMode = 'text';
 
-  // Enable button when text is entered
-  pushText.addEventListener('input', function() {
-    pushBtn.disabled = !pushText.value.trim();
+  // Mode switching
+  modeBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      modeBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentMode = btn.dataset.mode;
+
+      var needsText = currentMode === 'text' || currentMode === 'image+text' || currentMode === 'template';
+      var needsImage = currentMode === 'image' || currentMode === 'image+text';
+
+      pushText.style.display = needsText ? '' : 'none';
+      pushImageFields.style.display = needsImage ? '' : 'none';
+      validatePushBtn();
+    });
   });
+
+  // Image URL preview
+  var imgDebounce;
+  pushImageUrl.addEventListener('input', function() {
+    clearTimeout(imgDebounce);
+    var url = pushImageUrl.value.trim();
+    if (!url) { pushImagePreview.style.display = 'none'; validatePushBtn(); return; }
+    imgDebounce = setTimeout(function() {
+      pushImageThumb.onload = function() { pushImagePreview.style.display = ''; };
+      pushImageThumb.onerror = function() { pushImagePreview.style.display = 'none'; };
+      pushImageThumb.src = url;
+    }, 500);
+    validatePushBtn();
+  });
+
+  // Validate send button based on current mode
+  function validatePushBtn() {
+    var hasText = pushText.value.trim().length > 0;
+    var hasImage = pushImageUrl.value.trim().length > 0;
+    if (currentMode === 'text' || currentMode === 'template') pushBtn.disabled = !hasText;
+    else if (currentMode === 'image') pushBtn.disabled = !hasImage;
+    else if (currentMode === 'image+text') pushBtn.disabled = !hasText || !hasImage;
+  }
+  pushText.addEventListener('input', validatePushBtn);
+
+  // Build request body for current mode
+  function buildBody(role, dryRun) {
+    var payload = { role: role, mode: currentMode, dry_run: dryRun };
+    if (currentMode !== 'image') payload.text = pushText.value.trim();
+    if (currentMode === 'image' || currentMode === 'image+text') {
+      payload.image_url = pushImageUrl.value.trim();
+      var pUrl = pushPreviewUrl.value.trim();
+      if (pUrl) payload.preview_url = pUrl;
+    }
+    return payload;
+  }
 
   // Step 1: Click send → dry run to get count → show confirmation modal
   pushBtn.addEventListener('click', async function() {
-    var text = pushText.value.trim();
-    if (!text) return;
     var role = pushRole.value;
-
     pushBtn.disabled = true;
     pushBtn.textContent = '查詢中…';
 
@@ -533,7 +597,7 @@ async function initDashboard() {
       var res = await fetch(WORKER + '/api/formosa/push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Admin-Token': dashCode },
-        body: JSON.stringify({ role: role, text: text, mode: 'text', dry_run: true })
+        body: JSON.stringify(buildBody(role, true))
       });
       var data = await res.json();
       if (!res.ok) throw new Error(data.error || 'API error');
@@ -542,27 +606,37 @@ async function initDashboard() {
       if (count === 0) {
         showPushStatus('warn', '該群組沒有可推播的用戶');
         pushBtn.textContent = '發送推播';
-        pushBtn.disabled = false;
+        validatePushBtn();
         return;
       }
 
       var roleLabel = pushRole.options[pushRole.selectedIndex].text;
-      var previewText = text.length > 200 ? text.substring(0, 200) + '…' : text;
-
-      pushModalPreview.innerHTML =
+      var modeLabels = { text: '文字', image: '圖片', 'image+text': '圖片+文字', template: '模板' };
+      var previewHtml =
         '<div class="push-preview-meta">' +
           '<span>對象：<strong>' + roleLabel + '</strong></span>' +
           '<span>人數：<strong>' + count + ' 人</strong></span>' +
-        '</div>' +
-        '<div class="push-preview-text">' + previewText.replace(/\n/g, '<br>') + '</div>';
+          '<span>類型：<strong>' + (modeLabels[currentMode] || currentMode) + '</strong></span>' +
+        '</div>';
 
-      pendingSend = { text: text, role: role, count: count };
+      if (currentMode !== 'image') {
+        var t = pushText.value.trim();
+        var previewText = t.length > 200 ? t.substring(0, 200) + '…' : t;
+        previewHtml += '<div class="push-preview-text">' + previewText.replace(/\n/g, '<br>') + '</div>';
+      }
+      if (currentMode === 'image' || currentMode === 'image+text') {
+        previewHtml += '<div class="push-preview-image"><img src="' + pushImageUrl.value.trim() + '" alt="預覽"></div>';
+      }
+
+      pushModalPreview.innerHTML = previewHtml;
+      pendingSend = buildBody(role, false);
+      pendingSend._count = count;
       pushModal.style.display = 'flex';
     } catch (e) {
       showPushStatus('error', '查詢失敗：' + e.message);
     }
     pushBtn.textContent = '發送推播';
-    pushBtn.disabled = !pushText.value.trim();
+    validatePushBtn();
   });
 
   // Step 2: Cancel modal
@@ -584,16 +658,21 @@ async function initDashboard() {
     pushModalConfirm.textContent = '發送中…';
 
     try {
+      var sendPayload = Object.assign({}, pendingSend);
+      delete sendPayload._count;
       var res = await fetch(WORKER + '/api/formosa/push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Admin-Token': dashCode },
-        body: JSON.stringify({ role: pendingSend.role, text: pendingSend.text, mode: 'text' })
+        body: JSON.stringify(sendPayload)
       });
       var data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Send failed');
 
-      showPushStatus('ok', '已發送給 ' + data.sent + ' 位用戶（' + pendingSend.role + '）');
+      showPushStatus('ok', '已發送給 ' + data.sent + ' 位用戶（' + data.mode + '）');
       pushText.value = '';
+      pushImageUrl.value = '';
+      pushPreviewUrl.value = '';
+      pushImagePreview.style.display = 'none';
       pushBtn.disabled = true;
     } catch (e) {
       showPushStatus('error', '發送失敗：' + e.message);
@@ -913,6 +992,42 @@ function render(records) {
   }
 
   /* ═══ LINE Push Message ═══ */
+  .push-mode-bar {
+    display: flex; gap: 0.5rem; margin-bottom: 0.75rem;
+  }
+  .push-mode-btn {
+    padding: 0.4rem 1rem; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--bg); color: var(--text-secondary); font-size: 0.82rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .push-mode-btn:hover { border-color: var(--brand-navy); color: var(--text-primary); }
+  .push-mode-btn.active {
+    background: var(--brand-navy); color: white; border-color: var(--brand-navy);
+  }
+  .push-image-fields {
+    display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;
+  }
+  .push-input {
+    width: 100%; padding: 0.6rem 1rem; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 0.85rem; background: var(--bg);
+    color: var(--text-primary); box-sizing: border-box; transition: border-color 0.2s;
+  }
+  .push-input:focus { outline: none; border-color: var(--brand-navy); }
+  .push-input::placeholder { color: var(--text-muted); }
+  .push-image-preview {
+    border: 1px solid var(--border-light); border-radius: 8px;
+    overflow: hidden; max-width: 240px;
+  }
+  .push-image-preview img {
+    display: block; width: 100%; height: auto; max-height: 160px; object-fit: cover;
+  }
+  .push-preview-image {
+    margin-top: 0.75rem; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--border-light); max-width: 280px;
+  }
+  .push-preview-image img {
+    display: block; width: 100%; height: auto; max-height: 180px; object-fit: cover;
+  }
   .push-form { margin-top: 1rem; }
   .push-textarea {
     width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border);
