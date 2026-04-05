@@ -146,6 +146,37 @@ const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
     </div>
   </section>
 
+  <!-- ═══ LINE Push Message ═══ -->
+  <section class="dash-section" id="pushSection">
+    <h3>LINE 推播訊息</h3>
+    <p class="dash-subtitle">發送文字訊息給 Formosa ESG 用戶（URL 會自動變成可點擊連結）</p>
+    <div class="push-form">
+      <textarea id="pushText" class="push-textarea" rows="4" placeholder="輸入訊息內容（支援多行，URL 自動轉連結）"></textarea>
+      <div class="push-controls">
+        <select id="pushRole" class="push-select">
+          <option value="all">全部用戶</option>
+          <option value="participant">香客 Pilgrims</option>
+          <option value="volunteer">志工 Volunteers</option>
+          <option value="admin">管理員 Admins</option>
+        </select>
+        <button id="pushBtn" class="push-btn" disabled>發送推播</button>
+      </div>
+      <div id="pushStatus" class="push-status" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- ═══ Push Confirmation Modal ═══ -->
+  <div id="pushModal" class="push-modal-overlay" style="display:none">
+    <div class="push-modal">
+      <h3>確認發送推播</h3>
+      <div id="pushModalPreview" class="push-modal-preview"></div>
+      <div class="push-modal-actions">
+        <button id="pushModalCancel" class="push-modal-btn cancel">取消</button>
+        <button id="pushModalConfirm" class="push-modal-btn confirm">確認發送</button>
+      </div>
+    </div>
+  </div>
+
   <section class="dash-section" id="claudeUsage">
     <h3>🤖 Claude Max 使用量</h3>
     <p class="dash-subtitle">訂閱方案費用追蹤 · <span id="claudeUpdated">載入中...</span></p>
@@ -472,6 +503,116 @@ async function initDashboard() {
   initRoi();
 }
 
+// ═══ LINE Push Message ═══
+(function initPush() {
+  var pushText = document.getElementById('pushText');
+  var pushRole = document.getElementById('pushRole');
+  var pushBtn = document.getElementById('pushBtn');
+  var pushStatus = document.getElementById('pushStatus');
+  var pushModal = document.getElementById('pushModal');
+  var pushModalPreview = document.getElementById('pushModalPreview');
+  var pushModalCancel = document.getElementById('pushModalCancel');
+  var pushModalConfirm = document.getElementById('pushModalConfirm');
+  var pendingSend = null;
+
+  // Enable button when text is entered
+  pushText.addEventListener('input', function() {
+    pushBtn.disabled = !pushText.value.trim();
+  });
+
+  // Step 1: Click send → dry run to get count → show confirmation modal
+  pushBtn.addEventListener('click', async function() {
+    var text = pushText.value.trim();
+    if (!text) return;
+    var role = pushRole.value;
+
+    pushBtn.disabled = true;
+    pushBtn.textContent = '查詢中…';
+
+    try {
+      var res = await fetch(WORKER + '/api/formosa/push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': dashCode },
+        body: JSON.stringify({ role: role, text: text, mode: 'text', dry_run: true })
+      });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API error');
+
+      var count = data.count || 0;
+      if (count === 0) {
+        showPushStatus('warn', '該群組沒有可推播的用戶');
+        pushBtn.textContent = '發送推播';
+        pushBtn.disabled = false;
+        return;
+      }
+
+      var roleLabel = pushRole.options[pushRole.selectedIndex].text;
+      var previewText = text.length > 200 ? text.substring(0, 200) + '…' : text;
+
+      pushModalPreview.innerHTML =
+        '<div class="push-preview-meta">' +
+          '<span>對象：<strong>' + roleLabel + '</strong></span>' +
+          '<span>人數：<strong>' + count + ' 人</strong></span>' +
+        '</div>' +
+        '<div class="push-preview-text">' + previewText.replace(/\n/g, '<br>') + '</div>';
+
+      pendingSend = { text: text, role: role, count: count };
+      pushModal.style.display = 'flex';
+    } catch (e) {
+      showPushStatus('error', '查詢失敗：' + e.message);
+    }
+    pushBtn.textContent = '發送推播';
+    pushBtn.disabled = !pushText.value.trim();
+  });
+
+  // Step 2: Cancel modal
+  pushModalCancel.addEventListener('click', function() {
+    pushModal.style.display = 'none';
+    pendingSend = null;
+  });
+  pushModal.addEventListener('click', function(e) {
+    if (e.target === pushModal) {
+      pushModal.style.display = 'none';
+      pendingSend = null;
+    }
+  });
+
+  // Step 3: Confirm → actually send
+  pushModalConfirm.addEventListener('click', async function() {
+    if (!pendingSend) return;
+    pushModalConfirm.disabled = true;
+    pushModalConfirm.textContent = '發送中…';
+
+    try {
+      var res = await fetch(WORKER + '/api/formosa/push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': dashCode },
+        body: JSON.stringify({ role: pendingSend.role, text: pendingSend.text, mode: 'text' })
+      });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Send failed');
+
+      showPushStatus('ok', '已發送給 ' + data.sent + ' 位用戶（' + pendingSend.role + '）');
+      pushText.value = '';
+      pushBtn.disabled = true;
+    } catch (e) {
+      showPushStatus('error', '發送失敗：' + e.message);
+    }
+
+    pushModal.style.display = 'none';
+    pushModalConfirm.disabled = false;
+    pushModalConfirm.textContent = '確認發送';
+    pendingSend = null;
+  });
+
+  function showPushStatus(type, msg) {
+    pushStatus.style.display = 'block';
+    pushStatus.className = 'push-status push-status-' + type;
+    pushStatus.textContent = msg;
+    setTimeout(function() { pushStatus.style.display = 'none'; }, 6000);
+  }
+})();
+
 // Now safe to call after all const declarations
 checkAuth();
 
@@ -769,6 +910,83 @@ function render(records) {
   .claude-progress-bar {
     height: 100%; border-radius: 5px;
     transition: width 0.6s ease, background 0.3s;
+  }
+
+  /* ═══ LINE Push Message ═══ */
+  .push-form { margin-top: 1rem; }
+  .push-textarea {
+    width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 0.9rem; font-family: inherit;
+    background: var(--bg); color: var(--text-primary); resize: vertical;
+    min-height: 80px; transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+  .push-textarea:focus { outline: none; border-color: var(--brand-navy); }
+  .push-textarea::placeholder { color: var(--text-muted); }
+  .push-controls {
+    display: flex; gap: 0.75rem; margin-top: 0.75rem; align-items: center;
+  }
+  .push-select {
+    padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.85rem; background: var(--bg); color: var(--text-primary);
+    cursor: pointer; min-width: 160px;
+  }
+  .push-btn {
+    padding: 0.6rem 1.5rem; background: #059669; color: white; border: none;
+    border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .push-btn:hover:not(:disabled) { background: #047857; }
+  .push-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .push-status {
+    margin-top: 0.75rem; padding: 0.6rem 1rem; border-radius: 8px;
+    font-size: 0.85rem;
+  }
+  .push-status-ok { background: rgba(5,150,105,0.1); color: #059669; }
+  .push-status-error { background: rgba(239,68,68,0.1); color: #ef4444; }
+  .push-status-warn { background: rgba(245,158,11,0.1); color: #b45309; }
+
+  /* Push Confirmation Modal */
+  .push-modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+  }
+  .push-modal {
+    background: var(--bg-card); border-radius: var(--radius-lg);
+    padding: 2rem; max-width: 480px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .push-modal h3 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-primary); }
+  .push-modal-preview { margin-bottom: 1.5rem; }
+  .push-preview-meta {
+    display: flex; gap: 1.5rem; margin-bottom: 0.75rem;
+    font-size: 0.85rem; color: var(--text-secondary);
+  }
+  .push-preview-text {
+    padding: 1rem; background: var(--bg-section); border-radius: 8px;
+    font-size: 0.9rem; line-height: 1.6; color: var(--text-primary);
+    border: 1px solid var(--border-light); max-height: 200px; overflow-y: auto;
+    word-break: break-word;
+  }
+  .push-modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+  .push-modal-btn {
+    padding: 0.6rem 1.5rem; border: none; border-radius: 8px;
+    font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  }
+  .push-modal-btn.cancel {
+    background: var(--bg-section); color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .push-modal-btn.cancel:hover { background: var(--border-light); }
+  .push-modal-btn.confirm { background: #dc2626; color: white; }
+  .push-modal-btn.confirm:hover:not(:disabled) { background: #b91c1c; }
+  .push-modal-btn.confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  @media (max-width: 768px) {
+    .push-controls { flex-direction: column; }
+    .push-select { width: 100%; }
+    .push-btn { width: 100%; }
   }
 
   /* ═══ B3：狀態總覽 ═══ */

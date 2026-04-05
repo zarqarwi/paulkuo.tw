@@ -682,6 +682,8 @@ export async function handleFormosaPush(request, env) {
     const targetRole = body.role || 'all'; // all | participant | volunteer | admin
     const customText = body.text || '媽祖保佑 🙏\n記錄您的進香足跡吧！';
     const customTitle = body.title || '📍 進香打卡提醒';
+    const mode = body.mode || 'template'; // 'text' for plain text, 'template' for buttons
+    const dryRun = body.dry_run || false;
 
     // Get users filtered by role (exclude paused/completed from push)
     let query = "SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL AND (participant_status IS NULL OR participant_status = 'active')";
@@ -696,26 +698,38 @@ export async function handleFormosaPush(request, env) {
 
     const userIds = users.results.map(u => u.line_user_id);
 
-    const message = {
-      type: 'template',
-      altText: `📍 ${customTitle}`,
-      template: {
-        type: 'buttons',
-        title: customTitle,
-        text: customText,
-        actions: [
-          {
-            type: 'uri',
-            label: '立即打卡 📍',
-            uri: TRACKER_URL
-          }
-        ]
-      }
-    };
+    // Dry run: return count only without sending
+    if (dryRun) {
+      return jsonResponse({ ok: true, count: userIds.length, role: targetRole }, 200, request);
+    }
+
+    let message;
+    if (mode === 'text') {
+      // Plain text message — URLs auto-render as clickable links in LINE
+      message = { type: 'text', text: customText };
+    } else {
+      // Template with button (legacy behavior)
+      message = {
+        type: 'template',
+        altText: `📍 ${customTitle}`,
+        template: {
+          type: 'buttons',
+          title: customTitle,
+          text: customText,
+          actions: [
+            {
+              type: 'uri',
+              label: '立即打卡 📍',
+              uri: TRACKER_URL
+            }
+          ]
+        }
+      };
+    }
 
     const lineResults = await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [message]);
 
-    return jsonResponse({ ok: true, sent: userIds.length, role: targetRole, line_results: lineResults }, 200, request);
+    return jsonResponse({ ok: true, sent: userIds.length, role: targetRole, mode, line_results: lineResults }, 200, request);
   } catch (e) {
     console.error('Push error:', e.message);
     console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
