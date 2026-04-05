@@ -1,0 +1,716 @@
+---
+/**
+ * /wiki/ — Paul Kuo 知識圖譜首頁
+ * Phase 2A: Wiki homepage with concept list + Graph View
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PILLAR_MAP } from '../../config';
+
+const concepts = (await getCollection('wiki_concepts', ({ data }) => data.visibility === 'public'))
+  .sort((a, b) => (b.data.source_count || 0) - (a.data.source_count || 0));
+
+// Group by pillar
+const byPillar = new Map<string, typeof concepts>();
+for (const c of concepts) {
+  const key = c.data.pillar;
+  if (!byPillar.has(key)) byPillar.set(key, []);
+  byPillar.get(key)!.push(c);
+}
+
+// Load graph data for Graph View
+import graphRaw from '../../content/wiki/meta/graph.json';
+const publicGraph = {
+  nodes: graphRaw.nodes.filter((n: any) => n.visibility === 'public'),
+  edges: (() => {
+    const pubIds = new Set(graphRaw.nodes.filter((n: any) => n.visibility === 'public').map((n: any) => n.id));
+    return graphRaw.edges.filter((e: any) => pubIds.has(e.source) && pubIds.has(e.target));
+  })(),
+};
+
+const PILLAR_COLORS: Record<string, string> = {
+  ai: '#2563eb',
+  circular: '#059669',
+  faith: '#b45309',
+  startup: '#dc2626',
+  life: '#7c3aed',
+};
+
+const pillars = Object.entries(PILLAR_MAP);
+
+const schemaJson = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Paul Kuo 知識圖譜',
+  description: '以 AI 為核心的個人知識圖譜，涵蓋 AI 策略、循環經濟、文明反思、創業與人生五大支柱。',
+  url: 'https://paulkuo.tw/wiki/',
+  author: { '@type': 'Person', name: 'Paul Kuo', alternateName: '郭曜郎' },
+  numberOfItems: concepts.length,
+});
+---
+
+<BaseLayout
+  title="知識圖譜 — Paul Kuo"
+  description="Paul Kuo 的個人知識圖譜：以 LLM 編譯的概念網絡，涵蓋 AI、循環經濟、文明、創業、人生五大支柱。"
+  ogUrl="https://paulkuo.tw/wiki/"
+  schemaJson={schemaJson}
+>
+  <section class="wiki-page">
+    <header class="wiki-header">
+      <nav class="wiki-breadcrumb" aria-label="breadcrumb">
+        <a href="/">首頁</a> <span aria-hidden="true">›</span> <span>知識圖譜</span>
+      </nav>
+      <h1 class="wiki-title">知識圖譜</h1>
+      <p class="wiki-intro">
+        這是我的個人知識圖譜——由 LLM 從文章、筆記、外部資料中自動編譯，
+        將散落的想法連結成可探索的概念網絡。
+      </p>
+      <div class="wiki-stats">
+        <span>{concepts.length} 個概念</span>
+        <span class="wiki-stats-sep">·</span>
+        <span>{publicGraph.nodes.length} 個節點</span>
+        <span class="wiki-stats-sep">·</span>
+        <span>{publicGraph.edges.length} 條連結</span>
+        <span class="wiki-stats-sep">·</span>
+        <span>5 大支柱</span>
+      </div>
+    </header>
+
+    <!-- Graph View -->
+    <div class="wiki-graph-section">
+      <h2 class="wiki-section-title">概念地圖</h2>
+      <p class="wiki-section-desc">拖曳旋轉、滾輪縮放。點擊概念節點查看詳情，再點一次開啟頁面。</p>
+
+      <div class="graph-toolbar">
+        <label>
+          篩選支柱
+          <select id="wiki-pillar-filter">
+            <option value="all">全部</option>
+            {pillars.map(([key, val]) => <option value={key}>{val.label}</option>)}
+          </select>
+        </label>
+        <label>
+          搜尋
+          <input id="wiki-search" type="search" placeholder="概念名稱..." />
+        </label>
+        <div class="graph-type-toggle" role="group" aria-label="節點類型">
+          <label><input type="checkbox" data-node-type="concept" checked /><span class="dot dot-concept"></span>概念</label>
+          <label><input type="checkbox" data-node-type="source" checked /><span class="dot dot-source"></span>來源</label>
+        </div>
+        <button id="wiki-graph-reset" type="button">重置</button>
+      </div>
+
+      <div class="graph-controls">
+        <p id="wiki-graph-status" class="graph-status"></p>
+      </div>
+
+      <div class="wiki-graph-main">
+        <div id="wiki-graph-stage" class="wiki-graph-stage" role="application" aria-label="知識圖譜互動視覺化" tabindex="0"></div>
+        <aside id="wiki-graph-inspector" class="graph-inspector" aria-live="polite">
+          <div class="graph-inspector-head">
+            <h3>節點資訊</h3>
+            <button id="wiki-inspector-close" type="button" aria-label="關閉">✕</button>
+          </div>
+          <div id="wiki-inspector-content" class="graph-inspector-content">
+            <p>點擊任一節點查看資訊。</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Concept list by pillar -->
+    <div class="wiki-concepts-section">
+      <h2 class="wiki-section-title">概念索引</h2>
+      {pillars.map(([key, val]) => {
+        const items = byPillar.get(key) || [];
+        if (items.length === 0) return null;
+        return (
+          <div class="wiki-pillar-group">
+            <h3 class="wiki-pillar-label" style={`color: ${PILLAR_COLORS[key]}`}>
+              <span class="wiki-pillar-dot" style={`background: ${PILLAR_COLORS[key]}`}></span>
+              {val.label}
+            </h3>
+            <ul class="wiki-concept-list">
+              {items.map(c => {
+                const slug = c.data.slug || c.id.replace(/\.md$/, '');
+                return (
+                  <li>
+                    <a href={`/wiki/${slug}/`} class="wiki-concept-link">
+                      <span class="wiki-concept-title">{c.data.title}</span>
+                      {c.data.source_count > 0 && (
+                        <span class="wiki-concept-count">{c.data.source_count} 篇來源</span>
+                      )}
+                      {c.data.confidence && (
+                        <span class={`wiki-confidence wiki-confidence-${c.data.confidence}`}>{c.data.confidence}</span>
+                      )}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline define:vars={{ publicGraph, PILLAR_COLORS }}>
+// === Wiki Graph View — Force-directed 2D ===
+const stage = document.getElementById('wiki-graph-stage');
+const inspector = document.getElementById('wiki-graph-inspector');
+const inspectorContent = document.getElementById('wiki-inspector-content');
+const inspectorClose = document.getElementById('wiki-inspector-close');
+const pillarFilter = document.getElementById('wiki-pillar-filter');
+const searchInput = document.getElementById('wiki-search');
+const statusEl = document.getElementById('wiki-graph-status');
+const resetBtn = document.getElementById('wiki-graph-reset');
+const typeCheckboxes = Array.from(document.querySelectorAll('.graph-type-toggle input[data-node-type]'));
+
+if (!stage) throw new Error('wiki graph stage missing');
+
+const graph = publicGraph;
+const nodes = graph.nodes.map(function(n, idx) {
+  return Object.assign({}, n, {
+    i: idx,
+    x: (Math.random() - 0.5) * 800,
+    y: (Math.random() - 0.5) * 600,
+    vx: 0, vy: 0,
+    // concept nodes are bigger
+    radius: n.type === 'concept' ? 8 : 3,
+  });
+});
+
+var byId = new Map(nodes.map(function(n) { return [n.id, n]; }));
+var edges = graph.edges.map(function(e) {
+  return { source: byId.get(e.source), target: byId.get(e.target) };
+}).filter(function(e) { return e.source && e.target; });
+
+// Build adjacency
+var adjacency = new Map();
+function pushAdj(a, b) {
+  if (!adjacency.has(a)) adjacency.set(a, new Set());
+  adjacency.get(a).add(b);
+  if (!adjacency.has(b)) adjacency.set(b, new Set());
+  adjacency.get(b).add(a);
+}
+for (var i = 0; i < edges.length; i++) {
+  pushAdj(edges[i].source.id, edges[i].target.id);
+}
+
+// === Canvas rendering for performance (158 nodes) ===
+var canvas = document.createElement('canvas');
+canvas.style.cssText = 'width:100%;height:100%;display:block;';
+stage.appendChild(canvas);
+var ctx = canvas.getContext('2d');
+
+var W = 0, H = 0;
+function resize() {
+  var rect = stage.getBoundingClientRect();
+  W = rect.width; H = rect.height;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Pan/zoom state
+var camX = 0, camY = 0, camZoom = 1;
+var dragging = false, dragStartX = 0, dragStartY = 0, camStartX = 0, camStartY = 0;
+var dragMoved = false;
+
+// Visible types
+var visibleTypes = new Set(['concept', 'source']);
+var selectedNodeId = '';
+var focusNodeIds = new Set();
+var filterPillar = 'all';
+var searchTerms = [];
+
+function screenToWorld(sx, sy) {
+  return { x: (sx - W / 2) / camZoom - camX, y: (sy - H / 2) / camZoom - camY };
+}
+function worldToScreen(wx, wy) {
+  return { x: (wx + camX) * camZoom + W / 2, y: (wy + camY) * camZoom + H / 2 };
+}
+
+function nodeVisible(n) {
+  if (!visibleTypes.has(n.type)) return false;
+  if (filterPillar !== 'all' && n.pillar !== filterPillar) return false;
+  return true;
+}
+
+function nodeMatches(n) {
+  if (searchTerms.length === 0) return true;
+  var lower = n.title.toLowerCase();
+  return searchTerms.every(function(t) { return lower.includes(t); });
+}
+
+function applyFilters() {
+  filterPillar = pillarFilter ? pillarFilter.value : 'all';
+  var q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+  searchTerms = q ? q.split(/\s+/) : [];
+  focusNodeIds = selectedNodeId ? new Set([selectedNodeId].concat(Array.from(adjacency.get(selectedNodeId) || []))) : new Set();
+  var total = 0;
+  for (var i = 0; i < nodes.length; i++) {
+    if (nodeVisible(nodes[i])) total++;
+  }
+  if (statusEl) statusEl.textContent = '共 ' + total + ' 個節點';
+}
+
+// === Force simulation ===
+function simulate() {
+  var alpha = 0.3;
+  // Repulsion (only among visible)
+  for (var i = 0; i < nodes.length; i++) {
+    if (!nodeVisible(nodes[i])) continue;
+    for (var j = i + 1; j < nodes.length; j++) {
+      if (!nodeVisible(nodes[j])) continue;
+      var a = nodes[i], b = nodes[j];
+      var dx = a.x - b.x, dy = a.y - b.y;
+      var d2 = dx * dx + dy * dy + 1;
+      var f = 3000 / d2;
+      var inv = 1 / Math.sqrt(d2);
+      a.vx += dx * inv * f * alpha; a.vy += dy * inv * f * alpha;
+      b.vx -= dx * inv * f * alpha; b.vy -= dy * inv * f * alpha;
+    }
+  }
+  // Attraction
+  for (var i = 0; i < edges.length; i++) {
+    var a = edges[i].source, b = edges[i].target;
+    if (!nodeVisible(a) || !nodeVisible(b)) continue;
+    var dx = b.x - a.x, dy = b.y - a.y;
+    var d = Math.sqrt(dx * dx + dy * dy) || 1;
+    var target = (a.type === 'concept' && b.type === 'concept') ? 160 : 100;
+    var k = 0.02;
+    var f = (d - target) * k * alpha;
+    a.vx += dx / d * f; a.vy += dy / d * f;
+    b.vx -= dx / d * f; b.vy -= dy / d * f;
+  }
+  // Center gravity
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].vx -= nodes[i].x * 0.001;
+    nodes[i].vy -= nodes[i].y * 0.001;
+  }
+  // Integrate
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].vx *= 0.85; nodes[i].vy *= 0.85;
+    nodes[i].x += nodes[i].vx; nodes[i].y += nodes[i].vy;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(W / 2, H / 2);
+  ctx.scale(camZoom, camZoom);
+  ctx.translate(camX, camY);
+
+  // Draw edges
+  ctx.globalAlpha = 0.15;
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 0.5;
+  for (var i = 0; i < edges.length; i++) {
+    var a = edges[i].source, b = edges[i].target;
+    if (!nodeVisible(a) || !nodeVisible(b)) continue;
+    if (focusNodeIds.size > 0 && (!focusNodeIds.has(a.id) || !focusNodeIds.has(b.id))) continue;
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+
+  // Draw nodes
+  for (var i = 0; i < nodes.length; i++) {
+    var n = nodes[i];
+    if (!nodeVisible(n)) continue;
+    var matched = nodeMatches(n);
+    var inFocus = focusNodeIds.size === 0 || focusNodeIds.has(n.id);
+    var color = PILLAR_COLORS[n.pillar] || '#64748b';
+
+    ctx.globalAlpha = (!matched || !inFocus) ? 0.1 : 1;
+
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+    if (n.type === 'concept') {
+      ctx.fillStyle = color;
+      ctx.fill();
+      // Label
+      if (camZoom > 0.4) {
+        ctx.fillStyle = inFocus && matched ? '#0f172a' : '#94a3b8';
+        ctx.font = 'bold 11px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(n.title, n.x, n.y - n.radius - 4);
+      }
+    } else {
+      ctx.fillStyle = color;
+      ctx.globalAlpha *= 0.5;
+      ctx.fill();
+    }
+
+    // Selected highlight
+    if (n.id === selectedNodeId) {
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.radius + 3, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+}
+
+var frameCount = 0;
+function frame() {
+  frameCount++;
+  if (frameCount % 2 === 0) simulate();
+  draw();
+  requestAnimationFrame(frame);
+}
+
+// === Interaction ===
+function hitTest(sx, sy) {
+  var w = screenToWorld(sx, sy);
+  var closest = null, closestD = Infinity;
+  for (var i = 0; i < nodes.length; i++) {
+    if (!nodeVisible(nodes[i])) continue;
+    var dx = nodes[i].x - w.x, dy = nodes[i].y - w.y;
+    var d = Math.sqrt(dx * dx + dy * dy);
+    var hitR = Math.max(nodes[i].radius + 4, 12) / camZoom;
+    if (d < hitR && d < closestD) { closest = nodes[i]; closestD = d; }
+  }
+  return closest;
+}
+
+var lastClickId = '', lastClickTime = 0;
+
+canvas.addEventListener('pointerdown', function(e) {
+  var rect = canvas.getBoundingClientRect();
+  var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+  dragging = true; dragMoved = false;
+  dragStartX = sx; dragStartY = sy;
+  camStartX = camX; camStartY = camY;
+  canvas.setPointerCapture(e.pointerId);
+});
+
+canvas.addEventListener('pointermove', function(e) {
+  if (!dragging) {
+    // Hover tooltip
+    var rect = canvas.getBoundingClientRect();
+    var n = hitTest(e.clientX - rect.left, e.clientY - rect.top);
+    canvas.style.cursor = n ? 'pointer' : 'grab';
+    canvas.title = n ? n.title + ' (' + n.type + ')' : '';
+    return;
+  }
+  var rect = canvas.getBoundingClientRect();
+  var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+  var dx = sx - dragStartX, dy = sy - dragStartY;
+  if (!dragMoved && Math.hypot(dx, dy) < 5) return;
+  dragMoved = true;
+  camX = camStartX + dx / camZoom;
+  camY = camStartY + dy / camZoom;
+});
+
+canvas.addEventListener('pointerup', function(e) {
+  if (!dragMoved) {
+    // Click
+    var rect = canvas.getBoundingClientRect();
+    var n = hitTest(e.clientX - rect.left, e.clientY - rect.top);
+    if (n) {
+      var now = performance.now();
+      var rapidTap = (lastClickId === n.id && now - lastClickTime < 800);
+      if (rapidTap && n.type === 'concept') {
+        var slug = n.id;
+        window.location.href = '/wiki/' + slug + '/';
+        return;
+      }
+      selectedNodeId = n.id;
+      lastClickId = n.id;
+      lastClickTime = now;
+      renderInspector(n);
+      inspector.classList.add('graph-inspector-open');
+    } else {
+      clearSelection();
+    }
+    applyFilters();
+  }
+  dragging = false; dragMoved = false;
+  canvas.releasePointerCapture(e.pointerId);
+});
+
+canvas.addEventListener('wheel', function(e) {
+  e.preventDefault();
+  var factor = e.deltaY < 0 ? 1.08 : 0.93;
+  camZoom = Math.min(4, Math.max(0.2, camZoom * factor));
+}, { passive: false });
+
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderInspector(node) {
+  if (!inspectorContent) return;
+  var color = PILLAR_COLORS[node.pillar] || '#64748b';
+  var badge = '<span style="display:inline-block;border:1px solid #d1d5db;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.7rem;padding:0.1rem 0.35rem;">' + esc(node.type) + '</span>';
+  var pillarBadge = '<span style="display:inline-block;border-radius:999px;background:' + color + '20;color:' + color + ';font-size:0.7rem;padding:0.1rem 0.35rem;border:1px solid ' + color + '40;">' + esc(node.pillar) + '</span>';
+
+  if (node.type === 'concept') {
+    var neighbors = Array.from(adjacency.get(node.id) || []).map(function(id) { return byId.get(id); }).filter(Boolean);
+    var linkedConcepts = neighbors.filter(function(n) { return n.type === 'concept'; });
+    var linkedSources = neighbors.filter(function(n) { return n.type === 'source'; });
+    inspectorContent.innerHTML = '<div style="padding:0.3rem 0;"><strong style="font-size:0.95rem;">' + esc(node.title) + '</strong><div style="margin:0.3rem 0;display:flex;gap:0.3rem;">' + badge + pillarBadge + '</div>' +
+      '<p style="color:#64748b;font-size:0.78rem;margin:0.4rem 0;">連結 ' + linkedConcepts.length + ' 個概念、' + linkedSources.length + ' 個來源</p>' +
+      (linkedConcepts.length ? '<p style="font-size:0.78rem;color:#475569;margin:0.3rem 0;">相關概念：' + linkedConcepts.map(function(c) { return '<a href="/wiki/' + c.id + '/" style="color:#2563eb;">' + esc(c.title) + '</a>'; }).join('、') + '</p>' : '') +
+      '<a href="/wiki/' + node.id + '/" style="display:inline-block;margin-top:0.5rem;color:#2563eb;font-size:0.82rem;">開啟概念頁 →</a></div>';
+  } else {
+    inspectorContent.innerHTML = '<div style="padding:0.3rem 0;"><strong style="font-size:0.9rem;">' + esc(node.title) + '</strong><div style="margin:0.3rem 0;display:flex;gap:0.3rem;">' + badge + pillarBadge + '</div></div>';
+  }
+}
+
+function clearSelection() {
+  selectedNodeId = '';
+  focusNodeIds = new Set();
+  inspector.classList.remove('graph-inspector-open');
+  if (inspectorContent) inspectorContent.innerHTML = '<p>點擊任一節點查看資訊。</p>';
+}
+
+inspectorClose && inspectorClose.addEventListener('click', function() { clearSelection(); applyFilters(); });
+pillarFilter && pillarFilter.addEventListener('change', applyFilters);
+searchInput && searchInput.addEventListener('input', applyFilters);
+typeCheckboxes.forEach(function(input) {
+  input.addEventListener('change', function() {
+    var checked = typeCheckboxes.filter(function(c) { return c.checked; }).map(function(c) { return c.getAttribute('data-node-type'); }).filter(Boolean);
+    if (checked.length === 0) { input.checked = true; return; }
+    visibleTypes.clear();
+    checked.forEach(function(t) { visibleTypes.add(t); });
+    applyFilters();
+  });
+});
+resetBtn && resetBtn.addEventListener('click', function() {
+  camX = 0; camY = 0; camZoom = 1;
+  if (pillarFilter) pillarFilter.value = 'all';
+  if (searchInput) searchInput.value = '';
+  typeCheckboxes.forEach(function(c) { c.checked = true; });
+  visibleTypes.clear(); visibleTypes.add('concept'); visibleTypes.add('source');
+  clearSelection(); applyFilters();
+});
+
+// Keyboard
+stage.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { clearSelection(); applyFilters(); }
+});
+
+applyFilters();
+frame();
+</script>
+
+<style>
+  .wiki-page {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.2rem;
+  }
+  .wiki-breadcrumb {
+    font-size: 0.82rem;
+    color: var(--text-secondary, #64748b);
+    margin-bottom: 0.5rem;
+  }
+  .wiki-breadcrumb a { color: var(--text-secondary, #64748b); text-decoration: none; }
+  .wiki-breadcrumb a:hover { color: var(--accent-ai, #2563eb); }
+  .wiki-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+    margin: 0 0 0.6rem;
+  }
+  .wiki-intro {
+    color: var(--text-secondary, #64748b);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0 0 0.8rem;
+    max-width: 42rem;
+  }
+  .wiki-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #64748b);
+    margin-bottom: 2rem;
+  }
+  .wiki-stats-sep { color: #d1d5db; }
+  .wiki-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+    margin: 0 0 0.4rem;
+  }
+  .wiki-section-desc {
+    color: var(--text-secondary, #64748b);
+    font-size: 0.85rem;
+    margin: 0 0 0.8rem;
+  }
+
+  /* Graph toolbar (reuse tags-graph styles) */
+  .graph-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+  }
+  .graph-toolbar label {
+    display: grid;
+    gap: 0.2rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #64748b);
+  }
+  .graph-toolbar input,
+  .graph-toolbar select,
+  .graph-toolbar button {
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.5rem;
+    background: var(--bg-card, #fff);
+    color: var(--text-primary, #0f172a);
+    min-height: 2rem;
+    padding: 0.24rem 0.5rem;
+    font-size: 0.86rem;
+  }
+  .graph-type-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary, #64748b);
+    align-self: end;
+  }
+  .graph-type-toggle label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.12rem 0.35rem;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 999px;
+    background: #fff;
+  }
+  .dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; }
+  .dot-concept { background: #2563eb; }
+  .dot-source { background: #94a3b8; }
+  .graph-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .graph-status { margin: 0; font-size: 0.82rem; font-weight: 600; color: var(--text-primary, #0f172a); }
+
+  /* Graph stage */
+  .wiki-graph-section { margin-bottom: 3rem; }
+  .wiki-graph-main { position: relative; }
+  .wiki-graph-stage {
+    position: relative;
+    height: min(65vh, 600px);
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.75rem;
+    background: radial-gradient(circle at 18% 12%, #f0f4ff, #ffffff 60%);
+    overflow: hidden;
+    touch-action: none;
+  }
+  .graph-inspector {
+    position: absolute;
+    top: 0.75rem; right: 0.75rem;
+    width: min(18rem, calc(100% - 1.5rem));
+    max-height: calc(100% - 1.5rem);
+    overflow: auto;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.75rem;
+    background: var(--bg-card, #fff);
+    padding: 0.6rem 0.7rem;
+    z-index: 20;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .graph-inspector-open { opacity: 1; pointer-events: auto; }
+  .graph-inspector-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0 0 0.3rem; }
+  .graph-inspector-head h3 { margin: 0; font-size: 0.88rem; }
+  .graph-inspector-head button {
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 0.5rem;
+    background: #fff;
+    font-size: 0.82rem;
+    min-height: 1.6rem;
+    padding: 0.1rem 0.35rem;
+    cursor: pointer;
+  }
+
+  /* Concept index */
+  .wiki-concepts-section { margin-bottom: 3rem; }
+  .wiki-pillar-group { margin-bottom: 1.5rem; }
+  .wiki-pillar-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .wiki-pillar-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .wiki-concept-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .wiki-concept-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: var(--text-primary, #0f172a);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .wiki-concept-link:hover {
+    border-color: var(--accent-ai, #2563eb);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+  }
+  .wiki-concept-title { font-weight: 600; font-size: 0.9rem; flex: 1; }
+  .wiki-concept-count {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #64748b);
+    white-space: nowrap;
+  }
+  .wiki-confidence {
+    font-size: 0.68rem;
+    padding: 0.08rem 0.3rem;
+    border-radius: 999px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .wiki-confidence-high { color: #059669; border-color: #a7f3d0; background: #ecfdf5; }
+  .wiki-confidence-medium { color: #d97706; border-color: #fde68a; background: #fffbeb; }
+  .wiki-confidence-low { color: #64748b; border-color: #e2e8f0; background: #f8fafc; }
+
+  @media (max-width: 760px) {
+    .wiki-graph-stage { height: min(55vh, 420px); }
+    .graph-inspector {
+      position: fixed; left: 0.5rem; right: 0.5rem; top: auto; bottom: 0.5rem;
+      width: auto; max-height: 40vh; border-radius: 0.8rem;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.2);
+      transform: translateY(calc(100% + 1rem));
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .graph-inspector-open { transform: translateY(0); }
+  }
+</style>

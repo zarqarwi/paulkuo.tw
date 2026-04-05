@@ -45,6 +45,44 @@ export const GET: APIRoute = async () => {
     );
   }
 
+  // === Wiki Concepts ===
+  const wikiConcepts = (await getCollection('wiki_concepts' as any, ({ data }: any) => data.visibility === 'public'))
+    .sort((a: any, b: any) => (b.data.source_count || 0) - (a.data.source_count || 0));
+
+  if (wikiConcepts.length > 0) {
+    sections.push(
+      '# Wiki — 知識圖譜概念',
+      '',
+      `> ${wikiConcepts.length} public concepts from Paul\'s LLM-compiled knowledge graph.`,
+      `> Browse: ${base}/wiki/`,
+      '',
+      '---',
+      '',
+    );
+
+    for (const concept of wikiConcepts) {
+      const slug = concept.data.slug || concept.id.replace(/\.md$/, '');
+      const pillar = PILLAR_MAP[concept.data.pillar as keyof typeof PILLAR_MAP];
+      const pillarLabel = pillar ? `${pillar.label} / ${pillar.labelEn}` : '';
+      const tags = concept.data.tags?.join(', ') || '';
+      const url = `${base}/wiki/${slug}/`;
+
+      sections.push(
+        `## ${concept.data.title}`,
+        '',
+        `- URL: ${url}`,
+        `- Pillar: ${pillarLabel}`,
+        `- Sources: ${concept.data.source_count || 0}`,
+        ...(tags ? [`- Tags: ${tags}`] : []),
+        '',
+        concept.body || '(No content)',
+        '',
+        '---',
+        '',
+      );
+    }
+  }
+
   const body = sections.join('\n');
 
   return new Response(body, {

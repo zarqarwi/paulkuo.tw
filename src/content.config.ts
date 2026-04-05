@@ -55,9 +55,47 @@ const articles_zhcn = defineCollection({
   schema: articleSchema,
 });
 
+// Wiki knowledge graph pages
+const wikiSchema = z.object({
+  title: z.string(),
+  slug: z.string().optional(),
+  type: z.enum(['concept', 'entity', 'topic', 'source', 'comparison']),
+  pillar: z.enum(['ai', 'circular', 'faith', 'startup', 'life']),
+  visibility: z.enum(['public', 'internal']).default('public'),
+  created: z.coerce.date().optional(),
+  updated: z.coerce.date().optional(),
+  last_updated: z.coerce.date().optional(),
+  source_count: z.number().default(0),
+  confidence: z.enum(['low', 'medium', 'high']).default('low'),
+  tags: z.array(z.string()).default([]),
+  links_to: z.array(z.string()).default([]),
+  linked_from: z.array(z.string()).default([]),
+  raw_source_path: z.string().optional(),
+  raw_source_type: z.string().optional(),
+  raw_note_id: z.string().optional(),
+});
+
+const wiki_concepts = defineCollection({
+  loader: glob({
+    base: 'src/content/wiki/concepts',
+    pattern: '*.md',
+  }),
+  schema: wikiSchema,
+});
+
+const wiki_sources = defineCollection({
+  loader: glob({
+    base: 'src/content/wiki/sources',
+    pattern: '*.md',
+  }),
+  schema: wikiSchema,
+});
+
 export const collections = {
   articles,
   articles_en,
   articles_ja,
   articles_zhcn,
+  wiki_concepts,
+  wiki_sources,
 };
