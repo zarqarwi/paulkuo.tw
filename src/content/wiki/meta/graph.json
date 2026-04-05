@@ -1,0 +1,3333 @@
+{
+  "nodes": [
+    {
+      "id": "agentic-web",
+      "title": "Agentic Web",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "ai-agent-economy",
+      "title": "AI Agent 經濟",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "ai-education",
+      "title": "AI Education",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "ai-medical-biotech",
+      "title": "AI 在醫療與生技的應用",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "ai-skill-methodology",
+      "title": "AI Skill Methodology",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "build-for-models",
+      "title": "Build for Models",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "circular-economy-practice",
+      "title": "循環經濟實踐",
+      "type": "concept",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "emotional-self-awareness",
+      "title": "情緒認知與自我覺察",
+      "type": "concept",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "enterprise-ai-adoption",
+      "title": "Enterprise AI Adoption",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "heavy-tail-distribution",
+      "title": "重尾分布與極端值思維",
+      "type": "concept",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "human-ai-collaboration",
+      "title": "Human-AI Collaboration",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "human-judgment-in-ai-era",
+      "title": "Human Judgment in AI Era",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "narrative-power",
+      "title": "敘事力：意義建構的核心能力",
+      "type": "concept",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "one-person-team",
+      "title": "One-Person Team",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "regenerative-medicine",
+      "title": "再生醫療技術",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "skill-development",
+      "title": "Skill Development",
+      "type": "concept",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "steady-state-survival-trap",
+      "title": "穩態生存邏輯的陷阱",
+      "type": "concept",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "kuaidao-qingyi",
+      "title": "快刀青衣",
+      "type": "entity",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-addiction-economy-lonely-generation",
+      "title": "成癮經濟與孤獨世代：從色情談起",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-agi-becoming-complete-human",
+      "title": "AGI 即將降臨：成為更完整的人類，才是最好的準備",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-2027-civilization-reflection",
+      "title": "2027 年：當 AI 成為日常，我們該反思什麼？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-agent-planning-guide",
+      "title": "AI Agent 規劃指引：從踩過的坑到可複製的框架",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-agents-vs-agentic-ai",
+      "title": "AI Agents vs. Agentic AI：從任務工具到能動夥伴的演化",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-always-on-economy-restructure",
+      "title": "AI 時代的全天候經濟：從人力撐場到智慧協作",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-always-on-economy",
+      "title": "AI 時代的全天候經濟：從人力撐場到智慧協作的文明轉折",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-capability-gap-2026",
+      "title": "AI 時代的能力落差：從一張爆紅圖表談起",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-collab-realtime-translator",
+      "title": "一個人 × AI 的即時會議翻譯開發紀錄",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-ready-continuous-optimization",
+      "title": "把 paulkuo.tw 變成一個自己進化的網站",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-slaughterhouse-2028-crisis-scenario",
+      "title": "2028 屠宰場：一份讓華爾街失眠的 AI 崩潰劇本",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-social-intelligence-psychologist",
+      "title": "當 AI 比人更懂人情世故：社會智能測驗完勝心理學家的啟示",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ai-surpass-human-intelligence-six-years",
+      "title": "AI 會在六年內超越人類智慧嗎？解構這個看似有理的猜想",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-algorithm-as-judge",
+      "title": "量化人生的殘酷：當演算法成為最高審判者",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-algorithm-cannot-replace-decisions",
+      "title": "演算法無法取代的重量：為何我們不該成為科學教信徒？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-analytics-sampling-trap",
+      "title": "網站訪客數是零，但 Dashboard 說有 130 人",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-breaking-silo-effect",
+      "title": "跨越組織的僵化：業務開發即是破解穀倉",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-broken-crutch-elderly-faith",
+      "title": "爛掉的拐杖也是支撐：謙卑面對年老世代的信仰",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-builders-scorecard-story",
+      "title": "Builder's Scorecard 的設計緣起與開發歷程",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-burnout-society-self-exploitation",
+      "title": "《倦怠社會》：在功績主義的自我剝削中「卷不動，躺不平」",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-canary-in-coal-mine-ai-employment",
+      "title": "煤礦裡的金絲雀：AI 就業衝擊的預警系統",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-china-cultural-discourse-power",
+      "title": "中國正在輸出語法，而台灣還在輸出感動",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-cioran-on-suffering-and-clarity",
+      "title": "在苦難中張開眼：讀齊奧朗《在絕望之巔》",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-civilization-metric-system-over-goal",
+      "title": "被忽略的文明指標：用「系統」取代「目標」的風險哲學",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-claude-usage-nyan-chrome-extension",
+      "title": "我做了一個追蹤 Claude 用量的 Chrome Extension",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-code-is-cheap-vibe-coding-to-claws",
+      "title": "代碼已死，對話永生：從 Vibe Coding 到 Claws 的程式革命",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-compass-meets-algorithm-authority-in-human-ai-era",
+      "title": "當羅盤遇見演算法：思想權威在人機協作時代的困境",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-computation-as-currency",
+      "title": "演算本位時代：當知識、電力與貨幣畫上等號",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-cycling-digital-collaboration",
+      "title": "從騎車軌跡看數位協作：沒有公司能單打獨鬥的時代",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-dharma-instrument-mother-grace",
+      "title": "法器替母親擋下的重量：那多出來的六年，是恩典也是告別",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-digital-colonialism-platforms",
+      "title": "數位殖民的清醒：當免費平台改變規則，你能怎麼辦？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-digital-footprint-the-one",
+      "title": "數位軌跡與無形巨網：當生活被演算法悄悄接管",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-digital-transformation-pain",
+      "title": "開五指的陣痛：為何數位轉型總是以失敗告終？",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-elite-arrogance-youth",
+      "title": "菁英的傲慢，青年的出路",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-eq-group-education",
+      "title": "情緒不是個人的事：為何 EQ 應該是群育的核心？",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-facebook-algorithm-humanity",
+      "title": "科技始於人性：臉書演算法重構的商業啟示",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-faith-collapse-rebuild",
+      "title": "信仰的崩塌與重建：從 1995 閏八月預言看宗教的本質",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-faith-no-immunity",
+      "title": "信仰不能免疫：當宗教理性撞上病毒的物理定律",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-falsification-market-crisis",
+      "title": "敬畏未知的邊界：用否證思維面對市場危機",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-financial-crisis-market-humility",
+      "title": "敬畏未知的狂潮：金融海嘯十年的市場啟示",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-formosa-esg-2026-low-carbon-pilgrimage",
+      "title": "四十萬人的腳步，能對應多少碳？",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "public"
+    },
+    {
+      "id": "article-fundamentalist-faith-arrogance",
+      "title": "基要主義的陷阱：當信仰從追問變成審判",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-god-beyond-definition",
+      "title": "超越定義的上帝：為什麼神學需要否定的勇氣",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-google-chirp3-japanese-stt-benchmark",
+      "title": "6.4%：讓日文語音辨識的精準度，從「堪用」跳到「可商用」",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-homeschool-gentle-resistance",
+      "title": "自學教育的真相：家長的心得與溫和的對抗",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-incarnation-ai-embodiment",
+      "title": "道成肉身之必要性：為人工智慧的具身發展提供哲學論證",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-ironman-group-education",
+      "title": "獨行者的終結：從鐵人三項看群育的真實戰場",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-jd-ai-supply-chain-revolution",
+      "title": "京東的 AI 供應鏈：當預測變成基礎建設，台灣企業該看到什麼？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-jensen-huang-ai-mirror",
+      "title": "黃仁勳的三層提醒：AI 不只是工具，而是人類思維的鏡子",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-jensen-huang-learn-ai",
+      "title": "如果我是學生，我會學 AI：黃仁勳一句話背後的文明轉向",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-kevin-kelly-mirror-world-third-information-revolution",
+      "title": "鏡像世界：第三次資訊革命與 Kevin Kelly 眼中的 2049",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-knowledge-pipeline-not-discipline",
+      "title": "知識管理不靠自律，靠管線",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-language-truth-chatgpt5-dialogue",
+      "title": "關於語言、真實與矛盾：我與 ChatGPT 5 的對話",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-language-truth-gemini-dialogue",
+      "title": "關於語言、真實與矛盾：我與 Gemini Pro 2.5 的對話錄",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-life-database-engineering",
+      "title": "人生資料庫工程：當 70,267 個記憶節點被結構化",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-life-you-envy-is-miracle",
+      "title": "你羨慕的生活，其實已經是別人的奇蹟",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-market-crash-humility",
+      "title": "崩盤的啟示：知道自己「不懂」是生存的底線",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-moral-person-immoral-society",
+      "title": "道德的人，不道德的社會：為什麼好人聚在一起會做壞事",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-multi-model-collab-website-rebuild",
+      "title": "多模型實作：讓 Claude 與 Gemini 聯手，把網站重構成可被人讀也可被 AI 讀",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-negentropy-humanistic-practice",
+      "title": "在混沌中點燃意義：人文負熵不是雞湯，是生存策略",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-negentropy-taiwan-enterprise",
+      "title": "靠近負熵：從中美博弈看台灣企業的秩序選擇",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-neuralese-language-sovereignty",
+      "title": "當語言被放棄，我們還剩什麼？—— Neuralese 與語言主權的終結",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-nudity-as-language-algorithm",
+      "title": "當裸露成為語言：數位時代的身體語法與演算法共生",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-online-learning-resource-war",
+      "title": "停課不停學的殘酷考驗：家長視角下的資源戰",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-overcome-fear-start-ugly",
+      "title": "你不是輸在認知，是輸在尚未開始就先嚇死自己",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-pandemic-liquid-world",
+      "title": "疫情啟示：我們活在一個液態的世界",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-personal-health-data-infrastructure",
+      "title": "個人健康數據基礎設施：從 10 年 Apple Health 到 AI 驅動的交叉分析",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-personal-strategy-in-ai-storm",
+      "title": "從 AI 風暴中突圍：打造個人優勢策略圖",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-pope-leo-xiv-ai-homily",
+      "title": "AI 不能取代信仰：教宗給「效率至上」世代的一堂課",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-post-code-era-taste",
+      "title": "後程式碼時代的思考：當品味成為人類的關鍵競爭力",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-quiet-edge-thirteen-notes",
+      "title": "沉靜的鋒芒：十三則關於自持、識人與行走的語言節點",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-reformation-printing-politics",
+      "title": "宗教改革的現實脈絡：當信仰遇上印刷術與政治",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-refuse-follower-be-builder",
+      "title": "拒絕成為喧嘩的跟隨者：產業五大角色的生存抉擇",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-remote-work-cruel-truth",
+      "title": "遠距工作的殘酷真相：考驗人性的線上協作",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-rethinking-ai-consciousness-collective-subjectivity",
+      "title": "重新思考 AI 本質：從意識檢測到集體主體性的典範轉移",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-riding-wave-or-drowning",
+      "title": "在浪潮上或滅頂中？我們正經歷的歷史轉折",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-safer-4-ai-governance",
+      "title": "Safer-4 與技術治理的未來：人類還能掌握權力嗎？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-sam-altman-sora-energy-ai",
+      "title": "日出之前：Sam Altman 談 Sora、能源與 AI 生態系",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-same-sex-marriage-theology",
+      "title": "同婚議題的神學反思：愛與律法之間，信仰能不能呼吸？",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "article-shiseido-gic-style-over-trend",
+      "title": "資生堂 GIC 的啟示：風格超越流行",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-slash-career-discipline",
+      "title": "斜槓人生的紀律：自由的另一面是更嚴格的自我管理",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-social-media-value-spectrum",
+      "title": "在資訊洪流中看見自己：社群貼文的價值光譜",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "article-sovereign-ai-digital-autonomy",
+      "title": "主權 AI 全面解讀：數位時代的自主競爭力",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-super-individual-case-study",
+      "title": "不會寫程式的人，12 天寫了 23,000 行程式碼",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-super-learner-ai-era",
+      "title": "成為超級學習者：AI 時代的成長作業系統",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-system-vs-intuition-planning",
+      "title": "系統與直覺的對決：商業企劃背後的認知建構",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-taiwan-semiconductor-tenfold-leap",
+      "title": "台灣半導體的十倍飛躍：當資本遇上創新聚落",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "public"
+    },
+    {
+      "id": "article-traffic-beyond-currency",
+      "title": "流量不只是貨幣：影響力背後的社會角色與責任",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-us-ai-three-year-countdown",
+      "title": "美國 AI 產業的三年倒數：一場正在兌現的預言",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-web-crawling-ai-training-legal-comparison",
+      "title": "你的文章被 AI 吃掉了：各國網路爬蟲與 AI 訓練法律態度比較",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-why-greatness-cannot-be-planned",
+      "title": "為什麼偉大不能被計劃：Stepping Stones 模型與創業的真實軌跡",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "article-work-trend-index-2025-taiwan",
+      "title": "微軟說台灣 AI 準備度全球領先——但你的老闆知道嗎？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "article-world-outlook-2030",
+      "title": "2030 年世界展望：在技術加速與物理極限之間找到位置",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "clip-ai-theology-absolute-vulnerability",
+      "title": "人工智慧與絕對脆弱性",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "clip-china-one-person-ai-startups",
+      "title": "中國正在動員數千個一人 AI 新創",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "clip-ey-agent-economy-sovereignty",
+      "title": "EY 2026 AI 趨勢：主權、Agent 經濟與監管轉折",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "clip-notre-dame-ai-faith-summit",
+      "title": "聖母大學 AI、信仰與人類繁榮高峰會",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "public"
+    },
+    {
+      "id": "clip-oecd-digital-education-outlook-2026",
+      "title": "OECD 2026 數位教育展望",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "clip-one-person-billion-dollar-company",
+      "title": "一人十八億美元公司已經出現",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "clip-taiwan-circular-economy-2050-roadmap",
+      "title": "台灣循環經濟加速：新法規、AI 與綠色資金",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-005824-yu-kunun-personal-ip",
+      "title": "于困困：怎樣像創業一樣規劃個人 IP？",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-006336-stem-cell-exosome-automation",
+      "title": "幹細胞與外泌體自動化培養技術介紹",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-008840-sdt-self-determination",
+      "title": "從「聽話型優秀」到內在驅動：自我決定理論（SDT）的深度解析",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-009912-future-survival-advice",
+      "title": "2026年未來保命的修行忠告",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-017472-three-selves",
+      "title": "內核：你的三個「自我」",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-017592-openclaw-skill-guide",
+      "title": "OpenClaw（龍蝦）Skill 開發完全指南：從分鏡腳本到專屬 AI 工作流",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-026688-yin-huisheng-enterprise-claw-risk",
+      "title": "尹會生：企業用龍蝦，有哪些風險和收益？",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-035296-absolute-zero-training",
+      "title": "絕對零度訓練法：無人類介入的 AI 自訓練研究",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-043024-secondhand-recycling-logistics",
+      "title": "二手物資回收與物流模式創新探討",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-046456-china-llm-openrouter-dominance",
+      "title": "中國大模型在 OpenRouter 稱霸：執行層的成本優勢與 Token 消耗底層重構",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-048304-care-butler-ai-longterm-care",
+      "title": "照顧管家服務模式與AI工具在長照領域的應用探討",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-065952-super-learner-zhang-quanling",
+      "title": "超級學習者的世界——張泉靈 × 脫不花對談",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-066168-ai-drug-discovery",
+      "title": "全腦AI在新藥開發中的應用",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-072288-low-energy-rest-guide",
+      "title": "低能量人有效休息指南",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-072896-yang-tianrun-non-tech-claw-native",
+      "title": "楊天潤：不會技術，普通人怎麼跟上龍蝦潮？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-077512-wanweigang-qa-constraints",
+      "title": "萬維鋼讀者問答精選：硬約束、AI使用、不確定性與內核自我",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-099088-ai-social-ecology",
+      "title": "AI 社交生態觀察",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-107776-midlife-growth-social-health",
+      "title": "中年轉變智商與社交健康的自我提升",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-108032-zhang-peng-ai-assistant-evolution",
+      "title": "張鵬：大模型越來越強，AI 助理會變成什麼樣？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-123024-cloud-ai-interaction-goals",
+      "title": "與Cloud.ai互動的三大目標",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-123160-cervical-cancer-medical-data",
+      "title": "子宮頸癌治療探索與醫療數據合作討論",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-161424-sprouting-report",
+      "title": "發芽報告：領導力、信任與變革的歷史視角",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-161976-ai-timeline-prediction",
+      "title": "AI 能力演進的時間線預測：從專業替代到超級智慧",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-171424-supply-side-positive-sum",
+      "title": "供給側心態：打破零和博弈，構建正和思維的生存策略",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-171536-intelligence-vs-wisdom",
+      "title": "高智力與高妄想的悖論",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-174608-employee-health-longterm-care",
+      "title": "企業員工健康與長期照護服務的ESG整合",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-178104-medical-aesthetics-overseas",
+      "title": "醫美集團業務與系統介紹及海外市場拓展討論",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-187800-value-monetization",
+      "title": "沒人教的賺錢核心能力：價值轉化與認知貨幣化",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-188584-pastor-pang-memorial",
+      "title": "對牧師的懷念與追思",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-201104-kazike-ai-three-year-insights",
+      "title": "卡茲克三年 AI 實踐心得：從信息差到實習生思維",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-216736-spear-grass-growth-law",
+      "title": "尖毛草定律與厚積薄發的人生成長",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-216800-sales-closing-techniques",
+      "title": "銷售催單的四招封喉術：從堵退路到結構化決策",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-221528-uncertainty-as-meaning-fuel",
+      "title": "可能：不確定性是意義的燃料",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-221560-japan-regenerative-medicine",
+      "title": "日本CET公司臺灣再生醫療合作項目洽談",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-268104-vibe-coding-trend",
+      "title": "AI 編碼時代的角色轉變：Vibe Coding 的興起",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-270152-tech-sports-platform-collab",
+      "title": "健康生態系與運動賽事平台的協作",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-285216-habermas-communicative-rationality",
+      "title": "這個世界最在乎講道理的人，是怎麼講道理的？",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-287520-kaishu-openclaw-kids-parents",
+      "title": "凱叔：OpenClaw 來了，孩子與家長怎麼辦？",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-292096-wanweigang-thinking-tools-intro",
+      "title": "發刊詞：現代精英的思維武器庫",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-311832-narrative-first-principle",
+      "title": "敘事：這個宇宙的第一性原理",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-315912-hinton-ai-deception",
+      "title": "AI 的欺騙性與不可馴化性：Geoffrey Hinton 對人類生存的警告",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-332008-ai-foreman-buffer-period",
+      "title": "AI工長、緩衝期和衝浪者，一千天後你會成為什麼",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-335136-celebration-ritual-neuroscience",
+      "title": "經常慶功，就能成功",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-340544-naval-ai-thinking",
+      "title": "Naval 最新 AI 播客核心觀點解析：思維的摩托車與行動導向策略",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-379840-silent-mode-wisdom",
+      "title": "大智若愚：真正有能力的人如何調成靜音模式",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-384168-circular-economy-recycling-models",
+      "title": "循環經濟回收商業模式合作探討",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-389584-ai-predictions",
+      "title": "AI 革命時代的十大關鍵預言解讀",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-403816-lobster-talk-launch",
+      "title": "AI 龍蝦十日談：我請了 10 位實踐者來回答你最關心的問題",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-406952-personal-website-ai-tools",
+      "title": "個人網站搭建與AI工具應用的學習總結",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-435960-ai-hr-manufacturing",
+      "title": "AI 人力資源系統在製造業的應用：從履歷篩選到員工培訓",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-438184-abundance-mindset-ai-era",
+      "title": "AI時代，如何用富足心態應對新變化",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-445928-ai-wisdom",
+      "title": "AI 時代人生智慧",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-454304-ai-1percent-talent",
+      "title": "AI 時代的 1% 超級人才：從「分身概念」到「問問題學習」",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-458136-holographic-universe-theory",
+      "title": "宇宙全息理論解析：我們的世界可能是二維投影",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-479752-taiwan-environmental-projects",
+      "title": "台灣環保循環產業合作項目討論",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-482512-organizer-lecture-business",
+      "title": "整理師公益講座運營模式與商業拓展探討",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-483472-openclaw-setup-guide",
+      "title": "上手準備｜3步準備，安裝OpenClaw不踩坑",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-487488-agency-vs-steady-state",
+      "title": "能動：穩態生存的觀念陷阱",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-495048-steady-state-survival-trap",
+      "title": "為什麼聽話、努力沒那麼有用了？",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-497432-morgan-stanley-ai-employment",
+      "title": "摩根士丹利報告：56% 的人沒因 AI 被裁掉，小公司比中型公司更安全",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-498792-claude-skills-guide",
+      "title": "Claude Skills 功能解析：任務自動化、工作流設計與實戰應用",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-499752-cost-profit-analysis",
+      "title": "AI 驅動的成本核算與利潤分析：從資料脫節到決策穿透",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-504720-neuroplasticity",
+      "title": "神經可塑性：大腦開發的科學方法與實踐指南",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-505632-ning-liaoyuan-agent-economy-opportunities",
+      "title": "寧遼原：Agent 經濟時代，成就自己的機會在哪？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-519528-enterprise-communication",
+      "title": "企業通訊工具的公私分離設計與合規管控",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-558096-alien-life-civilization",
+      "title": "外星文明視角：宇宙秩序、地球監獄與精神生命的本質",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-580464-growth-through-adversity",
+      "title": "人在痛苦、空白和高壓交替狀態下成長最快",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-584104-life-energy-management",
+      "title": "人生能量管理：從低電量到滿格狀態的指南",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-593912-human-nature-truths",
+      "title": "人性真相68條分享",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-597672-narrative-storytelling",
+      "title": "問答：敘事和講故事、造夢的區別是什麼",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-630888-recording-self-growth",
+      "title": "記錄：最低成本的自我進化系統",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-643544-qu-xiaoyin-silicon-valley-agent-startups",
+      "title": "曲曉音：矽谷視角，哪些 Agent 創業正在發生？",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-658856-li-ning-human-value-reassessment",
+      "title": "李寧：AI 這麼能幹活，人的價值怎麼重估？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-661768-business-project-meeting",
+      "title": "商業合作與專案推進會議討論",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-699320-tech-progress-paradox",
+      "title": "科技進步悖論：工具越多卻越不得閒",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-705576-rockwool-recycling",
+      "title": "岩棉回收處理與產品合作討論",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-707232-kazike-wechat-claw-plugin",
+      "title": "卡茲克：微信接入龍蝦，能幫你做哪些事？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-714464-resource-collaboration",
+      "title": "組織資源盤點與跨領域合作框架",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-743840-moltbook-observation",
+      "title": "AI 社交平台 Moltbook 觀察：當 AI Agent 建立專屬社交網路",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-749536-partnership-project-planning",
+      "title": "健康生態系合作策略與項目規劃框架",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-756056-pastor-pang-reflection",
+      "title": "牧師離世對我的影響與思考",
+      "type": "source",
+      "pillar": "faith",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-780904-lab-facility-animal-research",
+      "title": "實驗室設施與動物實驗區域介紹",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-782928-preventive-medicine-ai-drug",
+      "title": "預防醫學服務設計與AI藥物開發的商業生態探討",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-799912-three-decision-formulas",
+      "title": "支撐好決策的三個神奇公式",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-808040-ai-medical-collaboration",
+      "title": "AI技術在醫療領域的應用與邊緣運算合作探討",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-817040-2028-ai-slaughterhouse",
+      "title": "2028 AI 屠宰場：萬字長文引發華爾街地震",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-837048-skill-creation-guide",
+      "title": "AI 工具 Skill 創建指南：從基礎搭建到經驗資產化",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-838824-circular-economy-decluttering",
+      "title": "循環經濟與斷舍離服務合作模式探討",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-842472-fortune-telling-psychology",
+      "title": "為什麼許多人著迷於算命？存在感的心理根源",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-847528-system-design-lessons",
+      "title": "系統設計踩坑與學習反思",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-850688-overcoming-fear-breakthrough",
+      "title": "擺脫恐懼，突破人生局限的終極密碼",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-859688-munger-wealth-structure",
+      "title": "財富的結構邏輯：勤奮的局限與現金流的放大",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-862976-lecture-method",
+      "title": "如何用做課的方法，打磨金飯碗大賽演講",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-866496-environmental-innovation-npo",
+      "title": "環保創新與公益事業合作交流",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-867072-carrier-toilet-pope-ai",
+      "title": "從福特號航母到教皇：人類與AI的真實摩擦",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-870072-2025-tech-of-year",
+      "title": "2025 年度技術，居然不是 AI？",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-873696-geo-ai-recommendation-attack",
+      "title": "央視 315 曝光 GEO：你以為的 AI 客觀答案，其實有人提前投了『毒』",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-874728-heavy-tail-extreme-values",
+      "title": "重尾：世界服從極端值",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-884928-claude-skill-research",
+      "title": "如何快速上手 Claude Skill 輔助科研提效",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-888480-compound-interest-capital",
+      "title": "複利的真相：超越金錢的人生資本積累戰略",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-896520-political-trust-collapse",
+      "title": "現代政治的信任崩塌：從國家承諾到個人化關係的倒退",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-898432-ai-drug-design-biotech",
+      "title": "AI藥物設計與生命科學研究的跨界合作",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-910880-emotional-self-awareness",
+      "title": "真正認識自己的情緒：耦合理論與認知的新視角",
+      "type": "source",
+      "pillar": "life",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-912296-growth-strategy-tool-person",
+      "title": "從工具人困境到能耐尋求的智能升級戰略",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "internal"
+    },
+    {
+      "id": "getnote-918240-maltbot-ai-assistant",
+      "title": "Maltbot 創始人深度訪談：從「雲端程式碼匿名會」到 AI 個人助理革命",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-938560-wang-runyu-personal-ai-efficiency",
+      "title": "王潤宇：龍蝦來了，個人真正能用起來的 AI 效率組合",
+      "type": "source",
+      "pillar": "ai",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-957592-wang-daxian-three-practical-cases",
+      "title": "王大仙：3 個實戰案例，把龍蝦和日常工作真正結合",
+      "type": "source",
+      "pillar": "startup",
+      "visibility": "public"
+    },
+    {
+      "id": "getnote-963240-material-substitution-fire",
+      "title": "材料替代與防火性能討論會議記錄",
+      "type": "source",
+      "pillar": "circular",
+      "visibility": "internal"
+    }
+  ],
+  "edges": [
+    {
+      "source": "ai-agent-economy",
+      "target": "one-person-team"
+    },
+    {
+      "source": "ai-agent-economy",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "ai-agent-economy",
+      "target": "skill-development"
+    },
+    {
+      "source": "ai-agent-economy",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "ai-agent-economy",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "ai-agent-economy",
+      "target": "agentic-web"
+    },
+    {
+      "source": "ai-agent-economy",
+      "target": "build-for-models"
+    },
+    {
+      "source": "ai-agent-economy",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "ai-medical-biotech",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "ai-medical-biotech",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "ai-medical-biotech",
+      "target": "regenerative-medicine"
+    },
+    {
+      "source": "circular-economy-practice",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "emotional-self-awareness",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "emotional-self-awareness",
+      "target": "skill-development"
+    },
+    {
+      "source": "emotional-self-awareness",
+      "target": "narrative-power"
+    },
+    {
+      "source": "heavy-tail-distribution",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "heavy-tail-distribution",
+      "target": "one-person-team"
+    },
+    {
+      "source": "heavy-tail-distribution",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "narrative-power",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "narrative-power",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "narrative-power",
+      "target": "skill-development"
+    },
+    {
+      "source": "regenerative-medicine",
+      "target": "ai-medical-biotech"
+    },
+    {
+      "source": "regenerative-medicine",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "steady-state-survival-trap",
+      "target": "skill-development"
+    },
+    {
+      "source": "steady-state-survival-trap",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "steady-state-survival-trap",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "kuaidao-qingyi",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-addiction-economy-lonely-generation",
+      "target": "narrative-power"
+    },
+    {
+      "source": "article-addiction-economy-lonely-generation",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "article-agi-becoming-complete-human",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-agi-becoming-complete-human",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-agi-becoming-complete-human",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-ai-2027-civilization-reflection",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-ai-2027-civilization-reflection",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-ai-agent-planning-guide",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-ai-agent-planning-guide",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "article-ai-agent-planning-guide",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-ai-agents-vs-agentic-ai",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-ai-agents-vs-agentic-ai",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-ai-always-on-economy-restructure",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-ai-always-on-economy-restructure",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-ai-always-on-economy-restructure",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-ai-always-on-economy",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-ai-always-on-economy",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-ai-always-on-economy",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-ai-capability-gap-2026",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-ai-capability-gap-2026",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-ai-capability-gap-2026",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-ai-collab-realtime-translator",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-ai-collab-realtime-translator",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-ai-collab-realtime-translator",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-ai-ready-continuous-optimization",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-ai-ready-continuous-optimization",
+      "target": "agentic-web"
+    },
+    {
+      "source": "article-ai-ready-continuous-optimization",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "article-ai-slaughterhouse-2028-crisis-scenario",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-ai-slaughterhouse-2028-crisis-scenario",
+      "target": "narrative-power"
+    },
+    {
+      "source": "article-ai-slaughterhouse-2028-crisis-scenario",
+      "target": "heavy-tail-distribution"
+    },
+    {
+      "source": "article-ai-social-intelligence-psychologist",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-ai-social-intelligence-psychologist",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-ai-surpass-human-intelligence-six-years",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-ai-surpass-human-intelligence-six-years",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-algorithm-as-judge",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-algorithm-cannot-replace-decisions",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-analytics-sampling-trap",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-breaking-silo-effect",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-broken-crutch-elderly-faith",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-builders-scorecard-story",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-builders-scorecard-story",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "article-burnout-society-self-exploitation",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "article-burnout-society-self-exploitation",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "article-canary-in-coal-mine-ai-employment",
+      "target": "ai-education"
+    },
+    {
+      "source": "article-canary-in-coal-mine-ai-employment",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-canary-in-coal-mine-ai-employment",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-china-cultural-discourse-power",
+      "target": "narrative-power"
+    },
+    {
+      "source": "article-cioran-on-suffering-and-clarity",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "article-civilization-metric-system-over-goal",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-civilization-metric-system-over-goal",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "article-claude-usage-nyan-chrome-extension",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-claude-usage-nyan-chrome-extension",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-code-is-cheap-vibe-coding-to-claws",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-code-is-cheap-vibe-coding-to-claws",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-code-is-cheap-vibe-coding-to-claws",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-compass-meets-algorithm-authority-in-human-ai-era",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-compass-meets-algorithm-authority-in-human-ai-era",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-computation-as-currency",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-cycling-digital-collaboration",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-dharma-instrument-mother-grace",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "article-digital-colonialism-platforms",
+      "target": "narrative-power"
+    },
+    {
+      "source": "article-digital-footprint-the-one",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-digital-transformation-pain",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-elite-arrogance-youth",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-eq-group-education",
+      "target": "ai-education"
+    },
+    {
+      "source": "article-eq-group-education",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "article-facebook-algorithm-humanity",
+      "target": "narrative-power"
+    },
+    {
+      "source": "article-facebook-algorithm-humanity",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-falsification-market-crisis",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-falsification-market-crisis",
+      "target": "heavy-tail-distribution"
+    },
+    {
+      "source": "article-financial-crisis-market-humility",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-financial-crisis-market-humility",
+      "target": "heavy-tail-distribution"
+    },
+    {
+      "source": "article-formosa-esg-2026-low-carbon-pilgrimage",
+      "target": "circular-economy-practice"
+    },
+    {
+      "source": "article-google-chirp3-japanese-stt-benchmark",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-google-chirp3-japanese-stt-benchmark",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-homeschool-gentle-resistance",
+      "target": "ai-education"
+    },
+    {
+      "source": "article-homeschool-gentle-resistance",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "article-incarnation-ai-embodiment",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-incarnation-ai-embodiment",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-ironman-group-education",
+      "target": "ai-education"
+    },
+    {
+      "source": "article-ironman-group-education",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-jd-ai-supply-chain-revolution",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-jd-ai-supply-chain-revolution",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-jensen-huang-ai-mirror",
+      "target": "ai-education"
+    },
+    {
+      "source": "article-jensen-huang-ai-mirror",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-jensen-huang-ai-mirror",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-jensen-huang-learn-ai",
+      "target": "ai-education"
+    },
+    {
+      "source": "article-jensen-huang-learn-ai",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-kevin-kelly-mirror-world-third-information-revolution",
+      "target": "agentic-web"
+    },
+    {
+      "source": "article-kevin-kelly-mirror-world-third-information-revolution",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-knowledge-pipeline-not-discipline",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "article-knowledge-pipeline-not-discipline",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-knowledge-pipeline-not-discipline",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-language-truth-chatgpt5-dialogue",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-language-truth-chatgpt5-dialogue",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-language-truth-gemini-dialogue",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-language-truth-gemini-dialogue",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-life-database-engineering",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-life-database-engineering",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-life-you-envy-is-miracle",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "article-market-crash-humility",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-market-crash-humility",
+      "target": "heavy-tail-distribution"
+    },
+    {
+      "source": "article-multi-model-collab-website-rebuild",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-multi-model-collab-website-rebuild",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-multi-model-collab-website-rebuild",
+      "target": "agentic-web"
+    },
+    {
+      "source": "article-negentropy-humanistic-practice",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-negentropy-humanistic-practice",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-negentropy-taiwan-enterprise",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-neuralese-language-sovereignty",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-online-learning-resource-war",
+      "target": "ai-education"
+    },
+    {
+      "source": "article-overcome-fear-start-ugly",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-overcome-fear-start-ugly",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "article-pandemic-liquid-world",
+      "target": "heavy-tail-distribution"
+    },
+    {
+      "source": "article-personal-health-data-infrastructure",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-personal-health-data-infrastructure",
+      "target": "build-for-models"
+    },
+    {
+      "source": "article-personal-health-data-infrastructure",
+      "target": "ai-medical-biotech"
+    },
+    {
+      "source": "article-personal-strategy-in-ai-storm",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-personal-strategy-in-ai-storm",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "article-personal-strategy-in-ai-storm",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-pope-leo-xiv-ai-homily",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-pope-leo-xiv-ai-homily",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-post-code-era-taste",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-post-code-era-taste",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-quiet-edge-thirteen-notes",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "article-reformation-printing-politics",
+      "target": "narrative-power"
+    },
+    {
+      "source": "article-refuse-follower-be-builder",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-remote-work-cruel-truth",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-rethinking-ai-consciousness-collective-subjectivity",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-rethinking-ai-consciousness-collective-subjectivity",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-riding-wave-or-drowning",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-riding-wave-or-drowning",
+      "target": "heavy-tail-distribution"
+    },
+    {
+      "source": "article-safer-4-ai-governance",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-safer-4-ai-governance",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-sam-altman-sora-energy-ai",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-shiseido-gic-style-over-trend",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-slash-career-discipline",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-sovereign-ai-digital-autonomy",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-sovereign-ai-digital-autonomy",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-super-individual-case-study",
+      "target": "one-person-team"
+    },
+    {
+      "source": "article-super-individual-case-study",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-super-individual-case-study",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-super-learner-ai-era",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-super-learner-ai-era",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "article-super-learner-ai-era",
+      "target": "ai-education"
+    },
+    {
+      "source": "article-system-vs-intuition-planning",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-system-vs-intuition-planning",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-taiwan-semiconductor-tenfold-leap",
+      "target": "circular-economy-practice"
+    },
+    {
+      "source": "article-traffic-beyond-currency",
+      "target": "narrative-power"
+    },
+    {
+      "source": "article-us-ai-three-year-countdown",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-us-ai-three-year-countdown",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-web-crawling-ai-training-legal-comparison",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "article-web-crawling-ai-training-legal-comparison",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "article-why-greatness-cannot-be-planned",
+      "target": "skill-development"
+    },
+    {
+      "source": "article-why-greatness-cannot-be-planned",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "article-work-trend-index-2025-taiwan",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "article-work-trend-index-2025-taiwan",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "article-world-outlook-2030",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "article-world-outlook-2030",
+      "target": "circular-economy-practice"
+    },
+    {
+      "source": "clip-ai-theology-absolute-vulnerability",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "clip-ai-theology-absolute-vulnerability",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "clip-china-one-person-ai-startups",
+      "target": "one-person-team"
+    },
+    {
+      "source": "clip-china-one-person-ai-startups",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "clip-ey-agent-economy-sovereignty",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "clip-ey-agent-economy-sovereignty",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "clip-notre-dame-ai-faith-summit",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "clip-notre-dame-ai-faith-summit",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "clip-oecd-digital-education-outlook-2026",
+      "target": "ai-education"
+    },
+    {
+      "source": "clip-oecd-digital-education-outlook-2026",
+      "target": "skill-development"
+    },
+    {
+      "source": "clip-one-person-billion-dollar-company",
+      "target": "one-person-team"
+    },
+    {
+      "source": "clip-one-person-billion-dollar-company",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "clip-taiwan-circular-economy-2050-roadmap",
+      "target": "circular-economy-practice"
+    },
+    {
+      "source": "getnote-005824-yu-kunun-personal-ip",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-005824-yu-kunun-personal-ip",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-006336-stem-cell-exosome-automation",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-006336-stem-cell-exosome-automation",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-006336-stem-cell-exosome-automation",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-009912-future-survival-advice",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-009912-future-survival-advice",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-017472-three-selves",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-017592-openclaw-skill-guide",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-017592-openclaw-skill-guide",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-017592-openclaw-skill-guide",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-017592-openclaw-skill-guide",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "getnote-017592-openclaw-skill-guide",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-026688-yin-huisheng-enterprise-claw-risk",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-026688-yin-huisheng-enterprise-claw-risk",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-026688-yin-huisheng-enterprise-claw-risk",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-026688-yin-huisheng-enterprise-claw-risk",
+      "target": "yin-huisheng"
+    },
+    {
+      "source": "getnote-026688-yin-huisheng-enterprise-claw-risk",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-035296-absolute-zero-training",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-035296-absolute-zero-training",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-046456-china-llm-openrouter-dominance",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-046456-china-llm-openrouter-dominance",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-046456-china-llm-openrouter-dominance",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-046456-china-llm-openrouter-dominance",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-048304-care-butler-ai-longterm-care",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-048304-care-butler-ai-longterm-care",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "getnote-048304-care-butler-ai-longterm-care",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-065952-super-learner-zhang-quanling",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-065952-super-learner-zhang-quanling",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-065952-super-learner-zhang-quanling",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-066168-ai-drug-discovery",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-066168-ai-drug-discovery",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-066168-ai-drug-discovery",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-072896-yang-tianrun-non-tech-claw-native",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-072896-yang-tianrun-non-tech-claw-native",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-072896-yang-tianrun-non-tech-claw-native",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-072896-yang-tianrun-non-tech-claw-native",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-072896-yang-tianrun-non-tech-claw-native",
+      "target": "yang-tianrun"
+    },
+    {
+      "source": "getnote-072896-yang-tianrun-non-tech-claw-native",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-099088-ai-social-ecology",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-099088-ai-social-ecology",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-099088-ai-social-ecology",
+      "target": "agentic-web"
+    },
+    {
+      "source": "getnote-107776-midlife-growth-social-health",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-107776-midlife-growth-social-health",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-108032-zhang-peng-ai-assistant-evolution",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-108032-zhang-peng-ai-assistant-evolution",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-108032-zhang-peng-ai-assistant-evolution",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-108032-zhang-peng-ai-assistant-evolution",
+      "target": "zhang-peng"
+    },
+    {
+      "source": "getnote-108032-zhang-peng-ai-assistant-evolution",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-123160-cervical-cancer-medical-data",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-123160-cervical-cancer-medical-data",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-161424-sprouting-report",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-161424-sprouting-report",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-161976-ai-timeline-prediction",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-161976-ai-timeline-prediction",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-161976-ai-timeline-prediction",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-171536-intelligence-vs-wisdom",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-171536-intelligence-vs-wisdom",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-174608-employee-health-longterm-care",
+      "target": "circular-economy-practice"
+    },
+    {
+      "source": "getnote-174608-employee-health-longterm-care",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-174608-employee-health-longterm-care",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-178104-medical-aesthetics-overseas",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-178104-medical-aesthetics-overseas",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-178104-medical-aesthetics-overseas",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-201104-kazike-ai-three-year-insights",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-201104-kazike-ai-three-year-insights",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-201104-kazike-ai-three-year-insights",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-201104-kazike-ai-three-year-insights",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-216736-spear-grass-growth-law",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-216736-spear-grass-growth-law",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "getnote-216800-sales-closing-techniques",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-216800-sales-closing-techniques",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-221528-uncertainty-as-meaning-fuel",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-221528-uncertainty-as-meaning-fuel",
+      "target": "heavy-tail-distribution"
+    },
+    {
+      "source": "getnote-221560-japan-regenerative-medicine",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-221560-japan-regenerative-medicine",
+      "target": "heavy-tail-distribution"
+    },
+    {
+      "source": "getnote-268104-vibe-coding-trend",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-268104-vibe-coding-trend",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-268104-vibe-coding-trend",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-270152-tech-sports-platform-collab",
+      "target": "circular-economy-practice"
+    },
+    {
+      "source": "getnote-270152-tech-sports-platform-collab",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-285216-habermas-communicative-rationality",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-285216-habermas-communicative-rationality",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-287520-kaishu-openclaw-kids-parents",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-287520-kaishu-openclaw-kids-parents",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-287520-kaishu-openclaw-kids-parents",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-287520-kaishu-openclaw-kids-parents",
+      "target": "kaishu"
+    },
+    {
+      "source": "getnote-287520-kaishu-openclaw-kids-parents",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-315912-hinton-ai-deception",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-315912-hinton-ai-deception",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-315912-hinton-ai-deception",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-332008-ai-foreman-buffer-period",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-332008-ai-foreman-buffer-period",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-332008-ai-foreman-buffer-period",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-332008-ai-foreman-buffer-period",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-335136-celebration-ritual-neuroscience",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-335136-celebration-ritual-neuroscience",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-340544-naval-ai-thinking",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-340544-naval-ai-thinking",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-340544-naval-ai-thinking",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-379840-silent-mode-wisdom",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-389584-ai-predictions",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-389584-ai-predictions",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-389584-ai-predictions",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-389584-ai-predictions",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-403816-lobster-talk-launch",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-403816-lobster-talk-launch",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-403816-lobster-talk-launch",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-403816-lobster-talk-launch",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-406952-personal-website-ai-tools",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-406952-personal-website-ai-tools",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-435960-ai-hr-manufacturing",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-435960-ai-hr-manufacturing",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-435960-ai-hr-manufacturing",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-435960-ai-hr-manufacturing",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-438184-abundance-mindset-ai-era",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-438184-abundance-mindset-ai-era",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-445928-ai-wisdom",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-445928-ai-wisdom",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-445928-ai-wisdom",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-454304-ai-1percent-talent",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-454304-ai-1percent-talent",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-454304-ai-1percent-talent",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-454304-ai-1percent-talent",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-454304-ai-1percent-talent",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-454304-ai-1percent-talent",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-483472-openclaw-setup-guide",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-483472-openclaw-setup-guide",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-497432-morgan-stanley-ai-employment",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-497432-morgan-stanley-ai-employment",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-497432-morgan-stanley-ai-employment",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-498792-claude-skills-guide",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-498792-claude-skills-guide",
+      "target": "agentic-web"
+    },
+    {
+      "source": "getnote-498792-claude-skills-guide",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-498792-claude-skills-guide",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "getnote-498792-claude-skills-guide",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-499752-cost-profit-analysis",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-504720-neuroplasticity",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-505632-ning-liaoyuan-agent-economy-opportunities",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-505632-ning-liaoyuan-agent-economy-opportunities",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-505632-ning-liaoyuan-agent-economy-opportunities",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-505632-ning-liaoyuan-agent-economy-opportunities",
+      "target": "ning-liaoyuan"
+    },
+    {
+      "source": "getnote-505632-ning-liaoyuan-agent-economy-opportunities",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-519528-enterprise-communication",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-558096-alien-life-civilization",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-558096-alien-life-civilization",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-584104-life-energy-management",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-584104-life-energy-management",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-584104-life-energy-management",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-593912-human-nature-truths",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-597672-narrative-storytelling",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-597672-narrative-storytelling",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-597672-narrative-storytelling",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-630888-recording-self-growth",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-630888-recording-self-growth",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-643544-qu-xiaoyin-silicon-valley-agent-startups",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-643544-qu-xiaoyin-silicon-valley-agent-startups",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-643544-qu-xiaoyin-silicon-valley-agent-startups",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-643544-qu-xiaoyin-silicon-valley-agent-startups",
+      "target": "qu-xiaoyin"
+    },
+    {
+      "source": "getnote-643544-qu-xiaoyin-silicon-valley-agent-startups",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-658856-li-ning-human-value-reassessment",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-658856-li-ning-human-value-reassessment",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-658856-li-ning-human-value-reassessment",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-658856-li-ning-human-value-reassessment",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-658856-li-ning-human-value-reassessment",
+      "target": "li-ning"
+    },
+    {
+      "source": "getnote-658856-li-ning-human-value-reassessment",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-661768-business-project-meeting",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-661768-business-project-meeting",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-699320-tech-progress-paradox",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-707232-kazike-wechat-claw-plugin",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-707232-kazike-wechat-claw-plugin",
+      "target": "ai-education"
+    },
+    {
+      "source": "getnote-707232-kazike-wechat-claw-plugin",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-707232-kazike-wechat-claw-plugin",
+      "target": "kazike"
+    },
+    {
+      "source": "getnote-707232-kazike-wechat-claw-plugin",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-714464-resource-collaboration",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-714464-resource-collaboration",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-743840-moltbook-observation",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-743840-moltbook-observation",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-743840-moltbook-observation",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-743840-moltbook-observation",
+      "target": "agentic-web"
+    },
+    {
+      "source": "getnote-749536-partnership-project-planning",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-749536-partnership-project-planning",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-780904-lab-facility-animal-research",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-782928-preventive-medicine-ai-drug",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-782928-preventive-medicine-ai-drug",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-782928-preventive-medicine-ai-drug",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-808040-ai-medical-collaboration",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-808040-ai-medical-collaboration",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-808040-ai-medical-collaboration",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "getnote-817040-2028-ai-slaughterhouse",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-817040-2028-ai-slaughterhouse",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-837048-skill-creation-guide",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-837048-skill-creation-guide",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-837048-skill-creation-guide",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-837048-skill-creation-guide",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "getnote-842472-fortune-telling-psychology",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-842472-fortune-telling-psychology",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-847528-system-design-lessons",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-847528-system-design-lessons",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "getnote-850688-overcoming-fear-breakthrough",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-850688-overcoming-fear-breakthrough",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-850688-overcoming-fear-breakthrough",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-859688-munger-wealth-structure",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-859688-munger-wealth-structure",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "getnote-862976-lecture-method",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-867072-carrier-toilet-pope-ai",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-867072-carrier-toilet-pope-ai",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-870072-2025-tech-of-year",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-873696-geo-ai-recommendation-attack",
+      "target": "agentic-web"
+    },
+    {
+      "source": "getnote-873696-geo-ai-recommendation-attack",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-884928-claude-skill-research",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-884928-claude-skill-research",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-884928-claude-skill-research",
+      "target": "ai-skill-methodology"
+    },
+    {
+      "source": "getnote-896520-political-trust-collapse",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-898432-ai-drug-design-biotech",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-898432-ai-drug-design-biotech",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-898432-ai-drug-design-biotech",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-910880-emotional-self-awareness",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-910880-emotional-self-awareness",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-912296-growth-strategy-tool-person",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-912296-growth-strategy-tool-person",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-912296-growth-strategy-tool-person",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "getnote-918240-maltbot-ai-assistant",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-918240-maltbot-ai-assistant",
+      "target": "one-person-team"
+    },
+    {
+      "source": "getnote-918240-maltbot-ai-assistant",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-918240-maltbot-ai-assistant",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-918240-maltbot-ai-assistant",
+      "target": "build-for-models"
+    },
+    {
+      "source": "getnote-938560-wang-runyu-personal-ai-efficiency",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-938560-wang-runyu-personal-ai-efficiency",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-938560-wang-runyu-personal-ai-efficiency",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-938560-wang-runyu-personal-ai-efficiency",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-938560-wang-runyu-personal-ai-efficiency",
+      "target": "wang-runyu"
+    },
+    {
+      "source": "getnote-938560-wang-runyu-personal-ai-efficiency",
+      "target": "kuaidao-qingyi"
+    },
+    {
+      "source": "getnote-957592-wang-daxian-three-practical-cases",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-957592-wang-daxian-three-practical-cases",
+      "target": "enterprise-ai-adoption"
+    },
+    {
+      "source": "getnote-957592-wang-daxian-three-practical-cases",
+      "target": "ai-agent-economy"
+    },
+    {
+      "source": "getnote-957592-wang-daxian-three-practical-cases",
+      "target": "wang-daxian"
+    },
+    {
+      "source": "getnote-957592-wang-daxian-three-practical-cases",
+      "target": "kuaidao-qingyi"
+    }
+  ],
+  "generated": "2026-04-05"
+}

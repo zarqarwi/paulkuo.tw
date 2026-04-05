@@ -1,0 +1,67 @@
+{
+  "version": "0.2.0",
+  "updated": "2026-04-06",
+  "pillars": {
+    "ai": {
+      "label": "AI 與科技",
+      "color": "var(--accent-ai)",
+      "keywords": ["AI", "LLM", "Agent", "自動化", "機器學習", "數位轉型", "演算法", "半導體"],
+      "search_queries": [
+        "AI agent economy 2026",
+        "LLM agentic workflow latest",
+        "one person team AI startup",
+        "human AI collaboration future",
+        "enterprise AI adoption strategy",
+        "AI skill methodology framework",
+        "build for AI models web",
+        "Claude Anthropic agent SDK",
+        "AI replacing human judgment"
+      ]
+    },
+    "circular": {
+      "label": "循環經濟",
+      "color": "var(--accent-circular)",
+      "keywords": ["ESG", "碳盤查", "永續", "循環經濟", "淨零", "白沙屯", "環保"],
+      "search_queries": [
+        "circular economy practice Taiwan 2026",
+        "ESG carbon footprint tracking",
+        "Taiwan semiconductor sustainability",
+        "PCB recycling metal recovery"
+      ]
+    },
+    "faith": {
+      "label": "信仰與哲學",
+      "color": "var(--accent-faith)",
+      "keywords": ["媽祖", "信仰", "神學", "靈性", "宗教", "哲學", "倫理"],
+      "search_queries": [
+        "AI theology embodiment philosophy",
+        "faith technology ethics 2026",
+        "Pope Leo XIV AI statement",
+        "台灣宗教 數位轉型"
+      ]
+    },
+    "startup": {
+      "label": "創業與職涯",
+      "color": "var(--accent-startup)",
+      "keywords": ["創業", "品牌", "斜槓", "商業", "管理", "職涯", "領導"],
+      "search_queries": [
+        "solo founder AI tools 2026",
+        "narrative power brand building",
+        "heavy tail distribution career strategy",
+        "startup digital transformation Taiwan"
+      ]
+    },
+    "life": {
+      "label": "生活與學習",
+      "color": "var(--accent-life)",
+      "keywords": ["教育", "健康", "家庭", "學習", "成長", "生活"],
+      "search_queries": [
+        "AI education transformation 2026",
+        "emotional self-awareness learning",
+        "steady state survival trap breaking",
+        "skill development AI era"
+      ]
+    }
+  },
+  "mapping": {}
+}
