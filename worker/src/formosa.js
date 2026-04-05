@@ -886,7 +886,7 @@ function haversine(lat1, lng1, lat2, lng2) {
 
 const SPEED_THRESHOLDS = [
   { maxSpeed: 15,       mode: 'zero_emission', gwp: 0 },          // ≤ 15 km/h → 步行/腳踏車，零排放
-  { maxSpeed: Infinity, mode: 'motorized',     gwp: 0.47515 }     // > 15 km/h → 統一用巴士係數
+  { maxSpeed: Infinity, mode: 'motorized',     gwp: 0.12013 }     // > 15 km/h → 巴士人均係數 (ecoinvent "market for transport, regular bus")
 ];
 
 function inferTransportMode(speedKmh) {
@@ -1061,7 +1061,7 @@ export async function handleFormosaAdminCarbon(request, env) {
     for (const uid of userIds) {
       gpsWalkKm += perUser[uid].zero_emission;
       gpsMotorizedKm += perUser[uid].motorized;
-      gpsCarbonTotal += perUser[uid].motorized * 0.47515;
+      gpsCarbonTotal += perUser[uid].motorized * 0.12013;
     }
     const gpsTotalKm = gpsWalkKm + gpsMotorizedKm;
 
@@ -1087,7 +1087,7 @@ export async function handleFormosaAdminCarbon(request, env) {
     const transportTotals = { ...surveyTotals };
     transportTotals.walk = { km: gpsWalkKm, users: userIds.length };
 
-    // Carbon saved: if all walk km were driven by bus (0.47515 kg CO2e/km)
+    // Carbon saved: if all walk km were driven by bus (0.12013 kg CO2e/person·km)
     const carbonSaved = Math.max(0, gpsWalkKm * GWP_FACTORS.bus);
 
     return jsonResponse({
@@ -1916,7 +1916,7 @@ export async function handleFormosaAdminEndActivity(request, env) {
 // ── SSBTi / Ecoinvent 3.10 Coefficients ──
 const GWP_FACTORS = {
   walk: 0, car: 0.30479, scooter: 0.13734, bike: 0.01220,
-  bus: 0.47515, mrt: 0.07575, train: 0.07575, hsr: 0.07487,
+  bus: 0.12013, mrt: 0.07575, train: 0.07575, hsr: 0.07487,
   water: 0.10974, recycle: -0.00265, hotel: 8.85
 };
 const WU_FACTORS = {

@@ -858,7 +858,7 @@ const linkPrefix = prefix;
         '</select>';
 
       var walkKm = parseFloat(u.walk_km) || 0;
-      var carbonSaved = parseFloat(u.carbon_saved_kg) || (walkKm * 0.47515);
+      var carbonSaved = parseFloat(u.carbon_saved_kg) || (walkKm * 0.12013);
 
       html += '<tr>' +
         '<td>' + (u.display_name || u.user_id.substring(0, 10)) + '</td>' +
@@ -887,7 +887,7 @@ const linkPrefix = prefix;
     sortDir *= -1;
     var keys = ['display_name', 'gps_count', 'walk_km', 'carbon_saved_kg', 'last_active'];
     function getSortVal(u, key) {
-      if (key === 'carbon_saved_kg') return parseFloat(u.carbon_saved_kg) || (parseFloat(u.walk_km) || 0) * 0.47515;
+      if (key === 'carbon_saved_kg') return parseFloat(u.carbon_saved_kg) || (parseFloat(u.walk_km) || 0) * 0.12013;
       return u[key] || '';
     }
     allUsers.sort(function(a, b) {
