@@ -37,3 +37,7 @@ bucket_name = "formosa-og"
 [[routes]]
 pattern = "mazu.today/*"
 zone_name = "mazu.today"
+
+# Workers AI binding — Wiki Ask (Phase 4A)
+[ai]
+binding = "AI"
