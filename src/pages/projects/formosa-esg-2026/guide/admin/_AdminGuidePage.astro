@@ -14,7 +14,7 @@ const guideLink = `${prefix}/projects/formosa-esg-2026/guide/`;
 const volunteerGuideLink = `${prefix}/projects/formosa-esg-2026/guide/volunteer/`;
 const flowLink = `${prefix}/projects/formosa-esg-2026/guide/admin-flow/`;
 const feedbackFlowLink = `${prefix}/projects/formosa-esg-2026/guide/feedback-flow/`;
-const dashboardLink = `${prefix}/projects/formosa-esg-2026/dashboard/`;
+const dashboardLink = 'https://mazu.today/dashboard/';
 
 /* helper: replace {prefix} placeholders in sec5 strings */
 const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
@@ -495,7 +495,7 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
   <p>{t(lang, 'adminGuidePage.footerOrg')}</p>
   <p>{t(lang, 'adminGuidePage.footerTagline')}</p>
   <div class="guide-footer-actions">
-    <a href={`${prefix}/projects/formosa-esg-2026/dashboard/`} class="guide-cta">{t(lang, 'adminGuidePage.ctaDashboard')}</a>
+    <a href="https://mazu.today/dashboard/" class="guide-cta">{t(lang, 'adminGuidePage.ctaDashboard')}</a>
     <a href={guideLink} class="guide-cta guide-cta-secondary">{t(lang, 'adminGuidePage.ctaGuide')}</a>
   </div>
 </footer>
