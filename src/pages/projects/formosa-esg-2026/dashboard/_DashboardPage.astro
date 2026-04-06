@@ -50,7 +50,9 @@ const i18nDash = JSON.stringify({
   frontPopup: t(lang, 'dashboardPage.frontPopup'),
   tailPopup: t(lang, 'dashboardPage.tailPopup'),
   mazuPopup: t(lang, 'dashboardPage.mazuPopup'),
+  mazuPopupFallback: t(lang, 'dashboardPage.mazuPopupFallback'),
   mazuLabel: t(lang, 'dashboardPage.mazuLabel'),
+  mazuLabelFallback: t(lang, 'dashboardPage.mazuLabelFallback'),
   roleFailed: t(lang, 'dashboardPage.roleFailed'),
   roleConfirm: t(lang, 'dashboardPage.roleConfirm'),
   unknownError: t(lang, 'dashboardPage.unknownError'),
@@ -508,7 +510,7 @@ const linkPrefix = prefix;
     } else {
       buildClusterLayerFallback(currentPositions);
     }
-    buildFrontTailLayer(front, tail);
+    buildFrontTailLayer(front, tail, clusterRes ? clusterRes.sedan : null);
 
     setMapMode(mapMode);
 
@@ -583,10 +585,15 @@ const linkPrefix = prefix;
       }
     });
 
-    if (clusterData.front) {
-      L.marker([clusterData.front.lat, clusterData.front.lng], {
+    // Crown: prefer sedan position, fallback to front
+    var crownPos = clusterData.sedan || clusterData.front;
+    if (crownPos) {
+      var crownPopupText = clusterData.sedan
+        ? _t.mazuPopup.replace('{count}', clusterData.sedan.activeSedan)
+        : _t.mazuPopupFallback;
+      L.marker([crownPos.lat, crownPos.lng], {
         icon: L.divIcon({ html: '👑', className: 'front-icon', iconSize: [24, 24], iconAnchor: [12, 12] })
-      }).bindPopup(_t.frontLabel).addTo(clusterLayer);
+      }).bindPopup(crownPopupText).addTo(clusterLayer);
     }
     if (clusterData.tail) {
       L.marker([clusterData.tail.lat, clusterData.tail.lng], {
@@ -634,7 +641,7 @@ const linkPrefix = prefix;
     });
   }
 
-  function buildFrontTailLayer(front, tail) {
+  function buildFrontTailLayer(front, tail, sedan) {
     if (frontTailLayer) map.removeLayer(frontTailLayer);
     frontTailLayer = L.layerGroup();
 
@@ -661,24 +668,37 @@ const linkPrefix = prefix;
       }).addTo(frontTailLayer);
     }
 
-    if (front && tail) {
+    // Crown marker: prefer sedan volunteer median, fallback to all-points median
+    var crownLat, crownLng, crownPopup, crownLabel;
+    if (sedan && sedan.lat && sedan.lng) {
+      crownLat = sedan.lat;
+      crownLng = sedan.lng;
+      crownPopup = _t.mazuPopup.replace('{count}', sedan.activeSedan);
+      crownLabel = _t.mazuLabel.replace('{count}', sedan.activeSedan);
+    } else if (front && tail) {
+      // Fallback: median of all GPS points
       var allLats = [], allLngs = [];
       (window._mapPoints || []).forEach(function(p) { allLats.push(p.lat); allLngs.push(p.lng); });
       if (allLats.length > 0) {
         allLats.sort(function(a,b){return a-b;});
         allLngs.sort(function(a,b){return a-b;});
-        var medLat = allLats[Math.floor(allLats.length / 2)];
-        var medLng = allLngs[Math.floor(allLngs.length / 2)];
-        L.circleMarker([medLat, medLng], {
-          radius: 22, color: 'transparent', fillColor: '#ffd700', fillOpacity: 0.15, weight: 0
-        }).addTo(frontTailLayer);
-        L.circleMarker([medLat, medLng], {
-          radius: 12, color: '#ffd700', fillColor: '#ffd700', fillOpacity: 1, weight: 2
-        }).bindPopup('<span style="color:#ffd700;font-weight:700">' + _t.mazuPopup + '</span>').addTo(frontTailLayer);
-        L.marker([medLat, medLng], {
-          icon: L.divIcon({ className: 'front-tail-label mazu-label-dark', html: _t.mazuLabel, iconSize: [56, 18], iconAnchor: [28, -14] })
-        }).addTo(frontTailLayer);
+        crownLat = allLats[Math.floor(allLats.length / 2)];
+        crownLng = allLngs[Math.floor(allLngs.length / 2)];
       }
+      crownPopup = _t.mazuPopupFallback;
+      crownLabel = _t.mazuLabelFallback;
+    }
+
+    if (crownLat && crownLng) {
+      L.circleMarker([crownLat, crownLng], {
+        radius: 22, color: 'transparent', fillColor: '#ffd700', fillOpacity: 0.15, weight: 0
+      }).addTo(frontTailLayer);
+      L.circleMarker([crownLat, crownLng], {
+        radius: 12, color: '#ffd700', fillColor: '#ffd700', fillOpacity: 1, weight: 2
+      }).bindPopup('<span style="color:#ffd700;font-weight:700">' + crownPopup + '</span>').addTo(frontTailLayer);
+      L.marker([crownLat, crownLng], {
+        icon: L.divIcon({ className: 'front-tail-label mazu-label-dark', html: crownLabel, iconSize: [80, 18], iconAnchor: [40, -14] })
+      }).addTo(frontTailLayer);
     }
   }
 
