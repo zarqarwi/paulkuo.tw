@@ -1,76 +1,89 @@
 # Wiki Web Collector — 2026-04-06 待審清單
 
 ## 搜尋摘要
-- 搜尋 query 數：6
-- 搜尋結果總數：60+
-- 通過篩選（relevance ≥ 4）：7
-- 已存 clips：7
-- Fetch 失敗：全部（sandbox egress blocked，clips 含搜尋摘要）
+- 搜尋 query 數：10
+- 搜尋結果總數：~100
+- 通過篩選：8
+- 已存 clips：8（1 full_text + 7 search_summary_only）
 
 ## 待審內容（按 relevance 排序）
 
-### ⭐⭐⭐⭐⭐ 高度推薦 ingest
+### ⭐⭐⭐⭐⭐ 高度推薦
 
-- [The One-Person Billion-Dollar Company Is Here](https://www.pymnts.com/artificial-intelligence-2/2026/the-one-person-billion-dollar-company-is-here/) — ai
-  - clip: `2026-04-06-one-person-billion-dollar-company.md` | relevance: 5
-  - Medvi: $20K 起步、0 員工、$1.8B revenue tracking。目前最具體的 one-person company 實證。
-  - 建議連結到：[[one-person-team]], [[ai-agent-economy]]
+- [Building Agents with the Claude Agent SDK](https://claude.com/blog/building-agents-with-the-claude-agent-sdk) — ai
+  - clip: `2026-04-06-claude-agent-sdk-building-agents.md` | relevance: 5 | full_text
+  - Anthropic 官方 Agent SDK 設計哲學：「給 AI 一台電腦」，Agent Loop 三步驟架構，MCP 整合
+  - 建議連結到：[[build-for-models]] [[human-ai-collaboration]] [[one-person-team]]
 
-- [China is mobilizing thousands of one-person AI startups](https://restofworld.org/2026/china-ai-one-person-companies-incentives/) — ai
-  - clip: `2026-04-06-china-one-person-ai-startups.md` | relevance: 5
-  - 中國政府層級推動 OPC：免費公寓、閒置機房改孵化器。
-  - 建議連結到：[[one-person-team]], [[ai-agent-economy]]
+- [Pope Leo XIV's Balanced View of Artificial Intelligence](https://www.vaticannews.va/en/church/news/2026-03/javier-cercas-leo-xiv-balanced-view-artificial-intelligence.html) — faith
+  - clip: `2026-04-06-pope-leo-xiv-balanced-view-ai.md` | relevance: 5 | search_summary_only
+  - 教宗第 60 屆世界傳播日文告「引導而非停止」AI，AI 內容需標示、人類創意保護
+  - 建議連結到：[[human-judgment-in-ai-era]]
 
-- [AI and Absolute Vulnerability](https://publicorthodoxy.org/2026/03/18/artificial-intelligence-and-absolute-vulnerability/) — faith
-  - clip: `2026-04-06-ai-theology-absolute-vulnerability.md` | relevance: 5
-  - Fordham 東正教公共神學期刊。DELTA 框架（dignity, embodiment, love, transcendence, agency）。
-  - 建議連結到：[[incarnation-ai-embodiment]] 的學術對照
+- [US Department of Labor Releases AI Literacy Framework](https://www.dol.gov/newsroom/releases/eta/eta20260213) — life
+  - clip: `2026-04-06-us-dol-ai-literacy-framework.md` | relevance: 5 | search_summary_only
+  - 美國勞工部 2026/02 發布的 AI 素養框架，政府級技能轉型政策
+  - 建議連結到：[[ai-skill-methodology]] [[ai-education]]
 
 ### ⭐⭐⭐⭐ 值得收錄
 
-- [AI Trends 2026: sovereignty, agent economy, regulatory turning point (EY)](https://www.ey.com/en_ch/newsroom/2026/03/ai-trends-2026-between-sovereignty-agent-economy-and-regulatory-turning-point) — ai
-  - clip: `2026-04-06-ey-agent-economy-sovereignty.md` | relevance: 4
-  - 市場數據更新：$9.14B → $139B by 2034 (CAGR 40.5%)。Gartner: 40% enterprise apps embed agents by 2026.
-  - 建議連結到：[[ai-agent-economy]], [[enterprise-ai-adoption]]
-
-- [Taiwan circular economy push: new laws, AI, green funding](https://www.eco-business.com/news/taiwan-ramps-up-circular-economy-push-with-new-laws-ai-and-green-funding/) — circular
-  - clip: `2026-04-06-taiwan-circular-economy-2050-roadmap.md` | relevance: 4
-  - 台灣 2050 循環經濟路線圖、循環標籤制度、年成長率 9%。
+- [Water Nexus: Can Semiconductors and Sustainability Coexist in Taiwan?](https://taiwaninsight.org/2025/11/05/water-nexus-can-semiconductors-and-sustainability-coexist-in-taiwan/) — circular
+  - clip: `2026-04-06-taiwan-semiconductor-water-sustainability.md` | relevance: 4 | search_summary_only
+  - TSMC 再生水 36,000 噸/日、碳費 2026 上路、CBAM 實施
   - 建議連結到：[[circular-economy-practice]]
 
-- [Notre Dame Summit on AI, Faith, and Human Flourishing](https://ethics.nd.edu/programs/faith-based-frameworks-for-ai-ethics/) — faith
-  - clip: `2026-04-06-notre-dame-ai-faith-summit.md` | relevance: 4
-  - 學術研討會：AI 意識、具身性、道德能動性、人性尊嚴。
-  - 建議連結到：[[human-judgment-in-ai-era]]
+- [Circular Economy and Profitability: PCB Metal Recovery](https://www.sciencedirect.com/science/article/pii/S2214993725005809) — circular
+  - clip: `2026-04-06-pcb-circular-economy-profitability.md` | relevance: 4 | search_summary_only
+  - PCB 是唯一穩定獲利的電子廢棄物回收類別，每噸可省 1.5-2 噸 CO₂
+  - 建議連結到：[[circular-economy-practice]]
 
-- [OECD Digital Education Outlook 2026](https://www.oecd.org/en/publications/oecd-digital-education-outlook-2026_062a7394-en.html) — life
-  - clip: `2026-04-06-oecd-digital-education-outlook.md` | relevance: 4
-  - 「metacognitive laziness」概念：外包認知任務給 AI 的長期技能退化風險。
-  - 建議連結到：[[ai-education]], [[skill-development]]
+- [Deep Dive: The Long Tail of AI](https://research.contrary.com/report/long-tail-of-ai) — startup
+  - clip: `2026-04-06-long-tail-of-ai-contrary.md` | relevance: 4 | search_summary_only
+  - AI 經濟的長尾效應：真正的價值在大量傳統企業的 AI 採用而非少數 AI 巨頭
+  - 建議連結到：[[heavy-tail-distribution]] [[ai-agent-economy]]
+
+- [The Comfort Trap: Why Your Brain Sabotages Growth](https://mindfulspark.org/2025/05/19/the-comfort-trap-why-your-brain-sabotages-growth-and-how-to-break-free/) — life
+  - clip: `2026-04-06-comfort-trap-brain-sabotage.md` | relevance: 4 | search_summary_only
+  - 杏仁核威脅反應 → 穩態生存陷阱的神經科學解釋，5% 漸進突破法則
+  - 建議連結到：[[steady-state-survival-trap]]
+
+- [AI & Data Literacy Framework for 2026](https://www.datacamp.com/blog/the-most-important-ai-skills-for-2026-a-practical-ai-and-data-literacy-framework) — life
+  - clip: `2026-04-06-datacamp-ai-literacy-framework-2026.md` | relevance: 4 | search_summary_only
+  - 四層 AI 素養架構，「判斷力 > 工具操作」，從教學轉向適應力評估
+  - 建議連結到：[[ai-skill-methodology]] [[skill-development]]
 
 ## 本日搜尋 Query
-1. `AI agent economy 2026 latest trends`
-2. `LLM agentic workflow latest 2026`
-3. `circular economy practice Taiwan 2026`
-4. `AI theology embodiment philosophy 2026`
-5. `one person team AI startup 2026`
-6. `AI education transformation 2026 skill development`
+1. `build for AI models web 2026` — ai
+2. `Claude Anthropic agent SDK 2026` — ai
+3. `Taiwan semiconductor sustainability 2026` — circular
+4. `PCB recycling metal recovery circular economy` — circular
+5. `Pope Leo XIV AI statement 2026` — faith
+6. `台灣宗教 數位轉型 2026` — faith
+7. `heavy tail distribution career strategy AI era` — startup
+8. `startup digital transformation Taiwan 2026` — startup
+9. `steady state survival trap breaking comfort zone` — life
+10. `skill development AI era 2026 framework` — life
 
-## 跳過的結果（重複 / 低分 / 一般報導）
-- Google Cloud AI agent trends report — relevance 3, 一般趨勢彙整
-- IBM AI tech trends 2026 — relevance 3, 過於概括
-- SS&C Blue Prism agent trends — relevance 2, 產品導向
-- Salesmate 7 AI agent shifts — relevance 2, 銷售工具導向
-- Machine Learning Mastery agentic AI trends — relevance 3, 教學導向
-- Vellum agentic workflows guide — relevance 3, 技術教學
-- Adaline top agentic LLM models — relevance 3, 工具比較
-- Taskade one-person companies — relevance 2, 產品推廣
-- Calvin University AI conference — relevance 3, 活動公告
-- Various Medium articles — relevance 2-3, 品質不一
+## 跳過的結果
+- "Top 10 AI Models For Web Development in 2026" (analyticsvidhya) — 原因：product_roundup/listicle
+- "Best AI Models April 2026" (buildfastwithai) — 原因：product_roundup
+- "Complete List of All AI Models in 2026" (websolutioncentre) — 原因：product_roundup
+- "Claude Agent SDK Deep Dive" (Medium/Shivansh Gupta) — 原因：與 Anthropic 官方文重疊，取官方版
+- "Pope Leo XIV Tells Priests Not to Write Homilies with AI" (Breitbart) — 原因：narrow_scope，已有更全面的 Vatican News 版
+- "TSMC ESG Reports" (tsmc.com) — 原因：corporate_report
+- "Top 61 Taiwan Startups to Watch in 2026" (Failory) — 原因：listicle
+- "Digital 2026: Taiwan" (DataReportal) — 原因：data_report_general
+- "全國宗教資訊網" (moi.gov.tw) — 原因：portal_page
+- "用 ATM 就能點光明燈" (bnext) — 原因：low_relevance (score 3)
+- "The Comfort Trap: Why You're Wired to Stay Stuck" (game-changer) — 原因：duplicate_topic，已取 MindfulSpark 版
+- "Cauchy Distribution: Understanding Heavy-Tailed Data" (DataCamp) — 原因：technical_tutorial
+- "Taming the Tail: Adventures in Improving AI Economics" (a16z) — 原因：low_relevance (score 3)
+- "Bloomberg: Anthropic Accidentally Releases Source Code" — 原因：news_sensational
+
+## 備註
+- WebFetch 大多被 egress proxy 擋住，僅 Anthropic 官方文取得全文，其餘 7 篇為 search_summary_only
+- 今日早班已產出 7 篇 clips（ai-theology、china-one-person 等），本輪為第二批不同 query 的結果
+- 五個 pillar 皆有覆蓋：ai(1) + circular(2) + faith(1) + startup(1) + life(3)
 
 ## 操作建議
-Paul 確認後，在 Cowork 說「ingest clips/ 裡的 7 篇」即可觸發 wiki ingest。
-如果只想收特定幾篇，指定檔名即可。
-
----
-*Generated by wiki-web-collector trial run (2026-04-06)*
+Paul 確認後，在 Cowork 說「ingest clips/ 裡的 X 篇」即可觸發 wiki ingest。
