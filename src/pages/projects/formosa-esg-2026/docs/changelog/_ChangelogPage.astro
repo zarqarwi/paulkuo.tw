@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+import changelogHtml from './_changelog-content.html?raw';
+
+interface Props {
+  lang?: Locale;
+}
+
+const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const prefix = LOCALE_PREFIX[lang];
+---
+
+<BaseLayout
+  title={t(lang, 'docsPage.changelogTitle')}
+  description={t(lang, 'docsPage.changelogDesc')}
+  ogUrl="https://mazu.today/docs/changelog/"
+  ogImage="https://mazu.today/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<div class="changelog-page">
+  <nav class="changelog-breadcrumb">
+    <div class="changelog-nav-inner">
+      <a href={`${prefix}/projects/formosa-esg-2026/docs/`}>{t(lang, 'docsPage.indexHeading')}</a>
+      <span>&rsaquo;</span>
+      <span>{t(lang, 'docsPage.changelogTitle')}</span>
+    </div>
+  </nav>
+
+  <div class="changelog-embed" set:html={changelogHtml} />
+
+  <div class="changelog-back">
+    <a href={`${prefix}/projects/formosa-esg-2026/docs/`}>&larr; {t(lang, 'docsPage.backToDocs')}</a>
+  </div>
+</div>
+
+</BaseLayout>
+
+<style is:inline>
+  .changelog-page { --accent: #2d7a4f; }
+  .changelog-breadcrumb {
+    background: #1a3a2a; color: white; padding: 0.75rem 1.5rem; font-size: 0.85rem;
+  }
+  .changelog-nav-inner { max-width: 860px; margin: 0 auto; opacity: 0.8; }
+  .changelog-breadcrumb a { color: white; text-decoration: none; }
+  .changelog-breadcrumb a:hover { text-decoration: underline; }
+  .changelog-breadcrumb span { margin: 0 0.3rem; }
+  .changelog-back { max-width: 860px; margin: 0 auto; padding: 1rem 1.5rem 3rem; font-size: 0.9rem; }
+  .changelog-back a { color: var(--accent); text-decoration: none; }
+  .changelog-back a:hover { text-decoration: underline; }
+</style>

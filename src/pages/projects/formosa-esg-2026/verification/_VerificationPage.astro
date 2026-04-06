@@ -1,0 +1,264 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { t } from '@/i18n/utils';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
+import { verificationData } from './_data/verification-items';
+import type { VerificationStatus } from './_data/verification-items';
+
+interface Props {
+  lang?: Locale;
+}
+
+const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const prefix = LOCALE_PREFIX[lang];
+
+// Compute summary stats
+const allItems = verificationData.flatMap((cat) => cat.items);
+const totalItems = allItems.length;
+const totalCategories = verificationData.length;
+const passCount = allItems.filter((i) => i.status === 'pass').length;
+const warnCount = allItems.filter((i) => i.status === 'warn').length;
+const failCount = allItems.filter((i) => i.status === 'fail').length;
+
+const statusIcon: Record<VerificationStatus, string> = {
+  pass: '&#10003;',
+  warn: '!',
+  fail: '&#10007;',
+  na: '—',
+};
+---
+
+<BaseLayout
+  title={t(lang, 'verificationPage.title')}
+  description={t(lang, 'verificationPage.description')}
+  ogUrl="https://mazu.today/verification/"
+  ogImage="https://mazu.today/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<div class="verification-page">
+  <header class="doc-header">
+    <div class="container">
+      <span class="tag">Pre-Launch Verification</span>
+      <h1>{t(lang, 'verificationPage.heading')}</h1>
+      <p class="subtitle">{t(lang, 'verificationPage.subtitle')}</p>
+      <div class="doc-meta">
+        <span>{t(lang, 'verificationPage.version')}</span>
+        <span>{t(lang, 'verificationPage.assessDate')}</span>
+        <span>{t(lang, 'verificationPage.launchDate')}</span>
+        <span>{t(lang, 'verificationPage.author')}</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="summary-bar">
+    <div class="summary-card">
+      <div class="number">{totalCategories}</div>
+      <div class="label">{t(lang, 'verificationPage.summaryCategories')}</div>
+    </div>
+    <div class="summary-card">
+      <div class="number">{totalItems}</div>
+      <div class="label">{t(lang, 'verificationPage.summaryItems')}</div>
+    </div>
+    <div class="summary-card">
+      <div class="number pass-color">{passCount}</div>
+      <div class="label">{t(lang, 'verificationPage.statusPass')}</div>
+    </div>
+    <div class="summary-card">
+      <div class="number warn-color">{warnCount}</div>
+      <div class="label">{t(lang, 'verificationPage.statusWarnShort')}</div>
+    </div>
+  </div>
+
+  <main class="container">
+    <div class="legend">
+      <span><span class="legend-dot pass-bg"></span> {t(lang, 'verificationPage.statusPass')}</span>
+      <span><span class="legend-dot warn-bg"></span> {t(lang, 'verificationPage.statusWarnShort')}</span>
+      <span><span class="legend-dot fail-bg"></span> {t(lang, 'verificationPage.statusFail')}</span>
+      <span><span class="legend-dot na-bg"></span> {t(lang, 'verificationPage.statusNA')}</span>
+    </div>
+
+    {verificationData.map((cat, catIndex) => (
+      <section>
+        <h2>
+          <span class="icon">{catIndex + 1}</span>
+          {t(lang, cat.key)}
+        </h2>
+        <p class="section-desc">{t(lang, cat.descKey)}</p>
+        <ul class="checklist">
+          {cat.items.map((item) => {
+            const label = t(lang, item.key);
+            const parts = label.split('|');
+            const title = parts[0]?.trim() ?? '';
+            const desc = parts[1]?.trim() ?? '';
+            const badgeLabel = item.status === 'pass'
+              ? t(lang, 'verificationPage.statusPass')
+              : item.status === 'warn'
+                ? (item.noteKey ? t(lang, item.noteKey) : t(lang, 'verificationPage.statusWarnShort'))
+                : item.status === 'fail'
+                  ? t(lang, 'verificationPage.statusFail')
+                  : t(lang, 'verificationPage.statusNA');
+            return (
+              <li>
+                <span class={`check-icon ${item.status}`} set:html={statusIcon[item.status]} />
+                <div class="item-content">
+                  <strong>{title}</strong>
+                  {desc && <span>{desc}</span>}
+                </div>
+                <span class={`badge ${item.status}`}>{badgeLabel}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))}
+
+    <section class="conclusion">
+      <h2>{t(lang, 'verificationPage.conclusionTitle')}</h2>
+      <p>{t(lang, 'verificationPage.conclusionP1')}</p>
+      <p>{t(lang, 'verificationPage.conclusionP2')}</p>
+      <p class="verdict">{t(lang, 'verificationPage.conclusionVerdict')}</p>
+    </section>
+
+    <div class="info-box">
+      {t(lang, 'verificationPage.footnote')}
+    </div>
+  </main>
+
+  <footer class="doc-footer">
+    {t(lang, 'verificationPage.footer')}
+  </footer>
+</div>
+
+</BaseLayout>
+
+<style is:inline>
+  .verification-page {
+    --primary: #1a3a2a;
+    --accent: #2d7a4f;
+    --accent-light: #e8f5ee;
+    --amber: #b45309;
+    --amber-light: #fef3c7;
+    --red: #b91c1c;
+    --red-light: #fee2e2;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+  }
+  .verification-page .doc-header {
+    background: var(--primary);
+    color: white;
+    padding: 3rem 2rem 2.5rem;
+  }
+  .verification-page .doc-header .container { max-width: 800px; margin: 0 auto; }
+  .verification-page .doc-header .tag {
+    display: inline-block; font-size: 0.75rem; letter-spacing: 0.08em;
+    text-transform: uppercase; background: rgba(255,255,255,0.15);
+    padding: 0.25rem 0.75rem; border-radius: 100px; margin-bottom: 1rem;
+  }
+  .verification-page .doc-header h1 { font-size: 1.75rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.5rem; }
+  .verification-page .subtitle { font-size: 1rem; opacity: 0.8; }
+  .verification-page .doc-meta { display: flex; gap: 2rem; margin-top: 1.5rem; font-size: 0.85rem; opacity: 0.75; flex-wrap: wrap; }
+  .verification-page .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+
+  .verification-page .summary-bar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem; margin: -1.5rem auto 2rem; max-width: 800px; padding: 0 1.5rem;
+    position: relative; z-index: 1;
+  }
+  .verification-page .summary-card {
+    background: white; border-radius: 12px; padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;
+  }
+  .verification-page .summary-card .number { font-size: 1.75rem; font-weight: 700; color: var(--accent); }
+  .verification-page .summary-card .label { font-size: 0.8rem; color: var(--gray-600); margin-top: 0.25rem; }
+  .verification-page .pass-color { color: var(--accent) !important; }
+  .verification-page .warn-color { color: var(--amber) !important; }
+
+  .verification-page section {
+    background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .verification-page section h2 {
+    font-size: 1.2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .verification-page section h2 .icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0; background: var(--accent-light); color: var(--accent);
+  }
+  .verification-page .section-desc { color: var(--gray-600); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+  .verification-page .checklist { list-style: none; padding: 0; }
+  .verification-page .checklist li {
+    padding: 0.85rem 1rem; border-radius: 8px; margin-bottom: 0.5rem;
+    display: grid; grid-template-columns: 24px 1fr auto; gap: 0.75rem;
+    align-items: start; font-size: 0.92rem; line-height: 1.5;
+  }
+  .verification-page .checklist li:nth-child(odd) { background: var(--gray-50); }
+
+  .verification-page .check-icon {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .verification-page .check-icon.pass { background: var(--accent-light); color: var(--accent); }
+  .verification-page .check-icon.warn { background: var(--amber-light); color: var(--amber); }
+  .verification-page .check-icon.fail { background: var(--red-light); color: var(--red); }
+  .verification-page .check-icon.na { background: var(--gray-100); color: var(--gray-400); }
+
+  .verification-page .item-content strong { display: block; color: var(--gray-800); }
+  .verification-page .item-content span { color: var(--gray-600); font-size: 0.85rem; }
+
+  .verification-page .badge {
+    font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.6rem;
+    border-radius: 100px; white-space: nowrap; align-self: center;
+  }
+  .verification-page .badge.pass { background: var(--accent-light); color: var(--accent); }
+  .verification-page .badge.warn { background: var(--amber-light); color: var(--amber); }
+  .verification-page .badge.fail { background: var(--red-light); color: var(--red); }
+  .verification-page .badge.na { background: var(--gray-100); color: var(--gray-400); }
+
+  .verification-page .legend {
+    display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.8rem;
+    color: var(--gray-600); margin-bottom: 2rem; padding: 0 0.5rem;
+  }
+  .verification-page .legend span { display: flex; align-items: center; gap: 0.4rem; }
+  .verification-page .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .verification-page .pass-bg { background: var(--accent); }
+  .verification-page .warn-bg { background: var(--amber); }
+  .verification-page .fail-bg { background: var(--red); }
+  .verification-page .na-bg { background: var(--gray-400); }
+
+  .verification-page .conclusion { border-left: 3px solid var(--accent); }
+  .verification-page .conclusion p { margin-top: 0.75rem; line-height: 1.8; font-size: 0.95rem; }
+  .verification-page .conclusion .verdict { font-weight: 600; color: var(--accent); }
+
+  .verification-page .info-box {
+    background: var(--gray-50); border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem; border-radius: 0 8px 8px 0;
+    margin-bottom: 2rem; font-size: 0.88rem; color: var(--gray-600); line-height: 1.6;
+  }
+  .verification-page .doc-footer {
+    text-align: center; padding: 2rem 1.5rem 3rem;
+    font-size: 0.8rem; color: var(--gray-400); line-height: 1.6;
+  }
+
+  @media print {
+    .verification-page .doc-header { padding: 2rem; }
+    .verification-page section { box-shadow: none; border: 1px solid var(--gray-200); break-inside: avoid; }
+    .verification-page .summary-card { box-shadow: none; border: 1px solid var(--gray-200); }
+  }
+  @media (max-width: 600px) {
+    .verification-page .doc-header h1 { font-size: 1.35rem; }
+    .verification-page .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .verification-page section { padding: 1.25rem; }
+    .verification-page .checklist li { grid-template-columns: 22px 1fr; }
+    .verification-page .badge { display: none; }
+  }
+</style>
