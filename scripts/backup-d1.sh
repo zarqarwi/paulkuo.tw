@@ -1,10 +1,10 @@
 #!/bin/bash
 # D1 定期備份腳本 — Formosa ESG 2026
 # 建議排程：每天凌晨 3 點執行
-# crontab: 0 3 * * * /bin/bash ~/Desktop/01_專案進行中/paulkuo.tw/scripts/backup-d1.sh >> ~/Desktop/01_專案進行中/paulkuo.tw/backups/backup.log 2>&1
+# crontab: 0 3 * * * /bin/bash ~/Desktop/01_專案進行中/paulkuo.tw/scripts/backup-d1.sh >> ~/Desktop/02_參考資料/backups/formosa-d1/backup.log 2>&1
 
 DATE=$(date +%Y-%m-%d)
-BACKUP_DIR="$HOME/Desktop/01_專案進行中/paulkuo.tw/backups"
+BACKUP_DIR="$HOME/Desktop/02_參考資料/backups/formosa-d1"
 WORKER_DIR="$HOME/Desktop/01_專案進行中/paulkuo.tw/worker"
 mkdir -p "$BACKUP_DIR"
 
