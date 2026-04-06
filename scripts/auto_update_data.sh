@@ -1,5 +1,10 @@
 #!/bin/bash
-# auto_update_data.sh v7 — Timing + Stock only
+# auto_update_data.sh v8 — Remove autostash fallback; push fail = reset + retry next run
+#
+# v8 改動（vs v7）：
+#   - 移除 autostash rebase fallback，push 失敗改用 git reset HEAD~1
+#   - data 檔留在 working tree，下次排程重新 commit + push
+#   - 徹底消除跟 Code session 衝突的風險
 #
 # v7 改動（vs v6）：
 #   - 移除 git stash/pop 同步區塊，改在 push 失敗時用 --autostash rebase
@@ -133,14 +138,8 @@ git add data/timing.json data/stock.json 2>/dev/null
 git commit -m "auto: data update $(date +%m/%d-%H:%M)" --no-verify >> "$LOG" 2>&1
 
 if ! git push origin main >> "$LOG" 2>&1; then
-    log "WARN: push rejected, pulling rebase with autostash..."
-    git pull --rebase --autostash origin main >> "$LOG" 2>&1
-    if git push origin main >> "$LOG" 2>&1; then
-        log "✅ Pushed (after rebase)"
-        echo "$NOW_EPOCH" > "$LAST_PUSH_FILE"
-    else
-        log "ERROR: push failed even after rebase"
-    fi
+    log "WARN: push rejected — reverting commit, will retry next run"
+    git reset HEAD~1 >> "$LOG" 2>&1
 else
     log "✅ Pushed"
     echo "$NOW_EPOCH" > "$LAST_PUSH_FILE"
