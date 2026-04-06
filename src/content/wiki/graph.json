@@ -1369,6 +1369,14 @@
       "type": "source",
       "pillar": "life",
       "visibility": "public"
+    },
+    {
+      "id": "getnote-566200-100year-life",
+      "type": "source",
+      "label": "百歲人生：多階段人生策略",
+      "pillar": "life",
+      "weight": 1,
+      "visibility": "internal"
     }
   ],
   "edges": [
@@ -3099,6 +3107,18 @@
     {
       "source": "clip-datacamp-ai-literacy-framework-2026",
       "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-566200-100year-life",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-566200-100year-life",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "getnote-566200-100year-life",
+      "target": "heavy-tail-distribution"
     }
   ],
   "meta": {

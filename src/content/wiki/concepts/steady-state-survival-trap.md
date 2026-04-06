@@ -5,11 +5,11 @@ pillar: life
 visibility: public
 created: 2026-04-05
 updated: 2026-04-06
-source_count: 10
+source_count: 11
 confidence: medium
 tags: [穩態生存, 文化滯後, 高波動時代, 觀念升級, 能動性]
 links_to: [skill-development, human-judgment-in-ai-era, ai-agent-economy]
-linked_from: [getnote-495048-steady-state-survival-trap, getnote-487488-agency-vs-steady-state, getnote-077512-wanweigang-qa-constraints, getnote-332008-ai-foreman-buffer-period, article-burnout-society-self-exploitation, article-civilization-metric-system-over-goal, article-overcome-fear-start-ugly, article-why-greatness-cannot-be-planned, article-world-outlook-2030, clip-comfort-trap-brain-sabotage]
+linked_from: [getnote-495048-steady-state-survival-trap, getnote-487488-agency-vs-steady-state, getnote-077512-wanweigang-qa-constraints, getnote-332008-ai-foreman-buffer-period, getnote-566200-100year-life, article-burnout-society-self-exploitation, article-civilization-metric-system-over-goal, article-overcome-fear-start-ugly, article-why-greatness-cannot-be-planned, article-world-outlook-2030, clip-comfort-trap-brain-sabotage]
 ---
 
 ## 摘要

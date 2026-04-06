@@ -1,32 +1,32 @@
 {
-  "total_pages": 227,
+  "total_pages": 228,
   "by_type": {
     "concept": 17,
-    "source": 209,
+    "source": 210,
     "entity": 1
   },
   "by_pillar": {
     "circular": 19,
     "ai": 103,
-    "life": 54,
+    "life": 55,
     "startup": 34,
     "faith": 17
   },
   "by_visibility": {
-    "internal": 68,
+    "internal": 69,
     "unknown": 9,
     "public": 150
   },
   "by_source_type": {
     "article": 93,
-    "getnote": 108,
+    "getnote": 109,
     "concept": 17,
     "clip": 8,
     "entity": 1
   },
   "graph": {
-    "nodes": 227,
-    "edges": 432
+    "nodes": 228,
+    "edges": 435
   },
   "generated": "2026-04-06"
 }

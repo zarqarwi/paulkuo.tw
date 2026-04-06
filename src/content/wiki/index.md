@@ -2,15 +2,15 @@
 title: "Paul Kuo LLM Wiki — 知識索引"
 type: index
 updated: 2026-04-06
-total_pages: 234
+total_pages: 235
 ---
 
 ## 總覽
-- 總頁數：234
+- 總頁數：235
 - 概念頁：17
 - 實體頁：1
-- 來源頁：216
-- Graph：234 nodes / 451 edges
+- 來源頁：217
+- Graph：235 nodes / 454 edges
 
 ## 概念頁
 
@@ -224,6 +224,7 @@ total_pages: 234
 - `getnote-862976-lecture-method` [getnote]
 - `getnote-874728-heavy-tail-extreme-values` [get_note] 🔒
 - `getnote-888480-compound-interest-capital` [get_note] 🔒
+- `getnote-566200-100year-life` [get_note] 🔒
 - `getnote-896520-political-trust-collapse` [getnote] 🔒
 - `getnote-910880-emotional-self-awareness` [getnote] 🔒
 

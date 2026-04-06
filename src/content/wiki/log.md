@@ -80,3 +80,9 @@
   - 新增 graph 節點：+8 / 新增連結：+19
   - wiki 總頁數：126 → 134 頁
   - 新增概念：0 個（全部連結至既有概念）
+- 21:00 | ingest | 《百歲人生》深度解讀 1 篇 internal source ingest | Cowork
+  - 來源：05_商務會議/AI鏈接筆記
+  - getnote-566200-100year-life 新建
+  - 3 個概念頁更新：skill-development(+1), steady-state-survival-trap(+1), heavy-tail-distribution(+1)
+  - ℹ️ 05_商務 資料夾審查完畢：7 篇錄音筆記(private)跳過、4 篇 untitled 跳過、供給側/複利各有舊版已 ingest
+  - wiki 總頁數更新：+1
