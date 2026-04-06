@@ -148,6 +148,22 @@ const schemaJson = JSON.stringify({
       )}
     </header>
 
+    <div class="wiki-share-bar">
+      <button class="share-btn share-copy" data-url={`${SITE.url}/wiki/${slug}/`}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        複製連結
+      </button>
+      <a class="share-btn" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(SITE.url + '/wiki/' + slug + '/')}&text=${encodeURIComponent(title + ' — Paul Kuo 知識圖譜')}`} target="_blank" rel="noopener">
+        X
+      </a>
+      <a class="share-btn" href={`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(SITE.url + '/wiki/' + slug + '/')}`} target="_blank" rel="noopener">
+        LINE
+      </a>
+      <a class="share-btn" href={`https://www.threads.net/intent/post?text=${encodeURIComponent(title + ' ' + SITE.url + '/wiki/' + slug + '/')}`} target="_blank" rel="noopener">
+        Threads
+      </a>
+    </div>
+
     <div class="concept-body">
       <Content />
     </div>
@@ -162,16 +178,24 @@ const schemaJson = JSON.stringify({
               {sourceTypeIcons[type] || '\u{1F4C1}'} {sourceTypeLabels[type] || type}（{sources.length}）
             </h3>
             <ul class="source-list">
-              {sources.map(s => (
+              {sources.map(s => {
+                const isArticle = s.data.raw_source_type === 'article';
+                const articleSlug = isArticle ? (s.data.slug || s.id.replace(/\.md$/, '')).replace(/^article-/, '') : null;
+                return (
                 <li class="source-item">
-                  <span class="source-title">{s.data.title}</span>
+                  {isArticle && articleSlug ? (
+                    <a href={`/articles/${articleSlug}/`} class="source-title source-link">{s.data.title}</a>
+                  ) : (
+                    <span class="source-title">{s.data.title}</span>
+                  )}
                   {s.data.pillar !== pillar && (
                     <span class="source-pillar" style={`color: ${PILLAR_COLORS[s.data.pillar] || '#64748b'};`}>
                       {PILLAR_MAP[s.data.pillar as keyof typeof PILLAR_MAP]?.label}
                     </span>
                   )}
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
         ))}
@@ -529,6 +553,14 @@ const schemaJson = JSON.stringify({
     color: var(--text-primary, #1e293b);
     flex: 1;
   }
+  .source-link {
+    color: var(--accent-ai, #2563eb);
+    text-decoration: none;
+  }
+  .source-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
   .source-pillar {
     font-size: 0.7rem;
     white-space: nowrap;
@@ -601,4 +633,44 @@ const schemaJson = JSON.stringify({
     background: radial-gradient(circle at 30% 20%, #f8fafc, #fff 60%);
     overflow: hidden;
   }
+
+  /* Share bar */
+  .wiki-share-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+  }
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 999px;
+    background: var(--bg-subtle, #f8fafc);
+    color: var(--text-secondary, #64748b);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+  .share-btn:hover {
+    border-color: var(--accent-ai, #2563eb);
+    color: var(--text-primary, #0f172a);
+  }
 </style>
+
+<script is:inline>
+document.querySelectorAll('.share-copy').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var url = btn.dataset.url;
+    navigator.clipboard.writeText(url).then(function() {
+      var orig = btn.innerHTML;
+      btn.textContent = '已複製！';
+      setTimeout(function() { btn.innerHTML = orig; }, 1500);
+    });
+  });
+});
+</script>
