@@ -4,12 +4,12 @@ type: concept
 pillar: life
 visibility: internal
 created: 2026-04-05
-updated: 2026-04-05
-source_count: 8
+updated: 2026-04-06
+source_count: 10
 confidence: medium
 tags: [情緒管理, 心理學, 自我認知, 存在感, 耦合理論]
 links_to: [human-judgment-in-ai-era, skill-development, narrative-power]
-linked_from: [article-addiction-economy-lonely-generation, article-burnout-society-self-exploitation, article-cioran-on-suffering-and-clarity, article-dharma-instrument-mother-grace, article-eq-group-education, article-homeschool-gentle-resistance, article-life-you-envy-is-miracle, article-quiet-edge-thirteen-notes]
+linked_from: [article-addiction-economy-lonely-generation, article-burnout-society-self-exploitation, article-cioran-on-suffering-and-clarity, article-dharma-instrument-mother-grace, article-eq-group-education, article-homeschool-gentle-resistance, article-life-you-envy-is-miracle, article-quiet-edge-thirteen-notes, getnote-050928-death-education-yin-ye, getnote-113736-sdt-agency-guide]
 ---
 
 ## 摘要

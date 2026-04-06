@@ -1,6 +1,30 @@
 {
   "nodes": [
     {
+      "id": "getnote-050928-death-education-yin-ye",
+      "type": "source",
+      "pillar": "life",
+      "title": "尹烨谈死亡教育"
+    },
+    {
+      "id": "getnote-443632-hard-constraints-ai-interaction",
+      "type": "source",
+      "pillar": "ai",
+      "title": "万维钢问答：硬约束、AI交互、自我认知"
+    },
+    {
+      "id": "getnote-218984-constraint-respect-action",
+      "type": "source",
+      "pillar": "life",
+      "title": "約束：先尊重，再行動"
+    },
+    {
+      "id": "getnote-113736-sdt-agency-guide",
+      "type": "source",
+      "pillar": "life",
+      "title": "SDT能動性培養指南"
+    },
+    {
       "id": "circular-economy-practice",
       "type": "concept",
       "pillar": "circular",
@@ -3113,6 +3137,62 @@
       "target": "skill-development"
     },
     {
+      "source": "getnote-050928-death-education-yin-ye",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "getnote-050928-death-education-yin-ye",
+      "target": "narrative-power"
+    },
+    {
+      "source": "getnote-443632-hard-constraints-ai-interaction",
+      "target": "human-ai-collaboration"
+    },
+    {
+      "source": "getnote-443632-hard-constraints-ai-interaction",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-443632-hard-constraints-ai-interaction",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-443632-hard-constraints-ai-interaction",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "getnote-443632-hard-constraints-ai-interaction",
+      "target": "narrative-power"
+    },
+    {
+      "source": "getnote-218984-constraint-respect-action",
+      "target": "narrative-power"
+    },
+    {
+      "source": "getnote-218984-constraint-respect-action",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "getnote-218984-constraint-respect-action",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
+      "source": "getnote-113736-sdt-agency-guide",
+      "target": "steady-state-survival-trap"
+    },
+    {
+      "source": "getnote-113736-sdt-agency-guide",
+      "target": "skill-development"
+    },
+    {
+      "source": "getnote-113736-sdt-agency-guide",
+      "target": "emotional-self-awareness"
+    },
+    {
+      "source": "getnote-113736-sdt-agency-guide",
+      "target": "human-judgment-in-ai-era"
+    },
+    {
       "source": "getnote-566200-100year-life",
       "target": "steady-state-survival-trap"
     },
@@ -3123,7 +3203,7 @@
   ],
   "meta": {
     "generated": "2026-04-05",
-    "node_count": 219,
-    "edge_count": 413
+    "node_count": 223,
+    "edge_count": 427
   }
 }

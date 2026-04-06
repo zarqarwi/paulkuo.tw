@@ -2,15 +2,15 @@
 title: "Paul Kuo LLM Wiki — 知識索引"
 type: index
 updated: 2026-04-06
-total_pages: 235
+total_pages: 232
 ---
 
 ## 總覽
-- 總頁數：235
+- 總頁數：232
 - 概念頁：17
 - 實體頁：1
-- 來源頁：217
-- Graph：235 nodes / 454 edges
+- 來源頁：214
+- Graph：232 nodes / 449 edges
 
 ## 概念頁
 
@@ -22,17 +22,17 @@ total_pages: 235
 - **AI Skill Methodology** (`ai-skill-methodology`) — 9 sources
 - **Build for Models** (`build-for-models`) — 13 sources
 - **Enterprise AI Adoption** (`enterprise-ai-adoption`) — 18 sources
-- **Human-AI Collaboration** (`human-ai-collaboration`) — 25 sources
-- **Human Judgment in AI Era** (`human-judgment-in-ai-era`) — 34 sources
+- **Human-AI Collaboration** (`human-ai-collaboration`) — 26 sources
+- **Human Judgment in AI Era** (`human-judgment-in-ai-era`) — 37 sources
 - **One-Person Team** (`one-person-team`) — 18 sources
 - **再生醫療技術** (`regenerative-medicine`) — 3 sources
-- **Skill Development** (`skill-development`) — 28 sources
+- **Skill Development** (`skill-development`) — 31 sources
 
 ### 生活與成長
-- **情緒認知與自我覺察** (`emotional-self-awareness`) — 8 sources
+- **情緒認知與自我覺察** (`emotional-self-awareness`) — 10 sources
 - **重尾分布與極端值思維** (`heavy-tail-distribution`) — 10 sources
-- **敘事力：意義建構的核心能力** (`narrative-power`) — 10 sources
-- **穩態生存邏輯的陷阱** (`steady-state-survival-trap`) — 10 sources
+- **敘事力：意義建構的核心能力** (`narrative-power`) — 13 sources
+- **穩態生存邏輯的陷阱** (`steady-state-survival-trap`) — 14 sources
 
 ### 循環經濟
 - **循環經濟實踐** (`circular-economy-practice`) — 14 sources
@@ -42,7 +42,7 @@ total_pages: 235
 
 ## 來源頁
 
-### AI 與科技（100 篇）
+### AI 與科技（101 篇）
 - `article-agi-becoming-complete-human` [article]
 - `article-ai-2027-civilization-reflection` [article]
 - `article-ai-agents-vs-agentic-ai` [article]
@@ -115,6 +115,7 @@ total_pages: 235
 - `getnote-403816-lobster-talk-launch` [getnote]
 - `getnote-406952-personal-website-ai-tools` [getnote] 🔒
 - `getnote-435960-ai-hr-manufacturing` [getnote] 🔒
+- `getnote-443632-hard-constraints-ai-interaction` [getnote]
 - `getnote-438184-abundance-mindset-ai-era` [getnote]
 - `getnote-454304-ai-1percent-talent` [getnote] 🔒
 - `getnote-458136-holographic-universe-theory` [getnote] 🔒
@@ -176,7 +177,7 @@ total_pages: 235
 - `getnote-859688-munger-wealth-structure` [getnote] 🔒
 - `getnote-957592-wang-daxian-three-practical-cases` [getnote]
 
-### 生活與成長（51 篇）
+### 生活與成長（54 篇）
 - `article-addiction-economy-lonely-generation` [article]
 - `article-burnout-society-self-exploitation` [article]
 - `article-cioran-on-suffering-and-clarity` [article]
@@ -198,6 +199,9 @@ total_pages: 235
 - `clip-comfort-trap-brain-sabotage` [clip]
 - `clip-oecd-digital-education-outlook-2026` [clip]
 - `getnote-008840-sdt-self-determination` [get_note] 🔒
+- `getnote-050928-death-education-yin-ye` [getnote]
+- `getnote-113736-sdt-agency-guide` [getnote]
+- `getnote-218984-constraint-respect-action` [getnote]
 - `getnote-009912-future-survival-advice` [getnote] 🔒
 - `getnote-017472-three-selves` [getnote]
 - `getnote-065952-super-learner-zhang-quanling` [getnote]

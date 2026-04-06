@@ -86,3 +86,22 @@
   - 3 個概念頁更新：skill-development(+1), steady-state-survival-trap(+1), heavy-tail-distribution(+1)
   - ℹ️ 05_商務 資料夾審查完畢：7 篇錄音筆記(private)跳過、4 篇 untitled 跳過、供給側/複利各有舊版已 ingest
   - wiki 總頁數更新：+1
+- 22:00 | ingest | get_筆記最終掃尾 4 篇 public source ingest | Cowork
+  - getnote-050928-death-education-yin-ye（03_環保循環經濟，public）
+  - getnote-443632-hard-constraints-ai-interaction（01_專欄/萬維鋼，public）
+  - getnote-218984-constraint-respect-action（06_個人成長，public）
+  - getnote-113736-sdt-agency-guide（08_其他，public）
+  - 6 個概念頁更新引用：emotional-self-awareness(+2), narrative-power(+3), human-ai-collaboration(+1), skill-development(+2), human-judgment(+3), steady-state-survival-trap(+3)
+  - ℹ️ 同批審查剩餘 23 筆記全部判定 SKIP：
+    - 9 private（09_會議錄音）
+    - 4 garbage（Google Drive/Facebook）
+    - 1 untitled + 1 app welcome
+    - 2 older duplicates（05_商務 供給側/複利）
+    - 6 content duplicates（06_個人成長 敘事×2/能動×2/重尾×1/約束×1）
+  - wiki 總頁數：228 → 232
+- 22:00 | milestone | 🎉 get_筆記 Phase 1 ingest 完結！
+  - 9 個資料夾全部處理完畢
+  - 共 113 篇 getnote source pages（public 44 + internal 69）
+  - 07_生活雜記：全部判定為 garbage/private 跳過
+  - 09_會議錄音：全部判定為 private 跳過
+  - 下一步：Phase 2 cross-pillar 連結最佳化
