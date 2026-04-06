@@ -1,48 +1,48 @@
 ---
 title: "Paul Kuo LLM Wiki — 知識索引"
 type: index
-updated: 2026-04-05
-total_pages: 226
+updated: 2026-04-06
+total_pages: 234
 ---
 
 ## 總覽
-- 總頁數：226
+- 總頁數：234
 - 概念頁：17
 - 實體頁：1
-- 來源頁：208
-- Graph：226 nodes / 436 edges
+- 來源頁：216
+- Graph：234 nodes / 451 edges
 
 ## 概念頁
 
 ### AI 與科技
 - **Agentic Web** (`agentic-web`) — 4 sources
-- **AI Agent 經濟** (`ai-agent-economy`) — 38 sources
-- **AI Education** (`ai-education`) — 12 sources
+- **AI Agent 經濟** (`ai-agent-economy`) — 40 sources
+- **AI Education** (`ai-education`) — 13 sources
 - **AI 在醫療與生技的應用** (`ai-medical-biotech`) — 1 sources
-- **AI Skill Methodology** (`ai-skill-methodology`) — 7 sources
-- **Build for Models** (`build-for-models`) — 12 sources
-- **Enterprise AI Adoption** (`enterprise-ai-adoption`) — 17 sources
-- **Human-AI Collaboration** (`human-ai-collaboration`) — 24 sources
-- **Human Judgment in AI Era** (`human-judgment-in-ai-era`) — 31 sources
-- **One-Person Team** (`one-person-team`) — 17 sources
+- **AI Skill Methodology** (`ai-skill-methodology`) — 9 sources
+- **Build for Models** (`build-for-models`) — 13 sources
+- **Enterprise AI Adoption** (`enterprise-ai-adoption`) — 18 sources
+- **Human-AI Collaboration** (`human-ai-collaboration`) — 25 sources
+- **Human Judgment in AI Era** (`human-judgment-in-ai-era`) — 34 sources
+- **One-Person Team** (`one-person-team`) — 18 sources
 - **再生醫療技術** (`regenerative-medicine`) — 3 sources
-- **Skill Development** (`skill-development`) — 25 sources
+- **Skill Development** (`skill-development`) — 28 sources
 
 ### 生活與成長
 - **情緒認知與自我覺察** (`emotional-self-awareness`) — 8 sources
-- **重尾分布與極端值思維** (`heavy-tail-distribution`) — 9 sources
+- **重尾分布與極端值思維** (`heavy-tail-distribution`) — 10 sources
 - **敘事力：意義建構的核心能力** (`narrative-power`) — 10 sources
-- **穩態生存邏輯的陷阱** (`steady-state-survival-trap`) — 9 sources
+- **穩態生存邏輯的陷阱** (`steady-state-survival-trap`) — 10 sources
 
 ### 循環經濟
-- **循環經濟實踐** (`circular-economy-practice`) — 12 sources
+- **循環經濟實踐** (`circular-economy-practice`) — 14 sources
 
 ## 實體頁
 - **快刀青衣** (`kuaidao-qingyi`)
 
 ## 來源頁
 
-### AI 與科技（92 篇）
+### AI 與科技（100 篇）
 - `article-agi-becoming-complete-human` [article]
 - `article-ai-2027-civilization-reflection` [article]
 - `article-ai-agents-vs-agentic-ai` [article]
@@ -85,8 +85,12 @@ total_pages: 226
 - `article-web-crawling-ai-training-legal-comparison` [article]
 - `article-work-trend-index-2025-taiwan` [article]
 - `clip-china-one-person-ai-startups` [clip]
+- `clip-claude-agent-sdk-building-agents` [clip]
+- `clip-datacamp-ai-literacy-framework-2026` [clip]
 - `clip-ey-agent-economy-sovereignty` [clip]
+- `clip-long-tail-of-ai-contrary` [clip]
 - `clip-one-person-billion-dollar-company` [clip]
+- `clip-us-dol-ai-literacy-framework` [clip]
 - `getnote-017592-openclaw-skill-guide` [getnote]
 - `getnote-035296-absolute-zero-training` [getnote] 🔒
 - `getnote-046456-china-llm-openrouter-dominance` [getnote]
@@ -136,7 +140,7 @@ total_pages: 226
 - `getnote-918240-maltbot-ai-assistant` [getnote]
 - `getnote-938560-wang-runyu-personal-ai-efficiency` [getnote]
 
-### 創業與商業（33 篇）
+### 創業與商業（34 篇）
 - `article-ai-agent-planning-guide` [article]
 - `article-breaking-silo-effect` [article]
 - `article-builders-scorecard-story` [article]
@@ -155,6 +159,7 @@ total_pages: 226
 - `article-system-vs-intuition-planning` [article]
 - `article-traffic-beyond-currency` [article]
 - `article-why-greatness-cannot-be-planned` [article]
+- `clip-long-tail-of-ai-contrary` [clip]
 - `getnote-005824-yu-kunun-personal-ip` [getnote]
 - `getnote-026688-yin-huisheng-enterprise-claw-risk` [getnote]
 - `getnote-171424-supply-side-positive-sum` [get_note] 🔒
@@ -171,7 +176,7 @@ total_pages: 226
 - `getnote-859688-munger-wealth-structure` [getnote] 🔒
 - `getnote-957592-wang-daxian-three-practical-cases` [getnote]
 
-### 生活與成長（48 篇）
+### 生活與成長（51 篇）
 - `article-addiction-economy-lonely-generation` [article]
 - `article-burnout-society-self-exploitation` [article]
 - `article-cioran-on-suffering-and-clarity` [article]
@@ -190,6 +195,7 @@ total_pages: 226
 - `article-shiseido-gic-style-over-trend` [article]
 - `article-social-media-value-spectrum` [article]
 - `article-world-outlook-2030` [article]
+- `clip-comfort-trap-brain-sabotage` [clip]
 - `clip-oecd-digital-education-outlook-2026` [clip]
 - `getnote-008840-sdt-self-determination` [get_note] 🔒
 - `getnote-009912-future-survival-advice` [getnote] 🔒
@@ -221,7 +227,7 @@ total_pages: 226
 - `getnote-896520-political-trust-collapse` [getnote] 🔒
 - `getnote-910880-emotional-self-awareness` [getnote] 🔒
 
-### 信仰與意義（18 篇）
+### 信仰與意義（19 篇）
 - `article-broken-crutch-elderly-faith` [article]
 - `article-elite-arrogance-youth` [article]
 - `article-faith-collapse-rebuild` [article]
@@ -238,13 +244,16 @@ total_pages: 226
 - `article-same-sex-marriage-theology` [article]
 - `clip-ai-theology-absolute-vulnerability` [clip]
 - `clip-notre-dame-ai-faith-summit` [clip]
+- `clip-pope-leo-xiv-balanced-view-ai` [clip]
 - `getnote-188584-pastor-pang-memorial` [getnote] 🔒
 - `getnote-756056-pastor-pang-reflection` [getnote] 🔒
 
-### 循環經濟（17 篇）
+### 循環經濟（19 篇）
 - `article-formosa-esg-2026-low-carbon-pilgrimage` [article]
 - `article-taiwan-semiconductor-tenfold-leap` [article]
+- `clip-pcb-circular-economy-profitability` [clip]
 - `clip-taiwan-circular-economy-2050-roadmap` [clip]
+- `clip-taiwan-semiconductor-water-sustainability` [clip]
 - `getnote-006336-stem-cell-exosome-automation` [getnote] 🔒
 - `getnote-043024-secondhand-recycling-logistics` [get_note] 🔒
 - `getnote-048304-care-butler-ai-longterm-care` [getnote] 🔒

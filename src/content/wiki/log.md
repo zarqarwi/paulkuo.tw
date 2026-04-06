@@ -69,3 +69,14 @@
 - Wiki 成長：86 → 126 頁（17 concept + 1 entity + 108 source）
 - graph.json：18 節點 + 47 邊
 - 🎉 里程碑：Phase 1 get_筆記 ingest 完成！7/8 資料夾已處理（07 生活雜記 + 09 會議錄音 = private 跳過）
+
+## 2026-04-06
+
+- 12:00 | ingest | Web Collector 第二批 8 篇 clips ingest | Cowork
+  - 來源：wiki/raw/clips/（04-06 web search 結果）
+  - 8 篇 clip source 摘要頁新建（全部 public）
+  - Pillar 分布：ai(1) + faith(1) + life(3) + circular(2) + startup(1)
+  - 12 個概念頁更新 linked_from + source_count
+  - 新增 graph 節點：+8 / 新增連結：+19
+  - wiki 總頁數：126 → 134 頁
+  - 新增概念：0 個（全部連結至既有概念）
