@@ -1,16 +1,16 @@
 {
   "total_pages": 232,
   "by_type": {
-    "concept": 17,
-    "source": 214,
+    "concept": 19,
+    "source": 216,
     "entity": 1
   },
   "by_pillar": {
-    "circular": 19,
-    "ai": 104,
-    "life": 58,
-    "startup": 34,
-    "faith": 17
+    "circular": 1,
+    "ai": 12,
+    "life": 4,
+    "startup": 1,
+    "faith": 1
   },
   "by_visibility": {
     "internal": 69,
@@ -28,5 +28,7 @@
     "nodes": 232,
     "edges": 449
   },
-  "generated": "2026-04-06"
+  "generated": "2026-04-06",
+  "total_nodes": 236,
+  "total_edges": 478
 }
