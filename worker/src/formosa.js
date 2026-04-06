@@ -15,7 +15,7 @@ async function getFormosaStatus(kv) {
 
 // ── Three-Tier Auth Helper ──
 // Roles: owner > manager > volunteer
-const ROLE_LEVEL = { owner: 3, manager: 2, volunteer: 1 };
+const ROLE_LEVEL = { owner: 3, manager: 2, volunteer: 1, sedan_volunteer: 1 };
 
 async function getAuthRole(request, env) {
   const token = request.headers.get('X-Admin-Token');
@@ -24,6 +24,7 @@ async function getAuthRole(request, env) {
   if (token === env.FORMOSA_ADMIN_TOKEN) return 'owner';
   if (token === env.FORMOSA_MANAGER_TOKEN) return 'manager';
   if (token === env.FORMOSA_VOLUNTEER_TOKEN) return 'volunteer';
+  if (token === env.FORMOSA_SEDAN_TOKEN) return 'sedan_volunteer';
   // Fallback: check KV invite codes (Dashboard sends invite code as X-Admin-Token)
   try {
     const raw = await env.TICKER_KV.get('invite_codes');
@@ -34,6 +35,12 @@ async function getAuthRole(request, env) {
     }
   } catch (_) {}
   return null;
+}
+
+// Check if a token is the sedan volunteer token
+function isSedanToken(request, env) {
+  const token = request.headers.get('X-Admin-Token');
+  return token && token === env.FORMOSA_SEDAN_TOKEN;
 }
 
 // Backward-compatible: requireAdmin still works for owner+manager endpoints
@@ -179,7 +186,8 @@ const COLUMN_MIGRATIONS = [
   `ALTER TABLE formosa_surveys ADD COLUMN q3_transport TEXT`,
   `ALTER TABLE formosa_surveys ADD COLUMN q4_eco TEXT`,
   `ALTER TABLE formosa_surveys ADD COLUMN q5_stay TEXT`,
-  `ALTER TABLE formosa_surveys ADD COLUMN q6_meal TEXT`
+  `ALTER TABLE formosa_surveys ADD COLUMN q6_meal TEXT`,
+  `ALTER TABLE formosa_users ADD COLUMN is_sedan INTEGER DEFAULT 0`
 ];
 
 // ── Run migration (once per Worker instance) ──
@@ -376,6 +384,17 @@ export async function handleFormosaCheckin(request, env, ctx) {
     const rateLimited = await checkRateLimitKV(env.TICKER_KV, userId, 60, 5);
     if (rateLimited) {
       return jsonResponse({ error: '打卡太頻繁，請稍後再試', rate_limited: true }, 429, request);
+    }
+
+    // Mark sedan volunteer in DB if using sedan token
+    if (isSedanToken(request, env) && userId !== 'anonymous_' + Date.now()) {
+      try {
+        await migrateFormosa(env.AUTH_DB);
+        await env.AUTH_DB.prepare(
+          `INSERT INTO formosa_users (line_user_id, is_sedan, updated_at) VALUES (?, 1, datetime('now'))
+           ON CONFLICT(line_user_id) DO UPDATE SET is_sedan = 1, updated_at = datetime('now')`
+        ).bind(userId).run();
+      } catch (_) {}
     }
 
     const lat = data.lat;
@@ -1315,7 +1334,51 @@ export async function handleFormosaAdminClusters(request, env) {
     const twoHoursAgo = new Date(Date.now() - 2*60*60*1000).toISOString();
     const lost = latestPoints.filter(p => p.created_at < twoHoursAgo).length;
 
-    const result = { clusters, front, tail, spread_km, lost, total_points: rows.length, total_users: userSet.size, zoom, cell_size: cellSize };
+    // Sedan volunteer GPS median — for crown positioning
+    const thirtyMinAgo = new Date(Date.now() - 30*60*1000).toISOString();
+    const twentyFourHoursAgo = new Date(Date.now() - 24*60*60*1000).toISOString();
+    let sedan = null;
+    try {
+      // Active sedan volunteers: is_sedan=1 AND had GPS in last 30 minutes
+      const sedanRows = await env.AUTH_DB.prepare(`
+        SELECT g.lat, g.lng FROM formosa_gps_points g
+        JOIN formosa_users u ON g.user_id = u.line_user_id
+        WHERE u.is_sedan = 1 AND g.created_at >= ?
+        ORDER BY g.created_at DESC
+      `).bind(thirtyMinAgo).all();
+      const sedanPts = sedanRows?.results || [];
+
+      // Count active sedan volunteers (unique users with GPS in last 30 min)
+      const activeSet = new Set(sedanPts.length > 0 ? (await env.AUTH_DB.prepare(`
+        SELECT DISTINCT g.user_id FROM formosa_gps_points g
+        JOIN formosa_users u ON g.user_id = u.line_user_id
+        WHERE u.is_sedan = 1 AND g.created_at >= ?
+      `).bind(thirtyMinAgo).all()).results.map(r => r.user_id) : []);
+
+      // Total: sedan volunteers with GPS in last 24h (not all-time)
+      const totalSedanResult = await env.AUTH_DB.prepare(`
+        SELECT COUNT(DISTINCT g.user_id) as cnt FROM formosa_gps_points g
+        JOIN formosa_users u ON g.user_id = u.line_user_id
+        WHERE u.is_sedan = 1 AND g.created_at >= ?
+      `).bind(twentyFourHoursAgo).first();
+
+      if (sedanPts.length > 0) {
+        // Median lat/lng
+        const lats = sedanPts.map(p => p.lat).sort((a, b) => a - b);
+        const lngs = sedanPts.map(p => p.lng).sort((a, b) => a - b);
+        const mid = Math.floor(lats.length / 2);
+        sedan = {
+          lat: lats.length % 2 ? lats[mid] : (lats[mid - 1] + lats[mid]) / 2,
+          lng: lngs.length % 2 ? lngs[mid] : (lngs[mid - 1] + lngs[mid]) / 2,
+          activeSedan: activeSet.size,
+          totalSedan: totalSedanResult?.cnt || 0
+        };
+      }
+    } catch (e) {
+      console.error('Sedan query error:', e);
+    }
+
+    const result = { clusters, front, tail, sedan, spread_km, lost, total_points: rows.length, total_users: userSet.size, zoom, cell_size: cellSize };
     await env.TICKER_KV.put(cacheKey, JSON.stringify(result), { expirationTtl: 60 });
     return jsonResponse(result, 200, request);
   } catch (e) { console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request); }
