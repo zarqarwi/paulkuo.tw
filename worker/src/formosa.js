@@ -2287,6 +2287,66 @@ export async function handleFormosaFeedback(request, env) {
   }
 }
 
+// ── Push Image Upload to R2 ──
+export async function handleFormosaUpload(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Method not allowed' }, 405, request);
+  }
+  const authErr = await requireAdmin(request, env);
+  if (authErr) return authErr;
+
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file');
+    if (!file) return jsonResponse({ error: 'Missing file field' }, 400, request);
+
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowed.includes(file.type)) {
+      return jsonResponse({ error: 'Only JPEG or PNG allowed' }, 400, request);
+    }
+
+    const buf = await file.arrayBuffer();
+    if (buf.byteLength === 0) return jsonResponse({ error: 'Empty file' }, 400, request);
+    if (buf.byteLength > 10 * 1024 * 1024) return jsonResponse({ error: 'File too large (max 10MB)' }, 413, request);
+
+    const ext = file.type === 'image/png' ? 'png' : 'jpg';
+    const ts = Date.now();
+    const rand = crypto.randomUUID().slice(0, 8);
+    const r2Key = `push/${ts}-${rand}.${ext}`;
+
+    await env.FORMOSA_OG.put(r2Key, buf, {
+      httpMetadata: { contentType: file.type, cacheControl: 'public, max-age=31536000' },
+    });
+
+    const url = `https://api.paulkuo.tw/api/formosa/push-image/${ts}-${rand}.${ext}`;
+    return jsonResponse({ ok: true, url }, 200, request);
+  } catch (e) {
+    console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
+  }
+}
+
+// ── Serve Push Image from R2 ──
+export async function handleFormosaPushImageServe(request, env, filename) {
+  try {
+    const r2Key = `push/${filename}`;
+    const object = await env.FORMOSA_OG.get(r2Key);
+    if (!object) return new Response('Not found', { status: 404 });
+    const ct = filename.endsWith('.png') ? 'image/png' : 'image/jpeg';
+    return new Response(object.body, {
+      headers: {
+        'Content-Type': ct,
+        'Cache-Control': 'public, max-age=31536000',
+        'Access-Control-Allow-Origin': '*',
+      }
+    });
+  } catch (e) {
+    return new Response('Error', { status: 500 });
+  }
+}
+
 // ── Feedback Screenshot Upload to R2 ──
 export async function handleFormosaFeedbackUpload(request, env) {
   if (request.method === 'OPTIONS') {

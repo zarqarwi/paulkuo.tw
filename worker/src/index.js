@@ -29,7 +29,7 @@ import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBea
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
 import { handleStatus } from './status.js';
-import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus, handleFormosaHealthAlert } from './formosa.js';
+import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus, handleFormosaHealthAlert, handleFormosaUpload, handleFormosaPushImageServe } from './formosa.js';
 import { fetchGscData, handleGsc } from './gsc.js';
 import { handleWikiSearch, handleWikiConcept, handleWikiGraph, handleWikiAsk } from './wiki-api.js';
 
@@ -436,6 +436,11 @@ async function handleRequest(request, env, ctx) {
   if (path.startsWith('/api/formosa/feedback-image/') && path.endsWith('.png')) {
     const fname = path.replace('/api/formosa/feedback-image/', '');
     return handleFormosaFeedbackImageServe(request, env, fname);
+  }
+  if (path === '/api/formosa/upload' && method === 'POST') return handleFormosaUpload(request, env);
+  if (path.startsWith('/api/formosa/push-image/')) {
+    const fname = path.replace('/api/formosa/push-image/', '');
+    if (fname) return handleFormosaPushImageServe(request, env, fname);
   }
   // ── Wiki API ──
   if (path === '/api/wiki/search' && method === 'GET') return handleWikiSearch(request, env);

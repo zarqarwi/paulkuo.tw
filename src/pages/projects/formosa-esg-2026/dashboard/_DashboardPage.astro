@@ -184,7 +184,11 @@ const linkPrefix = prefix;
       </div>
       <textarea id="pushText" class="push-textarea" rows="4" placeholder="輸入訊息內容（支援多行，URL 自動轉連結）"></textarea>
       <div id="pushImageFields" class="push-image-fields" style="display:none">
-        <input id="pushImageUrl" type="url" class="push-input" placeholder="圖片 URL（HTTPS，JPEG 或 PNG）">
+        <div class="push-url-row">
+          <input id="pushImageUrl" type="url" class="push-input" placeholder="圖片 URL（HTTPS，JPEG 或 PNG）">
+          <button type="button" id="pushUploadBtn" class="push-upload-btn">上傳圖片</button>
+          <input type="file" id="pushFileInput" accept="image/jpeg,image/png" style="display:none">
+        </div>
         <input id="pushPreviewUrl" type="url" class="push-input" placeholder="預覽圖 URL（選填，未填則同上）">
         <div id="pushImagePreview" class="push-image-preview" style="display:none">
           <img id="pushImageThumb" alt="圖片預覽">
@@ -1016,6 +1020,8 @@ const linkPrefix = prefix;
     var pushPreviewUrl = document.getElementById('pushPreviewUrl');
     var pushImagePreview = document.getElementById('pushImagePreview');
     var pushImageThumb = document.getElementById('pushImageThumb');
+    var pushUploadBtn = document.getElementById('pushUploadBtn');
+    var pushFileInput = document.getElementById('pushFileInput');
     var modeBtns = document.querySelectorAll('.push-mode-btn');
     var pendingSend = null;
     var currentMode = 'text';
@@ -1034,6 +1040,37 @@ const linkPrefix = prefix;
         pushImageFields.style.display = needsImage ? '' : 'none';
         validatePushBtn();
       });
+    });
+
+    // Upload image to R2
+    pushUploadBtn.addEventListener('click', function() { pushFileInput.click(); });
+    pushFileInput.addEventListener('change', async function() {
+      var file = pushFileInput.files[0];
+      if (!file) return;
+      pushUploadBtn.disabled = true;
+      pushUploadBtn.textContent = '上傳中…';
+      try {
+        var fd = new FormData();
+        fd.append('file', file);
+        var res = await fetch(API + '/api/formosa/upload', {
+          method: 'POST',
+          headers: ADMIN_HEADERS,
+          body: fd
+        });
+        var data = await res.json();
+        if (data.ok && data.url) {
+          pushImageUrl.value = data.url;
+          pushImageUrl.dispatchEvent(new Event('input'));
+        } else {
+          alert('上傳失敗：' + (data.error || '未知錯誤'));
+        }
+      } catch (e) {
+        alert('上傳失敗，請稍後再試');
+      } finally {
+        pushUploadBtn.disabled = false;
+        pushUploadBtn.textContent = '上傳圖片';
+        pushFileInput.value = '';
+      }
     });
 
     // Image URL preview
@@ -1605,6 +1642,18 @@ const linkPrefix = prefix;
   .push-image-fields {
     display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;
   }
+  .push-url-row {
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+  .push-url-row .push-input { flex: 1; margin: 0; }
+  .push-upload-btn {
+    flex-shrink: 0; padding: 0.55rem 0.9rem; font-size: 0.82rem;
+    border: 1px solid #ddd; border-radius: 8px;
+    background: #fff; color: #333;
+    cursor: pointer; white-space: nowrap; transition: background 0.15s;
+  }
+  .push-upload-btn:hover { background: #f5f5f5; }
+  .push-upload-btn:disabled { opacity: 0.6; cursor: default; }
   .push-input {
     width: 100%; padding: 0.6rem 1rem; border: 1px solid #ddd;
     border-radius: 8px; font-size: 0.85rem; background: #fff;
