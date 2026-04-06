@@ -169,30 +169,49 @@ const linkPrefix = prefix;
     </section>
   </div>
 
-  <!-- Push Notification -->
+  <!-- Push Notification (4-mode) -->
   <section class="dash-section" id="pushSection">
-    <h2>{t(lang, 'dashboardPage.pushSection')}</h2>
+    <h2>LINE 推播訊息</h2>
+    <p class="dash-subtitle">發送文字、圖片或組合訊息給 Formosa ESG 用戶</p>
     <div class="push-form">
-      <div class="push-row">
-        <label>{t(lang, 'dashboardPage.pushTarget')}</label>
-        <select id="pushRole" class="push-input">
-          <option value="all">{t(lang, 'dashboardPage.pushAll')}</option>
-          <option value="participant">{t(lang, 'dashboardPage.pushParticipant')}</option>
-          <option value="volunteer">{t(lang, 'dashboardPage.pushVolunteer')}</option>
-          <option value="admin">{t(lang, 'dashboardPage.pushAdmin')}</option>
+      <div class="push-mode-bar">
+        <button class="push-mode-btn active" data-mode="text">文字</button>
+        <button class="push-mode-btn" data-mode="image">圖片</button>
+        <button class="push-mode-btn" data-mode="image+text">圖片+文字</button>
+        <button class="push-mode-btn" data-mode="template">模板</button>
+      </div>
+      <textarea id="pushText" class="push-textarea" rows="4" placeholder="輸入訊息內容（支援多行，URL 自動轉連結）"></textarea>
+      <div id="pushImageFields" class="push-image-fields" style="display:none">
+        <input id="pushImageUrl" type="url" class="push-input" placeholder="圖片 URL（HTTPS，JPEG 或 PNG）">
+        <input id="pushPreviewUrl" type="url" class="push-input" placeholder="預覽圖 URL（選填，未填則同上）">
+        <div id="pushImagePreview" class="push-image-preview" style="display:none">
+          <img id="pushImageThumb" alt="圖片預覽">
+        </div>
+      </div>
+      <div class="push-controls">
+        <select id="pushRole" class="push-select">
+          <option value="all">全部用戶</option>
+          <option value="participant">香客 Pilgrims</option>
+          <option value="volunteer">志工 Volunteers</option>
+          <option value="admin">管理員 Admins</option>
         </select>
+        <button id="pushBtn" class="push-btn" disabled>發送推播</button>
       </div>
-      <div class="push-row">
-        <label>{t(lang, 'dashboardPage.pushTitleLabel')}</label>
-        <input type="text" id="pushTitle" class="push-input" value={t(lang, 'dashboardPage.pushTitleDefault')} maxlength="40">
-      </div>
-      <div class="push-row">
-        <label>{t(lang, 'dashboardPage.pushContentLabel')}</label>
-        <textarea id="pushText" class="push-input push-textarea" maxlength="160">{t(lang, 'dashboardPage.pushContentDefault')}</textarea>
-      </div>
-      <button id="pushBtn" class="push-send-btn" onclick="sendPush()">{t(lang, 'dashboardPage.pushSend')}</button>
+      <div id="pushStatus" class="push-status" style="display:none"></div>
     </div>
   </section>
+
+  <!-- Push Confirmation Modal -->
+  <div id="pushModal" class="push-modal-overlay" style="display:none">
+    <div class="push-modal">
+      <h3>確認發送推播</h3>
+      <div id="pushModalPreview" class="push-modal-preview"></div>
+      <div class="push-modal-actions">
+        <button id="pushModalCancel" class="push-modal-btn cancel">取消</button>
+        <button id="pushModalConfirm" class="push-modal-btn confirm">確認發送</button>
+      </div>
+    </div>
+  </div>
 
   <!-- LINE Usage -->
   <section class="dash-section" id="lineUsageSection">
@@ -962,24 +981,181 @@ const linkPrefix = prefix;
     });
   };
 
-  // ── Push Notification ──
-  window.sendPush = function() {
-    var role = document.getElementById('pushRole').value;
-    var title = document.getElementById('pushTitle').value || '';
-    var text = document.getElementById('pushText').value || '';
-    if (!confirm(_t.pushConfirm + (role === 'all' ? _t.pushConfirmAll : role) + '？')) return;
-    var btn = document.getElementById('pushBtn');
-    btn.disabled = true; btn.textContent = _t.pushing;
-    fetch(API + '/api/formosa/push', {
-      method: 'POST',
-      headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role: role, title: title, text: text })
-    }).then(function(r) { return r.json(); }).then(function(d) {
-      btn.disabled = false; btn.textContent = _t.pushSend;
-      if (d.ok) { alert(_t.pushSuccess.replace('{n}', d.sent)); }
-      else { alert(_t.pushFailed + (d.error || _t.unknownError)); }
-    }).catch(function(e) { btn.disabled = false; btn.textContent = _t.pushSend; alert(_t.pushFailed + e.message); });
-  };
+  // ── Push Notification (4-mode) ──
+  (function initPush() {
+    var pushText = document.getElementById('pushText');
+    var pushRole = document.getElementById('pushRole');
+    var pushBtn = document.getElementById('pushBtn');
+    var pushStatus = document.getElementById('pushStatus');
+    var pushModal = document.getElementById('pushModal');
+    var pushModalPreview = document.getElementById('pushModalPreview');
+    var pushModalCancel = document.getElementById('pushModalCancel');
+    var pushModalConfirm = document.getElementById('pushModalConfirm');
+    var pushImageFields = document.getElementById('pushImageFields');
+    var pushImageUrl = document.getElementById('pushImageUrl');
+    var pushPreviewUrl = document.getElementById('pushPreviewUrl');
+    var pushImagePreview = document.getElementById('pushImagePreview');
+    var pushImageThumb = document.getElementById('pushImageThumb');
+    var modeBtns = document.querySelectorAll('.push-mode-btn');
+    var pendingSend = null;
+    var currentMode = 'text';
+
+    // Mode switching
+    modeBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        modeBtns.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+
+        var needsText = currentMode === 'text' || currentMode === 'image+text' || currentMode === 'template';
+        var needsImage = currentMode === 'image' || currentMode === 'image+text';
+
+        pushText.style.display = needsText ? '' : 'none';
+        pushImageFields.style.display = needsImage ? '' : 'none';
+        validatePushBtn();
+      });
+    });
+
+    // Image URL preview
+    var imgDebounce;
+    pushImageUrl.addEventListener('input', function() {
+      clearTimeout(imgDebounce);
+      var url = pushImageUrl.value.trim();
+      if (!url) { pushImagePreview.style.display = 'none'; validatePushBtn(); return; }
+      imgDebounce = setTimeout(function() {
+        pushImageThumb.onload = function() { pushImagePreview.style.display = ''; };
+        pushImageThumb.onerror = function() { pushImagePreview.style.display = 'none'; };
+        pushImageThumb.src = url;
+      }, 500);
+      validatePushBtn();
+    });
+
+    // Validate send button based on current mode
+    function validatePushBtn() {
+      var hasText = pushText.value.trim().length > 0;
+      var hasImage = pushImageUrl.value.trim().length > 0;
+      if (currentMode === 'text' || currentMode === 'template') pushBtn.disabled = !hasText;
+      else if (currentMode === 'image') pushBtn.disabled = !hasImage;
+      else if (currentMode === 'image+text') pushBtn.disabled = !hasText || !hasImage;
+    }
+    pushText.addEventListener('input', validatePushBtn);
+
+    // Build request body for current mode
+    function buildBody(role, dryRun) {
+      var payload = { role: role, mode: currentMode, dry_run: dryRun };
+      if (currentMode !== 'image') payload.text = pushText.value.trim();
+      if (currentMode === 'image' || currentMode === 'image+text') {
+        payload.image_url = pushImageUrl.value.trim();
+        var pUrl = pushPreviewUrl.value.trim();
+        if (pUrl) payload.preview_url = pUrl;
+      }
+      return payload;
+    }
+
+    // Step 1: Click send → dry run to get count → show confirmation modal
+    pushBtn.addEventListener('click', async function() {
+      var role = pushRole.value;
+      pushBtn.disabled = true;
+      pushBtn.textContent = '查詢中…';
+
+      try {
+        var res = await fetch(API + '/api/formosa/push', {
+          method: 'POST',
+          headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
+          body: JSON.stringify(buildBody(role, true))
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'API error');
+
+        var count = data.count || 0;
+        if (count === 0) {
+          showPushStatus('warn', '該群組沒有可推播的用戶');
+          pushBtn.textContent = '發送推播';
+          validatePushBtn();
+          return;
+        }
+
+        var roleLabel = pushRole.options[pushRole.selectedIndex].text;
+        var modeLabels = { text: '文字', image: '圖片', 'image+text': '圖片+文字', template: '模板' };
+        var previewHtml =
+          '<div class="push-preview-meta">' +
+            '<span>對象：<strong>' + roleLabel + '</strong></span>' +
+            '<span>人數：<strong>' + count + ' 人</strong></span>' +
+            '<span>類型：<strong>' + (modeLabels[currentMode] || currentMode) + '</strong></span>' +
+          '</div>';
+
+        if (currentMode !== 'image') {
+          var t = pushText.value.trim();
+          var previewText = t.length > 200 ? t.substring(0, 200) + '…' : t;
+          previewHtml += '<div class="push-preview-text">' + previewText.replace(/\n/g, '<br>') + '</div>';
+        }
+        if (currentMode === 'image' || currentMode === 'image+text') {
+          previewHtml += '<div class="push-preview-image"><img src="' + pushImageUrl.value.trim() + '" alt="預覽"></div>';
+        }
+
+        pushModalPreview.innerHTML = previewHtml;
+        pendingSend = buildBody(role, false);
+        pendingSend._count = count;
+        pushModal.style.display = 'flex';
+      } catch (e) {
+        showPushStatus('error', '查詢失敗：' + e.message);
+      }
+      pushBtn.textContent = '發送推播';
+      validatePushBtn();
+    });
+
+    // Step 2: Cancel modal
+    pushModalCancel.addEventListener('click', function() {
+      pushModal.style.display = 'none';
+      pendingSend = null;
+    });
+    pushModal.addEventListener('click', function(e) {
+      if (e.target === pushModal) {
+        pushModal.style.display = 'none';
+        pendingSend = null;
+      }
+    });
+
+    // Step 3: Confirm → actually send
+    pushModalConfirm.addEventListener('click', async function() {
+      if (!pendingSend) return;
+      pushModalConfirm.disabled = true;
+      pushModalConfirm.textContent = '發送中…';
+
+      try {
+        var sendPayload = Object.assign({}, pendingSend);
+        delete sendPayload._count;
+        var res = await fetch(API + '/api/formosa/push', {
+          method: 'POST',
+          headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
+          body: JSON.stringify(sendPayload)
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Send failed');
+
+        showPushStatus('ok', '已發送給 ' + data.sent + ' 位用戶（' + data.mode + '）');
+        pushText.value = '';
+        pushImageUrl.value = '';
+        pushPreviewUrl.value = '';
+        pushImagePreview.style.display = 'none';
+        pushBtn.disabled = true;
+      } catch (e) {
+        showPushStatus('error', '發送失敗：' + e.message);
+      }
+
+      pushModal.style.display = 'none';
+      pushModalConfirm.disabled = false;
+      pushModalConfirm.textContent = '確認發送';
+      pendingSend = null;
+    });
+
+    function showPushStatus(type, msg) {
+      pushStatus.style.display = 'block';
+      pushStatus.className = 'push-status push-status-' + type;
+      pushStatus.textContent = msg;
+      setTimeout(function() { pushStatus.style.display = 'none'; }, 6000);
+    }
+  })();
 
   // ── Demo Mode: ?demo=1 ──
   function generateDemoData() {
@@ -1390,18 +1566,120 @@ const linkPrefix = prefix;
   :global(.timeline-svg) { width: 100%; max-height: 180px; }
   :global(.timeline-meta) { font-size: 0.8rem; color: #888; text-align: center; margin-top: 0.75rem; }
 
-  /* Push Form */
-  .push-form { max-width: 500px; }
-  .push-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
-  .push-row label { font-size: 0.85rem; font-weight: 600; color: #555; width: 50px; flex-shrink: 0; }
-  .push-input { flex: 1; padding: 0.4rem 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; }
-  .push-textarea { min-height: 60px; resize: vertical; font-family: inherit; }
-  .push-send-btn {
-    padding: 0.5rem 1.5rem; background: #B45309; color: #fff; border: none;
-    border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  .dash-subtitle { font-size: 0.85rem; color: #888; margin-top: -0.25rem; }
+
+  /* Push Form (4-mode) */
+  .push-form { margin-top: 1rem; }
+  .push-mode-bar {
+    display: flex; gap: 0.5rem; margin-bottom: 0.75rem;
   }
-  .push-send-btn:hover { background: #92400E; }
-  .push-send-btn:disabled { background: #ccc; cursor: not-allowed; }
+  :global(.push-mode-btn) {
+    padding: 0.4rem 1rem; border: 1px solid #ddd; border-radius: 6px;
+    background: #fff; color: #888; font-size: 0.82rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  :global(.push-mode-btn:hover) { border-color: #B45309; color: #333; }
+  :global(.push-mode-btn.active) {
+    background: #B45309; color: white; border-color: #B45309;
+  }
+  .push-image-fields {
+    display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;
+  }
+  .push-input {
+    width: 100%; padding: 0.6rem 1rem; border: 1px solid #ddd;
+    border-radius: 8px; font-size: 0.85rem; background: #fff;
+    color: #333; box-sizing: border-box; transition: border-color 0.2s;
+  }
+  .push-input:focus { outline: none; border-color: #B45309; }
+  .push-input::placeholder { color: #999; }
+  .push-image-preview {
+    border: 1px solid #eee; border-radius: 8px;
+    overflow: hidden; max-width: 240px;
+  }
+  .push-image-preview img {
+    display: block; width: 100%; height: auto; max-height: 160px; object-fit: cover;
+  }
+  :global(.push-preview-image) {
+    margin-top: 0.75rem; border-radius: 8px; overflow: hidden;
+    border: 1px solid #eee; max-width: 280px;
+  }
+  :global(.push-preview-image img) {
+    display: block; width: 100%; height: auto; max-height: 180px; object-fit: cover;
+  }
+  .push-textarea {
+    width: 100%; padding: 0.75rem 1rem; border: 1px solid #ddd;
+    border-radius: 8px; font-size: 0.9rem; font-family: inherit;
+    background: #fff; color: #333; resize: vertical;
+    min-height: 80px; transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+  .push-textarea:focus { outline: none; border-color: #B45309; }
+  .push-textarea::placeholder { color: #999; }
+  .push-controls {
+    display: flex; gap: 0.75rem; margin-top: 0.75rem; align-items: center;
+  }
+  .push-select {
+    padding: 0.6rem 1rem; border: 1px solid #ddd; border-radius: 8px;
+    font-size: 0.85rem; background: #fff; color: #333;
+    cursor: pointer; min-width: 160px;
+  }
+  .push-btn {
+    padding: 0.6rem 1.5rem; background: #059669; color: white; border: none;
+    border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .push-btn:hover:not(:disabled) { background: #047857; }
+  .push-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .push-status {
+    margin-top: 0.75rem; padding: 0.6rem 1rem; border-radius: 8px;
+    font-size: 0.85rem;
+  }
+  :global(.push-status-ok) { background: rgba(5,150,105,0.1); color: #059669; }
+  :global(.push-status-error) { background: rgba(239,68,68,0.1); color: #ef4444; }
+  :global(.push-status-warn) { background: rgba(245,158,11,0.1); color: #b45309; }
+
+  /* Push Confirmation Modal */
+  :global(.push-modal-overlay) {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+  }
+  :global(.push-modal) {
+    background: #fff; border-radius: 12px;
+    padding: 2rem; max-width: 480px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  :global(.push-modal h3) { font-size: 1.1rem; margin-bottom: 1rem; color: #333; }
+  :global(.push-modal-preview) { margin-bottom: 1.5rem; }
+  :global(.push-preview-meta) {
+    display: flex; gap: 1.5rem; margin-bottom: 0.75rem;
+    font-size: 0.85rem; color: #888;
+  }
+  :global(.push-preview-text) {
+    padding: 1rem; background: #f9fafb; border-radius: 8px;
+    font-size: 0.9rem; line-height: 1.6; color: #333;
+    border: 1px solid #eee; max-height: 200px; overflow-y: auto;
+    word-break: break-word;
+  }
+  :global(.push-modal-actions) { display: flex; gap: 0.75rem; justify-content: flex-end; }
+  :global(.push-modal-btn) {
+    padding: 0.6rem 1.5rem; border: none; border-radius: 8px;
+    font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  }
+  :global(.push-modal-btn.cancel) {
+    background: #f3f4f6; color: #888;
+    border: 1px solid #ddd;
+  }
+  :global(.push-modal-btn.cancel:hover) { background: #e5e7eb; }
+  :global(.push-modal-btn.confirm) { background: #dc2626; color: white; }
+  :global(.push-modal-btn.confirm:hover:not(:disabled)) { background: #b91c1c; }
+  :global(.push-modal-btn.confirm:disabled) { opacity: 0.5; cursor: not-allowed; }
+
+  @media (max-width: 768px) {
+    .push-controls { flex-direction: column; }
+    .push-select { width: 100%; }
+    .push-btn { width: 100%; }
+  }
 
   /* Role Select */
   .role-select {
