@@ -1,0 +1,318 @@
+---
+import type { Locale } from '@/i18n/config';
+import { LOCALE_PREFIX } from '@/i18n/config';
+import { t } from '@/i18n/utils';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import AuthGate from '../../_components/AuthGate.astro';
+import '../../../../../styles/guide-template.css';
+
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const prefix = LOCALE_PREFIX[lang];
+
+const guideLink = `${prefix}/projects/formosa-esg-2026/guide/`;
+const dashboardLink = `${prefix}/projects/formosa-esg-2026/dashboard/`;
+const trackerLink = `${prefix}/projects/formosa-esg-2026/tracker/`;
+---
+
+<BaseLayout
+  title={t(lang, 'volunteerGuidePage.title')}
+  description={t(lang, 'volunteerGuidePage.description')}
+  ogUrl="https://mazu.today/guide/volunteer/"
+  ogImage="https://mazu.today/images/formosa-esg-2026-og.png"
+  eventMode={true}
+>
+
+<AuthGate title={t(lang, 'volunteerGuidePage.authTitle')} subtitle={t(lang, 'volunteerGuidePage.authSubtitle')} lang={lang}>
+
+<article class="guide-content">
+
+<h1>{t(lang, 'volunteerGuidePage.heading')}</h1>
+<div class="guide-meta">
+  <span class="guide-version-badge">{t(lang, 'volunteerGuidePage.version')}</span>
+  <time datetime="2026-04-06">2026-04-06</time>
+  <span class="guide-changelog">{t(lang, 'volunteerGuidePage.changelog')}</span>
+</div>
+
+<blockquote>
+  <p>{t(lang, 'volunteerGuidePage.introP1')}</p>
+  <p>{t(lang, 'volunteerGuidePage.introP2')}</p>
+</blockquote>
+
+<nav class="guide-toc">
+  <details open>
+    <summary>{t(lang, 'volunteerGuidePage.tocSummary')}</summary>
+    <ol>
+      <li><a href="#section-1">{t(lang, 'volunteerGuidePage.tocItem1')}</a></li>
+      <li><a href="#section-2">{t(lang, 'volunteerGuidePage.tocItem2')}</a></li>
+      <li><a href="#section-3">{t(lang, 'volunteerGuidePage.tocItem3')}</a></li>
+      <li><a href="#section-4">{t(lang, 'volunteerGuidePage.tocItem4')}</a></li>
+      <li><a href="#section-5">{t(lang, 'volunteerGuidePage.tocItem5')}</a></li>
+      <li><a href="#section-6">{t(lang, 'volunteerGuidePage.tocItem6')}</a></li>
+      <li><a href="#section-7">{t(lang, 'volunteerGuidePage.tocItem7')}</a></li>
+      <li><a href="#section-8">{t(lang, 'volunteerGuidePage.tocItem8')}</a></li>
+      <li><a href="#section-9">{t(lang, 'volunteerGuidePage.tocItem9')}</a></li>
+      <li><a href="#section-10">{t(lang, 'volunteerGuidePage.tocItem10')}</a></li>
+      <li><a href="#section-11">{t(lang, 'volunteerGuidePage.tocItem11')}</a></li>
+      <li><a href="#section-12">{t(lang, 'volunteerGuidePage.tocItem12')}</a></li>
+      <li><a href="#section-13">{t(lang, 'volunteerGuidePage.tocItem13')}</a></li>
+    </ol>
+  </details>
+</nav>
+
+<hr />
+
+<h2 id="section-1">{t(lang, 'volunteerGuidePage.sec1Title')}</h2>
+
+<p>{t(lang, 'volunteerGuidePage.sec1Intro')}</p>
+
+<ul>
+  <li>{t(lang, 'volunteerGuidePage.sec1Can1')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec1Can2')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec1Can3')}</li>
+</ul>
+
+<p>{t(lang, 'volunteerGuidePage.sec1Summary')}</p>
+
+<hr />
+
+<h2 id="section-2">{t(lang, 'volunteerGuidePage.sec2Title')}</h2>
+
+<p>{t(lang, 'volunteerGuidePage.sec2Intro')}</p>
+
+<h3>{t(lang, 'volunteerGuidePage.sec2QrTitle')}</h3>
+
+<p>{t(lang, 'volunteerGuidePage.sec2QrDesc')}</p>
+
+<h3>{t(lang, 'volunteerGuidePage.sec2LineTitle')}</h3>
+
+<ol>
+  <li>{t(lang, 'volunteerGuidePage.sec2LineStep1')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec2LineStep2')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec2LineStep3')}</li>
+</ol>
+
+<p>{t(lang, 'volunteerGuidePage.sec2RoleNote')}</p>
+
+<hr />
+
+<h2 id="section-3">{t(lang, 'volunteerGuidePage.sec3Title')}</h2>
+
+<p>{t(lang, 'volunteerGuidePage.sec3Intro')}</p>
+
+<p>{t(lang, 'volunteerGuidePage.sec3Collect')}</p>
+
+<p>{t(lang, 'volunteerGuidePage.sec3Photo')}</p>
+
+<p>{t(lang, 'volunteerGuidePage.sec3Agree')}</p>
+
+<hr />
+
+<h2 id="section-4">{t(lang, 'volunteerGuidePage.sec4Title')}</h2>
+
+<p>{t(lang, 'volunteerGuidePage.sec4Intro')}</p>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec4Group1')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec4Group2')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec4Group3')} />
+
+<p>{t(lang, 'volunteerGuidePage.sec4Tip')}</p>
+
+<hr />
+
+<h2 id="section-5">{t(lang, 'volunteerGuidePage.sec5Title')}</h2>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec5Intro')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec5Manual')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec5Photo')} />
+
+<p>{t(lang, 'volunteerGuidePage.sec5Tip')}</p>
+
+<hr />
+
+<h2 id="section-6">{t(lang, 'volunteerGuidePage.sec6Title')}</h2>
+
+<p>{t(lang, 'volunteerGuidePage.sec6Intro')}</p>
+
+<p>{t(lang, 'volunteerGuidePage.sec6Auto')}</p>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec6Transport')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec6Impact')} />
+
+<p>{t(lang, 'volunteerGuidePage.sec6Overwrite')}</p>
+
+<hr />
+
+<h2 id="section-7">{t(lang, 'volunteerGuidePage.sec7Title')}</h2>
+
+<p>{t(lang, 'volunteerGuidePage.sec7Intro')}</p>
+
+<div class="table-wrapper">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">{t(lang, 'volunteerGuidePage.sec7ColLevel')}</th>
+      <th scope="col">{t(lang, 'volunteerGuidePage.sec7ColName')}</th>
+      <th scope="col">{t(lang, 'volunteerGuidePage.sec7ColKm')}</th>
+      <th scope="col">{t(lang, 'volunteerGuidePage.sec7ColBless')}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>{t(lang, 'volunteerGuidePage.sec7Lv1')}</td><td>0 km</td><td>1</td></tr>
+    <tr><td>2</td><td>{t(lang, 'volunteerGuidePage.sec7Lv2')}</td><td>15 km</td><td>5</td></tr>
+    <tr><td>3</td><td>{t(lang, 'volunteerGuidePage.sec7Lv3')}</td><td>45 km</td><td>10</td></tr>
+    <tr><td>4</td><td>{t(lang, 'volunteerGuidePage.sec7Lv4')}</td><td>90 km</td><td>15</td></tr>
+    <tr><td>5</td><td>{t(lang, 'volunteerGuidePage.sec7Lv5')}</td><td>135 km</td><td>20</td></tr>
+    <tr><td>6</td><td>{t(lang, 'volunteerGuidePage.sec7Lv6')}</td><td>180 km</td><td>25</td></tr>
+    <tr><td>7</td><td>{t(lang, 'volunteerGuidePage.sec7Lv7')}</td><td>225 km</td><td>30</td></tr>
+    <tr><td>8</td><td>{t(lang, 'volunteerGuidePage.sec7Lv8')}</td><td>270 km</td><td>35</td></tr>
+    <tr><td>9</td><td>{t(lang, 'volunteerGuidePage.sec7Lv9')}</td><td>300 km</td><td>40</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>{t(lang, 'volunteerGuidePage.sec7Tip')}</p>
+
+<p>{t(lang, 'volunteerGuidePage.sec7MyPage')}</p>
+
+<hr />
+
+<h2 id="section-8">{t(lang, 'volunteerGuidePage.sec8Title')}</h2>
+
+<p>{t(lang, 'volunteerGuidePage.sec8Intro')}</p>
+
+<p>{t(lang, 'volunteerGuidePage.sec8Qr')}</p>
+
+<p>{t(lang, 'volunteerGuidePage.sec8Share')}</p>
+
+<hr />
+
+<h2 id="section-9">{t(lang, 'volunteerGuidePage.sec9Title')}</h2>
+
+<p>{t(lang, 'volunteerGuidePage.sec9Intro')}</p>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec9Url').replace('{dashboardLink}', dashboardLink)} />
+
+<p>{t(lang, 'volunteerGuidePage.sec9Code')}</p>
+
+<h3>{t(lang, 'volunteerGuidePage.sec9SeeTitle')}</h3>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec9Kpi')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec9Map')} />
+
+<ul>
+  <li>{t(lang, 'volunteerGuidePage.sec9MapHeat')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec9MapMarker')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec9MapCluster')}</li>
+</ul>
+
+<p>{t(lang, 'volunteerGuidePage.sec9MapExtra')}</p>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec9Level')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec9Carbon')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec9LineQuota')} />
+
+<p set:html={t(lang, 'volunteerGuidePage.sec9Feedback')} />
+
+<!-- TODO: Dashboard 志工視角截圖 -->
+
+<hr />
+
+<h2 id="section-10">{t(lang, 'volunteerGuidePage.sec10Title')}</h2>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec10PauseTitle')} />
+
+<p>{t(lang, 'volunteerGuidePage.sec10PauseDesc')}</p>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec10DoneTitle')} />
+
+<p>{t(lang, 'volunteerGuidePage.sec10DoneDesc')}</p>
+
+<p>{t(lang, 'volunteerGuidePage.sec10EndNote')}</p>
+
+<hr />
+
+<h2 id="section-11">{t(lang, 'volunteerGuidePage.sec11Title')}</h2>
+
+<div class="faq-item">
+  <details><summary>{t(lang, 'volunteerGuidePage.sec11Q1')}</summary><p>{t(lang, 'volunteerGuidePage.sec11A1')}</p></details>
+</div>
+<div class="faq-item">
+  <details><summary>{t(lang, 'volunteerGuidePage.sec11Q2')}</summary><p>{t(lang, 'volunteerGuidePage.sec11A2')}</p></details>
+</div>
+<div class="faq-item">
+  <details><summary>{t(lang, 'volunteerGuidePage.sec11Q3')}</summary><p>{t(lang, 'volunteerGuidePage.sec11A3')}</p></details>
+</div>
+<div class="faq-item">
+  <details><summary>{t(lang, 'volunteerGuidePage.sec11Q4')}</summary><p>{t(lang, 'volunteerGuidePage.sec11A4')}</p></details>
+</div>
+<div class="faq-item">
+  <details><summary>{t(lang, 'volunteerGuidePage.sec11Q5')}</summary><p>{t(lang, 'volunteerGuidePage.sec11A5')}</p></details>
+</div>
+<div class="faq-item">
+  <details><summary>{t(lang, 'volunteerGuidePage.sec11Q6')}</summary><p>{t(lang, 'volunteerGuidePage.sec11A6')}</p></details>
+</div>
+<div class="faq-item">
+  <details><summary>{t(lang, 'volunteerGuidePage.sec11Q7')}</summary><p>{t(lang, 'volunteerGuidePage.sec11A7')}</p></details>
+</div>
+<div class="faq-item">
+  <details><summary>{t(lang, 'volunteerGuidePage.sec11Q8')}</summary><p>{t(lang, 'volunteerGuidePage.sec11A8')}</p></details>
+</div>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec11Fallback')} />
+
+<hr />
+
+<h2 id="section-12">{t(lang, 'volunteerGuidePage.sec12Title')}</h2>
+
+<p set:html={t(lang, 'volunteerGuidePage.sec12Intro')} />
+
+<ul>
+  <li>{t(lang, 'volunteerGuidePage.sec12Cmd1')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec12Cmd2')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec12Cmd3')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec12Cmd4')}</li>
+</ul>
+
+<p>{t(lang, 'volunteerGuidePage.sec12Menu')}</p>
+
+<hr />
+
+<h2 id="section-13">{t(lang, 'volunteerGuidePage.sec13Title')}</h2>
+
+<ol>
+  <li set:html={t(lang, 'volunteerGuidePage.sec13Tip1')} />
+  <li>{t(lang, 'volunteerGuidePage.sec13Tip2')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec13Tip3')}</li>
+  <li>{t(lang, 'volunteerGuidePage.sec13Tip4')}</li>
+  <li set:html={t(lang, 'volunteerGuidePage.sec13Tip5')} />
+</ol>
+
+<hr />
+
+<footer class="guide-footer">
+  <p>{t(lang, 'volunteerGuidePage.footerOrg')}</p>
+  <p>{t(lang, 'volunteerGuidePage.footerTagline')}</p>
+  <div class="guide-footer-actions">
+    <a href={dashboardLink} class="guide-cta">{t(lang, 'volunteerGuidePage.ctaDashboard')}</a>
+    <a href={guideLink} class="guide-cta guide-cta-secondary">{t(lang, 'volunteerGuidePage.ctaGuide')}</a>
+  </div>
+</footer>
+
+</article>
+
+</AuthGate>
+
+</BaseLayout>
+
+<style>
+  html { scroll-behavior: smooth; }
+</style>

@@ -11,6 +11,7 @@ const { lang } = Astro.props;
 const prefix = LOCALE_PREFIX[lang];
 
 const guideLink = `${prefix}/projects/formosa-esg-2026/guide/`;
+const volunteerGuideLink = `${prefix}/projects/formosa-esg-2026/guide/volunteer/`;
 const flowLink = `${prefix}/projects/formosa-esg-2026/guide/admin-flow/`;
 const feedbackFlowLink = `${prefix}/projects/formosa-esg-2026/guide/feedback-flow/`;
 const dashboardLink = `${prefix}/projects/formosa-esg-2026/dashboard/`;
@@ -42,6 +43,25 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
   <p>{t(lang, 'adminGuidePage.introP1')}</p>
   <p set:html={t(lang, 'adminGuidePage.introP2').replace('{guideLink}', guideLink)} />
 </blockquote>
+
+<h3>{t(lang, 'adminGuidePage.introAccessTitle')}</h3>
+
+<div class="table-wrapper">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">{t(lang, 'adminGuidePage.introAccessCol1')}</th>
+      <th scope="col">{t(lang, 'adminGuidePage.introAccessCol2')}</th>
+      <th scope="col">{t(lang, 'adminGuidePage.introAccessCol3')}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>{t(lang, 'adminGuidePage.introAccessOwner')}</td><td><code>gf-admin</code></td><td>{t(lang, 'adminGuidePage.introAccessOwnerDesc')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.introAccessManager')}</td><td><code>gf-manager</code></td><td>{t(lang, 'adminGuidePage.introAccessManagerDesc')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.introAccessVolunteer')}</td><td><code>g-formosa</code></td><td set:html={t(lang, 'adminGuidePage.introAccessVolunteerDesc').replace('{volunteerGuideLink}', volunteerGuideLink)} /></tr>
+  </tbody>
+</table>
+</div>
 
 <p style="margin:1.5rem 0;font-size:1.05rem;" set:html={t(lang, 'adminGuidePage.flowchartIntro').replace('{flowLink}', flowLink)} />
 <p style="margin:1.5rem 0;font-size:1.05rem;">🔄 <strong><a href={feedbackFlowLink}>Bug 修復流程</a></strong> — 從回報、分類、風險分級到驗收的完整 pipeline</p>
@@ -121,6 +141,15 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 </div>
 
 <p>{t(lang, 'adminGuidePage.sec2ManualSkip')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec2ModeTitle')}</h3>
+
+<ul>
+  <li set:html={t(lang, 'adminGuidePage.sec2ModeText')} />
+  <li set:html={t(lang, 'adminGuidePage.sec2ModeImage')} />
+  <li set:html={t(lang, 'adminGuidePage.sec2ModeImageText')} />
+  <li set:html={t(lang, 'adminGuidePage.sec2ModeUrl')} />
+</ul>
 
 <h3>{t(lang, 'adminGuidePage.sec2AutoTitle')}</h3>
 
@@ -203,6 +232,12 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 <p set:html={rp('adminGuidePage.sec5Dashboard')} />
 <p set:html={rp('adminGuidePage.sec5Demo')} />
 <p set:html={rp('adminGuidePage.sec5Data')} />
+<p set:html={rp('adminGuidePage.sec5VolunteerGuide')} />
+<p set:html={rp('adminGuidePage.sec5Faq')} />
+<p set:html={rp('adminGuidePage.sec5Docs')} />
+<p set:html={rp('adminGuidePage.sec5Verification')} />
+<p set:html={rp('adminGuidePage.sec5Feedback')} />
+<p set:html={rp('adminGuidePage.sec5Privacy')} />
 
 <hr />
 
@@ -451,6 +486,8 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 <p>{t(lang, 'adminGuidePage.sec11P2')}</p>
 
 <p>{t(lang, 'adminGuidePage.sec11P3')}</p>
+
+<p set:html={t(lang, 'adminGuidePage.sec11P4').replace('{volunteerGuideLink}', volunteerGuideLink)} />
 
 <hr />
 
