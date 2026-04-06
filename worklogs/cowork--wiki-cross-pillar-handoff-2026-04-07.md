@@ -54,7 +54,7 @@ Code 要做的：
 
 ## 未來待做（非急）
 
-- **circular pillar 擴展**：目前只有 1 個 concept，導致 4 個 pillar pair 未覆蓋（circular↔startup/faith/life）
+- **circular pillar 擴展**：目前只有 1 個 concept，導致 4 個 pillar pair 未覆蓋
 - **Phase 4B**：changelog + 統計儀表板 + hover tooltip
 - **Phase 4C**：社群 ingest + 多語言 + 更多 concept 頁
-- **Apple Notes 儀表板**：Code 完成 deploy 後，把 "Phase 4 補強 🟡" 改成 ✅
+- **Apple Notes 儀表板**：Code 完成 deploy 後，把 Phase 4 補強 改成 ✅
