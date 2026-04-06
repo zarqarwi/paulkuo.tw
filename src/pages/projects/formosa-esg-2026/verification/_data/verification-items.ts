@@ -54,7 +54,7 @@ export const verificationData: VerificationCategory[] = [
       { key: 'verificationPage.item4_1', status: 'pass' },
       { key: 'verificationPage.item4_2', status: 'pass' },
       { key: 'verificationPage.item4_3', status: 'pass' },
-      { key: 'verificationPage.item4_4', status: 'warn', noteKey: 'verificationPage.item4_4Note' },
+      { key: 'verificationPage.item4_4', status: 'pass' },
       { key: 'verificationPage.item4_5', status: 'pass' },
     ],
   },
@@ -84,7 +84,7 @@ export const verificationData: VerificationCategory[] = [
     items: [
       { key: 'verificationPage.item7_1', status: 'pass' },
       { key: 'verificationPage.item7_2', status: 'pass' },
-      { key: 'verificationPage.item7_3', status: 'warn', noteKey: 'verificationPage.item7_3Note' },
+      { key: 'verificationPage.item7_3', status: 'pass' },
       { key: 'verificationPage.item7_4', status: 'pass' },
       { key: 'verificationPage.item7_5', status: 'warn', noteKey: 'verificationPage.item7_5Note' },
       { key: 'verificationPage.item7_6', status: 'warn', noteKey: 'verificationPage.item7_6Note' },
