@@ -290,10 +290,10 @@
   <div class="container">
     <span class="tag">開発記録</span>
     <h1>Formosa ESG 2026<br>白沙屯媽祖巡礼 GPS トラッキングシステム — プロジェクト開発記録</h1>
-    <p class="subtitle">概念実証から1万人対応システムへ：16日間の開発全記録</p>
+    <p class="subtitle">概念実証から万人対応システムへ：開発経緯の概要</p>
     <div class="doc-meta">
       <span>バージョン 1.0</span>
-      <span>対象期間：2026/03/23 — 2026/04/07</span>
+      <span>対象期間：2026/03/23 —</span>
       <span>更新日：2026/04/07</span>
       <span>Formosa ESGプロジェクトチーム</span>
     </div>
@@ -302,10 +302,6 @@
 
 <!-- ═══════════ SUMMARY BAR ═══════════ -->
 <div class="summary-bar">
-  <div class="summary-card">
-    <div class="number">16</div>
-    <div class="label">開発日数</div>
-  </div>
   <div class="summary-card">
     <div class="number">5</div>
     <div class="label">開発フェーズ</div>
@@ -857,28 +853,63 @@
   <h3>権限システム</h3>
   <p>三層角色權限：Owner（完整管理權限）、Manager（推播 + 用戶管理）、Volunteer（僅查看 Dashboard 地圖與統計，無推播與用戶列表）。透過 KV invite code 機制發放邀請碼，與 Worker secret 統一驗證。</p>
 
-  <h3>Cloudflare 費用分析</h3>
-  <div class="metric-grid">
-    <div class="metric-item">
-      <div class="metric-label">月度費用（03/05–04/04）</div>
-      <div class="metric-value">$44.63 USD</div>
-    </div>
-    <div class="metric-item">
-      <div class="metric-label">最大項目</div>
-      <div class="metric-value">KV 操作佔 84%</div>
-    </div>
-    <div class="metric-item">
-      <div class="metric-label">萬人場景預估</div>
-      <div class="metric-value">~$46/月（可控範圍）</div>
-    </div>
-    <div class="metric-item">
-      <div class="metric-label">優化後預估</div>
-      <div class="metric-value">~$27/月（Plan A 移除 delete ops）</div>
-    </div>
+  <h3>運用コスト構造</h3>
+  <p>以下はシステム開発・運用期間の実際のコストです。イベント期間中はユーザー規模の拡大に伴い、インフラとプッシュ通知の費用が増加します。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>カテゴリ</th><th>項目</th><th>費用</th><th>説明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="3"><strong>AI 開発ツール</strong></td>
+          <td>Claude Max 20x サブスクリプション</td>
+          <td>$200 USD/月</td>
+          <td>主要開発ツール、コーディング・アーキテクチャ設計・ドキュメント作成をカバー</td>
+        </tr>
+        <tr>
+          <td>Claude Extra Credits</td>
+          <td>従量課金</td>
+          <td>高負荷開発期間の追加使用量、開発ペースにより変動</td>
+        </tr>
+        <tr>
+          <td>Claude プリペイドクレジット</td>
+          <td>$250 USD</td>
+          <td>イベント期間中のリアルタイム運用向けプリペイド</td>
+        </tr>
+        <tr>
+          <td rowspan="3"><strong>インフラ</strong></td>
+          <td>Cloudflare Workers Paid</td>
+          <td>$5 USD/月</td>
+          <td>100K/日リクエスト上限の解除</td>
+        </tr>
+        <tr>
+          <td>Cloudflare KV / D1 使用量</td>
+          <td>~$40 USD/月</td>
+          <td>KV 操作が 84% 占有（開発期間）；1万人想定 ~$46/月、最適化後 ~$27/月</td>
+        </tr>
+        <tr>
+          <td>mazu.today ドメイン</td>
+          <td>—</td>
+          <td>Cloudflare Workers リバースプロキシ経由、追加費用なし</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>ユーザー通信</strong></td>
+          <td>LINE OA プレミアムプラン</td>
+          <td>NT$1,200/月</td>
+          <td>イベント期間中に最上位プランへアップグレード、6,000 通のプッシュ配信を含む</td>
+        </tr>
+        <tr>
+          <td>LINE プッシュ超過分</td>
+          <td>NT$0.2/通</td>
+          <td>6,000 通を超えた分の従量課金</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <h3>其他基礎建設</h3>
-  <p>Workers Paid 方案已升級（$5/月），解除 100K/天請求上限。LIFF Channel 已發佈至 Published ステータス。LINE OA 已升級至 Medium tier（3,000 則推播/月）。Dashboard 推播支援文字、模板、圖片三種格式。</p>
+  <p>上記は継続的な費用で、開発フェーズとイベント状況により変動します。Cloudflare コスト最適化 Plan A（冗長な KV delete 操作の削除）は完了済み、今後は実際のイベントトラフィックに基づいてさらに調整予定です。</p>
 </section>
 
 <!-- ═══════════ 8. 主要 Issue トラッキング ═══════════ -->

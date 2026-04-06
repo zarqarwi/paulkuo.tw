@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>目前無網路連線</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .container {
+    text-align: center;
+    max-width: 360px;
+  }
+  .icon { font-size: 4rem; margin-bottom: 1.5rem; }
+  h1 { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; }
+  p { font-size: 0.9rem; color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem; }
+  .hint {
+    font-size: 0.8rem;
+    color: #64748b;
+    border-top: 1px solid #1e293b;
+    padding-top: 1rem;
+    line-height: 1.5;
+  }
+  button {
+    background: #1a5c2a;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+  }
+  button:active { background: #166534; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="icon">📡</div>
+  <h1>目前無網路連線</h1>
+  <p>請在有訊號時重新整理頁面。<br>您的打卡紀錄已安全儲存在手機中，<br>連線後會自動上傳。</p>
+  <button onclick="location.reload()">重新整理</button>
+  <div class="hint">
+    如果您之前已開啟打卡頁面，<br>
+    按「重新整理」即可載入快取版本繼續使用。
+  </div>
+</div>
+</body>
+</html>

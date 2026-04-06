@@ -237,7 +237,13 @@ async function seed() {
     const filepath = path.join(CONCEPTS_DIR, file);
     const content = fs.readFileSync(filepath, 'utf-8');
 
-    uploadToKV(`wiki:concept:${slug}`, content);
+    try {
+      const { frontmatter, body } = parseFrontmatter(content);
+      uploadToKV(`wiki:concept:${slug}`, { ...frontmatter, slug, body });
+    } catch (err) {
+      // Fallback: upload raw content wrapped in JSON
+      uploadToKV(`wiki:concept:${slug}`, { slug, body: content });
+    }
   }
 
   console.log('\n=== Seed Complete ===');
