@@ -357,6 +357,7 @@ https://paulkuo.tw/wiki/agentic-web/
 https://paulkuo.tw/wiki/ai-agent-economy/
 https://paulkuo.tw/wiki/ai-education/
 https://paulkuo.tw/wiki/ai-skill-methodology/
+https://paulkuo.tw/wiki/ask/
 https://paulkuo.tw/wiki/build-for-models/
 https://paulkuo.tw/wiki/enterprise-ai-adoption/
 https://paulkuo.tw/wiki/heavy-tail-distribution/
