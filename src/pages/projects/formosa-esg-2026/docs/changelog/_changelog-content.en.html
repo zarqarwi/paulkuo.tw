@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formosa ESG 2026 — Project Development Record</title>
+<style>
+  :root {
+    --primary: #1a3a2a;
+    --accent: #2d7a4f;
+    --accent-light: #e8f5ee;
+    --amber: #b45309;
+    --amber-light: #fef3c7;
+    --blue: #1d4ed8;
+    --blue-light: #dbeafe;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Noto Sans", "SF Pro Text", -apple-system, sans-serif;
+    color: var(--gray-800);
+    line-height: 1.7;
+    background: var(--gray-50);
+  }
+
+  /* ── Header ── */
+  .doc-header {
+    background: var(--primary);
+    color: white;
+    padding: 3rem 2rem 2.5rem;
+  }
+  .doc-header .container {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .doc-header .tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.15);
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+  }
+  .doc-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  .doc-header .subtitle {
+    font-size: 1rem;
+    opacity: 0.8;
+    font-weight: 400;
+  }
+  .doc-meta {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    opacity: 0.75;
+    flex-wrap: wrap;
+  }
+
+  /* ── Main ── */
+  .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: -1.5rem auto 2rem;
+    padding: 0 1.5rem;
+    max-width: 860px;
+    position: relative;
+    z-index: 1;
+  }
+  .summary-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .summary-card .number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .summary-card .label {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    margin-top: 0.25rem;
+  }
+
+  /* ── Sections ── */
+  section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  section h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--accent-light);
+  }
+  section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 1.5rem 0 0.75rem;
+  }
+  section h3:first-of-type { margin-top: 0.5rem; }
+  section p {
+    margin-bottom: 0.75rem;
+    color: var(--gray-600);
+    font-size: 0.92rem;
+  }
+
+  /* ── Tables ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 0.75rem 0 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  thead { background: var(--gray-100); }
+  th {
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--gray-600);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  td {
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  tr:hover { background: var(--gray-50); }
+
+  /* ── Phase badges ── */
+  .phase {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .phase-0  { background: #f3e8ff; color: #6b21a8; }
+  .phase-05 { background: #ede9fe; color: #5b21b6; }
+  .phase-1  { background: var(--blue-light); color: var(--blue); }
+  .phase-15 { background: #e0e7ff; color: #3730a3; }
+  .phase-2  { background: var(--amber-light); color: var(--amber); }
+  .phase-3  { background: var(--accent-light); color: var(--accent); }
+  .phase-4  { background: #fce7f3; color: #be185d; }
+  .phase-ops { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ── Status chips ── */
+  .status {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+  .status-done { background: var(--accent-light); color: var(--accent); }
+  .status-deployed { background: #d1fae5; color: #065f46; }
+  .status-progress { background: var(--amber-light); color: var(--amber); }
+
+  /* ── Metric grid ── */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+  }
+  .metric-item {
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    border-left: 3px solid var(--accent);
+  }
+  .metric-item .metric-label {
+    font-size: 0.78rem;
+    color: var(--gray-400);
+    margin-bottom: 0.2rem;
+  }
+  .metric-item .metric-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  /* ── Timeline ── */
+  .timeline-entry {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+    border-left: 2px solid var(--gray-200);
+  }
+  .timeline-entry::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 0.5rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .timeline-entry.milestone::before {
+    background: var(--amber);
+    width: 10px;
+    height: 10px;
+    left: -6px;
+  }
+  .timeline-date {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  .timeline-entry.milestone .timeline-date {
+    color: var(--amber);
+  }
+  .timeline-content {
+    font-size: 0.88rem;
+    color: var(--gray-600);
+  }
+  .timeline-content strong {
+    color: var(--gray-800);
+  }
+
+  /* ── Footer ── */
+  .doc-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.8rem;
+    color: var(--gray-400);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .doc-header { padding: 2rem 1rem 2rem; }
+    .doc-header h1 { font-size: 1.35rem; }
+    section { padding: 1.25rem; }
+    .summary-bar { grid-template-columns: repeat(2, 1fr); }
+    .doc-meta { gap: 1rem; }
+    th, td { padding: 0.5rem; font-size: 0.8rem; }
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: white; }
+    .doc-header { background: var(--primary) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    section { box-shadow: none; border: 1px solid var(--gray-200); break-inside: avoid; }
+    .summary-card { box-shadow: none; border: 1px solid var(--gray-200); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="doc-header">
+  <div class="container">
+    <span class="tag">Development Record</span>
+    <h1>Formosa ESG 2026<br>Baishatun Mazu Pilgrimage GPS Tracking System — Project Development Record</h1>
+    <p class="subtitle">From Proof of Concept to 10,000-User System: A 16-Day Development Journey</p>
+    <div class="doc-meta">
+      <span>Version 1.0</span>
+      <span>Coverage Period: 2026/03/23 — 2026/04/07</span>
+      <span>Last Updated: 2026/04/07</span>
+      <span>Formosa ESG Project Team</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ SUMMARY BAR ═══════════ -->
+<div class="summary-bar">
+  <div class="summary-card">
+    <div class="number">16</div>
+    <div class="label">Development Days</div>
+  </div>
+  <div class="summary-card">
+    <div class="number">5</div>
+    <div class="label">Development Phases</div>
+  </div>
+  <div class="summary-card">
+    <div class="number">4</div>
+    <div class="label">Load Test Rounds</div>
+  </div>
+  <div class="summary-card">
+    <div class="number">106+</div>
+    <div class="label">Issues Resolved</div>
+  </div>
+  <div class="summary-card">
+    <div class="number">4</div>
+    <div class="label">Locales Supported</div>
+  </div>
+</div>
+
+<main class="container">
+
+<!-- ═══════════ 1. Project Overview ═══════════ -->
+<section>
+  <h2>1. Project Overview</h2>
+  <p>"Formosa ESG 2026 Baishatun Mazu Pilgrimage GPS Tracking System" is a pilgrimage tracking service combining GPS positioning, carbon footprint estimation, and community interaction. Pilgrims log in via LINE, use their phones for real-time check-ins, accumulate mileage, view level progress, and can share personalized achievement cards. The system also provides an admin dashboard with live maps, push notifications, user management, and other backend functions.</p>
+  <p>The technical architecture uses Astro (frontend SSG) + Cloudflare Pages + Workers + D1 (SQLite) + KV (caching and buffering), combined with LINE LIFF SDK for login and sharing integration. The system is designed to handle 10,000 concurrent users.</p>
+
+  <div class="metric-grid">
+    <div class="metric-item">
+      <div class="metric-label">Event Date</div>
+      <div class="metric-value">2026/04/12 Departure</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Event Duration</div>
+      <div class="metric-value">~8-9 days (at Mazu's will)</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Capacity Target</div>
+      <div class="metric-value">10,000 concurrent users</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Supported Locales</div>
+      <div class="metric-value">zh-Hant / en / ja / zh-Hans</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Frontend Framework</div>
+      <div class="metric-value">Astro + Cloudflare Pages</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Backend Architecture</div>
+      <div class="metric-value">Workers + D1 + KV</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 2. Development Phase Overview ═══════════ -->
+<section>
+  <h2>2. Development Phase Overview</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Phase</th><th>Date</th><th>Core Objectives</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="phase phase-0">Phase 0</span></td>
+          <td>03/23</td>
+          <td>PoC: EXIF GPS reading, D1 write feasibility</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-05">Phase 0.5</span></td>
+          <td>03/24</td>
+          <td>MVP：16-question survey + GPS check-in + carbon footprint + achievement card + LINE webhook</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-1">Phase 1</span></td>
+          <td>03/25</td>
+          <td>UX overhaul: One-question-per-page cards + 9-tier levels + LIFF + share cards + Dashboard</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-15">Phase 1.5</span></td>
+          <td>03/25–26</td>
+          <td>Security hardening + Dashboard + LIFF Published + Workers Paid upgrade</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-2">Phase 2</span></td>
+          <td>03/25–26</td>
+          <td>4 load test rounds + D1 bottleneck analysis + KV Buffer architecture design</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>03/27–04/05</td>
+          <td>Pre-launch: KV Buffer implementation + GPS Pipeline Fix + permission system + push notifications + docs</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>04/01–07</td>
+          <td>Feature refinement: achievement card rules + survey optimization + Issue fixes + cost optimization</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════ 3. Daily Work Log ═══════════ -->
+<section>
+  <h2>3. Daily Work Log</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:80px">Date</th><th style="width:80px">Phase</th><th>Work Item</th><th style="width:60px">Status</th></tr>
+      </thead>
+      <tbody>
+        <!-- Day 1 -->
+        <tr>
+          <td rowspan="3"><strong>03/23</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 1</span></td>
+          <td><span class="phase phase-0">Phase 0</span></td>
+          <td>EXIF GPS coordinate reading PoC (browser-side EXIF.js)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-0">Phase 0</span></td>
+          <td>Cloudflare D1 database creation + Workers API endpoints</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-0">Phase 0</span></td>
+          <td>Project page framework (Astro SSG + Cloudflare Pages)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 2 -->
+        <tr>
+          <td rowspan="5"><strong>03/24</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 2</span></td>
+          <td><span class="phase phase-05">Phase 0.5</span></td>
+          <td>16-question ESG survey (one-question-per-page card workflow)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-05">Phase 0.5</span></td>
+          <td>GPS check-in feature + carbon footprint calculation engine</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-05">Phase 0.5</span></td>
+          <td>Achievement card system (check-in point visualization)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-05">Phase 0.5</span></td>
+          <td>LINE Bot webhook integration (Messaging API)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-05">Phase 0.5</span></td>
+          <td>Cloudflare Workers CORS fix + deployment verification</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 3 -->
+        <tr>
+          <td rowspan="6"><strong>03/25</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 3</span></td>
+          <td><span class="phase phase-1">Phase 1</span></td>
+          <td>UX overhaul: one-question-per-page + linear progress bar + swipe animations</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-1">Phase 1</span></td>
+          <td>9-tier pilgrim level system (cultivation → ascension), dual conditions: km + check-in count</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-1">Phase 1</span></td>
+          <td>9 AI-generated mascot images (replace emoji level icons)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-1">Phase 1</span></td>
+          <td>LINE LIFF SDK integration (Login channel + init)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-1">Phase 1</span></td>
+          <td>Share card (vertical layout + map + QR code + mascot + stats)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-2">Phase 2</span></td>
+          <td>Load test R1: HTTP layer C-10K ~ C-100K all PASS</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 4 -->
+        <tr>
+          <td rowspan="5"><strong>03/26</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 4</span></td>
+          <td><span class="phase phase-15">Phase 1.5</span></td>
+          <td>Dashboard: heatmap + clustering markers + front/tail + 3 mode switching</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-15">Phase 1.5</span></td>
+          <td>Security hardening: AuthGate + Admin Token API verification</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-2">Phase 2</span></td>
+          <td>Load test R2: 800 VU sweet spot confirmed (99.99% success)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-2">Phase 2</span></td>
+          <td>Load test R3: D1 write bottleneck verification (SQLite single-writer lock)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-2">Phase 2</span></td>
+          <td>Load test R4: real-world scenario simulation (CF-800 PASS / RW-500 Data API bottleneck)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 5-6 -->
+        <tr>
+          <td rowspan="4"><strong>03/27–28</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 5–6</span></td>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Carbon footprint daily reporting frontend + dynamic OG Image generation</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Mascot image 4x resolution upgrade + Dashboard AuthGate fix</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>7 UX fixes (photo thumbnails / FB sharing / GPS persistence, etc.)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Feature inventory: 23-item Done list compiled</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 7 -->
+        <tr>
+          <td rowspan="6"><strong>03/29</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 7</span></td>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Privacy consent mechanism (P0) + pause/Done status</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Carbon footprint simplified to 2-tier structure (zero-emission vs motorized transit)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>QR Code replaced with NET-ZERO logo + FB OG Image fix</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>User guides converted to web pages (pilgrim version + admin version)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>LINE Bot guidance link integration</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Event photo archival feature + FB share fbclid fix</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 8 -->
+        <tr>
+          <td rowspan="3"><strong>03/30</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 8</span></td>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Event photo archival button UX improvement (clear save button)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Personalized FB OG Image implementation</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Test mode banner + photo saving bug fix</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 9 -->
+        <tr>
+          <td rowspan="3"><strong>03/31</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 9</span></td>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Comprehensive GPS data pipeline fixes GP-1 ~ GP-9 (commit 8f08e5d)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>KV Buffer architecture implementation: Checkin → KV → Cron batch INSERT D1</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Accommodation carbon coefficient update: 12.5 → 8.85 kgCO₂e/night</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 10-11 -->
+        <tr>
+          <td rowspan="4"><strong>04/01–02</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 10–11</span></td>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>Survey optimization Q16 → Q10 (reduced 6 questions + renumbered)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Three-tier permission system launched: Owner / Manager / Volunteer</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>Dashboard access logging (fire-and-forget KV logging)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>Achievement card threshold: check-in ≥3 times + completed survey + phone number</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 12-13 -->
+        <tr>
+          <td rowspan="5"><strong>04/03–04</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 12–13</span></td>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>mazu.today Custom Domain launched (Worker routing + DNS)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>RFC #100: HealthAlert + Service Worker + Offline Fallback verification</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #99：8 resilience improvements (Promise.allSettled, localStorage fallback, etc.)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #102: Dual auth system alignment (KV invite code + Worker secret unified)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-3">Phase 3</span></td>
+          <td>LIFF Channel → Published (available to all users)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+
+        <!-- Day 14 -->
+        <tr>
+          <td rowspan="5"><strong>04/05</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 14</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #103: Carbon motorized transit coefficient correction 0.47515 → 0.12013 kg CO₂e/person·km</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #105：Push supports image + image+text formats（commit 35945cd）</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #106：Volunteer visibility fix (hide only push + user list)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Worker full deployment confirmed (Version 342af8b0)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>Cloudflare cost analysis: $44.63/month, KV ops account for 84%</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 15-16 -->
+        <tr>
+          <td rowspan="4"><strong>04/06–07</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 15–16</span></td>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>KV cost optimization Plan A: Remove TICKER_KV.delete() (commit a4b6fd2)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>Pre-Launch Checklist generated (7 categories, 34 items)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>Complete tech docs inventory + public deployment plan (/docs/ + /verification/)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>mazu.today Redirect Rules reconnaissance completed (Cloudflare Dashboard solution confirmed)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════ 4. Load Test Results Summary ═══════════ -->
+<section>
+  <h2>4. Load Test Results Summary</h2>
+  <p>Conducted 4 rounds of load testing using Grafana k6 (2026/03/25–26) to verify system performance under high concurrency. Test environment: MacBook Air local + Cloudflare Workers production.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Round</th><th>Date</th><th>Test Focus</th><th>VU Range</th><th>Key Results</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>R1</strong></td>
+          <td>03/25</td>
+          <td>HTTP Layer Limits</td>
+          <td>10K–100K</td>
+          <td>S-BURST / S-WAVE / S-EXTREME all PASS; 5,000 VU 91% success rate</td>
+        </tr>
+        <tr>
+          <td><strong>R2</strong></td>
+          <td>03/25</td>
+          <td>Capacity Sweet Spot</td>
+          <td>200–1,200</td>
+          <td>800 VU = 99.99% success rate (sweet spot); 1,200+ starts declining; recovery test 54%</td>
+        </tr>
+        <tr>
+          <td><strong>R3</strong></td>
+          <td>03/26</td>
+          <td>D1 Write Bottleneck</td>
+          <td>500</td>
+          <td>DI-500 confirms D1 SQLite single-writer lock; real-time success rate 42%; latency +51%</td>
+        </tr>
+        <tr>
+          <td><strong>R4</strong></td>
+          <td>03/26</td>
+          <td>Real-World Scenario Simulation</td>
+          <td>500–800</td>
+          <td>CF-800 (direct D1 write) 100% PASS; RW-500 (mixed load) 60% FAIL = Data API bottleneck</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Root Cause & Solutions</h3>
+  <p>R3-R4 tests confirmed the root cause is D1 SQLite's single-writer lock, causing serialization bottlenecks at high concurrency. Solution adopts KV Buffer architecture:</p>
+
+  <div class="metric-grid">
+    <div class="metric-item">
+      <div class="metric-label">Solution 1 — KV Buffer</div>
+      <div class="metric-value">Write check-ins to KV (not D1), key = gps:{ts}:{userId}:{randomId}</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Solution 2 — Cron Flush</div>
+      <div class="metric-value">Batch flush KV → D1 every 5 minutes, INSERT OR IGNORE prevents duplicates</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Solution 3 — Data API Cache</div>
+      <div class="metric-value">Stats first check KV cache (TTL 60s), miss then query D1</div>
+    </div>
+  </div>
+  <p>All three solutions deployed and verified as of 2026/03/29.</p>
+</section>
+
+<!-- ═══════════ 5. GPS Data Pipeline Fixes ═══════════ -->
+<section>
+  <h2>5. GPS Data Pipeline Fixes</h2>
+  <p>On 2026/03/31, performed comprehensive GPS data pipeline fixes (commit 8f08e5d), covering 9 improvements:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Fix Item</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GP-1</td><td>Auto-track persistence</td><td>localStorage Status persists across sessions</td></tr>
+        <tr><td>GP-2</td><td>Batch Batch upload</td><td>Accumulated offline check-ins uploaded in batch</td></tr>
+        <tr><td>GP-3</td><td>Sync endpoint</td><td>Frontend ↔ Worker data sync API</td></tr>
+        <tr><td>GP-4</td><td>GPS accuracy filtering</td><td>auto-skip if accuracy > threshold</td></tr>
+        <tr><td>GP-5</td><td>Speed detection</td><td>≤15 km/h zero-emission / >15 km/h motorized transit</td></tr>
+        <tr><td>GP-6</td><td>Distance calculation fix</td><td>Haversine formula + mileage accumulation</td></tr>
+        <tr><td>GP-7</td><td>Timestamp standardization</td><td>UTC → ISO 8601 unified format</td></tr>
+        <tr><td>GP-8</td><td>Duplicate check-in protection</td><td>Time interval + location distance dual check</td></tr>
+        <tr><td>GP-9</td><td>Error Recovery</td><td>Network interruption auto-retry + error reporting</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════ 6. Carbon Footprint Model ═══════════ -->
+<section>
+  <h2>6. Carbon Footprint Model</h2>
+  <p>Carbon footprint uses GPS speed auto-detection to classify pilgrimage movement into zero-emission (walking/cycling) and motorized transit. Motorized transit carbon coefficient is academically corrected using ecoinvent "market for transport, regular bus" dataset.</p>
+
+  <div class="metric-grid">
+    <div class="metric-item">
+      <div class="metric-label">Zero-emission (≤15 km/h)</div>
+      <div class="metric-value">0 kg CO₂e / person·km</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Motorized transit (>15 km/h)</div>
+      <div class="metric-value">0.12013 kg CO₂e / person·km</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Accommodation carbon</div>
+      <div class="metric-value">8.85 kg CO₂e / night</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Data source</div>
+      <div class="metric-value">ecoinvent — regular bus (person·km)</div>
+    </div>
+  </div>
+
+  <p>Carbon data includes "estimate" notation and disclaimers, provided for user reference but not as official carbon accounting. Carbon coefficient was corrected and deployed in Issue #103 (old value 0.47515 kg CO₂e/km was vehicle-km basis, semantically incorrect).</p>
+</section>
+
+<!-- ═══════════ 7. Infrastructure & Operations ═══════════ -->
+<section>
+  <h2>7. Infrastructure & Operations</h2>
+
+  <h3>mazu.today Independent Domain</h3>
+  <p>2026/04/03–04 mazu.today Custom Domain launched, reverse-proxied via Cloudflare Workers to paulkuo.tw/projects/formosa-esg-2026/. Covers DNS setup, Worker routing, i18n path mapping, webhook URL migration, etc. All LINE push links now use mazu.today.</p>
+
+  <h3>Permission System</h3>
+  <p>Three-tier role permissions: Owner (full admin rights), Manager (push + user management), Volunteer (view-only Dashboard maps & stats, no push or user list). Via KV invite code mechanism distributes invite codes, unified with Worker secret unified verification.</p>
+
+  <h3>Cloudflare Cost Analysis</h3>
+  <div class="metric-grid">
+    <div class="metric-item">
+      <div class="metric-label">Monthly cost (03/05–04/04)</div>
+      <div class="metric-value">$44.63 USD</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Largest item</div>
+      <div class="metric-value">KV ops account for 84%</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Estimated for 10K users</div>
+      <div class="metric-value">~$46/month (controllable)</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Estimated after optimization</div>
+      <div class="metric-value">~$27/month (Plan A removes delete ops)</div>
+    </div>
+  </div>
+
+  <h3>Other Infrastructure</h3>
+  <p>Workers Paid plan upgraded ($5/month), removed 100K/day request limit. LIFF Channel published to Published Status. LINE OA upgraded to Medium tier (3,000 messages/month). Dashboard push supports text, template, and image formats.</p>
+</section>
+
+<!-- ═══════════ 8. Key Issue Tracking ═══════════ -->
+<section>
+  <h2>8. Key Issue Tracking</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:70px">Issue</th><th>Title</th><th style="width:55px">Risk</th><th style="width:70px">Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>#99</td><td>8 system resilience improvements (error handling, Promise.allSettled, localStorage fallback)</td>
+          <td>L1</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#100</td><td>RFC — HealthAlert + Service Worker + Offline Fallback</td>
+          <td>L2</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#101</td><td>_redirects dual domain redirect loop (emergency revert)</td>
+          <td>L3</td><td><span class="status status-done">Reverted</span></td>
+        </tr>
+        <tr>
+          <td>#102</td><td>Dual auth system alignment (KV invite code + Worker secret)</td>
+          <td>L2</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#103</td><td>Carbon motorized transit coefficient correction (ecoinvent person·km basis)</td>
+          <td>L2</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#105</td><td>Push supports image + image+text formats</td>
+          <td>L1</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#106</td><td>Volunteer visibility scope fix</td>
+          <td>L1</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#107</td><td>/verification/ checklist page</td>
+          <td>L1</td><td><span class="status status-progress">In Progress</span></td>
+        </tr>
+        <tr>
+          <td>#108</td><td>/docs/ documentation center + Footer expansion</td>
+          <td>L1</td><td><span class="status status-progress">In Progress</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════ 9. Delivered Documents ═══════════ -->
+<section>
+  <h2>9. Delivered Documents</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Document Name</th><th>Version</th><th>Purpose</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Pilgrim User Guide</td><td>v0.4</td><td>General user operation guide</td>
+          <td><span class="status status-deployed">Live</span></td>
+        </tr>
+        <tr>
+          <td>Admin User Guide</td><td>v0.5</td><td>Dashboard operation + push notifications + user management</td>
+          <td><span class="status status-deployed">Live</span></td>
+        </tr>
+        <tr>
+          <td>FAQ</td><td>v1.0</td><td>User self-help troubleshooting</td>
+          <td><span class="status status-deployed">Live</span></td>
+        </tr>
+        <tr>
+          <td>Privacy Policy</td><td>v1.0</td><td>Data Collection and Privacy</td>
+          <td><span class="status status-deployed">Live</span></td>
+        </tr>
+        <tr>
+          <td>Pre-Launch Checklist</td><td>v1.0</td><td>Partner / Sponsor reference</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td>Project Development Record (this document)</td><td>v1.0</td><td>Complete development journey record</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td>Volunteer User Guide</td><td>—</td><td>Volunteer operation guide</td>
+          <td><span class="status status-progress">Planned</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════ 10. Development Milestones Timeline ═══════════ -->
+<section>
+  <h2>10. Development Milestones</h2>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date">03/23 — Project Launch</div>
+    <div class="timeline-content">PoC complete, EXIF GPS reading + D1 write feasibility confirmed</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">03/24 — MVP Live</div>
+    <div class="timeline-content">Survey + GPS check-in + carbon footprint + achievement card + LINE Bot,<strong>Zero to functional in 24 hours</strong></div>
+  </div>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date">03/25 — Major UX Overhaul</div>
+    <div class="timeline-content">One-question-per-page card workflow, 9-tier level system, LIFF integration, share cards, Dashboard map. Load test R1 completed same day</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">03/26 — Load Tests Complete</div>
+    <div class="timeline-content">R2-R4 complete, confirmed D1 bottleneck and KV Buffer solution direction</div>
+  </div>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date">03/29 — KV Buffer Verified</div>
+    <div class="timeline-content">All three solutions deployed and verified: KV Buffer, Cron Flush, Data API Cache</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">03/31 — GPS Pipeline Fix</div>
+    <div class="timeline-content">GP-1 ~ GP-9, 9 fixes deployed, data quality significantly improved</div>
+  </div>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date">04/03 — mazu.today Live</div>
+    <div class="timeline-content">Independent domain live, brand recognition improved, all LINE links migrated</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">04/05 — Full Deployment</div>
+    <div class="timeline-content">RFC #100 + Issues #99 / #102 / #103 / #105 / #106 deployed together. Open issues resolved</div>
+  </div>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date">04/07 — Pre-Launch Review</div>
+    <div class="timeline-content">Checklist complete, tech docs inventory, cost optimization Plan A deployed.<strong>5 days until departure</strong></div>
+  </div>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date" style="color: var(--amber);">04/12 — Departure Day</div>
+    <div class="timeline-content"><strong>Departure from Baishatun Gongtian Temple. System goes live.</strong></div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="doc-footer">
+  <p>Formosa ESG 2026 — Baishatun Mazu Pilgrimage GPS Tracking System</p>
+  <p>mazu.today &nbsp;|&nbsp; This Document Version 1.0 &nbsp;|&nbsp; Last Updated 2026/04/07</p>
+</footer>
+
+</body>
+</html>

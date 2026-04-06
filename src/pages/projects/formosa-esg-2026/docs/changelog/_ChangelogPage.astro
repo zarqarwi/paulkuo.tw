@@ -3,13 +3,16 @@ import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import { t } from '@/i18n/utils';
 import { LOCALE_PREFIX } from '@/i18n/config';
 import type { Locale } from '@/i18n/config';
-import changelogHtml from './_changelog-content.html?raw';
+import defaultContent from './_changelog-content.html?raw';
 
 interface Props {
   lang?: Locale;
+  content?: string;
 }
 
-const lang: Locale = Astro.props.lang ?? 'zh-Hant';
+const { lang: rawLang, content: contentProp } = Astro.props;
+const lang: Locale = rawLang ?? 'zh-Hant';
+const content = contentProp ?? defaultContent;
 const prefix = LOCALE_PREFIX[lang];
 ---
 
@@ -30,7 +33,7 @@ const prefix = LOCALE_PREFIX[lang];
     </div>
   </nav>
 
-  <div class="changelog-embed" set:html={changelogHtml} />
+  <div class="changelog-embed" set:html={content} />
 
   <div class="changelog-back">
     <a href={`${prefix}/projects/formosa-esg-2026/docs/`}>&larr; {t(lang, 'docsPage.backToDocs')}</a>
