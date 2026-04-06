@@ -1045,9 +1045,10 @@ footer {
   padding: 48px 24px 24px;
   margin-top: 64px;
 }
-/* Remove gap when footer follows dark contact section */
+/* Remove gap when footer follows dark-background sections */
 .contact-section + footer,
-.has-contact-section footer {
+.has-contact-section footer,
+footer.event-footer {
   margin-top: 0;
 }
 .footer-inner {
