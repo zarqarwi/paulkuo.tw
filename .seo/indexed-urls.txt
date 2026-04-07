@@ -372,6 +372,7 @@ https://paulkuo.tw/projects/formosa-esg-2026/verification/
 https://paulkuo.tw/search/
 https://paulkuo.tw/tags-graph/
 https://paulkuo.tw/tags/
+https://paulkuo.tw/tools/ai-collab-portfolio/
 https://paulkuo.tw/tools/ai-ready-dashboard/
 https://paulkuo.tw/tools/builders-scorecard/
 https://paulkuo.tw/tools/builders-scorecard/eval/index/
