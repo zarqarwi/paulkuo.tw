@@ -699,12 +699,29 @@ export async function handleFormosaPush(request, env) {
     const PUSH_PREVIEW_FALLBACK = 'https://mazu.today/images/formosa-esg-2026-og.png';
     const previewUrl = body.preview_url || PUSH_PREVIEW_FALLBACK;
 
+    const behaviorFilter = ['active', 'inactive'].includes(body.behavior_filter) ? body.behavior_filter : 'all';
+    const behaviorHours = Math.min(Math.max(parseInt(body.behavior_hours) || 24, 1), 168);
+
     // Get users filtered by role (exclude paused/completed from push)
     let query = "SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL AND (participant_status IS NULL OR participant_status = 'active')";
+    const queryParams = [];
     if (targetRole !== 'all') {
-      query += ` AND role = '${targetRole}'`;
+      query += ' AND role = ?';
+      queryParams.push(targetRole);
     }
-    const users = await env.AUTH_DB.prepare(query).all();
+    if (behaviorFilter !== 'all') {
+      // Compute cutoff as ISO string to use as parameterized value
+      const cutoff = new Date(Date.now() - behaviorHours * 3600 * 1000).toISOString().replace('T', ' ').slice(0, 19);
+      if (behaviorFilter === 'active') {
+        query += ' AND line_user_id IN (SELECT DISTINCT user_id FROM formosa_gps_points WHERE timestamp > ?)';
+      } else {
+        query += ' AND line_user_id NOT IN (SELECT DISTINCT user_id FROM formosa_gps_points WHERE timestamp > ?)';
+      }
+      queryParams.push(cutoff);
+    }
+    const users = queryParams.length > 0
+      ? await env.AUTH_DB.prepare(query).bind(...queryParams).all()
+      : await env.AUTH_DB.prepare(query).all();
 
     if (!users.results?.length) {
       return jsonResponse({ ok: true, sent: 0, message: 'No users to notify' }, 200, request);
@@ -716,7 +733,7 @@ export async function handleFormosaPush(request, env) {
 
     // Dry run: return count only without sending
     if (dryRun) {
-      return jsonResponse({ ok: true, count: validIds.length, skipped, role: targetRole }, 200, request);
+      return jsonResponse({ ok: true, count: validIds.length, skipped, role: targetRole, behavior_filter: behaviorFilter, behavior_hours: behaviorHours }, 200, request);
     }
 
     if (!validIds.length) {
@@ -762,7 +779,7 @@ export async function handleFormosaPush(request, env) {
 
     const lineResults = await multicastLineMessage(validIds, env.FORMOSA_LINE_TOKEN, messages);
 
-    return jsonResponse({ ok: true, sent: validIds.length, skipped, role: targetRole, mode, line_results: lineResults }, 200, request);
+    return jsonResponse({ ok: true, sent: validIds.length, skipped, role: targetRole, behavior_filter: behaviorFilter, behavior_hours: behaviorHours, mode, line_results: lineResults }, 200, request);
   } catch (e) {
     console.error('Push error:', e.message);
     console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);

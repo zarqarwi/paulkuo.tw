@@ -203,6 +203,17 @@ const linkPrefix = prefix;
         </select>
         <button id="pushBtn" class="push-btn" disabled>發送推播</button>
       </div>
+      <div class="push-filter-row">
+        <label class="push-filter-label">行為篩選</label>
+        <select id="pushBehavior" class="push-select push-select-sm">
+          <option value="all">不篩選</option>
+          <option value="active">活躍用戶（近期有打卡）</option>
+          <option value="inactive">不活躍用戶</option>
+        </select>
+        <span id="pushHoursGroup" style="display:none;align-items:center;gap:0.3rem;">
+          過去 <input id="pushBehaviorHours" type="number" class="push-hours-input" min="1" max="168" value="24"> 小時
+        </span>
+      </div>
       <div id="pushStatus" class="push-status" style="display:none"></div>
     </div>
   </section>
@@ -1022,9 +1033,18 @@ const linkPrefix = prefix;
     var pushImageThumb = document.getElementById('pushImageThumb');
     var pushUploadBtn = document.getElementById('pushUploadBtn');
     var pushFileInput = document.getElementById('pushFileInput');
+    var pushBehavior = document.getElementById('pushBehavior');
+    var pushBehaviorHours = document.getElementById('pushBehaviorHours');
+    var pushHoursGroup = document.getElementById('pushHoursGroup');
     var modeBtns = document.querySelectorAll('.push-mode-btn');
     var pendingSend = null;
     var currentMode = 'text';
+
+    // Show/hide hours input based on behavior filter
+    pushBehavior.addEventListener('change', function() {
+      var needHours = pushBehavior.value === 'active' || pushBehavior.value === 'inactive';
+      pushHoursGroup.style.display = needHours ? 'inline-flex' : 'none';
+    });
 
     // Mode switching
     modeBtns.forEach(function(btn) {
@@ -1107,6 +1127,11 @@ const linkPrefix = prefix;
         var pUrl = pushPreviewUrl.value.trim();
         if (pUrl) payload.preview_url = pUrl;
       }
+      var bFilter = pushBehavior.value;
+      if (bFilter !== 'all') {
+        payload.behavior_filter = bFilter;
+        payload.behavior_hours = parseInt(pushBehaviorHours.value) || 24;
+      }
       return payload;
     }
 
@@ -1134,10 +1159,12 @@ const linkPrefix = prefix;
         }
 
         var roleLabel = pushRole.options[pushRole.selectedIndex].text;
+        var behaviorLabel = pushBehavior.options[pushBehavior.selectedIndex].text;
         var modeLabels = { text: '文字', image: '圖片', 'image+text': '圖片+文字', template: '模板' };
         var previewHtml =
           '<div class="push-preview-meta">' +
             '<span>對象：<strong>' + roleLabel + '</strong></span>' +
+            (pushBehavior.value !== 'all' ? '<span>篩選：<strong>' + behaviorLabel + '（' + (parseInt(pushBehaviorHours.value) || 24) + 'h）</strong></span>' : '') +
             '<span>人數：<strong>' + count + ' 人</strong></span>' +
             '<span>類型：<strong>' + (modeLabels[currentMode] || currentMode) + '</strong></span>' +
           '</div>';
@@ -1191,11 +1218,14 @@ const linkPrefix = prefix;
         var data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Send failed');
 
-        showPushStatus('ok', '已發送給 ' + data.sent + ' 位用戶（' + data.mode + '）');
+        var filterNote = data.behavior_filter && data.behavior_filter !== 'all' ? '（' + data.behavior_filter + ' ' + data.behavior_hours + 'h）' : '';
+        showPushStatus('ok', '已發送給 ' + data.sent + ' 位用戶' + filterNote + '（' + data.mode + '）');
         pushText.value = '';
         pushImageUrl.value = '';
         pushPreviewUrl.value = '';
         pushImagePreview.style.display = 'none';
+        pushBehavior.value = 'all';
+        pushHoursGroup.style.display = 'none';
         pushBtn.disabled = true;
       } catch (e) {
         showPushStatus('error', '發送失敗：' + e.message);
@@ -1707,6 +1737,21 @@ const linkPrefix = prefix;
   :global(.push-status-ok) { background: rgba(5,150,105,0.1); color: #059669; }
   :global(.push-status-error) { background: rgba(239,68,68,0.1); color: #ef4444; }
   :global(.push-status-warn) { background: rgba(245,158,11,0.1); color: #b45309; }
+
+  /* Behavior Filter Row */
+  .push-filter-row {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-top: 0.6rem; flex-wrap: wrap;
+  }
+  .push-filter-label {
+    font-size: 0.82rem; color: #666; white-space: nowrap;
+  }
+  .push-select-sm { min-width: 0; font-size: 0.82rem; padding: 0.45rem 0.7rem; }
+  .push-hours-input {
+    width: 60px; padding: 0.4rem 0.5rem; border: 1px solid #ddd;
+    border-radius: 6px; font-size: 0.82rem; text-align: center;
+  }
+  #pushHoursGroup { font-size: 0.82rem; color: #555; }
 
   /* Push Confirmation Modal */
   :global(.push-modal-overlay) {
