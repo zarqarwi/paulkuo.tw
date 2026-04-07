@@ -219,6 +219,26 @@ const linkPrefix = prefix;
 
   var API_BASE = 'https://api.paulkuo.tw';
 
+  // ── Merge & deduplicate GPS points from server + localStorage ──
+  function mergeGpsPoints(serverPts, localPts) {
+    var seen = {};
+    var merged = [];
+    function addPoint(p) {
+      // Deduplicate by rounded lat+lng+datetime key
+      var key = (p.lat ? p.lat.toFixed(5) : '') + ',' + (p.lng ? p.lng.toFixed(5) : '') + ',' + (p.datetime || '');
+      if (seen[key]) return;
+      seen[key] = true;
+      merged.push({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source || 'gps' });
+    }
+    // Server points first (authoritative)
+    (serverPts || []).forEach(addPoint);
+    // Then local points (may have auto/photo points not yet uploaded)
+    (localPts || []).forEach(addPoint);
+    // Sort by datetime
+    merged.sort(function(a, b) { return (a.datetime || '').localeCompare(b.datetime || ''); });
+    return merged;
+  }
+
   // ── Detect ?u= param (shared profile view, e.g. from Facebook) ──
   var urlParams = new URLSearchParams(window.location.search);
   var viewUserId = urlParams.get('u');
@@ -281,8 +301,13 @@ const linkPrefix = prefix;
         if (syncData.km > km) km = syncData.km;
         if (syncData.carbon > carbon) carbon = syncData.carbon;
         if (syncData.survey_done) surveyDone = true;
+        // Merge server GPS track with localStorage (not replace)
         if (syncData.gps_track && syncData.gps_track.length > 0) {
-          localStorage.setItem('formosa_gps_track', JSON.stringify(syncData.gps_track));
+          var localTrack = [];
+          try { localTrack = JSON.parse(localStorage.getItem('formosa_gps_track') || '[]'); } catch(e2) {}
+          var merged = mergeGpsPoints(syncData.gps_track, localTrack);
+          localStorage.setItem('formosa_gps_track', JSON.stringify(merged));
+          serverGpsTrack = merged;
         }
         // Update localStorage with server values
         localStorage.setItem('formosa_checkins', checkins);

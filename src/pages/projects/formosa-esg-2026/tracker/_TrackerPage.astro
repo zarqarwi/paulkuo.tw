@@ -702,6 +702,45 @@ const prefix = LOCALE_PREFIX[lang];
   // ── R9: Flush any queued offline checkins on page load ──
   if (lineUserId) flushCheckinQueue(lineUserId);
 
+  // ── Issue #127: Fetch server GPS history and merge with localStorage ──
+  if (lineUserId) {
+    fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(lineUserId), {
+      headers: { 'X-Line-User-Id': lineUserId }
+    }).then(function(res) { return res.json(); }).then(function(data) {
+      if (data && data.gps_points && data.gps_points.length > 0) {
+        var serverPts = data.gps_points.map(function(p) {
+          return { lat: p.lat, lng: p.lng, datetime: p.timestamp || p.datetime, source: p.source || 'server' };
+        });
+        // Merge with existing gpsTrackPoints (deduplicate by lat+lng+datetime)
+        var seen = {};
+        gpsTrackPoints.forEach(function(p) {
+          var key = (p.lat ? p.lat.toFixed(5) : '') + ',' + (p.lng ? p.lng.toFixed(5) : '') + ',' + (p.datetime || '');
+          seen[key] = true;
+        });
+        var added = 0;
+        serverPts.forEach(function(p) {
+          var key = (p.lat ? p.lat.toFixed(5) : '') + ',' + (p.lng ? p.lng.toFixed(5) : '') + ',' + (p.datetime || '');
+          if (!seen[key]) {
+            seen[key] = true;
+            gpsTrackPoints.push(p);
+            added++;
+          }
+        });
+        if (added > 0) {
+          gpsTrackPoints.sort(function(a, b) { return (a.datetime || '').localeCompare(b.datetime || ''); });
+          // Persist merged track to localStorage
+          try {
+            var toSave = gpsTrackPoints.map(function(p) {
+              return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source };
+            });
+            if (toSave.length > 5000) toSave = toSave.slice(-5000);
+            lsSet('formosa_gps_track', JSON.stringify(toSave));
+          } catch(e) {}
+        }
+      }
+    }).catch(function() { /* server unavailable, use localStorage only */ });
+  }
+
   // ── One-Question-Per-Card System ──
   var cards = document.querySelectorAll('.q-card[data-q]');
   var totalQ = 10; // Q1-Q10 (optimized survey)
