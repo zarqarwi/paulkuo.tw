@@ -100,6 +100,16 @@ const prefix = LOCALE_PREFIX[lang];
     {t(lang, 'tracker_ui.testBanner')}
   </div>
 
+  <!-- OA Friend Guidance Banner -->
+  <div class="oa-friend-banner" id="oaFriendBanner" style="display:none">
+    <div class="oa-friend-content">
+      <span class="oa-friend-icon">🔔</span>
+      <div class="oa-friend-text">追蹤官方帳號，接收即時進香資訊與推播通知</div>
+      <a href="https://line.me/R/ti/p/@539fkwjd" class="oa-friend-btn" target="_blank" rel="noopener">加好友</a>
+      <button class="oa-friend-close" id="oaFriendClose" aria-label="關閉">×</button>
+    </div>
+  </div>
+
   <!-- Breadcrumb -->
   <nav class="tracker-breadcrumb">
     <a href={`${prefix}/projects/formosa-esg-2026/`}>← {t(lang, 'ui.back')}</a>
@@ -546,6 +556,29 @@ const prefix = LOCALE_PREFIX[lang];
     var tcl = document.getElementById('testCheckinLabel');
     if (tcl) tcl.style.display = 'block';
   }
+
+  // ── OA Friend Guidance ──
+  (function() {
+    if (lsGet('formosa_oa_dismissed') === '1') return;
+    function showOaFriendBanner() {
+      var banner = document.getElementById('oaFriendBanner');
+      if (!banner) return;
+      banner.style.display = 'block';
+      var closeBtn = document.getElementById('oaFriendClose');
+      if (closeBtn) closeBtn.addEventListener('click', function() {
+        banner.style.display = 'none';
+        lsSet('formosa_oa_dismissed', '1');
+      });
+    }
+    if (window.__liffFriendship === false) {
+      showOaFriendBanner();
+    } else if (window.__liffFriendship === undefined && window.__liffReady && typeof liff !== 'undefined' && typeof liff.getFriendship === 'function') {
+      liff.getFriendship().then(function(data) {
+        window.__liffFriendship = data.friendFlag;
+        if (!data.friendFlag) showOaFriendBanner();
+      }).catch(function() {});
+    }
+  })();
 
   // ── Background GPS Tracking ──
   // Restore saved GPS track from localStorage
@@ -2350,6 +2383,51 @@ const prefix = LOCALE_PREFIX[lang];
   .test-checkin-label {
     color: #f59e0b; font-size: 0.78rem; font-weight: 600; margin-top: 0.25rem;
   }
+
+  /* OA Friend Guidance Banner */
+  .oa-friend-banner {
+    background: linear-gradient(135deg, #00b900, #06C755);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin: 0.75rem 0 0.5rem;
+  }
+  .oa-friend-content {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .oa-friend-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .oa-friend-text {
+    flex: 1;
+    font-size: 0.85rem;
+    color: white;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  .oa-friend-btn {
+    flex-shrink: 0;
+    background: white;
+    color: #06C755;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 20px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .oa-friend-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.75);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    margin-top: 0;
+    width: auto;
+  }
+  .oa-friend-close:hover { color: white; background: none; }
 
   /* Photo Save Toast */
   .photo-toast {

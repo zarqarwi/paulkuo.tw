@@ -359,6 +359,14 @@ const authI18n = {
         if (liff.isLoggedIn()) {
           liff.getProfile().then(function(profile) {
             showProfile(profile);
+            // Check OA friendship (LINE Login channel must have bot linked)
+            if (typeof liff.getFriendship === 'function') {
+              liff.getFriendship().then(function(data) {
+                window.__liffFriendship = data.friendFlag;
+              }).catch(function() {
+                window.__liffFriendship = null;
+              });
+            }
           }).catch(function(e) { console.warn('LIFF getProfile error:', e); });
         } else if (liff.isInClient()) {
           liff.login();
