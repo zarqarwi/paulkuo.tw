@@ -1,4 +1,23 @@
 {
   "_comment": "YouTube channels for wiki auto-ingest (max 5). Paul 填入後啟用 channel scan。",
-  "channels": []
+  "channels": [
+    {
+      "handle": "@wow.insight",
+      "name": "wow 閱讀 × 科技 × 哲學",
+      "pillar": "ai",
+      "lang": "zh-TW"
+    },
+    {
+      "handle": "@TheValley101",
+      "name": "矽谷101",
+      "pillar": "startup",
+      "lang": "zh-TW"
+    },
+    {
+      "handle": "@lyi",
+      "name": "林亦 LYi",
+      "pillar": "ai",
+      "lang": "zh-TW"
+    }
+  ]
 }
