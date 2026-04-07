@@ -590,6 +590,7 @@ const prefix = LOCALE_PREFIX[lang];
     gpsTrackPoints = saved.map(function(p) { return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source || 'saved' }; });
   } catch(e) {}
   var gpsReady = false;
+  var geoPermissionAlertedThisSession = false; // #144: show permission-denied UI only once per session
 
   // ── GP-1: Periodic auto-track persist to localStorage ──
   var autoSaveCounter = 0;
@@ -669,6 +670,7 @@ const prefix = LOCALE_PREFIX[lang];
     window.__gpsWatchId = navigator.geolocation.watchPosition(
       function(pos) {
         gpsReady = true;
+        geoPermissionAlertedThisSession = false; // #144: reset flag if GPS recovers
         if (pulseEl) pulseEl.classList.add('active');
         if (checkinBtn) checkinBtn.style.display = 'inline-block';
 
@@ -704,10 +706,13 @@ const prefix = LOCALE_PREFIX[lang];
       },
       function(err) {
         if (err.code === 1) {
-          // Permission denied — show clear warning
-          if (pulseEl) { pulseEl.classList.remove('active'); pulseEl.classList.add('off'); }
-          if (statusEl) statusEl.textContent = '⚠️ ' + _i18n.locationDenied;
-          if (checkinBtn) checkinBtn.style.display = 'none';
+          // Permission denied — show warning once per session (#144: LIFF can fire code-1 repeatedly)
+          if (!geoPermissionAlertedThisSession) {
+            geoPermissionAlertedThisSession = true;
+            if (pulseEl) { pulseEl.classList.remove('active'); pulseEl.classList.add('off'); }
+            if (statusEl) statusEl.textContent = '⚠️ ' + _i18n.locationDenied;
+            if (checkinBtn) checkinBtn.style.display = 'none';
+          }
         } else {
           // Temporary failure (signal weak / timeout) — keep calm
           if (!gpsReady && statusEl) {
@@ -745,7 +750,8 @@ const prefix = LOCALE_PREFIX[lang];
     }).then(function(res) { return res.json(); }).then(function(data) {
       if (data && data.gps_points && data.gps_points.length > 0) {
         var serverPts = data.gps_points.map(function(p) {
-          return { lat: p.lat, lng: p.lng, datetime: p.timestamp || p.datetime, source: p.source || 'server' };
+          // #145: mark as _uploaded=true so getUnuploadedTrackPoints() won't re-send server data
+          return { lat: p.lat, lng: p.lng, datetime: p.timestamp || p.datetime, source: p.source || 'server', _uploaded: true };
         });
         // Merge with existing gpsTrackPoints (deduplicate by lat+lng+datetime)
         var seen = {};
@@ -1881,7 +1887,11 @@ const prefix = LOCALE_PREFIX[lang];
       activeBtn.disabled = false;
     }
     if (err.code === 1) {
-      alert(_i18n.permissionAlert);
+      // #144: replace intrusive alert with toast, guard to show only once per session
+      if (!geoPermissionAlertedThisSession) {
+        geoPermissionAlertedThisSession = true;
+        showPhotoToast('⚠️ ' + _i18n.locationDenied, 4000);
+      }
     } else if (err.code === 3) {
       showPhotoToast('📍 ' + _i18n.weakSignal, 3000);
     } else {
@@ -1900,17 +1910,44 @@ const prefix = LOCALE_PREFIX[lang];
       activeBtn.textContent = '📍 ' + _i18n.locating;
     }
 
+    // #143: restore button on any failure path
+    function restoreBtn() {
+      if (activeBtn) {
+        activeBtn.disabled = false;
+        activeBtn.textContent = activeBtn.dataset.origText || '打卡 📍';
+      }
+    }
+
     // GP-5: if watchPosition already has a fix, use it instantly
     if (gpsReady && gpsTrackPoints.length > 0) {
       var lastPt = gpsTrackPoints[gpsTrackPoints.length - 1];
-      processCheckin(lastPt.lat, lastPt.lng, lastPt.altitude, lastPt.accuracy, activeBtn);
+      try {
+        processCheckin(lastPt.lat, lastPt.lng, lastPt.altitude, lastPt.accuracy, activeBtn);
+      } catch(e) {
+        console.error('processCheckin error:', e);
+        restoreBtn();
+        showPhotoToast('⚠️ 打卡失敗，請重試', 3000);
+      }
+      return;
+    }
+
+    // #143: guard against missing geolocation API (some LIFF contexts)
+    if (!navigator.geolocation) {
+      restoreBtn();
+      showPhotoToast('⚠️ ' + _i18n.geoNotSupported, 3000);
       return;
     }
 
     // Fallback: getCurrentPosition with longer timeout (GP-5: 20s instead of 10s)
     navigator.geolocation.getCurrentPosition(
       function(pos) {
-        processCheckin(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, pos.coords.accuracy, activeBtn);
+        try {
+          processCheckin(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, pos.coords.accuracy, activeBtn);
+        } catch(e) {
+          console.error('processCheckin error:', e);
+          restoreBtn();
+          showPhotoToast('⚠️ 打卡失敗，請重試', 3000);
+        }
       },
       function(err) { handleCheckinError(err, activeBtn); },
       { enableHighAccuracy: true, timeout: 20000 }
