@@ -72,6 +72,7 @@ const prefix = LOCALE_PREFIX[lang];
   longPressHint: t(lang, 'tracker_ui.longPressHint'),
   linePhotoHint: t(lang, 'tracker_ui.linePhotoHint'),
   brandShortName: t(lang, 'brand.shortName'),
+  carbonZeroHint: t(lang, 'myPageContent.carbonZeroHint'),
   levelUpTitle: t(lang, 'tracker_ui.levelUpTitle'),
   levelUpMessage: t(lang, 'tracker_ui.levelUpMessage'),
   levelUpContinue: t(lang, 'tracker_ui.levelUpContinue'),
@@ -389,6 +390,7 @@ const prefix = LOCALE_PREFIX[lang];
       <div class="checkin-badge" id="checkinBadge"><img src="/images/formosa/level-1.webp" class="mascot-badge" width="120" height="120" alt={t(lang, 'levels.1.name')}><span>{t(lang, 'levels.1.name')}</span></div>
       <h2>{t(lang, 'tracker_ui.welcomeBack')}</h2>
       <p class="checkin-subtitle">{t(lang, 'tracker_ui.surveyDone')}</p>
+      <button class="btn btn-back" style="margin-bottom:1rem" onclick="showCard(1)">{t(lang, 'tracker_ui.ctaButtonReturn')}</button>
 
       <div class="checkin-stats" id="checkinStats"></div>
 
@@ -1169,6 +1171,9 @@ const prefix = LOCALE_PREFIX[lang];
   function getCarbonStatsHtml() {
     var carbon = lsGet('formosa_carbon') || '0';
     var saved = lsGet('formosa_carbon_saved') || '0';
+    if (parseFloat(carbon) === 0) {
+      return '<div class="done-stat" style="color:#6b7280;font-size:0.85rem;grid-column:1/-1">' + _i18n.carbonZeroHint + '</div>';
+    }
     var html = '<div class="done-stat"><strong>' + carbon + '</strong><span>kg CO₂e（估算）</span></div>';
     if (parseFloat(saved) > 0) {
       html += '<div class="done-stat" style="color:#059669"><strong>' + saved + '</strong><span>kg 已省下</span></div>';
