@@ -1195,14 +1195,14 @@ export async function handleFormosaAdminUsers(request, env) {
   try {
     await migrateFormosa(env.AUTH_DB);
     const gpsUsers = await env.AUTH_DB.prepare(`
-      SELECT g.user_id, u.display_name, u.picture_url, u.role,
+      SELECT u.line_user_id as user_id, u.display_name, u.picture_url, u.role,
         COUNT(g.id) as gps_count,
         MAX(g.created_at) as last_active,
         MIN(g.created_at) as first_active
-      FROM formosa_gps_points g
-      LEFT JOIN formosa_users u ON g.user_id = u.line_user_id
-      GROUP BY g.user_id
-      ORDER BY last_active DESC
+      FROM formosa_users u
+      LEFT JOIN formosa_gps_points g ON u.line_user_id = g.user_id
+      GROUP BY u.line_user_id
+      ORDER BY MAX(g.created_at) DESC
     `).all();
 
     // Fetch all GPS points to compute walk_km and carbon_kg from actual tracks
