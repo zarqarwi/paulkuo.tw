@@ -711,10 +711,16 @@ export async function handleFormosaPush(request, env) {
     }
 
     const userIds = users.results.map(u => u.line_user_id);
+    const validIds = userIds.filter(id => id && /^U[0-9a-f]{32}$/.test(id));
+    const skipped = userIds.length - validIds.length;
 
     // Dry run: return count only without sending
     if (dryRun) {
-      return jsonResponse({ ok: true, count: userIds.length, role: targetRole }, 200, request);
+      return jsonResponse({ ok: true, count: validIds.length, skipped, role: targetRole }, 200, request);
+    }
+
+    if (!validIds.length) {
+      return jsonResponse({ ok: true, sent: 0, skipped, message: 'No valid LINE IDs after format validation' }, 200, request);
     }
 
     let messages;
@@ -754,9 +760,9 @@ export async function handleFormosaPush(request, env) {
       }];
     }
 
-    const lineResults = await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, messages);
+    const lineResults = await multicastLineMessage(validIds, env.FORMOSA_LINE_TOKEN, messages);
 
-    return jsonResponse({ ok: true, sent: userIds.length, role: targetRole, mode, line_results: lineResults }, 200, request);
+    return jsonResponse({ ok: true, sent: validIds.length, skipped, role: targetRole, mode, line_results: lineResults }, 200, request);
   } catch (e) {
     console.error('Push error:', e.message);
     console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
