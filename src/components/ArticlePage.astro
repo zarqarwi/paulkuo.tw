@@ -226,6 +226,19 @@ const i = {
     <section class="article-body" itemprop="articleBody" aria-label={lang === 'en' ? 'Article content' : lang === 'ja' ? '記事内容' : '文章內容'}>
       <Content />
     </section>
+    <script>
+      /* LINE WebView fix: wrap bare <img> in article body with <a> so users can tap to open */
+      document.querySelectorAll('.article-body img').forEach(img => {
+        if (img.parentElement?.tagName !== 'A') {
+          const a = document.createElement('a');
+          a.href = img.src;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          img.parentNode.insertBefore(a, img);
+          a.appendChild(img);
+        }
+      });
+    </script>
 
     {tags.length > 0 && (
       <footer class="article-tags" aria-label={lang === 'en' ? 'Tags' : lang === 'ja' ? 'タグ' : '標籤'}>
