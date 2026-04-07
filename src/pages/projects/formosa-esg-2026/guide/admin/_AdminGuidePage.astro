@@ -16,7 +16,7 @@ const flowLink = `${prefix}/projects/formosa-esg-2026/guide/admin-flow/`;
 const feedbackFlowLink = `${prefix}/projects/formosa-esg-2026/guide/feedback-flow/`;
 const dashboardLink = 'https://mazu.today/dashboard/';
 
-/* helper: replace {prefix} placeholders in sec5 strings */
+/* helper: replace {prefix} placeholders in sec6 strings */
 const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 ---
 
@@ -81,6 +81,7 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
       <li><a href="#section-9">{t(lang, 'adminGuidePage.tocItem9')}</a></li>
       <li><a href="#section-10">{t(lang, 'adminGuidePage.tocItem10')}</a></li>
       <li><a href="#section-11">{t(lang, 'adminGuidePage.tocItem11')}</a></li>
+      <li><a href="#section-12">{t(lang, 'adminGuidePage.tocItem12')}</a></li>
     </ol>
   </details>
 </nav>
@@ -223,40 +224,59 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 
 <h2 id="section-5">{t(lang, 'adminGuidePage.sec5Title')}</h2>
 
-<p set:html={rp('adminGuidePage.sec5Home')} />
-<p set:html={rp('adminGuidePage.sec5Tracker')} />
-<p set:html={rp('adminGuidePage.sec5My')} />
-<p set:html={rp('adminGuidePage.sec5ViewOther')} />
-<p set:html={rp('adminGuidePage.sec5Guide')} />
-<p set:html={rp('adminGuidePage.sec5AdminGuide')} />
-<p set:html={rp('adminGuidePage.sec5Dashboard')} />
-<p set:html={rp('adminGuidePage.sec5Demo')} />
-<p set:html={rp('adminGuidePage.sec5Data')} />
-<p set:html={rp('adminGuidePage.sec5VolunteerGuide')} />
-<p set:html={rp('adminGuidePage.sec5Faq')} />
-<p set:html={rp('adminGuidePage.sec5Docs')} />
-<p set:html={rp('adminGuidePage.sec5Verification')} />
-<p set:html={rp('adminGuidePage.sec5Feedback')} />
-<p set:html={rp('adminGuidePage.sec5Privacy')} />
+<p>{t(lang, 'adminGuidePage.sec5Intro')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec5GHATitle')}</h3>
+
+<ul>
+  <li set:html={t(lang, 'adminGuidePage.sec5GHA1')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5GHA2')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5GHA3')} />
+</ul>
+
+<h3>{t(lang, 'adminGuidePage.sec5CoworkTitle')}</h3>
+
+<p set:html={t(lang, 'adminGuidePage.sec5CoworkDesc')} />
+
+<h3>{t(lang, 'adminGuidePage.sec5FlowTitle')}</h3>
+
+<ol>
+  <li set:html={t(lang, 'adminGuidePage.sec5FlowStep1')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5FlowStep2')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5FlowStep3')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5FlowStep4')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5FlowStep5')} />
+</ol>
+
+<h3>{t(lang, 'adminGuidePage.sec5AdminTitle')}</h3>
+
+<ul>
+  <li set:html={t(lang, 'adminGuidePage.sec5AdminTask1')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5AdminTask2')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5AdminTask3')} />
+  <li set:html={t(lang, 'adminGuidePage.sec5AdminTask4')} />
+</ul>
 
 <hr />
 
 <h2 id="section-6">{t(lang, 'adminGuidePage.sec6Title')}</h2>
 
-<p>{t(lang, 'adminGuidePage.sec6Intro')}</p>
-
-<p set:html={t(lang, 'adminGuidePage.sec6Rule1')} />
-<p set:html={t(lang, 'adminGuidePage.sec6Rule2')} />
-
-<p>{t(lang, 'adminGuidePage.sec6GPS')}</p>
-
-<p>{t(lang, 'adminGuidePage.sec6Daily')}</p>
-
-<p>{t(lang, 'adminGuidePage.sec6Saved')}</p>
-
-<blockquote>
-  <p>{t(lang, 'adminGuidePage.sec6Disclaimer')}</p>
-</blockquote>
+<p set:html={rp('adminGuidePage.sec6Home')} />
+<p set:html={rp('adminGuidePage.sec6Tracker')} />
+<p set:html={rp('adminGuidePage.sec6My')} />
+<p set:html={rp('adminGuidePage.sec6ViewOther')} />
+<p set:html={rp('adminGuidePage.sec6Guide')} />
+<p set:html={rp('adminGuidePage.sec6AdminGuide')} />
+<p set:html={rp('adminGuidePage.sec6Dashboard')} />
+<p set:html={rp('adminGuidePage.sec6Demo')} />
+<p set:html={rp('adminGuidePage.sec6Data')} />
+<p set:html={rp('adminGuidePage.sec6VolunteerGuide')} />
+<p set:html={rp('adminGuidePage.sec6Faq')} />
+<p set:html={rp('adminGuidePage.sec6Docs')} />
+<p set:html={rp('adminGuidePage.sec6Verification')} />
+<p set:html={rp('adminGuidePage.sec6Feedback')} />
+<p set:html={rp('adminGuidePage.sec6FeedbackLog')} />
+<p set:html={rp('adminGuidePage.sec6Privacy')} />
 
 <hr />
 
@@ -264,45 +284,18 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 
 <p>{t(lang, 'adminGuidePage.sec7Intro')}</p>
 
-<h3>{t(lang, 'adminGuidePage.sec7CollectTitle')}</h3>
+<p set:html={t(lang, 'adminGuidePage.sec7Rule1')} />
+<p set:html={t(lang, 'adminGuidePage.sec7Rule2')} />
 
-<div class="table-wrapper">
-<table>
-  <thead>
-    <tr><th scope="col">{t(lang, 'adminGuidePage.sec7CollectCol1')}</th><th scope="col">{t(lang, 'adminGuidePage.sec7CollectCol2')}</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>{t(lang, 'adminGuidePage.sec7CollectLine')}</td><td>{t(lang, 'adminGuidePage.sec7CollectRequired')}</td></tr>
-    <tr><td>{t(lang, 'adminGuidePage.sec7CollectGPS')}</td><td>{t(lang, 'adminGuidePage.sec7CollectRequired')}</td></tr>
-    <tr><td>{t(lang, 'adminGuidePage.sec7CollectPhoto')}</td><td>{t(lang, 'adminGuidePage.sec7CollectOptional')}</td></tr>
-    <tr><td>{t(lang, 'adminGuidePage.sec7CollectSurvey')}</td><td>{t(lang, 'adminGuidePage.sec7CollectRequired')}</td></tr>
-    <tr><td>{t(lang, 'adminGuidePage.sec7CollectDaily')}</td><td>{t(lang, 'adminGuidePage.sec7CollectOptional')}</td></tr>
-    <tr><td>{t(lang, 'adminGuidePage.sec7CollectPhone')}</td><td>{t(lang, 'adminGuidePage.sec7CollectOptional')}</td></tr>
-  </tbody>
-</table>
-</div>
+<p>{t(lang, 'adminGuidePage.sec7GPS')}</p>
 
-<h3>{t(lang, 'adminGuidePage.sec7ConsentTitle')}</h3>
+<p>{t(lang, 'adminGuidePage.sec7Daily')}</p>
 
-<p>{t(lang, 'adminGuidePage.sec7ConsentDesc')}</p>
+<p>{t(lang, 'adminGuidePage.sec7Saved')}</p>
 
-<h3>{t(lang, 'adminGuidePage.sec7RetentionTitle')}</h3>
-
-<ul>
-  <li set:html={t(lang, 'adminGuidePage.sec7RetentionActive')} />
-  <li set:html={t(lang, 'adminGuidePage.sec7Retention6mo')} />
-  <li set:html={t(lang, 'adminGuidePage.sec7RetentionAfter')} />
-</ul>
-
-<h3>{t(lang, 'adminGuidePage.sec7AdminTitle')}</h3>
-
-<ul>
-  <li set:html={t(lang, 'adminGuidePage.sec7AdminNote1')} />
-  <li set:html={t(lang, 'adminGuidePage.sec7AdminNote2')} />
-  <li>{t(lang, 'adminGuidePage.sec7AdminNote3')}</li>
-  <li set:html={t(lang, 'adminGuidePage.sec7AdminNote4')} />
-  <li set:html={t(lang, 'adminGuidePage.sec7AdminNote5')} />
-</ul>
+<blockquote>
+  <p>{t(lang, 'adminGuidePage.sec7Disclaimer')}</p>
+</blockquote>
 
 <hr />
 
@@ -310,68 +303,45 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 
 <p>{t(lang, 'adminGuidePage.sec8Intro')}</p>
 
-<h3>{t(lang, 'adminGuidePage.sec8TransportTitle')}</h3>
+<h3>{t(lang, 'adminGuidePage.sec8CollectTitle')}</h3>
 
-<p>{t(lang, 'adminGuidePage.sec8TransportDesc')}</p>
-
-<h3>{t(lang, 'adminGuidePage.sec8AuthTitle')}</h3>
-
-<p>{t(lang, 'adminGuidePage.sec8AuthP1')}</p>
-
-<p>{t(lang, 'adminGuidePage.sec8AuthP2')}</p>
-
-<h3>{t(lang, 'adminGuidePage.sec8DBTitle')}</h3>
-
-<p>{t(lang, 'adminGuidePage.sec8DBP1')}</p>
-
-<p>{t(lang, 'adminGuidePage.sec8DBP2')}</p>
-
-<h3>{t(lang, 'adminGuidePage.sec8AbuseTitle')}</h3>
-
-<p>{t(lang, 'adminGuidePage.sec8AbuseDesc')}</p>
-
-<h3>{t(lang, 'adminGuidePage.sec8PhotoTitle')}</h3>
-
-<p>{t(lang, 'adminGuidePage.sec8PhotoDesc')}</p>
-
-<h3>{t(lang, 'adminGuidePage.sec8BackupTitle')}</h3>
-
-<p>{t(lang, 'adminGuidePage.sec8BackupIntro')}</p>
-
-<p set:html={t(lang, 'adminGuidePage.sec8BackupBuffer')} />
-
-<p set:html={t(lang, 'adminGuidePage.sec8BackupDB')} />
-
-<p set:html={t(lang, 'adminGuidePage.sec8BackupOffline')} />
+<div class="table-wrapper">
+<table>
+  <thead>
+    <tr><th scope="col">{t(lang, 'adminGuidePage.sec8CollectCol1')}</th><th scope="col">{t(lang, 'adminGuidePage.sec8CollectCol2')}</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>{t(lang, 'adminGuidePage.sec8CollectLine')}</td><td>{t(lang, 'adminGuidePage.sec8CollectRequired')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.sec8CollectGPS')}</td><td>{t(lang, 'adminGuidePage.sec8CollectRequired')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.sec8CollectPhoto')}</td><td>{t(lang, 'adminGuidePage.sec8CollectOptional')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.sec8CollectSurvey')}</td><td>{t(lang, 'adminGuidePage.sec8CollectRequired')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.sec8CollectDaily')}</td><td>{t(lang, 'adminGuidePage.sec8CollectOptional')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.sec8CollectPhone')}</td><td>{t(lang, 'adminGuidePage.sec8CollectOptional')}</td></tr>
+  </tbody>
+</table>
+</div>
 
 <h3>{t(lang, 'adminGuidePage.sec8ConsentTitle')}</h3>
 
 <p>{t(lang, 'adminGuidePage.sec8ConsentDesc')}</p>
 
+<h3>{t(lang, 'adminGuidePage.sec8RetentionTitle')}</h3>
+
+<ul>
+  <li set:html={t(lang, 'adminGuidePage.sec8RetentionActive')} />
+  <li set:html={t(lang, 'adminGuidePage.sec8Retention6mo')} />
+  <li set:html={t(lang, 'adminGuidePage.sec8RetentionAfter')} />
+</ul>
+
 <h3>{t(lang, 'adminGuidePage.sec8AdminTitle')}</h3>
 
-<div class="callout callout-warning">
-  <span class="callout-icon">&#x26A0;&#xFE0F;</span>
-  <div>
-    <p set:html={t(lang, 'adminGuidePage.sec8AdminWarningTitle')} />
-    <ul style="margin:0.25rem 0 0;padding-left:1.25rem;font-size:0.92rem">
-      <li>{t(lang, 'adminGuidePage.sec8AdminWarning1')}</li>
-      <li set:html={t(lang, 'adminGuidePage.sec8AdminWarning2')} />
-      <li>{t(lang, 'adminGuidePage.sec8AdminWarning3')}</li>
-      <li>{t(lang, 'adminGuidePage.sec8AdminWarning4')}</li>
-      <li>{t(lang, 'adminGuidePage.sec8AdminWarning5')}</li>
-    </ul>
-  </div>
-</div>
-
-<h3>{t(lang, 'adminGuidePage.sec8IncidentTitle')}</h3>
-
-<ol>
-  <li>{t(lang, 'adminGuidePage.sec8Incident1')}</li>
-  <li>{t(lang, 'adminGuidePage.sec8Incident2')}</li>
-  <li>{t(lang, 'adminGuidePage.sec8Incident3')}</li>
-  <li>{t(lang, 'adminGuidePage.sec8Incident4')}</li>
-</ol>
+<ul>
+  <li set:html={t(lang, 'adminGuidePage.sec8AdminNote1')} />
+  <li set:html={t(lang, 'adminGuidePage.sec8AdminNote2')} />
+  <li>{t(lang, 'adminGuidePage.sec8AdminNote3')}</li>
+  <li set:html={t(lang, 'adminGuidePage.sec8AdminNote4')} />
+  <li set:html={t(lang, 'adminGuidePage.sec8AdminNote5')} />
+</ul>
 
 <hr />
 
@@ -379,115 +349,184 @@ const rp = (key: string) => t(lang, key).replace(/\{prefix\}/g, prefix);
 
 <p>{t(lang, 'adminGuidePage.sec9Intro')}</p>
 
+<h3>{t(lang, 'adminGuidePage.sec9TransportTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec9TransportDesc')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec9AuthTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec9AuthP1')}</p>
+
+<p>{t(lang, 'adminGuidePage.sec9AuthP2')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec9DBTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec9DBP1')}</p>
+
+<p>{t(lang, 'adminGuidePage.sec9DBP2')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec9AbuseTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec9AbuseDesc')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec9PhotoTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec9PhotoDesc')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec9BackupTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec9BackupIntro')}</p>
+
+<p set:html={t(lang, 'adminGuidePage.sec9BackupBuffer')} />
+
+<p set:html={t(lang, 'adminGuidePage.sec9BackupDB')} />
+
+<p set:html={t(lang, 'adminGuidePage.sec9BackupOffline')} />
+
+<h3>{t(lang, 'adminGuidePage.sec9ConsentTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec9ConsentDesc')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec9AdminTitle')}</h3>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">&#x26A0;&#xFE0F;</span>
+  <div>
+    <p set:html={t(lang, 'adminGuidePage.sec9AdminWarningTitle')} />
+    <ul style="margin:0.25rem 0 0;padding-left:1.25rem;font-size:0.92rem">
+      <li>{t(lang, 'adminGuidePage.sec9AdminWarning1')}</li>
+      <li set:html={t(lang, 'adminGuidePage.sec9AdminWarning2')} />
+      <li>{t(lang, 'adminGuidePage.sec9AdminWarning3')}</li>
+      <li>{t(lang, 'adminGuidePage.sec9AdminWarning4')}</li>
+      <li>{t(lang, 'adminGuidePage.sec9AdminWarning5')}</li>
+    </ul>
+  </div>
+</div>
+
+<h3>{t(lang, 'adminGuidePage.sec9IncidentTitle')}</h3>
+
 <ol>
-  <li set:html={t(lang, 'adminGuidePage.sec9Cond1')} />
-  <li set:html={t(lang, 'adminGuidePage.sec9Cond2')} />
-  <li set:html={t(lang, 'adminGuidePage.sec9Cond3')} />
+  <li>{t(lang, 'adminGuidePage.sec9Incident1')}</li>
+  <li>{t(lang, 'adminGuidePage.sec9Incident2')}</li>
+  <li>{t(lang, 'adminGuidePage.sec9Incident3')}</li>
+  <li>{t(lang, 'adminGuidePage.sec9Incident4')}</li>
 </ol>
-
-<p>{t(lang, 'adminGuidePage.sec9CondNote')}</p>
-
-<p>{t(lang, 'adminGuidePage.sec9CardDesc')}</p>
-
-<p>{t(lang, 'adminGuidePage.sec9AnyLevel')}</p>
-
-<p>{t(lang, 'adminGuidePage.sec9UseCases')}</p>
-<ul>
-  <li>{t(lang, 'adminGuidePage.sec9Use1')}</li>
-  <li>{t(lang, 'adminGuidePage.sec9Use2')}</li>
-  <li>{t(lang, 'adminGuidePage.sec9Use3')}</li>
-</ul>
 
 <hr />
 
 <h2 id="section-10">{t(lang, 'adminGuidePage.sec10Title')}</h2>
 
-<blockquote>
-  <p set:html={t(lang, 'adminGuidePage.sec10FlowRef').replace('{flowLink}', flowLink)} />
-</blockquote>
-
-<h3>{t(lang, 'adminGuidePage.sec10FrontendTitle')}</h3>
-
-<pre><code>{t(lang, 'adminGuidePage.sec10FrontendCmd')}</code></pre>
-
-<p>{t(lang, 'adminGuidePage.sec10FrontendNote')}</p>
-
-<h3>{t(lang, 'adminGuidePage.sec10WorkerTitle')}</h3>
-
-<pre><code>{t(lang, 'adminGuidePage.sec10WorkerCmd')}</code></pre>
-
-<div class="callout callout-warning">
-  <span class="callout-icon">&#x26A0;&#xFE0F;</span>
-  <p set:html={t(lang, 'adminGuidePage.sec10WorkerWarning')} />
-</div>
-
-<h3>{t(lang, 'adminGuidePage.sec10VerifyTitle')}</h3>
-
-<p>{t(lang, 'adminGuidePage.sec10VerifyIntro')}</p>
+<p>{t(lang, 'adminGuidePage.sec10Intro')}</p>
 
 <ol>
-  <li set:html={t(lang, 'adminGuidePage.sec10Verify1')} />
-  <li set:html={t(lang, 'adminGuidePage.sec10Verify2')} />
-  <li set:html={t(lang, 'adminGuidePage.sec10Verify3')} />
-  <li set:html={t(lang, 'adminGuidePage.sec10Verify4')} />
+  <li set:html={t(lang, 'adminGuidePage.sec10Cond1')} />
+  <li set:html={t(lang, 'adminGuidePage.sec10Cond2')} />
+  <li set:html={t(lang, 'adminGuidePage.sec10Cond3')} />
 </ol>
 
-<h3>{t(lang, 'adminGuidePage.sec10MonitorTitle')}</h3>
+<p>{t(lang, 'adminGuidePage.sec10CondNote')}</p>
 
-<p>{t(lang, 'adminGuidePage.sec10MonitorIntro')}</p>
+<p>{t(lang, 'adminGuidePage.sec10CardDesc')}</p>
 
+<p>{t(lang, 'adminGuidePage.sec10AnyLevel')}</p>
+
+<p>{t(lang, 'adminGuidePage.sec10UseCases')}</p>
 <ul>
-  <li set:html={t(lang, 'adminGuidePage.sec10Monitor1')} />
-  <li set:html={t(lang, 'adminGuidePage.sec10Monitor2')} />
-  <li set:html={t(lang, 'adminGuidePage.sec10Monitor3')} />
-  <li set:html={t(lang, 'adminGuidePage.sec10Monitor4')} />
-</ul>
-
-<h3>{t(lang, 'adminGuidePage.sec10TroubleshootTitle')}</h3>
-
-<div class="table-wrapper">
-<table>
-  <thead>
-    <tr><th scope="col">{t(lang, 'adminGuidePage.sec10TroubleshootCol1')}</th><th scope="col">{t(lang, 'adminGuidePage.sec10TroubleshootCol2')}</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>{t(lang, 'adminGuidePage.sec10Trouble1')}</td><td>{t(lang, 'adminGuidePage.sec10Trouble1Fix')}</td></tr>
-    <tr><td>{t(lang, 'adminGuidePage.sec10Trouble2')}</td><td>{t(lang, 'adminGuidePage.sec10Trouble2Fix')}</td></tr>
-    <tr><td>{t(lang, 'adminGuidePage.sec10Trouble3')}</td><td>{t(lang, 'adminGuidePage.sec10Trouble3Fix')}</td></tr>
-    <tr><td>{t(lang, 'adminGuidePage.sec10Trouble4')}</td><td>{t(lang, 'adminGuidePage.sec10Trouble4Fix')}</td></tr>
-  </tbody>
-</table>
-</div>
-
-<h3>{t(lang, 'adminGuidePage.sec10WrapupTitle')}</h3>
-
-<ol>
-  <li>{t(lang, 'adminGuidePage.sec10Wrapup1')}</li>
-  <li>{t(lang, 'adminGuidePage.sec10Wrapup2')}</li>
-  <li>{t(lang, 'adminGuidePage.sec10Wrapup3')}</li>
-  <li>{t(lang, 'adminGuidePage.sec10Wrapup4')}</li>
-</ol>
-
-<h3>{t(lang, 'adminGuidePage.sec10TrapsTitle')}</h3>
-
-<ul>
-  <li set:html={t(lang, 'adminGuidePage.sec10Trap1')} />
-  <li>{t(lang, 'adminGuidePage.sec10Trap2')}</li>
-  <li>{t(lang, 'adminGuidePage.sec10Trap3')}</li>
-  <li>{t(lang, 'adminGuidePage.sec10Trap4')}</li>
+  <li>{t(lang, 'adminGuidePage.sec10Use1')}</li>
+  <li>{t(lang, 'adminGuidePage.sec10Use2')}</li>
+  <li>{t(lang, 'adminGuidePage.sec10Use3')}</li>
 </ul>
 
 <hr />
 
 <h2 id="section-11">{t(lang, 'adminGuidePage.sec11Title')}</h2>
 
-<p>{t(lang, 'adminGuidePage.sec11P1')}</p>
+<blockquote>
+  <p set:html={t(lang, 'adminGuidePage.sec11FlowRef').replace('{flowLink}', flowLink)} />
+</blockquote>
 
-<p>{t(lang, 'adminGuidePage.sec11P2')}</p>
+<h3>{t(lang, 'adminGuidePage.sec11FrontendTitle')}</h3>
 
-<p>{t(lang, 'adminGuidePage.sec11P3')}</p>
+<pre><code>{t(lang, 'adminGuidePage.sec11FrontendCmd')}</code></pre>
 
-<p set:html={t(lang, 'adminGuidePage.sec11P4').replace('{volunteerGuideLink}', volunteerGuideLink)} />
+<p>{t(lang, 'adminGuidePage.sec11FrontendNote')}</p>
+
+<h3>{t(lang, 'adminGuidePage.sec11WorkerTitle')}</h3>
+
+<pre><code>{t(lang, 'adminGuidePage.sec11WorkerCmd')}</code></pre>
+
+<div class="callout callout-warning">
+  <span class="callout-icon">&#x26A0;&#xFE0F;</span>
+  <p set:html={t(lang, 'adminGuidePage.sec11WorkerWarning')} />
+</div>
+
+<h3>{t(lang, 'adminGuidePage.sec11VerifyTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec11VerifyIntro')}</p>
+
+<ol>
+  <li set:html={t(lang, 'adminGuidePage.sec11Verify1')} />
+  <li set:html={t(lang, 'adminGuidePage.sec11Verify2')} />
+  <li set:html={t(lang, 'adminGuidePage.sec11Verify3')} />
+  <li set:html={t(lang, 'adminGuidePage.sec11Verify4')} />
+</ol>
+
+<h3>{t(lang, 'adminGuidePage.sec11MonitorTitle')}</h3>
+
+<p>{t(lang, 'adminGuidePage.sec11MonitorIntro')}</p>
+
+<ul>
+  <li set:html={t(lang, 'adminGuidePage.sec11Monitor1')} />
+  <li set:html={t(lang, 'adminGuidePage.sec11Monitor2')} />
+  <li set:html={t(lang, 'adminGuidePage.sec11Monitor3')} />
+  <li set:html={t(lang, 'adminGuidePage.sec11Monitor4')} />
+</ul>
+
+<h3>{t(lang, 'adminGuidePage.sec11TroubleshootTitle')}</h3>
+
+<div class="table-wrapper">
+<table>
+  <thead>
+    <tr><th scope="col">{t(lang, 'adminGuidePage.sec11TroubleshootCol1')}</th><th scope="col">{t(lang, 'adminGuidePage.sec11TroubleshootCol2')}</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>{t(lang, 'adminGuidePage.sec11Trouble1')}</td><td>{t(lang, 'adminGuidePage.sec11Trouble1Fix')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.sec11Trouble2')}</td><td>{t(lang, 'adminGuidePage.sec11Trouble2Fix')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.sec11Trouble3')}</td><td>{t(lang, 'adminGuidePage.sec11Trouble3Fix')}</td></tr>
+    <tr><td>{t(lang, 'adminGuidePage.sec11Trouble4')}</td><td>{t(lang, 'adminGuidePage.sec11Trouble4Fix')}</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>{t(lang, 'adminGuidePage.sec11WrapupTitle')}</h3>
+
+<ol>
+  <li>{t(lang, 'adminGuidePage.sec11Wrapup1')}</li>
+  <li>{t(lang, 'adminGuidePage.sec11Wrapup2')}</li>
+  <li>{t(lang, 'adminGuidePage.sec11Wrapup3')}</li>
+  <li>{t(lang, 'adminGuidePage.sec11Wrapup4')}</li>
+</ol>
+
+<h3>{t(lang, 'adminGuidePage.sec11TrapsTitle')}</h3>
+
+<ul>
+  <li set:html={t(lang, 'adminGuidePage.sec11Trap1')} />
+  <li>{t(lang, 'adminGuidePage.sec11Trap2')}</li>
+  <li>{t(lang, 'adminGuidePage.sec11Trap3')}</li>
+  <li>{t(lang, 'adminGuidePage.sec11Trap4')}</li>
+</ul>
+
+<hr />
+
+<h2 id="section-12">{t(lang, 'adminGuidePage.sec12Title')}</h2>
+
+<p>{t(lang, 'adminGuidePage.sec12P1')}</p>
+
+<p>{t(lang, 'adminGuidePage.sec12P2')}</p>
+
+<p>{t(lang, 'adminGuidePage.sec12P3')}</p>
+
+<p set:html={t(lang, 'adminGuidePage.sec12P4').replace('{volunteerGuideLink}', volunteerGuideLink)} />
 
 <hr />
 
