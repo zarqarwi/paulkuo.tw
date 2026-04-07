@@ -696,7 +696,8 @@ export async function handleFormosaPush(request, env) {
     const mode = body.mode || 'template'; // 'text' | 'image' | 'image+text' | 'template'
     const dryRun = body.dry_run || false;
     const imageUrl = body.image_url || '';
-    const previewUrl = body.preview_url || imageUrl;
+    const PUSH_PREVIEW_FALLBACK = 'https://mazu.today/images/formosa-esg-2026-og.png';
+    const previewUrl = body.preview_url || PUSH_PREVIEW_FALLBACK;
 
     // Get users filtered by role (exclude paused/completed from push)
     let query = "SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL AND (participant_status IS NULL OR participant_status = 'active')";
@@ -2322,7 +2323,28 @@ export async function handleFormosaUpload(request, env) {
     });
 
     const url = `https://api.paulkuo.tw/api/formosa/push-image/${ts}-${rand}.${ext}`;
-    return jsonResponse({ ok: true, url }, 200, request);
+
+    // Try to generate a preview thumbnail via Cloudflare Image Resizing (best-effort)
+    let preview_url;
+    try {
+      const thumbRes = await fetch(url, {
+        cf: { image: { width: 480, fit: 'scale-down', format: 'jpeg', quality: 70 } }
+      });
+      if (thumbRes.ok) {
+        const thumbBuf = await thumbRes.arrayBuffer();
+        if (thumbBuf.byteLength > 0 && thumbBuf.byteLength < 1024 * 1024) {
+          const previewKey = `push/preview/${ts}-${rand}.jpg`;
+          await env.FORMOSA_OG.put(previewKey, thumbBuf, {
+            httpMetadata: { contentType: 'image/jpeg', cacheControl: 'public, max-age=31536000' }
+          });
+          preview_url = `https://api.paulkuo.tw/api/formosa/push-image/preview/${ts}-${rand}.jpg`;
+        }
+      }
+    } catch (e) {
+      // Image Resizing not available or failed, skip preview generation
+    }
+
+    return jsonResponse({ ok: true, url, ...(preview_url ? { preview_url } : {}) }, 200, request);
   } catch (e) {
     console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
   }
@@ -2458,7 +2480,7 @@ export async function handleFormosaFeedbackPublicStatus(request, env) {
     const rows = await env.AUTH_DB.prepare(
       `SELECT id, category, description, screenshot_url, status, admin_note, resolved_at, created_at
        FROM feedback
-       WHERE status != 'new'
+       WHERE category != 'test' AND category NOT LIKE '[DRY-RUN]%'
        ORDER BY created_at DESC`
     ).all();
 

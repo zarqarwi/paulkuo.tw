@@ -1061,6 +1061,7 @@ const linkPrefix = prefix;
         if (data.ok && data.url) {
           pushImageUrl.value = data.url;
           pushImageUrl.dispatchEvent(new Event('input'));
+          if (data.preview_url) pushPreviewUrl.value = data.preview_url;
         } else {
           alert('上傳失敗：' + (data.error || '未知錯誤'));
         }
