@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AICollabPortfolio from '../../../components/ai-collab-portfolio/AICollabPortfolio';
+
+const schemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AI Collaboration Portfolio",
+  "description": "A 5-dimension framework to measure your AI collaboration capability: Command, Delivery, Leverage, Quality, and Influence. 20 questions → radar chart → grade.",
+  "url": "https://paulkuo.tw/tools/ai-collab-portfolio",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TWD" },
+  "author": { "@id": "https://paulkuo.tw/#person" }
+});
+---
+<BaseLayout
+  title="AI Collaboration Portfolio — Measure What You Build"
+  description="Stop listing AI tools you know. Start measuring what you actually build. The AI Collaboration Portfolio assesses 5 dimensions: Command, Delivery, Leverage, Quality, and Influence — and outputs a radar chart + grade."
+  ogUrl="https://paulkuo.tw/tools/ai-collab-portfolio"
+  schemaJson={schemaJson}
+>
+  <AICollabPortfolio client:load />
+</BaseLayout>
