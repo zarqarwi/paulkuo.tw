@@ -22,6 +22,7 @@ for (const c of concepts) {
 
 // Load graph data for Graph View
 import graphRaw from '../../content/wiki/meta/graph.json';
+import statsJson from '../../content/wiki/stats.json';
 const publicGraph = {
   nodes: graphRaw.nodes.filter((n: any) => n.visibility === 'public'),
   edges: (() => {
@@ -39,6 +40,41 @@ const PILLAR_COLORS: Record<string, string> = {
 };
 
 const pillars = Object.entries(PILLAR_MAP);
+
+// Source count map for tooltip enrichment
+const nodeSourceCounts: Record<string, number> = {};
+for (const c of concepts) {
+  const id = c.data.slug || c.id.replace(/\.md$/, '');
+  if (c.data.source_count) nodeSourceCounts[id] = c.data.source_count;
+}
+
+// Cross-pillar edges (build time)
+const nodeIdToPillar = new Map<string, string>(
+  publicGraph.nodes.map((n: any) => [n.id, n.pillar || ''])
+);
+const crossPillarCount = publicGraph.edges.filter((e: any) => {
+  const sp = nodeIdToPillar.get(e.source);
+  const tp = nodeIdToPillar.get(e.target);
+  return sp && tp && sp !== tp;
+}).length;
+const crossPillarPct = publicGraph.edges.length > 0
+  ? Math.round((crossPillarCount / publicGraph.edges.length) * 100)
+  : 0;
+
+// Pillar concept counts
+const pillarConceptCounts = Object.fromEntries(
+  pillars.map(([key]) => [key, byPillar.get(key)?.length || 0])
+);
+
+// Changelog: top 10 recent concepts by last_updated
+const recentConcepts = [...concepts]
+  .filter(c => c.data.last_updated)
+  .sort((a, b) => (b.data.last_updated as Date).getTime() - (a.data.last_updated as Date).getTime())
+  .slice(0, 10);
+
+const lastUpdated = recentConcepts[0]?.data.last_updated
+  ? (recentConcepts[0].data.last_updated as Date).toISOString().slice(0, 10)
+  : '';
 
 const schemaJson = JSON.stringify({
   '@context': 'https://schema.org',
@@ -121,6 +157,58 @@ const schemaJson = JSON.stringify({
       </div>
     </div>
 
+    <!-- Stats Dashboard -->
+    <div class="wiki-stats-dashboard">
+      <div class="wiki-stats-grid">
+        {pillars.map(([key, val]) => {
+          const count = pillarConceptCounts[key] || 0;
+          if (count === 0) return null;
+          return (
+            <div class="wiki-stats-pill" style={`border-color: ${PILLAR_COLORS[key]}40; background: ${PILLAR_COLORS[key]}08;`}>
+              <span class="wiki-stats-pill-dot" style={`background: ${PILLAR_COLORS[key]}`}></span>
+              <span class="wiki-stats-pill-label">{val.label}</span>
+              <span class="wiki-stats-pill-count" style={`color: ${PILLAR_COLORS[key]}`}>{count}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div class="wiki-stats-meta">
+        <span>{publicGraph.nodes.length} 節點 · {publicGraph.edges.length} 連結</span>
+        <span class="wiki-stats-sep">·</span>
+        <span>跨支柱連結 {crossPillarPct}%</span>
+        {lastUpdated && (
+          <>
+            <span class="wiki-stats-sep">·</span>
+            <span>最近更新 {lastUpdated}</span>
+          </>
+        )}
+      </div>
+    </div>
+
+    <!-- Changelog -->
+    {recentConcepts.length > 0 && (
+      <div class="wiki-changelog-section">
+        <h2 class="wiki-section-title">最近更新</h2>
+        <ul class="wiki-changelog-list">
+          {recentConcepts.map(c => {
+            const slug = c.data.slug || c.id.replace(/\.md$/, '');
+            const dateStr = c.data.last_updated
+              ? (c.data.last_updated as Date).toISOString().slice(0, 10)
+              : '';
+            const color = PILLAR_COLORS[c.data.pillar] || '#64748b';
+            const pillarLabel = (PILLAR_MAP as any)[c.data.pillar]?.label || c.data.pillar;
+            return (
+              <li class="wiki-changelog-item">
+                <time class="wiki-changelog-date">{dateStr}</time>
+                <a href={`/wiki/${slug}/`} class="wiki-changelog-title">{c.data.title}</a>
+                <span class="wiki-changelog-badge" style={`color: ${color}; border-color: ${color}40; background: ${color}0d;`}>{pillarLabel}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    )}
+
     <!-- Concept list by pillar -->
     <div class="wiki-concepts-section">
       <h2 class="wiki-section-title">概念索引</h2>
@@ -180,7 +268,7 @@ const schemaJson = JSON.stringify({
   </section>
 </BaseLayout>
 
-<script is:inline define:vars={{ publicGraph, PILLAR_COLORS }}>
+<script is:inline define:vars={{ publicGraph, PILLAR_COLORS, nodeSourceCounts }}>
 // === Wiki Graph View — Force-directed 2D ===
 const stage = document.getElementById('wiki-graph-stage');
 const inspector = document.getElementById('wiki-graph-inspector');
@@ -447,13 +535,19 @@ function showTooltip(node, cx, cy) {
   var typeLabel = node.type === 'concept' ? '概念' : node.type === 'entity' ? '人物' : '來源';
   var neighbors = adjacency.get(node.id);
   var nCount = neighbors ? neighbors.size : 0;
+  var extra = '';
+  if (node.type === 'concept' && nodeSourceCounts[node.id]) {
+    extra = '<div style="color:#64748b;">' + nodeSourceCounts[node.id] + ' 篇來源 · ' + nCount + ' 個連結</div>';
+  } else {
+    extra = '<div style="color:#64748b;">' + nCount + ' 個連結</div>';
+  }
   tooltip.innerHTML =
     '<div style="font-weight:600;font-size:0.85rem;margin-bottom:0.2rem;">' + esc(node.title) + '</div>' +
     '<div style="display:flex;gap:0.3rem;margin-bottom:0.2rem;">' +
     '<span style="background:' + color + '18;color:' + color + ';border:1px solid ' + color + '40;border-radius:999px;padding:0.05rem 0.3rem;font-size:0.68rem;">' + esc(node.pillar) + '</span>' +
     '<span style="background:#f1f5f9;border:1px solid #d1d5db;border-radius:999px;padding:0.05rem 0.3rem;font-size:0.68rem;color:#475569;">' + typeLabel + '</span>' +
     '</div>' +
-    '<div style="color:#64748b;">' + nCount + ' 個連結</div>';
+    extra;
   // Position
   var tw = 220, th = tooltip.offsetHeight || 60;
   var left = cx + 12, top = cy - th / 2;
@@ -770,6 +864,90 @@ frame();
     min-height: 1.6rem;
     padding: 0.1rem 0.35rem;
     cursor: pointer;
+  }
+
+  /* Stats Dashboard */
+  .wiki-stats-dashboard {
+    margin-bottom: 2rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 0.75rem;
+    background: var(--bg-card, #fff);
+  }
+  .wiki-stats-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.55rem;
+  }
+  .wiki-stats-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: 0.78rem;
+  }
+  .wiki-stats-pill-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .wiki-stats-pill-label { color: var(--text-secondary, #64748b); }
+  .wiki-stats-pill-count { font-weight: 700; font-size: 0.82rem; }
+  .wiki-stats-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary, #64748b);
+  }
+
+  /* Changelog */
+  .wiki-changelog-section { margin-bottom: 3rem; }
+  .wiki-changelog-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.6rem 0 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+  .wiki-changelog-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 0.5rem;
+    background: var(--bg-card, #fff);
+  }
+  .wiki-changelog-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #94a3b8);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    min-width: 5.5rem;
+  }
+  .wiki-changelog-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text-primary, #0f172a);
+    text-decoration: none;
+  }
+  .wiki-changelog-title:hover { color: var(--accent-ai, #2563eb); }
+  .wiki-changelog-badge {
+    font-size: 0.68rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 999px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  @media (max-width: 500px) {
+    .wiki-changelog-date { min-width: auto; }
+    .wiki-changelog-badge { display: none; }
   }
 
   /* Concept index */
