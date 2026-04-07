@@ -114,6 +114,21 @@ function parseDuration(iso) {
   return (parseInt(m[1] || 0) * 3600) + (parseInt(m[2] || 0) * 60) + parseInt(m[3] || 0);
 }
 
+/** fetch with retry on 429 (exponential backoff: 1s, 2s, 4s) */
+async function fetchWithRetry(url, options = {}, maxRetries = 3) {
+  let lastError;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      const delay = Math.pow(2, attempt - 1) * 1000;
+      await new Promise(r => setTimeout(r, delay));
+    }
+    const resp = await fetch(url, options);
+    if (resp.status !== 429) return resp;
+    lastError = new Error(`YouTube page fetch: 429 (attempt ${attempt + 1}/${maxRetries + 1})`);
+  }
+  throw lastError;
+}
+
 // ── core: fetch metadata via Data API v3 ───────────────────────────────
 
 async function fetchVideoMeta(videoId, apiKey) {
@@ -138,8 +153,8 @@ async function fetchVideoMeta(videoId, apiKey) {
 // ── core: fetch transcript via Innertube (no API key needed) ───────────
 
 async function fetchTranscript(videoId, preferLang) {
-  // 1. Fetch watch page for INNERTUBE_API_KEY
-  const watchResp = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+  // 1. Fetch watch page for INNERTUBE_API_KEY (retry on 429)
+  const watchResp = await fetchWithRetry(`https://www.youtube.com/watch?v=${videoId}`, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       'Accept-Language': 'en-US,en;q=0.9',
@@ -288,8 +303,16 @@ export async function handleYoutubeIngest(request, env) {
     }
     const meta = await fetchVideoMeta(videoId, env.YOUTUBE_API_KEY);
 
-    // Fetch transcript (no API key needed)
-    const transcriptData = await fetchTranscript(videoId, lang);
+    // Fetch transcript (no API key needed) — fallback to metadata-only on failure
+    let transcriptData;
+    let transcriptFailed = false;
+    try {
+      transcriptData = await fetchTranscript(videoId, lang);
+    } catch (e) {
+      console.warn(`[youtube-ingest] Transcript fetch failed for ${videoId}: ${e.message}. Continuing metadata-only.`);
+      transcriptData = { transcript: '', lang: '', tracks: [] };
+      transcriptFailed = true;
+    }
 
     // Build markdown
     const result = buildSourceMarkdown(videoId, meta, transcriptData);
@@ -321,13 +344,34 @@ export async function handleYoutubeIngest(request, env) {
       title: meta.title,
       duration: meta.duration,
       transcriptLang: transcriptData.lang,
-      transcriptLines: transcriptData.transcript.split('\n').length,
+      transcriptLines: transcriptData.transcript ? transcriptData.transcript.split('\n').length : 0,
+      transcriptFailed,
       message: `Pending at youtube:pending:${videoId}. Run scripts/wiki-youtube-ingest.cjs to write source file.`,
     }, 200, request);
 
   } catch (e) {
     return jsonResponse({ error: 'Ingest failed: ' + e.message }, 500, request);
   }
+}
+
+// ── Resolve handle → channelId (with KV cache) ────────────────────────
+
+async function resolveChannelId(handle, apiKey, kv) {
+  const cacheKey = `youtube:channel_id:${handle}`;
+  const cached = await kv.get(cacheKey);
+  if (cached) return cached;
+
+  const url = `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${encodeURIComponent(handle)}&key=${apiKey}`;
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`channels API error for ${handle}: ${resp.status}`);
+  const data = await resp.json();
+  const channelId = data.items?.[0]?.id;
+  if (!channelId) throw new Error(`No channelId found for handle ${handle}`);
+
+  // Cache indefinitely (handles don't change)
+  await kv.put(cacheKey, channelId);
+  console.log(`[youtube-scan] Resolved ${handle} → ${channelId}`);
+  return channelId;
 }
 
 // ── Channel scan (Mode A: cron) ────────────────────────────────────────
@@ -348,6 +392,17 @@ export async function handleYoutubeChannelScan(env) {
   const { channels } = JSON.parse(channelsRaw);
   if (!channels || channels.length === 0) return { scanned: 0, new: 0 };
 
+  // Resolve handle → channelId for channels that only have handle
+  for (const ch of channels) {
+    if (!ch.channelId && ch.handle) {
+      try {
+        ch.channelId = await resolveChannelId(ch.handle, env.YOUTUBE_API_KEY, env.TICKER_KV);
+      } catch (e) {
+        console.error(`[youtube-scan] Cannot resolve channelId for ${ch.handle}: ${e.message}`);
+      }
+    }
+  }
+
   // Get last scan timestamp (default: 7 days ago)
   const lastScan = await env.TICKER_KV.get('youtube:last_scan');
   const publishedAfter = lastScan || new Date(Date.now() - 7 * 86400000).toISOString();
@@ -355,6 +410,10 @@ export async function handleYoutubeChannelScan(env) {
   let totalNew = 0;
 
   for (const ch of channels.slice(0, 5)) {
+    if (!ch.channelId) {
+      console.warn(`[youtube-scan] Skipping ${ch.handle || ch.name}: no channelId`);
+      continue;
+    }
     try {
       const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${ch.channelId}&type=video&order=date&publishedAfter=${publishedAfter}&maxResults=10&key=${env.YOUTUBE_API_KEY}`;
       const resp = await fetch(searchUrl);
@@ -369,7 +428,13 @@ export async function handleYoutubeChannelScan(env) {
         // Fetch full metadata + transcript
         try {
           const meta = await fetchVideoMeta(videoId, env.YOUTUBE_API_KEY);
-          const transcriptData = await fetchTranscript(videoId, ch.preferLang || '');
+          let transcriptData;
+          try {
+            transcriptData = await fetchTranscript(videoId, ch.preferLang || '');
+          } catch (e) {
+            console.warn(`[youtube-scan] Transcript failed for ${videoId}: ${e.message}. Storing metadata-only.`);
+            transcriptData = { transcript: '', lang: '', tracks: [] };
+          }
           const result = buildSourceMarkdown(videoId, meta, transcriptData);
 
           if (ch.pillar) {
