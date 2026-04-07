@@ -51,6 +51,7 @@ const i18nMyPage = JSON.stringify({
   mapNow: t(lang, 'myPageContent.mapNow'),
   viewerTitle: t(lang, 'myPageContent.viewerTitle'),
   copied: t(lang, 'myPageContent.copied'),
+  carbonZeroHint: t(lang, 'myPageContent.carbonZeroHint'),
 });
 
 const linkPrefix = prefix;
@@ -510,10 +511,14 @@ const linkPrefix = prefix;
   var carbonMain = document.getElementById('carbonMain');
   var savedKm = km; // walk km saved vs driving
   var carbonSaved = (savedKm * 0.21).toFixed(2);
-  carbonMain.innerHTML =
-    '<div class="carbon-big">' + carbon.toFixed(2) + ' <small>kg CO₂e</small></div>' +
-    '<p class="carbon-compare">' + _t.equivDriveLess + ' ' + savedKm.toFixed(1) + ' ' + _t.km + '</p>' +
-    '<p class="carbon-compare">' + _t.equivTrees + ' ' + Math.max(0.01, savedKm * 0.21 / 22).toFixed(2) + ' ' + _t.treesAnnual + '</p>';
+  if (carbon === 0) {
+    carbonMain.innerHTML = '<p class="carbon-zero-hint">' + _t.carbonZeroHint + '</p>';
+  } else {
+    carbonMain.innerHTML =
+      '<div class="carbon-big">' + carbon.toFixed(2) + ' <small>kg CO₂e</small></div>' +
+      '<p class="carbon-compare">' + _t.equivDriveLess + ' ' + savedKm.toFixed(1) + ' ' + _t.km + '</p>' +
+      '<p class="carbon-compare">' + _t.equivTrees + ' ' + Math.max(0.01, savedKm * 0.21 / 22).toFixed(2) + ' ' + _t.treesAnnual + '</p>';
+  }
 
   // Share card data
   document.getElementById('shareRankIcon').innerHTML = '<img src="' + MASCOT_BASE + rank.current.img + '" style="width:56px;height:56px;object-fit:contain;" alt="' + rank.current.name + '">';
@@ -829,6 +834,7 @@ const linkPrefix = prefix;
   .carbon-big { font-size: 2.5rem; font-weight: 800; color: #2E7D32; text-align: center; }
   .carbon-big small { font-size: 1rem; font-weight: 400; }
   .carbon-compare { color: #555; font-size: 0.85rem; text-align: center; margin: 0.5rem 0 0; }
+  :global(.carbon-zero-hint) { color: #888; font-size: 0.9rem; text-align: center; line-height: 1.6; margin: 0.5rem 0; }
 
   /* Share */
   .my-share-section { margin: 2rem 0; text-align: center; }
