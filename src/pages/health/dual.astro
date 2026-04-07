@@ -142,9 +142,10 @@ const authBtn = document.getElementById('authBtn');
 
 async function checkAuth() {
   const urlKey = new URLSearchParams(window.location.search).get('key');
-  
-  const code = urlKey || _hCode; if (code && await _verify(code)) { _hCode = code; sessionStorage.setItem('health_code', code); /* replaced */ if (true) {
-    
+  const code = urlKey || _hCode;
+  if (code && await _verify(code)) {
+    _hCode = code;
+    sessionStorage.setItem('health_code', code);
     authGate.style.display = 'none';
     mainEl.style.display = 'block';
     return;
@@ -153,8 +154,10 @@ async function checkAuth() {
 checkAuth();
 
 authBtn.addEventListener('click', async () => {
-  authBtn.textContent='驗證中…';authBtn.disabled=true; if (await _verify(authInput.value.trim().toLowerCase())) { _hCode=authInput.value.trim().toLowerCase(); sessionStorage.setItem('health_code',_hCode); if(true) {
-    
+  authBtn.textContent='驗證中…';authBtn.disabled=true;
+  if (await _verify(authInput.value.trim().toLowerCase())) {
+    _hCode=authInput.value.trim().toLowerCase();
+    sessionStorage.setItem('health_code',_hCode);
     authGate.style.display = 'none';
     mainEl.style.display = 'block';
   } else {
