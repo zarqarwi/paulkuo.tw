@@ -1952,7 +1952,7 @@ export const zhHans = {
     pitfallsTitle: '已知陷阱',
     pitfallsDesc: '开发过程中踩过的坑与防护 SOP，五大类实战经验。',
     changelogTitle: '项目开发记录',
-    changelogDesc: '16 天完整开发历程，从概念验证到万人系统。',
+    changelogDesc: '记载开发历程，从概念验证到系统部署。',
   },
 
 } as const;

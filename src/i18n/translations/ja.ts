@@ -1954,7 +1954,7 @@ export const ja = {
     pitfallsTitle: '既知の落とし穴',
     pitfallsDesc: '開発中に踏んだ罠と防止SOP。5カテゴリの実践経験。',
     changelogTitle: 'プロジェクト開発記録',
-    changelogDesc: '16日間の完全な開発経緯。概念実証から本番システムまで。',
+    changelogDesc: '開発経緯を記録。概念実証からシステムデプロイまで。',
   },
 
 } as const;

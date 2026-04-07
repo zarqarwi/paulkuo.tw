@@ -1954,7 +1954,7 @@ export const en = {
     pitfallsTitle: 'Known Pitfalls',
     pitfallsDesc: 'Lessons learned and preventive SOPs from development, organized in five categories.',
     changelogTitle: 'Development Record',
-    changelogDesc: 'Complete 16-day development journey from proof of concept to production system.',
+    changelogDesc: 'Documents the development journey from proof of concept to system deployment.',
   },
 
 } as const;
