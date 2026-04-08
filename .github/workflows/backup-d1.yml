@@ -1,0 +1,148 @@
+name: D1 Backup — Daily Export
+
+on:
+  schedule:
+    # UTC 19:00 = Taiwan 03:00 (next day)
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: Export D1 Tables
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Export formosa_users
+        id: export_users
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 export paulkuo-auth --remote \
+            --table formosa_users \
+            --output backup-formosa_users.sql
+          echo "✅ formosa_users exported"
+
+      - name: Export formosa_surveys
+        id: export_surveys
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 export paulkuo-auth --remote \
+            --table formosa_surveys \
+            --output backup-formosa_surveys.sql
+          echo "✅ formosa_surveys exported"
+
+      - name: Export formosa_gps_points
+        id: export_gps
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 export paulkuo-auth --remote \
+            --table formosa_gps_points \
+            --output backup-formosa_gps_points.sql
+          echo "✅ formosa_gps_points exported"
+
+      - name: Package backups
+        id: package
+        continue-on-error: true
+        run: |
+          DATE=$(date -u +"%Y-%m-%d")
+          ARCHIVE="formosa-d1-backup-${DATE}.tar.gz"
+          # Only include files that exist
+          FILES=$(ls backup-formosa_*.sql 2>/dev/null || true)
+          if [ -z "$FILES" ]; then
+            echo "❌ No backup files found"
+            exit 1
+          fi
+          tar -czf "$ARCHIVE" $FILES
+          echo "archive=$ARCHIVE" >> $GITHUB_OUTPUT
+          echo "✅ Packaged: $ARCHIVE"
+          ls -lh "$ARCHIVE"
+
+      - name: Upload artifact
+        if: steps.package.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: formosa-d1-backup-${{ github.run_id }}
+          path: ${{ steps.package.outputs.archive }}
+          retention-days: 90
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## D1 Backup Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Table | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          FAILURES=0
+
+          if [ "${{ steps.export_users.outcome }}" = "success" ]; then
+            echo "| formosa_users | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| formosa_users | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.export_surveys.outcome }}" = "success" ]; then
+            echo "| formosa_surveys | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| formosa_surveys | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.export_gps.outcome }}" = "success" ]; then
+            echo "| formosa_gps_points | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| formosa_gps_points | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.package.outcome }}" = "success" ]; then
+            echo "| Archive | ✅ ${{ steps.package.outputs.archive }} |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Archive | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Failures: $FAILURES / 4**" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$FAILURES" -gt 0 ]; then
+            echo "has_failures=true" >> $GITHUB_ENV
+          else
+            echo "has_failures=false" >> $GITHUB_ENV
+          fi
+
+      - name: LINE push notification on failure
+        if: always() && env.has_failures == 'true'
+        continue-on-error: true
+        run: |
+          curl -s -X POST https://api.line.me/v2/bot/message/push \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
+            -d '{
+              "to": "${{ secrets.LINE_ADMIN_USER_ID }}",
+              "messages": [
+                {
+                  "type": "text",
+                  "text": "⚠️ D1 備份失敗\n\n今日 D1 資料庫自動備份異常，請檢查。\n\nhttps://github.com/zarqarwi/paulkuo.tw/actions/runs/${{ github.run_id }}"
+                }
+              ]
+            }'
