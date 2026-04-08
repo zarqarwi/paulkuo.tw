@@ -28,3 +28,4 @@
 {"timestamp":"2026-04-08T04:15:33.464Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":9184,"outputTokens":6165,"costUSD":0.120027,"costTWD":3.9,"note":"beyond-man-days"}
 {"timestamp":"2026-04-08T04:24:22.063Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":9194,"outputTokens":6238,"costUSD":0.121152,"costTWD":3.94,"note":"beyond-man-days"}
 {"timestamp":"2026-04-08T04:49:01.118Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":9258,"outputTokens":6245,"costUSD":0.121449,"costTWD":3.95,"note":"beyond-man-days"}
+{"timestamp":"2026-04-08T05:25:09.559Z","service":"anthropic","model":"claude-sonnet","action":"translate-en","source":"translate-article","inputTokens":9765,"outputTokens":6535,"costUSD":0.12732,"costTWD":4.14,"note":"beyond-man-days"}
