@@ -1880,11 +1880,11 @@
     }
   },
   "beyond-man-days.md": {
-    "sourceHash": "66ceee1bd372",
+    "sourceHash": "810cd3ef9272",
     "translations": {
       "en": {
-        "hash": "410f75d9b90f",
-        "translatedAt": "2026-04-08T02:14:09.946Z",
+        "hash": "8081dab9ff4c",
+        "translatedAt": "2026-04-08T02:55:20.260Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
