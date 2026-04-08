@@ -67,7 +67,7 @@ AI 不是均勻地讓每個人變強。它是指數級地放大能力差距。
 
 ## 從人月神話到 AI 協作：為什麼注意力時長也不夠？
 
-1975 年，電腦科學家 [Fred Brooks](https://en.wikipedia.org/wiki/Fred_Brooks) 出版了[《人月神話》](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)。他的核心洞見：人月是假的。人數和時間不能互換，因為溝通成本會吃掉效率增益。往進度落後的專案加人，只會讓它更慢。
+1975 年，電腦科學家 [Fred Brooks](https://en.wikipedia.org/wiki/Fred_Brooks) 出版了[《人月神話》](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)，最經典的洞見，就是拆穿了「人月」這個迷思：人數和時間從來不是可以互換的變數。每增加一個人，不只增加產能，也同步增加溝通、協調與整合的成本，而這些成本足以吞掉原本想像中的效率增益。所以，當一個專案已經落後，再往裡面加人，通常不是補救，而是讓它更慢。
 
 Brooks 講的是人類團隊。但 AI 時代從反方向驗證了他的論點：AI 把溝通成本歸零了。不需要 onboarding，不需要對齊會議，24 小時不間斷工作，零 context switch 成本。當協調成本趨近零，並行執行第一次真正變得有效率——但建立在「協調很貴」這個假設上的度量衡，就同時失去了意義。
 
