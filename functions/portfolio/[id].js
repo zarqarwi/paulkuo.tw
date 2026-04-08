@@ -48,8 +48,9 @@ export async function onRequest(context) {
   }
 
   // Non-crawler: serve the SPA view page
-  const url = new URL(context.request.url);
-  url.pathname = '/portfolio/view/';
-  const asset = await context.env.ASSETS.fetch(new Request(url, context.request));
-  return asset;
+  // Use direct fetch (not ASSETS) since Pages ASSETS.fetch doesn't rewrite paths correctly
+  const spaUrl = new URL(context.request.url);
+  spaUrl.pathname = '/portfolio/view/';
+  spaUrl.search = '';
+  return fetch(spaUrl.toString());
 }
