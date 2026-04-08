@@ -31,14 +31,19 @@ const prefix = LOCALE_PREFIX[lang];
   </header>
 
   <!-- Dynamic sections -->
-  <section class="log-section" id="sectionFixed" style="display:none">
-    <h2 class="log-section-title resolved">✅ 已修復</h2>
-    <div id="listFixed"></div>
+  <section class="log-section" id="sectionNew" style="display:none">
+    <h2 class="log-section-title received">📥 已收到</h2>
+    <div id="listNew"></div>
   </section>
 
   <section class="log-section" id="sectionInProgress" style="display:none">
     <h2 class="log-section-title in-progress">🔧 處理中</h2>
     <div id="listInProgress"></div>
+  </section>
+
+  <section class="log-section" id="sectionFixed" style="display:none">
+    <h2 class="log-section-title resolved">✅ 已修復</h2>
+    <div id="listFixed"></div>
   </section>
 
   <section class="log-section" id="sectionNoted" style="display:none">
@@ -116,30 +121,36 @@ const prefix = LOCALE_PREFIX[lang];
         return;
       }
 
-      var fixed = [];
+      var received = [];
       var inProgress = [];
+      var fixed = [];
       var noted = [];
 
       data.feedbacks.forEach(function(fb) {
-        if (fb.status === 'fixed') fixed.push(fb);
+        if (fb.status === 'new' || fb.status === 'open') received.push(fb);
         else if (fb.status === 'triaging' || fb.status === 'fixing') inProgress.push(fb);
+        else if (fb.status === 'fixed') fixed.push(fb);
         else if (fb.status === 'wontfix' || fb.admin_note) noted.push(fb);
       });
 
-      if (fixed.length) {
-        document.getElementById('sectionFixed').style.display = '';
-        document.getElementById('listFixed').innerHTML = fixed.map(renderItem).join('');
+      if (received.length) {
+        document.getElementById('sectionNew').style.display = '';
+        document.getElementById('listNew').innerHTML = received.map(renderItem).join('');
       }
       if (inProgress.length) {
         document.getElementById('sectionInProgress').style.display = '';
         document.getElementById('listInProgress').innerHTML = inProgress.map(renderItem).join('');
+      }
+      if (fixed.length) {
+        document.getElementById('sectionFixed').style.display = '';
+        document.getElementById('listFixed').innerHTML = fixed.map(renderItem).join('');
       }
       if (noted.length) {
         document.getElementById('sectionNoted').style.display = '';
         document.getElementById('listNoted').innerHTML = noted.map(renderItem).join('');
       }
 
-      if (!fixed.length && !inProgress.length && !noted.length) {
+      if (!received.length && !inProgress.length && !fixed.length && !noted.length) {
         document.getElementById('logLoading').style.display = 'block';
         document.getElementById('logLoading').textContent = '目前沒有公開的回報紀錄。';
       }
@@ -198,6 +209,7 @@ const prefix = LOCALE_PREFIX[lang];
     border-bottom: 2px solid #eee;
     margin: 0 0 1rem;
   }
+  .log-section-title.received { border-color: #3b82f6; color: #3b82f6; }
   .log-section-title.resolved { border-color: #059669; color: #059669; }
   .log-section-title.in-progress { border-color: #d97706; color: #d97706; }
   .log-section-title.noted { border-color: #6b7280; color: #6b7280; }
