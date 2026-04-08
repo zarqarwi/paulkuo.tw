@@ -91,6 +91,50 @@ export default {
       }
     }
 
+    // ACP portfolio: social crawlers get OG-enriched HTML
+    const portfolioMatch = url.pathname.match(/^\/portfolio\/([a-z0-9]{8})\/?$/);
+    if (portfolioMatch) {
+      const acpId = portfolioMatch[1];
+
+      if (/facebookexternalhit|facebot|line|twitterbot|slackbot|linkedinbot|discordbot|telegrambot|whatsapp|kakaotalk|pinterest|googlebot/i.test(ua)) {
+        try {
+          const apiResp = await fetch(`https://api.paulkuo.tw/api/acp/${acpId}`);
+          if (apiResp.ok) {
+            const data = await apiResp.json();
+            const ogImage = `https://api.paulkuo.tw/api/acp/${acpId}/og`;
+            const portfolioUrl = `https://paulkuo.tw/portfolio/${acpId}`;
+            const title = `${data.grade} — AI Collaboration Portfolio (${data.total_score}/100)`;
+            const desc = data.github_username
+              ? `${data.grade} level AI collaborator (${data.total_score}/100). GitHub: ${data.github_username}`
+              : `${data.grade} level AI collaborator scoring ${data.total_score}/100 across 5 dimensions.`;
+
+            return new Response(`<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8"><title>${title}</title>
+<meta property="og:title" content="${title}" />
+<meta property="og:description" content="${desc}" />
+<meta property="og:image" content="${ogImage}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="${portfolioUrl}" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${title}" />
+<meta name="twitter:description" content="${desc}" />
+<meta name="twitter:image" content="${ogImage}" />
+</head><body><p>AI Collaboration Portfolio</p></body></html>`, {
+              status: 200,
+              headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'public, max-age=300' },
+            });
+          }
+        } catch {}
+      }
+
+      // Non-crawler: rewrite URL to the SPA page and let assets serve it
+      url.pathname = '/portfolio/view/';
+      return env.ASSETS.fetch(new Request(url, request));
+    }
+
     // All other requests: serve static assets
     return env.ASSETS.fetch(request);
   },
