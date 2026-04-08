@@ -1,5 +1,5 @@
 /**
- * AI Collaboration Portfolio — Layer 2 (GitHub Auto-Fetch) + Layer 3 (AI Verification)
+ * AI Collaboration Portfolio — Layer 2 (GitHub Auto-Fetch) + Layer 3 (AI Verification) + Phase 3 (Persistence)
  * 2026-04-08
  */
 import { corsHeaders, jsonResponse, checkRateLimit } from './utils.js';
@@ -244,5 +244,203 @@ export async function handleAcpVerify(request, env) {
     return jsonResponse(verification, 200, request);
   } catch (e) {
     return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// ── Phase 3: Persistence ──
+
+function generateId() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < 8; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+function generateToken() {
+  const arr = new Uint8Array(24);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// POST /api/acp/save — Save or create portfolio
+export async function handleAcpSave(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  if (request.method !== 'POST') return jsonResponse({ error: 'POST only' }, 405, request);
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (!checkRateLimit(ip, 10)) return jsonResponse({ error: 'Rate limit exceeded' }, 429, request);
+  if (!(await checkDailyLimit(ip, env, 'acp-save', 30))) return jsonResponse({ error: 'Daily limit exceeded' }, 429, request);
+
+  try {
+    const { answers, dim_scores, weights, github_data, github_username, verification, evidence_urls, auto_filled, total_score, grade } = await request.json();
+    if (!answers || !dim_scores || total_score === undefined || !grade) {
+      return jsonResponse({ error: 'Missing required fields' }, 400, request);
+    }
+
+    const id = generateId();
+    const owner_token = generateToken();
+
+    await env.AUTH_DB.prepare(
+      `INSERT INTO portfolios (id, owner_token, answers, dim_scores, weights, github_data, github_username, verification, evidence_urls, auto_filled, total_score, grade, is_public)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`
+    ).bind(
+      id, owner_token,
+      JSON.stringify(answers), JSON.stringify(dim_scores),
+      JSON.stringify(weights || {}), JSON.stringify(github_data || null),
+      github_username || null, JSON.stringify(verification || null),
+      JSON.stringify(evidence_urls || {}), JSON.stringify(auto_filled || []),
+      total_score, grade
+    ).run();
+
+    return jsonResponse({ id, owner_token, url: `https://paulkuo.tw/portfolio/${id}` }, 201, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// GET /api/acp/:id — Get public portfolio
+export async function handleAcpGet(request, env, id) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  if (request.method !== 'GET') return jsonResponse({ error: 'GET only' }, 405, request);
+
+  try {
+    const row = await env.AUTH_DB.prepare(
+      `SELECT id, answers, dim_scores, weights, github_data, github_username, verification, evidence_urls, auto_filled, total_score, grade, created_at, updated_at, is_public FROM portfolios WHERE id = ?`
+    ).bind(id).first();
+
+    if (!row) return jsonResponse({ error: 'Portfolio not found' }, 404, request);
+    if (!row.is_public) return jsonResponse({ error: 'Portfolio is private' }, 403, request);
+
+    return jsonResponse({
+      id: row.id,
+      answers: JSON.parse(row.answers),
+      dim_scores: JSON.parse(row.dim_scores),
+      weights: JSON.parse(row.weights || '{}'),
+      github_data: JSON.parse(row.github_data || 'null'),
+      github_username: row.github_username,
+      verification: JSON.parse(row.verification || 'null'),
+      evidence_urls: JSON.parse(row.evidence_urls || '{}'),
+      auto_filled: JSON.parse(row.auto_filled || '[]'),
+      total_score: row.total_score,
+      grade: row.grade,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// PUT /api/acp/:id — Update portfolio (requires owner_token)
+export async function handleAcpUpdate(request, env, id) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+  if (request.method !== 'PUT') return jsonResponse({ error: 'PUT only' }, 405, request);
+
+  try {
+    const { owner_token, answers, dim_scores, weights, github_data, github_username, verification, evidence_urls, auto_filled, total_score, grade } = await request.json();
+    if (!owner_token) return jsonResponse({ error: 'owner_token required' }, 401, request);
+
+    const existing = await env.AUTH_DB.prepare('SELECT id FROM portfolios WHERE id = ? AND owner_token = ?').bind(id, owner_token).first();
+    if (!existing) return jsonResponse({ error: 'Not found or unauthorized' }, 404, request);
+
+    await env.AUTH_DB.prepare(
+      `UPDATE portfolios SET answers = ?, dim_scores = ?, weights = ?, github_data = ?, github_username = ?, verification = ?, evidence_urls = ?, auto_filled = ?, total_score = ?, grade = ?, updated_at = datetime('now') WHERE id = ?`
+    ).bind(
+      JSON.stringify(answers), JSON.stringify(dim_scores),
+      JSON.stringify(weights || {}), JSON.stringify(github_data || null),
+      github_username || null, JSON.stringify(verification || null),
+      JSON.stringify(evidence_urls || {}), JSON.stringify(auto_filled || []),
+      total_score, grade, id
+    ).run();
+
+    return jsonResponse({ id, updated: true }, 200, request);
+  } catch (e) {
+    return jsonResponse({ error: e.message }, 500, request);
+  }
+}
+
+// GET /api/acp/:id/og — Dynamic OG image (SVG → PNG via Workers)
+export async function handleAcpOg(request, env, id) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+
+  try {
+    const row = await env.AUTH_DB.prepare(
+      'SELECT total_score, grade, dim_scores, github_username FROM portfolios WHERE id = ? AND is_public = 1'
+    ).bind(id).first();
+
+    if (!row) return new Response('Not found', { status: 404 });
+
+    const dimScores = JSON.parse(row.dim_scores);
+    const dims = ['command', 'delivery', 'leverage', 'quality', 'influence'];
+    const labels = ['Command', 'Delivery', 'Leverage', 'Quality', 'Influence'];
+    const emojis = ['\u26A1', '\uD83D\uDCE6', '\uD83D\uDD2D', '\uD83D\uDEE1\uFE0F', '\uD83C\uDF10'];
+    const colors = ['#4A90D9', '#8B5CF6', '#38bdf8', '#10b981', '#f59e0b'];
+
+    const gradeColors = { Orchestrator: '#f59e0b', Architect: '#4A90D9', Builder: '#8B5CF6', Practitioner: '#10b981', Explorer: '#94a3b8' };
+    const gradeEmojis = { Orchestrator: '\uD83D\uDE80', Architect: '\uD83C\uDFD7\uFE0F', Builder: '\u26A1', Practitioner: '\uD83D\uDD27', Explorer: '\uD83C\uDF31' };
+    const gc = gradeColors[row.grade] || '#94a3b8';
+
+    // Build radar polygon points
+    const cx = 200, cy = 180, maxR = 120;
+    const radarPts = dims.map((d, i) => {
+      const a = (Math.PI * 2 * i) / 5 - Math.PI / 2;
+      const r = ((dimScores[d] || 0) / 100) * maxR;
+      return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
+    }).join(' ');
+
+    // Grid rings
+    const gridRings = [20, 40, 60, 80, 100].map(lv => {
+      const pts = Array.from({ length: 5 }, (_, i) => {
+        const a = (Math.PI * 2 * i) / 5 - Math.PI / 2;
+        const r = (lv / 100) * maxR;
+        return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
+      }).join(' ');
+      return `<polygon points="${pts}" fill="none" stroke="rgba(74,144,217,0.15)" stroke-width="0.5"/>`;
+    }).join('');
+
+    // Axis lines + labels
+    const axes = dims.map((_, i) => {
+      const a = (Math.PI * 2 * i) / 5 - Math.PI / 2;
+      const lx = cx + maxR * Math.cos(a), ly = cy + maxR * Math.sin(a);
+      const tx = cx + (maxR + 30) * Math.cos(a), ty = cy + (maxR + 30) * Math.sin(a);
+      return `<line x1="${cx}" y1="${cy}" x2="${lx.toFixed(1)}" y2="${ly.toFixed(1)}" stroke="rgba(74,144,217,0.15)" stroke-width="0.5"/>
+        <text x="${tx.toFixed(1)}" y="${(ty + 4).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="700" fill="${colors[i]}">${labels[i]}</text>`;
+    }).join('');
+
+    // Dim score bars (right side)
+    const bars = dims.map((d, i) => {
+      const y = 60 + i * 50;
+      const score = dimScores[d] || 0;
+      return `<text x="440" y="${y}" font-size="13" fill="${colors[i]}" font-weight="600">${emojis[i]} ${labels[i]}</text>
+        <text x="680" y="${y}" font-size="14" fill="${colors[i]}" font-weight="700" text-anchor="end" font-family="monospace">${score}</text>
+        <rect x="440" y="${y + 6}" width="240" height="6" rx="3" fill="rgba(255,255,255,0.08)"/>
+        <rect x="440" y="${y + 6}" width="${(score / 100) * 240}" height="6" rx="3" fill="${colors[i]}"/>`;
+    }).join('');
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+      <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d0d1a"/><stop offset="100%" stop-color="#13132a"/></linearGradient></defs>
+      <rect width="1200" height="630" fill="url(#bg)"/>
+      <text x="440" y="35" font-size="11" fill="#4A90D9" font-weight="700" letter-spacing="0.1em">AI COLLABORATION PORTFOLIO</text>
+      <!-- Radar -->
+      ${gridRings}
+      ${axes}
+      <polygon points="${radarPts}" fill="rgba(74,144,217,0.15)" stroke="rgba(74,144,217,0.8)" stroke-width="2" stroke-linejoin="round"/>
+      <!-- Grade badge -->
+      <text x="200" y="350" text-anchor="middle" font-size="36" font-weight="800" fill="${gc}">${gradeEmojis[row.grade] || ''} ${row.grade}</text>
+      <text x="200" y="380" text-anchor="middle" font-size="48" font-weight="900" fill="#ffffff" font-family="monospace">${row.total_score}</text>
+      <text x="200" y="400" text-anchor="middle" font-size="14" fill="#94a3b8">/ 100</text>
+      <!-- Bars -->
+      ${bars}
+      <!-- Footer -->
+      <text x="40" y="600" font-size="13" fill="#475569">paulkuo.tw/portfolio/${id}</text>
+      ${row.github_username ? `<text x="1160" y="600" text-anchor="end" font-size="13" fill="#475569">github.com/${row.github_username}</text>` : ''}
+    </svg>`;
+
+    return new Response(svg, {
+      status: 200,
+      headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=3600', ...corsHeaders(request) },
+    });
+  } catch (e) {
+    return new Response('Error generating OG image', { status: 500 });
   }
 }

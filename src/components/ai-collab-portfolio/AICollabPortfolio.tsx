@@ -699,6 +699,12 @@ export default function AICollabPortfolio() {
   const [verification, setVerification] = useState<any>(null);
   const [verifying, setVerifying] = useState(false);
 
+  // Phase 3: persistence state
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [ownerToken, setOwnerToken] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
   const handleAnswer = (qid: string, val: string | number) => {
     setAnswers(prev => ({ ...prev, [qid]: val }));
   };
@@ -822,6 +828,34 @@ export default function AICollabPortfolio() {
       setTimeout(() => setCopySuccess(false), 2000);
     });
   };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveError('');
+    try {
+      const resp = await fetch(`${API_BASE}/api/acp/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          answers, dim_scores: dimScores, weights,
+          github_data: githubData, github_username: githubData?.username || null,
+          verification, evidence_urls: evidenceUrls, auto_filled: autoFilledFields,
+          total_score: totalScore, grade: grade.label,
+        }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Save failed');
+      setSavedId(data.id);
+      setOwnerToken(data.owner_token);
+      try { localStorage.setItem(`acp_token_${data.id}`, data.owner_token); } catch {}
+    } catch (e: any) {
+      setSaveError(e.message || 'Save failed');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const portfolioUrl = savedId ? `https://paulkuo.tw/portfolio/${savedId}` : null;
 
   const verifiedDimScores = verification?.dimension_notes
     ? Object.fromEntries(DIMS.map(d => [d.id, verification.dimension_notes[d.id]?.adjusted_score ?? dimScores[d.id]]))
@@ -1098,24 +1132,81 @@ export default function AICollabPortfolio() {
             </div>
           </div>
 
-          {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-            <button onClick={handleShare} style={{ flex: 1, ...S.btnPrimary, padding: '12px 20px' }}>
-              {copySuccess ? 'Copied!' : 'Copy Results'}
-            </button>
-            <button onClick={() => {
-              setShowResults(false);
-              setAnswers({});
-              setAutoFilledFields([]);
-              setEvidenceUrls({});
-              setGithubData(null);
-              setVerification(null);
-              setOpenDim('command');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }} style={{ ...S.btnSecondary, flex: 1 }}>
-              Try Again
-            </button>
-          </div>
+          {/* Save & Share */}
+          {!savedId ? (
+            <div style={{ marginTop: 8 }}>
+              <button onClick={handleSave} disabled={saving} style={{ ...S.btnPrimary, background: saving ? C.cardBorder : `linear-gradient(135deg, ${C.primary}, ${C.purple})`, marginBottom: 8 }}>
+                {saving ? 'Saving...' : 'Save & Get Shareable Link'}
+              </button>
+              {saveError && <div style={{ fontSize: 13, color: C.danger, marginBottom: 8 }}>{saveError}</div>}
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button onClick={handleShare} style={{ flex: 1, ...S.btnSecondary }}>
+                  {copySuccess ? 'Copied!' : 'Copy Results'}
+                </button>
+                <button onClick={() => {
+                  setShowResults(false); setAnswers({}); setAutoFilledFields([]); setEvidenceUrls({});
+                  setGithubData(null); setVerification(null); setSavedId(null); setOwnerToken(null);
+                  setOpenDim('command'); window.scrollTo({ top: 0, behavior: 'smooth' });
+                }} style={{ flex: 1, ...S.btnSecondary }}>
+                  Try Again
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ ...S.card, border: `1px solid ${C.success}33`, marginTop: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <span style={{ fontSize: 20 }}>&#x1F517;</span>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: C.white }}>Portfolio Saved</div>
+                  <div style={{ fontSize: 12, color: C.muted }}>Share your AI Collaboration Portfolio with anyone</div>
+                </div>
+              </div>
+              {/* Shareable URL */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                <input type="text" readOnly value={portfolioUrl || ''} style={{ ...S.input, flex: 1, fontSize: 13, background: '#0d0d1a' }} onClick={e => (e.target as HTMLInputElement).select()} />
+                <button onClick={() => { navigator.clipboard.writeText(portfolioUrl || ''); setCopySuccess(true); setTimeout(() => setCopySuccess(false), 2000); }} style={{ padding: '10px 16px', background: C.primary, color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' as const }}>
+                  {copySuccess ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+              {/* Social share buttons */}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' as const }}>
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${grade.emoji} ${grade.label} — ${totalScore}/100 on the AI Collaboration Portfolio\n\n"${grade.oneLiner}"\n\n${portfolioUrl}`)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', background: '#000', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none', minWidth: 100 }}
+                >
+                  <span style={{ fontFamily: 'serif', fontSize: 15, fontWeight: 900 }}>{'\uD835\uDD4F'}</span> Post
+                </a>
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(portfolioUrl || '')}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', background: '#0A66C2', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none', minWidth: 100 }}
+                >
+                  <span style={{ fontWeight: 900 }}>in</span> Share
+                </a>
+                <a
+                  href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`${grade.emoji} ${grade.label} — ${totalScore}/100\n\n"${grade.oneLiner}"\n\n${portfolioUrl}`)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', background: '#1a1a1a', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid #333', minWidth: 100 }}
+                >
+                  <span style={{ fontSize: 15 }}>{'\u25C9'}</span> Threads
+                </a>
+              </div>
+              {/* Secondary actions */}
+              <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+                <button onClick={handleShare} style={{ flex: 1, ...S.btnSecondary, fontSize: 12 }}>
+                  {copySuccess ? 'Copied!' : 'Copy as Text'}
+                </button>
+                <button onClick={() => {
+                  setShowResults(false); setAnswers({}); setAutoFilledFields([]); setEvidenceUrls({});
+                  setGithubData(null); setVerification(null); setSavedId(null); setOwnerToken(null);
+                  setOpenDim('command'); window.scrollTo({ top: 0, behavior: 'smooth' });
+                }} style={{ flex: 1, ...S.btnSecondary, fontSize: 12 }}>
+                  Start Over
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

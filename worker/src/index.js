@@ -33,7 +33,7 @@ import { handleStatus } from './status.js';
 import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus, handleFormosaHealthAlert, handleFormosaUpload, handleFormosaPushImageServe } from './formosa.js';
 import { fetchGscData, handleGsc } from './gsc.js';
 import { handleWikiSearch, handleWikiConcept, handleWikiGraph, handleWikiAsk } from './wiki-api.js';
-import { handleAcpGithub, handleAcpVerify } from './acp.js';
+import { handleAcpGithub, handleAcpVerify, handleAcpSave, handleAcpGet, handleAcpUpdate, handleAcpOg } from './acp.js';
 
 async function handleClaudeUsage(request, env, url) {
   const auth = await authenticateRequest(request, env, url.searchParams.get('code') || '');
@@ -459,6 +459,15 @@ async function handleRequest(request, env, ctx) {
   // ── ACP (AI Collaboration Portfolio) API ──
   if (path === '/api/acp/github' && (method === 'POST' || method === 'OPTIONS')) return handleAcpGithub(request, env);
   if (path === '/api/acp/verify' && (method === 'POST' || method === 'OPTIONS')) return handleAcpVerify(request, env);
+  if (path === '/api/acp/save' && (method === 'POST' || method === 'OPTIONS')) return handleAcpSave(request, env);
+  // /api/acp/:id and /api/acp/:id/og
+  const acpMatch = path.match(/^\/api\/acp\/([a-z0-9]{8})(\/og)?$/);
+  if (acpMatch) {
+    const [, acpId, ogSuffix] = acpMatch;
+    if (ogSuffix) return handleAcpOg(request, env, acpId);
+    if (method === 'GET' || method === 'OPTIONS') return handleAcpGet(request, env, acpId);
+    if (method === 'PUT') return handleAcpUpdate(request, env, acpId);
+  }
 
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
