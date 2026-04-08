@@ -137,7 +137,8 @@ Your job: cross-reference a user's self-reported scores with their GitHub data t
 You receive:
 1. Self-reported answers for 20 questions across 5 dimensions (Command, Delivery, Leverage, Quality, Influence)
 2. GitHub profile data (repos, stars, commits, CI pipelines, followers)
-3. Computed dimension scores and total score
+3. Evidence context: which fields were auto-filled from GitHub, which have evidence URLs, and which are purely self-reported
+4. Computed dimension scores and total score
 
 ## Output Format
 Return valid JSON only, no markdown fencing:
@@ -160,9 +161,12 @@ Return valid JSON only, no markdown fencing:
 
 ## Verification Rules
 - GitHub data is ground truth for: commits, stars, repo count, CI pipelines, followers
+- Fields with evidence URLs carry more weight than purely self-reported fields
+- Auto-filled fields from GitHub have the highest confidence
 - For dimensions without GitHub evidence (Quality uptime, Influence methodology citations), trust self-report but note lower confidence
 - If self-reported numbers are significantly higher than GitHub evidence, flag it
 - If GitHub evidence suggests the user is underselling, note that too
+- Consider the overall evidence ratio: more auto-filled + evidenced fields = higher overall confidence
 - Be direct and fair — not encouraging, not harsh`;
 
 export async function handleAcpVerify(request, env) {
@@ -186,7 +190,7 @@ export async function handleAcpVerify(request, env) {
   }
 
   try {
-    const { answers, github_data, dim_scores, total_score, grade } = await request.json();
+    const { answers, github_data, evidence_urls, auto_filled, dim_scores, total_score, grade } = await request.json();
 
     if (!answers || !dim_scores || total_score === undefined) {
       return jsonResponse({ error: 'Missing required fields' }, 400, request);
@@ -195,6 +199,12 @@ export async function handleAcpVerify(request, env) {
     const userMessage = JSON.stringify({
       self_reported_answers: answers,
       github_data: github_data || null,
+      evidence_context: {
+        auto_filled_fields: auto_filled || [],
+        evidence_urls: evidence_urls || {},
+        auto_count: (auto_filled || []).length,
+        evidenced_count: Object.keys(evidence_urls || {}).filter(k => evidence_urls[k]).length,
+      },
       computed_scores: { dim_scores, total_score, grade },
     });
 

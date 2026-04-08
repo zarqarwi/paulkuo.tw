@@ -47,6 +47,7 @@ interface Question {
   id: string;
   text: string;
   type: QType;
+  tooltip: string;
   options?: { label: string; score: number }[];
   scorer?: (v: number) => number;
 }
@@ -60,10 +61,10 @@ const mapNum = (v: number, tiers: [number, number][]) => {
 
 const QUESTIONS: Record<string, Question[]> = {
   command: [
-    { id: 'c1', text: 'How many reusable AI workflows / skills / system prompts have you built?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[2,40],[4,65],[10,100]]) },
-    { id: 'c2', text: 'How many automation pipelines do you maintain? (CI/CD, cron, Actions, etc.)', type: 'number', scorer: v => mapNum(v, [[0,0],[1,30],[2,55],[4,80],[10,100]]) },
-    { id: 'c3', text: 'How many AI models / tools do you use simultaneously?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[2,40],[3,65],[5,100]]) },
-    { id: 'c4', text: 'What is your task decomposition complexity?', type: 'select', options: [
+    { id: 'c1', text: 'How many reusable AI workflows / skills / system prompts have you built?', tooltip: 'Count distinct reusable prompts, system prompts, or multi-step workflows you\'ve created and continue to use.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[2,40],[4,65],[10,100]]) },
+    { id: 'c2', text: 'How many automation pipelines do you maintain? (CI/CD, cron, Actions, etc.)', tooltip: 'Include CI/CD pipelines, GitHub Actions, cron jobs, or any automated workflows you maintain.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,30],[2,55],[4,80],[10,100]]) },
+    { id: 'c3', text: 'How many AI models / tools do you use simultaneously?', tooltip: 'Count distinct AI models or tools (ChatGPT, Claude, Copilot, Midjourney, etc.) you use in your regular workflow.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[2,40],[3,65],[5,100]]) },
+    { id: 'c4', text: 'What is your task decomposition complexity?', tooltip: 'How complex are the tasks you delegate to AI? Simple = single prompts; Full SOP = orchestrated multi-agent systems with documented procedures.', type: 'select', options: [
       { label: 'Simple prompts', score: 20 },
       { label: 'Multi-step chains', score: 45 },
       { label: 'Multi-session orchestration', score: 70 },
@@ -71,26 +72,26 @@ const QUESTIONS: Record<string, Question[]> = {
     ]},
   ],
   delivery: [
-    { id: 'd1', text: 'How many code commits in the past 6 months?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[11,40],[51,60],[201,80],[501,100]]) },
-    { id: 'd2', text: 'How many services / tools are you currently deploying and operating?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,25],[2,50],[4,75],[8,100]]) },
-    { id: 'd3', text: 'How many pieces of content have you published? (articles / videos / docs)', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[3,40],[6,65],[16,100]]) },
-    { id: 'd4', text: 'How many complete projects have you shipped from zero to production?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,25],[2,50],[4,75],[8,100]]) },
+    { id: 'd1', text: 'How many code commits in the past 6 months?', tooltip: 'Total git commits across all repositories in the past 6 months. Auto-filled from GitHub public push events.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[11,40],[51,60],[201,80],[501,100]]) },
+    { id: 'd2', text: 'How many services / tools are you currently deploying and operating?', tooltip: 'Count services, APIs, bots, or tools you currently deploy and operate in production.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,25],[2,50],[4,75],[8,100]]) },
+    { id: 'd3', text: 'How many pieces of content have you published? (articles / videos / docs)', tooltip: 'Published articles, blog posts, videos, documentation pages, or other content. Auto-filled from GitHub Pages repos.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[3,40],[6,65],[16,100]]) },
+    { id: 'd4', text: 'How many complete projects have you shipped from zero to production?', tooltip: 'Complete projects shipped from idea to production \u2014 not just started, but actually deployed and usable.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,25],[2,50],[4,75],[8,100]]) },
   ],
   leverage: [
-    { id: 'l1', text: 'How many active projects are you maintaining simultaneously?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[2,45],[4,70],[8,100]]) },
-    { id: 'l2', text: 'Your output is equivalent to how many people in a traditional team?', type: 'select', options: [
+    { id: 'l1', text: 'How many active projects are you maintaining simultaneously?', tooltip: 'Distinct projects you\'re actively maintaining and shipping updates for. Auto-filled from GitHub active repos.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[2,45],[4,70],[8,100]]) },
+    { id: 'l2', text: 'Your output is equivalent to how many people in a traditional team?', tooltip: 'If a traditional team were to produce the same output, how many people would it take?', type: 'select', options: [
       { label: '1\u20132 people', score: 25 },
       { label: '3\u20135 people', score: 55 },
       { label: '5\u20138 people', score: 80 },
       { label: '8+ people', score: 100 },
     ]},
-    { id: 'l3', text: 'What is your automation coverage?', type: 'select', options: [
+    { id: 'l3', text: 'What is your automation coverage?', tooltip: 'What percentage of your workflow is automated vs. manual? Fully pipelined = almost no manual steps.', type: 'select', options: [
       { label: 'Manual mostly', score: 15 },
       { label: 'Some automation', score: 40 },
       { label: 'Heavily automated', score: 70 },
       { label: 'Fully pipelined', score: 100 },
     ]},
-    { id: 'l4', text: 'How did you arrive at your team-equivalent estimate?', type: 'select', options: [
+    { id: 'l4', text: 'How did you arrive at your team-equivalent estimate?', tooltip: 'How did you estimate your team-equivalent number? Third-party quotes are the strongest evidence.', type: 'select', options: [
       { label: 'Industry benchmark', score: 80 },
       { label: 'Past experience', score: 70 },
       { label: 'Third-party quote', score: 90 },
@@ -98,15 +99,15 @@ const QUESTIONS: Record<string, Question[]> = {
     ]},
   ],
   quality: [
-    { id: 'q1', text: 'How many active users do your services / tools have?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[10,40],[50,65],[200,100]]) },
-    { id: 'q2', text: 'How many quality-control mechanisms do you have? (tests / CI / CD / review SOPs)', type: 'number', scorer: v => mapNum(v, [[0,0],[1,25],[2,50],[4,75],[7,100]]) },
-    { id: 'q3', text: 'What is your system uptime level?', type: 'select', options: [
+    { id: 'q1', text: 'How many active users do your services / tools have?', tooltip: 'Real users actively using your services or tools. Not page views \u2014 actual users.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[10,40],[50,65],[200,100]]) },
+    { id: 'q2', text: 'How many quality-control mechanisms do you have? (tests / CI / CD / review SOPs)', tooltip: 'Count: automated tests, CI checks, code review processes, deployment pipelines, monitoring alerts.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,25],[2,50],[4,75],[7,100]]) },
+    { id: 'q3', text: 'What is your system uptime level?', tooltip: 'Best uptime level across your production services. 99.9%+ means less than 9 hours downtime per year.', type: 'select', options: [
       { label: 'No monitoring', score: 10 },
       { label: 'Basic monitoring', score: 40 },
       { label: '99%+ uptime', score: 75 },
       { label: '99.9%+ uptime', score: 100 },
     ]},
-    { id: 'q4', text: 'Is your output externally referenced or shared?', type: 'select', options: [
+    { id: 'q4', text: 'Is your output externally referenced or shared?', tooltip: 'Is your work referenced, linked to, or shared by others outside your organization?', type: 'select', options: [
       { label: 'None', score: 0 },
       { label: 'Occasional', score: 35 },
       { label: 'Regular', score: 70 },
@@ -114,10 +115,10 @@ const QUESTIONS: Record<string, Question[]> = {
     ]},
   ],
   influence: [
-    { id: 'i1', text: 'Total GitHub stars across your open-source projects?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[10,40],[50,65],[200,100]]) },
-    { id: 'i2', text: 'How many people have your teaching / sharing content reached?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,15],[50,35],[200,60],[1000,100]]) },
-    { id: 'i3', text: 'How many people have adopted your skills / templates / workflows?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,25],[5,50],[20,75],[100,100]]) },
-    { id: 'i4', text: 'How often is your methodology externally cited?', type: 'select', options: [
+    { id: 'i1', text: 'Total GitHub stars across your open-source projects?', tooltip: 'Total GitHub stars across all your public repositories. Auto-filled from GitHub.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[10,40],[50,65],[200,100]]) },
+    { id: 'i2', text: 'How many people have your teaching / sharing content reached?', tooltip: 'Total reach of your teaching/sharing: article readers, video viewers, talk attendees, followers, etc.', type: 'number', scorer: v => mapNum(v, [[0,0],[1,15],[50,35],[200,60],[1000,100]]) },
+    { id: 'i3', text: 'How many people have adopted your skills / templates / workflows?', tooltip: 'How many people have adopted your templates, workflows, prompts, or methodologies in their own work?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,25],[5,50],[20,75],[100,100]]) },
+    { id: 'i4', text: 'How often is your methodology externally cited?', tooltip: 'How often do others cite your methods, tools, or frameworks in their own work or publications?', type: 'select', options: [
       { label: 'Never', score: 0 },
       { label: 'Rarely', score: 30 },
       { label: 'Sometimes', score: 65 },
@@ -128,15 +129,56 @@ const QUESTIONS: Record<string, Question[]> = {
 
 /* ── Grade table ── */
 const GRADES = [
-  { min: 81, label: 'Orchestrator', desc: 'Full AI-native production', emoji: '🚀', color: '#f59e0b' },
-  { min: 61, label: 'Architect',    desc: 'Operating at team-scale solo', emoji: '🏗️', color: '#4A90D9' },
-  { min: 41, label: 'Builder',      desc: 'Shipping AI-powered projects', emoji: '⚡', color: '#8B5CF6' },
-  { min: 21, label: 'Practitioner', desc: 'Building with AI consistently', emoji: '🔧', color: '#10b981' },
-  { min: 0,  label: 'Explorer',     desc: 'Just getting started', emoji: '🌱', color: '#94a3b8' },
+  { min: 81, label: 'Orchestrator', desc: 'Full AI-native production', emoji: '🚀', color: '#f59e0b', oneLiner: 'You operate as an AI-native production system — shipping, scaling, and influencing at a level most teams aspire to.' },
+  { min: 61, label: 'Architect',    desc: 'Operating at team-scale solo', emoji: '🏗️', color: '#4A90D9', oneLiner: 'You architect AI collaboration at team-scale — designing systems, shipping consistently, and multiplying your output.' },
+  { min: 41, label: 'Builder',      desc: 'Shipping AI-powered projects', emoji: '⚡', color: '#8B5CF6', oneLiner: 'You actively ship AI-powered projects and are building the muscle for sustained production-grade output.' },
+  { min: 21, label: 'Practitioner', desc: 'Building with AI consistently', emoji: '🔧', color: '#10b981', oneLiner: 'You\'re building with AI consistently — the foundation is solid, and leveling up means shipping more and measuring impact.' },
+  { min: 0,  label: 'Explorer',     desc: 'Just getting started', emoji: '🌱', color: '#94a3b8', oneLiner: 'You\'re exploring AI collaboration — start with one project, ship it end-to-end, and let evidence accumulate.' },
 ];
 
 function getGrade(score: number) {
   return GRADES.find(g => score >= g.min)!;
+}
+
+/* ── Dimension insight helpers ── */
+const DIM_INSIGHTS: Record<string, { low: string; mid: string; high: string; improve: string }> = {
+  command: {
+    low: 'Your AI command surface is narrow — explore more models and build reusable workflows.',
+    mid: 'Solid command of AI tools. Next: systematize your workflows into documented SOPs.',
+    high: 'Advanced AI orchestration — you\'re directing complex multi-agent systems effectively.',
+    improve: 'Build more reusable system prompts and automation pipelines. Document your task decomposition patterns.',
+  },
+  delivery: {
+    low: 'Limited shipping evidence. Focus on completing and deploying one project end-to-end.',
+    mid: 'Consistent delivery. Increase velocity by deploying more services and publishing content.',
+    high: 'Prolific shipper — multiple services, content, and projects in production.',
+    improve: 'Ship more complete projects from zero to production. Publish content about what you build.',
+  },
+  leverage: {
+    low: 'Operating mostly at 1x capacity. Automate repetitive tasks and take on parallel projects.',
+    mid: 'Good cognitive leverage. Push further by automating more and quantifying your multiplier.',
+    high: 'Exceptional leverage — you\'re operating at multi-person team scale.',
+    improve: 'Automate more of your workflow. Get third-party quotes to validate your team-equivalent estimate.',
+  },
+  quality: {
+    low: 'Quality signals are weak — add monitoring, tests, and track real users.',
+    mid: 'Decent quality controls. Aim for higher uptime and external validation.',
+    high: 'Production-grade output with real users, monitoring, and external references.',
+    improve: 'Add more QC mechanisms (tests, CI, monitoring). Track active users and aim for 99.9%+ uptime.',
+  },
+  influence: {
+    low: 'Minimal external influence yet. Share your methods, open-source your tools, teach others.',
+    mid: 'Growing influence. Increase reach through more teaching and open-source contributions.',
+    high: 'Strong influence — your methods are being adopted and cited by others.',
+    improve: 'Open-source more projects. Write about your methodology. Present at meetups or conferences.',
+  },
+};
+
+function getDimInsight(dimId: string, score: number) {
+  const insights = DIM_INSIGHTS[dimId];
+  if (score >= 70) return { summary: insights.high, level: 'Strong' as const };
+  if (score >= 35) return { summary: insights.mid, level: 'Developing' as const };
+  return { summary: insights.low, level: 'Emerging' as const };
 }
 
 /* ── Score question ── */
@@ -496,8 +538,46 @@ function VerificationPanel({ verification }: { verification: any }) {
   );
 }
 
+/* ── Tooltip ── */
+function Tooltip({ text }: { text: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: 'relative' as const, display: 'inline-flex', alignItems: 'center' }}>
+      <span
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onClick={() => setShow(!show)}
+        style={{ width: 16, height: 16, borderRadius: '50%', background: C.cardBorder, color: C.muted, fontSize: 10, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'help', flexShrink: 0 }}
+      >?</span>
+      {show && (
+        <span style={{
+          position: 'absolute' as const, bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+          padding: '8px 12px', background: '#1a1a35', border: `1px solid ${C.cardBorder}`, borderRadius: 8,
+          fontSize: 12, color: C.text, lineHeight: 1.5, width: 240, zIndex: 10,
+          marginBottom: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.4)', pointerEvents: 'none' as const,
+        }}>{text}</span>
+      )}
+    </span>
+  );
+}
+
+/* ── Evidence Source Badge ── */
+function EvidenceBadge({ type }: { type: 'auto' | 'evidenced' | 'self' }) {
+  if (type === 'auto') return (
+    <span style={{ fontSize: 10, padding: '2px 8px', background: C.success + '22', color: C.success, borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap' as const }}>
+      Auto-filled from GitHub
+    </span>
+  );
+  if (type === 'evidenced') return (
+    <span style={{ fontSize: 10, padding: '2px 8px', background: C.accent + '22', color: C.accent, borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap' as const }}>
+      Evidenced
+    </span>
+  );
+  return null;
+}
+
 /* ── Accordion Section ── */
-function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, autoFilledFields }: {
+function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, autoFilledFields, evidenceUrls, onEvidenceUrl }: {
   dim: typeof DIMS[0];
   answers: Record<string, string | number>;
   onAnswer: (qid: string, val: string | number) => void;
@@ -505,6 +585,8 @@ function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, 
   onToggle: () => void;
   dimScore: number;
   autoFilledFields: string[];
+  evidenceUrls: Record<string, string>;
+  onEvidenceUrl: (qid: string, url: string) => void;
 }) {
   const qs = QUESTIONS[dim.id];
   const filled = qs.filter(q => answers[q.id] !== undefined && answers[q.id] !== '').length;
@@ -539,15 +621,16 @@ function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, 
         <div style={{ padding: '0 20px 20px' }}>
           {qs.map((q, idx) => {
             const isAutoFilled = autoFilledFields.includes(q.id);
+            const hasEvidence = !!evidenceUrls[q.id];
+            const badgeType = isAutoFilled ? 'auto' : hasEvidence ? 'evidenced' : 'self';
             return (
               <div key={q.id} style={{ marginBottom: idx < qs.length - 1 ? 20 : 0, paddingTop: 16, borderTop: `1px solid ${C.cardBorder}` }}>
-                <div style={{ ...S.questionLabel, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>{idx + 1}. {q.text}</span>
-                  {isAutoFilled && (
-                    <span style={{ fontSize: 10, padding: '2px 6px', background: C.success + '22', color: C.success, borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap' as const }}>
-                      GitHub
-                    </span>
-                  )}
+                <div style={{ ...S.questionLabel, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                  <span style={{ flex: 1 }}>{idx + 1}. {q.text}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                    {(answers[q.id] !== undefined && answers[q.id] !== '') && <EvidenceBadge type={badgeType} />}
+                    <Tooltip text={q.tooltip} />
+                  </div>
                 </div>
                 {q.type === 'number' ? (
                   <input
@@ -577,6 +660,18 @@ function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, 
                     ))}
                   </div>
                 )}
+                {/* Evidence URL for non-auto-filled fields */}
+                {!isAutoFilled && (
+                  <div style={{ marginTop: 8 }}>
+                    <input
+                      type="url"
+                      value={evidenceUrls[q.id] || ''}
+                      onChange={e => onEvidenceUrl(q.id, e.target.value)}
+                      placeholder="Evidence URL (optional)"
+                      style={{ ...S.input, fontSize: 12, padding: '6px 10px', borderColor: hasEvidence ? C.accent + '44' : C.cardBorder, background: hasEvidence ? 'rgba(56,189,248,0.04)' : '#1a1a35' }}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -598,6 +693,7 @@ export default function AICollabPortfolio() {
   // Layer 2 state
   const [githubData, setGithubData] = useState<any>(null);
   const [autoFilledFields, setAutoFilledFields] = useState<string[]>([]);
+  const [evidenceUrls, setEvidenceUrls] = useState<Record<string, string>>({});
 
   // Layer 3 state
   const [verification, setVerification] = useState<any>(null);
@@ -605,6 +701,10 @@ export default function AICollabPortfolio() {
 
   const handleAnswer = (qid: string, val: string | number) => {
     setAnswers(prev => ({ ...prev, [qid]: val }));
+  };
+
+  const handleEvidenceUrl = (qid: string, url: string) => {
+    setEvidenceUrls(prev => ({ ...prev, [qid]: url }));
   };
 
   const handleWeight = (dimId: string, val: number) => {
@@ -672,6 +772,8 @@ export default function AICollabPortfolio() {
         body: JSON.stringify({
           answers,
           github_data: githubData,
+          evidence_urls: evidenceUrls,
+          auto_filled: autoFilledFields,
           dim_scores: dimScores,
           total_score: totalScore,
           grade: grade.label,
@@ -699,10 +801,13 @@ export default function AICollabPortfolio() {
     const lines = [
       `AI Collaboration Portfolio`,
       ``,
-      `Total Score: ${totalScore}/100 \u2014 ${grade.emoji} ${grade.label}`,
-      `"${grade.desc}"`,
+      `${grade.emoji} ${grade.label} \u2014 ${totalScore}/100`,
+      `"${grade.oneLiner}"`,
       ``,
-      ...DIMS.map(d => `${d.emoji} ${d.label}: ${dimScores[d.id]}/100`),
+      ...DIMS.map(d => {
+        const insight = getDimInsight(d.id, dimScores[d.id]);
+        return `${d.emoji} ${d.label}: ${dimScores[d.id]}/100 (${insight.level})`;
+      }),
     ];
     if (verification?.verified_score !== undefined) {
       lines.push('', `AI-Verified Score: ${verification.verified_score}/100`);
@@ -767,6 +872,8 @@ export default function AICollabPortfolio() {
           onToggle={() => setOpenDim(openDim === dim.id ? '' : dim.id)}
           dimScore={dimScores[dim.id]}
           autoFilledFields={autoFilledFields}
+          evidenceUrls={evidenceUrls}
+          onEvidenceUrl={handleEvidenceUrl}
         />
       ))}
 
@@ -807,14 +914,21 @@ export default function AICollabPortfolio() {
             <h2 style={{ fontSize: 22, fontWeight: 800, color: C.white, margin: 0 }}>Your AI Collaboration Profile</h2>
           </div>
 
-          {/* Grade badge + total score */}
+          {/* Grade badge + total score + one-liner */}
           <div style={{ ...S.card, textAlign: 'center' as const, padding: 32 }}>
+            <div style={{ display: 'inline-block', padding: '6px 16px', background: grade.color + '22', border: `1px solid ${grade.color}44`, borderRadius: 20, fontSize: 11, fontWeight: 700, color: grade.color, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 16 }}>
+              Level {GRADES.length - GRADES.indexOf(grade)} of {GRADES.length}
+            </div>
             <div style={{ fontSize: 52, marginBottom: 8 }}>{grade.emoji}</div>
             <div style={{ fontSize: 32, fontWeight: 800, color: grade.color, marginBottom: 4 }}>{grade.label}</div>
-            <div style={{ fontSize: 14, color: C.muted, marginBottom: 20 }}>{grade.desc}</div>
-            <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: '12px 28px' }}>
+            <div style={{ fontSize: 14, color: C.muted, marginBottom: 16 }}>{grade.desc}</div>
+            <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: '12px 28px', marginBottom: 20 }}>
               <div style={{ fontSize: 44, fontWeight: 900, color: C.white, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{totalScore}</div>
               <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>/ 100</div>
+            </div>
+            {/* One-liner positioning statement */}
+            <div style={{ fontSize: 15, color: C.text, fontStyle: 'italic', lineHeight: 1.7, padding: '14px 20px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, borderLeft: `3px solid ${grade.color}`, textAlign: 'left' as const, maxWidth: 520, margin: '0 auto' }}>
+              "{grade.oneLiner}"
             </div>
           </div>
 
@@ -847,6 +961,107 @@ export default function AICollabPortfolio() {
               />
             ))}
           </div>
+
+          {/* Dimension Insight Cards */}
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.muted, marginBottom: 12, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>Dimension Deep Dive</div>
+          {DIMS.map(d => {
+            const score = dimScores[d.id];
+            const insight = getDimInsight(d.id, score);
+            const verifiedScore = verifiedDimScores?.[d.id];
+            const verNote = verification?.dimension_notes?.[d.id];
+            const sortedDims = [...DIMS].sort((a, b) => dimScores[b.id] - dimScores[a.id]);
+            const rank = sortedDims.findIndex(sd => sd.id === d.id) + 1;
+            const isStrongest = rank === 1;
+            const isWeakest = rank === DIMS.length;
+            return (
+              <div key={d.id} style={{ ...S.card, borderLeft: `3px solid ${d.color}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 20 }}>{d.emoji}</span>
+                    <div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: d.color }}>{d.label}</div>
+                      <div style={{ fontSize: 11, color: C.muted }}>{d.desc}</div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' as const }}>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: d.color, fontFamily: "'JetBrains Mono', monospace" }}>{score}</div>
+                    {verifiedScore !== undefined && verifiedScore !== score && (
+                      <div style={{ fontSize: 11, color: C.success }}>Verified: {verifiedScore}</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Relative position badges */}
+                <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' as const }}>
+                  <span style={{ fontSize: 10, padding: '2px 8px', background: (insight.level === 'Strong' ? C.success : insight.level === 'Developing' ? C.warning : C.danger) + '22', color: insight.level === 'Strong' ? C.success : insight.level === 'Developing' ? C.warning : C.danger, borderRadius: 4, fontWeight: 600 }}>
+                    {insight.level}
+                  </span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(255,255,255,0.06)', color: C.muted, borderRadius: 4, fontWeight: 600 }}>
+                    #{rank} of {DIMS.length}
+                  </span>
+                  {isStrongest && <span style={{ fontSize: 10, padding: '2px 8px', background: C.success + '22', color: C.success, borderRadius: 4, fontWeight: 600 }}>Strongest</span>}
+                  {isWeakest && <span style={{ fontSize: 10, padding: '2px 8px', background: C.warning + '22', color: C.warning, borderRadius: 4, fontWeight: 600 }}>Needs Focus</span>}
+                  <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(255,255,255,0.06)', color: C.muted, borderRadius: 4, fontWeight: 600 }}>
+                    Weight: {weights[d.id]}%
+                  </span>
+                </div>
+
+                {/* Insight text */}
+                <div style={{ fontSize: 13, color: C.text, lineHeight: 1.6, marginBottom: 10 }}>
+                  {insight.summary}
+                </div>
+
+                {/* AI verification note if available */}
+                {verNote && (
+                  <div style={{ fontSize: 12, color: C.muted, padding: '8px 12px', background: 'rgba(16,185,129,0.04)', borderRadius: 6, borderLeft: `2px solid ${C.success}33`, marginBottom: 10 }}>
+                    <span style={{ color: C.success, fontWeight: 600 }}>AI Note:</span> {verNote.note}
+                  </div>
+                )}
+
+                {/* Improvement suggestion */}
+                {score < 70 && (
+                  <div style={{ fontSize: 12, color: C.accent, padding: '8px 12px', background: C.accent + '08', borderRadius: 6, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                    <span style={{ flexShrink: 0 }}>&#x2794;</span>
+                    <span>{DIM_INSIGHTS[d.id].improve}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Evidence Transparency */}
+          {(() => {
+            const allQs = DIMS.flatMap(d => QUESTIONS[d.id]);
+            const answered = allQs.filter(q => answers[q.id] !== undefined && answers[q.id] !== '');
+            const autoCount = answered.filter(q => autoFilledFields.includes(q.id)).length;
+            const evidencedCount = answered.filter(q => !autoFilledFields.includes(q.id) && evidenceUrls[q.id]).length;
+            const selfCount = answered.length - autoCount - evidencedCount;
+            const total = answered.length || 1;
+            return (
+              <div style={S.card}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.muted, marginBottom: 14, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>Evidence Transparency</div>
+                <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
+                  {[
+                    { label: 'Auto-fetched', count: autoCount, color: C.success, icon: '\uD83D\uDCCA' },
+                    { label: 'Evidenced', count: evidencedCount, color: C.accent, icon: '\uD83D\uDD17' },
+                    { label: 'Self-reported', count: selfCount, color: C.muted, icon: '\u270D\uFE0F' },
+                  ].map(s => (
+                    <div key={s.label} style={{ flex: 1, textAlign: 'center' as const, padding: '10px 8px', background: s.color + '0a', borderRadius: 10, border: `1px solid ${s.color}22` }}>
+                      <div style={{ fontSize: 14, marginBottom: 4 }}>{s.icon}</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: s.color, fontFamily: "'JetBrains Mono', monospace" }}>{s.count}</div>
+                      <div style={{ fontSize: 10, color: C.muted, marginTop: 2 }}>{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+                {/* Stacked bar */}
+                <div style={{ height: 8, borderRadius: 4, overflow: 'hidden', display: 'flex', background: 'rgba(255,255,255,0.05)' }}>
+                  {autoCount > 0 && <div style={{ width: `${(autoCount / total) * 100}%`, background: C.success, transition: 'width 0.4s' }} />}
+                  {evidencedCount > 0 && <div style={{ width: `${(evidencedCount / total) * 100}%`, background: C.accent, transition: 'width 0.4s' }} />}
+                  {selfCount > 0 && <div style={{ width: `${(selfCount / total) * 100}%`, background: C.dimmed, transition: 'width 0.4s' }} />}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Layer 3: AI Verification */}
           {verification && <VerificationPanel verification={verification} />}
@@ -892,6 +1107,7 @@ export default function AICollabPortfolio() {
               setShowResults(false);
               setAnswers({});
               setAutoFilledFields([]);
+              setEvidenceUrls({});
               setGithubData(null);
               setVerification(null);
               setOpenDim('command');
