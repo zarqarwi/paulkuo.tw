@@ -12,6 +12,8 @@ const C = {
   muted: '#94a3b8',
   dimmed: '#475569',
   success: '#10b981',
+  warning: '#f59e0b',
+  danger: '#ef4444',
   white: '#ffffff',
 };
 
@@ -25,6 +27,10 @@ const S = {
   sectionTitle: { fontSize: 18, fontWeight: 700, color: C.white, margin: 0 } as React.CSSProperties,
   questionLabel: { fontSize: 14, color: C.text, marginBottom: 10, lineHeight: 1.5 } as React.CSSProperties,
 };
+
+const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? 'https://api.paulkuo.tw'
+  : 'https://api.paulkuo.tw';
 
 /* ── Dimensions config ── */
 const DIMS = [
@@ -73,9 +79,9 @@ const QUESTIONS: Record<string, Question[]> = {
   leverage: [
     { id: 'l1', text: 'How many active projects are you maintaining simultaneously?', type: 'number', scorer: v => mapNum(v, [[0,0],[1,20],[2,45],[4,70],[8,100]]) },
     { id: 'l2', text: 'Your output is equivalent to how many people in a traditional team?', type: 'select', options: [
-      { label: '1–2 people', score: 25 },
-      { label: '3–5 people', score: 55 },
-      { label: '5–8 people', score: 80 },
+      { label: '1\u20132 people', score: 25 },
+      { label: '3\u20135 people', score: 55 },
+      { label: '5\u20138 people', score: 80 },
       { label: '8+ people', score: 100 },
     ]},
     { id: 'l3', text: 'What is your automation coverage?', type: 'select', options: [
@@ -147,7 +153,7 @@ function scoreQuestion(q: Question, val: string | number | undefined): number {
 }
 
 /* ── Radar Chart (SVG, 5-axis) ── */
-function RadarChart({ scores }: { scores: Record<string, number> }) {
+function RadarChart({ scores, verifiedScores }: { scores: Record<string, number>; verifiedScores?: Record<string, number> }) {
   const size = 280;
   const cx = size / 2, cy = size / 2, maxR = 100;
   const n = DIMS.length;
@@ -159,6 +165,13 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
 
   const dataPoints = DIMS.map((d, i) => pt(i, (scores[d.id] / 100) * maxR));
   const pathD = dataPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ') + 'Z';
+
+  let verifiedPathD = '';
+  let verifiedPoints: [number, number][] = [];
+  if (verifiedScores) {
+    verifiedPoints = DIMS.map((d, i) => pt(i, ((verifiedScores[d.id] || 0) / 100) * maxR));
+    verifiedPathD = verifiedPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ') + 'Z';
+  }
 
   return (
     <svg viewBox={`0 0 ${size} ${size}`} style={{ width: '100%', maxWidth: 280, margin: '0 auto', display: 'block' }}>
@@ -183,7 +196,16 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
           </g>
         );
       })}
-      {/* Data polygon */}
+      {/* AI-verified polygon (behind) */}
+      {verifiedPathD && (
+        <>
+          <path d={verifiedPathD} fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.5)" strokeWidth={1.5} strokeLinejoin="round" strokeDasharray="4 3" />
+          {verifiedPoints.map((p, i) => (
+            <circle key={`v${i}`} cx={p[0]} cy={p[1]} r={3} fill={C.success} stroke={C.card} strokeWidth={1.5} opacity={0.6} />
+          ))}
+        </>
+      )}
+      {/* Self-reported polygon */}
       <path d={pathD} fill="rgba(74,144,217,0.15)" stroke="rgba(74,144,217,0.8)" strokeWidth={2} strokeLinejoin="round" />
       {dataPoints.map((p, i) => (
         <circle key={i} cx={p[0]} cy={p[1]} r={4} fill={DIMS[i].color} stroke={C.card} strokeWidth={2} />
@@ -193,15 +215,29 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
 }
 
 /* ── Dimension Score Bar ── */
-function ScoreBar({ label, emoji, score, color }: { label: string; emoji: string; score: number; color: string }) {
+function ScoreBar({ label, emoji, score, color, verifiedScore }: { label: string; emoji: string; score: number; color: string; verifiedScore?: number }) {
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
         <span style={{ fontSize: 13, color: C.text, fontWeight: 600 }}>{emoji} {label}</span>
-        <span style={{ fontSize: 15, fontWeight: 700, color, fontFamily: "'JetBrains Mono', monospace" }}>{score}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color, fontFamily: "'JetBrains Mono', monospace" }}>{score}</span>
+          {verifiedScore !== undefined && (
+            <span style={{ fontSize: 12, color: C.success, fontFamily: "'JetBrains Mono', monospace" }} title="AI-verified score">
+              ({verifiedScore})
+            </span>
+          )}
+        </div>
       </div>
-      <div style={{ height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden' }}>
+      <div style={{ height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden', position: 'relative' as const }}>
         <div style={{ height: '100%', width: `${score}%`, background: `linear-gradient(90deg, ${color}99, ${color})`, borderRadius: 3, transition: 'width 0.6s ease' }} />
+        {verifiedScore !== undefined && (
+          <div style={{
+            position: 'absolute' as const, top: 0, left: `${verifiedScore}%`,
+            width: 2, height: '100%', background: C.success, borderRadius: 1,
+            transition: 'left 0.6s ease',
+          }} />
+        )}
       </div>
     </div>
   );
@@ -225,14 +261,250 @@ function WeightSlider({ dim, value, onChange }: { dim: typeof DIMS[0]; value: nu
   );
 }
 
+/* ── GitHub Connect (Layer 2) ── */
+function GitHubConnect({ onDataLoaded, autoFilledFields }: {
+  onDataLoaded: (data: any) => void;
+  autoFilledFields: string[];
+}) {
+  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [profile, setProfile] = useState<any>(null);
+
+  const handleFetch = async () => {
+    if (!username.trim()) return;
+    setLoading(true);
+    setError('');
+    try {
+      const resp = await fetch(`${API_BASE}/api/acp/github`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim() }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Failed to fetch');
+      setProfile(data);
+      onDataLoaded(data);
+    } catch (e: any) {
+      setError(e.message || 'Failed to fetch GitHub data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ ...S.card, background: 'linear-gradient(135deg, #13132a 0%, #1a1a35 100%)', border: `1px solid ${C.primary}33` }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <span style={{ fontSize: 20 }}>&#x1F4E1;</span>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.white }}>Layer 2: GitHub Auto-Fetch</div>
+          <div style={{ fontSize: 12, color: C.muted }}>Connect your GitHub to auto-fill verifiable fields</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: error ? 8 : 0 }}>
+        <input
+          type="text"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleFetch()}
+          placeholder="GitHub username"
+          style={{ ...S.input, flex: 1 }}
+          disabled={loading}
+        />
+        <button
+          onClick={handleFetch}
+          disabled={loading || !username.trim()}
+          style={{
+            padding: '10px 20px',
+            background: loading ? C.cardBorder : C.primary,
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: loading ? 'wait' : 'pointer',
+            whiteSpace: 'nowrap' as const,
+          }}
+        >
+          {loading ? 'Fetching...' : 'Connect'}
+        </button>
+      </div>
+
+      {error && (
+        <div style={{ fontSize: 13, color: C.danger, marginTop: 8 }}>{error}</div>
+      )}
+
+      {profile && (
+        <div style={{ marginTop: 14, padding: 14, background: 'rgba(16,185,129,0.06)', borderRadius: 10, border: `1px solid ${C.success}22` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <img src={profile.avatar} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: C.white }}>{profile.name || profile.username}</div>
+              {profile.bio && <div style={{ fontSize: 12, color: C.muted }}>{profile.bio.slice(0, 80)}</div>}
+            </div>
+            <span style={{ fontSize: 12, color: C.success, marginLeft: 'auto', fontWeight: 600 }}>Connected</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+            {[
+              { label: 'Repos', value: profile.public_repos },
+              { label: 'Stars', value: profile.stars_total },
+              { label: 'Commits (6m)', value: profile.commits_6m },
+              { label: 'Active repos', value: profile.active_repos },
+              { label: 'CI pipelines', value: profile.ci_pipelines },
+              { label: 'Followers', value: profile.followers_count },
+            ].map(m => (
+              <div key={m.label} style={{ textAlign: 'center' as const }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: C.accent, fontFamily: "'JetBrains Mono', monospace" }}>{m.value}</div>
+                <div style={{ fontSize: 10, color: C.muted }}>{m.label}</div>
+              </div>
+            ))}
+          </div>
+          {autoFilledFields.length > 0 && (
+            <div style={{ marginTop: 10, fontSize: 12, color: C.success }}>
+              Auto-filled {autoFilledFields.length} fields from GitHub data
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── AI Verification Result (Layer 3) ── */
+function VerificationPanel({ verification }: { verification: any }) {
+  if (!verification) return null;
+  if (verification.parse_error) {
+    return (
+      <div style={{ ...S.card, borderColor: C.warning + '44' }}>
+        <div style={{ fontSize: 14, color: C.warning }}>AI verification returned non-standard output. Raw response available.</div>
+      </div>
+    );
+  }
+
+  const confColor = verification.overall_confidence === 'high' ? C.success
+    : verification.overall_confidence === 'medium' ? C.warning : C.danger;
+
+  return (
+    <div style={{ ...S.card, background: 'linear-gradient(135deg, #0d1a0d 0%, #13132a 100%)', border: `1px solid ${C.success}33` }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+        <span style={{ fontSize: 20 }}>&#x1F9E0;</span>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.white }}>Layer 3: AI Verification</div>
+          <div style={{ fontSize: 12, color: C.muted }}>Cross-referenced with GitHub evidence by Claude</div>
+        </div>
+        <div style={{
+          marginLeft: 'auto', padding: '4px 10px',
+          background: confColor + '22', border: `1px solid ${confColor}44`,
+          borderRadius: 6, fontSize: 12, fontWeight: 600, color: confColor,
+          textTransform: 'uppercase' as const,
+        }}>
+          {verification.overall_confidence} confidence
+        </div>
+      </div>
+
+      {/* One-liner */}
+      {verification.one_liner && (
+        <div style={{ fontSize: 15, color: C.text, fontStyle: 'italic', marginBottom: 16, lineHeight: 1.6, padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, borderLeft: `3px solid ${C.accent}` }}>
+          "{verification.one_liner}"
+        </div>
+      )}
+
+      {/* Verified vs Self-reported score */}
+      {verification.verified_score !== undefined && (
+        <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+          <div style={{ flex: 1, textAlign: 'center' as const, padding: 12, background: 'rgba(74,144,217,0.08)', borderRadius: 10 }}>
+            <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>SELF-REPORTED</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: C.primary, fontFamily: "'JetBrains Mono', monospace" }}>
+              {verification.verified_score + (verification.delta || 0)}
+            </div>
+          </div>
+          <div style={{ flex: 1, textAlign: 'center' as const, padding: 12, background: 'rgba(16,185,129,0.08)', borderRadius: 10 }}>
+            <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>AI-VERIFIED</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: C.success, fontFamily: "'JetBrains Mono', monospace" }}>
+              {verification.verified_score}
+            </div>
+          </div>
+          {verification.delta !== 0 && (
+            <div style={{ flex: 1, textAlign: 'center' as const, padding: 12, background: `rgba(${verification.delta > 0 ? '239,68,68' : '16,185,129'},0.08)`, borderRadius: 10 }}>
+              <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>DELTA</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: verification.delta > 0 ? C.danger : C.success, fontFamily: "'JetBrains Mono', monospace" }}>
+                {verification.delta > 0 ? '+' : ''}{verification.delta}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Dimension confidence */}
+      {verification.dimension_notes && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 8, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>Per-Dimension Verification</div>
+          {DIMS.map(d => {
+            const note = verification.dimension_notes[d.id];
+            if (!note) return null;
+            const nc = note.confidence === 'high' ? C.success : note.confidence === 'medium' ? C.warning : C.danger;
+            return (
+              <div key={d.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8, padding: '8px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: 6 }}>
+                <span style={{ fontSize: 14 }}>{d.emoji}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: d.color }}>{d.label}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {note.adjusted_score !== undefined && (
+                        <span style={{ fontSize: 12, fontWeight: 700, color: C.success, fontFamily: "'JetBrains Mono', monospace" }}>{note.adjusted_score}</span>
+                      )}
+                      <span style={{ fontSize: 10, padding: '2px 6px', background: nc + '22', color: nc, borderRadius: 4, fontWeight: 600 }}>{note.confidence}</span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{note.note}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Highlights & Flags */}
+      <div style={{ display: 'flex', gap: 12 }}>
+        {verification.highlights?.length > 0 && (
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.success, marginBottom: 6, textTransform: 'uppercase' as const }}>Highlights</div>
+            {verification.highlights.map((h: string, i: number) => (
+              <div key={i} style={{ fontSize: 12, color: C.text, marginBottom: 4, paddingLeft: 12, position: 'relative' as const }}>
+                <span style={{ position: 'absolute' as const, left: 0, color: C.success }}>+</span>{h}
+              </div>
+            ))}
+          </div>
+        )}
+        {verification.flags?.length > 0 && (
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.warning, marginBottom: 6, textTransform: 'uppercase' as const }}>Flags</div>
+            {verification.flags.map((f: string, i: number) => (
+              <div key={i} style={{ fontSize: 12, color: C.text, marginBottom: 4, paddingLeft: 12, position: 'relative' as const }}>
+                <span style={{ position: 'absolute' as const, left: 0, color: C.warning }}>!</span>{f}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {verification.confidence_note && (
+        <div style={{ marginTop: 12, fontSize: 11, color: C.dimmed, fontStyle: 'italic' }}>{verification.confidence_note}</div>
+      )}
+    </div>
+  );
+}
+
 /* ── Accordion Section ── */
-function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore }: {
+function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, autoFilledFields }: {
   dim: typeof DIMS[0];
   answers: Record<string, string | number>;
   onAnswer: (qid: string, val: string | number) => void;
   isOpen: boolean;
   onToggle: () => void;
   dimScore: number;
+  autoFilledFields: string[];
 }) {
   const qs = QUESTIONS[dim.id];
   const filled = qs.filter(q => answers[q.id] !== undefined && answers[q.id] !== '').length;
@@ -258,43 +530,56 @@ function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore }
           {dimScore > 0 && (
             <span style={{ fontSize: 14, fontWeight: 700, color: dim.color, fontFamily: "'JetBrains Mono', monospace", minWidth: 32, textAlign: 'right' as const }}>{dimScore}</span>
           )}
-          <span style={{ color: C.muted, fontSize: 18, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
+          <span style={{ color: C.muted, fontSize: 18, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>{'\u25BE'}</span>
         </div>
       </button>
 
       {/* Questions */}
       {isOpen && (
         <div style={{ padding: '0 20px 20px' }}>
-          {qs.map((q, idx) => (
-            <div key={q.id} style={{ marginBottom: idx < qs.length - 1 ? 20 : 0, paddingTop: 16, borderTop: `1px solid ${C.cardBorder}` }}>
-              <div style={S.questionLabel}>{idx + 1}. {q.text}</div>
-              {q.type === 'number' ? (
-                <input
-                  type="number" min={0}
-                  value={answers[q.id] ?? ''}
-                  onChange={e => onAnswer(q.id, e.target.value)}
-                  placeholder="Enter a number"
-                  style={S.input}
-                />
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
-                  {q.options!.map(opt => (
-                    <label key={opt.label} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-                      <input
-                        type="radio"
-                        name={q.id}
-                        value={opt.label}
-                        checked={answers[q.id] === opt.label}
-                        onChange={() => onAnswer(q.id, opt.label)}
-                        style={{ accentColor: dim.color }}
-                      />
-                      <span style={{ fontSize: 14, color: C.text }}>{opt.label}</span>
-                    </label>
-                  ))}
+          {qs.map((q, idx) => {
+            const isAutoFilled = autoFilledFields.includes(q.id);
+            return (
+              <div key={q.id} style={{ marginBottom: idx < qs.length - 1 ? 20 : 0, paddingTop: 16, borderTop: `1px solid ${C.cardBorder}` }}>
+                <div style={{ ...S.questionLabel, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>{idx + 1}. {q.text}</span>
+                  {isAutoFilled && (
+                    <span style={{ fontSize: 10, padding: '2px 6px', background: C.success + '22', color: C.success, borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap' as const }}>
+                      GitHub
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+                {q.type === 'number' ? (
+                  <input
+                    type="number" min={0}
+                    value={answers[q.id] ?? ''}
+                    onChange={e => onAnswer(q.id, e.target.value)}
+                    placeholder="Enter a number"
+                    style={{
+                      ...S.input,
+                      ...(isAutoFilled ? { borderColor: C.success + '44', background: 'rgba(16,185,129,0.04)' } : {}),
+                    }}
+                  />
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
+                    {q.options!.map(opt => (
+                      <label key={opt.label} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                        <input
+                          type="radio"
+                          name={q.id}
+                          value={opt.label}
+                          checked={answers[q.id] === opt.label}
+                          onChange={() => onAnswer(q.id, opt.label)}
+                          style={{ accentColor: dim.color }}
+                        />
+                        <span style={{ fontSize: 14, color: C.text }}>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -310,12 +595,49 @@ export default function AICollabPortfolio() {
   const [copySuccess, setCopySuccess] = useState(false);
   const [showWeights, setShowWeights] = useState(false);
 
+  // Layer 2 state
+  const [githubData, setGithubData] = useState<any>(null);
+  const [autoFilledFields, setAutoFilledFields] = useState<string[]>([]);
+
+  // Layer 3 state
+  const [verification, setVerification] = useState<any>(null);
+  const [verifying, setVerifying] = useState(false);
+
   const handleAnswer = (qid: string, val: string | number) => {
     setAnswers(prev => ({ ...prev, [qid]: val }));
   };
 
   const handleWeight = (dimId: string, val: number) => {
     setWeights(prev => ({ ...prev, [dimId]: val }));
+  };
+
+  // Layer 2: auto-fill from GitHub data
+  const handleGitHubData = (data: any) => {
+    setGithubData(data);
+    if (!data?.suggested) return;
+    const s = data.suggested;
+    const filled: string[] = [];
+    const newAnswers: Record<string, string | number> = { ...answers };
+
+    // Only auto-fill fields that haven't been manually entered
+    const autoFillMap: Record<string, number> = {
+      d1: s.d1, d2: s.d2, d3: s.d3, d4: s.d4,
+      c2: s.c2,
+      i1: s.i1, i2: s.i2,
+      l1: s.l1,
+    };
+
+    for (const [qid, val] of Object.entries(autoFillMap)) {
+      if (val !== undefined && val !== null) {
+        if (newAnswers[qid] === undefined || newAnswers[qid] === '') {
+          newAnswers[qid] = val;
+          filled.push(qid);
+        }
+      }
+    }
+
+    setAnswers(newAnswers);
+    setAutoFilledFields(filled);
   };
 
   /* Compute dim scores */
@@ -339,29 +661,66 @@ export default function AICollabPortfolio() {
   const answeredCount = Object.keys(answers).filter(k => answers[k] !== '').length;
   const totalQuestions = DIMS.reduce((s, d) => s + QUESTIONS[d.id].length, 0);
 
+  // Layer 3: trigger AI verification
+  const handleVerify = async () => {
+    setVerifying(true);
+    setVerification(null);
+    try {
+      const resp = await fetch(`${API_BASE}/api/acp/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          answers,
+          github_data: githubData,
+          dim_scores: dimScores,
+          total_score: totalScore,
+          grade: grade.label,
+        }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Verification failed');
+      setVerification(data);
+    } catch (e: any) {
+      setVerification({ parse_error: true, raw: e.message });
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   const handleCalculate = () => {
     setShowResults(true);
+    setVerification(null);
     setTimeout(() => {
       document.getElementById('acp-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   };
 
   const handleShare = () => {
-    const text = [
-      `🤖 AI Collaboration Portfolio`,
+    const lines = [
+      `AI Collaboration Portfolio`,
       ``,
-      `Total Score: ${totalScore}/100 — ${grade.emoji} ${grade.label}`,
+      `Total Score: ${totalScore}/100 \u2014 ${grade.emoji} ${grade.label}`,
       `"${grade.desc}"`,
       ``,
       ...DIMS.map(d => `${d.emoji} ${d.label}: ${dimScores[d.id]}/100`),
-      ``,
-      `paulkuo.tw/tools/ai-collab-portfolio/`,
-    ].join('\n');
-    navigator.clipboard.writeText(text).then(() => {
+    ];
+    if (verification?.verified_score !== undefined) {
+      lines.push('', `AI-Verified Score: ${verification.verified_score}/100`);
+    }
+    if (githubData?.username) {
+      lines.push(`GitHub: github.com/${githubData.username}`);
+    }
+    lines.push('', `paulkuo.tw/tools/ai-collab-portfolio/`);
+
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     });
   };
+
+  const verifiedDimScores = verification?.dimension_notes
+    ? Object.fromEntries(DIMS.map(d => [d.id, verification.dimension_notes[d.id]?.adjusted_score ?? dimScores[d.id]]))
+    : undefined;
 
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: '24px 16px', background: C.bg, minHeight: '100vh', color: C.text, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -373,12 +732,29 @@ export default function AICollabPortfolio() {
         </h1>
         <p style={{ fontSize: 15, color: C.muted, margin: 0, lineHeight: 1.6 }}>
           Measure what you build, not what you know.<br />
-          20 questions across 5 dimensions → your AI collaboration profile.
+          20 questions across 5 dimensions. 3-layer evidence architecture.
         </p>
+
+        {/* Layer badges */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 14, flexWrap: 'wrap' as const }}>
+          <span style={{ fontSize: 11, padding: '3px 10px', background: C.primary + '22', color: C.primary, borderRadius: 12, fontWeight: 600 }}>
+            Layer 1: Self-Assessment
+          </span>
+          <span style={{ fontSize: 11, padding: '3px 10px', background: C.accent + '22', color: C.accent, borderRadius: 12, fontWeight: 600 }}>
+            Layer 2: GitHub Auto-Fetch
+          </span>
+          <span style={{ fontSize: 11, padding: '3px 10px', background: C.success + '22', color: C.success, borderRadius: 12, fontWeight: 600 }}>
+            Layer 3: AI Verification
+          </span>
+        </div>
+
         {answeredCount > 0 && (
           <div style={{ marginTop: 12, fontSize: 12, color: C.dimmed }}>{answeredCount} / {totalQuestions} answered</div>
         )}
       </div>
+
+      {/* Layer 2: GitHub Connect */}
+      <GitHubConnect onDataLoaded={handleGitHubData} autoFilledFields={autoFilledFields} />
 
       {/* Form sections */}
       {DIMS.map(dim => (
@@ -390,6 +766,7 @@ export default function AICollabPortfolio() {
           isOpen={openDim === dim.id}
           onToggle={() => setOpenDim(openDim === dim.id ? '' : dim.id)}
           dimScore={dimScores[dim.id]}
+          autoFilledFields={autoFilledFields}
         />
       ))}
 
@@ -400,10 +777,10 @@ export default function AICollabPortfolio() {
           style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.white }}>⚙️ Weight Adjustment</div>
-            <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>Default: Command 25% · Delivery 25% · Leverage 20% · Quality 15% · Influence 15%</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.white }}>Weight Adjustment</div>
+            <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>Default: Command 25% / Delivery 25% / Leverage 20% / Quality 15% / Influence 15%</div>
           </div>
-          <span style={{ color: C.muted, fontSize: 18, transform: showWeights ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
+          <span style={{ color: C.muted, fontSize: 18, transform: showWeights ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>{'\u25BE'}</span>
         </button>
         {showWeights && (
           <div style={{ marginTop: 20 }}>
@@ -419,7 +796,7 @@ export default function AICollabPortfolio() {
 
       {/* Calculate button */}
       <button onClick={handleCalculate} style={S.btnPrimary}>
-        Calculate My Portfolio Score →
+        Calculate My Portfolio Score
       </button>
 
       {/* Results */}
@@ -443,16 +820,53 @@ export default function AICollabPortfolio() {
 
           {/* Radar chart */}
           <div style={{ ...S.card, padding: 24 }}>
-            <RadarChart scores={dimScores} />
+            <RadarChart scores={dimScores} verifiedScores={verifiedDimScores} />
+            {verifiedDimScores && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: C.muted }}>
+                  <div style={{ width: 12, height: 2, background: 'rgba(74,144,217,0.8)' }} /> Self-reported
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: C.muted }}>
+                  <div style={{ width: 12, height: 2, background: C.success, opacity: 0.5 }} /> AI-verified
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Dimension bars */}
           <div style={S.card}>
             <div style={{ fontSize: 13, fontWeight: 700, color: C.muted, marginBottom: 16, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>Dimension Breakdown</div>
             {DIMS.map(d => (
-              <ScoreBar key={d.id} label={d.label} emoji={d.emoji} score={dimScores[d.id]} color={d.color} />
+              <ScoreBar
+                key={d.id}
+                label={d.label}
+                emoji={d.emoji}
+                score={dimScores[d.id]}
+                color={d.color}
+                verifiedScore={verifiedDimScores?.[d.id]}
+              />
             ))}
           </div>
+
+          {/* Layer 3: AI Verification */}
+          {verification && <VerificationPanel verification={verification} />}
+
+          {/* Verify button */}
+          {!verification && (
+            <button
+              onClick={handleVerify}
+              disabled={verifying}
+              style={{
+                ...S.btnPrimary,
+                background: verifying
+                  ? C.cardBorder
+                  : `linear-gradient(135deg, ${C.success}, ${C.accent})`,
+                marginBottom: 16,
+              }}
+            >
+              {verifying ? 'Running AI Verification...' : 'Run AI Verification (Layer 3)'}
+            </button>
+          )}
 
           {/* Grade scale legend */}
           <div style={{ ...S.card, padding: 16 }}>
@@ -463,7 +877,7 @@ export default function AICollabPortfolio() {
                   <span style={{ fontSize: 16 }}>{g.emoji}</span>
                   <span style={{ fontSize: 13, fontWeight: grade.label === g.label ? 700 : 400, color: grade.label === g.label ? g.color : C.muted, minWidth: 100 }}>{g.label}</span>
                   <span style={{ fontSize: 12, color: C.dimmed }}>{g.desc}</span>
-                  <span style={{ fontSize: 11, color: C.dimmed, marginLeft: 'auto' }}>{g.min}–{g.min === 0 ? 20 : g.min === 21 ? 40 : g.min === 41 ? 60 : g.min === 61 ? 80 : 100}</span>
+                  <span style={{ fontSize: 11, color: C.dimmed, marginLeft: 'auto' }}>{g.min}\u2013{g.min === 0 ? 20 : g.min === 21 ? 40 : g.min === 41 ? 60 : g.min === 61 ? 80 : 100}</span>
                 </div>
               ))}
             </div>
@@ -472,9 +886,17 @@ export default function AICollabPortfolio() {
           {/* Action buttons */}
           <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
             <button onClick={handleShare} style={{ flex: 1, ...S.btnPrimary, padding: '12px 20px' }}>
-              {copySuccess ? '✓ Copied!' : '📋 Copy Results'}
+              {copySuccess ? 'Copied!' : 'Copy Results'}
             </button>
-            <button onClick={() => { setShowResults(false); setAnswers({}); setOpenDim('command'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ ...S.btnSecondary, flex: 1 }}>
+            <button onClick={() => {
+              setShowResults(false);
+              setAnswers({});
+              setAutoFilledFields([]);
+              setGithubData(null);
+              setVerification(null);
+              setOpenDim('command');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }} style={{ ...S.btnSecondary, flex: 1 }}>
               Try Again
             </button>
           </div>

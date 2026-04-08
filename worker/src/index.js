@@ -33,6 +33,7 @@ import { handleStatus } from './status.js';
 import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus, handleFormosaHealthAlert, handleFormosaUpload, handleFormosaPushImageServe } from './formosa.js';
 import { fetchGscData, handleGsc } from './gsc.js';
 import { handleWikiSearch, handleWikiConcept, handleWikiGraph, handleWikiAsk } from './wiki-api.js';
+import { handleAcpGithub, handleAcpVerify } from './acp.js';
 
 async function handleClaudeUsage(request, env, url) {
   const auth = await authenticateRequest(request, env, url.searchParams.get('code') || '');
@@ -454,6 +455,10 @@ async function handleRequest(request, env, ctx) {
     const slug = decodeURIComponent(path.replace('/api/wiki/concept/', ''));
     if (slug && !slug.includes('/')) return handleWikiConcept(request, env, slug);
   }
+
+  // ── ACP (AI Collaboration Portfolio) API ──
+  if (path === '/api/acp/github' && (method === 'POST' || method === 'OPTIONS')) return handleAcpGithub(request, env);
+  if (path === '/api/acp/verify' && (method === 'POST' || method === 'OPTIONS')) return handleAcpVerify(request, env);
 
   // ── Social API ──
   if (path === '/social/publish') return handleSocialPublish(request, env);
