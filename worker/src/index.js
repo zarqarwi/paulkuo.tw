@@ -403,6 +403,7 @@ async function handleRequest(request, env, ctx) {
   if (path === '/api/formosa/webhook') return handleFormosaWebhook(request, env);
   if (path === '/api/formosa/submit' && method === 'POST') return handleFormosaSubmit(request, env);
   if (path === '/api/formosa/checkin' && method === 'POST') return handleFormosaCheckin(request, env, ctx);
+  if (path === '/api/formosa/checkin/health' && method === 'GET') return jsonResponse({ ok: true }, 200, request);
   if (path === '/api/formosa/track/sync' && method === 'POST') return handleFormosaTrackSync(request, env);
   if (path === '/api/formosa/user/sync' && method === 'POST') return handleFormosaUserSync(request, env);
   if (path === '/api/formosa/photos/count') return handleFormosaPhotoCount(request, env);

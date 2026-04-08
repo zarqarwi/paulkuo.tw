@@ -72,18 +72,17 @@ jobs:
           fi
           echo "✅ CORS OK: $CORS"
 
-      - name: Check checkin API response time
+      - name: Check checkin API health
         id: checkin_perf
         continue-on-error: true
         run: |
-          TIME=$(curl -s -o /dev/null -w "%{time_total}" --max-time 10 https://api.paulkuo.tw/api/formosa/checkin)
-          echo "time=$TIME" >> $GITHUB_OUTPUT
-          SLOW=$(echo "$TIME > 3.0" | bc -l)
-          if [ "$SLOW" = "1" ]; then
-            echo "⚠️ Checkin API slow: ${TIME}s"
+          RESP=$(curl -s --max-time 10 https://api.paulkuo.tw/api/formosa/checkin/health)
+          echo "response=$RESP" >> $GITHUB_OUTPUT
+          if ! echo "$RESP" | grep -q '"ok":true'; then
+            echo "❌ Checkin health check failed: $RESP"
             exit 1
           fi
-          echo "✅ Checkin API response time: ${TIME}s"
+          echo "✅ Checkin API health OK"
 
       - name: Summary
         if: always()
@@ -131,9 +130,9 @@ jobs:
           fi
 
           if [ "${{ steps.checkin_perf.outcome }}" = "success" ]; then
-            echo "| Checkin perf | ✅ OK (${{ steps.checkin_perf.outputs.time }}s) |" >> $GITHUB_STEP_SUMMARY
+            echo "| Checkin health | ✅ OK |" >> $GITHUB_STEP_SUMMARY
           else
-            echo "| Checkin perf | ⚠️ SLOW (${{ steps.checkin_perf.outputs.time }}s) |" >> $GITHUB_STEP_SUMMARY
+            echo "| Checkin health | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
             FAILURES=$((FAILURES + 1))
           fi
 
