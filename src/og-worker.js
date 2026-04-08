@@ -130,9 +130,18 @@ export default {
         } catch {}
       }
 
-      // Non-crawler: rewrite URL to the SPA page and let assets serve it
+      // Non-crawler: serve the SPA page (keep URL as /portfolio/{id} in browser)
       url.pathname = '/portfolio/view/';
-      return env.ASSETS.fetch(new Request(url, request));
+      const asset = await env.ASSETS.fetch(new Request(url, request));
+      // Return 200 with HTML body even if Assets responds with redirect
+      if (asset.status >= 300 && asset.status < 400) {
+        const loc = asset.headers.get('location');
+        if (loc) {
+          const follow = new URL(loc, url);
+          return env.ASSETS.fetch(new Request(follow, request));
+        }
+      }
+      return asset;
     }
 
     // All other requests: serve static assets
