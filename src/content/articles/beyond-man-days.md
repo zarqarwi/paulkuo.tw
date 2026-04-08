@@ -99,6 +99,8 @@ Anthropic 自己的 Economic Index 從另一個角度切入，分析數百萬筆
 
 可真正缺席的，是績效層的衡量：你用 AI 實際產出了什麼、成果品質如何、相較於傳統做法提升了多少效率與價值。
 
+![全球 AI 能力框架定位圖：左下象限擠滿素養型框架，右下象限（個人績效）仍是空白](/images/ai-framework-matrix.svg)
+
 把現有的框架放到一個 2×2 矩陣上——橫軸是「素養 vs 績效」，縱軸是「個人 vs 宏觀」——你會看到左邊擠滿了人（UNESCO、DOL、Turing、各種學術量表），右上角有 [Anthropic Economic Index](https://www.anthropic.com/research)。右下角——個人層級、基於績效、可驗證——是空的。
 
 所有人都在測 AI 素養。沒有人在測個人的 AI 生產力。這篇文章提出一個框架來填這個缺口。跟我之前寫的[AI 時代的能力落差](/articles/ai-capability-gap-2026)那篇是同一條線——那篇講的是落差的存在，這篇講的是怎麼量化它。
