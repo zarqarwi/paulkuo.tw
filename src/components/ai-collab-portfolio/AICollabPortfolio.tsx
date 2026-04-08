@@ -36,7 +36,7 @@ const API_BASE = typeof window !== 'undefined' && window.location.hostname === '
 const DIMS = [
   { id: 'command',   label: 'Command',   emoji: '⚡', color: '#4A90D9', weight: 25, desc: 'Directing AI to do the right things' },
   { id: 'delivery',  label: 'Delivery',  emoji: '📦', color: '#8B5CF6', weight: 25, desc: 'Real output shipped with AI collaboration' },
-  { id: 'leverage',  label: 'Leverage',  emoji: '🔭', color: '#38bdf8', weight: 20, desc: 'Cognitive amplification multiplier' },
+  { id: 'leverage',  label: 'Leverage',  emoji: '🔭', color: '#38bdf8', weight: 20, desc: 'How much more do you get done with AI?' },
   { id: 'quality',   label: 'Quality',   emoji: '🛡️', color: '#10b981', weight: 15, desc: 'Verifiable production-grade output' },
   { id: 'influence', label: 'Influence', emoji: '🌐', color: '#f59e0b', weight: 15, desc: 'Methods adopted by others' },
 ];
@@ -57,6 +57,23 @@ const mapNum = (v: number, tiers: [number, number][]) => {
     if (v >= threshold) return score;
   }
   return 0;
+};
+
+/* ── aria-label + placeholder map for number inputs ── */
+const INPUT_META: Record<string, { ariaLabel: string; placeholder: string }> = {
+  c1: { ariaLabel: 'Number of reusable AI workflows', placeholder: 'e.g., 5' },
+  c2: { ariaLabel: 'Number of automation pipelines', placeholder: 'e.g., 3' },
+  c3: { ariaLabel: 'Number of AI models used simultaneously', placeholder: 'e.g., 4' },
+  d1: { ariaLabel: 'Number of code commits in the past 6 months', placeholder: 'e.g., 120' },
+  d2: { ariaLabel: 'Number of services or tools currently deployed', placeholder: 'e.g., 2' },
+  d3: { ariaLabel: 'Number of pieces of content published', placeholder: 'e.g., 10' },
+  d4: { ariaLabel: 'Number of complete projects shipped to production', placeholder: 'e.g., 3' },
+  l1: { ariaLabel: 'Number of active projects maintained simultaneously', placeholder: 'e.g., 4' },
+  q1: { ariaLabel: 'Number of active users across services or tools', placeholder: 'e.g., 50' },
+  q2: { ariaLabel: 'Number of quality control mechanisms', placeholder: 'e.g., 3' },
+  i1: { ariaLabel: 'Total GitHub stars across open-source projects', placeholder: 'e.g., 25' },
+  i2: { ariaLabel: 'Number of people reached by teaching or sharing content', placeholder: 'e.g., 500' },
+  i3: { ariaLabel: 'Number of people who adopted your skills or workflows', placeholder: 'e.g., 10' },
 };
 
 const QUESTIONS: Record<string, Question[]> = {
@@ -339,8 +356,8 @@ function GitHubConnect({ onDataLoaded, autoFilledFields }: {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <span style={{ fontSize: 20 }}>&#x1F4E1;</span>
         <div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: C.white }}>Layer 2: GitHub Auto-Fetch</div>
-          <div style={{ fontSize: 12, color: C.muted }}>Connect your GitHub to auto-fill verifiable fields</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.white }}>Connect GitHub — skip 8+ questions</div>
+          <div style={{ fontSize: 12, color: C.muted }}>We'll pull your commits, repos, and CI/CD data to pre-fill your portfolio. Read-only access only.</div>
         </div>
       </div>
 
@@ -373,42 +390,46 @@ function GitHubConnect({ onDataLoaded, autoFilledFields }: {
         </button>
       </div>
 
-      {error && (
-        <div style={{ fontSize: 13, color: C.danger, marginTop: 8 }}>{error}</div>
-      )}
+      <div aria-live="polite" aria-atomic="true">
+        {error && (
+          <div style={{ fontSize: 13, color: C.danger, marginTop: 8 }}>
+            GitHub connection failed. Please check your username.
+          </div>
+        )}
 
-      {profile && (
-        <div style={{ marginTop: 14, padding: 14, background: 'rgba(16,185,129,0.06)', borderRadius: 10, border: `1px solid ${C.success}22` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <img src={profile.avatar} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: C.white }}>{profile.name || profile.username}</div>
-              {profile.bio && <div style={{ fontSize: 12, color: C.muted }}>{profile.bio.slice(0, 80)}</div>}
-            </div>
-            <span style={{ fontSize: 12, color: C.success, marginLeft: 'auto', fontWeight: 600 }}>Connected</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-            {[
-              { label: 'Repos', value: profile.public_repos },
-              { label: 'Stars', value: profile.stars_total },
-              { label: 'Commits (6m)', value: profile.commits_6m },
-              { label: 'Active repos', value: profile.active_repos },
-              { label: 'CI pipelines', value: profile.ci_pipelines },
-              { label: 'Followers', value: profile.followers_count },
-            ].map(m => (
-              <div key={m.label} style={{ textAlign: 'center' as const }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: C.accent, fontFamily: "'JetBrains Mono', monospace" }}>{m.value}</div>
-                <div style={{ fontSize: 10, color: C.muted }}>{m.label}</div>
+        {profile && (
+          <div style={{ marginTop: 14, padding: 14, background: 'rgba(16,185,129,0.06)', borderRadius: 10, border: `1px solid ${C.success}22` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+              <img src={profile.avatar} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.white }}>{profile.name || profile.username}</div>
+                {profile.bio && <div style={{ fontSize: 12, color: C.muted }}>{profile.bio.slice(0, 80)}</div>}
               </div>
-            ))}
-          </div>
-          {autoFilledFields.length > 0 && (
-            <div style={{ marginTop: 10, fontSize: 12, color: C.success }}>
-              Auto-filled {autoFilledFields.length} fields from GitHub data
+              <span style={{ fontSize: 12, color: C.success, marginLeft: 'auto', fontWeight: 600 }}>Connected</span>
             </div>
-          )}
-        </div>
-      )}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {[
+                { label: 'Repos', value: profile.public_repos },
+                { label: 'Stars', value: profile.stars_total },
+                { label: 'Commits (6m)', value: profile.commits_6m },
+                { label: 'Active repos', value: profile.active_repos },
+                { label: 'CI pipelines', value: profile.ci_pipelines },
+                { label: 'Followers', value: profile.followers_count },
+              ].map(m => (
+                <div key={m.label} style={{ textAlign: 'center' as const }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: C.accent, fontFamily: "'JetBrains Mono', monospace" }}>{m.value}</div>
+                  <div style={{ fontSize: 10, color: C.muted }}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+            {autoFilledFields.length > 0 && (
+              <div style={{ marginTop: 10, fontSize: 12, color: C.success }}>
+                GitHub connected successfully. {autoFilledFields.length} fields auto-filled.
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -590,12 +611,26 @@ function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, 
 }) {
   const qs = QUESTIONS[dim.id];
   const filled = qs.filter(q => answers[q.id] !== undefined && answers[q.id] !== '').length;
+  const contentId = `acp-dim-${dim.id}`;
 
   return (
     <div style={{ ...S.card, padding: 0, overflow: 'hidden' }}>
       {/* Header */}
       <button
         onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={contentId}
+        onKeyDown={e => {
+          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            const idx = DIMS.findIndex(d => d.id === dim.id);
+            const next = e.key === 'ArrowDown'
+              ? DIMS[(idx + 1) % DIMS.length]
+              : DIMS[(idx - 1 + DIMS.length) % DIMS.length];
+            document.getElementById(`acp-accordion-${next.id}`)?.focus();
+          }
+        }}
+        id={`acp-accordion-${dim.id}`}
         style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' as const }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -618,11 +653,14 @@ function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, 
 
       {/* Questions */}
       {isOpen && (
-        <div style={{ padding: '0 20px 20px' }}>
+        <div id={contentId} style={{ padding: '0 20px 20px' }}>
           {qs.map((q, idx) => {
             const isAutoFilled = autoFilledFields.includes(q.id);
             const hasEvidence = !!evidenceUrls[q.id];
             const badgeType = isAutoFilled ? 'auto' : hasEvidence ? 'evidenced' : 'self';
+            const meta = INPUT_META[q.id];
+            const numVal = q.type === 'number' ? Number(answers[q.id]) : NaN;
+            const isInvalid = q.type === 'number' && answers[q.id] !== undefined && answers[q.id] !== '' && (numVal < 0 || numVal > 100);
             return (
               <div key={q.id} style={{ marginBottom: idx < qs.length - 1 ? 20 : 0, paddingTop: 16, borderTop: `1px solid ${C.cardBorder}` }}>
                 <div style={{ ...S.questionLabel, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
@@ -633,18 +671,34 @@ function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, 
                   </div>
                 </div>
                 {q.type === 'number' ? (
-                  <input
-                    type="number" min={0}
-                    value={answers[q.id] ?? ''}
-                    onChange={e => onAnswer(q.id, e.target.value)}
-                    placeholder="Enter a number"
-                    style={{
-                      ...S.input,
-                      ...(isAutoFilled ? { borderColor: C.success + '44', background: 'rgba(16,185,129,0.04)' } : {}),
-                    }}
-                  />
+                  <>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      aria-label={meta?.ariaLabel}
+                      value={answers[q.id] ?? ''}
+                      onChange={e => onAnswer(q.id, e.target.value)}
+                      placeholder={meta?.placeholder ?? 'e.g., 5'}
+                      aria-describedby={isInvalid ? `${q.id}-error` : undefined}
+                      style={{
+                        ...S.input,
+                        ...(isAutoFilled ? { borderColor: C.success + '44', background: 'rgba(16,185,129,0.04)' } : {}),
+                        ...(isInvalid ? { borderColor: C.danger + '88' } : {}),
+                      }}
+                    />
+                    {isInvalid && (
+                      <div id={`${q.id}-error`} role="alert" style={{ fontSize: 12, color: C.danger, marginTop: 4 }}>
+                        Please enter a number between 0 and 100
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
+                  <div
+                    role="radiogroup"
+                    aria-label={q.text}
+                    style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}
+                  >
                     {q.options!.map(opt => (
                       <label key={opt.label} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
                         <input
@@ -865,13 +919,13 @@ export default function AICollabPortfolio() {
     <div style={{ maxWidth: 680, margin: '0 auto', padding: '24px 16px', background: C.bg, minHeight: '100vh', color: C.text, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       {/* Hero */}
       <div style={{ marginBottom: 32, textAlign: 'center' as const }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginBottom: 8 }}>Assessment Tool</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginBottom: 8 }}>Portfolio Builder</div>
         <h1 style={{ fontSize: 28, fontWeight: 800, color: C.white, margin: '0 0 12px', lineHeight: 1.2 }}>
           AI Collaboration Portfolio
         </h1>
         <p style={{ fontSize: 15, color: C.muted, margin: 0, lineHeight: 1.6 }}>
           Measure what you build, not what you know.<br />
-          20 questions across 5 dimensions. 3-layer evidence architecture.
+          5 dimensions. Auto-verified. Takes ~5 min with GitHub.
         </p>
 
         {/* Layer badges */}
@@ -937,7 +991,7 @@ export default function AICollabPortfolio() {
 
       {/* Calculate button */}
       <button onClick={handleCalculate} style={S.btnPrimary}>
-        Calculate My Portfolio Score
+        Build My Portfolio
       </button>
 
       {/* Results */}
