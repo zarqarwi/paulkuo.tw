@@ -93,9 +93,11 @@ Anthropic 跟 Rick Dakan、Joseph Feller 合作開發的 [AI Fluency Framework](
 
 Anthropic 自己的 Economic Index 從另一個角度切入，分析數百萬筆真實對話來估算 AI 對勞動生產力的影響。數據極有價值——但它操作在統計總量的層級，不是個人 Portfolio 的層級。
 
-[美國勞工部 2026 年 2 月發布了 AI Literacy Framework](https://www.dol.gov/)。[英國 Turing Institute](https://www.turing.ac.uk/) 在 2025 年底發布了 AI Skills for Business Framework 第三版。[UNESCO](https://www.unesco.org/) 出了學生和教師的 AI 能力框架。學術界有 Collaborative AI Literacy 和 Collaborative AI Metacognition 的量表。
+[美國勞工部](https://www.dol.gov/)發布了 AI Literacy Framework，[英國 Turing Institute](https://www.turing.ac.uk/) 推出了《AI Skills for Business Framework》第三版，[UNESCO](https://www.unesco.org/) 有學生與教師的 AI 能力框架，學術界也提出了 Collaborative AI Literacy 與 Collaborative AI Metacognition 等量表。
 
-它們的共同特徵：測素養（你懂不懂 AI、能不能適當使用、知不知道限制），不測績效（你用 AI 實際產出了什麼、品質多高、效率比傳統高多少）。
+看起來框架很多，但它們大多在回答同一類問題：你是否理解 AI、能否合理使用、是否知道它的侷限。也就是說，它們測的是素養。
+
+可真正缺席的，是績效層的衡量：你用 AI 實際產出了什麼、成果品質如何、相較於傳統做法提升了多少效率與價值。
 
 把現有的框架放到一個 2×2 矩陣上——橫軸是「素養 vs 績效」，縱軸是「個人 vs 宏觀」——你會看到左邊擠滿了人（UNESCO、DOL、Turing、各種學術量表），右上角有 [Anthropic Economic Index](https://www.anthropic.com/research)。右下角——個人層級、基於績效、可驗證——是空的。
 
