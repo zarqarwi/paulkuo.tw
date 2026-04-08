@@ -1880,16 +1880,21 @@
     }
   },
   "beyond-man-days.md": {
-    "sourceHash": "798637f1a1d2",
+    "sourceHash": "8d893cdafc3b",
     "translations": {
       "en": {
-        "hash": "80298b188747",
-        "translatedAt": "2026-04-07T17:45:56.555Z",
+        "hash": "20d7e688ff79",
+        "translatedAt": "2026-04-08T02:04:05.372Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
         "hash": "a98c3d338795",
         "translatedAt": "2026-04-07T17:49:28.131Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "d7121f28cafe",
+        "translatedAt": "2026-04-08T02:07:43.836Z",
         "model": "claude-sonnet-4"
       }
     }
