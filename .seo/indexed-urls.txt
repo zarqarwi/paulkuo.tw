@@ -220,6 +220,7 @@ https://paulkuo.tw/en/projects/formosa-esg-2026/privacy/
 https://paulkuo.tw/en/projects/formosa-esg-2026/tracker/
 https://paulkuo.tw/en/projects/formosa-esg-2026/verification/
 https://paulkuo.tw/en/tags-graph/
+https://paulkuo.tw/governance/
 https://paulkuo.tw/health/
 https://paulkuo.tw/health/dual/
 https://paulkuo.tw/health/fitbit/
