@@ -14,7 +14,8 @@
 
 ## 待 Code 執行
 
-- [ ] commit + push 本輪 Cowork 產出（sync-dashboard.yml + issue-155-body.md + PENDING.md 更新 + session-handoff skill 更新）→ Code / Sonnet (2026-04-10)
+- [ ] 治理框架 Phase 2：讀 `worklogs/code--governance-phase2-dashboard-2026-04-10.md` 執行 → Code / Sonnet / L (2026-04-10+)
+  - 步驟 1 已包含：先 commit 上一輪 Cowork 未推的檔案（issue-155-body.md + PENDING.md + metrics JSON + handoff）
 
 ## 待 Cowork 執行
 
@@ -28,6 +29,7 @@ _（目前無待辦）_
 - 2026-04-09：Issue #155 新增自動同步機制（sync-dashboard Action），以後更新儀表板改 `worklogs/issue-155-body.md` 即可，push 到 main 會自動 PATCH
 - 2026-04-09：Cowork session 一律 Opus 4.6；所有 handoff 必須標注建議模型（跨所有專案）
 - 2026-04-09：GitHub MCP 的 `get_issue`/`update_issue` 有 issue_number 型別 bug，暫時不可用。讀 Issue 用 `search_issues`，寫 Issue 用 sync-dashboard Action
+- 2026-04-10：專案治理框架 Phase 1 完成（projects.json + automation-registry.json + collect-session-metrics.sh + session-handoff v4.5）。Phase 2 待辦：Worker API + Dashboard 頁面
 
 ---
 

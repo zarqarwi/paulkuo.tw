@@ -1,0 +1,26 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "paulkuo-main",
+  "date": "2026-04-10",
+  "session_type": "cowork",
+  "model": "opus",
+  "size": "L",
+  "outputs": {
+    "commits": 4,
+    "files_changed": 12,
+    "lines_added": 1000,
+    "lines_removed": 4,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": true
+  },
+  "custom": {},
+  "automation_changes": [
+    {
+      "task": "collect-session-metrics",
+      "change": "created",
+      "type": "script"
+    }
+  ],
+  "notes": "治理框架 Phase 1 完成：projects.json、automation-registry.json、governance-framework-spec.md、collect-session-metrics.sh、session-handoff v4.5。commits 含 Code 代 commit 的 2 筆 (5fd4ab3, ab39d2c) + 前輪遺留 2 筆 (4b44bf5, 996d205)。lines_added 為估算值。"
+}

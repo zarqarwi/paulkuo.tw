@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-09 22:xx（Cowork — P0 sync-dashboard Action + Code commit hash 補入）
+最後更新：2026-04-10 00:xx（Cowork — 專案治理框架 Phase 1 完成）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -24,10 +24,13 @@
 > 跨專案影響地圖：`docs/shared-file-impact-map.md` ✅ (9d5ebc4)
 > 跨 session 佇列：`worklogs/PENDING.md` ✅ (00970cd)
 > 儀表板自動同步：`.github/workflows/sync-dashboard.yml`
+> 專案治理框架：`worklogs/governance/` ✅ (5fd4ab3) | metrics 收集：`scripts/collect-session-metrics.sh` ✅ (ab39d2c)
 
 ---
 
 ## 完成日誌（最新在上）
+- 04-10 00:xx 專案治理框架 Phase 1 完成：projects.json + automation-registry.json + metrics 收集腳本 + session-handoff v4.5 (5fd4ab3, ab39d2c) Cowork+Code
+- 04-09 23:xx session-handoff v4.4 最終版 commit (4b44bf5, 996d205) Code
 - 04-09 22:xx sync-dashboard GitHub Action 建立 + issue-155-body.md 初始化 Cowork
 - 04-09 14:51 CLAUDE.md 新增跨子專案影響守則 + 狀態來源改為 Issue #155 (1ee2f88) Code
 - 04-09 14:51 docs/shared-file-impact-map.md 新增最低驗證指令 (b21cf02) Code
