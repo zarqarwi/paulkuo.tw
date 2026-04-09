@@ -146,16 +146,46 @@ npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangl
 
 ---
 
+## 跨子專案影響守則
+
+### 改動共用檔案前必做
+
+本 repo 有六個子專案共用同一個 codebase。改動共用模組前，先查：
+
+```
+docs/shared-file-impact-map.md
+```
+
+確認這次改動會波及哪些子專案。
+
+### Commit Message 強制標注
+
+凡是改動影響地圖 ⚠️ 欄位裡的任何檔案（`worker/src/index.js`、`translator.js`、`auth.js`、`utils.js`、`BaseLayout.astro` 等），commit message **必須**附上影響範圍標注：
+
+```
+fix: 修正 translator.js 半導體詞典 [影響: Wiki + 主站 + TQEF]
+```
+
+沒有標注 = 下次無法從 git log 追蹤影響範圍。
+
+### 部署後跨子專案驗證
+
+改動共用模組後，除了測自己的功能，**必須對每個受影響的子專案各打一支 API 確認沒有 500**。驗證指令見 `docs/shared-file-impact-map.md` 各模組底下的「最低驗證」欄位。
+
+---
+
 ## 跨 Session 協作
 
 ### 狀態管理
 
-Apple Notes「🎛️ 專案狀態儀表板」是所有專案狀態的**單一事實來源**。
-Code 無法直接寫 Apple Notes，所以用 `worklogs/` 作為中繼：
+**GitHub Issue #155** 是所有專案狀態的單一事實來源（2026-04-09 起從 Apple Notes 遷移）。
+Code 用 `worklogs/` 作為中繼，Cowork 消化後同步到 Issue #155：
 
 ```
-Code 做事 → 自動寫 worklogs/（含狀態變更）→ Paul 開 Cowork → Cowork 讀 worklogs/ → reconcile 記憶 → 同步到 Apple Notes
+Code 做事 → 自動寫 worklogs/ → Paul 開 Cowork → Cowork 讀 worklogs/ → 同步到 Issue #155
 ```
+
+**跨 session 待辦佇列**：`worklogs/PENDING.md`（Code 寫待交辦事項，Cowork 開場時掃這個檔案）。
 
 ### 黃金法則
 
@@ -163,6 +193,6 @@ Code 做事 → 自動寫 worklogs/（含狀態變更）→ Paul 開 Cowork → 
 
 ### Session 開場
 
-1. 讀 `worklogs/` 最新檔案，確認上次做到哪裡
-2. 如果有 `worklogs/` 裡的待辦快照，從那裡接續
+1. 讀 `worklogs/PENDING.md`，確認有沒有跨 session 待辦
+2. 讀 `worklogs/` 最新 worklog，確認上次做到哪裡
 3. 不確定就問 Paul
