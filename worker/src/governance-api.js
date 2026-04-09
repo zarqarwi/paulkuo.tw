@@ -1,4 +1,4 @@
-import { jsonResponse } from './utils.js';
+import { jsonResponse, corsHeaders } from './utils.js';
 
 /**
  * Verify Bearer token for governance API
@@ -27,7 +27,7 @@ export async function handleGovernanceSummary(request, env) {
   if (!data) return jsonResponse({ error: 'Summary not available. Run governance-kv-seed.cjs first.' }, 404, request);
   return new Response(data, {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
   });
 }
 
@@ -42,7 +42,7 @@ export async function handleGovernanceProjects(request, env) {
   if (!data) return jsonResponse({ error: 'Projects not available. Run governance-kv-seed.cjs first.' }, 404, request);
   return new Response(data, {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
   });
 }
 
@@ -61,7 +61,7 @@ export async function handleGovernanceMetrics(request, env, projectId) {
   if (!data) return jsonResponse({ error: `No metrics found for project: ${projectId}` }, 404, request);
   return new Response(data, {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
   });
 }
 
@@ -76,6 +76,6 @@ export async function handleGovernanceAutomation(request, env) {
   if (!data) return jsonResponse({ error: 'Automation registry not available. Run governance-kv-seed.cjs first.' }, 404, request);
   return new Response(data, {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
   });
 }
