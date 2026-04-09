@@ -17,7 +17,7 @@ function uploadToKV(key, value) {
   const tmpFile = path.join(require('os').tmpdir(), `gov-kv-seed-${Date.now()}.json`);
   fs.writeFileSync(tmpFile, jsonStr, 'utf-8');
 
-  const cmd = `npx wrangler kv key put '${key}' --namespace-id ${NAMESPACE_ID} --path '${tmpFile}' --remote`;
+  const cmd = `npx wrangler kv key put '${key}' --namespace-id ${NAMESPACE_ID} --path '${tmpFile}'`;
 
   try {
     execSync(cmd, { cwd: PROJECT_ROOT, stdio: 'pipe', encoding: 'utf-8' });
