@@ -1,9 +1,9 @@
 # paulkuo.tw 共用檔案影響地圖
 
-> 更新：2026-04-09
+> 更新：2026-04-09（TQEF 補入，修正歸屬錯誤）
 > 用途：跨子專案改動時的影響範圍參考
 
-本 repo 有五個子專案共用同一個 codebase，改 A 可能壞 B。
+本 repo 有六個子專案共用同一個 codebase，改 A 可能壞 B。
 修改以下檔案前，**必須確認影響範圍**。
 
 ## 子專案一覽
@@ -15,6 +15,9 @@
 | LLM Wiki | `/wiki/` | `/api/wiki/*` | LLM Wiki | #157 |
 | ACP | `/tools/ai-collab-portfolio/` | `/api/acp/*` | AI Collaboration Portfolio | #155 |
 | AI Ready | `/tools/ai-ready-dashboard` | eval-worker 獨立 | AI Ready Continuous evolution | #155 |
+| TQEF | `/tools/tqef/` | `/api/tqef/*` | 阿哥拉廣場｜即時會議記錄 | — (獨立專案) |
+
+> ⚠️ 阿哥拉廣場是獨立 Cowork 專案（不在 paulkuo.tw 資料夾），但 TQEF 功能跑在 paulkuo.tw 的 Worker 上，`/api/tqef/*` 的任何破壞性變更會直接影響阿哥拉廣場。
 
 ---
 
@@ -56,6 +59,7 @@
 | `worker/src/stock.js` | 主站 | 股價 |
 | `worker/src/gsc.js` | 主站 | GSC API |
 | `worker/src/youtube-ingest.js` | 主站 + Wiki | YouTube 資料 |
+| `worker/src/tqef-api.js` | TQEF | 語料庫 / 評測輪次 / 會議匯出 / STT |
 
 ---
 
@@ -63,9 +67,8 @@
 
 | 模組 | 服務的子專案 | 注意事項 |
 |------|-------------|---------|
-| `worker/src/translator.js` | Wiki + 主站 | 翻譯 / STT / 摘要 |
+| `worker/src/translator.js` | Wiki + 主站 + TQEF | 翻譯 / STT 後處理 / 摘要 |
 | `worker/src/scorecard.js` | Formosa + 主站 | 評分卡 |
-| `worker/src/tqef-api.js` | Formosa + Wiki | 語料庫 + 會議匯出 |
 | `worker/src/status.js` | 全部 | 健康檢查 |
 
 ---
@@ -74,9 +77,9 @@
 
 | 資源 | 類型 | 共用範圍 |
 |------|------|---------|
-| `AUTH_DB` (paulkuo-auth) | D1 | 主站 + Formosa + ACP |
+| `AUTH_DB` (paulkuo-auth) | D1 | 主站 + Formosa + ACP + TQEF |
 | `TICKER_KV` | KV | 全部（快取 + 訪客 + Fitbit + 成本） |
-| `TQEF_AUDIO` | R2 | Formosa + Wiki |
+| `TQEF_AUDIO` | R2 | TQEF（語音評測音檔） |
 | `FORMOSA_OG` | R2 | Formosa |
 
 ⚠️ D1 Schema 變更影響所有需要驗證的 API。
@@ -107,7 +110,7 @@ AI Ready 的優化引擎（`ai-ready-opt/optimize.py`）和 GitHub Actions（`.g
 修改高風險檔案時：
 
 1. **改之前** — 確認影響的子專案列表
-2. **改之後** — worklog 標注 `[影響: 主站 + Formosa + Wiki + ACP + AI Ready]`
+2. **改之後** — worklog 標注 `[影響: 主站 + Formosa + Wiki + ACP + AI Ready + TQEF]`
 3. **部署前** — 對每個受影響的子專案做基本 smoke test
 4. **handoff 時** — 在「跨專案影響」段落說明改了什麼、可能壞什麼
 5. **AI Ready 自動改動後** — 檢查 siteSchema.ts 和 llms.txt 有沒有影響其他子專案的結構化資料
