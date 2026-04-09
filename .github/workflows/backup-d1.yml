@@ -17,10 +17,34 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install Wrangler
-        run: npm install -g wrangler
+        run: npm install -g wrangler@3
+
+      - name: Validate secrets
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          MISSING=0
+          if [ -z "$CF_API_TOKEN" ]; then
+            echo "❌ CLOUDFLARE_API_TOKEN secret is not set"
+            MISSING=1
+          else
+            echo "✅ CLOUDFLARE_API_TOKEN is set"
+          fi
+          if [ -z "$CF_ACCOUNT_ID" ]; then
+            echo "❌ CLOUDFLARE_ACCOUNT_ID secret is not set"
+            MISSING=1
+          else
+            echo "✅ CLOUDFLARE_ACCOUNT_ID is set"
+          fi
+          if [ "$MISSING" -eq 1 ]; then
+            echo ""
+            echo "請到 Settings → Secrets and variables → Actions 補齊以上 secrets"
+            exit 1
+          fi
 
       - name: Export formosa_users
         id: export_users
@@ -29,7 +53,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          wrangler d1 export paulkuo-auth --remote \
+          wrangler d1 export paulkuo-auth \
+            --config worker/wrangler.toml \
+            --remote \
             --table formosa_users \
             --output backup-formosa_users.sql
           echo "✅ formosa_users exported"
@@ -41,7 +67,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          wrangler d1 export paulkuo-auth --remote \
+          wrangler d1 export paulkuo-auth \
+            --config worker/wrangler.toml \
+            --remote \
             --table formosa_surveys \
             --output backup-formosa_surveys.sql
           echo "✅ formosa_surveys exported"
@@ -53,7 +81,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          wrangler d1 export paulkuo-auth --remote \
+          wrangler d1 export paulkuo-auth \
+            --config worker/wrangler.toml \
+            --remote \
             --table formosa_gps_points \
             --output backup-formosa_gps_points.sql
           echo "✅ formosa_gps_points exported"
@@ -64,7 +94,6 @@ jobs:
         run: |
           DATE=$(date -u +"%Y-%m-%d")
           ARCHIVE="formosa-d1-backup-${DATE}.tar.gz"
-          # Only include files that exist
           FILES=$(ls backup-formosa_*.sql 2>/dev/null || true)
           if [ -z "$FILES" ]; then
             echo "❌ No backup files found"
