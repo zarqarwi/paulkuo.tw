@@ -99,6 +99,13 @@ jobs:
           command: deploy --config wrangler.toml
           workingDirectory: worker
 
+      - name: Seed Governance KV
+        if: success()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/governance-kv-seed.cjs
+
   # ── Layer 3: Post-deploy Smoke Test ──
   smoke-test:
     name: Smoke Test
@@ -149,3 +156,9 @@ jobs:
           CORS=$(curl -s -I -H "Origin: https://mazu.today" https://api.paulkuo.tw/api/formosa/feedback/status | grep -i "access-control-allow-origin")
           if [ -z "$CORS" ]; then echo "❌ CORS header missing" && exit 1; fi
           echo "✅ CORS OK: $CORS"
+
+      - name: Check Governance API
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.paulkuo.tw/api/governance/summary)
+          if [ "$STATUS" = "500" ]; then echo "❌ Governance API error: $STATUS" && exit 1; fi
+          echo "✅ Governance API OK ($STATUS)"

@@ -1,9 +1,12 @@
-# 多 Session 協作狀態管理 SOP v4.5
+# 多 Session 協作狀態管理 SOP v4.6
 
 Paul 同時使用 Code 和 Cowork 兩種 session 協作。
 Code 是主力戰場（程式碼、部署、工程），Cowork 是管家中樞（管理決策、文件、同步、自動化）。
 這份 SOP 確保狀態不會在交接時遺失或重複。
 
+> **v4.6 變更（2026-04-10）**：Handoff 文件必備區塊新增「Integration Checklist」（第 8 項）。
+> 解決 Code 未對齊 codebase 現有 pattern 導致 API_BASE 錯誤、CORS 遺漏的問題（4/09 事故）。
+>
 > **v4.5 更新（2026-04-09）：** 新增 metrics 收集步驟 + 專案治理框架（governance）
 
 > **v4.4 更新（2026-04-09）：**
@@ -339,6 +342,11 @@ Phase N 🟡 {未來階段}
 5. **注意事項**：已知陷阱
 6. **回報格式**：完成後要回報什麼（**必須包含驗證結果**，不要把驗證工作留給 Cowork）
 7. **本輪 metrics**：一行摘要，如 `5 commits, 12 files, +340/-87 lines, 1 deploy`
+8. **Integration Checklist**（涉及跨系統整合時必填）：
+   - **API base URL**：明確寫出要打的域名（本 repo 的 Worker API 是 `api.paulkuo.tw`，Pages 靜態站是 `paulkuo.tw`）
+   - **認證模式**：Bearer / Cookie / X-Admin-Token？首次使用新模式時標注對 CORS `Allow-Headers` 的影響
+   - **CORS 需求**：跨域回應是否需帶 `corsHeaders(request)`？建議用 `jsonResponse()` 以自動帶入，若用 `new Response()` 必須手動加
+   - **現有 pattern 參考**：指出「參考 `src/components/XXX` 或 `worker/src/YYY.js` 的寫法」，降低偏離現有慣例的機率
 
 ### 模型選擇指引（v4.4 新增）
 
