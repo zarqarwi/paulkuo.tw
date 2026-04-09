@@ -12,16 +12,31 @@
 
 ---
 
-## 待處理
+## 待 Code 執行
+
+- [ ] commit + push 本輪 Cowork 產出（sync-dashboard.yml + issue-155-body.md + PENDING.md 更新 + session-handoff skill 更新）→ Code / Sonnet (2026-04-10)
+
+## 待 Cowork 執行
 
 _（目前無待辦）_
 
+## 跨專案備忘
+
+> 這個 section 給所有 Cowork 專案共用。
+> 不管綁哪個資料夾，開場都應該透過 GitHub MCP 的 `get_file_contents` 讀這個檔案。
+
+- 2026-04-09：Issue #155 新增自動同步機制（sync-dashboard Action），以後更新儀表板改 `worklogs/issue-155-body.md` 即可，push 到 main 會自動 PATCH
+- 2026-04-09：Cowork session 一律 Opus 4.6；所有 handoff 必須標注建議模型（跨所有專案）
+- 2026-04-09：GitHub MCP 的 `get_issue`/`update_issue` 有 issue_number 型別 bug，暫時不可用。讀 Issue 用 `search_issues`，寫 Issue 用 sync-dashboard Action
+
 ---
 
-## 範例格式
+## 格式說明
 
 ```
-- [ ] 更新 Issue #155 阿哥拉廣場 Stage B 進度 → Cowork (2026-04-10)
-- [ ] 跑 TQEF eval_runner.py 抽樣 100 句 → Code (2026-04-10)
-- [ ] deploy worker + smoke test → Code (2026-04-11)
+待 Code / Cowork 執行：
+- [ ] {做什麼} → {給誰} / {建議模型} ({日期})
+
+跨專案備忘：
+- {日期}：{決策或狀態變更}
 ```
