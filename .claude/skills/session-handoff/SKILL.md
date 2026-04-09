@@ -333,7 +333,7 @@ Phase N 🟡 {未來階段}
 3. **具體步驟**：每步有明確的指令和預期結果
 4. **驗證方式**：怎麼確認做完了
 5. **注意事項**：已知陷阱
-6. **回報格式**：完成後要回報什麼
+6. **回報格式**：完成後要回報什麼（**必須包含驗證結果**，不要把驗證工作留給 Cowork）
 
 ### 模型選擇指引（v4.4 新增）
 
@@ -344,6 +344,19 @@ Phase N 🟡 {未來階段}
 | 狀態確認、讀檔回報、簡單翻譯 | Haiku |
 
 Cowork session 本身一律 Opus 4.6，不需要在 handoff 裡標注。
+
+### Code 回報原則（v4.4 新增）
+
+**Code 回報時必須包含驗證結果，不要把驗證工作留給 Cowork。**
+
+Cowork 跑的是 Opus，每一輪對話都很貴。如果 Code 回報「push 完了，你去驗」，Cowork 還要花一輪 Opus 去跑 curl / 查 API——這些 Sonnet 或 Haiku 就能做的事不應該消耗 Opus token。
+
+正確的回報方式：Code 自己做完驗證，回報最終結果。
+
+❌ 不好：「5 commits pushed，請驗證 Action 是否成功」
+✅ 正確：「5 commits pushed，sync-dashboard Action 已觸發並成功，Issue #155 updated_at 已刷新為 07:59:06Z」
+
+這個原則適用於所有 Cowork 專案，不限 paulkuo.tw。
 
 ### 預估量級（v4.4 新增）
 
