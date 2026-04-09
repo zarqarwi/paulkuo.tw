@@ -86,6 +86,64 @@
 
 ---
 
+## 最低驗證指令（改動共用模組後必跑）
+
+改動任何共用模組後，**依受影響子專案逐項執行**，全部回傳 200 才算通過。
+
+### 改動 `worker/src/index.js` / `utils.js` / `auth.js`（全部子專案受影響）
+
+```bash
+# 主站
+curl -s -o /dev/null -w "%{http_code}" https://paulkuo.tw/
+# Wiki
+curl -s -o /dev/null -w "%{http_code}" "https://api.paulkuo.tw/api/wiki/search?q=AI"
+# Formosa
+curl -s -o /dev/null -w "%{http_code}" https://api.paulkuo.tw/api/formosa/checkin/health
+# ACP
+curl -s -o /dev/null -w "%{http_code}" "https://api.paulkuo.tw/api/scorecard/feed"
+# TQEF
+curl -s -o /dev/null -w "%{http_code}" "https://api.paulkuo.tw/api/tqef/rounds"
+# AI Ready（eval-worker 獨立，不受 index.js 影響，跳過）
+```
+
+### 改動 `worker/src/translator.js`（Wiki + 主站 + TQEF）
+
+```bash
+curl -s -o /dev/null -w "%{http_code}" "https://api.paulkuo.tw/api/wiki/search?q=LLM"
+curl -s -o /dev/null -w "%{http_code}" https://paulkuo.tw/
+curl -s -o /dev/null -w "%{http_code}" "https://api.paulkuo.tw/api/tqef/rounds"
+```
+
+### 改動 `src/layouts/BaseLayout.astro` / `NavBar.astro` / `SiteHead.astro`（全站）
+
+```bash
+curl -s -o /dev/null -w "%{http_code}" https://paulkuo.tw/
+curl -s -o /dev/null -w "%{http_code}" https://paulkuo.tw/wiki/
+curl -s -o /dev/null -w "%{http_code}" https://paulkuo.tw/tools/ai-collab-portfolio/
+curl -s -o /dev/null -w "%{http_code}" https://paulkuo.tw/tools/tqef/
+```
+
+### 改動 `src/data/siteSchema.ts`（全站 SEO + AI Ready）
+
+```bash
+curl -s https://paulkuo.tw/ | grep -c "application/ld+json"
+# 確認回傳數字 > 0（JSON-LD 存在）
+curl -s -o /dev/null -w "%{http_code}" https://paulkuo-eval.paul-4bf.workers.dev/api/eval/score
+```
+
+### 改動 `AUTH_DB` Schema
+
+```bash
+# 確認 Formosa checkin 正常
+curl -s -o /dev/null -w "%{http_code}" https://api.paulkuo.tw/api/formosa/checkin/health
+# 確認 ACP 資料讀取正常
+curl -s -o /dev/null -w "%{http_code}" "https://api.paulkuo.tw/api/scorecard/feed"
+# 確認 TQEF corpus 正常
+curl -s -o /dev/null -w "%{http_code}" "https://api.paulkuo.tw/api/tqef/rounds"
+```
+
+---
+
 ## AI Ready 自動修改檔案
 
 AI Ready 的優化引擎（`ai-ready-opt/optimize.py`）和 GitHub Actions（`.github/workflows/ai-ready-opt.yml`）會自動修改以下共用檔案：
