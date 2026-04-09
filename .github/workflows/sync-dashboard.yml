@@ -1,0 +1,38 @@
+name: Sync Dashboard to Issue #155
+
+# 當 worklogs/issue-155-body.md 被 push 到 main 時自動同步到 Issue #155
+# 也可以手動觸發（workflow_dispatch）
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'worklogs/issue-155-body.md'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Update Issue #155 body
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update Issue #155 from file
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 用 gh api 直接 PATCH，避免 shell 跳脫問題
+          jq -Rs '{ body: . }' worklogs/issue-155-body.md \
+            | gh api repos/${{ github.repository }}/issues/155 \
+                --method PATCH \
+                --input -
+
+      - name: Verify
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          UPDATED=$(gh issue view 155 --json updatedAt -q '.updatedAt')
+          echo "✅ Issue #155 synced at: $UPDATED"
