@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-10 00:xx（Cowork — CI/CD 盤查 + governance-kv-seed bug 發現）
+最後更新：2026-04-10 02:xx（Cowork — governance-kv-seed 修復完成 + session-handoff v4.7 + worklog 三維度規則建立）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -30,6 +30,7 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-10 02:xx governance-kv-seed.cjs `--remote` 修復 (be42206) + session-handoff v4.7 (6f0927e) + CLAUDE.md worklog 三維度必填 (8198a7c) Code+Cowork
 - 04-10 00:xx CI/CD 盤查：Build & Deploy #3494~#3498 連續失敗，根因 governance-kv-seed.cjs `--remote` 參數。Worker 部署成功，KV seed 失敗。已寫 PENDING.md handoff 給 Code Cowork
 - 04-10 01:xx 治理框架 Phase 2 完成：governance API 4 endpoints + KV seed + Dashboard 頁面 /governance/ (ceb67d2, e2fcd8f, b09d00c) Cowork+Code
 - 04-10 01:xx Phase 2.5 governance 自動化 + session-handoff v4.6 (7f65dd7, 42337d1, cd2422a) Code
@@ -141,11 +142,11 @@ Corpus：219 頁 | Phase 0–4B ✅ 全完成 | 3 條自動化管線運行中
 |-------|------|------|
 | Phase 1 | Schema + 資料收集 | ✅ 完成 (5fd4ab3) |
 | Phase 2 | Worker API + Dashboard | ✅ 完成 (e2fcd8f, cd2422a) |
-| Phase 2.5 | 資料自動化（KV seed CI + 排程 metrics） | ⚠️ KV seed CI 失敗 |
+| Phase 2.5 | 資料自動化（KV seed CI + 排程 metrics） | ✅ 完成 (be42206) |
 | Phase 3 | 排程監測 + 異常偵測 | 🟡 未開始 |
 
 **⚠️ 已知問題：**
-- [ ] `governance-kv-seed.cjs` 第 20 行 `--remote` 參數在 CI 環境報錯 → 待 Code 修復（已寫 PENDING.md）
+- [x] `governance-kv-seed.cjs` 第 20 行 `--remote` 參數在 CI 環境報錯 → ✅ 已修復 (be42206)
 - [ ] `governance-metrics-collector` 排程任務尚未首次執行（今天 10:33 首跑）
 
 ---
