@@ -1,0 +1,88 @@
+{
+  "$schema": "projects-v1",
+  "projects": [
+    {
+      "id": "paulkuo-main",
+      "name": "Paulkuo 網站",
+      "repo": "zarqarwi/paulkuo.tw",
+      "dashboard_issue": 155,
+      "cowork_folder": "paulkuo.tw",
+      "status": "active",
+      "started": "2026-03-25",
+      "description": "個人網站主站 + Worker API",
+      "custom_metrics": [
+        { "key": "deploys", "label": "部署次數", "source": "worklog" },
+        { "key": "issues_closed", "label": "Issue 結案數", "source": "github" }
+      ]
+    },
+    {
+      "id": "formosa-esg",
+      "name": "白沙屯 ESG 繞境",
+      "repo": "zarqarwi/paulkuo.tw",
+      "dashboard_issue": 155,
+      "cowork_folder": "白沙屯ESG繞境",
+      "status": "active",
+      "started": "2026-03-24",
+      "description": "白沙屯媽祖繞境碳足跡追蹤 + LINE LIFF",
+      "custom_metrics": [
+        { "key": "deploys", "label": "部署次數", "source": "worklog" },
+        { "key": "issues_closed", "label": "Issue 結案數", "source": "github" }
+      ]
+    },
+    {
+      "id": "llm-wiki",
+      "name": "LLM Wiki",
+      "repo": "zarqarwi/paulkuo.tw",
+      "dashboard_issue": 157,
+      "cowork_folder": "paulkuo.tw",
+      "status": "active",
+      "started": "2026-04-05",
+      "description": "Karpathy Pattern 個人知識圖譜",
+      "custom_metrics": [
+        { "key": "sources_ingested", "label": "來源 ingest 數", "source": "worklog" },
+        { "key": "concepts_count", "label": "Concept 總數", "source": "filesystem" },
+        { "key": "corpus_pages", "label": "Corpus 頁數", "source": "filesystem" }
+      ]
+    },
+    {
+      "id": "acp",
+      "name": "AI 協作力評量",
+      "repo": "zarqarwi/paulkuo.tw",
+      "dashboard_issue": 155,
+      "cowork_folder": "paulkuo.tw",
+      "status": "active",
+      "started": "2026-04-08",
+      "description": "AI Collaboration Proficiency 自評工具",
+      "custom_metrics": [
+        { "key": "submissions", "label": "填寫次數", "source": "d1" }
+      ]
+    },
+    {
+      "id": "ai-ready",
+      "name": "讓 AI 懂我",
+      "repo": "zarqarwi/paulkuo.tw",
+      "dashboard_issue": 155,
+      "cowork_folder": "paulkuo.tw",
+      "status": "active",
+      "started": "2026-04-09",
+      "description": "AI Ready 分數監測 + JSON-LD 優化",
+      "custom_metrics": [
+        { "key": "ai_ready_score", "label": "AI Ready 分數", "source": "action" }
+      ]
+    },
+    {
+      "id": "agora",
+      "name": "阿哥拉廣場",
+      "repo": "zarqarwi/paulkuo.tw",
+      "dashboard_issue": 155,
+      "cowork_folder": null,
+      "status": "active",
+      "started": "2026-04-07",
+      "description": "即時會議記錄翻譯引擎",
+      "custom_metrics": [
+        { "key": "tqef_score", "label": "TQEF 總分", "source": "worklog" },
+        { "key": "corpus_sentences", "label": "語料庫句數", "source": "worklog" }
+      ]
+    }
+  ]
+}

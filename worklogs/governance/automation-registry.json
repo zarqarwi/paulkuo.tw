@@ -1,0 +1,104 @@
+{
+  "$schema": "automation-registry-v1",
+  "tasks": [
+    {
+      "id": "sync-dashboard",
+      "project_id": "paulkuo-main",
+      "name": "儀表板自動同步",
+      "type": "action",
+      "status": "active",
+      "trigger": "push to main (issue-155-body.md changed)",
+      "created": "2026-04-09",
+      "description": "編輯 issue-155-body.md → push → Action 自動 PATCH Issue #155"
+    },
+    {
+      "id": "health-check",
+      "project_id": "paulkuo-main",
+      "name": "Health Check",
+      "type": "action",
+      "status": "active",
+      "trigger": "每 6 小時",
+      "created": "2026-04-02",
+      "description": "GitHub Actions 監測站點健康狀態"
+    },
+    {
+      "id": "wiki-ingest-scanner",
+      "project_id": "llm-wiki",
+      "name": "Wiki Ingest 掃描器",
+      "type": "scheduled",
+      "status": "active",
+      "trigger": "每日 10:02",
+      "created": "2026-04-05",
+      "description": "掃 get_筆記 → 產出 wiki-ingest-pending.md"
+    },
+    {
+      "id": "wiki-web-collector",
+      "project_id": "llm-wiki",
+      "name": "Wiki Web 收集器",
+      "type": "scheduled",
+      "status": "active",
+      "trigger": "每日 09:37",
+      "created": "2026-04-05",
+      "description": "搜 pillar 關鍵字 → 存 raw/clips/"
+    },
+    {
+      "id": "wiki-knowledge-digest",
+      "project_id": "llm-wiki",
+      "name": "Wiki 知識摘要",
+      "type": "scheduled",
+      "status": "active",
+      "trigger": "每 2 天 10:00",
+      "created": "2026-04-05",
+      "description": "彙整 corpus 變化摘要"
+    },
+    {
+      "id": "ai-ready-weekly-scan",
+      "project_id": "ai-ready",
+      "name": "AI Ready 週掃描",
+      "type": "action",
+      "status": "active",
+      "trigger": "每週一 1AM UTC",
+      "created": "2026-04-09",
+      "description": "GitHub Actions 自動掃描 AI Ready 分數"
+    }
+  ],
+  "manual_recurring": [
+    {
+      "id": "wiki-batch-ingest",
+      "project_id": "llm-wiki",
+      "name": "Wiki 批次 Ingest",
+      "frequency": "每週",
+      "owner": "cowork",
+      "description": "每週 10-20 篇 source ingest",
+      "automation_candidate": true,
+      "notes": "目前需 Cowork 人工審查 visibility 分類，短期難全自動"
+    },
+    {
+      "id": "issue-155-content-update",
+      "project_id": "paulkuo-main",
+      "name": "儀表板內容更新",
+      "frequency": "每次 session 結束",
+      "owner": "cowork",
+      "description": "更新 issue-155-body.md 的專案狀態和完成日誌",
+      "automation_candidate": true,
+      "notes": "PATCH 已自動化（sync-dashboard），但內容編輯仍需 Cowork 判斷"
+    },
+    {
+      "id": "pending-md-scan",
+      "project_id": "paulkuo-main",
+      "name": "PENDING.md 掃描",
+      "frequency": "每次 session 開場",
+      "owner": "cowork",
+      "description": "讀 PENDING.md 確認跨 session 待辦",
+      "automation_candidate": false,
+      "notes": "需要理解語境，不適合全自動"
+    }
+  ],
+  "coverage": {
+    "automated": 6,
+    "manual": 3,
+    "total": 9,
+    "rate": 0.667,
+    "last_updated": "2026-04-09"
+  }
+}
