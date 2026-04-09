@@ -1,9 +1,12 @@
-# 多 Session 協作狀態管理 SOP v4.6
+# 多 Session 協作狀態管理 SOP v4.7
 
 Paul 同時使用 Code 和 Cowork 兩種 session 協作。
 Code 是主力戰場（程式碼、部署、工程），Cowork 是管家中樞（管理決策、文件、同步、自動化）。
 這份 SOP 確保狀態不會在交接時遺失或重複。
 
+> **v4.7 變更**：Worklog 格式升級為三維度必填（做了什麼/決策紀錄/阻礙與踩坑）。
+> 與 CLAUDE.md 同步。原「技術備忘」區塊拆分為「決策紀錄」和「阻礙與踩坑」兩個獨立區塊。
+>
 > **v4.6 變更（2026-04-10）**：Handoff 文件必備區塊新增「Integration Checklist」（第 8 項）。
 > 解決 Code 未對齊 codebase 現有 pattern 導致 API_BASE 錯誤、CORS 遺漏的問題（4/09 事故）。
 >
@@ -224,9 +227,14 @@ Worklog 是上游事實來源，記憶是下游快取。
 
 ---
 
-## Worklog 格式（Code 端產出）
+## Worklog 格式（Code 端產出）——三維度必填
 
-CLAUDE.md 已指示 Code 自動寫入 `worklogs/worklog-{YYYY-MM-DD}.md`：
+CLAUDE.md 已指示 Code 自動寫入 `worklogs/worklog-{YYYY-MM-DD}.md`。
+
+Worklog 必須涵蓋三個維度，缺一不可：
+- **做了什麼**（完成日誌 + 狀態變更）
+- **為什麼這樣決定**（決策紀錄）
+- **遇到什麼阻礙**（阻礙與踩坑）
 
 ```markdown
 # Worklog {YYYY-MM-DD}
@@ -234,8 +242,14 @@ CLAUDE.md 已指示 Code 自動寫入 `worklogs/worklog-{YYYY-MM-DD}.md`：
 ## 完成日誌（最新在上）
 - {HH:MM} {做了什麼} ({commit hash}) Code
 
-## 狀態變更（v4 新增）
+## 狀態變更
 - {Issue/待辦名稱}：{之前狀態} → {現在狀態}（{原因}）
+
+## 決策紀錄
+- {決策}：{為什麼選 A 不選 B}（影響範圍：{哪些模組/專案}）
+
+## 阻礙與踩坑
+- {問題描述} → {怎麼解決的 / 還沒解決}
 
 ## 待辦快照
 ### 高優先 🔴
@@ -243,9 +257,12 @@ CLAUDE.md 已指示 Code 自動寫入 `worklogs/worklog-{YYYY-MM-DD}.md`：
 ### 中優先 🟡
 - [ ] ...
 
-## 技術備忘
-- {踩坑紀錄、關鍵發現}
+## 待 Paul 執行
+- [ ] {操作描述} → 驗證: {驗證方法或「問 Paul」}
 ```
+
+**決策紀錄**：只記「有其他選項但我們選了這個」的情況。沒有特殊決策就寫「無特殊決策」，但不能省略。
+**阻礙與踩坑**：記已解決的（給未來參考）和未解決的（給下個 session 接手）。沒有阻礙就寫「無阻礙」，但不能省略。
 
 ### 狀態變更範例
 
