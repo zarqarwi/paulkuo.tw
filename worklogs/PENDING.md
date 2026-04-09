@@ -18,13 +18,7 @@
   - Dashboard 路徑：/governance/（原 /dashboard/ 有路由衝突）
   - ⚠️ 待 Paul 手動：wrangler deploy + 設定 GOVERNANCE_TOKEN secret
 
-- [ ] 🔴 修 governance-kv-seed.cjs `--remote` 參數 → Code / Sonnet (2026-04-10)
-  - 檔案：`scripts/governance-kv-seed.cjs` 第 20 行
-  - 問題：`npx wrangler kv key put ... --remote` 在 GitHub Actions 環境報 "Unknown argument: remote"
-  - 修法：移除 `--remote`（CI 環境有 CLOUDFLARE_API_TOKEN，wrangler 預設就會打 remote KV）
-  - 影響：#3494~#3498 連續 5 次 Build & Deploy 都因此失敗。Worker 本身有部署成功，只是 KV seed 沒跑到
-  - 修完後 push 到 main，CI 會自動 re-run，確認 Seed Governance KV + Smoke Test 都通過
-  - 順便 commit：`worklogs/worklog-2026-04-10.md`、`worklogs/cowork--next-session-2026-04-10b.md`、`worklogs/metrics/paulkuo-main/2026-04-10-cowork.json`
+- [x] 🔴 修 governance-kv-seed.cjs `--remote` 參數 → ✅ 已完成 (be42206)
 
 ## 待 Cowork 執行
 
