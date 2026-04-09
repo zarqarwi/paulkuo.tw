@@ -34,6 +34,7 @@ import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handle
 import { fetchGscData, handleGsc } from './gsc.js';
 import { handleWikiSearch, handleWikiConcept, handleWikiGraph, handleWikiAsk } from './wiki-api.js';
 import { handleAcpGithub, handleAcpVerify, handleAcpSave, handleAcpGet, handleAcpUpdate, handleAcpOg } from './acp.js';
+import { handleGovernanceSummary, handleGovernanceProjects, handleGovernanceMetrics, handleGovernanceAutomation } from './governance-api.js';
 
 async function handleClaudeUsage(request, env, url) {
   const auth = await authenticateRequest(request, env, url.searchParams.get('code') || '');
@@ -173,7 +174,7 @@ async function handleHealth(request, env) {
   return jsonResponse({ status: 'ok', fitbit_token: hasToken ? (tokenOk ? 'valid' : 'expired') : 'missing', fitbit_last_refresh: fitbitLastRefresh || 'never', fitbit_hours_ago: fitbitHoursAgo, fitbit_stale: fitbitHoursAgo !== null && fitbitHoursAgo > 12, stock_cache_age_sec: stockCache ? Math.round((Date.now() - JSON.parse(stockCache).cached_at) / 1000) : null, tse_trading: isTseTradingHours(), formosa: formosaHealth, timestamp: new Date().toISOString() }, 200, request);
 }
 
-const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/visit','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/feed/sync','/health','/gsc','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/scorecard/submit','/api/scorecard/feed','/api/scorecard/eval/:id','/api/scorecard/badge/:id','/api/scorecard/history/:projectName','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus','/api/wiki/search','/api/wiki/concept/:slug','/api/wiki/graph','/api/wiki/ask','/api/wiki/youtube-ingest'];
+const ENDPOINTS = ['/ticker','/visitors','/analytics','/analytics/visit','/analytics/beacon','/ws/stt-qwen','/ws/stt','/stt-groq','/stt-google','/fitbit','/stock','/sleep','/translate','/translate-stream','/summarize','/polish-transcript','/costs','/usage','/validate-code','/log-cost','/feed','/feed/sync','/health','/gsc','/social/publish','/social/status','/social/refresh','/auth/google/login','/auth/line/login','/auth/facebook/login','/auth/me','/auth/logout','/auth/admin/members','/auth/admin/codes','/feedback','/api/comments','/api/comments/:id','/api/comments/:id/like','/api/comments/admin/recent','/api/scorecard/evaluate','/api/scorecard/advise','/api/scorecard/submit','/api/scorecard/feed','/api/scorecard/eval/:id','/api/scorecard/badge/:id','/api/scorecard/history/:projectName','/api/tqef/corpus','/api/tqef/corpus/import','/api/tqef/rounds','/api/tqef/rounds/:id','/api/tqef/eval/upload','/api/tqef/youtube-transcript','/api/tqef/youtube-corpus','/api/wiki/search','/api/wiki/concept/:slug','/api/wiki/graph','/api/wiki/ask','/api/wiki/youtube-ingest','/api/governance/summary','/api/governance/projects','/api/governance/automation','/api/governance/metrics/:project_id'];
 
 async function handleMazuToday(request, url) {
   const path = url.pathname;
@@ -455,6 +456,15 @@ async function handleRequest(request, env, ctx) {
   if (path.startsWith('/api/wiki/concept/') && method === 'GET') {
     const slug = decodeURIComponent(path.replace('/api/wiki/concept/', ''));
     if (slug && !slug.includes('/')) return handleWikiConcept(request, env, slug);
+  }
+
+  // ── Governance API ──
+  if (path === '/api/governance/summary' && method === 'GET') return handleGovernanceSummary(request, env);
+  if (path === '/api/governance/projects' && method === 'GET') return handleGovernanceProjects(request, env);
+  if (path === '/api/governance/automation' && method === 'GET') return handleGovernanceAutomation(request, env);
+  if (path.startsWith('/api/governance/metrics/') && method === 'GET') {
+    const projectId = path.split('/api/governance/metrics/')[1];
+    return handleGovernanceMetrics(request, env, projectId);
   }
 
   // ── ACP (AI Collaboration Portfolio) API ──
