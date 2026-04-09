@@ -14,8 +14,17 @@
 
 ## 待 Code 執行
 
-- [ ] 治理框架 Phase 2：讀 `worklogs/code--governance-phase2-dashboard-2026-04-10.md` 執行 → Code / Sonnet / L (2026-04-10+)
-  - 步驟 1 已包含：先 commit 上一輪 Cowork 未推的檔案（issue-155-body.md + PENDING.md + metrics JSON + handoff）
+- [x] 治理框架 Phase 2：API + KV seed + Dashboard 頁面 → ✅ 已完成 (ceb67d2, e2fcd8f, b09d00c)
+  - Dashboard 路徑：/governance/（原 /dashboard/ 有路由衝突）
+  - ⚠️ 待 Paul 手動：wrangler deploy + 設定 GOVERNANCE_TOKEN secret
+
+- [ ] 🔴 修 governance-kv-seed.cjs `--remote` 參數 → Code / Sonnet (2026-04-10)
+  - 檔案：`scripts/governance-kv-seed.cjs` 第 20 行
+  - 問題：`npx wrangler kv key put ... --remote` 在 GitHub Actions 環境報 "Unknown argument: remote"
+  - 修法：移除 `--remote`（CI 環境有 CLOUDFLARE_API_TOKEN，wrangler 預設就會打 remote KV）
+  - 影響：#3494~#3498 連續 5 次 Build & Deploy 都因此失敗。Worker 本身有部署成功，只是 KV seed 沒跑到
+  - 修完後 push 到 main，CI 會自動 re-run，確認 Seed Governance KV + Smoke Test 都通過
+  - 順便 commit：`worklogs/worklog-2026-04-10.md`、`worklogs/cowork--next-session-2026-04-10b.md`、`worklogs/metrics/paulkuo-main/2026-04-10-cowork.json`
 
 ## 待 Cowork 執行
 
@@ -29,7 +38,7 @@ _（目前無待辦）_
 - 2026-04-09：Issue #155 新增自動同步機制（sync-dashboard Action），以後更新儀表板改 `worklogs/issue-155-body.md` 即可，push 到 main 會自動 PATCH
 - 2026-04-09：Cowork session 一律 Opus 4.6；所有 handoff 必須標注建議模型（跨所有專案）
 - 2026-04-09：GitHub MCP 的 `get_issue`/`update_issue` 有 issue_number 型別 bug，暫時不可用。讀 Issue 用 `search_issues`，寫 Issue 用 sync-dashboard Action
-- 2026-04-10：專案治理框架 Phase 1 完成（projects.json + automation-registry.json + collect-session-metrics.sh + session-handoff v4.5）。Phase 2 待辦：Worker API + Dashboard 頁面
+- 2026-04-10：專案治理框架 Phase 1+2 完成。Dashboard 在 /governance/（非 /dashboard/，因路由衝突）。API 4 支 endpoint：/api/governance/{summary,projects,metrics/:id,automation}。Auth 用 GOVERNANCE_TOKEN Bearer token
 
 ---
 
