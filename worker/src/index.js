@@ -30,7 +30,7 @@ import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTq
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
 import { handleYoutubeIngest, handleYoutubeChannelScan } from './youtube-ingest.js';
 import { handleStatus } from './status.js';
-import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus, handleFormosaHealthAlert, handleFormosaUpload, handleFormosaPushImageServe } from './formosa.js';
+import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handleFormosaTrackSync, handleFormosaPush, handleFormosaData, handleFormosaUser, handleFormosaUserSync, handleFormosaPhotoCount, handleFormosaPhoneUpdate, handleFormosaRichMenu, handleFormosaAdminSurveys, handleFormosaAdminCarbon, handleFormosaAdminTimeline, handleFormosaAdminUsers, handleFormosaAdminClusters, handleFormosaAdminStatus, handleFormosaAdminRoles, handleFormosaScheduledPush, handleFormosaFlushBuffer, handleFormosaOgImage, handleFormosaOgServe, handleFormosaPrivacyAgree, handleFormosaParticipantStatus, handleFormosaAdminEndActivity, handleFormosaFeedback, handleFormosaFeedbackList, handleFormosaFeedbackUpload, handleFormosaLineUsage, handleFormosaFeedbackImageServe, handleFormosaAuthRole, handleFormosaFeedbackUpdate, handleFormosaFeedbackPublicStatus, handleFormosaHealthAlert, handleFormosaUpload, handleFormosaPushImageServe, handleFormosaDailyReport } from './formosa.js';
 import { fetchGscData, handleGsc } from './gsc.js';
 import { handleWikiSearch, handleWikiConcept, handleWikiGraph, handleWikiAsk } from './wiki-api.js';
 import { handleAcpGithub, handleAcpVerify, handleAcpSave, handleAcpGet, handleAcpUpdate, handleAcpOg } from './acp.js';
@@ -411,7 +411,7 @@ async function handleRequest(request, env, ctx) {
   if (path === '/api/formosa/user/phone' && method === 'POST') return handleFormosaPhoneUpdate(request, env);
   if (path === '/api/formosa/push' && method === 'POST') return handleFormosaPush(request, env);
   if (path === '/api/formosa/admin/richmenu' && method === 'POST') return handleFormosaRichMenu(request, env);
-  // daily-report endpoint removed (replaced by survey Q3-Q6)
+  if (path === '/api/formosa/daily-report' && method === 'POST') return handleFormosaDailyReport(request, env);
   if (path === '/api/formosa/og-image' && method === 'POST') return handleFormosaOgImage(request, env);
   if (path.startsWith('/api/formosa/og/') && path.endsWith('.png') && (method === 'GET' || method === 'HEAD')) {
     const ogUserId = decodeURIComponent(path.replace('/api/formosa/og/', '').replace('.png', ''));

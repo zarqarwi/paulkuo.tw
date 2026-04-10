@@ -1140,16 +1140,19 @@ export async function handleFormosaAdminCarbon(request, env) {
     const modes = ['walk','car','scooter','bus','mrt','train','hsr'];
     const surveyTotals = {};
     modes.forEach(m => { surveyTotals[m] = { km: 0, users: 0 }; });
-    let waterTotal = 0, hotelTotal = 0;
-
     data.forEach(r => {
       modes.forEach(m => {
         const km = r['transport_' + m] || 0;
         if (km > 0) { surveyTotals[m].km += km; surveyTotals[m].users++; }
       });
-      waterTotal += r.water_bottles || 0;
-      hotelTotal += r.hotel_nights || 0;
     });
+
+    // Water and hotel from formosa_daily_reports (survey Q removed these fields)
+    const drRow = await env.AUTH_DB.prepare(
+      'SELECT COALESCE(SUM(water_bottles),0) as water_total, COALESCE(SUM(recycle_bottles),0) as recycle_total, COALESCE(SUM(hotel),0) as hotel_total FROM formosa_daily_reports'
+    ).first();
+    const waterTotal = (drRow && drRow.water_total) || 0;
+    const hotelTotal = (drRow && drRow.hotel_total) || 0;
 
     // Merge: use GPS-derived walk km (more accurate), keep survey transport breakdown
     const transportTotals = { ...surveyTotals };
