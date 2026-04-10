@@ -2234,7 +2234,7 @@ const prefix = LOCALE_PREFIX[lang];
       setTimeout(checkAndShowNotifications, 500);
     }
     __serverUserDataPromise.then(function(d) {
-      if (d && !d.survey) {
+      if (d && d.survey === null) {
         // Server has no survey record — localStorage is stale, reset and show CTA
         lsSet('formosa_survey_done', 'false');
         showCard('cta');
