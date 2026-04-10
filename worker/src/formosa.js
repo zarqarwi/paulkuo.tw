@@ -428,7 +428,7 @@ export async function handleFormosaCheckin(request, env, ctx) {
         accuracy: data.accuracy || null,
         source, timestamp: ts,
         blessing_id: data.blessing_id || null
-      }), { expirationTtl: 259200 });
+      }), { expirationTtl: 604800 }); // #R4-Fix-B: 7 days (was 3)
 
       let batchWritten = 0;
       if (data.track_points && Array.isArray(data.track_points)) {
@@ -442,7 +442,7 @@ export async function handleFormosaCheckin(request, env, ctx) {
             user_id: userId, lat: pt.lat, lng: pt.lng,
             altitude: null, accuracy: null,
             source: VALID_SOURCES.has(pt.source) ? pt.source : 'auto', timestamp: ptTs
-          }), { expirationTtl: 259200 });
+          }), { expirationTtl: 604800 }); // #R4-Fix-B: 7 days (was 3)
           batchWritten++;
         }
       }
@@ -523,7 +523,7 @@ export async function handleFormosaTrackSync(request, env) {
         user_id: userId, lat: pt.lat, lng: pt.lng,
         altitude: null, accuracy: null,
         source: VALID_SOURCES.has(pt.source) ? pt.source : 'auto', timestamp: ptTs
-      }), { expirationTtl: 259200 });
+      }), { expirationTtl: 604800 }); // #R4-Fix-B: 7 days (was 3)
       synced++;
     }
 
@@ -605,10 +605,10 @@ export async function handleFormosaFlushBuffer(env) {
         } catch (e) {
           console.error('Flush batch error:', e.message);
           errors += valid.length;
-          // D1 write failed — extend KV TTL to prevent data loss (3 days)
+          // D1 write failed — extend KV TTL to prevent data loss (7 days, #R4-Fix-B)
           await Promise.all(valid.map(async (entry) => {
             try {
-              await env.TICKER_KV.put(entry.key, JSON.stringify(entry.data), { expirationTtl: 259200 });
+              await env.TICKER_KV.put(entry.key, JSON.stringify(entry.data), { expirationTtl: 604800 });
             } catch {}
           }));
           continue;
@@ -1766,20 +1766,30 @@ async function multicastLineMessage(userIds, token, messages) {
   const results = [];
   for (let i = 0; i < userIds.length; i += 500) {
     const batch = userIds.slice(i, i + 500);
-    const resp = await fetch('https://api.line.me/v2/bot/message/multicast', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ to: batch, messages })
-    });
-    const result = { status: resp.status };
-    if (!resp.ok) {
-      try { result.error = await resp.json(); } catch (e) { result.error = await resp.text(); }
-      console.error('LINE multicast error:', JSON.stringify(result));
+    // #R4-Fix-D: retry on 429 / 5xx with exponential backoff (max 2 retries)
+    let lastResult = { status: 0 };
+    for (let attempt = 0; attempt <= 2; attempt++) {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt));
+      const resp = await fetch('https://api.line.me/v2/bot/message/multicast', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ to: batch, messages })
+      });
+      lastResult = { status: resp.status };
+      if (resp.ok) break;
+      try { lastResult.error = await resp.json(); } catch (e) { lastResult.error = await resp.text(); }
+      if (resp.status !== 429 && resp.status < 500) break; // don't retry 4xx (except 429)
+      console.error(`LINE multicast attempt ${attempt + 1} failed:`, JSON.stringify(lastResult));
     }
-    results.push(result);
+    if (!lastResult.error) {
+      // success
+    } else {
+      console.error('LINE multicast final failure:', JSON.stringify(lastResult));
+    }
+    results.push(lastResult);
   }
   return results;
 }

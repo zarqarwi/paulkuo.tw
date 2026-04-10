@@ -1101,8 +1101,9 @@ const prefix = LOCALE_PREFIX[lang];
       var s = data.stats;
       lsSet('formosa_carbon', s.carbon_kg.toFixed(2));
       lsSet('formosa_carbon_saved', (s.carbon_saved_kg || 0).toFixed(2));
-      lsSet('formosa_km', s.total_km.toFixed(2));
-      lsSet('formosa_checkins', s.checkins);
+      // #R4-Fix-A: only overwrite local stats if server data is >= local (D1 flush lag guard)
+      if (s.total_km > getSavedKm()) lsSet('formosa_km', s.total_km.toFixed(2));
+      if (s.checkins > getSavedCheckins()) lsSet('formosa_checkins', s.checkins);
       if (s.transport_breakdown) {
         lsSet('formosa_transport_breakdown', JSON.stringify(s.transport_breakdown));
       }
