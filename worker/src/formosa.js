@@ -1578,9 +1578,24 @@ async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
   if (!userId) return { type: 'text', text: botMsg(locale, 'stats_no_account') };
 
   try {
-    const gpsPoints = await env.AUTH_DB.prepare(
-      'SELECT COUNT(*) as cnt FROM formosa_gps_points WHERE user_id = ?'
-    ).bind(userId).first();
+    // FIX-4: query GPS points to compute actual distance + manual checkin count
+    const gpsRows = await env.AUTH_DB.prepare(
+      'SELECT lat, lng, timestamp, source FROM formosa_gps_points WHERE user_id = ? ORDER BY timestamp ASC'
+    ).bind(userId).all();
+
+    const pts = gpsRows.results || [];
+
+    // Count only manual checkins (GPS auto-points don't count as check-ins)
+    const checkins = pts.filter(p => p.source === 'manual').length;
+
+    // Compute total km using haversine (same filter logic as main stats endpoint)
+    let totalKm = 0;
+    for (let i = 1; i < pts.length; i++) {
+      const dist = haversine(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
+      const timeDiffHours = (new Date(pts[i].timestamp) - new Date(pts[i-1].timestamp)) / 3600000;
+      if (dist < 0.01 || timeDiffHours <= 0 || timeDiffHours < 1/120 || dist / timeDiffHours > 300) continue;
+      totalKm += dist;
+    }
 
     const survey = await env.AUTH_DB.prepare(
       'SELECT carbon_total_kg FROM formosa_surveys WHERE user_id = ? LIMIT 1'
@@ -1590,26 +1605,12 @@ async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
       'SELECT photo_count FROM formosa_users WHERE line_user_id = ?'
     ).bind(userId).first();
 
-    const checkins = gpsPoints?.cnt || 0;
     const carbon = survey?.carbon_total_kg || 0;
     const photos = user?.photo_count || 0;
 
-    // Calculate level (等級名稱保持繁中，各語系共用)
-    const TITLES = [
-      { km: 0, checkins: 1, name: '煉氣香客', icon: '🔥' },
-      { km: 15, checkins: 5, name: '築基香客', icon: '🧱' },
-      { km: 45, checkins: 10, name: '金丹香客', icon: '💛' },
-      { km: 90, checkins: 15, name: '元嬰香客', icon: '👶' },
-      { km: 135, checkins: 20, name: '化神香客', icon: '✨' },
-      { km: 180, checkins: 25, name: '煉虛香客', icon: '🌀' },
-      { km: 225, checkins: 30, name: '合體香客', icon: '🤝' },
-      { km: 270, checkins: 35, name: '大乘香客', icon: '🏆' },
-      { km: 300, checkins: 40, name: '飛升香客', icon: '🚀' }
-    ];
-    let title = TITLES[0];
-    for (let i = TITLES.length - 1; i >= 0; i--) {
-      if (checkins >= TITLES[i].checkins) { title = TITLES[i]; break; }
-    }
+    // Use computeRank which checks both km AND checkins (consistent with Tracker + Worker)
+    const rank = computeRank(totalKm, checkins);
+    const title = rank.current;
 
     const lines = [
       `${title.icon} ${title.name}`,
@@ -1630,7 +1631,7 @@ async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
 function buildCarbonInfoMessage() {
   return {
     type: 'text',
-    text: '🌱 碳足跡小知識\n\n進香途中我們用兩種方式估算你的碳足跡：\n🚶 步行/腳踏車 → 零排放 ✨\n🚌 搭乘交通工具 → 約 0.48 kg CO₂e/km\n\n走越多、搭越少，碳足跡越低！\n🌿 鼓勵大家多走路、多共乘，一起愛護地球 🌍\n\n📝 此為簡化估算，目的是提醒減排意識\n\n📍 前往記錄：\n' + TRACKER_URL
+    text: '🌱 碳足跡小知識\n\n進香途中我們用兩種方式估算你的碳足跡：\n🚶 步行/腳踏車 → 零排放 ✨\n🚌 搭乘交通工具 → 約 0.12013 kg CO₂e/km\n\n走越多、搭越少，碳足跡越低！\n🌿 鼓勵大家多走路、多共乘，一起愛護地球 🌍\n\n📝 此為簡化估算，目的是提醒減排意識\n\n📍 前往記錄：\n' + TRACKER_URL
   };
 }
 
