@@ -1862,7 +1862,7 @@ export const en = {
     q2: 'What is the route of the Baishatun Mazu Pilgrimage?',
     a2: 'The Baishatun Mazu Pilgrimage is the only walking pilgrimage in Taiwan with no fixed route. The route is entirely determined by the goddess Mazu\'s divine will, guiding the palanquin bearers in new directions each year. The pilgrimage passes through four counties—Miaoli, Taichung, Changhua, and Yunlin (and in 2025, entered Nantou for the first time). The starting point is Gongtian Temple in Tongxiao, Miaoli County, and the destination is Chaotian Temple in Beigang, Yunlin County, covering approximately 300–400 kilometers roundtrip.',
     q3: 'How many people registered for the 2026 pilgrimage?',
-    a3: 'As of the end of March 2026, registration exceeded 436,000 people, setting a new all-time record. Historical growth trends: 2002 (3,141) → 2015 (18,579) → 2019 (50,001) → 2023 (113,621) → 2024 (179,971) → 2025 (329,118) → 2026 (436,653+).',
+    a3: 'As of the end of March 2026, registration exceeded 463,000 people, setting a new all-time record. Historical growth trends: 2002 (3,141) → 2015 (18,579) → 2019 (50,001) → 2023 (113,621) → 2024 (179,971) → 2025 (329,118) → 2026 (463,588+).',
     q4: 'How long is the history of the Baishatun Mazu Pilgrimage?',
     a4: 'The tradition of Mazu pilgrims walking to Beigang exceeds 200 years, predating the construction of Gongtian Temple (1863). In 2008, it was registered as a Miaoli County Cultural Asset. In 2010, the Ministry of Culture designated it as a "National Important Intangible Cultural Heritage."',
     q5: 'How do I register to participate in the Baishatun Mazu Pilgrimage?',
