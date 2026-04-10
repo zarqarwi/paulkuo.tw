@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-10（Cowork — R3-fix 全部完成，UserSync 驗證通過，吳心恬 km=94.3 確認合理）
+最後更新：2026-04-11（Cowork — R4 audit 完成，4 個 P1 全修 + deploy 876dddbd，0 個 P0）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -30,6 +30,7 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-11 R4 audit 完成 ✅：P0=0，P1=4（全修+deploy 876dddbd），P2=10（活動期間處理）。Fix-A stats rollback guard + Fix-B KV TTL 3→7天 + Fix-D multicast retry + Fix-C LINE 費用確認（$800→$1200 動態切換）Cowork+Code
 - 04-10 R3-fix 全部完成驗證通過 ✅：FIX-1 computeFilteredKm (58a9e09) + FIX-2 VALID_SOURCES (同 commit)，Worker deploy 174bace0，UserSync 驗證吳心恬 km=94.3 合理，endpoint 確認 POST /api/formosa/user/sync (body: line_user_id) Cowork+Code
 - 04-10 R3 audit 完成（資料品質&防禦韌性）：FIX-1 UserSync 噪音過濾缺失 [P0] + FIX-2 source 無白名單 [P1]，handoff 交 Code（021c291）Cowork
 - 04-10 Issue #162 今日善足跡 API 驗通過：daily-report → ok:true，admin/carbon water_bottles 有值（Cowork 驗，不需重跑 deploy）Cowork
@@ -71,20 +72,30 @@
 ---
 
 ## Formosa ESG 2026
-> 起駕：4/12（倒數 **2 天**）⚠️ 凍結期 4/11-4/13
+> 起駕：4/12（倒數 **1 天**）⚠️ 凍結期 4/11 開始
 
 **Phase 3 ✅** 上線準備完成
 **Phase 4 ✅** 功能完善（Issue #104–#162 全結案）
 
-**📋 R3 Audit + Fix 全部完成 ✅（2026-04-10）**
-- ✅ FIX-1 [P0]：computeFilteredKm 共用函數抽出（排除 remote + 三層噪音過濾），commit 58a9e09，Worker deploy 174bace0
-- ✅ FIX-2 [P1]：VALID_SOURCES 白名單（TrackSync + Checkin batch），同 commit
-- ✅ 吳心恬驗證：UserSync 觸發後 km=94.3（合理），endpoint: `POST /api/formosa/user/sync` (body: `line_user_id`)
-- ✅ 12 項安全確認（GPS 驗證、Rate limit、斷線 queue、Cron 鎖…）
+**📋 Pre-Launch Audit 四輪全部完成 ✅**
+- R1 ✅ 數據一致性（等級門檻、碳排係數）
+- R2 ✅ 修復驗證（成就卡、LINE Bot、Dashboard）
+- R3 ✅ 資料品質＋防禦韌性（computeFilteredKm + VALID_SOURCES）
+- R4 ✅ 使用者旅程＋邊界人物＋營運韌性（P0=0, P1=4 全修, P2=10 延後）
+
+**R4 P1 修復明細（已 deploy 876dddbd）：**
+- Fix-A：stats rollback guard — D1 flush 延遲時不覆寫較高的本地數值
+- Fix-B：KV buffer TTL 3天→7天 — D1 長時間異常時的安全邊際
+- Fix-C：LINE 費用確認 — NT$800（≤300人）/ NT$1,200（>300人）動態切換
+- Fix-D：multicast retry — LINE 推播 429/5xx 加 2 次 exponential backoff
+
+**R4 P2（10 項，活動期間處理）：**
+鎖屏 GPS 說明、GPS 拒絕引導按鈕、Worker 錯誤 i18n、OG 圖片 loading、Health alert 擴展、費用 alert、Cron 升級告警等
 
 **⏰ 4/12 前剩餘待辦**
 - [x] 重設 FORMOSA_ADMIN_TOKEN — ✅ 4/10 已完成
-- [x] R3-FIX-1 + FIX-2 Worker deploy — ✅ 4/10 版本 174bace0
+- [x] R3-FIX Worker deploy — ✅ 4/10 版本 174bace0
+- [x] R4-FIX Worker deploy — ✅ 4/11 版本 876dddbd
 - [ ] 活動前全清測試資料 — **Paul 操作**（已發通知）
 - [ ] 填 data/youtube-channels.json — **需 Paul 提供**
 
