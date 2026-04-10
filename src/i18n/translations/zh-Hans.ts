@@ -489,6 +489,17 @@ export const zhHans = {
     achievementShare: '分享',
     achievementClose: '关闭',
   },
+  dailyReport: {
+    title: '今日善足迹',
+    waterBottles: '今天喝了几瓶瓶装水？',
+    recycled: '回收了几瓶？',
+    stayed: '昨晚有住宿吗？',
+    yes: '有',
+    no: '没有',
+    optional: '不填也 OK！填了碳足迹会更完整',
+    submit: '提交善足迹',
+    submitted: '已记录',
+  },
 
   homepage: {
     heroTitle: '2026 白沙屯妈祖进香',

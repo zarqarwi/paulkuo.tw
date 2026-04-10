@@ -481,6 +481,17 @@ export const zhHant = {
     achievementShare: '分享',
     achievementClose: '關閉',
   },
+  dailyReport: {
+    title: '今日善足跡',
+    waterBottles: '今天喝了幾瓶瓶裝水？',
+    recycled: '回收了幾瓶？',
+    stayed: '昨晚有住宿嗎？',
+    yes: '有',
+    no: '沒有',
+    optional: '不填也 OK！填了碳足跡會更完整',
+    submit: '送出善足跡',
+    submitted: '已記錄',
+  },
   // ─── 首頁 ────────────────────────────────────
   homepage: {
     heroTitle: '2026 白沙屯媽祖進香',

@@ -491,6 +491,17 @@ export const ja = {
     achievementShare: 'シェア',
     achievementClose: '閉じる',
   },
+  dailyReport: {
+    title: '今日の善フットプリント',
+    waterBottles: '今日ペットボトルの水を何本飲みましたか？',
+    recycled: '何本リサイクルしましたか？',
+    stayed: '昨晩宿泊しましたか？',
+    yes: 'はい',
+    no: 'いいえ',
+    optional: '任意です。記入するとカーボンレポートがより正確になります',
+    submit: '送信',
+    submitted: '記録済み',
+  },
 
   homepage: {
     heroTitle: '2026 白沙屯媽祖（マソ）巡礼',

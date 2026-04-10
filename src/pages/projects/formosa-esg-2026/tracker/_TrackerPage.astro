@@ -83,6 +83,17 @@ const prefix = LOCALE_PREFIX[lang];
   achievementMessage: t(lang, 'tracker_ui.achievementMessage'),
   achievementShare: t(lang, 'tracker_ui.achievementShare'),
   achievementClose: t(lang, 'tracker_ui.achievementClose'),
+  dailyReport: {
+    title: t(lang, 'dailyReport.title'),
+    waterBottles: t(lang, 'dailyReport.waterBottles'),
+    recycled: t(lang, 'dailyReport.recycled'),
+    stayed: t(lang, 'dailyReport.stayed'),
+    yes: t(lang, 'dailyReport.yes'),
+    no: t(lang, 'dailyReport.no'),
+    optional: t(lang, 'dailyReport.optional'),
+    submit: t(lang, 'dailyReport.submit'),
+    submitted: t(lang, 'dailyReport.submitted'),
+  },
   levels: {
     '1': t(lang, 'levels.1.name'),
     '2': t(lang, 'levels.2.name'),
@@ -412,6 +423,42 @@ const prefix = LOCALE_PREFIX[lang];
       </div>
 
       <div class="checkin-progress" id="checkinProgress"></div>
+
+      <!-- 今日善足跡 daily footprint panel — shown after successful checkin, collapsed by default -->
+      <div id="footprintPanel" style="display:none;margin-top:1.25rem;text-align:left">
+        <div class="fp-header" onclick="toggleFootprintPanel()" style="display:flex;justify-content:space-between;align-items:center;background:#f0f9f0;border-radius:12px 12px 0 0;padding:0.75rem 1rem;cursor:pointer;border:1px solid #c8e6c9">
+          <span style="font-weight:600;color:#2e7d32">🌱 {t(lang, 'dailyReport.title')}（{t(lang, 'tracker_ui.optional')}）</span>
+          <span class="fp-toggle" style="color:#888;font-size:0.85rem">{t(lang, 'tracker_ui.expandToggle')}</span>
+        </div>
+        <div class="fp-body" style="display:none;border:1px solid #c8e6c9;border-top:0;border-radius:0 0 12px 12px;padding:1rem;background:#fff">
+          <div style="margin-bottom:1rem">
+            <div style="font-size:0.9rem;color:#555;margin-bottom:0.5rem">🍶 {t(lang, 'dailyReport.waterBottles')}</div>
+            <div id="fpWater" data-value="0" style="display:flex;align-items:center;gap:0.75rem">
+              <button type="button" onclick="fpStepper('fpWater',-1)" class="fp-step-btn">−</button>
+              <span class="fp-stepper-val" style="font-size:1.2rem;font-weight:600;min-width:2rem;text-align:center">0</span>
+              <button type="button" onclick="fpStepper('fpWater',1)" class="fp-step-btn">+</button>
+            </div>
+          </div>
+          <div style="margin-bottom:1rem">
+            <div style="font-size:0.9rem;color:#555;margin-bottom:0.5rem">♻️ {t(lang, 'dailyReport.recycled')}</div>
+            <div id="fpRecycle" data-value="0" style="display:flex;align-items:center;gap:0.75rem">
+              <button type="button" onclick="fpStepper('fpRecycle',-1)" class="fp-step-btn">−</button>
+              <span class="fp-stepper-val" style="font-size:1.2rem;font-weight:600;min-width:2rem;text-align:center">0</span>
+              <button type="button" onclick="fpStepper('fpRecycle',1)" class="fp-step-btn">+</button>
+            </div>
+          </div>
+          <div style="margin-bottom:1rem">
+            <div style="font-size:0.9rem;color:#555;margin-bottom:0.5rem">🏨 {t(lang, 'dailyReport.stayed')}</div>
+            <div id="fpStayed" data-value="" style="display:flex;gap:0.75rem">
+              <button type="button" class="fp-stayed-btn" data-val="1" onclick="fpSetStayed('1')" style="flex:1;padding:0.5rem;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer">{t(lang, 'dailyReport.yes')}</button>
+              <button type="button" class="fp-stayed-btn" data-val="0" onclick="fpSetStayed('0')" style="flex:1;padding:0.5rem;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer">{t(lang, 'dailyReport.no')}</button>
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem">ℹ️ {t(lang, 'dailyReport.optional')}</p>
+          <button id="fpSubmitBtn" type="button" onclick="submitFootprint()" style="width:100%;padding:0.75rem;background:#2e7d32;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer">{t(lang, 'dailyReport.submit')}</button>
+          <div class="fp-done" style="display:none;text-align:center;padding:0.75rem;color:#2e7d32;font-weight:600">✅ {t(lang, 'dailyReport.submitted')}</div>
+        </div>
+      </div>
 
       <!-- Share button (simplified) -->
       <div class="share-section" style="margin-top:2rem">
@@ -1883,6 +1930,21 @@ const prefix = LOCALE_PREFIX[lang];
 
     updateCheckinProgress(t);
 
+    // Show daily footprint panel after successful checkin
+    var fpPanel = document.getElementById('footprintPanel');
+    if (fpPanel) {
+      fpPanel.style.display = 'block';
+      // Reset panel to collapsed state on each new checkin
+      var fpBody = fpPanel.querySelector('.fp-body');
+      if (fpBody) fpBody.style.display = 'none';
+      var fpToggle = fpPanel.querySelector('.fp-toggle');
+      if (fpToggle) fpToggle.textContent = _i18n.expandToggle;
+      var fpDone = fpPanel.querySelector('.fp-done');
+      if (fpDone) fpDone.style.display = 'none';
+      var fpSubmit = document.getElementById('fpSubmitBtn');
+      if (fpSubmit) { fpSubmit.style.display = 'block'; fpSubmit.disabled = false; fpSubmit.textContent = _i18n.dailyReport.submit; }
+    }
+
     // Check for notifications after stats update
     checkAndShowNotifications();
   }
@@ -1904,6 +1966,79 @@ const prefix = LOCALE_PREFIX[lang];
       showPhotoToast('📍 ' + _i18n.locationTimeout, 3000);
     }
   }
+
+  // ── Daily Footprint Panel functions ──────────────────────────
+  window.toggleFootprintPanel = function() {
+    var body = document.querySelector('#footprintPanel .fp-body');
+    var toggleBtn = document.querySelector('#footprintPanel .fp-toggle');
+    if (!body) return;
+    var isHidden = body.style.display === 'none';
+    body.style.display = isHidden ? 'block' : 'none';
+    if (toggleBtn) toggleBtn.textContent = isHidden ? _i18n.collapseToggle : _i18n.expandToggle;
+  };
+
+  window.fpStepper = function(id, delta) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var val = parseInt(el.dataset.value || '0') + delta;
+    if (val < 0) val = 0;
+    if (val > 99) val = 99;
+    if (id === 'fpRecycle') {
+      var waterVal = parseInt((document.getElementById('fpWater') || {}).dataset && (document.getElementById('fpWater').dataset.value || '0'));
+      if (val > waterVal) val = waterVal;
+    }
+    el.dataset.value = val;
+    var valEl = el.querySelector('.fp-stepper-val');
+    if (valEl) valEl.textContent = val;
+  };
+
+  window.fpSetStayed = function(val) {
+    var el = document.getElementById('fpStayed');
+    if (!el) return;
+    el.dataset.value = val;
+    var buttons = el.querySelectorAll('.fp-stayed-btn');
+    buttons.forEach(function(btn) {
+      btn.style.background = btn.dataset.val === val ? '#e8f5e9' : '#fff';
+      btn.style.borderColor = btn.dataset.val === val ? '#2e7d32' : '#ccc';
+      btn.style.fontWeight = btn.dataset.val === val ? '600' : 'normal';
+    });
+  };
+
+  window.submitFootprint = function() {
+    var userId = lineUserId || lsGet('formosa_user_id') || '';
+    if (!userId) { showPhotoToast('⚠️ ' + _i18n.loginRequired, 3000); return; }
+    var waterEl = document.getElementById('fpWater');
+    var recycleEl = document.getElementById('fpRecycle');
+    var stayedEl = document.getElementById('fpStayed');
+    var waterCount = parseInt((waterEl && waterEl.dataset.value) || '0');
+    var recycleCount = parseInt((recycleEl && recycleEl.dataset.value) || '0');
+    var stayedVal = stayedEl && stayedEl.dataset.value;
+    var submitBtn = document.getElementById('fpSubmitBtn');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = _i18n.sending; }
+    fetch(API_BASE + '/api/formosa/daily-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        line_user_id: userId,
+        water_bottles: waterCount,
+        recycle_bottles: recycleCount,
+        hotel: stayedVal === '1' ? 1 : 0
+      })
+    }).then(function(res) {
+      if (res.ok) {
+        var fpBody = document.querySelector('#footprintPanel .fp-body');
+        var fpDone = document.querySelector('#footprintPanel .fp-done');
+        if (submitBtn) submitBtn.style.display = 'none';
+        if (fpDone) fpDone.style.display = 'block';
+      } else {
+        showPhotoToast('⚠️ ' + _i18n.networkError, 3000);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = _i18n.dailyReport.submit; }
+      }
+    }).catch(function() {
+      showPhotoToast('⚠️ ' + _i18n.networkError, 3000);
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = _i18n.dailyReport.submit; }
+    });
+  };
 
   window.manualCheckin = function() {
     // Immediate loading feedback on both buttons
@@ -3150,6 +3285,14 @@ const prefix = LOCALE_PREFIX[lang];
     box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
   }
   .checkin-big-icon { font-size: 1.6rem; }
+  .fp-step-btn {
+    width: 2.2rem; height: 2.2rem;
+    border-radius: 50%; border: 1px solid #c8e6c9;
+    background: #f0f9f0; color: #2e7d32;
+    font-size: 1.2rem; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fp-step-btn:active { background: #c8e6c9; }
   .checkin-upload-section {
     margin-top: 2rem;
     padding-top: 1.5rem;

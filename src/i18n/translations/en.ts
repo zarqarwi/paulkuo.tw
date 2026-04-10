@@ -491,6 +491,17 @@ export const en = {
     achievementShare: 'Share',
     achievementClose: 'Close',
   },
+  dailyReport: {
+    title: 'Daily Footprint',
+    waterBottles: 'Bottled water consumed today?',
+    recycled: 'Bottles recycled?',
+    stayed: 'Did you stay overnight?',
+    yes: 'Yes',
+    no: 'No',
+    optional: 'Optional — helps make your carbon report more complete',
+    submit: 'Submit footprint',
+    submitted: 'Recorded',
+  },
 
   homepage: {
     heroTitle: '2026 Baishatun Mazu Pilgrimage',
