@@ -1503,6 +1503,11 @@ const prefix = LOCALE_PREFIX[lang];
     lsSet('formosa_survey_date', new Date().toISOString());
     lsSet('formosa_deeds', JSON.stringify(data.survey.q1 || []));
 
+    // FIX-1: save phone to localStorage so achievement card can unlock
+    if (data.phone) {
+      lsSet('formosa_phone', data.phone);
+    }
+
     // Save GPS track for route map
     lsSet('formosa_gps_track', JSON.stringify(data.gps_points || []));
 
