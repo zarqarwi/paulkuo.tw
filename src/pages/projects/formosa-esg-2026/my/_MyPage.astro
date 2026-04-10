@@ -208,14 +208,14 @@ const linkPrefix = prefix;
   var MASCOT_BASE = '/images/formosa/';
   var TITLES = [
     { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.png', name: '煉氣香客', sub: '啟程入門者' },
-    { km: 15,  checkins: 3,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
-    { km: 45,  checkins: 5,  icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
-    { km: 90,  checkins: 6,  icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
-    { km: 135, checkins: 8,  icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
-    { km: 180, checkins: 10, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
-    { km: 225, checkins: 12, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
-    { km: 270, checkins: 14, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
-    { km: 300, checkins: 14, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
+    { km: 15,  checkins: 5,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
+    { km: 45,  checkins: 10, icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
+    { km: 90,  checkins: 15, icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
+    { km: 135, checkins: 20, icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
+    { km: 180, checkins: 25, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
+    { km: 225, checkins: 30, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
+    { km: 270, checkins: 35, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
+    { km: 300, checkins: 40, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
   ];
 
   var API_BASE = 'https://api.paulkuo.tw';
@@ -510,14 +510,14 @@ const linkPrefix = prefix;
   // Carbon card
   var carbonMain = document.getElementById('carbonMain');
   var savedKm = km; // walk km saved vs driving
-  var carbonSaved = (savedKm * 0.21).toFixed(2);
+  var carbonSaved = (savedKm * 0.12013).toFixed(2);
   if (carbon === 0) {
     carbonMain.innerHTML = '<p class="carbon-zero-hint">' + _t.carbonZeroHint + '</p>';
   } else {
     carbonMain.innerHTML =
       '<div class="carbon-big">' + carbon.toFixed(2) + ' <small>kg CO₂e</small></div>' +
       '<p class="carbon-compare">' + _t.equivDriveLess + ' ' + savedKm.toFixed(1) + ' ' + _t.km + '</p>' +
-      '<p class="carbon-compare">' + _t.equivTrees + ' ' + Math.max(0.01, savedKm * 0.21 / 22).toFixed(2) + ' ' + _t.treesAnnual + '</p>';
+      '<p class="carbon-compare">' + _t.equivTrees + ' ' + Math.max(0.01, savedKm * 0.12013 / 22).toFixed(2) + ' ' + _t.treesAnnual + '</p>';
   }
 
   // Share card data
@@ -529,7 +529,7 @@ const linkPrefix = prefix;
   document.getElementById('shareCheckins').textContent = checkins;
   document.getElementById('shareCheckinsLabel').textContent = _t.shareCheckin;
   document.getElementById('shareCarbon').textContent = carbon.toFixed(2);
-  var treesEquiv = Math.max(0.01, km * 0.21 / 22).toFixed(2);
+  var treesEquiv = Math.max(0.01, km * 0.12013 / 22).toFixed(2);
   document.getElementById('shareCarbonCompare').innerHTML =
     '<span>' + _t.shareDriveLess + ' ' + km.toFixed(1) + ' km</span>' +
     '<span>' + _t.shareTrees + ' ' + treesEquiv + ' ' + _t.shareTreesUnit + '</span>';
