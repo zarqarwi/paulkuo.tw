@@ -8,6 +8,13 @@
 
 ---
 
+## 前情提要
+
+- **Issue #162（今日善足跡）**：Worker 已部署，API 已驗通過（Cowork 4/10 確認），不需要重跑 deploy
+- **吳心恬 Anita Wu**：已知用 display_name 可查，D1 搜尋欄位用 `display_name LIKE '%吳心恬%' OR display_name LIKE '%Anita Wu%'`
+
+---
+
 ## 背景
 
 R3 audit 找到 2 個🔴必修項目：
@@ -41,6 +48,10 @@ sed -n '1580,1620p' worker/src/formosa.js
 sed -n '440,450p' worker/src/formosa.js
 sed -n '520,535p' worker/src/formosa.js
 grep -n "computeRank\|source.*manual" worker/src/formosa.js | head -20
+
+# 6. 查吳心恬 Anita Wu 的 line_user_id
+cd worker && npx wrangler d1 execute formosa-db --config wrangler.toml \
+  --command "SELECT line_user_id, display_name, total_km, level FROM formosa_users WHERE display_name LIKE '%吳心恬%' OR display_name LIKE '%Anita Wu%'"
 ```
 
 ---
@@ -146,13 +157,18 @@ const sanitizedSource = VALID_SOURCES.has(pt.source) ? pt.source : 'auto';
 ## 吳心恬雙等級 bug 調查
 
 **症狀**：同時顯示「煉氣」（Tracker 等級卡）和「元嬰」（成就卡彈窗）
+**全名**：吳心恬 Anita Wu
 
 **假設**：FIX-1 修復後，UserSync 里程降低 → computeRank 重算 → 等級降回正確值，雙等級自然消失
 
 **操作**：
-1. 修完 FIX-1 後，找到吳心恬的 line_user_id
-2. 查她的 GPS points 數量和里程（過濾前 vs 過濾後差多少）
-3. 重新跑一次 UserSync → 確認 MyPage 等級和 Tracker 等級一致
+1. Step 0 的 D1 查詢已找到她的 line_user_id
+2. 查她的 GPS points 過濾前 vs 過濾後差多少：
+   ```sql
+   SELECT COUNT(*), SUM(CASE WHEN source != 'remote' THEN 1 ELSE 0 END) as non_remote
+   FROM formosa_gps_points WHERE line_user_id = '{her_id}'
+   ```
+3. 修完 FIX-1 後重跑 UserSync，確認 MyPage 等級和 Tracker 等級一致
 
 如果修完 FIX-1 後雙等級還在，才需要深入查成就卡彈窗的觸發條件。
 
@@ -172,13 +188,19 @@ const sanitizedSource = VALID_SOURCES.has(pt.source) ? pt.source : 'auto';
 
 ## 部署方式
 
-這些是 Worker 改動：
+這些是 Worker 改動，完成後通知 Paul 跑：
 ```bash
 cd ~/Desktop/01_專案進行中/paulkuo.tw/worker
 wrangler deploy --config wrangler.toml
 ```
 
-⚠️ Paul 本機執行（Code 沒有 wrangler 部署權限）
+驗證：
+```bash
+# 打 UserSync 確認里程數字
+curl -X POST https://api.paulkuo.tw/api/formosa/user-sync \
+  -H "Content-Type: application/json" \
+  -d '{"line_user_id":"smoke_test"}'
+```
 
 ---
 
@@ -193,8 +215,7 @@ wrangler deploy --config wrangler.toml
 - {HH:MM} 吳心恬雙等級 bug 確認（{修好了 / 還需要查}）Code
 
 ## 待 Paul 執行
-- [ ] Worker deploy → 驗證: curl https://api.paulkuo.tw/api/formosa/health
-- [ ] 確認分享卡里程數字合理（MyPage 里程 ≈ Stats API 里程）
+- [ ] Worker deploy → 驗證: 打 UserSync 確認里程合理
 
 ## 決策紀錄
 - remote 排除：加在 computeFilteredKm 裡，所有下游統一行為，符合 Paul 決策
@@ -211,4 +232,5 @@ wrangler deploy --config wrangler.toml
 2. **FIX-1 是主菜，FIX-2 是配菜** — 如果時間有限，先確保 FIX-1 正確再動 FIX-2
 3. **Worker 部署必須帶 `--config`** — 根目錄的 `wrangler.jsonc` 是 og-worker，不是主 Worker
 4. **前端部署不需要動** — 這兩個修復都是 Worker 邏輯
-5. **R3 中的 🟡 觀察項目本次不修** — 403 UX、Cron 效能等留待活動結束後處理
+5. **Issue #162 不需要重跑 deploy** — Cowork 已驗通過（daily-report API 回 ok:true）
+6. **R3 中的 🟡 觀察項目本次不修** — 403 UX、Cron 效能等留待活動結束後處理
