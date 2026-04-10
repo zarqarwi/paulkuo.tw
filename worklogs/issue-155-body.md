@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-10 02:xx（Cowork — governance-kv-seed 修復完成 + session-handoff v4.7 + worklog 三維度規則建立）
+最後更新：2026-04-10（Cowork — R3 audit 完成 + Issue #162 驗通過 + R3-fix handoff 交 Code）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -30,6 +30,8 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-10 R3 audit 完成（資料品質&防禦韌性）：FIX-1 UserSync 噪音過濾缺失 [P0] + FIX-2 source 無白名單 [P1]，handoff 交 Code（021c291）Cowork
+- 04-10 Issue #162 今日善足跡 API 驗通過：daily-report → ok:true，admin/carbon water_bottles 有值（Cowork 驗，不需重跑 deploy）Cowork
 - 04-10 02:xx governance-kv-seed.cjs `--remote` 修復 (be42206) + session-handoff v4.7 (6f0927e) + CLAUDE.md worklog 三維度必填 (8198a7c) Code+Cowork
 - 04-10 00:xx CI/CD 盤查：Build & Deploy #3494~#3498 連續失敗，根因 governance-kv-seed.cjs `--remote` 參數。Worker 部署成功，KV seed 失敗。已寫 PENDING.md handoff 給 Code Cowork
 - 04-10 01:xx 治理框架 Phase 2 完成：governance API 4 endpoints + KV seed + Dashboard 頁面 /governance/ (ceb67d2, e2fcd8f, b09d00c) Cowork+Code
@@ -68,14 +70,21 @@
 ---
 
 ## Formosa ESG 2026
-> 起駕：4/12（倒數 3 天）⚠️ 凍結期 4/11-4/13
+> 起駕：4/12（倒數 **2 天**）⚠️ 凍結期 4/11-4/13
 
 **Phase 3 ✅** 上線準備完成
-**Phase 4 ✅** 功能完善（Issue #104–#153 全結案）
+**Phase 4 ✅** 功能完善（Issue #104–#162 全結案）
+
+**📋 R3 Audit 結果（2026-04-10）**
+- 🔴 FIX-1 [P0]：UserSync 缺噪音過濾 → **Code 執行中**（handoff: `code--formosa-r3-fix-2026-04-10.md`）
+- 🔴 FIX-2 [P1]：source 無白名單 → **Code 執行中**（同上 handoff）
+- 🟡 吳心恬雙等級 bug → 待 FIX-1 修復後確認
+- 🟢 12 項安全確認（GPS 驗證、Rate limit、斷線 queue、Cron 鎖…）
 
 **⏰ 4/12 前剩餘待辦**
-- [ ] 重設 FORMOSA_ADMIN_TOKEN — **Paul 本機執行**
+- [x] 重設 FORMOSA_ADMIN_TOKEN — ✅ 4/10 已完成
 - [ ] 填 data/youtube-channels.json — **需 Paul 提供**
+- [ ] R3-FIX-1 + FIX-2 完成後跑 wrangler deploy — **待 Code 完成後 Paul 執行**
 
 ---
 
