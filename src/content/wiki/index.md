@@ -1,16 +1,16 @@
 ---
 title: "Paul Kuo LLM Wiki — 知識索引"
 type: index
-updated: 2026-04-06
-total_pages: 232
+updated: 2026-04-10
+total_pages: 235
 ---
 
 ## 總覽
-- 總頁數：232
-- 概念頁：17
+- 總頁數：235
+- 概念頁：22
 - 實體頁：1
-- 來源頁：214
-- Graph：232 nodes / 449 edges
+- 來源頁：226
+- Graph：235 nodes / 459 edges
 
 ## 概念頁
 
@@ -18,6 +18,7 @@ total_pages: 232
 - **Agentic Web** (`agentic-web`) — 4 sources
 - **AI Agent 經濟** (`ai-agent-economy`) — 40 sources
 - **AI Education** (`ai-education`) — 13 sources
+- **AI 具身化** (`ai-embodiment`) — 1 sources
 - **AI 在醫療與生技的應用** (`ai-medical-biotech`) — 1 sources
 - **AI Skill Methodology** (`ai-skill-methodology`) — 9 sources
 - **Build for Models** (`build-for-models`) — 13 sources
@@ -26,6 +27,7 @@ total_pages: 232
 - **Human Judgment in AI Era** (`human-judgment-in-ai-era`) — 37 sources
 - **One-Person Team** (`one-person-team`) — 18 sources
 - **再生醫療技術** (`regenerative-medicine`) — 3 sources
+- **遞迴自我改進** (`recursive-self-improvement`) — 1 sources
 - **Skill Development** (`skill-development`) — 31 sources
 
 ### 生活與成長
@@ -35,7 +37,14 @@ total_pages: 232
 - **穩態生存邏輯的陷阱** (`steady-state-survival-trap`) — 14 sources
 
 ### 循環經濟
+- **去增長與共有財** (`degrowth-commons`) — 1 sources
 - **循環經濟實踐** (`circular-economy-practice`) — 14 sources
+
+### 信仰
+- **信仰與科技的對話** (`faith-technology-dialogue`) — 8 sources
+
+### 創業
+- **建構者心態** (`builder-mindset`) — 10 sources
 
 ## 實體頁
 - **快刀青衣** (`kuaidao-qingyi`)

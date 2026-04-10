@@ -9,7 +9,7 @@ source_count: 14
 confidence: high
 tags: [循環經濟, 回收模式, ESG, 物資再利用, 環保創新]
 links_to: [enterprise-ai-adoption]
-linked_from: [getnote-043024-secondhand-recycling-logistics, getnote-479752-taiwan-environmental-projects, getnote-705576-rockwool-recycling, getnote-838824-circular-economy-decluttering, getnote-384168-circular-economy-recycling-models, getnote-482512-organizer-lecture-business, getnote-963240-material-substitution-fire, getnote-866496-environmental-innovation-npo, article-formosa-esg-2026-low-carbon-pilgrimage, article-taiwan-semiconductor-tenfold-leap, article-world-outlook-2030, clip-taiwan-circular-economy-2050-roadmap, clip-taiwan-semiconductor-water-sustainability, clip-pcb-circular-economy-profitability]
+linked_from: [getnote-043024-secondhand-recycling-logistics, getnote-479752-taiwan-environmental-projects, getnote-705576-rockwool-recycling, getnote-838824-circular-economy-decluttering, getnote-384168-circular-economy-recycling-models, getnote-482512-organizer-lecture-business, getnote-963240-material-substitution-fire, getnote-866496-environmental-innovation-npo, article-formosa-esg-2026-low-carbon-pilgrimage, article-taiwan-semiconductor-tenfold-leap, article-world-outlook-2030, clip-taiwan-circular-economy-2050-roadmap, clip-taiwan-semiconductor-water-sustainability, clip-pcb-circular-economy-profitability, degrowth-commons]
 ---
 
 ## 摘要

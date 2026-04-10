@@ -9,7 +9,7 @@ source_count: 1
 confidence: low
 tags: [去增長, 人類世, 共產主義, UBI, 資本主義批判, 齋藤幸平, 共有財, AI與社會]
 links_to: [human-judgment-in-ai-era, circular-economy-practice]
-linked_from: []
+linked_from: [degrowth-commons]
 raw_source_path: "notes/04_AI與科技/untitled_1889383225493171560.md"
 raw_source_type: getnote
 raw_note_id: "1889383225493171560"

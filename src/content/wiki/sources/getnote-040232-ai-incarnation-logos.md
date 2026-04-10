@@ -9,7 +9,7 @@ source_count: 1
 confidence: low
 tags: [AI具身化, 神學, 道成肉身, 人形機器人, Logos]
 links_to: [faith-technology-dialogue, human-ai-collaboration, agentic-web]
-linked_from: []
+linked_from: [ai-embodiment]
 raw_source_path: "notes/04_AI與科技/untitled_1889394136856040232.md"
 raw_source_type: getnote
 raw_note_id: "1889394136856040232"

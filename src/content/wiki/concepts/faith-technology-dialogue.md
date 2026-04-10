@@ -9,7 +9,7 @@ source_count: 8
 confidence: medium
 tags: [信仰與AI, 道成肉身, 具身性, AI倫理, 神學反思, 教宗]
 links_to: [human-ai-collaboration, human-judgment-in-ai-era, narrative-power]
-linked_from: [article-incarnation-ai-embodiment, article-pope-leo-xiv-ai-homily, article-reformation-printing-politics, article-god-beyond-definition, clip-ai-theology-absolute-vulnerability, clip-notre-dame-ai-faith-summit, clip-pope-leo-xiv-balanced-view-ai, article-faith-collapse-rebuild]
+linked_from: [article-incarnation-ai-embodiment, article-pope-leo-xiv-ai-homily, article-reformation-printing-politics, article-god-beyond-definition, clip-ai-theology-absolute-vulnerability, clip-notre-dame-ai-faith-summit, clip-pope-leo-xiv-balanced-view-ai, article-faith-collapse-rebuild, ai-embodiment]
 ---
 
 ## 摘要

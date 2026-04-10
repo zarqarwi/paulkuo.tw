@@ -9,7 +9,7 @@ source_count: 1
 confidence: low
 tags: [AlphaEvolve, DeepMind, AI演化, 演算法自我改進, Alpha系列]
 links_to: [ai-agent-economy, agentic-web]
-linked_from: []
+linked_from: [recursive-self-improvement]
 raw_source_path: "notes/04_AI與科技/untitled_1889383209385483752.md"
 raw_source_type: getnote
 raw_note_id: "1889383209385483752"
