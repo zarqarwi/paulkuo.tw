@@ -797,10 +797,15 @@ const prefix = LOCALE_PREFIX[lang];
   if (lineUserId) flushCheckinQueue(lineUserId);
 
   // ── Issue #127: Fetch server GPS history and merge with localStorage ──
+  // Store as shared Promise so init decision tree can verify survey status (no duplicate request)
+  var __serverUserDataPromise = lineUserId
+    ? fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(lineUserId), {
+        headers: { 'X-Line-User-Id': lineUserId }
+      }).then(function(r) { return r.json(); }).catch(function() { return null; })
+    : Promise.resolve(null);
+
   if (lineUserId) {
-    fetch(API_BASE + '/api/formosa/user/' + encodeURIComponent(lineUserId), {
-      headers: { 'X-Line-User-Id': lineUserId }
-    }).then(function(res) { return res.json(); }).then(function(data) {
+    __serverUserDataPromise.then(function(data) {
       if (data && data.gps_points && data.gps_points.length > 0) {
         var serverPts = data.gps_points.map(function(p) {
           // #145: mark as _uploaded=true so getUnuploadedTrackPoints() won't re-send server data
@@ -2222,10 +2227,25 @@ const prefix = LOCALE_PREFIX[lang];
     var container = document.querySelector('.tracker');
     if (container) container.appendChild(guestCard);
   } else if (lsGet('formosa_survey_done') === 'true') {
-    enterCheckinMode();
-    checkParticipantStatus();
-    // Check for pending notifications after page load
-    setTimeout(checkAndShowNotifications, 500);
+    // Verify survey record still exists on server (handles admin data reset case)
+    function _enterCheckinModeFlow() {
+      enterCheckinMode();
+      checkParticipantStatus();
+      setTimeout(checkAndShowNotifications, 500);
+    }
+    __serverUserDataPromise.then(function(d) {
+      if (d && !d.survey) {
+        // Server has no survey record — localStorage is stale, reset and show CTA
+        lsSet('formosa_survey_done', 'false');
+        showCard('cta');
+        var startBtn = document.getElementById('startSurveyBtn');
+        if (startBtn) startBtn.addEventListener('click', function() { showCard(1); });
+      } else {
+        _enterCheckinModeFlow();
+      }
+    }).catch(function() {
+      _enterCheckinModeFlow(); // network error — trust localStorage
+    });
   } else {
     // Show CTA landing card instead of jumping straight into survey
     showCard('cta');
