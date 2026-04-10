@@ -441,7 +441,7 @@ export async function handleFormosaCheckin(request, env, ctx) {
           await env.TICKER_KV.put(ptKey, JSON.stringify({
             user_id: userId, lat: pt.lat, lng: pt.lng,
             altitude: null, accuracy: null,
-            source: pt.source || 'auto', timestamp: ptTs
+            source: VALID_SOURCES.has(pt.source) ? pt.source : 'auto', timestamp: ptTs
           }), { expirationTtl: 259200 });
           batchWritten++;
         }
@@ -522,7 +522,7 @@ export async function handleFormosaTrackSync(request, env) {
       await env.TICKER_KV.put(ptKey, JSON.stringify({
         user_id: userId, lat: pt.lat, lng: pt.lng,
         altitude: null, accuracy: null,
-        source: pt.source || 'auto', timestamp: ptTs
+        source: VALID_SOURCES.has(pt.source) ? pt.source : 'auto', timestamp: ptTs
       }), { expirationTtl: 259200 });
       synced++;
     }
@@ -952,6 +952,25 @@ function haversine(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+const VALID_SOURCES = new Set(['auto', 'manual', 'photo', 'checkin', 'remote', 'saved']);
+
+// Shared filtered-km calculation (Stats API baseline logic + remote exclusion)
+function computeFilteredKm(pts) {
+  if (!pts || pts.length < 2) return 0;
+  const sorted = pts
+    .filter(p => p.source !== 'remote')
+    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  let totalKm = 0;
+  for (let i = 1; i < sorted.length; i++) {
+    const dist = haversine(sorted[i-1].lat, sorted[i-1].lng, sorted[i].lat, sorted[i].lng);
+    const timeDiffHours = (new Date(sorted[i].timestamp) - new Date(sorted[i-1].timestamp)) / 3600000;
+    if (dist < 0.01 || timeDiffHours <= 0 || timeDiffHours < 1/120) continue;
+    if (dist / timeDiffHours > 300) continue;
+    totalKm += dist;
+  }
+  return totalKm;
+}
+
 const SPEED_THRESHOLDS = [
   { maxSpeed: 15,       mode: 'zero_emission', gwp: 0 },          // ≤ 15 km/h → 步行/腳踏車，零排放
   { maxSpeed: Infinity, mode: 'motorized',     gwp: 0.12013 }     // > 15 km/h → 巴士人均係數 (ecoinvent "market for transport, regular bus")
@@ -982,22 +1001,19 @@ export async function handleFormosaUser(request, env, userId) {
     ).bind(userId).first();
 
     const pts = points?.results || [];
-    let totalKm = 0;
+    const totalKm = computeFilteredKm(pts);
     let totalCarbon = 0;
     const transportBreakdown = { zero_emission: 0, motorized: 0 };
 
-    for (let i = 1; i < pts.length; i++) {
-      const dist = haversine(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
-      const timeDiffHours = (new Date(pts[i].timestamp) - new Date(pts[i-1].timestamp)) / 3600000;
-
-      // Filter noise: skip tiny distances, zero/negative time gaps, GPS drift
-      if (dist < 0.01 || timeDiffHours <= 0 || timeDiffHours < 1/120) continue; // <10m, or <30s
-
+    // Carbon/transport breakdown (same filters as computeFilteredKm)
+    const nonRemote = pts.filter(p => p.source !== 'remote');
+    for (let i = 1; i < nonRemote.length; i++) {
+      const dist = haversine(nonRemote[i-1].lat, nonRemote[i-1].lng, nonRemote[i].lat, nonRemote[i].lng);
+      const timeDiffHours = (new Date(nonRemote[i].timestamp) - new Date(nonRemote[i-1].timestamp)) / 3600000;
+      if (dist < 0.01 || timeDiffHours <= 0 || timeDiffHours < 1/120) continue;
       const speed = dist / timeDiffHours;
-      if (speed > 300) continue; // GPS drift anomaly
-
+      if (speed > 300) continue;
       const transport = inferTransportMode(speed);
-      totalKm += dist;
       totalCarbon += dist * transport.gwp;
       transportBreakdown[transport.mode] += dist;
     }
@@ -1588,14 +1604,7 @@ async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
     // Count only manual checkins (GPS auto-points don't count as check-ins)
     const checkins = pts.filter(p => p.source === 'manual').length;
 
-    // Compute total km using haversine (same filter logic as main stats endpoint)
-    let totalKm = 0;
-    for (let i = 1; i < pts.length; i++) {
-      const dist = haversine(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
-      const timeDiffHours = (new Date(pts[i].timestamp) - new Date(pts[i-1].timestamp)) / 3600000;
-      if (dist < 0.01 || timeDiffHours <= 0 || timeDiffHours < 1/120 || dist / timeDiffHours > 300) continue;
-      totalKm += dist;
-    }
+    const totalKm = computeFilteredKm(pts);
 
     const survey = await env.AUTH_DB.prepare(
       'SELECT carbon_total_kg FROM formosa_surveys WHERE user_id = ? LIMIT 1'
@@ -1802,17 +1811,12 @@ export async function handleFormosaUserSync(request, env) {
 
     // Get user's cumulative data from server
     const gpsPoints = await env.AUTH_DB.prepare(
-      'SELECT lat, lng, timestamp as datetime, source FROM formosa_gps_points WHERE user_id = ? ORDER BY timestamp ASC'
+      'SELECT lat, lng, timestamp, source FROM formosa_gps_points WHERE user_id = ? ORDER BY timestamp ASC'
     ).bind(lineUserId).all();
 
-    const checkinCount = gpsPoints.results?.length || 0;
-
-    // Calculate total km from GPS points
-    let totalKm = 0;
     const pts = gpsPoints.results || [];
-    for (let i = 1; i < pts.length; i++) {
-      totalKm += haversineKm(pts[i-1].lat, pts[i-1].lng, pts[i].lat, pts[i].lng);
-    }
+    const checkinCount = pts.length;
+    const totalKm = computeFilteredKm(pts);
 
     // Check if survey was done
     const survey = await env.AUTH_DB.prepare(
@@ -1835,7 +1839,7 @@ export async function handleFormosaUserSync(request, env) {
       privacy_agreed: !!user?.privacy_agreed_at,
       participant_status: user?.participant_status || 'active',
       completed_at: user?.completed_at || null,
-      gps_track: pts.map(p => ({ lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source }))
+      gps_track: pts.map(p => ({ lat: p.lat, lng: p.lng, datetime: p.timestamp, source: p.source }))
     }, 200, request);
   } catch (e) {
     console.error('API error:', e); return jsonResponse({ error: 'Internal server error' }, 500, request);
