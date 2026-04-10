@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-10（Cowork — R3 audit 完成 + Issue #162 驗通過 + R3-fix handoff 交 Code）
+最後更新：2026-04-10（Cowork — R3-fix 全部完成，UserSync 驗證通過，吳心恬 km=94.3 確認合理）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -30,6 +30,7 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-10 R3-fix 全部完成驗證通過 ✅：FIX-1 computeFilteredKm (58a9e09) + FIX-2 VALID_SOURCES (同 commit)，Worker deploy 174bace0，UserSync 驗證吳心恬 km=94.3 合理，endpoint 確認 POST /api/formosa/user/sync (body: line_user_id) Cowork+Code
 - 04-10 R3 audit 完成（資料品質&防禦韌性）：FIX-1 UserSync 噪音過濾缺失 [P0] + FIX-2 source 無白名單 [P1]，handoff 交 Code（021c291）Cowork
 - 04-10 Issue #162 今日善足跡 API 驗通過：daily-report → ok:true，admin/carbon water_bottles 有值（Cowork 驗，不需重跑 deploy）Cowork
 - 04-10 02:xx governance-kv-seed.cjs `--remote` 修復 (be42206) + session-handoff v4.7 (6f0927e) + CLAUDE.md worklog 三維度必填 (8198a7c) Code+Cowork
@@ -75,16 +76,17 @@
 **Phase 3 ✅** 上線準備完成
 **Phase 4 ✅** 功能完善（Issue #104–#162 全結案）
 
-**📋 R3 Audit 結果（2026-04-10）**
-- 🔴 FIX-1 [P0]：UserSync 缺噪音過濾 → **Code 執行中**（handoff: `code--formosa-r3-fix-2026-04-10.md`）
-- 🔴 FIX-2 [P1]：source 無白名單 → **Code 執行中**（同上 handoff）
-- 🟡 吳心恬雙等級 bug → 待 FIX-1 修復後確認
-- 🟢 12 項安全確認（GPS 驗證、Rate limit、斷線 queue、Cron 鎖…）
+**📋 R3 Audit + Fix 全部完成 ✅（2026-04-10）**
+- ✅ FIX-1 [P0]：computeFilteredKm 共用函數抽出（排除 remote + 三層噪音過濾），commit 58a9e09，Worker deploy 174bace0
+- ✅ FIX-2 [P1]：VALID_SOURCES 白名單（TrackSync + Checkin batch），同 commit
+- ✅ 吳心恬驗證：UserSync 觸發後 km=94.3（合理），endpoint: `POST /api/formosa/user/sync` (body: `line_user_id`)
+- ✅ 12 項安全確認（GPS 驗證、Rate limit、斷線 queue、Cron 鎖…）
 
 **⏰ 4/12 前剩餘待辦**
 - [x] 重設 FORMOSA_ADMIN_TOKEN — ✅ 4/10 已完成
+- [x] R3-FIX-1 + FIX-2 Worker deploy — ✅ 4/10 版本 174bace0
+- [ ] 活動前全清測試資料 — **Paul 操作**（已發通知）
 - [ ] 填 data/youtube-channels.json — **需 Paul 提供**
-- [ ] R3-FIX-1 + FIX-2 完成後跑 wrangler deploy — **待 Code 完成後 Paul 執行**
 
 ---
 
