@@ -19,7 +19,7 @@ export default {
       url.searchParams.has('u')
     ) {
       const userId = url.searchParams.get('u');
-      const apiBase = 'https://paulkuo-ticker.paul-4bf.workers.dev';
+      const apiBase = 'https://api.paulkuo.tw';
       const ogImageUrl = `${apiBase}/api/formosa/og/${encodeURIComponent(userId)}.png`;
       const trackerUrl = `https://paulkuo.tw/projects/formosa-esg-2026/tracker/?u=${encodeURIComponent(userId)}`;
       const defaultOgImage = 'https://paulkuo.tw/images/formosa-esg-2026-og.png';

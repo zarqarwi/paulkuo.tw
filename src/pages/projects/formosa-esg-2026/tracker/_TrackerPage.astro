@@ -674,6 +674,12 @@ const prefix = LOCALE_PREFIX[lang];
         if (pulseEl) pulseEl.classList.add('active');
         if (checkinBtn) checkinBtn.style.display = 'inline-block';
 
+        // #158: discard points with poor accuracy (>100m) to reduce GPS drift
+        if (pos.coords.accuracy > 100) {
+          if (statusEl) statusEl.textContent = '📍 ' + _i18n.trackingWaiting;
+          return;
+        }
+
         var pt = {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
