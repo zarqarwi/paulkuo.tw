@@ -703,9 +703,13 @@ export async function handleFormosaPush(request, env) {
     const behaviorHours = Math.min(Math.max(parseInt(body.behavior_hours) || 24, 1), 168);
 
     // Get users filtered by role (exclude paused/completed from push)
-    let query = "SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL AND (participant_status IS NULL OR participant_status = 'active')";
+    // Admin pushes bypass participant_status filter — admins should always receive
+    const isAdminTarget = targetRole === 'admin';
+    let query = isAdminTarget
+      ? "SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL AND role = 'admin'"
+      : "SELECT line_user_id FROM formosa_users WHERE line_user_id IS NOT NULL AND (participant_status IS NULL OR participant_status = 'active')";
     const queryParams = [];
-    if (targetRole !== 'all') {
+    if (!isAdminTarget && targetRole !== 'all') {
       query += ' AND role = ?';
       queryParams.push(targetRole);
     }
