@@ -598,6 +598,10 @@ const prefix = LOCALE_PREFIX[lang];
   _i18n = _trackerEl ? JSON.parse(_trackerEl.dataset.i18n || '{}') : {};
   _lang = _trackerEl ? (_trackerEl.dataset.lang || 'zh-Hant') : 'zh-Hant';
 
+  // #161: Re-read lineUserId — outer scope captures it before LIFF async completes,
+  // so new users who just logged in would have lineUserId=null and share links without ?u=
+  lineUserId = window.__lineUserId || lsGet('formosa_line_user_id') || null;
+
   // ── Test Mode Banner ──
   if (TEST_MODE) {
     var tb = document.getElementById('testBanner');
@@ -1435,9 +1439,8 @@ const prefix = LOCALE_PREFIX[lang];
   };
 
   window.shareFB = function() {
-    // FB share URL includes userId so crawler can serve personalized OG image
+    // FB share URL — TRACKER_URL already includes ?u=lineUserId when logged in
     var fbUrl = TRACKER_URL;
-    if (lineUserId) fbUrl = TRACKER_URL + '?u=' + encodeURIComponent(lineUserId);
     if (navigator.share) {
       navigator.share({
         title: SHARE_TITLE,
