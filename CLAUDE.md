@@ -93,6 +93,27 @@ Worklog 必須涵蓋三個維度，缺一不可：
 
 ## 工程慣例
 
+### 新 Clone 後必做
+
+```bash
+cd ~/Desktop/01_專案進行中/paulkuo.tw
+bash scripts/install-hooks.sh
+```
+
+這會安裝 `commit-msg` hook（跨子專案影響偵測）。Hook 不進 git 版本控制，每次 clone 後要重新裝。
+
+### Rollback Protocol
+
+出事時的復原步驟：
+
+1. **Worker API 壞了**：`cd worker && git checkout HEAD~1 -- src/ && wrangler deploy --config wrangler.toml`
+2. **前端壞了**：`git checkout HEAD~1 -- src/ && npm run build && wrangler deploy`
+3. **D1 Schema 改壞了**：D1 沒有原生 rollback，靠 `backup-d1.yml` Action 的每日備份還原
+4. **KV 資料錯了**：重新跑對應的 seed 腳本（如 `node scripts/governance-kv-seed.cjs`）
+5. **共用檔案改壞多個子專案**：先 revert commit，再逐一跑 smoke test 確認全部恢復
+
+回退後必須對每個受影響的子專案跑 smoke test（見 `docs/shared-file-impact-map.md`）。
+
 ### 部署
 
 ```bash
