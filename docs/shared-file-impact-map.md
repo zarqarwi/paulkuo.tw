@@ -1,10 +1,14 @@
 # paulkuo.tw 共用檔案影響地圖
 
-> 更新：2026-04-09（TQEF 補入，修正歸屬錯誤）
-> 用途：跨子專案改動時的影響範圍參考
+> 更新：2026-04-11（新增 JSON 單一事實來源）
+> 用途：跨子專案改動時的影響範圍參考（人類可讀版）
+> 機器可讀來源：`docs/shared-files.json`（commit-msg hook、skill、scheduled task 都讀這份）
 
 本 repo 有六個子專案共用同一個 codebase，改 A 可能壞 B。
 修改以下檔案前，**必須確認影響範圍**。
+
+> ⚠️ 新增或修改共用檔案時，請更新 `docs/shared-files.json`（單一事實來源），
+> 而非只改這份 markdown。hook 和自動掃描都讀 JSON。
 
 ## 子專案一覽
 
