@@ -1,0 +1,50 @@
+{
+  "_doc": "跨子專案共用檔案清單。commit-msg hook、cross-project-impact skill、scheduled task 都讀這份。專案清單的單一事實來源是 worklogs/governance/projects.json，本檔只管『哪些檔案是共用的』。",
+  "_updated": "2026-04-11",
+  "_projects_source": "worklogs/governance/projects.json",
+
+  "_affects_convention": "affects 欄位一律使用 projects.json 的 project id。'*' 代表全部專案。顯示時從 projects.json 查中文名。",
+
+  "critical": [
+    { "file": "worker/src/index.js", "affects": ["*"], "note": "Worker 路由分派" },
+    { "file": "worker/src/config.js", "affects": ["*"], "note": "全域設定常數" },
+    { "file": "worker/src/utils.js", "affects": ["*"], "note": "corsHeaders / jsonResponse" },
+    { "file": "worker/src/auth.js", "affects": ["*"], "note": "OAuth + token + 預算檢查" },
+    { "file": "src/layouts/BaseLayout.astro", "affects": ["*"], "note": "基礎版面" },
+    { "file": "src/components/NavBar.astro", "affects": ["*"], "note": "導航列" },
+    { "file": "src/components/SiteHead.astro", "affects": ["*"], "note": "SEO meta tags" },
+    { "file": "src/components/SiteFooter.astro", "affects": ["*"], "note": "頁尾" },
+    { "file": "src/components/I18nClient.astro", "affects": ["*"], "note": "多語切換" },
+    { "file": "src/data/siteSchema.ts", "affects": ["*", "ai-ready"], "note": "JSON-LD 結構化資料" }
+  ],
+
+  "shared_modules": [
+    { "file": "worker/src/translator.js", "affects": ["llm-wiki", "paulkuo-main", "agora"], "note": "翻譯 / STT 後處理 / 摘要" },
+    { "file": "worker/src/scorecard.js", "affects": ["formosa-esg", "paulkuo-main"], "note": "評分卡" },
+    { "file": "worker/src/status.js", "affects": ["*"], "note": "健康檢查" },
+    { "file": "worker/src/youtube-ingest.js", "affects": ["paulkuo-main", "llm-wiki"], "note": "YouTube 資料" }
+  ],
+
+  "ai_ready_auto": [
+    { "file": "public/llms.txt", "affects": ["*"], "note": "AI Agent 自動優化" },
+    { "file": "public/mcp.json", "affects": ["*"], "note": "MCP 工具定義" },
+    { "file": "public/.well-known/agent-card.json", "affects": ["*"], "note": "A2A 卡片" },
+    { "file": "public/robots.txt", "affects": ["*"], "note": "爬蟲規則" }
+  ],
+
+  "smoke_tests": {
+    "*": [
+      "curl -s -o /dev/null -w '%{http_code}' https://paulkuo.tw/",
+      "curl -s -o /dev/null -w '%{http_code}' 'https://api.paulkuo.tw/api/wiki/search?q=AI'",
+      "curl -s -o /dev/null -w '%{http_code}' https://api.paulkuo.tw/api/formosa/checkin/health",
+      "curl -s -o /dev/null -w '%{http_code}' 'https://api.paulkuo.tw/api/scorecard/feed'",
+      "curl -s -o /dev/null -w '%{http_code}' 'https://api.paulkuo.tw/api/tqef/rounds'"
+    ],
+    "llm-wiki": ["curl -s -o /dev/null -w '%{http_code}' 'https://api.paulkuo.tw/api/wiki/search?q=LLM'"],
+    "paulkuo-main": ["curl -s -o /dev/null -w '%{http_code}' https://paulkuo.tw/"],
+    "formosa-esg": ["curl -s -o /dev/null -w '%{http_code}' https://api.paulkuo.tw/api/formosa/checkin/health"],
+    "acp": ["curl -s -o /dev/null -w '%{http_code}' 'https://api.paulkuo.tw/api/scorecard/feed'"],
+    "agora": ["curl -s -o /dev/null -w '%{http_code}' 'https://api.paulkuo.tw/api/tqef/rounds'"],
+    "ai-ready": ["curl -s -o /dev/null -w '%{http_code}' https://paulkuo-eval.paul-4bf.workers.dev/api/eval/score"]
+  }
+}
