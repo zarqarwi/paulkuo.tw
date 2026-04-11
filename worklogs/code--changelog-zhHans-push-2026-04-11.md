@@ -2,6 +2,7 @@
 **給：Code**
 **日期：2026-04-11**
 **專案：zarqarwi/paulkuo.tw**
+**狀態：✅ 完成**（2026-04-12 00:06，commit d028a37）
 
 ---
 
@@ -137,7 +138,7 @@ curl -s "https://mazu.today/projects/formosa-esg-2026/docs/changelog/" | grep -c
 
 完成後在 worklog 記：
 ```
-- 04-11 {HH:MM} changelog zh-Hans push 完成，4 語言版本全部上線 ({commit hash}) Code
+- 04-12 {HH:MM} changelog zh-Hans push 完成，4 語言版本全部上線 ({commit hash}) Code
 ```
 
 並更新本 handoff 檔案加一行：`**狀態：✅ 完成**`
