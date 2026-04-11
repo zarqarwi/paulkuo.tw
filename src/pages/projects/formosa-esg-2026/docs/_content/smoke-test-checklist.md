@@ -1,6 +1,6 @@
 # Tracker Smoke Test Checklist
 
-**版本 v1.1** ｜ 2026-04-04 ｜ 新增 RFC #100 項目 + 語系驗證
+**版本 v1.2** ｜ 2026-04-11 ｜ Level 3 執行完成 + 五輪 Pre-Launch Audit 全通過
 
 三個層級，依情境選用。測試前一律 **hard refresh**（CDN max-age=3600）。
 
@@ -66,7 +66,9 @@
 
 ---
 
-## Level 3：上線前驗收（4/11，30 分鐘）
+## Level 3：上線前驗收（4/11 完成 ✅）
+
+> **2026-04-11 驗收狀態：** Pre-Launch Audit R1–R5 五輪全部完成。核心打卡路徑穩固，離線機制完整，GPS 飄移 + 直線軌跡修復（Issue #163），分享連結 race condition 修復（Issue #161）。真機 Smoke Test 由 Paul 執行。
 
 Level 2 全部項目 + 以下壓力情境：
 
@@ -96,6 +98,6 @@ Level 2 全部項目 + 以下壓力情境：
 |------|------|------|-----------|
 | 每次 `wrangler deploy` 後 | Level 1 | Code session | worklog 當日條目 |
 | 每週固定一次 | Level 2 | Cowork 或 Paul | handoffs/ 裡的驗證紀錄 |
-| 4/11 上線前一天 | Level 3 | Paul + Cowork 協作 | 獨立驗收報告 |
+| 4/11 起駕前驗收 ✅ | Level 3 | Paul + Cowork 協作 | R1–R5 五輪 Pre-Launch Audit 全完成 |
 
 > 任何一項 fail → 截圖 + 裝置型號 → 寫進 handoff → 交 Code session 修復。

@@ -1,5 +1,5 @@
-# Formosa ESG 2026: Operations Runbook v1.0
-**Date:** 2026-04-04  
+# Formosa ESG 2026: Operations Runbook v1.1
+**Date:** 2026-04-04 (v1.1 updated: 2026-04-11)  
 **Event Period:** April 12–20, 2026  
 **Audience:** Paul (owner), volunteer operators  
 **Purpose:** Live pilgrimage incident response manual
@@ -674,7 +674,7 @@ X-Admin-Token: <token_from_wrangler_secret>
 | Paul (Owner) | — | LINE, direct call |
 | Cloudflare Support | https://dash.cloudflare.com/support | Use for D1, KV, infrastructure issues |
 | LINE Developers | https://developers.line.biz/ | Webhook, channel settings |
-| Formosa Repo | https://github.com/paulkuo-tw/formosa | Source of truth for code |
+| Formosa Repo | https://github.com/zarqarwi/paulkuo.tw | Source of truth for code |
 | Staging Env | https://staging.paulkuo.tw | Test changes before main push |
 
 ### Deployment Checklist
@@ -697,6 +697,10 @@ Before pushing to production:
 7. **querySelector duplication:** Multiple elements with same selector caused 4/03 incident; validate uniqueness
 8. **localStorage isolation:** LINE in-app browser and Safari have isolated storage; test on real device
 9. **Constants drift:** Always verify constants against source code, not documentation (4/04 incident)
+10. **GPS speed outlier → straight-line trajectories:** Raw GPS points can have erroneous high-speed readings that create straight-line artifacts between distant points. Always apply speed outlier filter (>120 km/h = reject) + accuracy filter (>100m = reject) before computing distance. (Issue #163, 4/11)
+11. **computeFilteredKm must use filteredPoints:** If distance calculation reads rawPoints instead of filteredPoints after the filter step, all filtering is bypassed silently. Verify the correct variable name at point of calculation. (R3 audit, 4/10)
+12. **VALID_SOURCES whitelist for GPS writes:** Without a whitelist, admin/dashboard writes can pollute the GPS buffer. Only accept writes from known client sources. (R3 fix, VALID_SOURCES, 4/10)
+13. **Share link race condition — lineUserId captured before LIFF init:** If lineUserId is read synchronously before `liff.init()` resolves, it captures `null`. Always await LIFF init before reading user profile. (Issue #161, 4/11)
 
 ### Escalation Path
 1. **Minor (user-facing but containable):**
@@ -717,9 +721,10 @@ Before pushing to production:
 ---
 
 ## Version History
+- **v1.1** (2026-04-11): Fix repo URL, add Known Pitfalls #10–13 (GPS outlier filter, computeFilteredKm, VALID_SOURCES, share link race condition), update date
 - **v1.0** (2026-04-04): Initial release, 12 scenarios, quick reference, emergency procedures
 
-**Last Updated:** 2026-04-04  
+**Last Updated:** 2026-04-11  
 **Maintained By:** Paul (owner) and volunteer ops team
 
 ---
