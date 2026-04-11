@@ -1,0 +1,23 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "llm-wiki",
+  "date": "2026-04-10",
+  "session_type": "auto",
+  "model": "n/a",
+  "size": "auto",
+  "outputs": {
+    "commits": 1,
+    "files_changed": 0,
+    "lines_added": 0,
+    "lines_removed": 0,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": false
+  },
+  "custom": {
+    "concepts_count": 22,
+    "corpus_pages": 225
+  },
+  "automation_changes": [],
+  "notes": "自動收集 by governance-metrics-collector。1 commit：新增 3 concepts（ai-embodiment, recursive-self-improvement, degrowth-commons）。files_changed 設 0：GitHub MCP 無法批次取得 per-commit file list。"
+}

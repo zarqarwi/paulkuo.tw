@@ -1,0 +1,20 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "formosa-esg",
+  "date": "2026-04-10",
+  "session_type": "auto",
+  "model": "n/a",
+  "size": "auto",
+  "outputs": {
+    "commits": 15,
+    "files_changed": 0,
+    "lines_added": 0,
+    "lines_removed": 0,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": false
+  },
+  "custom": {},
+  "automation_changes": [],
+  "notes": "自動收集 by governance-metrics-collector。15 commits 集中在起駕前 pre-launch audit R2-R4 修復（碳排係數、等級門檻、computeFilteredKm、成就卡、tracker survey）。files_changed 設 0：GitHub MCP 無法批次取得 per-commit file list。"
+}
