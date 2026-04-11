@@ -79,3 +79,17 @@ export async function handleGovernanceAutomation(request, env) {
     headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
   });
 }
+
+/**
+ * GET /api/governance/audit
+ * Returns cross-project audit results + trend
+ */
+export async function handleGovernanceAudit(request, env) {
+  if (!isAuthorized(request, env)) return unauthorized(request);
+  const data = await env.TICKER_KV.get('gov:audit');
+  if (!data) return jsonResponse({ error: 'Audit data not available. Run scanner + kv-seed first.' }, 404, request);
+  return new Response(data, {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(request) },
+  });
+}

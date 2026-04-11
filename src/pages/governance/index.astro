@@ -53,6 +53,28 @@ const API_BASE = 'https://api.paulkuo.tw';
         <canvas id="trend-chart" width="400" height="200"></canvas>
       </div>
     </section>
+
+    <!-- Audit health -->
+    <section class="section">
+      <h2 class="section-title">跨專案稽核</h2>
+      <div class="audit-panel two-col">
+        <div>
+          <div class="audit-summary">
+            <div class="audit-stat">
+              <span id="audit-scanner-status" class="scanner-badge loading">⏳ 載入中</span>
+            </div>
+            <div class="audit-stat">
+              <span id="audit-open-issues" class="audit-number">—</span>
+              <span class="audit-label">待處理問題</span>
+            </div>
+          </div>
+          <div id="audit-flagged-list" class="audit-flagged"></div>
+        </div>
+        <div>
+          <canvas id="audit-trend-chart" width="400" height="160"></canvas>
+        </div>
+      </div>
+    </section>
   </div>
 </BaseLayout>
 
@@ -214,6 +236,147 @@ const API_BASE = 'https://api.paulkuo.tw';
     renderCards(summary.projects || []);
     renderDonut(summary.automation || {});
     renderTrend(summary.projects || []);
+
+    // Fetch audit data (non-blocking — dashboard still loads if audit unavailable)
+    const storedToken = sessionStorage.getItem(SESSION_KEY);
+    govFetch('/api/governance/audit', storedToken).then(async res => {
+      if (!res.ok) {
+        document.getElementById('audit-scanner-status').textContent = '⚠️ 無資料';
+        document.getElementById('audit-scanner-status').className = 'scanner-badge warn';
+        return;
+      }
+      const audit = await res.json();
+      renderAudit(audit);
+    }).catch(() => {
+      document.getElementById('audit-scanner-status').textContent = '❌ 連線失敗';
+      document.getElementById('audit-scanner-status').className = 'scanner-badge error';
+    });
+  }
+
+  // ── Render audit panel ─────────────────────────────────
+  function renderAudit(audit) {
+    // 1. Scanner badge
+    const badge = document.getElementById('audit-scanner-status');
+    if (audit.scanner_health && audit.scanner_health.is_healthy) {
+      badge.textContent = '✅ 正常';
+      badge.className = 'scanner-badge ok';
+    } else {
+      badge.textContent = '⚠️ 48h 未更新';
+      badge.className = 'scanner-badge warn';
+    }
+
+    // 2. 待處理數字
+    const issueEl = document.getElementById('audit-open-issues');
+    const latest = audit.recent && audit.recent[0];
+    if (latest) {
+      const openCount = (latest.missing_tags || 0) + (latest.missing_smoke_tests || 0);
+      issueEl.textContent = openCount;
+      if (openCount > 0) issueEl.classList.add('warn');
+    } else {
+      issueEl.textContent = '0';
+    }
+
+    // 3. Flagged list (from most recent audit result)
+    // We need flagged detail — if not in recent summary, show summary-level info
+    const flaggedEl = document.getElementById('audit-flagged-list');
+    if (!latest) {
+      flaggedEl.innerHTML = '<p style="color:#9ca3af;font-size:0.8rem">✅ 近期無稽核資料</p>';
+    } else if ((latest.missing_tags || 0) + (latest.missing_smoke_tests || 0) === 0) {
+      flaggedEl.innerHTML = '<p style="color:#22c55e;font-size:0.8rem">✅ 近期無異常</p>';
+    } else {
+      flaggedEl.innerHTML = `
+        <div class="flagged-item">
+          <span class="flagged-hash">${latest.date}</span>
+          <span class="flagged-msg">缺 tag: ${latest.missing_tags}，缺 smoke test: ${latest.missing_smoke_tests}</span>
+        </div>`;
+    }
+
+    // 4. 趨勢折線圖
+    if (audit.trend && audit.trend.dates && audit.trend.dates.length > 0) {
+      renderAuditTrend(audit.trend);
+    }
+  }
+
+  // ── Render audit trend line chart ─────────────────────
+  function renderAuditTrend(trend) {
+    const canvas = document.getElementById('audit-trend-chart');
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+
+    const W = 400, H = 160;
+    const padL = 28, padB = 30, padT = 10, padR = 10;
+    const chartW = W - padL - padR;
+    const chartH = H - padB - padT;
+
+    const dates = trend.dates;
+    const tagsData = trend.missing_tags;
+    const smokeData = trend.missing_smoke_tests;
+    const maxVal = Math.max(...tagsData, ...smokeData, 1);
+    const n = dates.length;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Gridlines
+    ctx.font = '10px sans-serif';
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + chartH - (chartH / 4 * i);
+      const val = Math.round((maxVal / 4) * i);
+      ctx.strokeStyle = '#f3f4f6';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.fillStyle = '#9ca3af';
+      ctx.fillText(val, 2, y + 4);
+    }
+
+    // Helper: draw polyline
+    function drawLine(data, color) {
+      if (n < 1) return;
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      data.forEach((v, i) => {
+        const x = padL + (i / Math.max(n - 1, 1)) * chartW;
+        const y = padT + chartH - (v / maxVal) * chartH;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      // Dots
+      data.forEach((v, i) => {
+        const x = padL + (i / Math.max(n - 1, 1)) * chartW;
+        const y = padT + chartH - (v / maxVal) * chartH;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      });
+    }
+
+    drawLine(tagsData, '#3b82f6');      // 藍：missing tags
+    drawLine(smokeData, '#f97316');     // 橘：missing smoke tests
+
+    // X-axis date labels (first and last)
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '9px sans-serif';
+    if (dates.length > 0) {
+      ctx.fillText(dates[0].slice(5), padL, H - 4);
+      if (dates.length > 1) {
+        const lastLabel = dates[dates.length - 1].slice(5);
+        const lw = ctx.measureText(lastLabel).width;
+        ctx.fillText(lastLabel, W - padR - lw, H - 4);
+      }
+    }
+
+    // Legend
+    ctx.fillStyle = '#3b82f6';
+    ctx.fillRect(padL, padT - 2, 8, 8);
+    ctx.fillStyle = '#374151';
+    ctx.font = '9px sans-serif';
+    ctx.fillText('缺 tag', padL + 10, padT + 6);
+
+    ctx.fillStyle = '#f97316';
+    ctx.fillRect(padL + 50, padT - 2, 8, 8);
+    ctx.fillStyle = '#374151';
+    ctx.fillText('缺 smoke test', padL + 60, padT + 6);
   }
 
   // ── Auth flow ──────────────────────────────────────────
@@ -460,10 +623,42 @@ const API_BASE = 'https://api.paulkuo.tw';
     border: 1px solid #f3f4f6;
   }
 
+  /* ── Audit Panel ── */
+  .audit-summary { display: flex; gap: 1.5rem; margin-bottom: 1rem; }
+  .audit-stat { display: flex; flex-direction: column; gap: 0.25rem; }
+  .audit-label { font-size: 0.75rem; color: #9ca3af; }
+  .audit-number { font-size: 2rem; font-weight: 700; color: #111827; }
+  :global(.audit-number.warn) { color: #ef4444; }
+
+  .scanner-badge {
+    display: inline-block; padding: 0.3rem 0.75rem;
+    border-radius: 999px; font-size: 0.8rem; font-weight: 500;
+  }
+  .scanner-badge.ok { background: #dcfce7; color: #166534; }
+  .scanner-badge.warn { background: #fef3c7; color: #92400e; }
+  .scanner-badge.error { background: #fee2e2; color: #991b1b; }
+  .scanner-badge.loading { background: #f3f4f6; color: #6b7280; }
+
+  .audit-flagged { margin-top: 0.75rem; }
+  :global(.flagged-item) {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.8rem; padding: 0.4rem 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  :global(.flagged-hash) { font-family: monospace; color: #6b7280; }
+  :global(.flagged-msg) { flex: 1; color: #374151; }
+
+  #audit-trend-chart {
+    display: block; max-width: 100%;
+    border-radius: 8px; background: #fafafa;
+    border: 1px solid #f3f4f6;
+  }
+
   /* ── RWD ── */
   @media (max-width: 640px) {
     .two-col { grid-template-columns: 1fr; }
     .card-grid { grid-template-columns: repeat(2, 1fr); }
     #trend-chart { width: 100%; height: auto; }
+    #audit-trend-chart { width: 100%; height: auto; }
   }
 </style>

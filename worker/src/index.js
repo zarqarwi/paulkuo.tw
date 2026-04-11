@@ -34,7 +34,7 @@ import { handleFormosaWebhook, handleFormosaSubmit, handleFormosaCheckin, handle
 import { fetchGscData, handleGsc } from './gsc.js';
 import { handleWikiSearch, handleWikiConcept, handleWikiGraph, handleWikiAsk } from './wiki-api.js';
 import { handleAcpGithub, handleAcpVerify, handleAcpSave, handleAcpGet, handleAcpUpdate, handleAcpOg } from './acp.js';
-import { handleGovernanceSummary, handleGovernanceProjects, handleGovernanceMetrics, handleGovernanceAutomation } from './governance-api.js';
+import { handleGovernanceSummary, handleGovernanceProjects, handleGovernanceMetrics, handleGovernanceAutomation, handleGovernanceAudit } from './governance-api.js';
 
 async function handleClaudeUsage(request, env, url) {
   const auth = await authenticateRequest(request, env, url.searchParams.get('code') || '');
@@ -462,6 +462,7 @@ async function handleRequest(request, env, ctx) {
   if (path === '/api/governance/summary' && method === 'GET') return handleGovernanceSummary(request, env);
   if (path === '/api/governance/projects' && method === 'GET') return handleGovernanceProjects(request, env);
   if (path === '/api/governance/automation' && method === 'GET') return handleGovernanceAutomation(request, env);
+  if (path === '/api/governance/audit' && method === 'GET') return handleGovernanceAudit(request, env);
   if (path.startsWith('/api/governance/metrics/') && method === 'GET') {
     const projectId = path.split('/api/governance/metrics/')[1];
     return handleGovernanceMetrics(request, env, projectId);

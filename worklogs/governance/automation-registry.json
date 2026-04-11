@@ -60,6 +60,16 @@
       "trigger": "每週一 1AM UTC",
       "created": "2026-04-09",
       "description": "GitHub Actions 自動掃描 AI Ready 分數"
+    },
+    {
+      "id": "cross-project-impact-scanner",
+      "project_id": "paulkuo-main",
+      "name": "跨專案影響掃描器",
+      "type": "scheduled",
+      "status": "active",
+      "trigger": "每日 10:30",
+      "created": "2026-04-11",
+      "description": "掃 3 天 git log，比對 shared-files.json，輸出稽核結果到 audit-results/"
     }
   ],
   "manual_recurring": [
@@ -95,10 +105,10 @@
     }
   ],
   "coverage": {
-    "automated": 6,
+    "automated": 7,
     "manual": 3,
-    "total": 9,
-    "rate": 0.667,
-    "last_updated": "2026-04-09"
+    "total": 10,
+    "rate": 0.7,
+    "last_updated": "2026-04-11"
   }
 }

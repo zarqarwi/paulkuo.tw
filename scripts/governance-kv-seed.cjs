@@ -88,6 +88,56 @@ function calcProjectSummary(project, metrics) {
 }
 
 /**
+ * Build gov:audit payload from audit-results/ directory
+ */
+function buildAuditPayload(governanceDir) {
+  const auditDir = path.join(governanceDir, 'audit-results');
+  const lastScanPath = path.join(governanceDir, 'last-scan.json');
+  const empty = { recent: [], trend: { dates: [], missing_tags: [], missing_smoke_tests: [] }, scanner_health: { last_success: null, is_healthy: false } };
+
+  if (!fs.existsSync(auditDir)) return empty;
+
+  const files = fs.readdirSync(auditDir)
+    .filter(f => f.match(/^\d{4}-\d{2}-\d{2}\.json$/))
+    .sort()
+    .reverse()
+    .slice(0, 7);
+
+  if (files.length === 0) return empty;
+
+  const recent = files.map(f => {
+    try {
+      const data = JSON.parse(fs.readFileSync(path.join(auditDir, f), 'utf-8'));
+      return {
+        date: data.date,
+        total_flagged: data.summary?.total_flagged || 0,
+        missing_tags: data.summary?.missing_tags || 0,
+        missing_smoke_tests: data.summary?.missing_smoke_tests || 0,
+      };
+    } catch { return null; }
+  }).filter(Boolean);
+
+  // trend arrays（oldest to newest for chart display）
+  const ordered = [...recent].reverse();
+  const trend = {
+    dates: ordered.map(r => r.date),
+    missing_tags: ordered.map(r => r.missing_tags),
+    missing_smoke_tests: ordered.map(r => r.missing_smoke_tests),
+  };
+
+  let scanner_health = { last_success: null, is_healthy: false };
+  if (fs.existsSync(lastScanPath)) {
+    try {
+      const ls = JSON.parse(fs.readFileSync(lastScanPath, 'utf-8'));
+      const hoursSince = (Date.now() - new Date(ls.last_success).getTime()) / 3600000;
+      scanner_health = { last_success: ls.last_success, is_healthy: hoursSince < 48 };
+    } catch { /* non-fatal */ }
+  }
+
+  return { recent, trend, scanner_health };
+}
+
+/**
  * Main seeding logic
  */
 async function seed() {
@@ -135,6 +185,42 @@ async function seed() {
     return calcProjectSummary(project, metrics);
   });
 
+  // Audit summary snippet for gov:summary
+  const auditDir = path.join(GOVERNANCE_DIR, 'audit-results');
+  const lastScanPath = path.join(GOVERNANCE_DIR, 'last-scan.json');
+  let auditSummaryField = { last_scan: null, scanner_healthy: false, open_issues: 0, trend_7d_avg: 0 };
+
+  if (fs.existsSync(auditDir)) {
+    const auditFiles = fs.readdirSync(auditDir)
+      .filter(f => f.endsWith('.json') && f !== 'index.json')
+      .sort()
+      .reverse()
+      .slice(0, 7);
+    if (auditFiles.length > 0) {
+      const latestFile = auditFiles[0];
+      const latestData = JSON.parse(fs.readFileSync(path.join(auditDir, latestFile), 'utf-8'));
+      const openIssues = (latestData.summary?.missing_tags || 0) + (latestData.summary?.missing_smoke_tests || 0);
+      const totalFlaggedArr = auditFiles.map(f => {
+        try { return JSON.parse(fs.readFileSync(path.join(auditDir, f), 'utf-8')).summary?.total_flagged || 0; } catch { return 0; }
+      });
+      const trend7dAvg = Math.round((totalFlaggedArr.reduce((a, b) => a + b, 0) / totalFlaggedArr.length) * 10) / 10;
+
+      let scannerHealthy = false;
+      if (fs.existsSync(lastScanPath)) {
+        const lastScan = JSON.parse(fs.readFileSync(lastScanPath, 'utf-8'));
+        const hoursSince = (Date.now() - new Date(lastScan.last_success).getTime()) / 3600000;
+        scannerHealthy = hoursSince < 48;
+      }
+
+      auditSummaryField = {
+        last_scan: latestData.date,
+        scanner_healthy: scannerHealthy,
+        open_issues: openIssues,
+        trend_7d_avg: trend7dAvg,
+      };
+    }
+  }
+
   const summary = {
     projects: projectSummaries,
     automation: {
@@ -143,10 +229,16 @@ async function seed() {
       manual_count: manualCount,
       candidates,
     },
+    audit: auditSummaryField,
     total_metrics_entries: totalMetricsEntries,
     last_updated: new Date().toISOString(),
   };
   uploadToKV('gov:summary', summary);
+
+  // 5. gov:audit — 稽核結果（最近 7 天）
+  console.log('5. gov:audit');
+  const auditPayload = buildAuditPayload(GOVERNANCE_DIR);
+  uploadToKV('gov:audit', auditPayload);
 
   console.log(`\n=== Seed Complete ===`);
   console.log(`Projects: ${projects.length}, Metrics entries: ${totalMetricsEntries}`);

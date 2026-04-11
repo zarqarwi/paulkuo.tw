@@ -1,0 +1,132 @@
+{
+  "$schema": "audit-result-v1",
+  "date": "2026-04-11",
+  "scan_range": "2026-04-08 ~ 2026-04-11",
+  "total_commits_scanned": 118,
+  "flagged": [
+    {
+      "hash": "73e3546",
+      "message": "fix(worker): admin/carbon 改撈 formosa_daily_reports 表；恢復 daily-report 路由",
+      "date": "2026-04-10",
+      "shared_files": [
+        "worker/src/index.js"
+      ],
+      "affected_projects": [
+        "paulkuo-main",
+        "formosa-esg",
+        "llm-wiki",
+        "acp",
+        "ai-ready",
+        "agora"
+      ],
+      "risk_level": "critical",
+      "has_tag": false,
+      "has_smoke_test": true
+    },
+    {
+      "hash": "cd2422a",
+      "message": "fix: governance API CORS + API_BASE 修正 [影響: 治理框架]",
+      "date": "2026-04-09",
+      "shared_files": [
+        "worker/src/utils.js"
+      ],
+      "affected_projects": [
+        "paulkuo-main",
+        "formosa-esg",
+        "llm-wiki",
+        "acp",
+        "ai-ready",
+        "agora"
+      ],
+      "risk_level": "critical",
+      "has_tag": true,
+      "has_smoke_test": false
+    },
+    {
+      "hash": "e2fcd8f",
+      "message": "feat: 治理 Dashboard Phase 2 — API + KV seed + 前端 [影響: 全專案]",
+      "date": "2026-04-09",
+      "shared_files": [
+        "worker/src/index.js"
+      ],
+      "affected_projects": [
+        "paulkuo-main",
+        "formosa-esg",
+        "llm-wiki",
+        "acp",
+        "ai-ready",
+        "agora"
+      ],
+      "risk_level": "critical",
+      "has_tag": true,
+      "has_smoke_test": false
+    },
+    {
+      "hash": "7d7e85d",
+      "message": "fix(health-check): add dedicated GET /api/formosa/checkin/health endpoint",
+      "date": "2026-04-09",
+      "shared_files": [
+        "worker/src/index.js"
+      ],
+      "affected_projects": [
+        "paulkuo-main",
+        "formosa-esg",
+        "llm-wiki",
+        "acp",
+        "ai-ready",
+        "agora"
+      ],
+      "risk_level": "critical",
+      "has_tag": false,
+      "has_smoke_test": false
+    },
+    {
+      "hash": "c0b86b7",
+      "message": "feat(acp): Phase 3 — D1 persistence, shareable URLs, OG image, social sharing",
+      "date": "2026-04-08",
+      "shared_files": [
+        "worker/src/index.js"
+      ],
+      "affected_projects": [
+        "paulkuo-main",
+        "formosa-esg",
+        "llm-wiki",
+        "acp",
+        "ai-ready",
+        "agora"
+      ],
+      "risk_level": "critical",
+      "has_tag": false,
+      "has_smoke_test": false
+    },
+    {
+      "hash": "8be165c",
+      "message": "feat: ACP Layer 2 (GitHub auto-fetch) + Layer 3 (AI verification)",
+      "date": "2026-04-08",
+      "shared_files": [
+        "worker/src/index.js"
+      ],
+      "affected_projects": [
+        "paulkuo-main",
+        "formosa-esg",
+        "llm-wiki",
+        "acp",
+        "ai-ready",
+        "agora"
+      ],
+      "risk_level": "critical",
+      "has_tag": false,
+      "has_smoke_test": false
+    }
+  ],
+  "summary": {
+    "total_flagged": 6,
+    "missing_tags": 4,
+    "missing_smoke_tests": 5,
+    "by_risk_level": {
+      "critical": 6,
+      "shared_modules": 0,
+      "ai_ready_auto": 0
+    }
+  }
+}
