@@ -290,11 +290,11 @@
   <div class="container">
     <span class="tag">Development Record</span>
     <h1>Formosa ESG 2026<br>Baishatun Mazu Pilgrimage GPS Tracking System — Project Development Record</h1>
-    <p class="subtitle">From Proof of Concept to 10,000-User System: Development Overview</p>
+    <p class="subtitle">From Proof of Concept to 10,000-User System: A 20-Day Development Journey</p>
     <div class="doc-meta">
-      <span>Version 1.0</span>
-      <span>Coverage Period: 2026/03/23 —</span>
-      <span>Last Updated: 2026/04/07</span>
+      <span>Version 1.1</span>
+      <span>Coverage Period: 2026/03/23 — 2026/04/11</span>
+      <span>Last Updated: 2026/04/11</span>
       <span>Formosa ESG Project Team</span>
     </div>
   </div>
@@ -302,6 +302,10 @@
 
 <!-- ═══════════ SUMMARY BAR ═══════════ -->
 <div class="summary-bar">
+  <div class="summary-card">
+    <div class="number">20</div>
+    <div class="label">Development Days</div>
+  </div>
   <div class="summary-card">
     <div class="number">5</div>
     <div class="label">Development Phases</div>
@@ -311,7 +315,7 @@
     <div class="label">Load Test Rounds</div>
   </div>
   <div class="summary-card">
-    <div class="number">106+</div>
+    <div class="number">163+</div>
     <div class="label">Issues Resolved</div>
   </div>
   <div class="summary-card">
@@ -723,6 +727,70 @@
           <td>mazu.today Redirect Rules reconnaissance completed (Cloudflare Dashboard solution confirmed)</td>
           <td><span class="status status-done">Done</span></td>
         </tr>
+
+        <!-- Day 17-18 -->
+        <tr>
+          <td rowspan="3"><strong>04/08–09</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 17–18</span></td>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>Issue #141: Segmented push notifications + LIFF OA guidance + Secrets audit</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-4">Phase 4</span></td>
+          <td>Issue #120: Push image upload (R2 storage) + Wiki Phase 3–4A</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Dashboard migrated to GitHub Issue #155 + sync-dashboard Action auto-sync</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+
+        <!-- Day 19 -->
+        <tr>
+          <td rowspan="3"><strong>04/10</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 19</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Pre-Launch Audit R3: Data quality + defensive resilience (computeFilteredKm + VALID_SOURCES fix, Worker deploy 174bace0)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #162: Today's Good Footprint API verification passed</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>CI/CD audit + Governance Framework Phase 1–2.5 completed (Dashboard + API + KV seed)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+
+        <!-- Day 20 -->
+        <tr>
+          <td rowspan="5"><strong>04/11</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">Day 20</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Pre-Launch Audit R4: User journey + edge personas + operational resilience (P0=0, P1=4 all fixed, Worker deploy 876dddbd)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #163: GPS drift + straight-line trajectory fix (speed outlier filter + accuracy filtering)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #161: Share footprint link fix (race condition — lineUserId captured as null before LIFF async)</td>
+          <td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Pre-Launch Audit R5: Full codebase health check + fixes (P0×2 + P1×6 all fixed, commit 9fa6c9d)</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>All 5 rounds of Pre-Launch Audit completed ✅ — core check-in path solid, offline mechanism intact, no dead routes</td>
+          <td><span class="status status-done">Done</span></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -853,63 +921,28 @@
   <h3>Permission System</h3>
   <p>Three-tier role permissions: Owner (full admin rights), Manager (push + user management), Volunteer (view-only Dashboard maps & stats, no push or user list). Via KV invite code mechanism distributes invite codes, unified with Worker secret unified verification.</p>
 
-  <h3>Operating Cost Structure</h3>
-  <p>Below are the actual costs during system development and operation. Infrastructure and push notification costs scale with user growth during the event period.</p>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr><th>Category</th><th>Item</th><th>Cost</th><th>Description</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td rowspan="3"><strong>AI Development Tools</strong></td>
-          <td>Claude Max 20x Subscription</td>
-          <td>$200 USD/mo</td>
-          <td>Primary development tool covering coding, architecture design, and documentation</td>
-        </tr>
-        <tr>
-          <td>Claude Extra Credits</td>
-          <td>Usage-based</td>
-          <td>Additional usage during high-intensity development, varies by pace</td>
-        </tr>
-        <tr>
-          <td>Claude Prepaid Credits</td>
-          <td>$250 USD</td>
-          <td>Pre-purchased credits for real-time operations during the event</td>
-        </tr>
-        <tr>
-          <td rowspan="3"><strong>Infrastructure</strong></td>
-          <td>Cloudflare Workers Paid</td>
-          <td>$5 USD/mo</td>
-          <td>Removes the 100K/day request limit</td>
-        </tr>
-        <tr>
-          <td>Cloudflare KV / D1 Usage</td>
-          <td>~$40 USD/mo</td>
-          <td>KV ops account for 84% (dev period); estimated ~$46/mo at 10K users, ~$27/mo after optimization</td>
-        </tr>
-        <tr>
-          <td>mazu.today Domain</td>
-          <td>—</td>
-          <td>Reverse-proxied via Cloudflare Workers, no additional cost</td>
-        </tr>
-        <tr>
-          <td rowspan="2"><strong>User Communications</strong></td>
-          <td>LINE OA Premium Plan</td>
-          <td>NT$1,200/mo</td>
-          <td>Upgraded to top-tier plan during event, includes 6,000 push messages</td>
-        </tr>
-        <tr>
-          <td>LINE Push Overage</td>
-          <td>NT$0.2/msg</td>
-          <td>Per-message charge beyond 6,000 messages</td>
-        </tr>
-      </tbody>
-    </table>
+  <h3>Cloudflare Cost Analysis</h3>
+  <div class="metric-grid">
+    <div class="metric-item">
+      <div class="metric-label">Monthly cost (03/05–04/04)</div>
+      <div class="metric-value">$44.63 USD</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Largest item</div>
+      <div class="metric-value">KV ops account for 84%</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Estimated for 10K users</div>
+      <div class="metric-value">~$46/month (controllable)</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">Estimated after optimization</div>
+      <div class="metric-value">~$27/month (Plan A removes delete ops)</div>
+    </div>
   </div>
 
-  <p>The above are ongoing costs that vary with development phase and event status. Cloudflare cost optimization Plan A (removing redundant KV delete operations) has been completed; further adjustments will be made based on actual event traffic.</p>
+  <h3>Other Infrastructure</h3>
+  <p>Workers Paid plan upgraded ($5/month), removed 100K/day request limit. LIFF Channel published to Published Status. LINE OA upgraded to Medium tier (3,000 messages/month). Dashboard push supports text, template, and image formats.</p>
 </section>
 
 <!-- ═══════════ 8. Key Issue Tracking ═══════════ -->
@@ -952,11 +985,31 @@
         </tr>
         <tr>
           <td>#107</td><td>/verification/ checklist page</td>
-          <td>L1</td><td><span class="status status-progress">In Progress</span></td>
+          <td>L1</td><td><span class="status status-deployed">Deployed</span></td>
         </tr>
         <tr>
           <td>#108</td><td>/docs/ documentation center + Footer expansion</td>
-          <td>L1</td><td><span class="status status-progress">In Progress</span></td>
+          <td>L1</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#120</td><td>Push image upload (R2 storage)</td>
+          <td>L1</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#141</td><td>Segmented push + LIFF OA guidance</td>
+          <td>L2</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#161</td><td>Share footprint link race condition fix</td>
+          <td>L2</td><td><span class="status status-deployed">Deployed</span></td>
+        </tr>
+        <tr>
+          <td>#162</td><td>Today's Good Footprint API verification</td>
+          <td>L1</td><td><span class="status status-done">Done</span></td>
+        </tr>
+        <tr>
+          <td>#163</td><td>GPS drift + straight-line trajectory fix</td>
+          <td>L2</td><td><span class="status status-deployed">Deployed</span></td>
         </tr>
       </tbody>
     </table>
@@ -1055,6 +1108,21 @@
     <div class="timeline-content">Checklist complete, tech docs inventory, cost optimization Plan A deployed.<strong>5 days until departure</strong></div>
   </div>
 
+  <div class="timeline-entry">
+    <div class="timeline-date">04/08–09 — Feature Completion + Governance</div>
+    <div class="timeline-content">Segmented push live, push image R2 storage, Dashboard migrated to GitHub Issue #155 auto-sync</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">04/10 — R3 Audit + Fix</div>
+    <div class="timeline-content">Data quality + defensive resilience audit, computeFilteredKm + VALID_SOURCES fix deployed, Governance Framework live</div>
+  </div>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date">04/11 — All 5 Audit Rounds Complete ✅</div>
+    <div class="timeline-content">R4 + R5 audit + fixes done, Issues #161/#163 closed.<strong>Core path solid, 1 day to departure</strong></div>
+  </div>
+
   <div class="timeline-entry milestone">
     <div class="timeline-date" style="color: var(--amber);">04/12 — Departure Day</div>
     <div class="timeline-content"><strong>Departure from Baishatun Gongtian Temple. System goes live.</strong></div>
@@ -1066,7 +1134,7 @@
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer class="doc-footer">
   <p>Formosa ESG 2026 — Baishatun Mazu Pilgrimage GPS Tracking System</p>
-  <p>mazu.today &nbsp;|&nbsp; This Document Version 1.0 &nbsp;|&nbsp; Last Updated 2026/04/07</p>
+  <p>mazu.today &nbsp;|&nbsp; This Document Version 1.1 &nbsp;|&nbsp; Last Updated 2026/04/11</p>
 </footer>
 
 </body>

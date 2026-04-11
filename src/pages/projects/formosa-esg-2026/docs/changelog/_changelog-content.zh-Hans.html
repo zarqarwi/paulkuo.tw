@@ -290,11 +290,11 @@
   <div class="container">
     <span class="tag">Development Record</span>
     <h1>Formosa ESG 2026<br>白沙屯妈祖进香 GPS 追踪系统 — 项目开发记录</h1>
-    <p class="subtitle">从概念验证到万人系统：简述开发历程</p>
+    <p class="subtitle">从概念验证到万人系统：20 天完整开发历程</p>
     <div class="doc-meta">
-      <span>版本 1.0</span>
-      <span>涵盖期间：2026/03/23 —</span>
-      <span>更新日期：2026/04/07</span>
+      <span>版本 1.1</span>
+      <span>涵盖期间：2026/03/23 — 2026/04/11</span>
+      <span>更新日期：2026/04/11</span>
       <span>Formosa ESG 项目团队</span>
     </div>
   </div>
@@ -302,6 +302,10 @@
 
 <!-- ═══════════ SUMMARY BAR ═══════════ -->
 <div class="summary-bar">
+  <div class="summary-card">
+    <div class="number">20</div>
+    <div class="label">开发天数</div>
+  </div>
   <div class="summary-card">
     <div class="number">5</div>
     <div class="label">开发阶段</div>
@@ -311,7 +315,7 @@
     <div class="label">压力测试轮次</div>
   </div>
   <div class="summary-card">
-    <div class="number">106+</div>
+    <div class="number">163+</div>
     <div class="label">已解决问题</div>
   </div>
   <div class="summary-card">
@@ -690,6 +694,70 @@
           <td>mazu.today 重定向规则侦察完成（Cloudflare 仪表板方案确认）</td>
           <td><span class="status status-done">完成</span></td>
         </tr>
+
+        <!-- Day 17-18 -->
+        <tr>
+          <td rowspan="3"><strong>04/08–09</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">第 17–18 天</span></td>
+          <td><span class="phase phase-4">阶段 4</span></td>
+          <td>Issue #141：分众推送 + LIFF OA 引导 + Secrets 盘点</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-4">阶段 4</span></td>
+          <td>Issue #120：推送图片上传（R2 存储）+ Wiki Phase 3–4A</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>仪表板迁移至 GitHub Issue #155 + sync-dashboard Action 自动同步</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
+
+        <!-- Day 19 -->
+        <tr>
+          <td rowspan="3"><strong>04/10</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">第 19 天</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Pre-Launch Audit R3：数据质量 + 防御韧性（computeFilteredKm + VALID_SOURCES 修复，Worker deploy 174bace0）</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #162：今日善足迹 API 验证通过</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>CI/CD 盘查 + 治理框架 Phase 1–2.5 完成（Dashboard + API + KV seed）</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+
+        <!-- Day 20 -->
+        <tr>
+          <td rowspan="5"><strong>04/11</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">第 20 天</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Pre-Launch Audit R4：用户旅程 + 边界人物 + 运维韧性（P0=0, P1=4 全修, Worker deploy 876dddbd）</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #163：GPS 漂移 + 直线轨迹修复（speed outlier filter + accuracy 过滤）</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #161：分享足迹链接修复（race condition — lineUserId 在 LIFF async 前为 null）</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Pre-Launch Audit R5：全面代码健康检查 + 修复完成（P0×2 + P1×6 全修，commit 9fa6c9d）</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>五轮 Pre-Launch Audit 全部完成 ✅ — 核心打卡路径稳固、离线机制完整、无死路由</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -820,63 +888,28 @@
   <h3>权限系统</h3>
   <p>三层角色权限：拥有者（完整管理权限）、经理（推送 + 用户管理）、义工（仅查看仪表板地图和统计，无推送或用户列表）。通过 KV 邀请码机制分配邀请码，与 Worker 密钥统一验证。</p>
 
-  <h3>运营成本结构</h3>
-  <p>以下为系统开发与运营期间的实际成本。活动期间随用户规模增长，基础设施与推送费用会相应增加。</p>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr><th>类别</th><th>项目</th><th>费用</th><th>说明</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td rowspan="3"><strong>AI 开发工具</strong></td>
-          <td>Claude Max 20x 订阅</td>
-          <td>$200 USD/月</td>
-          <td>主要开发工具，涵盖程序编写、架构设计、文档产出</td>
-        </tr>
-        <tr>
-          <td>Claude Extra Credits</td>
-          <td>按量计费</td>
-          <td>高强度开发期间的额外用量，依开发节奏浮动</td>
-        </tr>
-        <tr>
-          <td>Claude 储值额度</td>
-          <td>$250 USD</td>
-          <td>预购额度，用于活动期间即时运维</td>
-        </tr>
-        <tr>
-          <td rowspan="3"><strong>基础设施</strong></td>
-          <td>Cloudflare Workers Paid</td>
-          <td>$5 USD/月</td>
-          <td>解除 100K/天请求上限</td>
-        </tr>
-        <tr>
-          <td>Cloudflare KV / D1 用量</td>
-          <td>~$40 USD/月</td>
-          <td>KV 操作占 84%（开发期）；万人场景预估 ~$46/月，优化后 ~$27/月</td>
-        </tr>
-        <tr>
-          <td>mazu.today 域名</td>
-          <td>—</td>
-          <td>通过 Cloudflare Workers 反向代理，无额外费用</td>
-        </tr>
-        <tr>
-          <td rowspan="2"><strong>用户通讯</strong></td>
-          <td>LINE OA 进阶版</td>
-          <td>NT$1,200/月</td>
-          <td>活动期间升级至最高阶方案，含 6,000 则推送</td>
-        </tr>
-        <tr>
-          <td>LINE 推送超额</td>
-          <td>NT$0.2/则</td>
-          <td>超过 6,000 则后按量计费</td>
-        </tr>
-      </tbody>
-    </table>
+  <h3>Cloudflare 成本分析</h3>
+  <div class="metric-grid">
+    <div class="metric-item">
+      <div class="metric-label">月度成本（03/05–04/04）</div>
+      <div class="metric-value">$44.63 USD</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">最大项目</div>
+      <div class="metric-value">KV 操作占 84%</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">10K 用户预估</div>
+      <div class="metric-value">~$46/月（可控）</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-label">优化后预估</div>
+      <div class="metric-value">~$27/月（Plan A 移除删除操作）</div>
+    </div>
   </div>
 
-  <p>上述费用为持续性支出，随开发阶段与活动状态动态变化。Cloudflare 费用优化已完成 Plan A（移除冗余 KV delete 操作），后续将视活动实际流量进一步调整。</p>
+  <h3>其他基础设施</h3>
+  <p>Workers 付费计划升级（$5/月），移除 100K/天请求限制。LIFF 频道已发布。LINE OA 升级至中等级（3,000 消息/月）。仪表板推送支持文本、模板和图片格式。</p>
 </section>
 
 <!-- ═══════════ 8. 关键问题追踪 ═══════════ -->
@@ -919,11 +952,31 @@
         </tr>
         <tr>
           <td>#107</td><td>/verification/ 验证页面</td>
-          <td>L1</td><td><span class="status status-progress">进行中</span></td>
+          <td>L1</td><td><span class="status status-deployed">已部署</span></td>
         </tr>
         <tr>
           <td>#108</td><td>/docs/ 文档中心 + Footer 扩展</td>
-          <td>L1</td><td><span class="status status-progress">进行中</span></td>
+          <td>L1</td><td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td>#120</td><td>推送图片上传（R2 存储）</td>
+          <td>L1</td><td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td>#141</td><td>分众推送 + LIFF OA 引导</td>
+          <td>L2</td><td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td>#161</td><td>分享足迹链接 race condition 修复</td>
+          <td>L2</td><td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td>#162</td><td>今日善足迹 API 验证</td>
+          <td>L1</td><td><span class="status status-done">完成</span></td>
+        </tr>
+        <tr>
+          <td>#163</td><td>GPS 漂移 + 直线轨迹修复</td>
+          <td>L2</td><td><span class="status status-deployed">已部署</span></td>
         </tr>
       </tbody>
     </table>
@@ -1036,6 +1089,21 @@
     <div class="timeline-content">检查清单完成、技术文档清单、成本优化 Plan A 部署。<strong>距离出发 5 天</strong></div>
   </div>
 
+  <div class="timeline-entry">
+    <div class="timeline-date">04/08–09 — 功能完善 + 治理框架</div>
+    <div class="timeline-content">分众推送上线、推送图片 R2 存储、仪表板迁移至 GitHub Issue #155 自动同步</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">04/10 — R3 审计 + 修复</div>
+    <div class="timeline-content">数据质量 + 防御韧性审计，computeFilteredKm + VALID_SOURCES 修复部署，治理框架上线</div>
+  </div>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date">04/11 — 五轮审计全部完成 ✅</div>
+    <div class="timeline-content">R4 + R5 审计 + 修复完成，Issue #161/#163 关闭。<strong>核心路径稳固，距离出发 1 天</strong></div>
+  </div>
+
   <div class="timeline-entry milestone">
     <div class="timeline-date" style="color: var(--amber);">04/12 — 出发日</div>
     <div class="timeline-content"><strong>从白沙屯宫庙出发。系统正式上线。</strong></div>
@@ -1047,7 +1115,7 @@
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer class="doc-footer">
   <p>Formosa ESG 2026 — 白沙屯妈祖进香 GPS 追踪系统</p>
-  <p>mazu.today &nbsp;|&nbsp; 本文档版本 1.0 &nbsp;|&nbsp; 更新于 2026/04/07</p>
+  <p>mazu.today &nbsp;|&nbsp; 本文档版本 1.1 &nbsp;|&nbsp; 更新于 2026/04/11</p>
 </footer>
 
 </body>
