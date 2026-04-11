@@ -172,7 +172,7 @@ Checkin requests return HTTP 202 Accepted with an 8-second timeout for async KV 
 | Condition | Classification | GWP Factor | Purpose |
 |-----------|---------------|-----------|---------|
 | ≤ 15 km/h | Zero-emission | 0 kg CO₂e/km | Walking, cycling, stationary |
-| > 15 km/h | Motorized | 0.47515 kg CO₂e/km | Bus coefficient (default) |
+| > 15 km/h | Motorized | 0.12013 kg CO₂e/km | Unified coefficient (walking + transit weighted average) |
 
 ---
 
@@ -210,7 +210,7 @@ Three conditions must ALL be satisfied:
 | car | 0.30479 | kg CO₂e/km | Ecoinvent 3.10 LCA database |
 | scooter | 0.13734 | kg CO₂e/km | E-scooter/personal mobility |
 | bike | 0.01220 | kg CO₂e/km | Pedal or e-bike |
-| bus | 0.47515 | kg CO₂e/km | Public transit (primary default) |
+| bus | 0.12013 | kg CO₂e/km | Unified coefficient |
 | mrt | 0.07575 | kg CO₂e/km | Mass rapid transit |
 | train | 0.07575 | kg CO₂e/km | Conventional rail |
 | hsr | 0.07487 | kg CO₂e/km | High-speed rail |

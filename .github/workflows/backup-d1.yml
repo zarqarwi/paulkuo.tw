@@ -88,6 +88,34 @@ jobs:
             --output backup-formosa_gps_points.sql
           echo "✅ formosa_gps_points exported"
 
+      - name: Export formosa_daily_reports
+        id: export_daily_reports
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 export paulkuo-auth \
+            --config worker/wrangler.toml \
+            --remote \
+            --table formosa_daily_reports \
+            --output backup-formosa_daily_reports.sql
+          echo "✅ formosa_daily_reports exported"
+
+      - name: Export formosa_privacy_consent
+        id: export_privacy
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 export paulkuo-auth \
+            --config worker/wrangler.toml \
+            --remote \
+            --table formosa_privacy_consent \
+            --output backup-formosa_privacy_consent.sql
+          echo "✅ formosa_privacy_consent exported"
+
       - name: Package backups
         id: package
         continue-on-error: true
@@ -143,6 +171,20 @@ jobs:
             FAILURES=$((FAILURES + 1))
           fi
 
+          if [ "${{ steps.export_daily_reports.outcome }}" = "success" ]; then
+            echo "| formosa_daily_reports | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| formosa_daily_reports | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
+          if [ "${{ steps.export_privacy.outcome }}" = "success" ]; then
+            echo "| formosa_privacy_consent | ✅ OK |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| formosa_privacy_consent | ❌ FAIL |" >> $GITHUB_STEP_SUMMARY
+            FAILURES=$((FAILURES + 1))
+          fi
+
           if [ "${{ steps.package.outcome }}" = "success" ]; then
             echo "| Archive | ✅ ${{ steps.package.outputs.archive }} |" >> $GITHUB_STEP_SUMMARY
           else
@@ -151,7 +193,7 @@ jobs:
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Failures: $FAILURES / 4**" >> $GITHUB_STEP_SUMMARY
+          echo "**Failures: $FAILURES / 6**" >> $GITHUB_STEP_SUMMARY
 
           if [ "$FAILURES" -gt 0 ]; then
             echo "has_failures=true" >> $GITHUB_ENV

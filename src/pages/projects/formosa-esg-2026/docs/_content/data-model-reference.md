@@ -236,7 +236,7 @@ R2
 | car | 0.30479 | kg CO₂e/km | formosa.js:1908 |
 | scooter | 0.13734 | kg CO₂e/km | formosa.js:1908 |
 | bike | 0.01220 | kg CO₂e/km | formosa.js:1908 |
-| bus | 0.47515 | kg CO₂e/km | formosa.js:1909 |
+| bus | 0.12013 | kg CO₂e/km | formosa.js（統一係數） |
 | mrt | 0.07575 | kg CO₂e/km | formosa.js:1909 |
 | train | 0.07575 | kg CO₂e/km | formosa.js:1909 |
 | hsr | 0.07487 | kg CO₂e/km | formosa.js:1909 |
@@ -244,7 +244,7 @@ R2
 | recycle | -0.00265 | kg CO₂e/瓶 | formosa.js:1910（回收抵扣） |
 | hotel | 8.85 | kg CO₂e/晚 | formosa.js:1910 |
 
-速度推斷門檻（formosa.js:877-880）：≤ 15 km/h → zero_emission, > 15 km/h → motorized (0.47515)
+速度推斷門檻（formosa.js:877-880）：≤ 15 km/h → zero_emission, > 15 km/h → motorized (0.12013)
 
 ⚠️ **勘誤**：本段 2026-04-04 初版寫「機車 0.05、汽車 0.21、遊覽車 0.04」，皆為錯誤舊值，已於同日修正。
 
