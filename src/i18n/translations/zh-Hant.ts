@@ -1111,7 +1111,7 @@ export const zhHant = {
     step65ZeroLabel: '🚶 零碳移動（自動）',
     step65ZeroDesc: '速度 <15 km/h → 判定步行/騎車 → CO₂ = 0',
     step65TransitLabel: '🚗 交通碳排（手動）',
-    step65TransitDesc: '開車 0.21 / 機車 0.10 / 公車 0.05 / 捷運 0.03 kg CO₂e/km',
+    step65TransitDesc: '系統以統一碳排係數 0.12013 kgCO₂/km 計算您的減碳足跡',
     step65DailyLabel: '🧴 日常碳排',
     step65DailyDesc: '塑膠瓶 0.3 kg/瓶、旅宿 2.5 kg/晚',
     step65CalcLabel: '📊 即時試算',

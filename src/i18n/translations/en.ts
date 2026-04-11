@@ -1121,7 +1121,7 @@ export const en = {
     step65ZeroLabel: '🚶 Zero-Emission Movement (Auto)',
     step65ZeroDesc: 'Speed <15 km/h → determine walk/bike → CO₂ = 0',
     step65TransitLabel: '🚗 Transport Carbon (Manual)',
-    step65TransitDesc: 'Car 0.21 / scooter 0.10 / bus 0.05 / MRT 0.03 kg CO₂e/km',
+    step65TransitDesc: 'The system calculates your carbon footprint reduction using a unified emission factor of 0.12013 kgCO₂/km',
     step65DailyLabel: '🧴 Daily Carbon',
     step65DailyDesc: 'Plastic bottles 0.3 kg/bottle, lodging 2.5 kg/night',
     step65CalcLabel: '📊 Real-Time Estimate',

@@ -1119,7 +1119,7 @@ export const zhHans = {
     step65ZeroLabel: '🚶 零碳移动（自动）',
     step65ZeroDesc: '速度 <15 km/h → 判定步行/骑车 → CO₂ = 0',
     step65TransitLabel: '🚗 交通碳排（手动）',
-    step65TransitDesc: '开车 0.21 / 摩托车 0.10 / 公交车 0.05 / 地铁 0.03 kg CO₂e/km',
+    step65TransitDesc: '系统以统一碳排系数 0.12013 kgCO₂/km 计算您的减碳足迹',
     step65DailyLabel: '🧴 日常碳排',
     step65DailyDesc: '塑胶瓶 0.3 kg/瓶、旅宿 2.5 kg/晚',
     step65CalcLabel: '📊 即时试算',

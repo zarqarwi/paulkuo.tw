@@ -2568,6 +2568,12 @@ const prefix = LOCALE_PREFIX[lang];
     }
   });
 
+  // ── GP-7b: online — flush queue when network reconnects ──
+  window.addEventListener('online', function() {
+    var userId = lineUserId || lsGet('formosa_user_id') || '';
+    if (userId) flushCheckinQueue(userId);
+  });
+
   // ── GP-8: beforeunload / pagehide — rescue data before page closes ──
   window.addEventListener('beforeunload', function() {
     persistAutoTrack();

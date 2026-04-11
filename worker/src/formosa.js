@@ -33,7 +33,9 @@ async function getAuthRole(request, env) {
       const info = codes[token.trim().toLowerCase()];
       if (info && info.role === 'admin') return 'owner';
     }
-  } catch (_) {}
+  } catch (e) {
+    console.error('getAuthRole invite code error:', e.message || e);
+  }
   return null;
 }
 
@@ -394,7 +396,9 @@ export async function handleFormosaCheckin(request, env, ctx) {
           `INSERT INTO formosa_users (line_user_id, is_sedan, updated_at) VALUES (?, 1, datetime('now'))
            ON CONFLICT(line_user_id) DO UPDATE SET is_sedan = 1, updated_at = datetime('now')`
         ).bind(userId).run();
-      } catch (_) {}
+      } catch (e) {
+        console.error('handleFormosaCheckin sedan write error:', e.message || e);
+      }
     }
 
     const lat = data.lat;
@@ -609,7 +613,9 @@ export async function handleFormosaFlushBuffer(env) {
           await Promise.all(valid.map(async (entry) => {
             try {
               await env.TICKER_KV.put(entry.key, JSON.stringify(entry.data), { expirationTtl: 604800 });
-            } catch {}
+            } catch (e) {
+              console.error('handleFormosaFlushBuffer KV re-put error:', e.message || e);
+            }
           }));
           continue;
         }
@@ -857,23 +863,27 @@ export async function handleFormosaScheduledPush(env) {
   let totalSent = 0;
 
   for (const { locale, query, bind } of localeConfigs) {
-    const stmt = env.AUTH_DB.prepare(query);
-    const users = bind.length > 0
-      ? await stmt.bind(...bind).all()
-      : await stmt.all();
+    try {
+      const stmt = env.AUTH_DB.prepare(query);
+      const users = bind.length > 0
+        ? await stmt.bind(...bind).all()
+        : await stmt.all();
 
-    if (!users.results?.length) continue;
+      if (!users.results?.length) continue;
 
-    const pushMessages = BOT_MESSAGES[locale].push;
-    const msg = pushMessages[Math.min(msgIdx, pushMessages.length - 1)];
-    const localizedUrl = localizeUrl(trackerUrl, locale);
-    const userIds = users.results.map(u => u.line_user_id);
+      const pushMessages = BOT_MESSAGES[locale].push;
+      const msg = pushMessages[Math.min(msgIdx, pushMessages.length - 1)];
+      const localizedUrl = localizeUrl(trackerUrl, locale);
+      const userIds = users.results.map(u => u.line_user_id);
 
-    await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [
-      { type: 'text', text: `${msg.title}\n\n${msg.text}\n\n📍 ${localizedUrl}` }
-    ]);
+      await multicastLineMessage(userIds, env.FORMOSA_LINE_TOKEN, [
+        { type: 'text', text: `${msg.title}\n\n${msg.text}\n\n📍 ${localizedUrl}` }
+      ]);
 
-    totalSent += userIds.length;
+      totalSent += userIds.length;
+    } catch (e) {
+      console.error(`ScheduledPush ${locale} error:`, e.message || e);
+    }
   }
 
   return { sent: totalSent };
@@ -1540,55 +1550,6 @@ function buildWelcomeMessage(locale = 'zh-Hant') {
   };
 }
 
-// ── Usage Instructions ──
-function buildUsageMessage() {
-  return {
-    type: 'flex',
-    altText: '📖 使用說明',
-    contents: {
-      type: 'bubble',
-      size: 'mega',
-      header: {
-        type: 'box', layout: 'vertical', backgroundColor: '#1a5c2a', paddingAll: '15px',
-        contents: [
-          { type: 'text', text: '📖 使用說明', color: '#ffffff', size: 'lg', weight: 'bold' }
-        ]
-      },
-      body: {
-        type: 'box', layout: 'vertical', spacing: 'lg', paddingAll: '20px',
-        contents: [
-          { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
-            { type: 'text', text: '① 打卡記錄', weight: 'bold', size: 'sm' },
-            { type: 'text', text: '點「立即打卡」按鈕，系統自動記錄您的 GPS 位置。建議每到一個新地點就打卡一次。', wrap: true, size: 'xs', color: '#666666' }
-          ]},
-          { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
-            { type: 'text', text: '② 照片上傳', weight: 'bold', size: 'sm' },
-            { type: 'text', text: '上傳進香途中照片，系統會讀取照片中的 GPS 定位。照片不會上傳到伺服器，僅讀取 GPS 資訊作為路徑紀錄。', wrap: true, size: 'xs', color: '#666666' }
-          ]},
-          { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
-            { type: 'text', text: '③ 問卷填寫', weight: 'bold', size: 'sm' },
-            { type: 'text', text: '填寫善行紀錄、交通方式等問卷，系統自動計算您的碳足跡。問卷只需填一次。', wrap: true, size: 'xs', color: '#666666' }
-          ]},
-          { type: 'box', layout: 'vertical', spacing: 'sm', contents: [
-            { type: 'text', text: '④ 等級成就', weight: 'bold', size: 'sm' },
-            { type: 'text', text: '打卡越多、走越遠，等級越高！共 9 級，從煉氣香客到飛升香客。', wrap: true, size: 'xs', color: '#666666' }
-          ]},
-          { type: 'separator' },
-          { type: 'text', text: '💡 輸入關鍵字快速操作', weight: 'bold', size: 'xs', margin: 'md' },
-          { type: 'text', text: '「打卡」→ 記錄足跡\n「等級」→ 我的紀錄\n「碳足跡」→ 碳排資訊\n「關於」→ 專案介紹', wrap: true, size: 'xs', color: '#888888', margin: 'sm' }
-        ]
-      },
-      footer: {
-        type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: '15px',
-        contents: [
-          { type: 'button', style: 'primary', color: '#1a5c2a', action: { type: 'uri', label: '📍 開始打卡', uri: TRACKER_URL } },
-          { type: 'button', style: 'link', action: { type: 'uri', label: '📖 查看完整使用說明', uri: GUIDE_URL } }
-        ]
-      }
-    }
-  };
-}
-
 // ── Stats Message (from DB) ──
 async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
   if (!userId) return { type: 'text', text: botMsg(locale, 'stats_no_account') };
@@ -1636,21 +1597,6 @@ async function buildStatsMessage(userId, env, locale = 'zh-Hant') {
   }
 }
 
-// ── Carbon Info ──
-function buildCarbonInfoMessage() {
-  return {
-    type: 'text',
-    text: '🌱 碳足跡小知識\n\n進香途中我們用兩種方式估算你的碳足跡：\n🚶 步行/腳踏車 → 零排放 ✨\n🚌 搭乘交通工具 → 約 0.12013 kg CO₂e/km\n\n走越多、搭越少，碳足跡越低！\n🌿 鼓勵大家多走路、多共乘，一起愛護地球 🌍\n\n📝 此為簡化估算，目的是提醒減排意識\n\n📍 前往記錄：\n' + TRACKER_URL
-  };
-}
-
-// ── Default Menu ──
-function buildMenuMessage() {
-  return {
-    type: 'text',
-    text: '🙏 媽祖 Bot 為您服務\n\n輸入以下關鍵字：\n📍「打卡」→ 記錄足跡\n📖「說明」→ 使用指南\n📊「等級」→ 我的紀錄\n🌱「碳足跡」→ 碳排資訊\n💡「關於」→ 專案介紹\n\n💡 輸入「說明」查看使用指南'
-  };
-}
 
 // ── Rich Menu Setup ──
 export async function handleFormosaRichMenu(request, env) {
@@ -1735,7 +1681,9 @@ async function getLineProfile(userId, token) {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch (e) {
+    console.error('getLineProfile error:', e.message || e);
+  }
   return null;
 }
 
@@ -2061,24 +2009,32 @@ export async function handleFormosaDailyReport(request, env) {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
 
-  await migrateFormosa(env.AUTH_DB);
-
   // GET: fetch user's daily reports
   if (request.method === 'GET') {
-    const url = new URL(request.url);
-    const userId = url.searchParams.get('user_id');
-    if (!userId) return jsonResponse({ error: 'user_id required' }, 400, request);
+    try {
+      await migrateFormosa(env.AUTH_DB);
+      const url = new URL(request.url);
+      const userId = url.searchParams.get('user_id');
+      if (!userId) return jsonResponse({ error: 'user_id required' }, 400, request);
 
-    const rows = await env.AUTH_DB.prepare(
-      `SELECT * FROM formosa_daily_reports WHERE user_id = ? ORDER BY report_date DESC`
-    ).bind(userId).all();
+      const rows = await env.AUTH_DB.prepare(
+        `SELECT * FROM formosa_daily_reports WHERE user_id = ? ORDER BY report_date DESC`
+      ).bind(userId).all();
 
-    // Aggregate totals
-    let totalGwp = 0, totalWu = 0;
-    for (const r of rows.results) { totalGwp += r.carbon_gwp || 0; totalWu += r.carbon_wu || 0; }
+      // Aggregate totals
+      let totalGwp = 0, totalWu = 0;
+      for (const r of rows.results) { totalGwp += r.carbon_gwp || 0; totalWu += r.carbon_wu || 0; }
 
-    return jsonResponse({ ok: true, reports: rows.results, total_gwp: totalGwp, total_wu: totalWu, count: rows.results.length }, 200, request);
+      return jsonResponse({ ok: true, reports: rows.results, total_gwp: totalGwp, total_wu: totalWu, count: rows.results.length }, 200, request);
+    } catch (e) {
+      console.error('handleFormosaDailyReport GET error:', e);
+      return new Response(JSON.stringify({ error: 'Internal error' }), {
+        status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders(request) }
+      });
+    }
   }
+
+  await migrateFormosa(env.AUTH_DB);
 
   // POST: submit or update daily report
   if (request.method !== 'POST') {
@@ -2229,7 +2185,7 @@ export async function handleFormosaLineUsage(request, env) {
   if (authErr) return authErr;
 
   try {
-    const lineAuth = { 'Authorization': `Bearer ${env.LINE_CHANNEL_ACCESS_TOKEN}` };
+    const lineAuth = { 'Authorization': `Bearer ${env.FORMOSA_LINE_TOKEN}` };
 
     const [quotaRes, consumptionRes] = await Promise.all([
       fetch('https://api.line.me/v2/bot/message/quota', { headers: lineAuth }),
@@ -2600,12 +2556,3 @@ export async function handleFormosaHealthAlert(env) {
   return { checked: true, healthy: false, alerted: true };
 }
 
-function haversineKm(lat1, lng1, lat2, lng2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-    Math.sin(dLng/2) * Math.sin(dLng/2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}

@@ -52,6 +52,17 @@ const i18nMyPage = JSON.stringify({
   viewerTitle: t(lang, 'myPageContent.viewerTitle'),
   copied: t(lang, 'myPageContent.copied'),
   carbonZeroHint: t(lang, 'myPageContent.carbonZeroHint'),
+  levels: {
+    '1': t(lang, 'levels.1.name'),
+    '2': t(lang, 'levels.2.name'),
+    '3': t(lang, 'levels.3.name'),
+    '4': t(lang, 'levels.4.name'),
+    '5': t(lang, 'levels.5.name'),
+    '6': t(lang, 'levels.6.name'),
+    '7': t(lang, 'levels.7.name'),
+    '8': t(lang, 'levels.8.name'),
+    '9': t(lang, 'levels.9.name'),
+  },
 });
 
 const linkPrefix = prefix;
@@ -207,15 +218,15 @@ const linkPrefix = prefix;
   var _prefix = linkPrefix;
   var MASCOT_BASE = '/images/formosa/';
   var TITLES = [
-    { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.png', name: '煉氣香客', sub: '啟程入門者' },
-    { km: 15,  checkins: 5,  icon: '🧱', img: 'level-2.png', name: '築基香客', sub: '開始上路者' },
-    { km: 45,  checkins: 10, icon: '💛', img: 'level-3.png', name: '金丹香客', sub: '穩定行腳者' },
-    { km: 90,  checkins: 15, icon: '👶', img: 'level-4.png', name: '元嬰香客', sub: '深度參與者' },
-    { km: 135, checkins: 20, icon: '✨', img: 'level-5.png', name: '化神香客', sub: '高里程行者' },
-    { km: 180, checkins: 25, icon: '🌀', img: 'level-6.png', name: '煉虛香客', sub: '進階完成者' },
-    { km: 225, checkins: 30, icon: '🤝', img: 'level-7.png', name: '合體香客', sub: '高階完成者' },
-    { km: 270, checkins: 35, icon: '🏆', img: 'level-8.png', name: '大乘香客', sub: '榮譽進階者' },
-    { km: 300, checkins: 40, icon: '🚀', img: 'level-9.png', name: '飛升香客', sub: '圓滿認證者' }
+    { km: 0,   checkins: 1,  icon: '🔥', img: 'level-1.png', name: _t.levels['1'], sub: '啟程入門者' },
+    { km: 15,  checkins: 5,  icon: '🧱', img: 'level-2.png', name: _t.levels['2'], sub: '開始上路者' },
+    { km: 45,  checkins: 10, icon: '💛', img: 'level-3.png', name: _t.levels['3'], sub: '穩定行腳者' },
+    { km: 90,  checkins: 15, icon: '👶', img: 'level-4.png', name: _t.levels['4'], sub: '深度參與者' },
+    { km: 135, checkins: 20, icon: '✨', img: 'level-5.png', name: _t.levels['5'], sub: '高里程行者' },
+    { km: 180, checkins: 25, icon: '🌀', img: 'level-6.png', name: _t.levels['6'], sub: '進階完成者' },
+    { km: 225, checkins: 30, icon: '🤝', img: 'level-7.png', name: _t.levels['7'], sub: '高階完成者' },
+    { km: 270, checkins: 35, icon: '🏆', img: 'level-8.png', name: _t.levels['8'], sub: '榮譽進階者' },
+    { km: 300, checkins: 40, icon: '🚀', img: 'level-9.png', name: _t.levels['9'], sub: '圓滿認證者' }
   ];
 
   var API_BASE = 'https://api.paulkuo.tw';
