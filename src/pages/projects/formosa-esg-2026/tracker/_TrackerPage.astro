@@ -643,6 +643,28 @@ const prefix = LOCALE_PREFIX[lang];
   var autoSaveCounter = 0;
   var autoSaveTimer = null;
 
+  // ── #163: Periodic auto-upload to server (5-min interval, fix straight-line bug) ──
+  var autoUploadTimer = null;
+  function startAutoUpload(userId) {
+    if (autoUploadTimer || !userId) return;
+    autoUploadTimer = setInterval(function() {
+      var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+      if (unsent.length === 0) return;
+      fetch(API_BASE + '/api/formosa/track/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Line-User-Id': userId },
+        body: JSON.stringify({
+          user_id: userId,
+          points: unsent.slice(-500).map(function(p) {
+            return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source };
+          })
+        })
+      }).then(function(res) {
+        if (res.ok) gpsTrackPoints.forEach(function(p) { p._uploaded = true; });
+      }).catch(function() {});
+    }, 300000); // every 5 minutes
+  }
+
   function persistAutoTrack() {
     try {
       var savedTrack = JSON.parse(lsGet('formosa_gps_track') || '[]');
@@ -745,6 +767,8 @@ const prefix = LOCALE_PREFIX[lang];
             if (statusEl) statusEl.textContent = '📍 ' + _i18n.trackingWaiting;
             return;
           }
+          // #163: outlier filter — speed > 150 km/h within 5 min = GPS glitch
+          if (timeDiff > 0 && timeDiff < 300000 && dist / (timeDiff / 3600000) > 150) return;
         }
 
         gpsTrackPoints.push(pt);
@@ -754,6 +778,8 @@ const prefix = LOCALE_PREFIX[lang];
         if (!autoSaveTimer) {
           autoSaveTimer = setInterval(persistAutoTrack, 60000);
         }
+        // #163: periodic auto-upload to server
+        if (!autoUploadTimer && lineUserId) startAutoUpload(lineUserId);
         if (statusEl) statusEl.textContent = '📍 ' + _i18n.tracking;
         if (countEl) countEl.textContent = gpsTrackPoints.length + ' ' + _i18n.gpsRecords;
       },
@@ -2093,6 +2119,12 @@ const prefix = LOCALE_PREFIX[lang];
     // Fallback: getCurrentPosition with longer timeout (GP-5: 20s instead of 10s)
     navigator.geolocation.getCurrentPosition(
       function(pos) {
+        // #163: accuracy filter — same threshold as watchPosition
+        if (pos.coords.accuracy > 100) {
+          restoreBtn();
+          showPhotoToast('⚠️ ' + _i18n.trackingWaiting, 3000);
+          return;
+        }
         try {
           processCheckin(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, pos.coords.accuracy, activeBtn);
         } catch(e) {
