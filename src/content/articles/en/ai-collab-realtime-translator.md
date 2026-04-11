@@ -1,18 +1,21 @@
 ---
 title: "Paid for Three Years of Subscription, Then Built My Own Better Solution: A Solo × AI Real-Time Meeting Translation Development Story"
-subtitle: "The core of AI collaboration isn't coding—it's articulating problems clearly"
-description: "A non-programmer using AI collaboration to create a real-time multilingual meeting translation tool. A complete record from pain point to implementation, and what this process reveals about the essence of AI literacy."
+subtitle: "Beyond Transync AI: Building a real-time meeting translator with AI collaboration at 1/10 the cost"
+description: "After three years of Good Tape and evaluating Transync AI, a non-programmer used AI collaboration to build a real-time multilingual meeting translation tool—for just NT$16 per meeting. A complete record from pain point to implementation, and what this reveals about AI literacy."
 abstract: |
   I paid for three years of Good Tape subscription, with zero usage in the final month before expiration—because I already had my own tool. This article documents how someone with a background spanning theology, agricultural e-commerce, and circular economy, without an engineering identity, used AI collaboration to create "Agora Square," a real-time multilingual meeting translation tool. The tool itself isn't the point—the point is that this process made me realize: effective AI collaboration requires not coding skills, but the ability to structure problems, break them into phases, and describe them clearly—a capability that's now more valuable than any programming language.
 date: 2026-03-12
 updated: 2026-03-12
 pillar: ai
 tags:
-  - AI協作
-  - 超級個體
-  - 即時翻譯
-  - 語音辨識
-  - AI素養
+  - AI collaboration
+  - solo creator
+  - real-time translation
+  - speech recognition
+  - AI literacy
+  - Transync AI
+  - meeting translation tools
+  - Groq
 cover: "/images/covers/ai-collab-realtime-translator.jpg"
 featured: false
 draft: false
