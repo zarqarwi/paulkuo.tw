@@ -1,0 +1,98 @@
+name: Feedback Batch Update
+
+on:
+  push:
+    paths:
+      - 'worklogs/feedback-batch-update.json'
+
+permissions:
+  contents: write
+
+jobs:
+  batch-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if updates exist
+        id: check
+        run: |
+          UPDATES=$(jq '.updates | length' worklogs/feedback-batch-update.json)
+          if [ "$UPDATES" -eq 0 ]; then
+            echo "No updates to process, skipping."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "Found $UPDATES update(s) to process."
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Batch PATCH feedback status
+        if: steps.check.outputs.skip != 'true'
+        env:
+          ADMIN_TOKEN: ${{ secrets.FORMOSA_ADMIN_TOKEN }}
+        run: |
+          SOURCE=$(jq -r '.source' worklogs/feedback-batch-update.json)
+          echo "=== Feedback Batch Update ==="
+          echo "Source: $SOURCE"
+          echo ""
+
+          FAILED=0
+          SUCCESS=0
+          TOTAL=$(jq '.updates | length' worklogs/feedback-batch-update.json)
+
+          jq -c '.updates[]' worklogs/feedback-batch-update.json | while read -r item; do
+            ID=$(echo "$item" | jq -r '.id')
+            STATUS=$(echo "$item" | jq -r '.status')
+            NOTE=$(echo "$item" | jq -r '.admin_note // empty')
+
+            # Validate status
+            case "$STATUS" in
+              new|triaging|fixing|fixed|wontfix) ;;
+              *)
+                echo "::warning::Skipping feedback #$ID: invalid status '$STATUS'"
+                FAILED=$((FAILED + 1))
+                continue
+                ;;
+            esac
+
+            # Build JSON body
+            if [ -n "$NOTE" ]; then
+              BODY=$(jq -n --arg s "$STATUS" --arg n "$NOTE" '{status:$s,admin_note:$n}')
+            else
+              BODY=$(jq -n --arg s "$STATUS" '{status:$s}')
+            fi
+
+            echo "PATCH feedback #$ID → $STATUS"
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X PATCH \
+              "https://api.paulkuo.tw/api/formosa/feedback/$ID" \
+              -H "Content-Type: application/json" \
+              -H "X-Admin-Token: $ADMIN_TOKEN" \
+              -d "$BODY")
+
+            HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+            RESP_BODY=$(echo "$RESPONSE" | head -n -1)
+
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "  ✅ OK ($HTTP_CODE)"
+              SUCCESS=$((SUCCESS + 1))
+            else
+              echo "  ❌ FAILED ($HTTP_CODE): $RESP_BODY"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          echo ""
+          echo "=== Summary ==="
+          echo "Source: $SOURCE"
+          echo "Total: $TOTAL"
+
+      - name: Clear trigger file
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          echo '{"updates":[],"source":"cleared","triggered_at":""}' > worklogs/feedback-batch-update.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add worklogs/feedback-batch-update.json
+          git commit -m "chore: clear batch-update trigger [skip ci]" || true
+          git pull --rebase origin main || true
+          git push
