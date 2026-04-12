@@ -1,0 +1,20 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "formosa-esg",
+  "date": "2026-04-11",
+  "session_type": "auto",
+  "model": "n/a",
+  "size": "auto",
+  "outputs": {
+    "commits": 15,
+    "files_changed": 14,
+    "lines_added": 0,
+    "lines_removed": 0,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": false
+  },
+  "custom": {},
+  "automation_changes": [],
+  "notes": "自動收集 by governance-metrics-collector。主要活動：R5 全面性程式碼健康檢查 + 修復（P0×2 + P1×6）、volunteer guide v1.0 changelog 多語系更新（zh-Hant/zh-Hans/EN/JA）、backup-d1 補齊 + 碳係數修正、smoke-test checklist 更新。"
+}
