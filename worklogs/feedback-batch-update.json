@@ -1,1 +1,5 @@
-{"updates":[],"source":"init","triggered_at":""}
+{
+  "updates": [{"id": 1, "status": "fixed", "admin_note": "test file-based trigger"}],
+  "source": "manual-test",
+  "triggered_at": "2026-04-12T20:00:00+08:00"
+}
