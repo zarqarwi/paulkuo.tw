@@ -11,7 +11,7 @@ export async function onRequest(context) {
   if (!userId) return context.next();
 
   const ua = (context.request.headers.get('user-agent') || '').toLowerCase();
-  const isCrawler = /facebookexternalhit|facebot|line|twitterbot|slackbot|linkedinbot|discordbot|telegrambot|whatsapp|kakaotalk|pinterest|googlebot/i.test(ua);
+  const isCrawler = /facebookexternalhit|facebot|twitterbot|slackbot|linkedinbot|discordbot|telegrambot|whatsapp|kakaotalk|pinterest|googlebot/i.test(ua);
 
   // Normal users get the static page (client JS reads ?u= and fetches data)
   if (!isCrawler) return context.next();

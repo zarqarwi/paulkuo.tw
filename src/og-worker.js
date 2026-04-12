@@ -14,7 +14,7 @@ export default {
 
     // Only intercept social crawlers on tracker page with ?u= param
     if (
-      /facebookexternalhit|facebot|line|twitterbot|slackbot|linkedinbot|discordbot|telegrambot|whatsapp|kakaotalk|pinterest|googlebot/i.test(ua) &&
+      /facebookexternalhit|facebot|twitterbot|slackbot|linkedinbot|discordbot|telegrambot|whatsapp|kakaotalk|pinterest|googlebot/i.test(ua) &&
       url.pathname === '/projects/formosa-esg-2026/tracker/' &&
       url.searchParams.has('u')
     ) {
@@ -96,7 +96,7 @@ export default {
     if (portfolioMatch) {
       const acpId = portfolioMatch[1];
 
-      if (/facebookexternalhit|facebot|line|twitterbot|slackbot|linkedinbot|discordbot|telegrambot|whatsapp|kakaotalk|pinterest|googlebot/i.test(ua)) {
+      if (/facebookexternalhit|facebot|twitterbot|slackbot|linkedinbot|discordbot|telegrambot|whatsapp|kakaotalk|pinterest|googlebot/i.test(ua)) {
         try {
           const apiResp = await fetch(`https://api.paulkuo.tw/api/acp/${acpId}`);
           if (apiResp.ok) {
