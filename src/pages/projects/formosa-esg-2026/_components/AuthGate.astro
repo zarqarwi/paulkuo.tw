@@ -180,6 +180,7 @@ const authI18n = {
 
   // ── LINE Login Mode ──
   if (lineLogin) {
+    var liffTimeoutId = null;
     var lineLoginBtn = document.getElementById('lineLoginBtn');
     var lineProfileSection = document.getElementById('lineProfileSection');
     var lineLoginSection = document.getElementById('lineLoginSection');
@@ -325,6 +326,7 @@ const authI18n = {
       }
       liff.init({ liffId: liffId }).then(function() {
         window.__liffReady = true;
+        if (liffTimeoutId) { clearTimeout(liffTimeoutId); liffTimeoutId = null; }
 
         // ── i18n: auto-redirect by LINE language ──
         (function autoRedirectByLanguage() {
@@ -408,8 +410,8 @@ const authI18n = {
             window.__liffInitStarted = true;
             initLIFF();
           }
-          // Timeout fallback: if LIFF doesn't init within 5s, show error
-          setTimeout(function() {
+          // Timeout fallback: if LIFF doesn't init within 12s, show error
+          liffTimeoutId = setTimeout(function() {
             if (!window.__liffReady) {
               resetLoginBtn();
               var errEl2 = document.getElementById('liffErrorMsg');
@@ -421,7 +423,7 @@ const authI18n = {
               }
               errEl2.textContent = 'LINE 登入載入逾時，請重新整理頁面再試。';
             }
-          }, 5000);
+          }, 12000);
         }
       });
     }
@@ -445,7 +447,10 @@ const authI18n = {
             pictureUrl: localStorage.getItem('formosa_line_picture') || ''
           });
         }
-        initLIFF();
+        if (!window.__liffInitStarted) {
+          window.__liffInitStarted = true;
+          initLIFF();
+        }
       }
     });
 
