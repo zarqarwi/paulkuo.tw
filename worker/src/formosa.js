@@ -442,10 +442,13 @@ export async function handleFormosaCheckin(request, env, ctx) {
         for (const pt of validPts) {
           const ptTs = pt.datetime || new Date().toISOString();
           const ptKey = `gps:${ptTs}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
+          // #168: Apply geofence to batch track_points too
+          const ptInRange = pt.lat >= 23.4 && pt.lat <= 24.9 && pt.lng >= 120.1 && pt.lng <= 121.0;
+          const ptSource = ptInRange ? (VALID_SOURCES.has(pt.source) ? pt.source : 'auto') : 'remote';
           await env.TICKER_KV.put(ptKey, JSON.stringify({
             user_id: userId, lat: pt.lat, lng: pt.lng,
             altitude: null, accuracy: null,
-            source: VALID_SOURCES.has(pt.source) ? pt.source : 'auto', timestamp: ptTs
+            source: ptSource, timestamp: ptTs
           }), { expirationTtl: 604800 }); // #R4-Fix-B: 7 days (was 3)
           batchWritten++;
         }
@@ -523,10 +526,13 @@ export async function handleFormosaTrackSync(request, env) {
     for (const pt of validPts) {
       const ptTs = pt.datetime || new Date().toISOString();
       const ptKey = `gps:${ptTs}:${userId}:${crypto.randomUUID().slice(0, 8)}`;
+      // #168: Apply geofence — points outside 白沙屯↔北港 range → 'remote'
+      const ptInRange = pt.lat >= 23.4 && pt.lat <= 24.9 && pt.lng >= 120.1 && pt.lng <= 121.0;
+      const ptSource = ptInRange ? (VALID_SOURCES.has(pt.source) ? pt.source : 'auto') : 'remote';
       await env.TICKER_KV.put(ptKey, JSON.stringify({
         user_id: userId, lat: pt.lat, lng: pt.lng,
         altitude: null, accuracy: null,
-        source: VALID_SOURCES.has(pt.source) ? pt.source : 'auto', timestamp: ptTs
+        source: ptSource, timestamp: ptTs
       }), { expirationTtl: 604800 }); // #R4-Fix-B: 7 days (was 3)
       synced++;
     }
@@ -1127,8 +1133,9 @@ export async function handleFormosaAdminCarbon(request, env) {
     await migrateFormosa(env.AUTH_DB);
 
     // GPS-derived distance and carbon (primary source)
+    // #168: Filter out 'remote' points (outside geofence) to prevent ghost mileage
     const allPoints = await env.AUTH_DB.prepare(
-      'SELECT user_id, lat, lng, timestamp FROM formosa_gps_points ORDER BY user_id, timestamp ASC'
+      "SELECT user_id, lat, lng, source, timestamp FROM formosa_gps_points WHERE source != 'remote' ORDER BY user_id, timestamp ASC"
     ).all();
     const pts = allPoints?.results || [];
 
@@ -1244,9 +1251,10 @@ export async function handleFormosaAdminUsers(request, env) {
   }
   try {
     await migrateFormosa(env.AUTH_DB);
+    // #168: Exclude 'remote' points from gps_count to prevent ghost checkin inflation
     const gpsUsers = await env.AUTH_DB.prepare(`
       SELECT u.line_user_id as user_id, u.display_name, u.picture_url, u.role,
-        COUNT(g.id) as gps_count,
+        COUNT(CASE WHEN g.source != 'remote' THEN g.id END) as gps_count,
         MAX(g.created_at) as last_active,
         MIN(g.created_at) as first_active
       FROM formosa_users u
@@ -1256,8 +1264,9 @@ export async function handleFormosaAdminUsers(request, env) {
     `).all();
 
     // Fetch all GPS points to compute walk_km and carbon_kg from actual tracks
+    // #168: Include source column and filter out 'remote' (outside geofence) points
     const allPoints = await env.AUTH_DB.prepare(
-      'SELECT user_id, lat, lng, timestamp FROM formosa_gps_points ORDER BY user_id, timestamp ASC'
+      "SELECT user_id, lat, lng, source, timestamp FROM formosa_gps_points WHERE source != 'remote' ORDER BY user_id, timestamp ASC"
     ).all();
     const pts = allPoints?.results || [];
 

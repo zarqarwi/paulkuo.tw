@@ -648,23 +648,36 @@ const prefix = LOCALE_PREFIX[lang];
   var autoSaveTimer = null;
 
   // ── #163: Periodic auto-upload to server (5-min interval, fix straight-line bug) ──
+  // ── #168: Filter GPS drift before upload — minimum 50m between uploaded points ──
   var autoUploadTimer = null;
+  var lastUploadedPt = null;
   function startAutoUpload(userId) {
     if (autoUploadTimer || !userId) return;
     autoUploadTimer = setInterval(function() {
       var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
       if (unsent.length === 0) return;
+      // #168: Filter out stationary drift — only upload points with >= 50m movement
+      var filtered = [];
+      var ref = lastUploadedPt;
+      for (var i = 0; i < unsent.length; i++) {
+        if (!ref || haversine(ref.lat, ref.lng, unsent[i].lat, unsent[i].lng) >= 0.05) {
+          filtered.push(unsent[i]);
+          ref = unsent[i];
+        }
+      }
+      // Mark all unsent as uploaded regardless (don't re-evaluate drift points next cycle)
+      unsent.forEach(function(p) { p._uploaded = true; });
+      if (filtered.length === 0) return;
+      lastUploadedPt = filtered[filtered.length - 1];
       fetch(API_BASE + '/api/formosa/track/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Line-User-Id': userId },
         body: JSON.stringify({
           user_id: userId,
-          points: unsent.slice(-500).map(function(p) {
+          points: filtered.slice(-500).map(function(p) {
             return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source };
           })
         })
-      }).then(function(res) {
-        if (res.ok) gpsTrackPoints.forEach(function(p) { p._uploaded = true; });
       }).catch(function() {});
     }, 300000); // every 5 minutes
   }
