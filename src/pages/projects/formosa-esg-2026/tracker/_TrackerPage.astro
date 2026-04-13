@@ -2576,6 +2576,31 @@ const prefix = LOCALE_PREFIX[lang];
       persistAutoTrack();
       var userId = lineUserId || lsGet('formosa_user_id') || '';
       if (userId) flushCheckinQueue(userId);
+      // ── Issue #169: LIFF kills background timers — restart autoUploadTimer + flush unsent ──
+      if (userId && autoUploadTimer !== null) {
+        clearInterval(autoUploadTimer);
+        autoUploadTimer = null;
+        startAutoUpload(userId);
+        // Immediately flush any unsent points accumulated while in background
+        var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+        var filtered = []; var ref = lastUploadedPt;
+        for (var i = 0; i < unsent.length; i++) {
+          if (!ref || haversine(ref.lat, ref.lng, unsent[i].lat, unsent[i].lng) >= 0.05) {
+            filtered.push(unsent[i]); ref = unsent[i];
+          }
+        }
+        unsent.forEach(function(p) { p._uploaded = true; });
+        if (filtered.length > 0) {
+          lastUploadedPt = filtered[filtered.length - 1];
+          fetch(API_BASE + '/api/formosa/track/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Line-User-Id': userId },
+            body: JSON.stringify({ user_id: userId, points: filtered.slice(-500).map(function(p) {
+              return { lat: p.lat, lng: p.lng, datetime: p.datetime, source: p.source };
+            }) })
+          }).catch(function() {});
+        }
+      }
     } else {
       persistAutoTrack();
     }
