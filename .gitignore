@@ -64,3 +64,9 @@ worker/backup-2026-03-30.sql
 # Dev tool outputs
 *code-stats*
 backups/
+
+# Claude Code 本機權限設定（每台機器不同）
+.claude/settings.local.json
+
+# 自動產生的 push timestamp
+scripts/.last_push_ts
