@@ -819,7 +819,7 @@ export async function handleFormosaScheduledPush(env) {
 
   if (month !== 4 || day < 12 || day > 20) return { skipped: true, reason: 'outside pilgrimage dates' };
 
-  const pushHours = [6, 9, 12, 15, 18];
+  const pushHours = [9];
   if (!pushHours.includes(hour)) return { skipped: true, reason: 'not a push hour, current: ' + hour };
 
   // Check activity status
