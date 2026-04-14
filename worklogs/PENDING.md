@@ -14,9 +14,18 @@
 
 ## 待 Code 執行
 
+- [x] 🟡 Harness Engineering 文件庫上架 → ✅ 已完成 (70ad07a, 2026-04-14)
+  - 完整 handoff：`worklogs/code--harness-docs-upload-2026-04-14.md`
+  - 兩份 HTML 已在 `public/governance/` 就位；只需改 `src/pages/governance/index.astro` 加文件庫區塊
+  - ⚠️ 關鍵：文件庫**必須放在 token gate 外部**（governance 是 token-protected dashboard，放錯地方訪客就看不到）
+  - Push 前告知 Paul
+
+- [x] 🟡 治理框架 Phase 3：Dashboard 整合 scanner 稽核結果 → ✅ 已完成 (851dd58)
+  - 6 步全 pass，automation coverage 66.7% → 70%
+  - ⚠️ 待 Paul 手動部署：`npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangler.toml`
+
 - [x] 治理框架 Phase 2：API + KV seed + Dashboard 頁面 → ✅ 已完成 (ceb67d2, e2fcd8f, b09d00c)
-  - Dashboard 路徑：/governance/（原 /dashboard/ 有路由衝突）
-  - ⚠️ 待 Paul 手動：wrangler deploy + 設定 GOVERNANCE_TOKEN secret
+  - ✅ 2026-04-11 17:07 Paul 已部署前端 + Worker + 設定 GOVERNANCE_TOKEN secret
 
 - [x] 🔴 修 governance-kv-seed.cjs `--remote` 參數 → ✅ 已完成 (be42206)
 
@@ -33,6 +42,7 @@ _（目前無待辦）_
 - 2026-04-09：Cowork session 一律 Opus 4.6；所有 handoff 必須標注建議模型（跨所有專案）
 - 2026-04-09：GitHub MCP 的 `get_issue`/`update_issue` 有 issue_number 型別 bug，暫時不可用。讀 Issue 用 `search_issues`，寫 Issue 用 sync-dashboard Action
 - 2026-04-10：專案治理框架 Phase 1+2 完成。Dashboard 在 /governance/（非 /dashboard/，因路由衝突）。API 4 支 endpoint：/api/governance/{summary,projects,metrics/:id,automation}。Auth 用 GOVERNANCE_TOKEN Bearer token
+- 2026-04-11：Phase 2 已部署上線。Phase 3 程式碼完成（851dd58），待 Paul 部署。新增 `/api/governance/audit` endpoint + Dashboard 稽核面板
 
 ---
 
@@ -45,3 +55,11 @@ _（目前無待辦）_
 跨專案備忘：
 - {日期}：{決策或狀態變更}
 ```
+
+---
+
+## Scanner 自動產出（最新在上）
+
+- [ ] 🟡 跨專案 smoke test 缺漏：cd2422a, e2fcd8f, 7d7e85d, c0b86b7, 8be165c（影響 paulkuo-main, formosa-esg, llm-wiki）→ Code (auto-scanner 2026-04-11)
+- [ ] 🟡 跨專案影響待驗：73e3546 動到 `worker/src/index.js`（缺 [影響] 標注 + 缺 smoke test），需補驗全部子專案（掃描日期：2026-04-12）
+- [ ] 🟡 跨專案 smoke test 缺漏：851dd58 governance Phase 3 待部署後補驗全部子專案（掃描日期：2026-04-12）
