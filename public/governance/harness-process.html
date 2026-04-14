@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harness Engineering — 一個專案的開發歷程</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #08080d;
+    color: #e0e0e0;
+    padding: 48px 20px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #f97316, #eab308, #22c55e, #3b82f6, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 56px;
+  }
+
+  /* === MATURITY SPINE === */
+  .spine {
+    position: relative;
+    padding-left: 0;
+  }
+
+  /* === PHASE BLOCK === */
+  .phase {
+    position: relative;
+    margin-bottom: 56px;
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .phase-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .pn-0 { background: #1a1a2e; color: #94a3b8; border: 2px solid #334155; }
+  .pn-1 { background: #1c1017; color: #f87171; border: 2px solid #7f1d1d; }
+  .pn-2 { background: #1a2010; color: #a3e635; border: 2px solid #3f6212; }
+  .pn-3 { background: #10182a; color: #60a5fa; border: 2px solid #1e3a5f; }
+  .pn-4 { background: #1f1028; color: #c084fc; border: 2px solid #581c87; }
+  .pn-5 { background: #0f1a1a; color: #2dd4bf; border: 2px solid #134e4a; }
+
+  .phase-title-block { flex: 1; }
+  .phase-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .phase-when {
+    font-size: 11px;
+    color: #666;
+    margin-top: 2px;
+  }
+  .phase-tagline {
+    font-size: 13px;
+    color: #999;
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  /* phase body */
+  .phase-body {
+    margin-left: 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .phase-body.full { grid-template-columns: 1fr; }
+
+  .pb-card {
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* card variants */
+  .card-what { background: #0e0e18; border: 1px solid #1e1e2e; }
+  .card-why { background: #10100a; border: 1px solid #2a2a1a; }
+  .card-incident { background: #180e0e; border: 1px solid #2e1e1e; }
+  .card-output { background: #0e1810; border: 1px solid #1e2e1e; }
+  .card-insight { background: #0e0e18; border: 1px solid #2a2a4a; }
+  .card-meta { background: #14101a; border: 1px solid #2e1e3e; }
+
+  .card-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .cl-what { color: #64748b; }
+  .cl-incident { color: #f87171; }
+  .cl-output { color: #6ee76e; }
+  .cl-insight { color: #60a5fa; }
+  .cl-meta { color: #c084fc; }
+
+  .card-text { color: #bbb; }
+  .card-text strong { color: #ddd; font-weight: 600; }
+  .card-text .dim { color: #777; }
+  .card-text .hl-red { color: #f87171; }
+  .card-text .hl-green { color: #6ee76e; }
+  .card-text .hl-blue { color: #60a5fa; }
+  .card-text .hl-purple { color: #c084fc; }
+  .card-text .hl-yellow { color: #fbbf24; }
+
+  /* === ARROW BETWEEN PHASES === */
+  .phase-arrow {
+    text-align: center;
+    margin: -28px 0 28px 64px;
+    color: #333;
+    font-size: 20px;
+    letter-spacing: 4px;
+  }
+
+  /* === FLYWHEEL === */
+  .flywheel {
+    margin-top: 60px;
+    margin-bottom: 48px;
+    text-align: center;
+  }
+  .flywheel-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #ddd;
+  }
+  .flywheel-ring {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .fw-step {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    position: relative;
+  }
+  .fw-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #444;
+    font-size: 16px;
+    z-index: 2;
+  }
+  .fw-1 { background: #1c1017; color: #f87171; border: 1px solid #3b1520; }
+  .fw-2 { background: #1a1810; color: #fbbf24; border: 1px solid #3a3510; }
+  .fw-3 { background: #101a14; color: #6ee76e; border: 1px solid #1a3a1a; }
+  .fw-4 { background: #10142a; color: #60a5fa; border: 1px solid #1a2a4a; }
+  .fw-5 { background: #1a1028; color: #c084fc; border: 1px solid #2e1a4e; }
+  .fw-loop {
+    display: block;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #555;
+  }
+
+  /* === MATURITY METER === */
+  .maturity {
+    background: #0c0c14;
+    border: 1px solid #1e1e2e;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 48px;
+  }
+  .maturity-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #aaa;
+  }
+  .mat-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 14px;
+  }
+  .mat-label {
+    width: 120px;
+    font-size: 12px;
+    color: #888;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .mat-bar-bg {
+    flex: 1;
+    height: 24px;
+    background: #1a1a24;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .mat-bar {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    transition: width 0.3s;
+  }
+  .mb-tools { background: linear-gradient(90deg, #334155, #475569); width: 15%; }
+  .mb-state { background: linear-gradient(90deg, #7f1d1d, #b91c1c); width: 30%; }
+  .mb-context { background: linear-gradient(90deg, #3f6212, #65a30d); width: 50%; }
+  .mb-recovery { background: linear-gradient(90deg, #1e3a5f, #2563eb); width: 70%; }
+  .mb-meta { background: linear-gradient(90deg, #581c87, #7c3aed); width: 90%; }
+
+  .mat-milestone {
+    font-size: 10px;
+    color: #555;
+    margin-left: 8px;
+    flex-shrink: 0;
+    width: 200px;
+  }
+
+  /* === FOOTER === */
+  .sources {
+    background: #0a0a10;
+    border: 1px solid #1a1a2a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .sources h3 { font-size: 13px; color: #555; margin-bottom: 10px; }
+  .sources p { font-size: 12px; color: #666; line-height: 1.8; }
+
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    color: #333;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Incident-Driven Harness Engineering</h1>
+  <p class="subtitle">Formosa ESG 2026 · 一個專案從零到 v4.8 的真實開發歷程</p>
+
+  <!-- ==================== PHASE 0 ==================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num pn-0">0</div>
+      <div class="phase-title-block">
+        <div class="phase-title">裸奔期</div>
+        <div class="phase-when">3 月中 — 3/30</div>
+        <div class="phase-tagline">「先讓東西能動」</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="pb-card card-what">
+        <div class="card-label cl-what">做了什麼</div>
+        <div class="card-text">
+          Chat 規劃 → 口頭交代 Code 做事<br>
+          Code 做完 commit，沒有 worklog<br>
+          Cowork 偶爾幫忙更新 Issue<br>
+          <strong>沒有交接協議，沒有狀態追蹤</strong>
+        </div>
+      </div>
+      <div class="pb-card card-incident">
+        <div class="card-label cl-incident">累積的債</div>
+        <div class="card-text">
+          Paul 腦中是唯一的狀態同步機制<br>
+          Code session 每次開場都要花 10 分鐘重建 context<br>
+          已完成的事被反覆提醒<br>
+          <span class="dim">→ 還沒爆，但遲早</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-arrow">↓</div>
+
+  <!-- ==================== PHASE 1 ==================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num pn-1">1</div>
+      <div class="phase-title-block">
+        <div class="phase-title">事故驅動期</div>
+        <div class="phase-when">3/31 — 4/05 · v3.0 — v3.2</div>
+        <div class="phase-tagline">「每次出事就補一條規則」</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="pb-card card-incident">
+        <div class="card-label cl-incident">連環事故</div>
+        <div class="card-text">
+          <span class="hl-red">3/31</span> GitHub API 推 108KB 檔案截斷 main<br>
+          <span class="hl-red">4/03</span> 刪 dead code 壞了打卡按鈕<br>
+          <span class="hl-red">4/03</span> 誤診 root cause，信心滿滿但是錯的<br>
+          <span class="hl-red">4/04</span> formosa.js 2400 行被 MCP 截斷，誤判「不存在」<br>
+          <span class="hl-red">4/04</span> 自己寫的報告拿來驗證自己另一份報告<br>
+          <span class="hl-red">4/05</span> deploy / LIFF Published 反覆催促已完成項目
+        </div>
+      </div>
+      <div class="pb-card card-output">
+        <div class="card-label cl-output">長出來的東西</div>
+        <div class="card-text">
+          <span class="hl-green">護欄 #1-#7</span> — 每條背後一個事故日期<br>
+          <span class="hl-green">worklog 機制</span> — Code 自動產出，Cowork 消化<br>
+          <span class="hl-green">驗證優先</span>（v3.0）— 先查再提醒<br>
+          <span class="hl-green">儀表板 #155</span> — single source of truth<br>
+          <span class="hl-green">三原則</span>（v4.2）— worklog 上游 / 線上真相 / 顯式宣告<br>
+          <strong>這階段的特徵：被動反應，一事一護欄</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-arrow">↓</div>
+
+  <!-- ==================== PHASE 2 ==================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num pn-2">2</div>
+      <div class="phase-title-block">
+        <div class="phase-title">主動防禦期</div>
+        <div class="phase-when">4/12 · v4.3</div>
+        <div class="phase-tagline">「去看看別人踩過什麼坑」</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="pb-card card-what">
+        <div class="card-label cl-what">做法轉變</div>
+        <div class="card-text">
+          不再只等事故，<strong>主動去找業界研究</strong><br>
+          Chat 搜尋 MAST、KAMI、LiveKit、DevOps.com 等<br>
+          從 11 張護欄卡片篩選 4 條高 ROI 落地<br>
+          再交給另一個 Chat session 點評補強<br>
+          <span class="dim">三個 session 分工：調查 → 篩選 → 點評</span>
+        </div>
+      </div>
+      <div class="pb-card card-output">
+        <div class="card-label cl-output">長出來的東西</div>
+        <div class="card-text">
+          <span class="hl-green">護欄 #8</span> 錯誤雪球效應 — 上游判斷預設未驗證<br>
+          <span class="hl-green">護欄 #9</span> 善意過度幫忙 — 不確定就說不確定<br>
+          <span class="hl-green">護欄 #10</span> 終止條件 — 連敗 2 次就停<br>
+          <span class="hl-green">護欄 #11</span> Propose-then-Commit — 不可逆四步走<br>
+          <span class="hl-green">不可逆操作清單</span> · <span class="hl-green">自我檢查第 4 問</span><br>
+          <strong>從「出事才補」變成「預防尚未踩過的坑」</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-arrow">↓</div>
+
+  <!-- ==================== PHASE 3 ==================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num pn-3">3</div>
+      <div class="phase-title-block">
+        <div class="phase-title">結構化期</div>
+        <div class="phase-when">4/12 · v4.4 — v4.6</div>
+        <div class="phase-tagline">「光有護欄不夠，要有強制檢查點」</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="pb-card card-insight">
+        <div class="card-label cl-insight">關鍵洞察</div>
+        <div class="card-text">
+          護欄是「應該怎麼做」，但沒有機制確保真的做了<br>
+          <strong>護欄靠自律，機制靠結構</strong><br>
+          需要在流程的頭尾各裝一道閘門
+        </div>
+      </div>
+      <div class="pb-card card-output">
+        <div class="card-label cl-output">長出來的東西</div>
+        <div class="card-text">
+          <span class="hl-green">Exit Gate</span> — 結案強制確認，防漏出<br>
+          <span class="hl-green">Reconciliation</span> — 開場自動對帳，補漏進<br>
+          <span class="hl-green">Task Sizing</span> S/M/L — 讓接手方知道要花多久<br>
+          <span class="hl-green">模型建議</span> — 告訴接手方用什麼模型做<br>
+          <span class="hl-green">Integration Checklist</span> — 改動影響範圍檢查<br>
+          <strong>從「規則集」變成「流程架構」</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-arrow">↓</div>
+
+  <!-- ==================== PHASE 4 ==================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num pn-4">4</div>
+      <div class="phase-title-block">
+        <div class="phase-title">自我治理期</div>
+        <div class="phase-when">4/12 — 4/13 · v4.7 — v4.8</div>
+        <div class="phase-tagline">「治理工具本身也需要被治理」</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="pb-card card-incident">
+        <div class="card-label cl-incident">Meta 事故</div>
+        <div class="card-text">
+          <span class="hl-red">4/12</span> SKILL.md 停在 v4.1 整整兩週<br>
+          AI 的行為已經演進到 v4.6，但磁碟上的定義還是舊的<br>
+          <strong>治理框架沒有治理自己</strong> — 決策蒸發反模式<br><br>
+          <span class="hl-red">4/13</span> /track/sync 漏裝 geofence<br>
+          新 endpoint 沒繼承舊 endpoint 的防護<br>
+          <strong>防護不是共用 middleware，是 copy-paste</strong>
+        </div>
+      </div>
+      <div class="pb-card card-output">
+        <div class="card-label cl-output">長出來的東西</div>
+        <div class="card-text">
+          <span class="hl-purple">護欄 #12</span> Skill 版本同步閉環<br>
+          <span class="dim">改行為 → 改檔案 → bump 版本 → exit gate 確認</span><br><br>
+          <span class="hl-purple">護欄 #13</span> 新 endpoint 防護繼承<br>
+          <span class="dim">Integration Checklist 強制檢查防護繼承</span><br><br>
+          <strong>Harness 開始治理 Harness 自己</strong><br>
+          <span class="dim">這是系統成熟的標誌</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-arrow">↓</div>
+
+  <!-- ==================== PHASE 5 ==================== -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num pn-5">5</div>
+      <div class="phase-title-block">
+        <div class="phase-title">自動化期</div>
+        <div class="phase-when">4/12 起 · Phase B-C</div>
+        <div class="phase-tagline">「人不該是最脆弱的環節」</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="pb-card card-insight">
+        <div class="card-label cl-insight">下一步方向</div>
+        <div class="card-text">
+          <span class="hl-blue">batch-update.yml</span> — Cowork 寫 JSON 觸發 GitHub Actions 批次更新 D1<br>
+          <span class="hl-blue">reconcile.yml</span> — 定時掃描 D1 vs GitHub，自動補齊不一致<br>
+          <span class="hl-blue">Worker changed_by</span> — 每筆狀態更新帶來源標記<br>
+          <span class="hl-blue">D1 audit 欄位</span> — status_changed_at + status_changed_by<br><br>
+          <strong>目標：把人從狀態同步迴圈中解放出來</strong><br>
+          <span class="dim">Paul 只需要做「決策」和「不可逆操作」</span>
+        </div>
+      </div>
+      <div class="pb-card card-meta">
+        <div class="card-label cl-meta">終局形態</div>
+        <div class="card-text">
+          事故 → <span class="hl-yellow">護欄</span>（行為約束）<br>
+          護欄 → <span class="hl-green">機制</span>（結構保證）<br>
+          機制 → <span class="hl-blue">自動化</span>（降低人力依賴）<br>
+          自動化 → <span class="hl-purple">自我治理</span>（系統治理系統）<br><br>
+          人類從「狀態搬運工」退到「決策者 + 看門人」<br>
+          <strong>這就是 Harness Engineering 的成熟曲線</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FLYWHEEL === -->
+  <div class="flywheel">
+    <div class="flywheel-title">迭代飛輪</div>
+    <div class="flywheel-ring">
+      <div class="fw-step fw-1">事故發生</div>
+      <div class="fw-step fw-2">Postmortem</div>
+      <div class="fw-step fw-3">護欄 / 機制</div>
+      <div class="fw-step fw-4">寫入 Harness</div>
+      <div class="fw-step fw-5">所有 Session 繼承</div>
+    </div>
+    <span class="fw-loop">↻ 每一輪讓整個系統比上一輪更難出同類事故</span>
+  </div>
+
+  <!-- ==================== MATURITY METER === -->
+  <div class="maturity">
+    <div class="maturity-title">Harness 成熟度光譜</div>
+
+    <div class="mat-row">
+      <div class="mat-label">工具接線</div>
+      <div class="mat-bar-bg"><div class="mat-bar mb-tools">Phase 0</div></div>
+      <div class="mat-milestone">MCP 接上、session 能跑</div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-label">狀態管理</div>
+      <div class="mat-bar-bg"><div class="mat-bar mb-state">Phase 1</div></div>
+      <div class="mat-milestone">worklog + 儀表板 + 三原則</div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-label">Context 品質</div>
+      <div class="mat-bar-bg"><div class="mat-bar mb-context">Phase 2</div></div>
+      <div class="mat-milestone">護欄 + 信心等級 + 不可逆清單</div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-label">錯誤恢復</div>
+      <div class="mat-bar-bg"><div class="mat-bar mb-recovery">Phase 3</div></div>
+      <div class="mat-milestone">Exit Gate + Reconciliation 雙閘門</div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-label">自我治理</div>
+      <div class="mat-bar-bg"><div class="mat-bar mb-meta">Phase 4-5</div></div>
+      <div class="mat-milestone">版本同步閉環 + 自動化 + audit trail</div>
+    </div>
+  </div>
+
+  <!-- ==================== TAKEAWAY === -->
+  <div class="sources">
+    <h3>這張圖在說什麼</h3>
+    <p>
+      Harness Engineering 不是一次設計完的。它是從事故裡長出來的有機體——
+      每一條護欄背後都有一個日期、一個故事、一個「下次不要再這樣」的教訓。
+      系統成熟的標誌不是「護欄很多」，而是「harness 開始治理 harness 自己」。
+      終局目標是讓人類從狀態搬運的苦力退到決策者的位置——
+      只在不可逆操作和方向性決策時介入，其餘全部由 harness 自動處理。
+    </p>
+  </div>
+
+  <div class="footer">
+    Formosa ESG 2026 · Incident-Driven Harness Engineering · 2026-03 → 2026-04
+  </div>
+
+</div>
+</body>
+</html>

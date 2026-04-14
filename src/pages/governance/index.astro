@@ -23,6 +23,22 @@ const API_BASE = 'https://api.paulkuo.tw';
     </div>
   </div>
 
+  <section class="docs-library">
+    <h2 class="docs-library-title">文件庫</h2>
+    <div class="docs-library-grid">
+      <a href="/governance/harness-process.html" target="_blank" rel="noopener" class="doc-card">
+        <h3>Harness Engineering 開發歷程</h3>
+        <p>從 Phase 0 裸奔到 Phase 5 自動化，六階段演進記錄</p>
+        <span class="doc-cta">閱讀文件 →</span>
+      </a>
+      <a href="/governance/skill-overview.html" target="_blank" rel="noopener" class="doc-card">
+        <h3>session-handoff Skill v4.8 總覽</h3>
+        <p>13 條護欄、Exit Gate / Reconciliation 雙閘門、不可逆操作清單</p>
+        <span class="doc-cta">閱讀文件 →</span>
+      </a>
+    </div>
+  </section>
+
   <div id="dashboard" hidden>
     <div class="dash-header">
       <h1>🎛️ 專案治理 Dashboard</h1>
@@ -660,5 +676,67 @@ const API_BASE = 'https://api.paulkuo.tw';
     .card-grid { grid-template-columns: repeat(2, 1fr); }
     #trend-chart { width: 100%; height: auto; }
     #audit-trend-chart { width: 100%; height: auto; }
+  }
+
+  /* ── Docs library ── */
+  .docs-library {
+    max-width: 1000px;
+    margin: 0 auto 3rem;
+    padding: 0 1rem;
+  }
+
+  .docs-library-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .docs-library-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+  }
+
+  .doc-card {
+    display: block;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .doc-card:hover {
+    transform: translateY(-2px);
+    border-color: #3b82f6;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08);
+  }
+
+  .doc-card h3 {
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+
+  .doc-card p {
+    color: #6b7280;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0 0 0.75rem;
+  }
+
+  .doc-cta {
+    color: #3b82f6;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    .docs-library-grid { grid-template-columns: 1fr; }
   }
 </style>

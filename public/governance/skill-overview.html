@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>session-handoff skill v4.8 總覽</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  h1 {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .version-badge {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+  .version-badge span {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 4px;
+  }
+  .vb-old { background: #1a1a2a; color: #666; border: 1px solid #333; text-decoration: line-through; }
+  .vb-new { background: #1a2a1a; color: #6ee76e; border: 1px solid #3b6d3b; }
+  .vb-delta { background: #2d1a4e; color: #c084fc; border: 1px solid #5c3d8f; }
+
+  /* === SECTION HEADERS === */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    margin-top: 8px;
+  }
+  .section-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .section-header .line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, #444, transparent);
+  }
+
+  /* === CORE ARCHITECTURE === */
+  .arch-flow {
+    background: #0e0e18;
+    border: 1px solid #2a2a3a;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 48px;
+    text-align: center;
+  }
+  .arch-diagram {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 2;
+    color: #aaa;
+  }
+  .arch-diagram .role-chat { color: #60a5fa; font-weight: 600; }
+  .arch-diagram .role-cowork { color: #6ee76e; font-weight: 600; }
+  .arch-diagram .role-code { color: #f472b6; font-weight: 600; }
+  .arch-diagram .arrow { color: #555; }
+  .arch-diagram .mech { color: #fbbf24; }
+
+  /* === SESSION ROLES === */
+  .roles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .role-card {
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .role-chat-card { background: #1a1a2e; border: 1px solid #3b3b6d; }
+  .role-cowork-card { background: #1a2e1a; border: 1px solid #3b6d3b; }
+  .role-code-card { background: #2e1a1e; border: 1px solid #6d3b4b; }
+  .role-icon { font-size: 20px; margin-bottom: 8px; }
+  .role-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .role-metaphor { font-size: 11px; color: #888; margin-bottom: 10px; }
+  .role-desc { font-size: 12px; color: #aaa; line-height: 1.6; }
+
+  /* === GUARDRAIL TIERS === */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .tier-box {
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .tier-core {
+    background: linear-gradient(135deg, #1c1017, #1c1020);
+    border: 1px solid #5c2d3e;
+  }
+  .tier-context {
+    background: linear-gradient(135deg, #17180e, #1a1c10);
+    border: 1px solid #4a4d2a;
+  }
+  .tier-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-red { background: #ef4444; }
+  .dot-yellow { background: #eab308; }
+
+  .trap-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .trap-num {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .num-red { background: #3b1520; color: #f87171; }
+  .num-yellow { background: #2d2a10; color: #fbbf24; }
+  .trap-text { font-size: 13px; line-height: 1.5; }
+  .trap-name { font-weight: 600; color: #ddd; }
+  .trap-rule { color: #999; font-size: 12px; }
+  .trap-new {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: #2d1a4e;
+    color: #c084fc;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .trap-v43 {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: #1a2a3a;
+    color: #60a5fa;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* === TWO-LAYER MECHANISM === */
+  .two-layer {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 0;
+    margin-bottom: 48px;
+    align-items: stretch;
+  }
+  .layer-box {
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .layer-exit {
+    background: linear-gradient(135deg, #1a0e1e, #1a1028);
+    border: 1px solid #4a3060;
+  }
+  .layer-recon {
+    background: linear-gradient(135deg, #0e1a1e, #101a28);
+    border: 1px solid #2a4a60;
+  }
+  .layer-connect {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 13px;
+  }
+  .layer-connect .arrows { font-size: 20px; letter-spacing: 2px; }
+  .layer-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .layer-sub { font-size: 11px; color: #888; margin-bottom: 14px; }
+  .layer-item { font-size: 12px; color: #aaa; line-height: 1.8; padding-left: 8px; border-left: 2px solid #333; margin-bottom: 6px; }
+  .layer-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+  .badge-purple { background: #3a1a3a; color: #c084fc; }
+  .badge-blue { background: #1a2a3a; color: #60a5fa; }
+  .badge-green { background: #1a3a1a; color: #6ee76e; }
+
+  /* === IRREVERSIBLE OPS === */
+  .ops-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #2a2a3a;
+  }
+  .ops-table th {
+    background: #14141f;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+    font-weight: 600;
+  }
+  .ops-table td {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-top: 1px solid #1e1e2e;
+  }
+  .ops-table tr:nth-child(even) td { background: #0e0e16; }
+  .ops-table tr:nth-child(odd) td { background: #12121c; }
+  .risk-high { color: #f87171; font-weight: 600; }
+  .risk-mid { color: #fbbf24; font-weight: 600; }
+
+  /* === HANDOFF TEMPLATE === */
+  .handoff-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .handoff-box { border-radius: 12px; padding: 20px; }
+  .handoff-old { background: #141414; border: 1px solid #2a2a2a; opacity: 0.55; }
+  .handoff-new { background: #0f1a14; border: 1px solid #2a4a2a; }
+  .handoff-label { font-size: 12px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .handoff-item { display: flex; gap: 8px; margin-bottom: 6px; font-size: 13px; align-items: flex-start; }
+  .h-num { color: #666; font-size: 12px; width: 18px; flex-shrink: 0; text-align: right; }
+  .h-text { color: #bbb; }
+  .h-new { color: #6ee76e; font-weight: 500; }
+  .h-enhanced { color: #60a5fa; font-weight: 500; }
+  .h-removed { color: #666; text-decoration: line-through; }
+
+  /* === SELF-CHECK === */
+  .selfcheck {
+    background: linear-gradient(135deg, #0f1520, #0f0f1a);
+    border: 1px solid #2a3a4a;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 48px;
+  }
+  .check-item { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .check-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #1a2a3a;
+    color: #60a5fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .check-text { font-size: 14px; line-height: 1.5; }
+
+  /* === VERSION TIMELINE === */
+  .timeline {
+    position: relative;
+    margin-bottom: 48px;
+    padding-left: 28px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #3b3b6d, #2d1a4e, #3b6d3b);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 16px;
+    padding-left: 20px;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #333;
+    border: 2px solid #555;
+  }
+  .tl-item.tl-current::before { background: #6ee76e; border-color: #4ade80; }
+  .tl-item.tl-v43::before { background: #60a5fa; border-color: #3b82f6; }
+  .tl-ver { font-size: 13px; font-weight: 700; color: #ddd; }
+  .tl-date { font-size: 11px; color: #666; margin-left: 8px; }
+  .tl-desc { font-size: 12px; color: #999; margin-top: 2px; }
+
+  /* === TASK SIZING === */
+  .sizing-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .size-card {
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .size-s { background: #1a2a1a; border: 1px solid #3b6d3b; }
+  .size-m { background: #2a2a1a; border: 1px solid #6d6d3b; }
+  .size-l { background: #2a1a1a; border: 1px solid #6d3b3b; }
+  .size-letter { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+  .size-s .size-letter { color: #6ee76e; }
+  .size-m .size-letter { color: #fbbf24; }
+  .size-l .size-letter { color: #f87171; }
+  .size-time { font-size: 12px; color: #aaa; }
+  .size-desc { font-size: 11px; color: #777; margin-top: 4px; }
+
+  /* === MODEL REC === */
+  .model-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+  .model-card {
+    border-radius: 10px;
+    padding: 14px;
+    background: #12121c;
+    border: 1px solid #2a2a3a;
+    text-align: center;
+  }
+  .model-name { font-size: 13px; font-weight: 700; color: #ddd; margin-bottom: 2px; }
+  .model-effort { font-size: 11px; color: #888; margin-bottom: 8px; }
+  .model-use { font-size: 11px; color: #aaa; line-height: 1.5; }
+
+  /* === SOURCES === */
+  .sources {
+    background: #0e0e14;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .sources h3 { font-size: 14px; margin-bottom: 12px; color: #888; }
+  .source-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .source-tag {
+    background: #1a1a24;
+    border: 1px solid #2a2a3a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: #aaa;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #444;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>session-handoff skill v4.8</h1>
+  <p class="subtitle">2026-04-13 · 從 v4.3 到 v4.8 的完整演進</p>
+  <div class="version-badge">
+    <span class="vb-old">v4.3</span>
+    <span class="vb-delta">+5 版 · +2 護欄 · +3 新機制</span>
+    <span class="vb-new">v4.8 current</span>
+  </div>
+
+  <!-- VERSION TIMELINE -->
+  <div class="section-header">
+    <h2>版本演進時間線</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item tl-v43">
+      <div class="tl-ver">v4.3 <span class="tl-date">4/12</span></div>
+      <div class="tl-desc">業界護欄 #8-#11 + 不可逆操作清單 + Handoff 模板改版 + 自我檢查第 4 問</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-ver">v4.4 <span class="tl-date">4/12</span></div>
+      <div class="tl-desc">Exit Gate 結案確認 + Reconciliation 開場對帳 + 模型建議 + Task Sizing S/M/L</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-ver">v4.5 <span class="tl-date">4/12</span></div>
+      <div class="tl-desc">Metrics 收集腳本</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-ver">v4.6 <span class="tl-date">4/12</span></div>
+      <div class="tl-desc">Handoff 加 Integration Checklist（第 8 項），整合 v4.2-v4.5 散落內容</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-ver">v4.7 <span class="tl-date">4/12</span></div>
+      <div class="tl-desc">護欄 #12 Skill 版本同步閉環 — SKILL.md 停在 v4.1 兩週的事後分析</div>
+    </div>
+    <div class="tl-item tl-current">
+      <div class="tl-ver">v4.8 <span class="tl-date">4/13</span></div>
+      <div class="tl-desc">護欄 #13 新 endpoint 防護繼承 — Issue #168 幽靈里程事後分析</div>
+    </div>
+  </div>
+
+  <!-- SESSION ROLES -->
+  <div class="section-header">
+    <h2>三元分工架構</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="roles-grid">
+    <div class="role-card role-chat-card">
+      <div class="role-icon">🧠</div>
+      <div class="role-name">Chat</div>
+      <div class="role-metaphor">前額葉 · 決策中樞</div>
+      <div class="role-desc">
+        跨專案判斷<br>
+        外部整合（Calendar / Drive）<br>
+        長期規劃 + 架構決策<br>
+        產出 handoff 給 Code/Cowork
+      </div>
+    </div>
+    <div class="role-card role-cowork-card">
+      <div class="role-icon">🤲</div>
+      <div class="role-name">Cowork</div>
+      <div class="role-metaphor">小腦 + 雙手 · 管家中樞</div>
+      <div class="role-desc">
+        開場同步 + 儀表板維護<br>
+        桌面操控 + 排程任務<br>
+        文件產出（Skills）<br>
+        GitHub MCP + 瀏覽器驗證
+      </div>
+    </div>
+    <div class="role-card role-code-card">
+      <div class="role-icon">💪</div>
+      <div class="role-name">Code</div>
+      <div class="role-metaphor">脊髓 + 肌肉 · 主力戰場</div>
+      <div class="role-desc">
+        本機 terminal + 程式碼落地<br>
+        Git push / deploy<br>
+        自動產出 worklog<br>
+        測試、lint、build
+      </div>
+    </div>
+  </div>
+
+  <!-- CORE FLOW -->
+  <div class="arch-flow">
+    <div class="arch-diagram">
+      <span class="role-chat">Chat 決策</span> <span class="arrow">──→</span> <span class="mech">handoff.md</span> <span class="arrow">──→</span> <span class="role-code">Code 執行</span> <span class="arrow">──→</span> <span class="mech">worklogs/</span> <span class="arrow">──→</span> <span class="role-cowork">Cowork 同步</span> <span class="arrow">──→</span> <span class="mech">儀表板 #155</span><br>
+      <span style="color:#555;font-size:11px">↑ Exit Gate 結案 ──────────── Reconciliation 開場對帳 ↓</span>
+    </div>
+  </div>
+
+  <!-- GUARDRAIL TIERS -->
+  <div class="section-header">
+    <h2>護欄分層架構（13 條）</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="tier-grid">
+    <div class="tier-box tier-core">
+      <div class="tier-label"><span class="dot dot-red"></span> 核心護欄 · 每次必讀（6 條）</div>
+      <div class="trap-item">
+        <div class="trap-num num-red">8</div>
+        <div class="trap-text">
+          <span class="trap-name">錯誤雪球效應</span><span class="trap-v43">v4.3</span><br>
+          <span class="trap-rule">上游技術判斷預設「未驗證」，接手方先驗證再執行</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-red">9</div>
+        <div class="trap-text">
+          <span class="trap-name">善意過度幫忙</span><span class="trap-v43">v4.3</span><br>
+          <span class="trap-rule">不確定就說不確定。沒打 API / 沒讀原始碼 → 不斷言</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-red">10</div>
+        <div class="trap-text">
+          <span class="trap-name">缺少終止條件</span><span class="trap-v43">v4.3</span><br>
+          <span class="trap-rule">同方向連續失敗 2 次 → 停下等 Paul 決策</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-red">11</div>
+        <div class="trap-text">
+          <span class="trap-name">Propose-then-Commit</span><span class="trap-v43">v4.3</span><br>
+          <span class="trap-rule">不可逆操作走 propose → confirm → execute → verify</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-red">12</div>
+        <div class="trap-text">
+          <span class="trap-name">Skill 版本同步閉環</span><span class="trap-new">v4.7 NEW</span><br>
+          <span class="trap-rule">改了 skill 行為 → 更新 SKILL.md → bump 版本 → exit gate 確認</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-red">13</div>
+        <div class="trap-text">
+          <span class="trap-name">新 endpoint 防護繼承</span><span class="trap-new">v4.8 NEW</span><br>
+          <span class="trap-rule">新 API endpoint 必須繼承同類的 geofence / filter / rate limit / auth</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tier-box tier-context">
+      <div class="tier-label"><span class="dot dot-yellow"></span> 情境護欄 · 按需觸發（7 條）</div>
+      <div class="trap-item">
+        <div class="trap-num num-yellow">1</div>
+        <div class="trap-text">
+          <span class="trap-name">超出常規先告知</span><br>
+          <span class="trap-rule">非日常操作先說風險、等 Paul 點頭</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-yellow">2</div>
+        <div class="trap-text">
+          <span class="trap-name">驗證盲區意識</span><br>
+          <span class="trap-rule">GitHub MCP 截斷、搜不到 ≠ 不存在</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-yellow">3</div>
+        <div class="trap-text">
+          <span class="trap-name">自我驗證禁止</span><br>
+          <span class="trap-rule">自己寫的不能自己驗</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-yellow">4</div>
+        <div class="trap-text">
+          <span class="trap-name">手機實測必要</span><br>
+          <span class="trap-rule">PR 驗收走手機流程，不只打 API</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-yellow">5</div>
+        <div class="trap-text">
+          <span class="trap-name">UI 副作用 + API 語義陷阱</span><br>
+          <span class="trap-rule">querySelector 依賴 + 有回傳 ≠ 你想的意思</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-yellow">6</div>
+        <div class="trap-text">
+          <span class="trap-name">信心等級標注</span><br>
+          <span class="trap-rule">推測性結論標高/中/低</span>
+        </div>
+      </div>
+      <div class="trap-item">
+        <div class="trap-num num-yellow">7</div>
+        <div class="trap-text">
+          <span class="trap-name">Cron 競態 + 記憶快取</span><br>
+          <span class="trap-rule">不跟 cron 搶推、先查線上再答</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWO-LAYER MECHANISM -->
+  <div class="section-header">
+    <h2>兩層互補機制</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="two-layer">
+    <div class="layer-box layer-exit">
+      <div class="layer-title">Exit Gate</div>
+      <div class="layer-sub">結案時觸發 · 防漏出</div>
+      <div class="layer-item">結案時列出本次處理的所有狀態變更</div>
+      <div class="layer-item">每項標記同步方式（dispatch / curl）</div>
+      <div class="layer-item">Skill 版本確認：SKILL.md 是否需 bump</div>
+      <div class="layer-item">必須全部同步或標 skip + 原因才能結案</div>
+      <span class="layer-badge badge-purple">v4.4 新增</span>
+    </div>
+    <div class="layer-connect">
+      <div class="arrows">⇄</div>
+      <div style="writing-mode: vertical-rl; font-size: 11px; color: #666; letter-spacing: 2px;">互補</div>
+    </div>
+    <div class="layer-box layer-recon">
+      <div class="layer-title">Reconciliation</div>
+      <div class="layer-sub">開場時觸發 · 補漏進</div>
+      <div class="layer-item">掃儀表板/D1 中仍「進行中」的項目</div>
+      <div class="layer-item">比對 GitHub closed issues + 最新 worklog</div>
+      <div class="layer-item">已結案但狀態未更新 → 自動結案 + 標來源</div>
+      <div class="layer-item">卡太久沒動靜 → 提醒 Paul</div>
+      <span class="layer-badge badge-blue">v4.4 新增</span>
+    </div>
+  </div>
+
+  <!-- IRREVERSIBLE OPS -->
+  <div class="section-header">
+    <h2>不可逆操作清單（護欄 #11 搭配）</h2>
+    <div class="line"></div>
+  </div>
+
+  <table class="ops-table">
+    <thead>
+      <tr><th>操作</th><th>風險</th><th>還原難度</th><th>備註</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>wrangler deploy</code></td><td class="risk-high">🔴 高</td><td>CDN 快取 1hr</td><td>壞版本被鎖住</td></tr>
+      <tr><td>D1 migration / DROP / DELETE</td><td class="risk-high">🔴 高</td><td>需備份還原</td><td>可能資料遺失</td></tr>
+      <tr><td>KV 批量刪除/覆寫</td><td class="risk-high">🔴 高</td><td>無原生回滾</td><td>要先備份</td></tr>
+      <tr><td>R2 物件刪除</td><td class="risk-high">🔴 高</td><td>不可還原</td><td>—</td></tr>
+      <tr><td>LINE 推播訊息</td><td class="risk-high">🔴 高</td><td>不可撤回</td><td>影響所有用戶</td></tr>
+      <tr><td><code>wrangler secret put</code></td><td class="risk-high">🔴 高</td><td>覆蓋即遺失</td><td>先記舊值</td></tr>
+      <tr><td><code>git push --force</code></td><td class="risk-high">🔴 高</td><td>reflog 限時</td><td>—</td></tr>
+      <tr><td>帳號權限變更</td><td class="risk-high">🔴 高</td><td>手動還原</td><td>—</td></tr>
+      <tr><td><code>git push</code> to main</td><td class="risk-mid">🟡 中</td><td>git revert</td><td>觸發 auto-deploy</td></tr>
+      <tr><td>DNS / redirect 修改</td><td class="risk-mid">🟡 中</td><td>改回即可</td><td>有傳播延遲</td></tr>
+    </tbody>
+  </table>
+
+  <!-- HANDOFF TEMPLATE -->
+  <div class="section-header">
+    <h2>Handoff 模板演進</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="handoff-compare">
+    <div class="handoff-box handoff-old">
+      <div class="handoff-label">📄 v4.3（9 區塊）</div>
+      <div class="handoff-item"><span class="h-num">1.</span><span class="h-text">背景</span></div>
+      <div class="handoff-item"><span class="h-num">2.</span><span class="h-text">上游假設</span></div>
+      <div class="handoff-item"><span class="h-num">3.</span><span class="h-text h-removed">Session 衝突檢查</span></div>
+      <div class="handoff-item"><span class="h-num">4.</span><span class="h-text">Step 0 偵察</span></div>
+      <div class="handoff-item"><span class="h-num">5.</span><span class="h-text">具體步驟</span></div>
+      <div class="handoff-item"><span class="h-num">6.</span><span class="h-text">驗證方式 + 來源標注</span></div>
+      <div class="handoff-item"><span class="h-num">7.</span><span class="h-text">注意事項 + 不可逆標記</span></div>
+      <div class="handoff-item"><span class="h-num">8.</span><span class="h-text">信心等級</span></div>
+      <div class="handoff-item"><span class="h-num">9.</span><span class="h-text">回報格式</span></div>
+    </div>
+    <div class="handoff-box handoff-new">
+      <div class="handoff-label">✅ v4.8（8 區塊）</div>
+      <div class="handoff-item"><span class="h-num">1.</span><span class="h-text">背景</span></div>
+      <div class="handoff-item"><span class="h-num">2.</span><span class="h-text">Step 0 偵察</span></div>
+      <div class="handoff-item"><span class="h-num">3.</span><span class="h-text">具體步驟</span></div>
+      <div class="handoff-item"><span class="h-num">4.</span><span class="h-enhanced">上游假設（接手方先驗證）</span></div>
+      <div class="handoff-item"><span class="h-num">5.</span><span class="h-enhanced">驗證方式 + 來源標注</span></div>
+      <div class="handoff-item"><span class="h-num">6.</span><span class="h-enhanced">注意事項 + 不可逆標記 ⚠️</span></div>
+      <div class="handoff-item"><span class="h-num">7.</span><span class="h-text">信心等級 高/中/低</span></div>
+      <div class="handoff-item"><span class="h-num">8.</span><span class="h-new">Integration Checklist ⭐ NEW</span></div>
+    </div>
+  </div>
+
+  <!-- TASK SIZING + MODEL -->
+  <div class="section-header">
+    <h2>Task Sizing + 模型建議</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="sizing-row">
+    <div class="size-card size-s">
+      <div class="size-letter">S</div>
+      <div class="size-time">&lt; 30 min</div>
+      <div class="size-desc">單點修復、設定調整</div>
+    </div>
+    <div class="size-card size-m">
+      <div class="size-letter">M</div>
+      <div class="size-time">30 min ~ 2 hr</div>
+      <div class="size-desc">功能新增、多檔案修改</div>
+    </div>
+    <div class="size-card size-l">
+      <div class="size-letter">L</div>
+      <div class="size-time">2+ hr</div>
+      <div class="size-desc">架構重構、新系統建置</div>
+    </div>
+  </div>
+
+  <div class="model-grid">
+    <div class="model-card">
+      <div class="model-name">Haiku 4.5</div>
+      <div class="model-effort">Low effort</div>
+      <div class="model-use">機械式替換<br>加 comment、改 typo</div>
+    </div>
+    <div class="model-card">
+      <div class="model-name">Sonnet 4.6</div>
+      <div class="model-effort">Medium effort</div>
+      <div class="model-use">單檔修改<br>已知改法的 bug fix</div>
+    </div>
+    <div class="model-card">
+      <div class="model-name">Opus 4.6</div>
+      <div class="model-effort">High effort</div>
+      <div class="model-use">跨檔重構<br>需大量 context</div>
+    </div>
+    <div class="model-card">
+      <div class="model-name">Opus 4.6</div>
+      <div class="model-effort">Max effort</div>
+      <div class="model-use">全新功能設計<br>安全性審計</div>
+    </div>
+  </div>
+
+  <!-- SELF CHECK -->
+  <div class="section-header">
+    <h2>動手前自我檢查（4 問）</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="selfcheck">
+    <div class="check-item">
+      <div class="check-num">1</div>
+      <div class="check-text">「如果這步失敗，修復成本多高？」</div>
+    </div>
+    <div class="check-item">
+      <div class="check-num">2</div>
+      <div class="check-text">「我能驗證自己做的對不對？」</div>
+    </div>
+    <div class="check-item">
+      <div class="check-num">3</div>
+      <div class="check-text">「這件事的正確執行者是誰？」</div>
+    </div>
+    <div class="check-item">
+      <div class="check-num">4</div>
+      <div class="check-text">「我確定嗎？」— 不確定永遠比自信的錯誤答案好</div>
+    </div>
+  </div>
+
+  <!-- SOURCES -->
+  <div class="sources">
+    <h3>文獻來源 + 事故來源</h3>
+    <div class="source-grid">
+      <div class="source-tag">MAST · arxiv 2503.13657</div>
+      <div class="source-tag">KAMI v0.1 · arxiv 2512.07497</div>
+      <div class="source-tag">LiveKit · HITL Pattern</div>
+      <div class="source-tag">DevOps.com · Risk Tiering</div>
+      <div class="source-tag">4/12 · SKILL.md 版本落差事故</div>
+      <div class="source-tag">4/13 · Issue #168 幽靈里程事故</div>
+      <div class="source-tag">4/03 · 打卡壞了但 API 正常</div>
+      <div class="source-tag">4/04 · formosa.js 截斷誤判</div>
+      <div class="source-tag">3/31 · GitHub API 108KB 截斷</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    session-handoff skill v4.3 → v4.8 · 學術研究 + 實戰事故 雙軌迭代 · 2026-04-13
+  </div>
+
+</div>
+</body>
+</html>
