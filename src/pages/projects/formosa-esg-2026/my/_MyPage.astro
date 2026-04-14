@@ -141,7 +141,7 @@ const linkPrefix = prefix;
       </div>
       <div class="my-stat-card">
         <div class="my-stat-num" id="statCarbon">0</div>
-        <div class="my-stat-label">kg CO₂e</div>
+        <div class="my-stat-label">{t(lang, 'myPageContent.carbonSavedLabel')}</div>
       </div>
     </div>
 
@@ -259,7 +259,7 @@ const linkPrefix = prefix;
   // Read data from localStorage (fallback)
   var checkins = parseInt(localStorage.getItem('formosa_checkins') || '0');
   var km = parseFloat(localStorage.getItem('formosa_km') || '0');
-  var carbon = parseFloat(localStorage.getItem('formosa_carbon') || '0');
+  var carbon = km * 0.12013; // saved carbon from walk km (GPS-derived)
   var surveyDone = localStorage.getItem('formosa_survey_done') === 'true';
   var serverGpsTrack = null;
 
@@ -282,7 +282,7 @@ const linkPrefix = prefix;
       if (viewData && viewData.stats) {
         checkins = viewData.stats.checkins || 0;
         km = viewData.stats.total_km || 0;
-        carbon = viewData.stats.carbon_kg || 0;
+        carbon = viewData.stats.carbon_saved_kg || 0;
         surveyDone = viewData.survey ? true : checkins > 0;
         if (viewData.gps_points && viewData.gps_points.length > 0) {
           serverGpsTrack = viewData.gps_points.map(function(p) {
@@ -311,7 +311,7 @@ const linkPrefix = prefix;
       if (syncData.ok) {
         if (syncData.checkins > checkins) checkins = syncData.checkins;
         if (syncData.km > km) km = syncData.km;
-        if (syncData.carbon > carbon) carbon = syncData.carbon;
+        carbon = km * 0.12013; // saved carbon = walk km × bus GWP factor
         if (syncData.survey_done) surveyDone = true;
         // Merge server GPS track with localStorage (not replace)
         if (syncData.gps_track && syncData.gps_track.length > 0) {
@@ -324,7 +324,7 @@ const linkPrefix = prefix;
         // Update localStorage with server values
         localStorage.setItem('formosa_checkins', checkins);
         localStorage.setItem('formosa_km', km);
-        if (carbon > 0) localStorage.setItem('formosa_carbon', carbon.toFixed(2));
+        // carbon is computed from km, no need to cache separately
       }
     } catch(e) { /* server unavailable, use localStorage */ }
   } else if (viewUserId) {
