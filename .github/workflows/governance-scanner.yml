@@ -1,0 +1,89 @@
+name: Governance Scanner — Daily Cross-Project Audit
+
+on:
+  schedule:
+    # UTC 02:00 = Taiwan 10:00
+    # 選 10:00 是因為：(1) Taiwan 工作時間開始、(2) 對齊其他治理 cron task
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # 手動觸發用
+
+# 防止同時跑兩個 scanner 導致 commit 衝突
+concurrency:
+  group: governance-scanner
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    name: Cross-project scan + KV seed
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 需要 push scanner 產出回 repo
+
+    steps:
+      - name: Checkout（要完整 history 才能掃 git log）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # scanner 用 git log 掃近 N 天 commit
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install wrangler
+        run: npm install -g wrangler@3
+
+      - name: Validate Cloudflare secrets
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          MISSING=0
+          [ -z "$CF_API_TOKEN" ] && { echo "❌ CLOUDFLARE_API_TOKEN missing"; MISSING=1; }
+          [ -z "$CF_ACCOUNT_ID" ] && { echo "❌ CLOUDFLARE_ACCOUNT_ID missing"; MISSING=1; }
+          [ "$MISSING" -eq 1 ] && exit 1
+          echo "✅ Cloudflare secrets OK"
+
+      - name: Run cross-project scanner
+        run: |
+          node scripts/cross-project-scanner.cjs
+          echo "--- last-scan.json ---"
+          cat worklogs/governance/last-scan.json
+          echo "--- audit-results/ ---"
+          ls -la worklogs/governance/audit-results/
+
+      - name: Seed governance KV
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node scripts/governance-kv-seed.cjs --remote
+
+      - name: Commit scanner outputs back to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 只 add scanner 產出的路徑，不要順手 add 別的
+          git add worklogs/governance/audit-results/ worklogs/governance/last-scan.json worklogs/PENDING.md || true
+
+          # 如果沒有實際變更就跳過 commit
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          TODAY=$(date +%Y-%m-%d)
+          git commit -m "auto(scanner): daily audit ${TODAY}
+
+          自動產出：
+          - audit-results/${TODAY}.json（新）
+          - last-scan.json（更新時間戳）
+          - PENDING.md（如有新 missing smoke test）"
+
+          # rebase 上最新 main 後 push，避免跟其他 auto commit 衝突
+          git pull --rebase origin main || {
+            echo "❌ rebase failed, manual intervention needed"
+            exit 1
+          }
+          git push origin main
