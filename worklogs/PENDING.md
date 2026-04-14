@@ -22,12 +22,7 @@
   - 完整 handoff：`handoffs/code--commit-mcp-register-script-2026-04-14.md`
   - 單一 commit，含 handoff 本身；不 push
 
-- [ ] 🟡 Commit + push + deploy `src/pages/governance/index.astro` quick fix → Code / Sonnet 4.6 (2026-04-14 夜)
-  - 完整 handoff：`handoffs/code--governance-quick-fix-2026-04-14.md`
-  - Cowork 狀態：`⚠️ local edit uncommitted`（沙盒無法 commit，.git 唯讀）
-  - Task size：S（< 30 min），信心等級：高
-  - Smoke test 用**無痕視窗**（sessionStorage 會讓你誤以為登入畫面沒變）
-  - 後續分離任務：Cowork 已用 Stitch 產出登入畫面 visual redesign（projects/3520595413095137436），dashboard 資訊架構改版（KPI bar / actionable 稽核表）另案處理
+- [x] 🟡 Commit + push + deploy `src/pages/governance/index.astro` quick fix → ✅ 已完成 (aa225cd, 2026-04-14)
 
 - [ ] 🔴 Scanner 自動化 workflow 建置 → Code / Sonnet 4.6 (2026-04-14 下午)
   - 完整 handoff：`worklogs/code--scanner-automation-2026-04-14.md`
