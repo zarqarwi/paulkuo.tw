@@ -118,8 +118,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
       <a href="/governance/" class="project-card harness" style="text-decoration:none;color:inherit">
         <div class="project-icon" style="background:rgba(124,58,237,0.1)">🧬</div>
-        <h2>Harness Engineering</h2>
-        <p>從第一次事故到第 13 條護欄，這份記錄追蹤一個人與多個 AI Session 長期協作時，如何從混亂中長出系統秩序。不是從設計圖開始——是從出事開始。每個教訓變成一條護欄，護欄變成機制，機制走向自動化，最後 Harness 開始治理自己。</p>
+        <h2>人機協作秩序設計</h2>
+        <p class="project-subtitle" style="font-size:0.8rem;color:var(--text-secondary);margin:-8px 0 12px;font-style:italic;">Harness Engineering 實戰記錄</p>
+        <p>從第一次事故到第 13 條護欄，這份記錄追蹤一個人與多個 AI Session 長期協作時，如何把教訓變成護欄、護欄變成機制、機制走向自動化。終局不是讓系統跑得更順——而是讓人退到只做「決策」和「不可逆操作確認」的位置，其餘交給架構。</p>
         <div class="project-tags">
           <span class="project-tag">Context Engineering</span>
           <span class="project-tag">Multi-Agent</span>
@@ -128,7 +129,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
         <div class="project-strategic">
           <strong>結構意義</strong>
-          <span>市場上關於 Context Engineering 的討論，多半停在「怎麼給 AI 更好的 prompt」。但當你同時操作多個 AI session，問題就不同了：Chat 做了決策、Code 執行了修改、Cowork 剛接手——三個 session 彼此不認識，誰來確保它們對現實的認知是一致的？這個問題沒有現成答案。Harness Engineering 是一份來自實戰的記錄：讓多個 AI agent 在異步協作時維持 context 一致性，同時保留人類作為最終決策者的控制權。</span>
+          <span>大多數關於 AI 工具的討論，停在「怎麼讓 AI 做得更好」。但當工具本身持續升級，真正的問題浮出來了：在一個人同時是決策者、工程師、產品經理，而 AI 是執行者的情況下，協作的秩序由誰設計？這份記錄編碼的不是工具的使用方式，而是判斷——哪些操作是不可逆的、錯誤在哪個節點該被攔截、治理框架如何治理自己。這些判斷不會被下一個版本取代，反而會因為 AI 工具的普及而變得更稀缺。</span>
         </div>
         <span class="project-cta">查看治理 Dashboard →</span>
       </a>
