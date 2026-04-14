@@ -16,12 +16,7 @@
 
 - [x] 🟢 Commit design system 文件 + worklog 變更 → ✅ 已完成 (8363e60, 2026-04-14 18:11)
 
-- [ ] 🟢 分批 commit 累積變更（~100 檔案）→ Code / Sonnet 4.6 (2026-04-14 17:45)
-  - 完整 handoff：`handoffs/code--batch-commit-accumulated-2026-04-14.md`
-  - 5 批：gitignore / config / worklogs / handoffs / wiki content
-  - 含 gitignore 排除 `.claude/settings.local.json` + `scripts/.last_push_ts`（`git rm --cached`）
-  - 改名 `worklog-2026-04-11 2.md` → `worklog-2026-04-11-issue-163.md`
-  - 不 push，交給 Paul
+- [x] 🟢 分批 commit 累積變更（~100 檔案）→ ✅ 已完成 5 批 commits (453b20a→abb6390, 2026-04-14 18:20)
 
 - [ ] 🔴 Scanner 自動化 workflow 建置 → Code / Sonnet 4.6 (2026-04-14 下午)
   - 完整 handoff：`worklogs/code--scanner-automation-2026-04-14.md`
