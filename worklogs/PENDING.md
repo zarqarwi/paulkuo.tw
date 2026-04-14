@@ -14,6 +14,22 @@
 
 ## 待 Code 執行
 
+- [x] 🟢 Commit design system 文件 + worklog 變更 → ✅ 已完成 (8363e60, 2026-04-14 18:11)
+
+- [ ] 🟢 分批 commit 累積變更（~100 檔案）→ Code / Sonnet 4.6 (2026-04-14 17:45)
+  - 完整 handoff：`handoffs/code--batch-commit-accumulated-2026-04-14.md`
+  - 5 批：gitignore / config / worklogs / handoffs / wiki content
+  - 含 gitignore 排除 `.claude/settings.local.json` + `scripts/.last_push_ts`（`git rm --cached`）
+  - 改名 `worklog-2026-04-11 2.md` → `worklog-2026-04-11-issue-163.md`
+  - 不 push，交給 Paul
+
+- [ ] 🔴 Scanner 自動化 workflow 建置 → Code / Sonnet 4.6 (2026-04-14 下午)
+  - 完整 handoff：`worklogs/code--scanner-automation-2026-04-14.md`
+  - 三部分：(1) cleanup 假資料 (2) 建 `.github/workflows/governance-scanner.yml` (3) 手動觸發驗證
+  - ⚠️ 補 Phase 3（851dd58）未完成的環節——scanner 從未排程，Dashboard「48h 未更新」是真實狀態
+  - Secrets（`CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`）已存在，不用新增
+  - Push 前告知 Paul（兩個 commit：cleanup + workflow）
+
 - [x] 🟡 Harness Engineering 文件庫上架 → ✅ 已完成 (70ad07a, 2026-04-14)
   - 完整 handoff：`worklogs/code--harness-docs-upload-2026-04-14.md`
   - 兩份 HTML 已在 `public/governance/` 就位；只需改 `src/pages/governance/index.astro` 加文件庫區塊
@@ -31,7 +47,9 @@
 
 ## 待 Cowork 執行
 
-_（目前無待辦）_
+- ~~用 Stitch「Homepage Redesign」比對 paulkuo.tw 線上首頁~~ → **已擱置** (2026-04-14 17:20)
+  - Paul 決定過去測試的 Stitch 專案不再延續，Stitch 轉為「產新稿」而非「比對舊稿」
+  - 取而代之的是 `docs/design-system.md`（單一事實來源）+ 未來 Stitch Web UI 手動貼 designMd 流程
 
 ## 跨專案備忘
 
