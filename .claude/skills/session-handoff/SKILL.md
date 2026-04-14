@@ -343,6 +343,38 @@ Phase N 🟡 {未來階段}
 
 ---
 
+## Cowork 交付訊息模板（對話中必須顯示）
+
+Cowork 產出 handoff 文件後，在對話中告訴 Paul 時，**必須在訊息裡直接寫出以下資訊**。
+Paul 不應該需要打開 handoff 檔案才能決定要開哪個 session、用什麼模型。
+
+### 必備欄位
+
+```
+📋 Handoff 準備好了
+
+🤖 建議模型：{Opus / Sonnet / Haiku}（原因：{一句話}）
+📁 專案：{專案名稱}
+📝 任務摘要：{一句話描述要做什麼}
+⏱️ 預估複雜度：{低 / 中 / 高}
+
+▶️ Code 開場指令（直接貼給 Code）：
+cd ~/Desktop/01_專案進行中/{專案資料夾} && git pull
+讀 worklogs/{handoff 檔名}
+```
+
+### 模型建議判斷原則
+
+| 情境 | 建議模型 |
+|------|----------|
+| 多檔案重構、架構變更、複雜 debug | Opus |
+| 單一功能開發、bug 修復、已有明確步驟 | Sonnet |
+| 簡單文字替換、格式調整、單行修改 | Haiku |
+
+Paul 看完對話訊息就能決定開哪個 Code session，不用打開 handoff 檔案。
+
+---
+
 ## Handoff 文件（需要時才用）
 
 大多數情況下，worklog 自動流轉就夠了。
@@ -359,14 +391,20 @@ Phase N 🟡 {未來階段}
 ### Handoff 文件必備區塊
 
 0. **建議模型**：`建議模型: Sonnet` 或 `建議模型: Opus`（寫在檔案最上方，這是硬規則，適用所有專案）
-1. **背景**：為什麼要做這件事（一段話）
-2. **Step 0 偵察**：先查再改，列出 grep/PRAGMA 等偵察指令
-3. **具體步驟**：每步有明確的指令和預期結果
-4. **驗證方式**：怎麼確認做完了
-5. **注意事項**：已知陷阱
-6. **回報格式**：完成後要回報什麼（**必須包含驗證結果**，不要把驗證工作留給 Cowork）
-7. **本輪 metrics**：一行摘要，如 `5 commits, 12 files, +340/-87 lines, 1 deploy`
-8. **Integration Checklist**（涉及跨系統整合時必填）：
+1. **Step -1 環境準備**（handoff 文件第一個執行步驟，不可省略）：
+   ```bash
+   cd ~/Desktop/01_專案進行中/{專案資料夾} && git pull
+   ```
+   Cowork 透過 GitHub MCP push 的檔案，Code 本機不會自動有。不寫這步 = Code 找不到 handoff 檔案。
+   所有檔案引用都必須用絕對路徑（如 `~/Desktop/01_專案進行中/paulkuo.tw/worklogs/xxx.md`）。
+2. **背景**：為什麼要做這件事（一段話）
+3. **Step 0 偵察**：先查再改，列出 grep/PRAGMA 等偵察指令
+4. **具體步驟**：每步有明確的指令和預期結果
+5. **驗證方式**：怎麼確認做完了
+6. **注意事項**：已知陷阱
+7. **回報格式**：完成後要回報什麼（**必須包含驗證結果**，不要把驗證工作留給 Cowork）
+8. **本輪 metrics**：一行摘要，如 `5 commits, 12 files, +340/-87 lines, 1 deploy`
+9. **Integration Checklist**（涉及跨系統整合時必填）：
    - **API base URL**：明確寫出要打的域名（本 repo 的 Worker API 是 `api.paulkuo.tw`，Pages 靜態站是 `paulkuo.tw`）
    - **認證模式**：Bearer / Cookie / X-Admin-Token？首次使用新模式時標注對 CORS `Allow-Headers` 的影響
    - **CORS 需求**：跨域回應是否需帶 `corsHeaders(request)`？建議用 `jsonResponse()` 以自動帶入，若用 `new Response()` 必須手動加

@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "paulkuo-dev",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/.bin/astro", "dev", "--port", "4321"],
+      "name": "astro-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
       "port": 4321
     }
   ]

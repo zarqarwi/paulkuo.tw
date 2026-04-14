@@ -23,6 +23,8 @@ Code session 工作時會自動讀取路徑上所有層級的 CLAUDE.md，不需
 
 不需要 Paul 提醒。做完就記，就像寫 git log 一樣自然。
 
+⚠️ 即使只改一行，commit 後也必須立倸追加 worklog。不要等 session 結束。
+
 ### 格式（三維度必填）
 
 Worklog 必須涵蓋三個維度，缺一不可：
@@ -152,7 +154,7 @@ npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangl
 
 ### Git
 
-- commit + push 要原子操作（cron 每 10 分鐘跑 git stash/pop，避免衝突）
+- commit + push 要原子操作（避免與 cron 或其他 session 的 git 操作衝突）
 - 部署前必查：`grep -rn "<<<<<<" worker/src/`
 - 一個 commit 只做一件事，不要混改 CSS + JS 邏輯 + HTML 結構
 
