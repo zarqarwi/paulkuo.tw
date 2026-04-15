@@ -1,10 +1,101 @@
 # Handoff: Governance Dashboard 資訊架構改版 — Phase A（視覺 + DOM 結構）
 
-**建議模型**：Opus 4.6 + High（跨多區塊改動、需要理解現有 render 流程與 API 回傳 shape）
-**Task size**：M（30 min ~ 2 hr）
-**信心等級**：中-高（改動範圍大，但每步都有 screenshot 參考）
+> **⚠️ 狀態更新（2026-04-15 10:xx）**：Paul 下令「直接啟動 Phase A」，
+> **Cowork 已把完整程式碼寫進 `src/pages/governance/index.astro` 的 working directory**。
+> Code session **不需要再照下方 spec 重寫一遍**，只要：
+>
+> 1. `git diff src/pages/governance/index.astro` 確認改動合理
+> 2. commit + push + build + deploy + smoke test
+> 3. 回報三態宣告（commit SHA）
+>
+> 下方章節（DOM 重構、render 函式、CSS）保留做為**事後 review / Phase B 對照用**，
+> 不是要 Code 實作的 spec。
+
+**建議模型**：Sonnet 4.6 + Medium（只需 diff review + 部署，不需重新設計）
+**Task size**：S（< 30 min，純 review + commit + deploy）
+**信心等級**：高（Cowork 已做 syntax check + DOM/JS id 交叉驗證 + CSS braces balance 全通過）
 **視覺參考**：Stitch v1 [screenshot](https://lh3.googleusercontent.com/aida/ADBb0uhtCCr5Ab_iq7KThhoRxDOxMv266CzgioIYryUTH46m4AqjGQsVJXX_AS2HdY3oht6FGdDO0JmjCanTvuSsVNeuRQYF4gmPU3E39KBx_zRU3gVB-50XaB39ibawkBLgXtoXLr6Bo_cdtAvUxtAeW6HqbsDZekqTrbV8Q6eC14hrNJSZlAJ4mwiNx390Sv_iXyyA87Sphf2vSYT-l-qzUMb9T5vqgsHp7h6jRv7RpnS_Qcovpuwy43phuUc)
 （登入 Stitch 看全版：https://stitch.withgoogle.com/projects/3520595413095137436）
+
+---
+
+## 🚀 Code 快速執行路徑（主流程）
+
+```bash
+cd ~/Desktop/01_專案進行中/paulkuo.tw
+
+# 1. 確認 working dir 狀態
+git status --short
+# 預期：
+#  M src/pages/governance/index.astro    (+427 -43)
+# ?? handoffs/code--governance-dashboard-redesign-phase-a-2026-04-14.md
+# ?? worklogs/worklog-2026-04-15.md
+#  M worklogs/PENDING.md
+
+# 2. Review diff（核心是 index.astro）
+git diff src/pages/governance/index.astro | less
+
+# 3. 本機驗證（Cowork 沙盒 arm64 跟 macOS node_modules 不相容所以沒跑 build；
+#    你這邊 macOS 可以直接跑）
+npm run build
+
+# 4. Commit + push（包含 Cowork 的文件交接檔）
+git add src/pages/governance/index.astro \
+        handoffs/code--governance-dashboard-redesign-phase-a-2026-04-14.md \
+        worklogs/worklog-2026-04-15.md \
+        worklogs/PENDING.md
+
+git commit -m "$(cat <<'EOF'
+feat(governance): Phase A — KPI bar + 專案卡升級 + Paper & Ink design tokens
+
+依 Stitch v1 方向（projects/3520595413095137436 / screen 594fcba8）落地：
+- 頂部 KPI Bar 4 tiles：專案健康度分佈 / 待處理稽核 / 自動化覆蓋率 / 最近部署
+- 專案卡升級：左邊彩色 border + 本週 commits + delta badge + 為何🟡? 按鈕
+- Header 加 period toggle (今日/本週/本月) pill tabs — Phase A 只綁 UI state
+- 導入 CSS variables --gov-* (Paper #fbf8ff + Ink #1a1b22 + Electric Blue accent)
+- 新增 helpers: relativeTime / deltaBadge / escapeHtml / renderKPIBar / renderKPIAudit
+- 卡片字體改 Newsreader serif（主站品牌字同源），繁中行高維持 1.5-1.8
+
+Phase A 限定：缺值欄位（weekly_commits / weekly_delta / last_deploy /
+health_reason）顯示 "—" placeholder，Phase B 擴充 Worker API 後自動帶值。
+
+設計意圖：讓 dashboard 打開 3 秒內讀到「健康度 / 待稽核 / 覆蓋率 / 部署」
+四條 headline，不再從 commits 累計反推當下狀態（舊版像 worklog 的根因）。
+
+Cowork 驗證：
+- JS syntax: node --check pass
+- CSS braces: 105 open / 105 close balanced
+- DOM / JS id cross-check: 9 新 id 全部雙端對應
+- CSS tokens: 9 個 --gov-* 全部定義
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+EOF
+)"
+
+git push
+
+# 5. 部署（純前端，Worker 不動）
+npm run build && wrangler deploy
+
+# 6. Smoke test（用無痕視窗！sessionStorage 會讓你誤以為沒變）
+open -na "Google Chrome" --args --incognito https://paulkuo.tw/governance/
+# 輸入 GOVERNANCE_TOKEN 後確認：
+# ✅ KPI Bar 顯示 4 tiles（健康度分佈 / 稽核數 / 覆蓋率% / 部署時間）
+# ✅ 專案卡有左邊 3px 彩色 border、本週 commits "—"、為何🟡? 按鈕
+# ✅ Period toggle 點「今日/本週/本月」會切換 active 狀態（console 有 log）
+# ✅ 其他區塊（donut / trend / audit / docs）行為不變
+# ✅ Console 無 error
+```
+
+**三態宣告**（完成後回報用）：
+
+- `✅ commit {SHA} pushed` + `✅ deployed to Cloudflare Pages`
+- 然後到 `worklogs/PENDING.md` mark 本條目 `[x]`
+- 並在 `worklogs/worklog-2026-04-15.md` 追加一條完成日誌（Code 類）
+
+---
+
+**以下為設計 spec（事後 review / Phase B 對照用）**
 
 ---
 
