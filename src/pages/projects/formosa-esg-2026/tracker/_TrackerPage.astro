@@ -112,6 +112,15 @@ const prefix = LOCALE_PREFIX[lang];
     {t(lang, 'tracker_ui.testBanner')}
   </div>
 
+  <!-- LINE Browser Prompt Banner (#172) -->
+  <div class="line-browser-banner" id="lineBrowserBanner" style="display:none">
+    <div class="line-browser-content">
+      <span class="line-browser-icon">📱</span>
+      <div class="line-browser-text">請從 LINE 內建瀏覽器開啟，資料才會同步</div>
+      <a href="https://liff.line.me/2009588321-rXVntTKg" class="line-browser-btn">開啟</a>
+    </div>
+  </div>
+
   <!-- OA Friend Guidance Banner -->
   <div class="oa-friend-banner" id="oaFriendBanner" style="display:none">
     <div class="oa-friend-content">
@@ -609,6 +618,15 @@ const prefix = LOCALE_PREFIX[lang];
     var tcl = document.getElementById('testCheckinLabel');
     if (tcl) tcl.style.display = 'block';
   }
+
+  // ── LINE Browser Prompt (#172) ──
+  // If formosa_line_user_id is absent, user is likely in an external browser where LIFF won't fire.
+  (function() {
+    if (!lsGet('formosa_line_user_id')) {
+      var banner = document.getElementById('lineBrowserBanner');
+      if (banner) banner.style.display = 'block';
+    }
+  })();
 
   // ── OA Friend Guidance ──
   (function() {
@@ -2670,6 +2688,38 @@ const prefix = LOCALE_PREFIX[lang];
   }
   .test-checkin-label {
     color: #f59e0b; font-size: 0.78rem; font-weight: 600; margin-top: 0.25rem;
+  }
+
+  /* LINE Browser Prompt Banner (#172) */
+  .line-browser-banner {
+    background: linear-gradient(135deg, #1a73e8, #0f5cd8);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin: 0.75rem 0 0.5rem;
+  }
+  .line-browser-content {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .line-browser-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .line-browser-text {
+    flex: 1;
+    font-size: 0.85rem;
+    color: white;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  .line-browser-btn {
+    flex-shrink: 0;
+    background: white;
+    color: #1a73e8;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 20px;
+    text-decoration: none;
+    white-space: nowrap;
   }
 
   /* OA Friend Guidance Banner */
