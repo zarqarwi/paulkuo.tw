@@ -25,15 +25,57 @@ const API_BASE = 'https://api.paulkuo.tw';
   </div>
 
   <div id="dashboard" hidden>
-    <div class="dash-header">
-      <h1>🎛️ 專案治理 Dashboard</h1>
-      <span id="last-updated" class="last-updated"></span>
-    </div>
+    <header class="dash-header">
+      <h1 class="dash-title">🎛️ 專案治理 Dashboard</h1>
+      <div class="dash-header-right">
+        <div class="period-toggle" role="tablist" aria-label="時間範圍">
+          <button data-period="today" class="period-pill" role="tab">今日</button>
+          <button data-period="week" class="period-pill active" role="tab" aria-selected="true">本週</button>
+          <button data-period="month" class="period-pill" role="tab">本月</button>
+        </div>
+        <span id="last-updated" class="last-updated"></span>
+      </div>
+    </header>
+
+    <!-- KPI Bar：4 headline tiles -->
+    <section class="kpi-bar" aria-label="關鍵指標">
+      <div class="kpi-tile" data-kpi="health">
+        <span class="kpi-label">專案健康度</span>
+        <div class="kpi-value kpi-health-split">
+          <span class="chip chip-green">🟢 <em id="kpi-green">—</em></span>
+          <span class="chip chip-yellow">🟡 <em id="kpi-yellow">—</em></span>
+          <span class="chip chip-red">🔴 <em id="kpi-red">—</em></span>
+        </div>
+      </div>
+      <div class="kpi-tile" data-kpi="audit">
+        <span class="kpi-label">待處理稽核</span>
+        <div class="kpi-value">
+          <span id="kpi-audit-count" class="kpi-big">—</span>
+          <span id="kpi-audit-detail" class="kpi-sub">—</span>
+        </div>
+      </div>
+      <div class="kpi-tile" data-kpi="coverage">
+        <span class="kpi-label">自動化覆蓋率</span>
+        <div class="kpi-value">
+          <span id="kpi-coverage-pct" class="kpi-big">—</span>
+          <span id="kpi-coverage-delta" class="kpi-delta">—</span>
+        </div>
+      </div>
+      <div class="kpi-tile" data-kpi="deploy">
+        <span class="kpi-label">最近部署</span>
+        <div class="kpi-value">
+          <span id="kpi-deploy-ago" class="kpi-big">—</span>
+          <span id="kpi-deploy-meta" class="kpi-sub">—</span>
+        </div>
+      </div>
+    </section>
 
     <!-- Project cards -->
     <section class="section">
-      <h2 class="section-title">專案狀態</h2>
-      <div id="project-cards" class="card-grid"></div>
+      <div class="section-header">
+        <h2 class="section-title">專案狀態</h2>
+      </div>
+      <div id="project-cards" class="card-grid card-grid-rich"></div>
     </section>
 
     <!-- Automation coverage -->
@@ -116,6 +158,31 @@ const API_BASE = 'https://api.paulkuo.tw';
     return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
   }
 
+  function relativeTime(dateStr) {
+    if (!dateStr) return '—';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    if (diff < 0) return '剛剛';
+    const h = Math.floor(diff / 3600000);
+    if (h < 1) return '不到 1 小時前';
+    if (h < 24) return h + ' 小時前';
+    const d = Math.floor(h / 24);
+    if (d < 30) return d + ' 天前';
+    return Math.floor(d / 30) + ' 個月前';
+  }
+
+  function deltaBadge(n) {
+    if (n == null) return '';
+    if (n > 0) return `<span class="delta delta-up">↑${n}</span>`;
+    if (n < 0) return `<span class="delta delta-down">↓${Math.abs(n)}</span>`;
+    return `<span class="delta delta-flat">—</span>`;
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
+
   // ── Fetch with Bearer token ────────────────────────────
   async function govFetch(path, token) {
     const res = await fetch(API_BASE + path, {
@@ -124,23 +191,49 @@ const API_BASE = 'https://api.paulkuo.tw';
     return res;
   }
 
-  // ── Render project cards ───────────────────────────────
+  // ── Render project cards（Phase A 升級版） ────────────
+  // 新欄位策略：weekly_commits / weekly_delta / last_deploy / open_prs / health_reason
+  // 這些欄位 Phase A 時 API 還沒回傳，會自動 fallback 成 "—"，Phase B 補 API 後自動帶值
   function renderCards(projects) {
     const grid = document.getElementById('project-cards');
-    grid.innerHTML = projects.map(p => `
-      <div class="proj-card health-${p.health}">
-        <div class="proj-card-top">
-          <span class="health-dot">${healthEmoji(p.health)}</span>
-          <span class="proj-name">${p.name}</span>
+    grid.innerHTML = projects.map(p => {
+      const weekly = p.weekly_commits != null ? p.weekly_commits : '—';
+      const delta = p.weekly_delta != null ? deltaBadge(p.weekly_delta) : '';
+      const lastDeploy = p.last_deploy ? relativeTime(p.last_deploy) : '—';
+      const openPrs = p.open_prs != null && p.open_prs > 0 ? `未合併 PR ${p.open_prs}` : '';
+      const healthReason = p.health_reason || '—';
+
+      return `
+        <div class="proj-card health-${p.health}" data-project-id="${escapeHtml(p.id || '')}">
+          <div class="proj-card-top">
+            <span class="health-dot">${healthEmoji(p.health)}</span>
+            <span class="proj-name">${escapeHtml(p.name)}</span>
+          </div>
+          <div class="proj-stat">
+            <span class="proj-stat-num">${weekly}</span><small> 本週 commits</small> ${delta}
+          </div>
+          <div class="proj-meta">
+            <span>上次部署 ${lastDeploy}</span>
+            ${openPrs ? `<span>${openPrs}</span>` : ''}
+          </div>
+          <div class="proj-activity">
+            <span>最後活動：${formatDate(p.last_activity)}</span>
+            <button class="proj-health-why" type="button"
+              data-reason="${escapeHtml(healthReason)}"
+              title="${escapeHtml(healthReason)}"
+              aria-label="說明健康度">為何 ${healthEmoji(p.health)}？</button>
+          </div>
         </div>
-        <div class="proj-stat">${p.total_commits}<small> commits</small></div>
-        <div class="proj-meta">
-          <span>${p.total_deploys} deploys</span>
-          <span>${p.total_files_changed} files</span>
-        </div>
-        <div class="proj-activity">最後活動：${formatDate(p.last_activity)}</div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+
+    grid.querySelectorAll('.proj-health-why').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const reason = btn.getAttribute('data-reason') || '—';
+        alert(reason === '—' ? '尚無健康度原因資料（Phase B 會補上）' : reason);
+      });
+    });
   }
 
   // ── Render automation donut ────────────────────────────
@@ -241,6 +334,65 @@ const API_BASE = 'https://api.paulkuo.tw';
     ctx.fillText('累計 commits（各專案）', padL, H - padB + 14);
   }
 
+  // ── Render KPI bar (Phase A) ───────────────────────────
+  function renderKPIBar(summary) {
+    const projects = summary.projects || [];
+
+    // Health distribution
+    const green = projects.filter(p => p.health === 'green').length;
+    const yellow = projects.filter(p => p.health === 'yellow').length;
+    const red = projects.filter(p => p.health === 'red').length;
+    setText('kpi-green', green);
+    setText('kpi-yellow', yellow);
+    setText('kpi-red', red);
+
+    // Coverage
+    const auto = summary.automation || {};
+    const pctNum = typeof auto.coverage_rate === 'number' ? Math.round(auto.coverage_rate * 100) : null;
+    setText('kpi-coverage-pct', pctNum != null ? pctNum + '%' : '—');
+    // Delta：Phase A 沒資料，用 placeholder；Phase B 補 summary.automation.delta 後自動帶值
+    const delta = auto.delta;
+    const deltaEl = document.getElementById('kpi-coverage-delta');
+    if (delta != null) {
+      deltaEl.innerHTML = delta > 0 ? `↑${delta}%` : delta < 0 ? `↓${Math.abs(delta)}%` : '持平';
+      deltaEl.className = 'kpi-delta ' + (delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat');
+    } else {
+      deltaEl.textContent = '—';
+      deltaEl.className = 'kpi-delta';
+    }
+
+    // Deploy：Phase A 沒 last_deploy 欄位，fallback 用 summary.last_updated
+    const deployAt = summary.last_deploy_at || summary.last_updated;
+    setText('kpi-deploy-ago', deployAt ? relativeTime(deployAt) : '—');
+    const deployMeta = summary.last_deploy_project
+      ? `${summary.last_deploy_project}${summary.last_deploy_commit ? ' / ' + String(summary.last_deploy_commit).slice(0, 7) : ''}`
+      : (deployAt ? '最後更新時間' : '—');
+    setText('kpi-deploy-meta', deployMeta);
+  }
+
+  function renderKPIAudit(audit) {
+    const latest = audit && audit.recent && audit.recent[0];
+    const countEl = document.getElementById('kpi-audit-count');
+    const detailEl = document.getElementById('kpi-audit-detail');
+    if (!latest) {
+      countEl.textContent = '0';
+      countEl.classList.remove('warn');
+      detailEl.textContent = '無資料';
+      return;
+    }
+    const tags = latest.missing_tags || 0;
+    const smoke = latest.missing_smoke_tests || 0;
+    const total = tags + smoke;
+    countEl.textContent = total;
+    countEl.classList.toggle('warn', total > 0);
+    detailEl.textContent = total > 0 ? `缺 tag ${tags} · 缺 smoke test ${smoke}` : '無異常';
+  }
+
+  function setText(id, v) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = v == null ? '—' : String(v);
+  }
+
   // ── Main render ────────────────────────────────────────
   function renderDashboard(summary) {
     document.getElementById('auth-gate').hidden = true;
@@ -251,6 +403,7 @@ const API_BASE = 'https://api.paulkuo.tw';
       : '';
     document.getElementById('last-updated').textContent = updatedStr;
 
+    renderKPIBar(summary);
     renderCards(summary.projects || []);
     renderDonut(summary.automation || {});
     renderTrend(summary.projects || []);
@@ -261,13 +414,16 @@ const API_BASE = 'https://api.paulkuo.tw';
       if (!res.ok) {
         document.getElementById('audit-scanner-status').textContent = '⚠️ 無資料';
         document.getElementById('audit-scanner-status').className = 'scanner-badge warn';
+        renderKPIAudit(null);
         return;
       }
       const audit = await res.json();
       renderAudit(audit);
+      renderKPIAudit(audit);
     }).catch(() => {
       document.getElementById('audit-scanner-status').textContent = '❌ 連線失敗';
       document.getElementById('audit-scanner-status').className = 'scanner-badge error';
+      renderKPIAudit(null);
     });
   }
 
@@ -431,6 +587,20 @@ const API_BASE = 'https://api.paulkuo.tw';
     if (e.key === 'Enter') document.getElementById('token-submit').click();
   });
 
+  // Period toggle (Phase A: UI only, Phase B 擴充 API 後再 bind fetch)
+  document.querySelectorAll('.period-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.period-pill').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      // eslint-disable-next-line no-console
+      console.log('[governance] period switched to', btn.dataset.period, '(Phase B pending)');
+    });
+  });
+
   // Auto-login if token stored in session
   const stored = sessionStorage.getItem(SESSION_KEY);
   if (stored) tryLogin(stored);
@@ -438,6 +608,26 @@ const API_BASE = 'https://api.paulkuo.tw';
 </script>
 
 <style>
+  /* ── Phase A: Paper & Ink design tokens ── */
+  :root {
+    --gov-bg: #fbf8ff;
+    --gov-surface: #ffffff;
+    --gov-surface-low: #f4f2fd;
+    --gov-surface-high: #eeedf7;
+    --gov-surface-highest: #e3e1eb;
+    --gov-ink: #1a1b22;
+    --gov-ink-soft: #424754;
+    --gov-muted: #9ca3af;
+    --gov-outline-ghost: rgba(194, 198, 214, 0.4);
+    --gov-primary: #3b82f6;
+    --gov-primary-deep: #0058be;
+    --gov-accent-green: #22c55e;
+    --gov-accent-yellow: #f59e0b;
+    --gov-accent-red: #ef4444;
+    --gov-radius: 8px;
+    --gov-serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+  }
+
   /* ── Auth Gate ── */
   .auth-wrapper {
     min-height: 70vh;
@@ -514,21 +704,159 @@ const API_BASE = 'https://api.paulkuo.tw';
     padding: 1.5rem 1rem 3rem;
   }
 
+  /* ── Dashboard background（Paper） ── */
+  #dashboard { background: var(--gov-bg); }
+
+  /* ── Header + period toggle ── */
   .dash-header {
     display: flex;
-    align-items: baseline;
+    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
     flex-wrap: wrap;
   }
 
-  .dash-header h1 {
+  .dash-title {
+    font-family: var(--gov-serif);
+    font-weight: 500;
+    font-size: 1.6rem;
+    color: var(--gov-ink);
     margin: 0;
-    font-size: 1.5rem;
-    color: #111827;
+    line-height: 1.3;
   }
 
-  .last-updated { font-size: 0.8rem; color: #9ca3af; }
+  .dash-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .period-toggle {
+    display: inline-flex;
+    background: var(--gov-surface-low);
+    border-radius: 999px;
+    padding: 0.2rem;
+  }
+
+  .period-pill {
+    border: 0;
+    background: transparent;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--gov-ink-soft);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+
+  .period-pill:hover { color: var(--gov-ink); }
+
+  .period-pill.active {
+    background: var(--gov-surface);
+    color: var(--gov-ink);
+    box-shadow: 0 1px 2px rgba(26, 27, 34, 0.06);
+  }
+
+  .last-updated { font-size: 0.8rem; color: var(--gov-muted); }
+
+  /* ── KPI Bar ── */
+  .kpi-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .kpi-tile {
+    background: var(--gov-surface);
+    border-radius: var(--gov-radius);
+    padding: 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    transition: background 0.15s;
+    min-height: 90px;
+  }
+
+  .kpi-tile:hover { background: var(--gov-surface-low); }
+
+  .kpi-label {
+    font-size: 0.72rem;
+    color: var(--gov-ink-soft);
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+
+  .kpi-value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .kpi-big {
+    font-family: var(--gov-serif);
+    font-size: 1.85rem;
+    font-weight: 500;
+    color: var(--gov-ink);
+    line-height: 1;
+  }
+
+  .kpi-big.warn { color: var(--gov-accent-red); }
+
+  .kpi-sub {
+    font-size: 0.72rem;
+    color: var(--gov-ink-soft);
+  }
+
+  .kpi-delta {
+    font-size: 0.75rem;
+    color: var(--gov-muted);
+  }
+
+  .kpi-delta.up { color: var(--gov-accent-green); }
+  .kpi-delta.down { color: var(--gov-accent-red); }
+
+  .kpi-health-split {
+    gap: 0.4rem;
+  }
+
+  .kpi-health-split .chip {
+    font-size: 0.82rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background: var(--gov-surface-low);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .kpi-health-split .chip em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--gov-ink);
+  }
+
+  /* ── Section header（專案狀態等） ── */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1rem;
+  }
+
+  .section-header .section-title { margin: 0; border: 0; padding: 0; }
+
+  .section-link {
+    font-size: 0.78rem;
+    color: var(--gov-primary);
+    text-decoration: none;
+  }
+
+  .section-link:hover { text-decoration: underline; }
 
   .section { margin-bottom: 2.5rem; }
 
@@ -548,17 +876,23 @@ const API_BASE = 'https://api.paulkuo.tw';
     gap: 0.75rem;
   }
 
+  .card-grid-rich { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+
   .proj-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 0.875rem;
+    background: var(--gov-surface);
+    border: 0;
+    border-left: 3px solid transparent;
+    border-radius: var(--gov-radius);
+    padding: 1rem 1.1rem;
     position: relative;
+    transition: background 0.15s;
   }
 
-  .proj-card.health-green { border-left: 3px solid #22c55e; }
-  .proj-card.health-yellow { border-left: 3px solid #f59e0b; }
-  .proj-card.health-red { border-left: 3px solid #ef4444; }
+  .proj-card:hover { background: var(--gov-surface-low); }
+
+  .proj-card.health-green { border-left-color: var(--gov-accent-green); }
+  .proj-card.health-yellow { border-left-color: var(--gov-accent-yellow); }
+  .proj-card.health-red { border-left-color: var(--gov-accent-red); }
 
   .proj-card-top {
     display: flex;
@@ -579,29 +913,70 @@ const API_BASE = 'https://api.paulkuo.tw';
   }
 
   .proj-stat {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1d4ed8;
+    font-size: 1rem;
+    color: var(--gov-ink-soft);
     line-height: 1.2;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    flex-wrap: wrap;
   }
 
-  .proj-stat small { font-size: 0.75rem; font-weight: 400; color: #6b7280; }
+  .proj-stat-num {
+    font-family: var(--gov-serif);
+    font-size: 1.7rem;
+    font-weight: 500;
+    color: var(--gov-primary-deep);
+  }
+
+  .proj-stat small { font-size: 0.72rem; font-weight: 400; color: var(--gov-ink-soft); }
+
+  .delta {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+  }
+
+  .delta-up { color: var(--gov-accent-green); background: rgba(34, 197, 94, 0.1); }
+  .delta-down { color: var(--gov-accent-red); background: rgba(239, 68, 68, 0.1); }
+  .delta-flat { color: var(--gov-muted); background: var(--gov-surface-low); }
 
   .proj-meta {
     display: flex;
     gap: 0.5rem;
     font-size: 0.72rem;
-    color: #9ca3af;
-    margin-top: 0.25rem;
+    color: var(--gov-muted);
+    margin-top: 0.35rem;
+    flex-wrap: wrap;
   }
 
   .proj-activity {
     font-size: 0.7rem;
-    color: #9ca3af;
-    margin-top: 0.4rem;
-    padding-top: 0.4rem;
-    border-top: 1px solid #f3f4f6;
+    color: var(--gov-muted);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--gov-outline-ghost);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.4rem;
   }
+
+  .proj-health-why {
+    background: none;
+    border: 0;
+    color: var(--gov-primary);
+    font-size: 0.68rem;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .proj-health-why:hover { text-decoration: underline; }
 
   /* ── Two-column section ── */
   .two-col {
@@ -682,11 +1057,20 @@ const API_BASE = 'https://api.paulkuo.tw';
   }
 
   /* ── RWD ── */
+  @media (max-width: 860px) {
+    .kpi-bar { grid-template-columns: repeat(2, 1fr); }
+  }
+
   @media (max-width: 640px) {
     .two-col { grid-template-columns: 1fr; }
     .card-grid { grid-template-columns: repeat(2, 1fr); }
+    .card-grid-rich { grid-template-columns: 1fr; }
     #trend-chart { width: 100%; height: auto; }
     #audit-trend-chart { width: 100%; height: auto; }
+  }
+
+  @media (max-width: 480px) {
+    .kpi-bar { grid-template-columns: 1fr; }
   }
 
   /* ── Docs library（已移入 #dashboard） ── */
