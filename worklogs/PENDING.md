@@ -24,14 +24,12 @@
 
 - [x] 🟡 Commit + push + deploy `src/pages/governance/index.astro` quick fix → ✅ 已完成 (aa225cd, 2026-04-14)
 
-- [ ] 🟡 Governance Dashboard 資訊架構改版 Phase A → Code / Opus 4.6 (2026-04-14 夜)
-  - 完整 handoff：`handoffs/code--governance-dashboard-redesign-phase-a-2026-04-14.md`
-  - **前置已完成**：quick fix (aa225cd) 已 merge
-  - Paul 已從 Stitch v1/v2 選定 v1 方向（Paper & Ink + Newsreader serif + tonal layering）
-  - Task size：M (30 min–2 hr)，信心等級：中-高
-  - Phase A 純前端：KPI bar (4 tiles) + 專案卡升級 + period toggle UI + CSS variables
-  - 缺值欄位用 `—` placeholder；Phase B（Worker API 擴充 weekly/delta/last_deploy）+ Phase C（稽核 actionable table）另案
+- [x] 🟢 Governance Dashboard Phase A — ✅ 已完成 (6246e03, 2026-04-15)
+  - commit + push + deploy 完成；build 534 pages pass；smoke test 200 OK
+  - Task size：S (< 30 min，純 review + commit + deploy)，信心等級：高
+  - Smoke test 必用**無痕視窗**（sessionStorage 干擾）
   - 視覺參考：Stitch projects/3520595413095137436 v1 screen 594fcba83743439d958f1dcd3b4bab60
+  - Phase B (Worker API 擴充 weekly/delta/last_deploy 欄位) + Phase C (稽核 actionable table) 另案
 
 - [ ] 🔴 Scanner 自動化 workflow 建置 → Code / Sonnet 4.6 (2026-04-14 下午)
   - 完整 handoff：`worklogs/code--scanner-automation-2026-04-14.md`
