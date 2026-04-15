@@ -1034,7 +1034,9 @@ export async function handleFormosaUser(request, env, userId) {
       transportBreakdown[transport.mode] += dist;
     }
 
-    const checkins = pts.filter(p => p.source === 'manual').length || Math.max(pts.length, 1);
+    const manualCheckins = pts.filter(p => p.source === 'manual').length;
+    const inRangePts = pts.filter(p => p.source !== 'remote');
+    const checkins = manualCheckins || Math.max(inRangePts.length, 1);
     const rank = computeRank(totalKm, checkins);
 
     // GPS-inferred transport carbon + daily report non-transport carbon (hotel, water)
