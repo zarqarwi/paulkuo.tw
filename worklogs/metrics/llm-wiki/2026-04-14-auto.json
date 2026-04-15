@@ -1,0 +1,23 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "llm-wiki",
+  "date": "2026-04-14",
+  "session_type": "auto",
+  "model": "n/a",
+  "size": "auto",
+  "outputs": {
+    "commits": 1,
+    "files_changed": 60,
+    "lines_added": 0,
+    "lines_removed": 0,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": false
+  },
+  "custom": {
+    "concepts_count": 22,
+    "corpus_pages": 242
+  },
+  "automation_changes": [],
+  "notes": "自動收集 by governance-metrics-collector. Commit abb6390: ingest 60+ web clips + YouTube sources + ghost-mileage dryrun. files_changed estimated from commit message (60+ clips)."
+}
