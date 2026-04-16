@@ -4,43 +4,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 <BaseLayout title="知識問答 — Paul Kuo" description="向 Paul Kuo 的個人知識庫提問">
   <style>
-    :root {
-      --text-primary: #0f172a;
-      --text-secondary: #64748b;
-      --accent-ai: #2563eb;
-      --border: #d1d5db;
-      --bg-light: #ffffff;
-      --bg-card: #f8fafc;
-      --bg-user: #dbeafe;
-      --bg-bot: #f1f5f9;
-    }
-
-    html[data-theme="dark"] {
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --accent-ai: #3b82f6;
-      --border: #334155;
-      --bg-light: #0f172a;
-      --bg-card: #1e293b;
-      --bg-user: #1e40af;
-      --bg-bot: #1e293b;
-    }
-
     * {
       box-sizing: border-box;
     }
 
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-primary);
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
     }
 
     .breadcrumb {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
       font-size: 0.875rem;
       color: var(--text-secondary);
     }
@@ -54,272 +32,219 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       text-decoration: underline;
     }
 
-    .breadcrumb span {
-      color: var(--text-secondary);
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem 0;
-      color: var(--text-primary);
-    }
-
-    .header p {
-      font-size: 1.125rem;
-      color: var(--text-secondary);
-      margin: 0;
-    }
-
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      height: 600px;
-      background-color: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      overflow: hidden;
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .chat-messages::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .chat-messages::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .chat-messages::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 4px;
-    }
-
-    .chat-messages::-webkit-scrollbar-thumb:hover {
-      background: var(--text-secondary);
-    }
-
-    .message {
+    /* Search box */
+    .search-wrap {
       display: flex;
       gap: 0.75rem;
-      animation: slideIn 0.3s ease-out;
+      margin-bottom: 1.5rem;
     }
 
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .message.user {
-      justify-content: flex-end;
-    }
-
-    .message-content {
-      max-width: 70%;
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
-      line-height: 1.5;
-      word-wrap: break-word;
-    }
-
-    .message.bot .message-content {
-      background-color: var(--bg-bot);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-    }
-
-    .message.user .message-content {
-      background-color: var(--accent-ai);
-      color: white;
-    }
-
-    .message-text {
-      margin: 0;
-    }
-
-    .related-concepts {
-      margin-top: 0.75rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .concept-chip {
-      display: inline-block;
-      padding: 0.375rem 0.75rem;
-      background-color: rgba(37, 99, 235, 0.1);
-      border: 1px solid var(--accent-ai);
-      border-radius: 1.5rem;
-      font-size: 0.875rem;
-      color: var(--accent-ai);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .concept-chip:hover {
-      background-color: var(--accent-ai);
-      color: white;
-    }
-
-    .loading {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-secondary);
-    }
-
-    .loading-dot {
-      width: 8px;
-      height: 8px;
-      background-color: var(--accent-ai);
-      border-radius: 50%;
-      animation: loadingPulse 1.4s ease-in-out infinite;
-    }
-
-    .loading-dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .loading-dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes loadingPulse {
-      0%, 80%, 100% {
-        opacity: 0.3;
-        transform: scale(1);
-      }
-      40% {
-        opacity: 1;
-        transform: scale(1.2);
-      }
-    }
-
-    .input-area {
-      padding: 1rem;
-      border-top: 1px solid var(--border);
-      background-color: var(--bg-card);
-      display: flex;
-      gap: 0.75rem;
-    }
-
-    .input-field {
+    .search-input {
       flex: 1;
-      padding: 0.75rem 1rem;
+      padding: 0.875rem 1.25rem;
       border: 1px solid var(--border);
       border-radius: 0.75rem;
-      background-color: var(--bg-light);
+      background-color: var(--bg-card);
       color: var(--text-primary);
       font-size: 1rem;
       font-family: system-ui, -apple-system, sans-serif;
       transition: border-color 0.2s;
     }
 
-    .input-field:focus {
+    .search-input:focus {
       outline: none;
       border-color: var(--accent-ai);
     }
 
-    .send-btn {
-      padding: 0.75rem 1.5rem;
+    .ask-btn {
+      padding: 0.875rem 1.5rem;
       background-color: var(--accent-ai);
       color: white;
       border: none;
       border-radius: 0.75rem;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
       font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      white-space: nowrap;
     }
 
-    .send-btn:hover:not(:disabled) {
+    .ask-btn:hover:not(:disabled) {
       background-color: #1d4ed8;
-      transform: translateY(-1px);
     }
 
-    .send-btn:disabled {
+    .ask-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
-    .example-chips {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 0.75rem;
-      margin: 2rem 0;
+    /* Spinner */
+    .spinner-wrap {
+      display: none;
+      align-items: center;
+      gap: 0.625rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .spinner-wrap.visible {
+      display: flex;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent-ai);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Example chips */
+    .example-section {
+      margin-bottom: 2rem;
+    }
+
+    .example-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.625rem;
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
     .example-chip {
-      padding: 1rem;
-      background-color: rgba(37, 99, 235, 0.05);
-      border: 1px solid rgba(37, 99, 235, 0.3);
-      border-radius: 0.75rem;
+      padding: 0.5rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      background: transparent;
       cursor: pointer;
-      transition: all 0.2s;
-      color: var(--text-primary);
-      font-size: 0.95rem;
-      text-align: center;
+      transition: border-color 0.2s, color 0.2s;
     }
 
     .example-chip:hover {
-      background-color: rgba(37, 99, 235, 0.15);
       border-color: var(--accent-ai);
-      transform: translateY(-2px);
+      color: var(--accent-ai);
     }
 
-    .error-message {
-      padding: 0.75rem 1rem;
+    /* Answer section */
+    #answerSection {
+      display: none;
+    }
+
+    #answerSection.visible {
+      display: block;
+    }
+
+    .answer-question {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 1.25rem 0;
+    }
+
+    .answer-body {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--text-primary);
+      margin-bottom: 1.75rem;
+    }
+
+    :global(.answer-body a) {
+      color: var(--accent-ai);
+      text-decoration: underline;
+    }
+
+    :global(.answer-body a:hover) {
+      opacity: 0.8;
+    }
+
+    /* Sources */
+    .sources-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 0.625rem;
+    }
+
+    .source-chip {
+      display: inline-block;
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      margin: 0 0.375rem 0.375rem 0;
+      transition: border-color 0.2s;
+    }
+
+    .source-chip:hover {
+      border-color: var(--accent-ai);
+      color: var(--accent-ai);
+    }
+
+    /* Follow-up */
+    .followup-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .followup-chip {
+      display: inline-block;
+      padding: 0.5rem 0.875rem;
+      background-color: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      border-radius: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--accent-ai);
+      cursor: pointer;
+      margin: 0 0.375rem 0.375rem 0;
+      transition: background-color 0.2s;
+    }
+
+    .followup-chip:hover {
+      background-color: rgba(37, 99, 235, 0.18);
+    }
+
+    /* Error */
+    .error-box {
+      padding: 0.875rem 1rem;
       background-color: #fee2e2;
       border: 1px solid #fecaca;
       border-radius: 0.75rem;
       color: #991b1b;
       font-size: 0.875rem;
+      margin-bottom: 1.25rem;
     }
 
-    html[data-theme="dark"] .error-message {
+    html[data-theme="dark"] .error-box {
       background-color: #7c2d12;
       border-color: #92400e;
       color: #fed7aa;
     }
 
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: var(--text-secondary);
-      text-align: center;
-    }
-
-    .empty-state p {
-      margin: 0 0 1rem 0;
-      font-size: 1.125rem;
+    /* Divider */
+    .answer-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.75rem 0;
     }
 
     @media (max-width: 768px) {
@@ -327,27 +252,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         padding: 1.5rem 1rem;
       }
 
-      .header h1 {
-        font-size: 1.75rem;
-      }
-
-      .chat-container {
-        height: 500px;
-      }
-
-      .message-content {
-        max-width: 85%;
-      }
-
-      .example-chips {
-        grid-template-columns: 1fr;
-      }
-
-      .input-area {
+      .search-wrap {
         flex-direction: column;
       }
 
-      .send-btn {
+      .ask-btn {
         width: 100%;
       }
     }
@@ -363,271 +272,214 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       <span>知識問答</span>
     </nav>
 
-    <!-- Header -->
-    <div class="header">
-      <h1>知識問答</h1>
-      <p>向我的知識庫提問，AI 會根據知識圖譜中的概念回答。</p>
+    <!-- Search box -->
+    <div class="search-wrap">
+      <input
+        type="text"
+        id="questionInput"
+        class="search-input"
+        placeholder="輸入你的問題，例如：AI 時代需要什麼能力？"
+        autocomplete="off"
+      />
+      <button class="ask-btn" id="askBtn">問</button>
     </div>
 
-    <!-- Example Questions -->
-    <div class="example-chips">
-      <div class="example-chip" onclick="handleExampleQuestion('什麼是 AI Agent 經濟？')">
-        什麼是 AI Agent 經濟？
-      </div>
-      <div class="example-chip" onclick="handleExampleQuestion('Paul 怎麼看一人公司？')">
-        Paul 怎麼看一人公司？
-      </div>
-      <div class="example-chip" onclick="handleExampleQuestion('循環經濟在台灣怎麼實踐？')">
-        循環經濟在台灣怎麼實踐？
-      </div>
-      <div class="example-chip" onclick="handleExampleQuestion('AI 時代需要什麼能力？')">
-        AI 時代需要什麼能力？
+    <!-- Spinner -->
+    <div class="spinner-wrap" id="spinnerWrap">
+      <div class="spinner"></div>
+      <span>搜尋中…</span>
+    </div>
+
+    <!-- Example chips (hidden after first question) -->
+    <div class="example-section" id="exampleSection">
+      <p class="example-label">範例問題</p>
+      <div class="chips-row">
+        <button class="example-chip" data-q="什麼是 AI Agent 經濟？">什麼是 AI Agent 經濟？</button>
+        <button class="example-chip" data-q="Paul 怎麼看一人公司？">Paul 怎麼看一人公司？</button>
+        <button class="example-chip" data-q="循環經濟在台灣怎麼實踐？">循環經濟在台灣怎麼實踐？</button>
+        <button class="example-chip" data-q="AI 時代需要什麼能力？">AI 時代需要什麼能力？</button>
       </div>
     </div>
 
-    <!-- Chat Container -->
-    <div class="chat-container">
-      <div class="chat-messages" id="chatMessages">
-        <div class="empty-state">
-          <p>開始提問，探索知識圖譜</p>
-        </div>
+    <!-- Answer section -->
+    <div id="answerSection">
+      <hr class="answer-divider" />
+      <h2 class="answer-question" id="answerQuestion"></h2>
+      <div class="answer-body" id="answerBody"></div>
+
+      <!-- Sources -->
+      <div class="sources-section" id="sourcesSection">
+        <p class="section-label">來源</p>
+        <div id="sourcesChips"></div>
       </div>
 
-      <!-- Input Area -->
-      <div class="input-area">
-        <input
-          type="text"
-          id="questionInput"
-          class="input-field"
-          placeholder="輸入您的問題..."
-          onkeydown="handleKeyDown(event)"
-        />
-        <button class="send-btn" id="sendBtn" onclick="handleSubmit()">
-          提問
-        </button>
+      <!-- Follow-up -->
+      <div class="followup-section" id="followupSection">
+        <p class="section-label">繼續探索</p>
+        <div id="followupChips"></div>
       </div>
     </div>
   </div>
 
   <script is:inline>
     const API_URL = 'https://api.paulkuo.tw/api/wiki/ask';
-    const chatMessages = document.getElementById('chatMessages');
-    const questionInput = document.getElementById('questionInput');
-    const sendBtn = document.getElementById('sendBtn');
 
-    // Convert [[slug]] to links
+    const questionInput = document.getElementById('questionInput');
+    const askBtn = document.getElementById('askBtn');
+    const spinnerWrap = document.getElementById('spinnerWrap');
+    const exampleSection = document.getElementById('exampleSection');
+    const answerSection = document.getElementById('answerSection');
+    const answerQuestion = document.getElementById('answerQuestion');
+    const answerBody = document.getElementById('answerBody');
+    const sourcesSection = document.getElementById('sourcesSection');
+    const sourcesChips = document.getElementById('sourcesChips');
+    const followupSection = document.getElementById('followupSection');
+    const followupChips = document.getElementById('followupChips');
+
+    let exampleHidden = false;
+
+    // Convert [[slug]] to blue anchor links
     function convertSlugsToLinks(text) {
       const slugPattern = /\[\[([^\]]+)\]\]/g;
-      const div = document.createElement('div');
+      const container = document.createElement('span');
       let lastIndex = 0;
-      let hasContent = false;
 
       const matches = Array.from(text.matchAll(slugPattern));
 
       if (matches.length === 0) {
-        div.textContent = text;
-        return div;
+        container.textContent = text;
+        return container;
       }
 
       matches.forEach((match) => {
         const slug = match[1];
-        const beforeText = text.substring(lastIndex, match.index);
-
-        if (beforeText) {
-          const textNode = document.createTextNode(beforeText);
-          div.appendChild(textNode);
-          hasContent = true;
+        const before = text.substring(lastIndex, match.index);
+        if (before) {
+          container.appendChild(document.createTextNode(before));
         }
-
-        const link = document.createElement('a');
-        link.href = `/wiki/${slug}/`;
-        link.textContent = slug;
-        link.style.color = 'var(--accent-ai)';
-        link.style.textDecoration = 'underline';
-        link.style.cursor = 'pointer';
-        div.appendChild(link);
-        hasContent = true;
-
+        const a = document.createElement('a');
+        a.href = `/wiki/${slug}/`;
+        a.textContent = slug;
+        container.appendChild(a);
         lastIndex = match.index + match[0].length;
       });
 
       const remaining = text.substring(lastIndex);
       if (remaining) {
-        const textNode = document.createTextNode(remaining);
-        div.appendChild(textNode);
-        hasContent = true;
+        container.appendChild(document.createTextNode(remaining));
       }
 
-      return hasContent ? div : document.createTextNode(text);
+      return container;
     }
 
-    // Clear empty state
-    function clearEmptyState() {
-      const emptyState = chatMessages.querySelector('.empty-state');
-      if (emptyState) {
-        emptyState.remove();
-      }
-    }
+    async function submitQuestion(question) {
+      if (!question) return;
 
-    // Add message to chat
-    function addMessage(content, isUser = false, relatedConcepts = null) {
-      clearEmptyState();
-
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
-
-      const contentDiv = document.createElement('div');
-      contentDiv.className = 'message-content';
-
-      const textP = document.createElement('p');
-      textP.className = 'message-text';
-
-      if (isUser) {
-        textP.textContent = content;
-      } else {
-        const converted = convertSlugsToLinks(content);
-        textP.appendChild(converted);
+      // Hide examples permanently on first submit
+      if (!exampleHidden) {
+        exampleSection.style.display = 'none';
+        exampleHidden = true;
       }
 
-      contentDiv.appendChild(textP);
-
-      // Add related concepts if available
-      if (relatedConcepts && relatedConcepts.length > 0 && !isUser) {
-        const conceptsDiv = document.createElement('div');
-        conceptsDiv.className = 'related-concepts';
-
-        relatedConcepts.forEach((concept) => {
-          const chip = document.createElement('div');
-          chip.className = 'concept-chip';
-          chip.textContent = concept;
-          chip.style.cursor = 'pointer';
-          chip.onclick = () => {
-            handleExampleQuestion(concept);
-          };
-          conceptsDiv.appendChild(chip);
-        });
-
-        contentDiv.appendChild(conceptsDiv);
-      }
-
-      messageDiv.appendChild(contentDiv);
-      chatMessages.appendChild(messageDiv);
-
-      // Scroll to bottom
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // Add loading indicator
-    function addLoadingMessage() {
-      clearEmptyState();
-
-      const messageDiv = document.createElement('div');
-      messageDiv.className = 'message bot';
-
-      const contentDiv = document.createElement('div');
-      contentDiv.className = 'message-content';
-      contentDiv.id = 'loadingMessage';
-
-      const loadingDiv = document.createElement('div');
-      loadingDiv.className = 'loading';
-
-      for (let i = 0; i < 3; i++) {
-        const dot = document.createElement('div');
-        dot.className = 'loading-dot';
-        loadingDiv.appendChild(dot);
-      }
-
-      contentDiv.appendChild(loadingDiv);
-      messageDiv.appendChild(contentDiv);
-      chatMessages.appendChild(messageDiv);
-
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // Remove loading message
-    function removeLoadingMessage() {
-      const loadingMsg = document.getElementById('loadingMessage');
-      if (loadingMsg) {
-        loadingMsg.parentElement.parentElement.remove();
-      }
-    }
-
-    // Handle form submission
-    async function handleSubmit() {
-      const question = questionInput.value.trim();
-
-      if (!question) {
-        return;
-      }
-
-      // Add user message
-      addMessage(question, true);
-      questionInput.value = '';
-      sendBtn.disabled = true;
-
-      // Add loading state
-      addLoadingMessage();
+      // UI state
+      askBtn.disabled = true;
+      spinnerWrap.classList.add('visible');
+      answerSection.classList.remove('visible');
 
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question }),
         });
 
-        removeLoadingMessage();
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
 
         const data = await response.json();
 
-        // Add bot response
-        addMessage(data.answer, false, data.related_concepts);
-      } catch (error) {
-        removeLoadingMessage();
+        // Render question
+        answerQuestion.textContent = question;
 
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message bot';
+        // Render answer body
+        answerBody.innerHTML = '';
+        const converted = convertSlugsToLinks(data.answer || '');
+        answerBody.appendChild(converted);
 
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'message-content';
+        // Sources
+        const sources = data.sources || [];
+        if (sources.length > 0) {
+          sourcesChips.innerHTML = '';
+          sources.forEach((src) => {
+            const a = document.createElement('a');
+            a.href = `/wiki/${src.slug}/`;
+            a.className = 'source-chip';
+            a.textContent = '🔗 ' + src.title;
+            sourcesChips.appendChild(a);
+          });
+          sourcesSection.style.display = '';
+        } else {
+          sourcesSection.style.display = 'none';
+        }
 
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent =
-          '發生錯誤，請稍後再試。' +
-          (error.message ? `(${error.message})` : '');
+        // Follow-up
+        const related = (data.related_concepts || []).slice(0, 3);
+        if (related.length > 0) {
+          followupChips.innerHTML = '';
+          related.forEach((concept) => {
+            const btn = document.createElement('button');
+            btn.className = 'followup-chip';
+            btn.textContent = '什麼是 ' + concept.title + '？';
+            btn.addEventListener('click', () => {
+              const q = '什麼是 ' + concept.title + '？';
+              questionInput.value = q;
+              submitQuestion(q);
+            });
+            followupChips.appendChild(btn);
+          });
+          followupSection.style.display = '';
+        } else {
+          followupSection.style.display = 'none';
+        }
 
-        contentDiv.appendChild(errorDiv);
-        messageDiv.appendChild(contentDiv);
-        chatMessages.appendChild(messageDiv);
-
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        answerSection.classList.add('visible');
+      } catch (err) {
+        // Show error inside answer area
+        answerQuestion.textContent = question;
+        answerBody.innerHTML = '';
+        const errBox = document.createElement('div');
+        errBox.className = 'error-box';
+        errBox.textContent = '發生錯誤，請稍後再試。' + (err.message ? ` (${err.message})` : '');
+        answerBody.appendChild(errBox);
+        sourcesSection.style.display = 'none';
+        followupSection.style.display = 'none';
+        answerSection.classList.add('visible');
       } finally {
-        sendBtn.disabled = false;
+        spinnerWrap.classList.remove('visible');
+        askBtn.disabled = false;
         questionInput.focus();
       }
     }
 
-    // Handle keyboard input
-    function handleKeyDown(event) {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        handleSubmit();
+    // Submit handlers
+    askBtn.addEventListener('click', () => submitQuestion(questionInput.value.trim()));
+
+    questionInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitQuestion(questionInput.value.trim());
       }
-    }
+    });
 
-    // Handle example question click
-    function handleExampleQuestion(question) {
-      questionInput.value = question;
-      questionInput.focus();
-    }
+    // Example chip handlers
+    document.querySelectorAll('.example-chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const q = chip.dataset.q;
+        questionInput.value = q;
+        submitQuestion(q);
+      });
+    });
 
-    // Set initial focus
+    // Initial focus
     questionInput.focus();
   </script>
 </BaseLayout>
