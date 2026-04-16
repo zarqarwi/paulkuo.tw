@@ -1,0 +1,23 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "llm-wiki",
+  "date": "2026-04-15",
+  "session_type": "auto",
+  "model": "n/a",
+  "size": "auto",
+  "outputs": {
+    "commits": 4,
+    "files_changed": 0,
+    "lines_added": 0,
+    "lines_removed": 0,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": false
+  },
+  "custom": {
+    "concepts_count": 26,
+    "corpus_pages": 251
+  },
+  "automation_changes": [],
+  "notes": "自動收集 by governance-metrics-collector。4 commits: wiki column frontmatter scanner, batch 1.5 concept 擴充(4新concept), batch 1 收尾, recover stash(含wiki檔)。files_changed 無法從 commit message 精確取得，設為 0。"
+}

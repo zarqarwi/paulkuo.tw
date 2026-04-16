@@ -1,0 +1,20 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "paulkuo-main",
+  "date": "2026-04-15",
+  "session_type": "auto",
+  "model": "n/a",
+  "size": "auto",
+  "outputs": {
+    "commits": 12,
+    "files_changed": 0,
+    "lines_added": 0,
+    "lines_removed": 0,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": false
+  },
+  "custom": {},
+  "automation_changes": [],
+  "notes": "自動收集 by governance-metrics-collector。12 commits: feat(governance) Phase A KPI bar升級, auto(scanner) daily audit, external eval baseline, worklog/handoff docs, stash recover, auto-collect 4/14 metrics, feedback triage。files_changed 無法從 commit message 精確取得，設為 0。"
+}
