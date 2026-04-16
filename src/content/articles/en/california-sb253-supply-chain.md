@@ -11,7 +11,7 @@ abstract: |
   but "What data should I actually prepare?" This article is the answer.
 date: 2026-04-16
 updated: 2026-04-16
-pillar: circular-economy
+pillar: circular
 tags:
   - SB 253
   - 加州碳揭露法
