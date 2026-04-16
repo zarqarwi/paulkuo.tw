@@ -152,6 +152,15 @@ const authI18n = {
       var result = await verifyCode(code);
       if (result) {
         sessionStorage.setItem(STORAGE_KEY, code);
+        // #174: On lineLogin pages, regular codes should not bypass LIFF login
+        if (lineLogin && result.role !== 'admin') {
+          // Code is valid but we still need LINE identity — initiate LIFF
+          if (adminLoginSection) adminLoginSection.style.display = 'none';
+          if (!window.__liffInitStarted) { window.__liffInitStarted = true; initLIFF(); }
+          authBtn.textContent = authI18n.verify;
+          authBtn.disabled = false;
+          return;
+        }
         unlock();
       } else {
         authInput.style.borderColor = '#ef4444';
@@ -173,7 +182,14 @@ const authI18n = {
     var code = urlKey || stored;
     if (code) {
       var result = await verifyCode(code);
-      if (result) { sessionStorage.setItem(STORAGE_KEY, code); unlock(); return true; }
+      if (result) {
+        sessionStorage.setItem(STORAGE_KEY, code);
+        // #174: On lineLogin pages, only admin role should auto-unlock via password.
+        // Regular access codes must still go through LIFF to get lineUserId.
+        if (lineLogin && result.role !== 'admin') return false;
+        unlock();
+        return true;
+      }
     }
     return false;
   }
@@ -432,8 +448,9 @@ const authI18n = {
     checkStoredCode().then(function(unlocked) {
       if (!unlocked) {
         // Shared link guest mode: ?u= param unlocks page for viewing
+        // #174: Validate format — LINE user IDs are 'U' + 32 hex chars
         var sharedUserId = new URLSearchParams(window.location.search).get('u');
-        if (sharedUserId) {
+        if (sharedUserId && /^U[0-9a-f]{32}$/i.test(sharedUserId)) {
           window.__guestMode = true;
           unlock();
           return;
