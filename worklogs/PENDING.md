@@ -31,12 +31,7 @@
   - 視覺參考：Stitch projects/3520595413095137436 v1 screen 594fcba83743439d958f1dcd3b4bab60
   - Phase B (Worker API 擴充 weekly/delta/last_deploy 欄位) + Phase C (稽核 actionable table) 另案
 
-- [ ] 🔴 Scanner 自動化 workflow 建置 → Code / Sonnet 4.6 (2026-04-14 下午)
-  - 完整 handoff：`worklogs/code--scanner-automation-2026-04-14.md`
-  - 三部分：(1) cleanup 假資料 (2) 建 `.github/workflows/governance-scanner.yml` (3) 手動觸發驗證
-  - ⚠️ 補 Phase 3（851dd58）未完成的環節——scanner 從未排程，Dashboard「48h 未更新」是真實狀態
-  - Secrets（`CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`）已存在，不用新增
-  - Push 前告知 Paul（兩個 commit：cleanup + workflow）
+- [x] 🔴 Scanner 自動化 workflow 建置 → ✅ 已完成（cd9ebd9, auto scanner daily 2026-04-16 正常運行中）
 
 - [x] 🟡 Harness Engineering 文件庫上架 → ✅ 已完成 (70ad07a, 2026-04-14)
   - 完整 handoff：`worklogs/code--harness-docs-upload-2026-04-14.md`
@@ -84,8 +79,29 @@
 
 ---
 
+- [ ] 🔴 Formosa Post-Event Issues 批次修復 → Code / Opus 4.6 (2026-04-16)
+  - 完整 handoff：`worklogs/code--formosa-post-event-batch-2026-04-16.md`
+  - Batch 1: #175 auto-close.yml injection (P2, 30min)
+  - Batch 2: #177 GPS 彰化以南 + #178 LIFF 常駐 (P1, 90min)
+  - Batch 3: #173 Dashboard 定位 + #174 AuthGate + #179 拍照 (P1+P2, 90min)
+  - ⚠️ 前提：Formosa 活動已結束或 Paul 確認可 deploy
+  - Task Size：L（3-4 hr，分三批獨立 commit + deploy + 驗證）
+
+- [ ] 🟡 YouTube transcript Whisper backfill（19/23 影片）→ Code / Opus 4.6 (2026-04-16)
+  - 前提：Paul 提供 `GROQ_API_KEY` 到本機環境（`export GROQ_API_KEY=xxx`）
+  - 執行：`node scripts/wiki-youtube-ingest.cjs --backfill`
+  - 預估 19 個影片 × Whisper STT，成本約 $0.5-1 USD
+  - 1 個影片 (Po6xqJsCook) 已設為 private，無法處理
+  - 完成後跑 `node scripts/wiki-kv-seed.cjs` 更新 KV
+  - branch: `fix/youtube-transcript-pipeline`，待 merge 到 main
+
+- [ ] 🟡 YouTube transcript Worker deploy → Code (transcript 修復完成後)
+  - Worker 的 Innertube 多 client 嘗試改完但 YouTube 全封，實際效果有限
+  - 等本機 backfill 跑完確認穩定後再 deploy Worker
+  - `cd worker && wrangler deploy --config wrangler.toml`
+
 ## Scanner 自動產出（最新在上）
 
-- [ ] 🟡 跨專案 smoke test 缺漏：cd2422a, e2fcd8f, 7d7e85d, c0b86b7, 8be165c（影響 paulkuo-main, formosa-esg, llm-wiki）→ Code (auto-scanner 2026-04-11)
-- [ ] 🟡 跨專案影響待驗：73e3546 動到 `worker/src/index.js`（缺 [影響] 標注 + 缺 smoke test），需補驗全部子專案（掃描日期：2026-04-12）
-- [ ] 🟡 跨專案 smoke test 缺漏：851dd58 governance Phase 3 待部署後補驗全部子專案（掃描日期：2026-04-12）
+- [x] 🟡 跨專案 smoke test 缺漏：cd2422a, e2fcd8f, 7d7e85d, c0b86b7, 8be165c → ✅ 2026-04-16 Cowork 補驗全部 200 OK（主站/Wiki/Formosa/ACP/TQEF）
+- [x] 🟡 跨專案影響待驗：73e3546 → ✅ 2026-04-16 Cowork 補驗，全部子專案 API 正常，近 3 天 scanner 無異常
+- [x] 🟡 跨專案 smoke test 缺漏：851dd58 governance Phase 3 → ✅ 已部署，Dashboard 200 OK，scanner daily audit 正常運行
