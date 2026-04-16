@@ -9,7 +9,7 @@ source_count: 1
 confidence: low
 tags: [個人品牌, 內容策略, 自媒體, 垂直定位]
 links_to: [one-person-team, human-judgment-in-ai-era]
-linked_from: []
+linked_from: [content-moat]
 raw_source_path: "notes/04_AI與科技/于困困：怎样像创业一样规划个人IP？_1903862408503005824.md"
 raw_source_type: getnote
 raw_note_id: "1903862408503005824"

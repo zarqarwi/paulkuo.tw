@@ -9,7 +9,7 @@ source_count: 13
 confidence: medium
 tags: [敘事力, 第一性原理, 意義建構, 溝通理性, 故事思維]
 links_to: [human-judgment-in-ai-era, human-ai-collaboration, skill-development]
-linked_from: [getnote-311832-narrative-first-principle, getnote-597672-narrative-storytelling, getnote-285216-habermas-communicative-rationality, article-addiction-economy-lonely-generation, article-ai-slaughterhouse-2028-crisis-scenario, article-china-cultural-discourse-power, article-digital-colonialism-platforms, article-facebook-algorithm-humanity, article-reformation-printing-politics, article-traffic-beyond-currency, getnote-050928-death-education-yin-ye, getnote-443632-hard-constraints-ai-interaction, getnote-218984-constraint-respect-action]
+linked_from: [getnote-311832-narrative-first-principle, getnote-597672-narrative-storytelling, getnote-285216-habermas-communicative-rationality, article-addiction-economy-lonely-generation, article-ai-slaughterhouse-2028-crisis-scenario, article-china-cultural-discourse-power, article-digital-colonialism-platforms, article-facebook-algorithm-humanity, article-reformation-printing-politics, article-traffic-beyond-currency, getnote-050928-death-education-yin-ye, getnote-443632-hard-constraints-ai-interaction, getnote-218984-constraint-respect-action, content-moat]
 ---
 
 ## 摘要
