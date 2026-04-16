@@ -11,7 +11,7 @@ abstract: |
   而是「我到底該準備什麼資料？」這篇就是回答。
 date: 2026-04-16
 updated: 2026-04-16
-pillar: circular-economy
+pillar: circular
 tags:
   - SB 253
   - 加州碳揭露法
