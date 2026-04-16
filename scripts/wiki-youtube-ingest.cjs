@@ -3,7 +3,7 @@
 /**
  * Wiki YouTube Ingest CLI (Issue #126)
  *
- * Two modes:
+ * Modes:
  *   1) Pull pending videos from KV → write to src/content/wiki/sources/
  *      $ node scripts/wiki-youtube-ingest.cjs
  *
@@ -11,7 +11,14 @@
  *      $ node scripts/wiki-youtube-ingest.cjs https://www.youtube.com/watch?v=XXXX
  *      $ node scripts/wiki-youtube-ingest.cjs XXXX --pillar=circular --lang=zh-TW
  *
- * Requires: wrangler CLI (for KV access)
+ *   3) Backfill: re-fetch transcripts for existing sources with empty transcript_lang
+ *      $ node scripts/wiki-youtube-ingest.cjs --backfill
+ *
+ * Transcript fetching (local, two-tier):
+ *   Tier 1: yt-dlp subtitle extraction (for videos with auto/manual captions)
+ *   Tier 2: Groq Whisper STT (for videos without captions, requires GROQ_API_KEY)
+ *
+ * Requires: wrangler CLI (for KV access), yt-dlp (for transcript fetching)
  */
 
 const fs = require('fs');
@@ -73,6 +80,237 @@ function kvPut(key, value) {
   }
 }
 
+// ── Transcript helpers ────────────────────────────────────────────────
+
+function decodeXmlEntities(str) {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n/g, ' ')
+    .trim();
+}
+
+function parseTranscriptXml(xml) {
+  const segments = [];
+  const regex = /<text start="([^"]+)" dur="([^"]+)"[^>]*>([\s\S]*?)<\/text>/g;
+  let match;
+  while ((match = regex.exec(xml)) !== null) {
+    const text = decodeXmlEntities(match[3]);
+    if (!text) continue;
+    segments.push({ start: parseFloat(match[1]), duration: parseFloat(match[2]), text });
+  }
+  return segments;
+}
+
+function parseJson3Transcript(jsonStr) {
+  try {
+    const data = JSON.parse(jsonStr);
+    if (!data.events) return [];
+    const segments = [];
+    for (const ev of data.events) {
+      if (!ev.segs) continue;
+      const text = ev.segs.map(s => s.utf8 || '').join('').trim();
+      if (!text || text === '\n') continue;
+      segments.push({ start: (ev.tStartMs || 0) / 1000, duration: (ev.dDurationMs || 0) / 1000, text });
+    }
+    return segments;
+  } catch { return []; }
+}
+
+function fmtTime(sec) {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  return h > 0
+    ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    : `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function mergeToTranscript(segments) {
+  if (segments.length === 0) return '';
+  const lines = [];
+  let buf = '';
+  let bufStart = segments[0].start;
+  for (const seg of segments) {
+    if (buf === '') bufStart = seg.start;
+    buf += (buf ? ' ' : '') + seg.text;
+    if (buf.length >= 200 || /[。！？.!?]$/.test(buf)) {
+      lines.push(`[${fmtTime(bufStart)}] ${buf}`);
+      buf = '';
+    }
+  }
+  if (buf) lines.push(`[${fmtTime(bufStart)}] ${buf}`);
+  return lines.join('\n');
+}
+
+/**
+ * Fetch transcript locally using yt-dlp (Tier 1: captions, Tier 2: Whisper STT)
+ * @returns {{ transcript: string, lang: string, method: string }}
+ */
+function fetchTranscriptLocal(videoId, preferLang) {
+  console.log(`  ⏳ Fetching transcript for ${videoId}...`);
+
+  // Tier 1: Try yt-dlp for existing captions
+  try {
+    const jsonRaw = execSync(
+      `yt-dlp --dump-json --skip-download "https://www.youtube.com/watch?v=${videoId}" 2>/dev/null`,
+      { encoding: 'utf-8', timeout: 60000, maxBuffer: 10 * 1024 * 1024 }
+    );
+    const data = JSON.parse(jsonRaw);
+
+    // Check subtitles (manual first, then auto-generated)
+    const subs = data.subtitles || {};
+    const autoCaps = data.automatic_captions || {};
+
+    // Language priority: prefer Chinese variants, then English, then any
+    const langPriority = preferLang
+      ? [preferLang, 'zh', 'zh-Hans', 'zh-Hant', 'zh-Hans-zh', 'zh-Hant-zh', 'en']
+      : ['zh', 'zh-Hans', 'zh-Hant', 'zh-Hans-zh', 'zh-Hant-zh', 'en'];
+
+    let selectedUrl = null;
+    let selectedLang = '';
+    let isAuto = false;
+
+    // Try manual subtitles first
+    for (const lang of langPriority) {
+      if (subs[lang]) {
+        const json3 = subs[lang].find(f => f.ext === 'json3') || subs[lang].find(f => f.ext === 'srv1');
+        if (json3) { selectedUrl = json3.url; selectedLang = lang; break; }
+      }
+    }
+
+    // Then auto-generated
+    if (!selectedUrl) {
+      for (const lang of langPriority) {
+        if (autoCaps[lang]) {
+          const json3 = autoCaps[lang].find(f => f.ext === 'json3') || autoCaps[lang].find(f => f.ext === 'srv1');
+          if (json3) { selectedUrl = json3.url; selectedLang = lang; isAuto = true; break; }
+        }
+      }
+    }
+
+    // Fallback: any available subtitle
+    if (!selectedUrl) {
+      const allSubs = { ...subs, ...autoCaps };
+      for (const [lang, formats] of Object.entries(allSubs)) {
+        const json3 = formats.find(f => f.ext === 'json3') || formats.find(f => f.ext === 'srv1');
+        if (json3) { selectedUrl = json3.url; selectedLang = lang; isAuto = !subs[lang]; break; }
+      }
+    }
+
+    if (selectedUrl) {
+      console.log(`  📝 Found ${isAuto ? 'auto' : 'manual'} captions: ${selectedLang}`);
+      const body = execSync(
+        `curl -s "${selectedUrl}"`,
+        { encoding: 'utf-8', timeout: 30000 }
+      );
+
+      let segments = parseJson3Transcript(body);
+      if (segments.length === 0) segments = parseTranscriptXml(body);
+
+      if (segments.length > 0) {
+        const transcript = mergeToTranscript(segments);
+        console.log(`  ✓ Transcript: ${segments.length} segments, ${transcript.split('\n').length} lines`);
+        return { transcript, lang: selectedLang, method: isAuto ? 'yt-dlp-auto' : 'yt-dlp-manual' };
+      }
+    }
+
+    console.log(`  ⚠ No captions available via yt-dlp`);
+  } catch (e) {
+    console.warn(`  ⚠ yt-dlp failed: ${e.message}`);
+  }
+
+  // Tier 2: Whisper STT via Groq
+  const groqKey = process.env.GROQ_API_KEY;
+  if (!groqKey) {
+    console.log(`  ⚠ No GROQ_API_KEY set, skipping Whisper STT fallback`);
+    return { transcript: '', lang: '', method: 'none' };
+  }
+
+  try {
+    console.log(`  🎙 Downloading audio for Whisper STT...`);
+    const audioPath = path.join(require('os').tmpdir(), `yt-whisper-${videoId}.m4a`);
+
+    execSync(
+      `yt-dlp -f "ba[ext=m4a]/ba" --no-playlist -o "${audioPath}" "https://www.youtube.com/watch?v=${videoId}" 2>/dev/null`,
+      { timeout: 120000 }
+    );
+
+    if (!fs.existsSync(audioPath)) {
+      console.warn(`  ✗ Audio download failed`);
+      return { transcript: '', lang: '', method: 'none' };
+    }
+
+    const fileSizeMB = fs.statSync(audioPath).size / (1024 * 1024);
+    console.log(`  🎙 Audio: ${fileSizeMB.toFixed(1)} MB`);
+
+    if (fileSizeMB > 25) {
+      console.warn(`  ⚠ Audio too large for Groq Whisper (${fileSizeMB.toFixed(1)} MB > 25 MB limit), skipping`);
+      fs.unlinkSync(audioPath);
+      return { transcript: '', lang: '', method: 'none' };
+    }
+
+    // Call Groq Whisper API
+    const audioData = fs.readFileSync(audioPath);
+    const boundary = '----FormBoundary' + Date.now();
+    const payload = Buffer.concat([
+      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="audio.m4a"\r\nContent-Type: audio/mp4\r\n\r\n`),
+      audioData,
+      Buffer.from(`\r\n--${boundary}\r\nContent-Disposition: form-data; name="model"\r\n\r\nwhisper-large-v3-turbo\r\n--${boundary}\r\nContent-Disposition: form-data; name="response_format"\r\n\r\nverbose_json\r\n--${boundary}--\r\n`),
+    ]);
+
+    const tmpPayload = path.join(require('os').tmpdir(), `yt-whisper-payload-${videoId}.bin`);
+    fs.writeFileSync(tmpPayload, payload);
+
+    const whisperResult = execSync(
+      `curl -s -X POST "https://api.groq.com/openai/v1/audio/transcriptions" ` +
+      `-H "Authorization: Bearer ${groqKey}" ` +
+      `-H "Content-Type: multipart/form-data; boundary=${boundary}" ` +
+      `--data-binary "@${tmpPayload}"`,
+      { encoding: 'utf-8', timeout: 180000 }
+    );
+
+    fs.unlinkSync(audioPath);
+    fs.unlinkSync(tmpPayload);
+
+    const whisperData = JSON.parse(whisperResult);
+    if (whisperData.error) {
+      console.warn(`  ✗ Whisper error: ${whisperData.error.message || whisperData.error}`);
+      return { transcript: '', lang: '', method: 'none' };
+    }
+
+    // Build transcript from segments or text
+    let transcript = '';
+    const detectedLang = whisperData.language || 'zh';
+
+    if (whisperData.segments && whisperData.segments.length > 0) {
+      const segments = whisperData.segments.map(s => ({
+        start: s.start,
+        duration: s.end - s.start,
+        text: s.text.trim(),
+      })).filter(s => s.text);
+      transcript = mergeToTranscript(segments);
+      console.log(`  ✓ Whisper: ${segments.length} segments, lang=${detectedLang}`);
+    } else if (whisperData.text) {
+      transcript = whisperData.text;
+      console.log(`  ✓ Whisper: plain text, lang=${detectedLang}`);
+    }
+
+    return { transcript, lang: detectedLang, method: 'whisper-groq' };
+  } catch (e) {
+    console.warn(`  ✗ Whisper STT failed: ${e.message}`);
+    // Clean up temp files
+    try {
+      const audioPath = path.join(require('os').tmpdir(), `yt-whisper-${videoId}.m4a`);
+      if (fs.existsSync(audioPath)) fs.unlinkSync(audioPath);
+    } catch {}
+    return { transcript: '', lang: '', method: 'none' };
+  }
+}
+
 // ── Pull pending videos from KV ────────────────────────────────────────
 
 async function pullPending() {
@@ -102,6 +340,15 @@ async function pullPending() {
       continue;
     }
 
+    // If transcript is missing, try to fetch locally
+    if (!data.transcriptLang) {
+      const result = fetchTranscriptLocal(data.videoId);
+      if (result.transcript) {
+        data.markdown = injectTranscript(data.markdown, result);
+        data.transcriptLang = result.lang;
+      }
+    }
+
     fs.writeFileSync(filepath, data.markdown, 'utf-8');
     console.log(`  ✓ Written: ${filename} (${data.title})`);
     kvDelete(key);
@@ -110,6 +357,27 @@ async function pullPending() {
 
   console.log(`\nWrote ${written} source file(s) to wiki/sources/`);
   return written;
+}
+
+/** Inject transcript data into markdown content */
+function injectTranscript(markdown, transcriptResult) {
+  const { transcript, lang, method } = transcriptResult;
+  if (!transcript) return markdown;
+
+  // Update frontmatter transcript_lang
+  markdown = markdown.replace(/^transcript_lang: ".*"$/m, `transcript_lang: "${lang}"`);
+
+  // Replace empty transcript section
+  markdown = markdown.replace(
+    /## 逐字稿\n\n（無字幕可用）/,
+    `## 逐字稿\n\n${transcript}`
+  );
+
+  // Update ingest notes
+  markdown = markdown.replace(/- 字幕語言：無/, `- 字幕語言：${lang}（${method}）`);
+  markdown = markdown.replace(/- 可用字幕：無/, `- 可用字幕：${lang}`);
+
+  return markdown;
 }
 
 // ── Trigger single video ingest via API ────────────────────────────────
@@ -174,6 +442,60 @@ function seedChannels() {
   console.log(`Seeded ${data.channels.length} channel(s) to KV youtube:channels`);
 }
 
+// ── Backfill: re-fetch transcripts for existing sources ───────────────
+
+async function backfill(options = {}) {
+  console.log('Scanning existing YouTube sources for missing transcripts...\n');
+
+  const files = fs.readdirSync(SOURCES_DIR).filter(f => f.startsWith('youtube-') && f.endsWith('.md'));
+  const needsFix = [];
+
+  for (const file of files) {
+    const content = fs.readFileSync(path.join(SOURCES_DIR, file), 'utf-8');
+    const langMatch = content.match(/^transcript_lang: "(.*)"/m);
+    if (langMatch && langMatch[1] === '') {
+      const idMatch = content.match(/^youtube_id: "(.*)"/m);
+      if (idMatch) needsFix.push({ file, videoId: idMatch[1] });
+    }
+  }
+
+  if (needsFix.length === 0) {
+    console.log('All YouTube sources have transcripts. Nothing to backfill.');
+    return 0;
+  }
+
+  console.log(`Found ${needsFix.length} source(s) with missing transcripts:\n`);
+
+  let updated = 0;
+  let failed = 0;
+
+  for (const { file, videoId } of needsFix) {
+    console.log(`─── ${file} (${videoId}) ───`);
+    const filepath = path.join(SOURCES_DIR, file);
+    let content = fs.readFileSync(filepath, 'utf-8');
+
+    const result = fetchTranscriptLocal(videoId, options.lang);
+
+    if (result.transcript) {
+      content = injectTranscript(content, result);
+
+      // Update the "updated" date in frontmatter
+      const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' });
+      content = content.replace(/^updated: .+$/m, `updated: ${today}`);
+
+      fs.writeFileSync(filepath, content, 'utf-8');
+      console.log(`  ✓ Updated: ${file}\n`);
+      updated++;
+    } else {
+      console.error(`  ✗ No transcript available (method: ${result.method})\n`);
+      failed++;
+    }
+  }
+
+  console.log(`\nBackfill complete: ${updated} updated, ${failed} failed, ${needsFix.length} total`);
+  return updated;
+}
+
 // ── Main ───────────────────────────────────────────────────────────────
 
 async function main() {
@@ -186,24 +508,33 @@ async function main() {
     if (arg.startsWith('--lang=')) options.lang = arg.split('=')[1];
     else if (arg.startsWith('--pillar=')) options.pillar = arg.split('=')[1];
     else if (arg === '--force') options.force = true;
+    else if (arg === '--backfill') options.backfill = true;
     else if (arg === '--seed-channels') { seedChannels(); return; }
     else if (arg === '--help' || arg === '-h') {
       console.log(`Usage:
   node scripts/wiki-youtube-ingest.cjs                    Pull pending from KV
   node scripts/wiki-youtube-ingest.cjs <url|videoId>      Ingest single video
+  node scripts/wiki-youtube-ingest.cjs --backfill         Re-fetch missing transcripts
   node scripts/wiki-youtube-ingest.cjs --seed-channels    Upload channels.json to KV
 
 Options:
   --lang=zh-TW       Preferred transcript language
   --pillar=ai        Wiki pillar (ai|circular|faith|startup|life)
   --force            Re-ingest even if already done
-  --seed-channels    Seed data/youtube-channels.json to KV`);
+  --backfill         Scan existing sources, re-fetch empty transcripts
+  --seed-channels    Seed data/youtube-channels.json to KV
+
+Environment:
+  GROQ_API_KEY       Required for Whisper STT fallback (videos without captions)
+  FORMOSA_ADMIN_TOKEN  Required for single-video ingest via API`);
       return;
     }
     else positional.push(arg);
   }
 
-  if (positional.length > 0) {
+  if (options.backfill) {
+    await backfill(options);
+  } else if (positional.length > 0) {
     await triggerIngest(positional[0], options);
   } else {
     await pullPending();

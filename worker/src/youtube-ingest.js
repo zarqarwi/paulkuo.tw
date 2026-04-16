@@ -151,12 +151,23 @@ async function fetchVideoMeta(videoId, apiKey) {
 }
 
 // ── core: fetch transcript via Innertube (no API key needed) ───────────
+//
+// YouTube has progressively locked down Innertube clients. We try multiple
+// client types in order. If all fail, the caller falls back to metadata-only
+// and the CLI backfill uses yt-dlp + Whisper STT instead.
+
+const INNERTUBE_CLIENTS = [
+  { clientName: 'WEB', clientVersion: '2.20240313' },
+  { clientName: 'ANDROID', clientVersion: '20.10.38' },
+  { clientName: 'IOS', clientVersion: '20.10.4' },
+  { clientName: 'TVHTML5_SIMPLY_EMBEDDED_PLAYER', clientVersion: '2.0' },
+];
 
 async function fetchTranscript(videoId, preferLang) {
   // 1. Fetch watch page for INNERTUBE_API_KEY (retry on 429)
   const watchResp = await fetchWithRetry(`https://www.youtube.com/watch?v=${videoId}`, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
       'Accept-Language': 'en-US,en;q=0.9',
     }
   });
@@ -166,20 +177,42 @@ async function fetchTranscript(videoId, preferLang) {
   const apiKeyMatch = html.match(/"INNERTUBE_API_KEY":\s*"([a-zA-Z0-9_-]+)"/);
   const apiKey = apiKeyMatch ? apiKeyMatch[1] : 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
 
-  // 2. Innertube /player with ANDROID client
-  const innertubeResp = await fetch(`https://www.youtube.com/youtubei/v1/player?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      context: { client: { clientName: 'ANDROID', clientVersion: '20.10.38' } },
-      videoId,
-    }),
-  });
-  if (!innertubeResp.ok) throw new Error(`Innertube API: ${innertubeResp.status}`);
-  const innertubeData = await innertubeResp.json();
-  const captionTracks = innertubeData?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+  // 2. Try each Innertube client until one returns captionTracks
+  let captionTracks = [];
+  let clientUsed = '';
 
-  if (captionTracks.length === 0) return { transcript: '', lang: '', tracks: [] };
+  for (const client of INNERTUBE_CLIENTS) {
+    try {
+      const innertubeResp = await fetch(`https://www.youtube.com/youtubei/v1/player?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          context: { client },
+          videoId,
+        }),
+      });
+      if (!innertubeResp.ok) {
+        console.warn(`[fetchTranscript] ${client.clientName} returned ${innertubeResp.status} for ${videoId}`);
+        continue;
+      }
+      const data = await innertubeResp.json();
+      const tracks = data?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+      if (tracks.length > 0) {
+        captionTracks = tracks;
+        clientUsed = client.clientName;
+        break;
+      }
+    } catch (e) {
+      console.warn(`[fetchTranscript] ${client.clientName} error for ${videoId}: ${e.message}`);
+    }
+  }
+
+  if (captionTracks.length === 0) {
+    console.log(`[fetchTranscript] No captionTracks from any Innertube client for ${videoId}. Video may lack captions — CLI backfill (yt-dlp + Whisper) recommended.`);
+    return { transcript: '', lang: '', tracks: [] };
+  }
+
+  console.log(`[fetchTranscript] Got ${captionTracks.length} tracks via ${clientUsed} for ${videoId}`);
 
   // 3. Pick track
   let selected = captionTracks[0];
@@ -191,7 +224,7 @@ async function fetchTranscript(videoId, preferLang) {
   const trackUrl = selected.baseUrl.replace('&fmt=srv3', '');
   const transcriptResp = await fetch(trackUrl, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
     }
   });
   const body = await transcriptResp.text();
@@ -212,7 +245,7 @@ async function fetchTranscript(videoId, preferLang) {
 
 // ── build wiki source markdown ─────────────────────────────────────────
 
-function buildSourceMarkdown(videoId, meta, transcriptData) {
+function buildSourceMarkdown(videoId, meta, transcriptData, pillar) {
   const today = twDateStr();
   const durationMin = Math.round(meta.duration / 60);
   const slug = slugify(meta.title) || videoId;
@@ -221,7 +254,7 @@ function buildSourceMarkdown(videoId, meta, transcriptData) {
     '---',
     `title: "${meta.title.replace(/"/g, '\\"')}"`,
     'type: source',
-    'pillar: ai',
+    `pillar: ${pillar || 'ai'}`,
     'visibility: public',
     `created: ${today}`,
     `updated: ${today}`,
@@ -315,12 +348,7 @@ export async function handleYoutubeIngest(request, env) {
     }
 
     // Build markdown
-    const result = buildSourceMarkdown(videoId, meta, transcriptData);
-
-    // Override pillar if provided
-    if (pillar) {
-      result.markdown = result.markdown.replace(/^pillar: ai$/m, `pillar: ${pillar}`);
-    }
+    const result = buildSourceMarkdown(videoId, meta, transcriptData, pillar);
 
     // Store to KV for CLI pickup
     await env.TICKER_KV.put(`youtube:pending:${videoId}`, JSON.stringify({
@@ -435,11 +463,7 @@ export async function handleYoutubeChannelScan(env) {
             console.warn(`[youtube-scan] Transcript failed for ${videoId}: ${e.message}. Storing metadata-only.`);
             transcriptData = { transcript: '', lang: '', tracks: [] };
           }
-          const result = buildSourceMarkdown(videoId, meta, transcriptData);
-
-          if (ch.pillar) {
-            result.markdown = result.markdown.replace(/^pillar: ai$/m, `pillar: ${ch.pillar}`);
-          }
+          const result = buildSourceMarkdown(videoId, meta, transcriptData, ch.pillar);
 
           await env.TICKER_KV.put(`youtube:pending:${videoId}`, JSON.stringify({
             slug: result.slug,

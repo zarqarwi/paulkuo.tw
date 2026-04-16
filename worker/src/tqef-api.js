@@ -1145,7 +1145,7 @@ export async function handleTqefYoutubeTranscript(request, env) {
     // 1. Fetch YouTube watch page to extract INNERTUBE_API_KEY and title
     const watchResp = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
         'Accept-Language': 'en-US,en;q=0.9',
       }
     });
@@ -1164,27 +1164,37 @@ export async function handleTqefYoutubeTranscript(request, env) {
     const apiKeyMatch = html.match(/"INNERTUBE_API_KEY":\s*"([a-zA-Z0-9_-]+)"/);
     const apiKey = apiKeyMatch ? apiKeyMatch[1] : 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
 
-    // 2. Call Innertube /player with ANDROID client to get captionTracks
-    //    ANDROID client returns baseUrls without exp=xpe (no PoToken required)
-    const innertubeResp = await fetch(`https://www.youtube.com/youtubei/v1/player?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        context: { client: { clientName: 'ANDROID', clientVersion: '20.10.38' } },
-        videoId,
-      }),
-    });
+    // 2. Try multiple Innertube clients to get captionTracks
+    //    YouTube has locked down individual clients; we try several in sequence.
+    const clients = [
+      { clientName: 'WEB', clientVersion: '2.20240313' },
+      { clientName: 'ANDROID', clientVersion: '20.10.38' },
+      { clientName: 'IOS', clientVersion: '20.10.4' },
+      { clientName: 'TVHTML5_SIMPLY_EMBEDDED_PLAYER', clientVersion: '2.0' },
+    ];
 
-    if (!innertubeResp.ok) {
-      return jsonResponse({ error: `Innertube API error: ${innertubeResp.status}` }, 502, request);
+    let captionTracks = [];
+    for (const client of clients) {
+      try {
+        const innertubeResp = await fetch(`https://www.youtube.com/youtubei/v1/player?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ context: { client }, videoId }),
+        });
+        if (!innertubeResp.ok) continue;
+        const innertubeData = await innertubeResp.json();
+        const tracks = innertubeData?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+        if (tracks.length > 0) {
+          captionTracks = tracks;
+          break;
+        }
+      } catch (e) {
+        console.warn(`[youtube-transcript] ${client.clientName} failed for ${videoId}: ${e.message}`);
+      }
     }
 
-    const innertubeData = await innertubeResp.json();
-    const captionsRenderer = innertubeData?.captions?.playerCaptionsTracklistRenderer;
-    const captionTracks = captionsRenderer?.captionTracks || [];
-
     if (captionTracks.length === 0) {
-      return jsonResponse({ error: 'No captions available for this video', videoId, title }, 404, request);
+      return jsonResponse({ error: 'No captions available for this video (tried all Innertube clients)', videoId, title }, 404, request);
     }
 
     // 3. Build tracks list for frontend
