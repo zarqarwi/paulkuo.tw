@@ -396,11 +396,14 @@ https://paulkuo.tw/wiki/ai-education/
 https://paulkuo.tw/wiki/ai-embodiment/
 https://paulkuo.tw/wiki/ai-skill-methodology/
 https://paulkuo.tw/wiki/ask/
+https://paulkuo.tw/wiki/attention-time/
 https://paulkuo.tw/wiki/build-for-models/
 https://paulkuo.tw/wiki/builder-mindset/
+https://paulkuo.tw/wiki/content-moat/
 https://paulkuo.tw/wiki/degrowth-commons/
 https://paulkuo.tw/wiki/enterprise-ai-adoption/
 https://paulkuo.tw/wiki/faith-technology-dialogue/
+https://paulkuo.tw/wiki/harness-engineering/
 https://paulkuo.tw/wiki/heavy-tail-distribution/
 https://paulkuo.tw/wiki/human-ai-collaboration/
 https://paulkuo.tw/wiki/human-judgment-in-ai-era/
@@ -410,6 +413,7 @@ https://paulkuo.tw/wiki/one-person-team/
 https://paulkuo.tw/wiki/recursive-self-improvement/
 https://paulkuo.tw/wiki/skill-development/
 https://paulkuo.tw/wiki/steady-state-survival-trap/
+https://paulkuo.tw/wiki/tacit-knowledge/
 https://paulkuo.tw/zh-cn/
 https://paulkuo.tw/zh-cn/about/
 https://paulkuo.tw/zh-cn/articles/
