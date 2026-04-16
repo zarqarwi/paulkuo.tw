@@ -5,11 +5,11 @@ pillar: ai
 visibility: public
 created: 2026-04-16
 updated: 2026-04-16
-source_count: 2
+source_count: 3
 confidence: medium
 tags: [AI編碼代理, Harness工程, 前饋控制, 反饋控制, Claude Code]
 links_to: [tacit-knowledge, human-ai-collaboration]
-linked_from: [getnote-703240-ai-coding-harness-engineering, getnote-880568-cybernetics-homeostasis-tacit-knowledge]
+linked_from: [getnote-703240-ai-coding-harness-engineering, getnote-880568-cybernetics-homeostasis-tacit-knowledge, getnote-439768-talk-cheap-code-cheap]
 ---
 
 ## 摘要

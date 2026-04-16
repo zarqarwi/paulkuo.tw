@@ -5,11 +5,11 @@ pillar: ai
 visibility: public
 created: 2026-04-16
 updated: 2026-04-16
-source_count: 2
+source_count: 4
 confidence: medium
 tags: [隱性知識, 波蘭尼, 內穩態, 控制論, 人類判斷力]
 links_to: [harness-engineering, human-judgment-in-ai-era, human-ai-collaboration]
-linked_from: [getnote-880568-cybernetics-homeostasis-tacit-knowledge, getnote-703240-ai-coding-harness-engineering]
+linked_from: [getnote-880568-cybernetics-homeostasis-tacit-knowledge, getnote-703240-ai-coding-harness-engineering, getnote-867472-carrier-toilet-pope-ai-friction, getnote-966824-learning-as-meta-ability]
 ---
 
 ## 摘要
