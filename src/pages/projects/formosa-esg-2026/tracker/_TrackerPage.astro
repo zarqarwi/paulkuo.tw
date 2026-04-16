@@ -660,6 +660,7 @@ const prefix = LOCALE_PREFIX[lang];
   } catch(e) {}
   var gpsReady = false;
   var geoPermissionAlertedThisSession = false; // #144: show permission-denied UI only once per session
+  var lastGpsTimestamp = 0; // #177: heartbeat — last time watchPosition fired
 
   // ── GP-1: Periodic auto-track persist to localStorage ──
   var autoSaveCounter = 0;
@@ -672,7 +673,7 @@ const prefix = LOCALE_PREFIX[lang];
   function startAutoUpload(userId) {
     if (autoUploadTimer || !userId) return;
     autoUploadTimer = setInterval(function() {
-      var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+      var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded && !p.gap; });
       if (unsent.length === 0) return;
       // #168: Filter out stationary drift — only upload points with >= 50m movement
       var filtered = [];
@@ -774,6 +775,7 @@ const prefix = LOCALE_PREFIX[lang];
     window.__gpsWatchId = navigator.geolocation.watchPosition(
       function(pos) {
         gpsReady = true;
+        lastGpsTimestamp = Date.now(); // #177: heartbeat
         geoPermissionAlertedThisSession = false; // #144: reset flag if GPS recovers
         if (pulseEl) pulseEl.classList.add('active');
         if (checkinBtn) checkinBtn.style.display = 'inline-block';
@@ -2587,20 +2589,47 @@ const prefix = LOCALE_PREFIX[lang];
     setTimeout(function() { map.invalidateSize(); }, 100);
   }
 
-  // ── GP-7: visibilitychange — restart tracking, persist, flush queue ──
+  // ── GP-7: visibilitychange — suspend/resume GPS + timers (#177, #178) ──
   document.addEventListener('visibilitychange', function() {
     if (document.visibilityState === 'visible') {
-      if (!window.__gpsWatchId && lsGet('formosa_participant_status') !== 'completed') startGPSTracking();
+      // #177: Detect OS freeze — gap > 60s means GPS was silently killed
+      var gapSeconds = lastGpsTimestamp ? (Date.now() - lastGpsTimestamp) / 1000 : 0;
+      var wasOsFrozen = gapSeconds > 60;
+
+      // #177: Insert gap marker so frontend can draw dashed line over the gap
+      if (wasOsFrozen && gpsTrackPoints.length > 0) {
+        gpsTrackPoints.push({
+          lat: gpsTrackPoints[gpsTrackPoints.length - 1].lat,
+          lng: gpsTrackPoints[gpsTrackPoints.length - 1].lng,
+          datetime: new Date().toISOString(),
+          source: 'gap',
+          gap: true,
+          gap_seconds: Math.round(gapSeconds)
+        });
+      }
+
+      // #178: Restart GPS tracking (was cleared on hidden)
+      if (!window.__gpsWatchId && lsGet('formosa_participant_status') !== 'completed') {
+        startGPSTracking();
+        // #178: Toast — notify user GPS is back
+        var toastEl = document.getElementById('photoToast');
+        if (toastEl && wasOsFrozen) {
+          toastEl.textContent = '📍 GPS 追蹤已恢復';
+          toastEl.classList.add('show');
+          setTimeout(function() { toastEl.classList.remove('show'); }, 3000);
+        }
+      }
+
       persistAutoTrack();
       var userId = lineUserId || lsGet('formosa_user_id') || '';
       if (userId) flushCheckinQueue(userId);
-      // ── Issue #169: LIFF kills background timers — restart autoUploadTimer + flush unsent ──
-      if (userId && autoUploadTimer !== null) {
-        clearInterval(autoUploadTimer);
-        autoUploadTimer = null;
+
+      // ── Issue #169: Restart autoUploadTimer + flush unsent ──
+      if (userId) {
+        if (autoUploadTimer) { clearInterval(autoUploadTimer); autoUploadTimer = null; }
         startAutoUpload(userId);
         // Immediately flush any unsent points accumulated while in background
-        var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+        var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded && !p.gap; });
         var filtered = []; var ref = lastUploadedPt;
         for (var i = 0; i < unsent.length; i++) {
           if (!ref || haversine(ref.lat, ref.lng, unsent[i].lat, unsent[i].lng) >= 0.05) {
@@ -2620,7 +2649,14 @@ const prefix = LOCALE_PREFIX[lang];
         }
       }
     } else {
+      // #178: Going hidden — suspend GPS + timers to reduce resource usage
       persistAutoTrack();
+      if (window.__gpsWatchId) {
+        navigator.geolocation.clearWatch(window.__gpsWatchId);
+        window.__gpsWatchId = null;
+      }
+      if (autoUploadTimer) { clearInterval(autoUploadTimer); autoUploadTimer = null; }
+      if (autoSaveTimer) { clearInterval(autoSaveTimer); autoSaveTimer = null; }
     }
   });
 
@@ -2639,7 +2675,7 @@ const prefix = LOCALE_PREFIX[lang];
     // Use sendBeacon for track/sync if available (survives page close)
     var userId = lineUserId || lsGet('formosa_user_id') || '';
     if (userId && navigator.sendBeacon) {
-      var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded; });
+      var unsent = gpsTrackPoints.filter(function(p) { return !p._uploaded && !p.gap; });
       if (unsent.length > 0) {
         navigator.sendBeacon(API_BASE + '/api/formosa/track/sync', new Blob([JSON.stringify({
           user_id: userId,
