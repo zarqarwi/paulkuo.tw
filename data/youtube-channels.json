@@ -18,6 +18,18 @@
       "name": "林亦 LYi",
       "pillar": "ai",
       "lang": "zh-TW"
+    },
+    {
+      "handle": "@bestpartners",
+      "name": "Best Partners",
+      "pillar": "startup",
+      "lang": "zh-TW"
+    },
+    {
+      "handle": "@ycombinator",
+      "name": "Y Combinator",
+      "pillar": "startup",
+      "lang": "en"
     }
   ]
 }
