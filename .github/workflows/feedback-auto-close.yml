@@ -13,12 +13,12 @@ jobs:
     steps:
       - name: Extract feedback ID and PATCH
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ADMIN_TOKEN: ${{ secrets.FORMOSA_ADMIN_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          BODY=$(cat <<'BODYEOF'
-          ${{ github.event.issue.body }}
-          BODYEOF
-          )
+          # Read issue body at runtime via gh api — avoids shell expansion of untrusted content
+          BODY=$(gh api "repos/${{ github.repository }}/issues/${ISSUE_NUMBER}" --jq '.body')
           IDS=$(echo "$BODY" | grep -oP 'feedback-id:\s*\K\d+')
 
           for ID in $IDS; do
@@ -27,6 +27,6 @@ jobs:
               "https://api.paulkuo.tw/api/formosa/feedback/$ID" \
               -H "Content-Type: application/json" \
               -H "X-Admin-Token: $ADMIN_TOKEN" \
-              -d "{\"status\":\"fixed\",\"admin_note\":\"Auto-closed: Issue #${{ github.event.issue.number }} closed\"}")
+              -d "{\"status\":\"fixed\",\"admin_note\":\"Auto-closed: Issue #${ISSUE_NUMBER} closed\"}")
             echo "Response: $RESPONSE"
           done
