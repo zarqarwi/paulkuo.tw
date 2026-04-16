@@ -1898,5 +1898,25 @@
         "model": "claude-sonnet-4"
       }
     }
+  },
+  "california-sb253-supply-chain.md": {
+    "sourceHash": "01020b894936",
+    "translations": {
+      "en": {
+        "hash": "1b7423232104",
+        "translatedAt": "2026-04-16T12:05:38.836Z",
+        "model": "claude-sonnet-4"
+      },
+      "ja": {
+        "hash": "d20bea2dd85e",
+        "translatedAt": "2026-04-16T12:08:30.564Z",
+        "model": "claude-sonnet-4"
+      },
+      "zh-cn": {
+        "hash": "dabf3389c1c5",
+        "translatedAt": "2026-04-16T12:10:43.343Z",
+        "model": "claude-sonnet-4"
+      }
+    }
   }
 }
