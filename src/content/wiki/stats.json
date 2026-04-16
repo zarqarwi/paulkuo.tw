@@ -1,8 +1,8 @@
 {
-  "total_pages": 244,
+  "total_pages": 250,
   "by_type": {
     "concept": 26,
-    "source": 231,
+    "source": 237,
     "entity": 1
   },
   "by_pillar": {
@@ -15,20 +15,20 @@
   "by_visibility": {
     "internal": 69,
     "unknown": 9,
-    "public": 163
+    "public": 169
   },
   "by_source_type": {
     "article": 93,
-    "getnote": 118,
+    "getnote": 124,
     "concept": 26,
     "clip": 8,
     "entity": 1
   },
   "graph": {
-    "nodes": 244,
-    "edges": 479
+    "nodes": 250,
+    "edges": 487
   },
   "generated": "2026-04-16",
-  "total_nodes": 248,
-  "total_edges": 508
+  "total_nodes": 254,
+  "total_edges": 516
 }
