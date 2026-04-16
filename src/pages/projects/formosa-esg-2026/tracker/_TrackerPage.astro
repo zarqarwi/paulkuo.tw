@@ -425,10 +425,16 @@ const prefix = LOCALE_PREFIX[lang];
         <p style="margin-bottom:0.5rem;color:#aaa;font-size:0.72rem;">{t(lang, 'tracker_ui.photoPrivacyNote')}</p>
         <div class="photo-action-row">
           <button type="button" class="photo-btn photo-btn-camera" id="cameraBtnMini">📷 {t(lang, 'tracker_ui.takePhoto')}</button>
+          <button type="button" class="photo-btn photo-btn-gallery" id="galleryBtnMini">🖼️ 從相簿</button>
           <button type="button" class="photo-btn photo-btn-save" id="photoSaveBtn" disabled onclick="saveLastPhoto()">📥 {t(lang, 'tracker_ui.savePhoto')}</button>
         </div>
         <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" capture="environment" id="photoCameraMini" style="display:none">
+        <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" multiple id="photoGalleryMini" style="display:none">
         <div id="photoStatusMini" class="photo-status"></div>
+        <div id="photoLogSection" style="display:none;margin-top:0.5rem">
+          <button type="button" class="photo-log-toggle" id="photoLogToggle" style="background:none;border:none;color:#888;font-size:0.78rem;cursor:pointer;padding:0">📋 已記錄照片 ▾</button>
+          <div id="photoLogList" class="photo-log-list" style="display:none"></div>
+        </div>
       </div>
 
       <div class="checkin-progress" id="checkinProgress"></div>
@@ -1614,6 +1620,33 @@ const prefix = LOCALE_PREFIX[lang];
     statusEl.innerHTML = '<span class="photo-status-text">📷 已記錄 ' + cumulativePhotoCount + ' 張照片 <span class="photo-status-check">✓</span></span><span class="photo-status-thanks">感謝記錄這段旅程</span>';
   }
 
+  // #179: Photo log — persist metadata to localStorage so users can review what they processed
+  function addToPhotoLog(name, hasGPS) {
+    var log = JSON.parse(lsGet('formosa_photo_log') || '[]');
+    if (log.some(function(e) { return e.name === name; })) return;
+    log.push({ name: name, datetime: new Date().toISOString(), hasGPS: hasGPS });
+    if (log.length > 200) log = log.slice(-200);
+    lsSet('formosa_photo_log', JSON.stringify(log));
+  }
+
+  function renderPhotoLog() {
+    var log = JSON.parse(lsGet('formosa_photo_log') || '[]');
+    var section = document.getElementById('photoLogSection');
+    var list = document.getElementById('photoLogList');
+    if (!section || !list) return;
+    if (log.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    var html = '<div style="font-size:0.75rem;color:#888;max-height:200px;overflow-y:auto;margin-top:0.25rem">';
+    for (var i = log.length - 1; i >= 0; i--) {
+      var e = log[i];
+      var dt = e.datetime ? new Date(e.datetime).toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+      html += '<div style="padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05)">' +
+        (e.hasGPS ? '📍' : '📷') + ' ' + e.name.substring(0, 30) + ' <span style="color:#666">' + dt + '</span></div>';
+    }
+    html += '</div>';
+    list.innerHTML = html;
+  }
+
   // ── Toast helper ──
   function showPhotoToast(msg, duration) {
     var el = document.getElementById('photoToast');
@@ -1769,14 +1802,18 @@ const prefix = LOCALE_PREFIX[lang];
             source: 'photo',
             filename: file.name
           });
+          addToPhotoLog(file.name, true);
+        } else {
+          addToPhotoLog(file.name, false);
         }
-      } catch (e) { /* no GPS */ }
+      } catch (e) { addToPhotoLog(file.name, false); }
     }
 
     if (count > 0) {
       // Update cumulative count
       cumulativePhotoCount += count;
       lsSet('formosa_photo_count', cumulativePhotoCount);
+      renderPhotoLog();
 
       // GP-2: warn if no userId
       var userId = lineUserId || lsGet('formosa_user_id') || '';
@@ -1856,17 +1893,39 @@ const prefix = LOCALE_PREFIX[lang];
 
     var cameraBtn = document.getElementById('cameraBtnMini');
     var cameraInput = document.getElementById('photoCameraMini');
+    var galleryBtn = document.getElementById('galleryBtnMini');
+    var galleryInput = document.getElementById('photoGalleryMini');
     var statusMini = document.getElementById('photoStatusMini');
     if (cameraBtn && cameraInput) {
       cameraBtn.addEventListener('click', function() { cameraInput.click(); });
       cameraInput.addEventListener('change', function() {
         if (this.files.length > 0) handlePhotos(this.files, statusMini);
-        this.value = ''; // reset so same photo can re-trigger
+        this.value = '';
+      });
+    }
+    // #179: Gallery picker (no capture attribute — opens photo library)
+    if (galleryBtn && galleryInput) {
+      galleryBtn.addEventListener('click', function() { galleryInput.click(); });
+      galleryInput.addEventListener('change', function() {
+        if (this.files.length > 0) handlePhotos(this.files, statusMini);
+        this.value = '';
       });
     }
 
-    // Show existing photo count on page load
+    // #179: Photo log toggle
+    var photoLogToggle = document.getElementById('photoLogToggle');
+    var photoLogList = document.getElementById('photoLogList');
+    if (photoLogToggle && photoLogList) {
+      photoLogToggle.addEventListener('click', function() {
+        var isOpen = photoLogList.style.display !== 'none';
+        photoLogList.style.display = isOpen ? 'none' : 'block';
+        photoLogToggle.textContent = isOpen ? '📋 已記錄照片 ▾' : '📋 已記錄照片 ▴';
+      });
+    }
+
+    // Show existing photo count + log on page load
     updatePhotoStatusDisplay();
+    renderPhotoLog();
 
     // (Daily report loading removed — replaced by survey Q3-Q6)
   }
@@ -3510,6 +3569,8 @@ const prefix = LOCALE_PREFIX[lang];
   .photo-btn:active { transform: scale(0.97); }
   .photo-btn-camera { border-color: var(--accent-faith); color: var(--accent-faith); font-weight: 600; }
   .photo-btn-camera:hover { background: rgba(76,175,80,0.08); }
+  .photo-btn-gallery { border-color: #60a5fa; color: #60a5fa; font-weight: 600; }
+  .photo-btn-gallery:hover { background: rgba(96,165,250,0.08); }
   .photo-btn-save { border-color: #f59e0b; color: #f59e0b; font-weight: 600; font-size: 0.88rem; }
   .photo-btn-save:hover { background: rgba(245,158,11,0.08); }
   .photo-btn-save:disabled { opacity: 0.35; pointer-events: none; }
