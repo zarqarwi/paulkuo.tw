@@ -284,9 +284,9 @@
     <h1>Formosa ESG 2026<br>白沙屯媽祖進香 GPS 追蹤系統 — 專案開發紀錄</h1>
     <p class="subtitle">從概念驗證到萬人系統：簡述開發歷程</p>
     <div class="doc-meta">
-      <span>版本 1.1</span>
-      <span>涵蓋期間：2026/03/23 —</span>
-      <span>更新日期：2026/04/11</span>
+      <span>版本 1.2</span>
+      <span>涵蓋期間：2026/03/23 — 2026/04/17</span>
+      <span>更新日期：2026/04/17</span>
       <span>Formosa ESG 專案團隊</span>
     </div>
   </div>
@@ -295,15 +295,15 @@
 <!-- ═══════════ SUMMARY BAR ═══════════ -->
 <div class="summary-bar">
   <div class="summary-card">
-    <div class="number">5</div>
+    <div class="number">6</div>
     <div class="label">開發階段</div>
   </div>
   <div class="summary-card">
-    <div class="number">4</div>
-    <div class="label">壓力測試輪次</div>
+    <div class="number">5</div>
+    <div class="label">Pre-Launch Audit 輪次</div>
   </div>
   <div class="summary-card">
-    <div class="number">163+</div>
+    <div class="number">179+</div>
     <div class="label">已解決問題</div>
   </div>
   <div class="summary-card">
@@ -399,6 +399,18 @@
           <td>03/31–04/07</td>
           <td>問卷優化 Q16→Q10 + 權限系統 + 成本優化 Plan A + 上線前檢查</td>
           <td><span class="status status-done">完成</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">階段 5</span></td>
+          <td>04/08–11</td>
+          <td>Pre-Launch Audit 五輪完成 + 分眾推播 + Issue #155 自動同步儀表板</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">活動期</span></td>
+          <td>04/12–</td>
+          <td>起駕上線運維：熱修 #168/#171/#172 + 治理 v4.8→v4.12 + post-event branch 隔離</td>
+          <td><span class="status status-progress">進行中</span></td>
         </tr>
       </tbody>
     </table>
@@ -746,6 +758,94 @@
           <td>五輪 Pre-Launch Audit 全部完成 ✅ — 核心打卡路徑穩固、離線機制完整、無死路由</td>
           <td><span class="status status-done">完成</span></td>
         </tr>
+
+        <!-- Day 21 — 起駕日 -->
+        <tr>
+          <td rowspan="4"><strong>04/12</strong><br><span style="font-size:0.75rem;color:var(--amber)">第 21 天 — 起駕</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>🎉 白沙屯拱天宮起駕，系統正式上線運行（Worker 版本 8148bac5）</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>起駕日清場：D1 測試資料全清（users 143→0, gps 1140→0, surveys 20→0）+ KV gps: buffer 9,255 key bulk delete</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Feedback 治理 Phase A 完成：formosa-feedback skill 新增 Step 6.5 exit gate + session-handoff v4.4 reconciliation + 7 筆舊 triaging 全部 PATCH fixed</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Phase B batch-update.yml 上線：file-based trigger 方案（Chat 研究→Cowork 說帖→Code 實作→Cowork 驗收），commit 57024b2</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+
+        <!-- Day 22 -->
+        <tr>
+          <td rowspan="1"><strong>04/13</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">第 22 天</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #168 GPS 幽靈里程修復（commit 9160a69）— /track/sync 加 geofence + WHERE source != 'remote' 過濾；催生護欄 #13（新 endpoint 防護繼承）、session-handoff 升級 v4.8</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+
+        <!-- Day 23 -->
+        <tr>
+          <td rowspan="3"><strong>04/14</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">第 23 天</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #170 pushHours 幽靈部署事故：跨 repo 真相驗證失誤；催生護欄 #14 + Code 完成三態宣告規範，session-handoff 升級 v4.9</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #171 個人足跡頁碳欄位修復（commit 93fb621）— 綁錯 carbon_kg 欄位，已部署待 LIFF 實測</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>治理框架 Code-First 審計落地：session-handoff v4.9 整併 Code / Cowork 三態宣告、延遲觸發行為驗證</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
+
+        <!-- Day 24 -->
+        <tr>
+          <td rowspan="2"><strong>04/15</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">第 24 天</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Issue #172 網頁版/LINE 雙等級不同步修復（commit a389dd6）— 根因：localStorage 跨瀏覽器隔離 + Stats API fallback 陷阱（Math.max(len, 1) 對空陣列回 1）；衍生 #174 AuthGate bypass + #175 auto-close.yml injection</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Feedback 三筆直接回報分流：#177 GPS 彰化以南未記錄 / #178 LIFF 常駐影響 LINE 群+來電 / #179 拍照入口+我的相簿 — 全部 post-event label；確立活動期原則：靜默修復優於警示、門檻 = 純後台且零體感副作用才動</td>
+          <td><span class="status status-progress">排程中</span></td>
+        </tr>
+
+        <!-- Day 25 -->
+        <tr>
+          <td rowspan="2"><strong>04/16</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">第 25 天</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Cowork 巡查 + Code Formosa post-event batch fix：Batch 1 (#175 auto-close.yml injection) 進 main (0aeb496)；Batch 2+3 (#177/#178/#173/#174/#179) 於 fix/formosa-post-event branch 隔離，待活動後 merge+deploy</td>
+          <td><span class="status status-progress">隔離中</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Impact Fence（活動期程式碼圍籬）建立：🟢 Safe Zone（CI/CD）直接進 main / 🔴 Live Zone（前端+Worker）fix/formosa-post-event 隔離</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
+
+        <!-- Day 26 -->
+        <tr>
+          <td rowspan="2"><strong>04/17</strong><br><span style="font-size:0.75rem;color:var(--gray-400)">第 26 天</span></td>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>CI race condition 系統性修復（commit 70173b2）：seo-index.yml + ai-ready-opt.yml 加 concurrency group + 3-retry pull --rebase loop，根治 workflow_run 串連自我 race</td>
+          <td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td><span class="phase phase-ops">Ops</span></td>
+          <td>Cowork 治理 v4.12 落地：儀表板載體正名（Apple Notes→Issue #155 單一載體）；新增 Phase 版本沿革 v4.7→v4.12 + 護欄 #12–#14 沿革</td>
+          <td><span class="status status-done">完成</span></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -966,6 +1066,46 @@
           <td>#163</td><td>GPS 漂移 + 直線軌跡修復</td>
           <td>L2</td><td><span class="status status-deployed">已部署</span></td>
         </tr>
+        <tr>
+          <td>#168</td><td>GPS 幽靈里程（靜止用戶累積假 km）— geofence + source filter</td>
+          <td>L2</td><td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td>#170</td><td>pushHours 幽靈部署事故 — 跨 repo 真相驗證（催生護欄 #14）</td>
+          <td>L2</td><td><span class="status status-done">完成</span></td>
+        </tr>
+        <tr>
+          <td>#171</td><td>個人足跡頁 carbon_kg 欄位綁錯修復</td>
+          <td>L1</td><td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td>#172</td><td>網頁版／LINE 雙等級不同步（localStorage 隔離 + fallback 陷阱）</td>
+          <td>L2</td><td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td>#173</td><td>Dashboard 媽祖定位缺席</td>
+          <td>L1</td><td><span class="status status-progress">post-event branch</span></td>
+        </tr>
+        <tr>
+          <td>#174</td><td>AuthGate bypass 疑似</td>
+          <td>L2</td><td><span class="status status-progress">post-event branch</span></td>
+        </tr>
+        <tr>
+          <td>#175</td><td>auto-close.yml Expression injection — gh api 取代 shell heredoc</td>
+          <td>L1</td><td><span class="status status-deployed">已部署</span></td>
+        </tr>
+        <tr>
+          <td>#177</td><td>GPS 彰化以南未記錄（Vivo OriginOS 節電策略假說）</td>
+          <td>L1</td><td><span class="status status-progress">post-event branch</span></td>
+        </tr>
+        <tr>
+          <td>#178</td><td>LIFF 常駐影響 LINE 群+來電</td>
+          <td>L1</td><td><span class="status status-progress">post-event branch</span></td>
+        </tr>
+        <tr>
+          <td>#179</td><td>照片上傳找不到拍照入口 + 缺少我的相簿</td>
+          <td>L1</td><td><span class="status status-progress">post-event branch</span></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -1094,7 +1234,32 @@
 
   <div class="timeline-entry milestone">
     <div class="timeline-date" style="color: var(--amber);">04/12 — 起駕日</div>
-    <div class="timeline-content"><strong>白沙屯拱天宮出發。系統正式上線。</strong></div>
+    <div class="timeline-content"><strong>白沙屯拱天宮出發。系統正式上線（Worker 版本 8148bac5）。</strong>同日完成起駕清場（D1 + KV 歸零）與 Feedback 治理 Phase A + B。</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">04/13 — Issue #168 GPS 幽靈里程修復</div>
+    <div class="timeline-content">靜止用戶累積假 km 修復（geofence + source filter），催生護欄 #13、skill 升至 v4.8</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">04/14 — Issue #170 事故與治理升級</div>
+    <div class="timeline-content">pushHours 幽靈部署事故，催生護欄 #14「跨 repo 真相驗證」+ Code 三態宣告；session-handoff 升至 v4.9</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">04/15 — Issue #172 雙等級根因釐清</div>
+    <div class="timeline-content">localStorage 跨瀏覽器隔離 + fallback 陷阱修復；確立活動期兩條原則（靜默修復優於警示、部署門檻 = 純後台零體感副作用）</div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">04/16 — post-event branch 隔離</div>
+    <div class="timeline-content">Impact Fence 建立：🟢 Safe Zone 直接 main / 🔴 Live Zone 於 fix/formosa-post-event 隔離五項修復（#173/#174/#177/#178/#179）</div>
+  </div>
+
+  <div class="timeline-entry milestone">
+    <div class="timeline-date">04/17 — 活動期運維穩定</div>
+    <div class="timeline-content">CI race condition 系統性修復（concurrency group + pull --rebase retry）；Cowork 治理 v4.12 落地，儀表板載體正名為 Issue #155 單一事實來源</div>
   </div>
 </section>
 
@@ -1103,6 +1268,6 @@
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer class="doc-footer">
   <p>Formosa ESG 2026 — 白沙屯媽祖進香 GPS 追蹤系統</p>
-  <p>mazu.today &nbsp;|&nbsp; 本文檔版本 1.1 &nbsp;|&nbsp; 更新於 2026/04/11</p>
+  <p>mazu.today &nbsp;|&nbsp; 本文檔版本 1.2 &nbsp;|&nbsp; 更新於 2026/04/17</p>
 </footer>
 
