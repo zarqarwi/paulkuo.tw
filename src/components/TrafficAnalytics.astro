@@ -484,7 +484,11 @@
           var aiH = d.total > 0 ? (d.ai / d.total * h) : 0;
           var genH = h - aiH;
           var label = d.date.slice(5).replace('-', '/');
-          return '<div class="ta-bot-bar-col">' +
+          var byNameStr = d.byName && Object.keys(d.byName).length > 0
+            ? ' (' + Object.entries(d.byName).map(function(e) { return e[0] + '×' + e[1]; }).join(', ') + ')'
+            : '';
+          var titleAttr = d.date + ': AI ' + d.ai + ' / 一般 ' + d.generic + byNameStr;
+          return '<div class="ta-bot-bar-col" title="' + titleAttr + '">' +
             '<div class="ta-bot-bar-stack" style="height:' + h.toFixed(0) + 'px">' +
               '<div class="ta-bot-bar-ai" style="height:' + aiH.toFixed(0) + 'px"></div>' +
               '<div class="ta-bot-bar-gen" style="height:' + genH.toFixed(0) + 'px"></div>' +

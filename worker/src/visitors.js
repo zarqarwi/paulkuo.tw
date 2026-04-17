@@ -785,7 +785,7 @@ export async function aggregateBotAnalytics(env) {
       const raw = await env.TICKER_KV.get(`analytics:bot-visits:${dateStr}`);
       if (raw) {
         const parsed = JSON.parse(raw);
-        daily.unshift({ date: dateStr, total: parsed.total, ai: parsed.ai, generic: parsed.generic, estimated: parsed.estimated || 0, backfilled: !!parsed.backfilled });
+        daily.unshift({ date: dateStr, total: parsed.total, ai: parsed.ai, generic: parsed.generic, estimated: parsed.estimated || 0, backfilled: !!parsed.backfilled, byName: parsed.byName || {} });
         total30d.total += parsed.total;
         total30d.ai += parsed.ai;
         total30d.generic += parsed.generic;
@@ -800,13 +800,14 @@ export async function aggregateBotAnalytics(env) {
     } catch {}
   }
 
+  const classifiedTotal = Object.values(byNameAll).reduce((a, b) => a + b, 0);
   const topCrawlers = Object.entries(byNameAll)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15)
     .map(([name, count]) => ({
       name,
       count,
-      percent: total30d.total > 0 ? +(count / total30d.total * 100).toFixed(1) : 0,
+      percent: classifiedTotal > 0 ? +(count / classifiedTotal * 100).toFixed(1) : 0,
     }));
 
   const sum = (arr) => arr.reduce((acc, d) => ({
