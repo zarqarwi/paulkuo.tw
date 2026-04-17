@@ -1,3 +1,9 @@
+---
+name: wiki-ingest
+description: >
+  paulkuo.tw LLM Wiki 知識管線的 ingest 工作流程。當 Paul 要求處理 get_筆記、ingest 新內容到 wiki/sources/、提取 concepts / entities、更新 graph.json 與 stats.json、或掃描 wiki-ingest-pending.md 時觸發。執行單篇或批次 ingest，並依 visibility 規則判定是否去識別化。關鍵觸發詞：ingest、wiki 批次、concept 提取、wiki 來源、visibility 分類、wiki 新增。
+---
+
 # Wiki Ingest Skill
 
 > 觸發詞：wiki ingest、ingest 筆記、匯入 wiki、wiki 攝入、消化筆記、wiki 新增

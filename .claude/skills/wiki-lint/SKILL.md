@@ -1,3 +1,9 @@
+---
+name: wiki-lint
+description: >
+  paulkuo.tw LLM Wiki 的知識圖譜品質健檢工具。當 Paul 要求檢查 wiki 頁面品質、掃描 frontmatter 缺失、驗證 graph.json 結構完整性（孤立節點 / 斷裂 edge）、比對 stats.json 一致性、或跑定期 wiki audit 時觸發。只讀不寫，產出 wiki-lint 健檢報告。關鍵觸發詞：wiki lint、wiki 健檢、wiki 品質檢查、graph 檢查、知識圖譜檢查。
+---
+
 # Wiki Lint — 知識圖譜健檢 Skill
 
 > 觸發詞：wiki lint、wiki 健檢、wiki 品質檢查、wiki audit、知識圖譜檢查、graph 檢查
