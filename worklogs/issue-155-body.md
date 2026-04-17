@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-11（Cowork — R4 audit 完成，4 個 P1 全修 + deploy 876dddbd，0 個 P0）
+最後更新：2026-04-18（Cowork — 工作環境定義 rev2 落地 1100ccb + 0e3c43f，Exit Gate 5/5 PASS）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -30,6 +30,8 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-18 工作環境定義 rev2 落地 ✅（1100ccb + 0e3c43f）：Q-WE-1~9 全 9 題 Paul 拍板。docs/governance/working-environment.md Accepted，CLAUDE.md 加連結段落（245 行），session memory 建 project_working_environment.md。Exit Gate 5/5 PASS Cowork+Code
+- 04-18 session-handoff skill v5.0 主線 A+B 完工 ✅：路線 C''（不拆只整理），skill-schema-lint 5/5 PASS（ec71e17），retrospective-2026-04-18-v5-split-reversal.md 建立（78d3ec8）— 止「1085 vs 522」跨視窗錯誤數字傳遞踩坑 Code+Cowork
 - 04-11 R4 audit 完成 ✅：P0=0，P1=4（全修+deploy 876dddbd），P2=10（活動期間處理）。Fix-A stats rollback guard + Fix-B KV TTL 3→7天 + Fix-D multicast retry + Fix-C LINE 費用確認（$800→$1200 動態切換）Cowork+Code
 - 04-10 R3-fix 全部完成驗證通過 ✅：FIX-1 computeFilteredKm (58a9e09) + FIX-2 VALID_SOURCES (同 commit)，Worker deploy 174bace0，UserSync 驗證吳心恬 km=94.3 合理，endpoint 確認 POST /api/formosa/user/sync (body: line_user_id) Cowork+Code
 - 04-10 R3 audit 完成（資料品質&防禦韌性）：FIX-1 UserSync 噪音過濾缺失 [P0] + FIX-2 source 無白名單 [P1]，handoff 交 Code（021c291）Cowork
@@ -170,6 +172,30 @@ Corpus：219 頁 | Phase 0–4B ✅ 全完成 | 3 條自動化管線運行中
 **⚠️ 已知問題：**
 - [x] `governance-kv-seed.cjs` 第 20 行 `--remote` 參數在 CI 環境報錯 → ✅ 已修復 (be42206)
 - [ ] `governance-metrics-collector` 排程任務尚未首次執行（今天 10:33 首跑）
+
+---
+
+## 工作環境治理（Chat/Cowork/Code 三視窗）
+
+**SSOT 文件**：`docs/governance/working-environment.md`（rev2 Accepted 2026-04-18）
+
+| 主題 | 狀態 |
+|------|------|
+| §1 三視窗職責邊界 + 禁止事項 + Cowork commit 白名單 | ✅ rev2 |
+| §1.3.1 兩層記憶系統路徑區分（repo `.auto-memory/` vs session memory）| ✅ 2026-04-18 補註 |
+| §2 源頭事實清單 + F-ID 機制 + 兩層驗證防線 | ✅ rev2 |
+| §3 Handoff ADR 欄位升級（Status + Consequences）| ✅ rev2 |
+| §4 Skill/CLAUDE.md 三層長度規則（200 預警 / 800 觸發 / 900 硬）| ✅ rev2 |
+| §5 外部共識對照表（Anthropic + 業界 + 傳統工程）| ✅ rev2 |
+| §6.3 中期動作驗證（收斂日 2026-05-02）| ⏳ 進行中 |
+
+**收斂驗證（2026-05-02 前）：**
+- [ ] 下一份 handoff 自然套用 §3 Status + Consequences
+- [ ] v5.1 規劃 rev1 自然附源頭事實清單（F-ID）
+- [ ] CLAUDE.md 行數未再膨脹（目前 245 行，官方軟上限 200）
+
+**⚠️ 已知越界：**
+- [ ] CLAUDE.md 245 行已超官方 200 行軟上限 22%（F4）→ v5.1 視窗檢視是否抽部分內容獨立
 
 ---
 

@@ -1,10 +1,12 @@
 ---
 title: 工作環境定義 — Chat / Cowork / Code 三方職責與源頭事實規範
-version: rev2
+version: rev2.1
 date: 2026-04-18
 author: Cowork
-status: Accepted（Paul 拍板 Q-WE-1 ~ Q-WE-9）
+status: Accepted（Paul 拍板 Q-WE-1 ~ Q-WE-9，rev2.1 為實戰補註非新決策）
 supersedes: rev1（未 commit，2026-04-18 同日）
+amendments:
+  - rev2.1 (2026-04-18 同日實戰補註)：§1.2 表格拆分 repo 記憶 / session 記憶 / PENDING.md 三列；新增 §1.3.1「兩層記憶系統路徑區分」。補註依據：本日 handoff §2.3 誤寫 `.auto-memory/`，Code 落地時才發現應指 session memory 路徑。屬實戰踩坑補邊角案例，非推翻 Q-WE-1 ~ Q-WE-9 任何拍板。
 upstream:
   - docs/governance/retrospective-2026-04-18-v5-split-reversal.md
   - handoffs/cowork--session-handoff-v5-split-reassessment-2026-04-18.md
@@ -68,7 +70,9 @@ purpose: 定義三視窗職責邊界 + 規劃文件源頭事實規範 + handoff 
 | 寫 commit / push | ❌ | ⚠️（僅白名單路徑，見 §1.5） | ✅ |
 | 動 skill / 腳本 / schema | ❌ | ❌ | ✅ |
 | 寫 worklog 三維度 | ❌ | ✅（結 session 時） | ✅（Code 日報） |
-| 更新 MEMORY.md / PENDING.md | ❌ | ✅ | ⚠️（可寫但 Cowork 為主） |
+| 更新 repo MEMORY.md（`.auto-memory/`）| ❌ | ✅ | ⚠️（可寫但 Cowork 為主） |
+| 更新 session memory（Code session 記憶）| ❌ | ❌（無法寫入 Mac 本機）| ✅ |
+| 更新 `worklogs/PENDING.md` | ❌ | ✅ | ✅ |
 | 跑 lint / 跑測試 | ❌ | ⚠️（僅 sandbox 端） | ✅（ground truth） |
 | deploy 到 Cloudflare | ❌ | ❌ | ✅（或 Paul 手動） |
 | 推翻已拍板決策 | ❌ | ❌（見 §1.3 Cowork 禁止事項） | ❌ |
@@ -92,6 +96,24 @@ purpose: 定義三視窗職責邊界 + 規劃文件源頭事實規範 + handoff 
 - ❌ 自行寫 handoff 給下個視窗（handoff 是 Cowork 的事）
 - ❌ 自行決定 skill / 治理規範的結構性改動（需有 Cowork handoff 為根據）
 - ❌ 跳過 commit message `[影響: xxx]` 標注（影響共用模組時強制）
+
+### 1.3.1 兩層記憶系統的路徑區分（2026-04-18 補註）
+
+寫 handoff 時「更新 MEMORY.md」要先釐清是哪一層，否則 Code 會找不到檔案：
+
+| 層 | 路徑 | 用途 | 誰寫 |
+|---|------|------|------|
+| **Repo 記憶** | `.auto-memory/MEMORY.md`（repo 內）| 跨專案、進 git、隨 repo 搬遷 | Cowork / Code 都可 |
+| **Session 記憶** | `/Users/apple/.claude/projects/-Users-apple-Desktop/memory/`（Mac 本機，非 repo）| Code session 跨對話記憶 | 只有 Code 可（Cowork sandbox 無法寫入本機 Claude 設定目錄）|
+
+**Cowork 寫 Code handoff 時的判斷**：
+- 要「Code 在本機 session 記住這件事」→ 指 session memory 路徑
+- 要「下一個 Cowork / 跨專案的 Chat 也看得到」→ 指 repo `.auto-memory/`
+- 兩者都要 → handoff 分兩步寫清楚
+
+**本輪踩坑**：`handoffs/cowork--working-environment-deployment-2026-04-18.md` §2.3 原寫 `.auto-memory/` 但 Code 發現那應該寫 session memory 路徑（因為目的是讓 Code 跨對話記住），Code 在本機自行修正。未來寫類似 handoff 時明確寫「session memory」或「repo .auto-memory」，不要只寫「MEMORY.md」。
+
+---
 
 ### 1.4 跨視窗交接的三個關鍵點
 
