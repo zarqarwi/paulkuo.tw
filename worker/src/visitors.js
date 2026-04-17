@@ -959,6 +959,69 @@ export async function handleBotBackfill(request, env, corsHeadersFn) {
 }
 
 /**
+ * 一次性歷史回填：重讀每日 bucket 的 byName，用新三軌分類規則重算計數。
+ * GET /analytics/reclass?key=FORMOSA_ADMIN_TOKEN
+ */
+export async function handleReclassify(request, env, corsHeadersFn) {
+  const url = new URL(request.url);
+  const key = url.searchParams.get('key');
+  if (key !== env.FORMOSA_ADMIN_TOKEN) {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 403, headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) }
+    });
+  }
+
+  const nameToType = {};
+  for (const c of LLM_CRAWLERS)    nameToType[c.name] = 'llm';
+  for (const c of SEARCH_CRAWLERS) nameToType[c.name] = 'search';
+  for (const c of SEO_TOOLS)       nameToType[c.name] = 'seo_tool';
+
+  const now = new Date();
+  const results = [];
+
+  for (let i = 0; i < 35; i++) {
+    const d = new Date(now);
+    d.setUTCDate(d.getUTCDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const bucketKey = `analytics:bot-visits:${dateStr}`;
+
+    try {
+      const raw = await env.TICKER_KV.get(bucketKey);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+
+      if (parsed.backfilled) {
+        results.push({ date: dateStr, skipped: 'backfilled', total: parsed.total });
+        continue;
+      }
+
+      const byName = parsed.byName || {};
+      let llm = 0, search = 0, seo_tool = 0, generic = 0;
+      for (const [name, count] of Object.entries(byName)) {
+        const type = nameToType[name];
+        if      (type === 'llm')      llm      += count;
+        else if (type === 'search')   search   += count;
+        else if (type === 'seo_tool') seo_tool += count;
+        else                          generic  += count;
+      }
+
+      const updated = { ...parsed, llm, search, seo_tool, generic, ai: llm };
+      await env.TICKER_KV.put(bucketKey, JSON.stringify(updated), { expirationTtl: 86400 * 35 });
+
+      results.push({ date: dateStr, total: parsed.total, llm, search, seo_tool, generic, sumClasses: llm + search + seo_tool + generic });
+    } catch (e) {
+      results.push({ date: dateStr, error: e.message });
+    }
+  }
+
+  await aggregateBotAnalytics(env);
+
+  return new Response(JSON.stringify({ ok: true, reclassified: results.length, results }, null, 2), {
+    headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) }
+  });
+}
+
+/**
  * GET /visitors — 回傳 KV 裡的訪客數據
  */
 export async function handleVisitors(request, env, corsHeadersFn) {

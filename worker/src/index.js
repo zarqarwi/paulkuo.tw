@@ -25,7 +25,7 @@ import { handleFeedGet, handleFeedPush, syncSocialFeed, handleFeedSync } from '.
 import { handleCommentsGet, handleCommentCreate, handleCommentUpdate, handleCommentDelete, handleCommentLike, handleCommentsAdminRecent } from './comments.js';
 import { handleGoogleLogin, handleGoogleCallback, handleLineLogin, handleLineCallback, handleFacebookLogin, handleFacebookCallback, handleAuthMe, handleLogout, handleAdminMembers, handleValidateCode, handleAdminGetCodes, handleAdminCreateCode, handleAdminDeleteCode } from './auth.js';
 import { handleSocialPublish, handleSocialStatus, handleSocialRefresh } from './social.js';
-import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors, aggregateBotAnalytics, handleBotBackfill } from './visitors.js';
+import { fetchDailyVisitors, handleVisitors, handleAnalytics, handleAnalyticsBeacon, handleVisitBeacon, fetchAnalyticsOverview, fetchRumAnalytics, fetchDurationAnalytics, fetchZoneUniqueVisitors, aggregateBotAnalytics, handleBotBackfill, handleReclassify } from './visitors.js';
 import { handleTqefDashboard, handleTqefCorpus, handleTqefCorpusCreate, handleTqefCorpusImport, handleTqefCorpusUpdate, handleTqefCorpusDelete, handleTqefRounds, handleTqefRoundDetail, handleTqefRoundCompare, handleTqefEvalUpload, handleTqefFeedbackCreate, handleTqefFeedbackAdopt, handleTqefFeedbackList, handleTqefFeedbackReject, handleTqefFeedbackDefer, handleTqefMeetingExport, handleTqefMeetingExportsList, handleTqefMeetingExportEntries, handleTqefMeetingAdoptEntry, handleTqefMeetingArchive, handleTqefUploadText, handleTqefCorpusBatch, handleTqefUploadAudio, handleTqefSttStatus, handleTqefAudioCorrect, handleTqefAudioProxy, handleTqefYoutubeTranscript, handleTqefYoutubeCorpus } from './tqef-api.js';
 import { handleScorecardEvaluate, handleScorecardAdvise, handleScorecardSubmit, handleScorecardFeed, handleScorecardGetEval, handleScorecardBadge, handleScorecardHistory } from './scorecard.js';
 import { handleYoutubeIngest, handleYoutubeChannelScan } from './youtube-ingest.js';
@@ -274,6 +274,7 @@ async function handleRequest(request, env, ctx) {
   if (path === '/analytics/visit' && method === 'POST') return handleVisitBeacon(request, env, corsHeaders);
   if (path === '/analytics/beacon' && method === 'POST') return handleAnalyticsBeacon(request, env, corsHeaders);
   if (path === '/analytics/backfill' && method === 'GET') return handleBotBackfill(request, env, corsHeaders);
+  if (path === '/analytics/reclass' && method === 'GET') return handleReclassify(request, env, corsHeaders);
   if (path === '/feed' && method === 'GET') return handleFeedGet(request, env);
   if (path === '/feed/sync' && method === 'POST') return handleFeedSync(request, env);
   if (path === '/fitbit') { try { return jsonResponse(await fetchFitbitData(env.TICKER_KV, env), 200, request); } catch (e) { return jsonResponse({ error: e.message }, 500, request); } }
