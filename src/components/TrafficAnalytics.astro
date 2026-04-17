@@ -462,18 +462,21 @@
     var botData = data.botTraffic;
     if (botData && botData.total30d && botData.total30d.total > 0) {
       var bt = botData;
-      var AI_NAMES = ['GPTBot','ChatGPT','ClaudeBot','Claude','Anthropic','Google-Extended','Bytespider','PerplexityBot','Cohere','Meta','CCBot'];
+      var LLM_NAMES = ['GPTBot','ChatGPT','OAI-SearchBot','ClaudeBot','Claude','Anthropic','PerplexityBot','Perplexity-User','Bytespider','Cohere','Meta','CCBot','Google-Extended','Applebot-Extended','Amazonbot','YouBot','Diffbot'];
+      var SEARCH_NAMES = ['Googlebot','Bingbot','Applebot','DuckDuckBot','Baidu','Yandex','PetalBot','Sogou'];
+      var SEO_TOOL_NAMES = ['Ahrefs','Semrush','DataForSeo','Majestic','MegaIndex','BLEXBot','Serpstat'];
 
       function updateBotView(range) {
         var totals = range === 1 ? bt.total1d : range === 7 ? bt.total7d : bt.total30d;
         var sliced = range === 1 ? bt.daily.slice(-1) : range === 7 ? bt.daily.slice(-7) : bt.daily;
-        var aiPct = totals.total > 0 ? (totals.ai / totals.total * 100).toFixed(1) : 0;
+        var llmPct = totals.total > 0 ? ((totals.llm || 0) / totals.total * 100).toFixed(1) : 0;
 
         var botKpiHtml =
           '<div class="ta-bot-kpis">' +
-            '<div class="ak"><span class="ak-v" style="color:#f59e0b">' + fmt(totals.total) + '</span><span class="ak-l">Bot 總訪問</span></div>' +
-            '<div class="ak"><span class="ak-v" style="color:#ef4444">' + fmt(totals.ai) + '</span><span class="ak-l">AI Crawler (' + aiPct + '%)</span></div>' +
-            '<div class="ak"><span class="ak-v" style="color:#8b5cf6">' + fmt(totals.generic) + '</span><span class="ak-l">一般爬蟲</span></div>' +
+            '<div class="ak"><span class="ak-v" style="color:#ef4444">' + fmt(totals.llm || 0) + '</span><span class="ak-l">LLM 抓取 (' + llmPct + '%)</span></div>' +
+            '<div class="ak"><span class="ak-v" style="color:#8b5cf6">' + fmt(totals.search || 0) + '</span><span class="ak-l">搜尋引擎</span></div>' +
+            '<div class="ak"><span class="ak-v" style="color:#f59e0b">' + fmt(totals.seo_tool || 0) + '</span><span class="ak-l">SEO 工具</span></div>' +
+            '<div class="ak"><span class="ak-v" style="color:#94a3b8">' + fmt(totals.generic || 0) + '</span><span class="ak-l">其他爬蟲</span></div>' +
           '</div>';
 
         var maxBotDay = 1;
@@ -481,17 +484,21 @@
 
         var barsHtml = sliced.map(function(d) {
           var h = Math.max(2, (d.total / maxBotDay * 60));
-          var aiH = d.total > 0 ? (d.ai / d.total * h) : 0;
-          var genH = h - aiH;
+          var llmH    = d.total > 0 ? ((d.llm      || 0) / d.total * h) : 0;
+          var searchH = d.total > 0 ? ((d.search   || 0) / d.total * h) : 0;
+          var seoH    = d.total > 0 ? ((d.seo_tool || 0) / d.total * h) : 0;
+          var genH    = h - llmH - searchH - seoH;
           var label = d.date.slice(5).replace('-', '/');
           var byNameStr = d.byName && Object.keys(d.byName).length > 0
             ? ' (' + Object.entries(d.byName).map(function(e) { return e[0] + '×' + e[1]; }).join(', ') + ')'
             : '';
-          var titleAttr = d.date + ': AI ' + d.ai + ' / 一般 ' + d.generic + byNameStr;
+          var titleAttr = d.date + ': LLM ' + (d.llm||0) + ' / 搜尋 ' + (d.search||0) + ' / SEO工具 ' + (d.seo_tool||0) + ' / 其他 ' + (d.generic||0) + byNameStr;
           return '<div class="ta-bot-bar-col" title="' + titleAttr + '">' +
             '<div class="ta-bot-bar-stack" style="height:' + h.toFixed(0) + 'px">' +
-              '<div class="ta-bot-bar-ai" style="height:' + aiH.toFixed(0) + 'px"></div>' +
-              '<div class="ta-bot-bar-gen" style="height:' + genH.toFixed(0) + 'px"></div>' +
+              '<div style="height:' + llmH.toFixed(0)    + 'px;background:#ef4444"></div>' +
+              '<div style="height:' + searchH.toFixed(0) + 'px;background:#8b5cf6"></div>' +
+              '<div style="height:' + seoH.toFixed(0)    + 'px;background:#f59e0b"></div>' +
+              '<div style="height:' + genH.toFixed(0)    + 'px;background:#94a3b8"></div>' +
             '</div>' +
             (sliced.length <= 7 ? '<span class="ta-bot-bar-label">' + label + '</span>' : '') +
           '</div>';
@@ -499,8 +506,10 @@
 
         var chartHtml = '<div class="ta-bot-bars">' + barsHtml + '</div>' +
           '<div class="ta-bot-legend">' +
-            '<span class="ta-legend-item"><span class="ta-dot" style="background:#ef4444"></span>AI Crawler</span>' +
-            '<span class="ta-legend-item"><span class="ta-dot" style="background:#8b5cf6"></span>一般爬蟲</span>' +
+            '<span class="ta-legend-item"><span class="ta-dot" style="background:#ef4444"></span>LLM</span>' +
+            '<span class="ta-legend-item"><span class="ta-dot" style="background:#8b5cf6"></span>搜尋引擎</span>' +
+            '<span class="ta-legend-item"><span class="ta-dot" style="background:#f59e0b"></span>SEO 工具</span>' +
+            '<span class="ta-legend-item"><span class="ta-dot" style="background:#94a3b8"></span>其他</span>' +
           '</div>';
 
         var crawlerRows = '';
@@ -509,8 +518,11 @@
           crawlerRows = '<h4 class="ta-bot-sub">Top Crawlers (30d)</h4>' +
             bt.topCrawlers.slice(0, 10).map(function(c) {
               var barW = (c.percent / maxCrawlerPct * 100).toFixed(1);
-              var isAI = AI_NAMES.indexOf(c.name) >= 0;
-              var dotColor = isAI ? '#ef4444' : '#8b5cf6';
+              var dotColor;
+              if (LLM_NAMES.indexOf(c.name) >= 0)      dotColor = '#ef4444';
+              else if (SEARCH_NAMES.indexOf(c.name) >= 0)   dotColor = '#8b5cf6';
+              else if (SEO_TOOL_NAMES.indexOf(c.name) >= 0) dotColor = '#f59e0b';
+              else                                           dotColor = '#94a3b8';
               return '<div class="ta-bot-crawler-row">' +
                 '<span class="ta-ref-cat-dot" style="background:' + dotColor + '"></span>' +
                 '<span class="ta-page-name">' + c.name + '</span>' +
@@ -521,7 +533,7 @@
         }
 
         document.getElementById('taBotTraffic').innerHTML =
-          '<h4 class="ta-section-title">\u{1F916} AI / Bot \u6D41\u91CF</h4>' +
+          '<h4 class="ta-section-title">\u{1F916} Bot \u6D41\u91CF\uFF08\u4E09\u8ECC\uFF09</h4>' +
           botKpiHtml + chartHtml + crawlerRows;
       }
 
