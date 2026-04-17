@@ -231,3 +231,15 @@ Code 做事 → 自動寫 worklogs/ → Paul 開 Cowork → Cowork 讀 worklogs/
 1. 讀 `worklogs/PENDING.md`，確認有沒有跨 session 待辦
 2. 讀 `worklogs/` 最新 worklog，確認上次做到哪裡
 3. 不確定就問 Paul
+
+---
+
+## 工作環境定義（2026-04-18 rev2）
+
+三視窗職責邊界、源頭事實清單規範、Handoff ADR 欄位升級，全部收斂在：
+
+`docs/governance/working-environment.md`
+
+任何 major version 規劃 / 跨 session 踩坑處理 / handoff 模板升級，以那份文件為準。
+
+⚠️ 本檔（CLAUDE.md）目前 233 行，已超官方 200 行軟上限（見 working-environment.md §4.2 F4）。v5.1 視窗會檢視是否抽部分內容到 `docs/governance/` 獨立文件。
