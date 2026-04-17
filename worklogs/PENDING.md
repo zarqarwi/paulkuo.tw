@@ -105,3 +105,4 @@
 - [x] 🟡 跨專案 smoke test 缺漏：cd2422a, e2fcd8f, 7d7e85d, c0b86b7, 8be165c → ✅ 2026-04-16 Cowork 補驗全部 200 OK（主站/Wiki/Formosa/ACP/TQEF）
 - [x] 🟡 跨專案影響待驗：73e3546 → ✅ 2026-04-16 Cowork 補驗，全部子專案 API 正常，近 3 天 scanner 無異常
 - [x] 🟡 跨專案 smoke test 缺漏：851dd58 governance Phase 3 → ✅ 已部署，Dashboard 200 OK，scanner daily audit 正常運行
+- [ ] 🟡 跨專案 smoke test 缺漏：5c58ee02（paulkuo-main, llm-wiki） → Code (auto-scanner 2026-04-17)
