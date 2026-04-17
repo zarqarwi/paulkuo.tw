@@ -1,0 +1,23 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "llm-wiki",
+  "date": "2026-04-16",
+  "session_type": "auto",
+  "model": "n/a",
+  "size": "auto",
+  "outputs": {
+    "commits": 26,
+    "files_changed": 0,
+    "lines_added": 0,
+    "lines_removed": 0,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": false
+  },
+  "custom": {
+    "concepts_count": 32,
+    "corpus_pages": 269
+  },
+  "automation_changes": [],
+  "notes": "自動收集 by governance-metrics-collector。26 commits: wiki batch 1/1.5/2A/2B ingest (23 sources), 6 個新 concept (personal-knowledge-system/learning-as-meta-skill/gpu-economics/ai-capabilities-benchmark/software-disruption/token-economics), Ask UI Perplexity 風格改版, YouTube transcript pipeline 修復 (yt-dlp+Whisper fallback), stats/graph 多次 rebuild, 多份 handoff/worklog。files_changed 無法從 commit message 精確取得，設為 0。"
+}
