@@ -14,6 +14,12 @@
 
 ## 待 Code 執行
 
+- [ ] 🟢 跑 `node scripts/governance-kv-seed.cjs` 補 Dashboard 數字 → Code / Sonnet (2026-04-18)
+  - 完整 handoff：`handoffs/cowork--governance-kv-reseed-2026-04-18.md`
+  - 背景：04-17 已補完 metrics 檔（commit `bf0705b`），但 KV 沒重 seed，Dashboard 數字錯
+  - 白沙屯零風險（Cowork 已偵查確認，只寫 `gov:*` prefix）
+  - 不需 redeploy Worker；完成後驗 `/governance/` 無痕視窗 hard refresh
+
 - [x] 🟢 Commit design system 文件 + worklog 變更 → ✅ 已完成 (8363e60, 2026-04-14 18:11)
 
 - [x] 🟢 分批 commit 累積變更（~100 檔案）→ ✅ 已完成 5 批 commits (453b20a→abb6390, 2026-04-14 18:20)
