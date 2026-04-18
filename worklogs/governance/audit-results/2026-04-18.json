@@ -1,0 +1,33 @@
+{
+  "$schema": "audit-result-v1",
+  "date": "2026-04-18",
+  "scan_range": "2026-04-15 ~ 2026-04-18",
+  "total_commits_scanned": 86,
+  "flagged": [
+    {
+      "hash": "5c58ee02",
+      "message": "fix: YouTube transcript pipeline — yt-dlp + Whisper fallback, backfill 4/23 sources [影響: Wiki]",
+      "date": "2026-04-16",
+      "shared_files": [
+        "worker/src/youtube-ingest.js"
+      ],
+      "affected_projects": [
+        "paulkuo-main",
+        "llm-wiki"
+      ],
+      "risk_level": "shared_modules",
+      "has_tag": true,
+      "has_smoke_test": false
+    }
+  ],
+  "summary": {
+    "total_flagged": 1,
+    "missing_tags": 0,
+    "missing_smoke_tests": 1,
+    "by_risk_level": {
+      "critical": 0,
+      "shared_modules": 1,
+      "ai_ready_auto": 0
+    }
+  }
+}
