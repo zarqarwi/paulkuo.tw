@@ -85,27 +85,51 @@ v5.0 原規劃拆三份，基於「1086 行」假設。實際驗證後源檔 522
 
 ### 鐵律
 
-1. **程式碼修改一律交 Code。** Cowork 不直接改程式碼，超過 5KB 的 GitHub 檔案操作不碰（2026-03-31 截斷事故教訓）。
+護欄依主題分四組：**A 委託原則** / **B 工具失真** / **C 驗證原則** / **D Context 管理**。命名規則見本節末。
 
-2. **含程式碼常數的文件，流程是 Code dump → Cowork 排版。** Cowork 不自己讀 code 來填常數。等級門檻、碳排係數、rate limit 數值等，一律由 Code 先匯出，Cowork 只負責排版成文件。如果必須引用常數，標註「待 Code 驗證」直到確認。
+#### A 委託原則
 
-3. **對話超過 30-40 輪來回，或一次交叉比對超過 5 份文件，準備開新視窗。** Context 衰減會讓早期的精確資訊變模糊，增加幻覺風險。把結論寫進 worklog 或 memory，讓新視窗接手。
+1. **A1 — 程式碼修改一律交 Code。** Cowork 不直接改程式碼，超過 5KB 的 GitHub 檔案操作不碰。（2026-03-31 截斷事故教訓）
 
-4. **任何「完成/未完成」的狀態判斷，一律現場查 git log，不從記憶回答。** Memory 只記「為什麼」和「怎麼做」，不記「做了沒有」。完成與否，每次現場查。
+2. **A2 — 含程式碼常數的文件，流程是 Code dump → Cowork 排版。** Cowork 不自己讀 code 來填常數。等級門檻、碳排係數、rate limit 數值等，一律由 Code 先匯出，Cowork 只負責排版成文件。如果必須引用常數，標註「待 Code 驗證」直到確認。
 
-5. **Cowork 不做自我驗證迴圈。** Cowork 產出的文件 A，不能拿文件 A 當基準去驗證文件 B。要驗就查原始碼或交 Code 驗。（2026-04-04 幻值事件根因）
+#### B 工具失真
 
-6. **Cowork 視窗切換時必須持久化。** 收到 Code 的完成回報後，立刻寫進 worklog 或更新 memory。不能只在對話裡確認就算 — 下一個視窗看不到這個對話。
+3. **B1 — GitHub MCP 大檔案截斷意識。** Cowork 用 GitHub MCP 讀超過 1000 行的檔案可能被截斷。如果搜尋結果是「找不到」，不能判定為「不存在」，要標記為「未確認，需 Code 用本機 grep 驗證」。（2026-04-04 RFC #100 誤判事件教訓）
 
-7. **偵察先行，行動在後。** Cowork 開給 Code 的工單，第一步永遠是 Step 0 偵察（grep / git log / PRAGMA），不是直接改 code。
+4. **B2 — GitHub API 回傳結果要確認語義。** API 有回傳結果 ≠ 結果的意思是你想的。例如 `list_commits(path=某檔案)` 回傳的是「tree 包含該檔案的 commits」，不是「改動該檔案的 commits」。要確認因果關係，必須查 diff。（2026-04-05 事故教訓）
 
-8. **GitHub MCP 大檔案截斷風險。** Cowork 用 GitHub MCP 讀超過 1000 行的檔案可能被截斷。如果搜尋結果是「找不到」，不能判定為「不存在」，要標記為「未確認，需 Code 用本機 grep 驗證」。（2026-04-04 RFC #100 誤判事件教訓）
+5. **B3 — Sandbox ≠ Repo，涉及 repo 檔案一律用 filesystem MCP 讀 Paul 電腦。** Cowork 的 sandbox 掛載可能是 repo 的子集或過期快照。在開始任何涉及 repo 檔案的分析或編輯前，必須用 `mcp__filesystem__read_file` 或 `mcp__filesystem__list_directory` 讀取 Paul 電腦上的實際 repo（路徑見各專案 Project Instructions）。**絕對不要基於 sandbox 的檔案列表做判斷。**（2026-04-06 Wiki Phase 4 事故教訓：sandbox 只有 10 個 concept，repo 有 17 個，導致整份分析無效）
 
-9. **GitHub API 回傳結果要確認語義。（v4.1 新增）** API 有回傳結果 ≠ 結果的意思是你想的。例如 `list_commits(path=某檔案)` 回傳的是「tree 包含該檔案的 commits」，不是「改動該檔案的 commits」。要確認因果關係，必須查 diff。（2026-04-05 事故教訓）
+6. **B4 — 絕對不使用 Apple Notes 存取任何專案狀態。** 儀表板已永久遷移至 GitHub Issue。Apple Notes MCP 僅在非專案用途（個人筆記）時才可使用。
 
-10. **Sandbox ≠ Repo，涉及 repo 檔案一律用 filesystem MCP 讀 Paul 電腦。（v4.2 新增）** Cowork 的 sandbox 掛載可能是 repo 的子集或過期快照。在開始任何涉及 repo 檔案的分析或編輯前，必須用 `mcp__filesystem__read_file` 或 `mcp__filesystem__list_directory` 讀取 Paul 電腦上的實際 repo（路徑見各專案 Project Instructions）。**絕對不要基於 sandbox 的檔案列表做判斷。**（2026-04-06 Wiki Phase 4 事故教訓：sandbox 只有 10 個 concept，repo 有 17 個，導致整份分析無效）
+#### C 驗證原則
 
-11. **絕對不使用 Apple Notes 存取任何專案狀態。（v4.8 新增）** 儀表板已永久遷移至 GitHub Issue。Apple Notes MCP 僅在非專案用途（個人筆記）時才可使用。
+7. **C1 — 任何「完成/未完成」的狀態判斷，一律現場查 git log，不從記憶回答。** Memory 只記「為什麼」和「怎麼做」，不記「做了沒有」。完成與否，每次現場查。
+
+8. **C2 — Cowork 不做自我驗證迴圈。** Cowork 產出的文件 A，不能拿文件 A 當基準去驗證文件 B。要驗就查原始碼或交 Code 驗。（2026-04-04 幻值事件根因）
+
+9. **C3 — 偵察先行，行動在後。** Cowork 開給 Code 的工單，第一步永遠是 Step 0 偵察（grep / git log / PRAGMA），不是直接改 code。
+
+10. **C4 — 陰性結果結論節制。（v5.1 新增）** 查無 ≠ 不存在。grep / search / list 回傳空結果時，不可直接下「X 不存在」結論，須交叉驗證（換工具 / 換關鍵字 / 換資料源）或標「未確認」。（2026-04-17 Wiki KV seed 誤判事件教訓）
+
+11. **C5 — SSoT 變更後下游重驗。（v5.1 新增）** Single Source of Truth 被修改後，所有依賴該 SSoT 的下游產物（報告、dashboard、衍生文件）必須重新驗證，不得沿用舊結論。（2026-04-17 SSoT 變更案教訓）
+
+#### D Context 管理
+
+12. **D1 — 對話超過 30-40 輪來回，或一次交叉比對超過 5 份文件，準備開新視窗。** Context 衰減會讓早期的精確資訊變模糊，增加幻覺風險。把結論寫進 worklog 或 memory，讓新視窗接手。
+
+13. **D2 — Cowork 視窗切換時必須持久化。** 收到 Code 的完成回報後，立刻寫進 worklog 或更新 memory。不能只在對話裡確認就算——下一個視窗看不到這個對話。
+
+#### 命名規則（v5.1 起生效）
+
+從 v5.1 起，新增或調整護欄編號必須遵循：
+
+- **主題碼開頭**：A / B / C / D 擇一；若開新主題（例如 E / F），須在本節先定義主題代碼與涵義
+- **序號遞增**：主題碼後接該主題當前最大序號 + 1
+- **不再使用流水號** `#N`（舊流水號已全面退休）
+- **退休編號不得回收**：若某條護欄失效，保留編號但標 `[retired]`，不得將該編號指派給新條目
+- **修訂不升編號**：同一條規則的內容調整不改變編號，只在 CHANGELOG.md 記錄修訂
 
 ### Cowork 適合做的
 - 文件產出（但常數由 Code 提供）
