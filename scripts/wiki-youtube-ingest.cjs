@@ -26,6 +26,34 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
+
+// ── .env loader (zero-dep) ─────────────────────────────────────────────
+// 自動讀取專案根目錄的 .env，讓 GROQ_API_KEY 等 secret 不用每次手動 source。
+// 只設定「尚未存在」的變數，避免覆蓋 shell 已匯出的值。
+(function loadDotEnv() {
+  const envPath = path.join(PROJECT_ROOT, '.env');
+  if (!fs.existsSync(envPath)) return;
+  try {
+    const raw = fs.readFileSync(envPath, 'utf-8');
+    for (const rawLine of raw.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith('#')) continue;
+      const eq = line.indexOf('=');
+      if (eq <= 0) continue;
+      const key = line.slice(0, eq).trim();
+      let val = line.slice(eq + 1).trim();
+      // 去掉成對的外層引號
+      if ((val.startsWith('"') && val.endsWith('"')) ||
+          (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+      }
+      if (!(key in process.env)) process.env[key] = val;
+    }
+  } catch (err) {
+    console.warn(`[dotenv] failed to load ${envPath}: ${err.message}`);
+  }
+})();
+
 const SOURCES_DIR = path.join(PROJECT_ROOT, 'src', 'content', 'wiki', 'sources');
 const NAMESPACE_ID = 'c066a2fd7942494c8ead37cc518b191b';
 const API_BASE = 'https://api.paulkuo.tw';
@@ -244,20 +272,48 @@ function fetchTranscriptLocal(videoId, preferLang) {
       return { transcript: '', lang: '', method: 'none' };
     }
 
-    const fileSizeMB = fs.statSync(audioPath).size / (1024 * 1024);
+    let fileSizeMB = fs.statSync(audioPath).size / (1024 * 1024);
     console.log(`  🎙 Audio: ${fileSizeMB.toFixed(1)} MB`);
 
-    if (fileSizeMB > 25) {
-      console.warn(`  ⚠ Audio too large for Groq Whisper (${fileSizeMB.toFixed(1)} MB > 25 MB limit), skipping`);
-      fs.unlinkSync(audioPath);
-      return { transcript: '', lang: '', method: 'none' };
+    // 超過 Groq 25 MB 上限時，用 ffmpeg 壓成 mono 16 kHz 32 kbps opus。
+    // Whisper 模型本身就是 16 kHz mono，低 bitrate 幾乎無辨識率損失。
+    // 30 min 影片壓完約 7 MB。
+    let audioPathFinal = audioPath;
+    if (fileSizeMB > 24) {
+      try {
+        console.log(`  🎙 Audio too large (${fileSizeMB.toFixed(1)} MB), compressing with ffmpeg...`);
+        const compressedPath = path.join(require('os').tmpdir(), `yt-whisper-${videoId}.ogg`);
+        execSync(
+          `ffmpeg -y -i "${audioPath}" -ac 1 -ar 16000 -c:a libopus -b:a 32k "${compressedPath}" 2>/dev/null`,
+          { timeout: 180000 }
+        );
+        if (!fs.existsSync(compressedPath)) throw new Error('compressed file missing');
+        const newSizeMB = fs.statSync(compressedPath).size / (1024 * 1024);
+        console.log(`  🎙 Compressed: ${newSizeMB.toFixed(1)} MB (opus mono 16 kHz 32k)`);
+        // 原檔拿掉，換指向壓縮版
+        fs.unlinkSync(audioPath);
+        audioPathFinal = compressedPath;
+        fileSizeMB = newSizeMB;
+        if (fileSizeMB > 25) {
+          console.warn(`  ⚠ Even after compression (${fileSizeMB.toFixed(1)} MB > 25 MB), skipping`);
+          fs.unlinkSync(audioPathFinal);
+          return { transcript: '', lang: '', method: 'none' };
+        }
+      } catch (ce) {
+        console.warn(`  ✗ ffmpeg compression failed: ${ce.message}`);
+        if (fs.existsSync(audioPath)) fs.unlinkSync(audioPath);
+        return { transcript: '', lang: '', method: 'none' };
+      }
     }
 
     // Call Groq Whisper API
-    const audioData = fs.readFileSync(audioPath);
+    const audioData = fs.readFileSync(audioPathFinal);
+    const isOgg = audioPathFinal.endsWith('.ogg');
+    const uploadFilename = isOgg ? 'audio.ogg' : 'audio.m4a';
+    const uploadContentType = isOgg ? 'audio/ogg' : 'audio/mp4';
     const boundary = '----FormBoundary' + Date.now();
     const payload = Buffer.concat([
-      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="audio.m4a"\r\nContent-Type: audio/mp4\r\n\r\n`),
+      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${uploadFilename}"\r\nContent-Type: ${uploadContentType}\r\n\r\n`),
       audioData,
       Buffer.from(`\r\n--${boundary}\r\nContent-Disposition: form-data; name="model"\r\n\r\nwhisper-large-v3-turbo\r\n--${boundary}\r\nContent-Disposition: form-data; name="response_format"\r\n\r\nverbose_json\r\n--${boundary}--\r\n`),
     ]);
@@ -270,10 +326,10 @@ function fetchTranscriptLocal(videoId, preferLang) {
       `-H "Authorization: Bearer ${groqKey}" ` +
       `-H "Content-Type: multipart/form-data; boundary=${boundary}" ` +
       `--data-binary "@${tmpPayload}"`,
-      { encoding: 'utf-8', timeout: 180000 }
+      { encoding: 'utf-8', timeout: 180000, maxBuffer: 20 * 1024 * 1024 }
     );
 
-    fs.unlinkSync(audioPath);
+    fs.unlinkSync(audioPathFinal);
     fs.unlinkSync(tmpPayload);
 
     const whisperData = JSON.parse(whisperResult);
@@ -302,10 +358,12 @@ function fetchTranscriptLocal(videoId, preferLang) {
     return { transcript, lang: detectedLang, method: 'whisper-groq' };
   } catch (e) {
     console.warn(`  ✗ Whisper STT failed: ${e.message}`);
-    // Clean up temp files
+    // Clean up temp files (可能是 .m4a 原檔或 .ogg 壓縮檔)
     try {
-      const audioPath = path.join(require('os').tmpdir(), `yt-whisper-${videoId}.m4a`);
-      if (fs.existsSync(audioPath)) fs.unlinkSync(audioPath);
+      for (const ext of ['.m4a', '.ogg']) {
+        const p = path.join(require('os').tmpdir(), `yt-whisper-${videoId}${ext}`);
+        if (fs.existsSync(p)) fs.unlinkSync(p);
+      }
     } catch {}
     return { transcript: '', lang: '', method: 'none' };
   }
