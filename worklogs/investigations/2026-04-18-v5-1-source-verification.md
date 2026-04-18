@@ -29,10 +29,21 @@ $ wc -l .claude/skills/*/SKILL.md 2>/dev/null | sort -rn
 
 ```
 $ grep -rnE "護欄\s*#[0-9]+|鐵律\s*#[0-9]+" worklogs/ handoffs/ docs/governance/ 2>/dev/null | wc -l
-0
+      42
 
 $ grep -rhoE "#[0-9]+" <(grep -rE "護欄\s*#[0-9]+|鐵律\s*#[0-9]+" worklogs/ handoffs/ docs/governance/ 2>/dev/null) | sort -u
-（無輸出，沒有符合的行）
+#1
+#11
+#12
+#13
+#14
+#15
+#16
+#17
+#170
+#18
+#3
+#4
 
 $ grep -cE "^#### #[0-9]+|^### #[0-9]+|^## #[0-9]+" .claude/skills/session-handoff/SKILL.md
 0
@@ -55,7 +66,15 @@ drwxr-xr-x@ 19 apple  staff    608 Apr 18 05:52 ..
 -rw-------   1 apple  staff  21662 Apr 18 06:16 working-environment.md
 
 $ grep -rlE "跨.?Cowork|撞車|cross.cowork|collision" worklogs/ docs/governance/ handoffs/ 2>/dev/null
-（無輸出，沒有符合的檔案）
+worklogs/worklog-2026-04-18.md
+worklogs/cowork--next-session-handoff-2026-04-10.md
+worklogs/code--governance-framework-phase1-2026-04-09.md
+worklogs/worklog-2026-04-17 2.md
+worklogs/governance-framework-spec.md
+handoffs/cowork--session-handoff-v5-1-planning-rev1-2026-04-18.md
+handoffs/code--v5-1-source-verification-2026-04-18.md
+handoffs/chat--session-handoff-v5-planning-2026-04-17.md
+handoffs/chat--session-handoff-v5-planning-2026-04-17-rev3.md
 ```
 
 ## §2.4 治理上界現況
@@ -108,7 +127,7 @@ ec71e1799c60aee979b6291af7d9516f173888f8      553
 
 ## 執行者備註
 
-- §2.2a/b：grep 對 worklogs/ + handoffs/ + docs/governance/ 搜尋「護欄 #N」或「鐵律 #N」，輸出為空（0 筆）。唯一編號清單亦無輸出。
-- §2.2c：grep 搜尋 SKILL.md 內 `^#### #N` / `^### #N` / `^## #N` 格式，輸出為 0。表示護欄目前非以此格式標記，實際護欄格式待 Cowork 確認。
-- §2.3c：跨 Cowork / 撞車相關紀錄搜尋結果為空，無現有相關檔案。
+- §2.2a/b：背景指令延遲完成，初版報告誤記為 0。實際結果：42 筆引用，12 個唯一編號（#1, #3, #4, #11–#18, #170）。注意 #170 可能為「護欄 #17」的誤匹配（正文有「0」接在後面），Cowork 可自行判斷。
+- §2.2c：grep 搜尋 SKILL.md 內 `^#### #N` / `^### #N` / `^## #N` 格式，輸出為 0。護欄目前非此 heading 格式標記，實際格式待 Cowork 核對 SKILL.md 內容確認。
+- §2.3c：背景指令延遲完成，初版報告誤記為空。實際找到 9 個相關檔案（含本 handoff 自身與本 worklog，因內文提及「撞車」等關鍵字）。
 - §2.5b 最舊 handoff 檔案：`handoffs/code--event-branding-mazu-today-2026-03-31.md`（依 ls -1t 排序，tail -1 取最舊）。
