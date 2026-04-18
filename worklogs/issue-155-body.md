@@ -30,6 +30,7 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-18 session-handoff skill v5.1 三項 scope 全部落地 ✅：D 跨 Cowork 撞車 retro 歸檔（fdb4564）+ B 護欄編號系統首建 13 條 A/B/C/D 分組（f0154e4，SKILL.md 86-108 改寫 + 命名規則子節）+ E changelog 抽離獨立 CHANGELOG.md（e17d6f4，SKILL.md 頂部 10 段 → 一行指引）。skill-schema-lint 5/5 PASS，SKILL.md 最終 543 行（<§0 治理上界 900）。retrospective-2026-04-18-v5-1-closure.md 建立。**源頭事實規範 ROI 驗證 100 倍**：v5.0 事後抓 1.2 天 vs v5.1 事前抓 15 分鐘（rev3 §7 「17 條編號」空中樓閣）Cowork+Code
 - 04-18 工作環境定義 rev2 落地 ✅（1100ccb + 0e3c43f）：Q-WE-1~9 全 9 題 Paul 拍板。docs/governance/working-environment.md Accepted，CLAUDE.md 加連結段落（245 行），session memory 建 project_working_environment.md。Exit Gate 5/5 PASS Cowork+Code
 - 04-18 session-handoff skill v5.0 主線 A+B 完工 ✅：路線 C''（不拆只整理），skill-schema-lint 5/5 PASS（ec71e17），retrospective-2026-04-18-v5-split-reversal.md 建立（78d3ec8）— 止「1085 vs 522」跨視窗錯誤數字傳遞踩坑 Code+Cowork
 - 04-11 R4 audit 完成 ✅：P0=0，P1=4（全修+deploy 876dddbd），P2=10（活動期間處理）。Fix-A stats rollback guard + Fix-B KV TTL 3→7天 + Fix-D multicast retry + Fix-C LINE 費用確認（$800→$1200 動態切換）Cowork+Code
@@ -190,12 +191,44 @@ Corpus：219 頁 | Phase 0–4B ✅ 全完成 | 3 條自動化管線運行中
 | §6.3 中期動作驗證（收斂日 2026-05-02）| ⏳ 進行中 |
 
 **收斂驗證（2026-05-02 前）：**
-- [ ] 下一份 handoff 自然套用 §3 Status + Consequences
-- [ ] v5.1 規劃 rev1 自然附源頭事實清單（F-ID）
+- [x] 下一份 handoff 自然套用 §3 Status + Consequences（v5.1 規劃 rev1/rev2 + D/B/E 三份 Code handoff 全有）
+- [x] v5.1 規劃 rev1 自然附源頭事實清單（F-ID）（rev1 §1 Source of Truth Manifest + Code 驗證 commit 734c476，**ROI 驗證 100 倍**）
 - [ ] CLAUDE.md 行數未再膨脹（目前 245 行，官方軟上限 200）
 
 **⚠️ 已知越界：**
-- [ ] CLAUDE.md 245 行已超官方 200 行軟上限 22%（F4）→ v5.1 視窗檢視是否抽部分內容獨立
+- [ ] CLAUDE.md 245 行已超官方 200 行軟上限 22%（F4）→ 延 v5.2 視窗檢視是否抽部分內容獨立
+
+---
+
+## session-handoff skill v5.1（已結案 2026-04-18）
+
+**三項 scope 全部落地，源頭事實規範首次成功救援**
+
+| scope | 交付物 | commit |
+|-------|-------|--------|
+| D | worklogs/investigations/2026-04-18-cross-cowork-session-collision.md | fdb4564 |
+| B | SKILL.md 「鐵律」節改寫為 13 條 A/B/C/D 編號系統 + 命名規則 | f0154e4 |
+| E | CHANGELOG.md（12 段 v3→v5.1）+ SKILL.md 頂部一行指引 | e17d6f4 |
+
+**關鍵指標：**
+- SKILL.md 行數：553 → 578 → 543（仍低於 §0 治理上界 900）
+- skill-schema-lint：5/5 PASS（全程）
+- 源頭事實規範 ROI：v5.0 事後抓 1.2 天 → v5.1 事前抓 15 分鐘，**降低 100 倍**
+
+**空中樓閣 meta（第 2 次實例，繼 v5.0「1086 行」後）：**
+- rev3 §7 主張「既有 15 條 #1-#15 編號系統」，實際 SKILL.md 只有 11 條無編號規則
+- 在 Cowork rev1 Proposed 階段由 Code 驗證報告（734c476）抓到
+- rev2 §3.2 依實際 11 條重新歸納為 A2/B4/C5/D2 = 13 條
+- 若 v5.2 再發生第三次 → 升格為 skill 護欄 E1「治理文件引用之源驗證」
+
+**v5.2 候選 scope（延）：**
+- A 四層檔案架構（L1+L2+L3+L5）
+- C Metrics 三階段
+- CLAUDE.md 245 行越界處置（抽部分成 runbook）
+- E1 護欄升格（若第三次空中樓閣發生）
+- 跨 session worklog 並發寫摩擦處置（每次 commit 吃 rebase 衝突成本）
+
+**Retro**：docs/governance/retrospective-2026-04-18-v5-1-closure.md
 
 ---
 
