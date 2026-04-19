@@ -56,6 +56,12 @@
 
 ## 待 Cowork 執行
 
+- [ ] 🔴 協作憲法 v0.2 結案三件事 → Cowork / Opus 4.6 (2026-04-19 排入下輪)
+  - 完整 handoff：`handoffs/cowork--constitution-v0.2-closeout-2026-04-20.md`
+  - 依序做：Issue #155 governance 里程碑條目 → worklog 4/19 三維度補完 → briefing v2 標 DONE
+  - 起點：本輪已 commit `a6550f9`（憲法 v0.2 ADR + 四層 skill 盤點報告）
+  - Task Size：M（約 45-60 min）
+
 - ~~用 Stitch「Homepage Redesign」比對 paulkuo.tw 線上首頁~~ → **已擱置** (2026-04-14 17:20)
   - Paul 決定過去測試的 Stitch 專案不再延續，Stitch 轉為「產新稿」而非「比對舊稿」
   - 取而代之的是 `docs/design-system.md`（單一事實來源）+ 未來 Stitch Web UI 手動貼 designMd 流程
