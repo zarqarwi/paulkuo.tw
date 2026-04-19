@@ -27,69 +27,9 @@ Code session 工作時會自動讀取路徑上所有層級的 CLAUDE.md，不需
 
 ### 格式（三維度必填）
 
-Worklog 必須涵蓋三個維度，缺一不可：
-- **做了什麼**（完成日誌 + 狀態變更）
-- **為什麼這樣決定**（決策紀錄）
-- **遇到什麼阻礙**（阻礙與踩坑）
+做完就記，commit 後立刻追加。三維度必填：做了什麼 / 決策原因 / 阻礙踩坑。沒有就寫「無」，但不能省略區塊。Session 結束時補狀態變更、決策紀錄、待辦快照。
 
-```markdown
-# Worklog {YYYY-MM-DD}
-
-## 完成日誌（最新在上）
-- {HH:MM} {做了什麼} ({commit hash}) Code
-- {HH:MM} {做了什麼} ({commit hash}) Code
-```
-
-### Session 結束時
-
-當 Paul 說「結束」、「收工」、「今天到這」、或明確結束對話時，在 worklog 底部補上：
-
-```markdown
-## 狀態變更
-- {Issue/待辦名稱}：{之前狀態} → {現在狀態}（{原因}）
-
-## 決策紀錄
-- {決策}：{為什麼選 A 不選 B}（影響範圍：{哪些模組/專案}）
-
-## 阻礙與踩坑
-- {問題描述} → {怎麼解決的 / 還沒解決}
-
-## 待辦快照
-### 高優先 🔴
-- [ ] ...
-### 中優先 🟡
-- [ ] ...
-### 低優先 🟢
-- [ ] ...
-```
-
-**決策紀錄**：只記「有其他選項但我們選了這個」的情況。沒有特殊決策就寫「無特殊決策」，但不能省略這個區塊。
-
-**阻礙與踩坑**：記已解決的（給未來參考）和未解決的（給下個 session 接手）。沒有阻礙就寫「無阻礙」，但不能省略。
-
-### 狀態變更區塊（重要）
-
-每次 session 結束寫 worklog 時，**必須回顧這次工作影響了哪些已知的 issue、待辦、或 Cowork 記憶裡的待確認項目**，寫進「狀態變更」區塊。
-
-包括：
-- 直接完成的任務
-- 間接解決的副作用（例如 FAQ 路由更新順便修好了根目錄 redirect）
-- 狀態從「未完成」變「已完成」、從「待確認」變「已確認」的項目
-
-範例：
-```markdown
-## 狀態變更
-- Issue #90 mazu.today 根目錄 redirect：未完成 → 已解決（formosaRoutes 更新）
-- Feedback #5 品牌名稱：等 Paul 定案 → fixed（已 PATCH admin_note）
-- FORMOSA_ALERT_USER_ID secret：待確認 → 不影響（程式碼 skip 邏輯）
-```
-
-這個區塊是 Cowork 自動 reconcile 的依據。沒寫 = Cowork 不知道 = 記憶裡的待辦會繼續掛著。
-
-### 隱式結束
-
-如果 Paul 沒有明確說結束，但已經超過 30 分鐘沒有新指令，
-下一次收到指令時先把上一段工作的 worklog 補完，再開始新工作。
+詳細格式與範例見 `docs/governance/worklog-format.md`。
 
 ---
 
@@ -106,17 +46,7 @@ bash scripts/install-hooks.sh
 
 ### Rollback Protocol
 
-出事時的復原步驟：
-
-1. **Worker API 壞了**：`cd worker && git checkout HEAD~1 -- src/ && wrangler deploy --config wrangler.toml`
-2. **前端壞了**：`git checkout HEAD~1 -- src/ && npm run build && wrangler deploy`
-3. **D1 Schema 改壞了**：D1 沒有原生 rollback，靠 `backup-d1.yml` Action 的每日備份還原
-4. **KV 資料錯了**：重新跑對應的 seed 腳本（如 `node scripts/governance-kv-seed.cjs`）
-5. **共用檔案改壞多個子專案**：先 revert commit，再逐一跑 smoke test 確認全部恢復
-
-回退後必須對每個受影響的子專案跑 smoke test（見 `docs/shared-file-impact-map.md`）。
-
-**Cowork workspace 警訊處理**：跳出容量警訊時，先跑 `list_scheduled_tasks` 區分排程 vs ad-hoc session；排程任務的 working files 可安全清除（產物已 commit 到 repo），ad-hoc session 需先確認 artifact 已匯出。
+出事時見 `docs/governance/rollback-protocol.md`。
 
 ### 部署
 
@@ -255,7 +185,7 @@ Code 做事 → 自動寫 worklogs/ → Paul 開 Cowork → Cowork 讀 worklogs/
 
 任何 major version 規劃 / 跨 session 踩坑處理 / handoff 模板升級，以那份文件為準。
 
-⚠️ 本檔（CLAUDE.md）目前 233 行，已超官方 200 行軟上限（見 working-environment.md §4.2 F4）。v5.1 視窗會檢視是否抽部分內容到 `docs/governance/` 獨立文件。
+⚠️ 本檔（CLAUDE.md）目前 ~220 行，超官方 200 行軟上限（見 working-environment.md §4.2 F4）。v5.2 視窗持續監控。
 
 ---
 
