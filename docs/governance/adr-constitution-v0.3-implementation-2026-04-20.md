@@ -1,6 +1,6 @@
 # ADR: 協作憲法 v0.3 實施方案
 
-**Status**: Draft（待 Paul 審閱 → Accepted）
+**Status**: Accepted
 **Date**: 2026-04-20
 **Deciders**: Paul（拍板）、Cowork session claude-opus-4-6（草擬）
 **Implements**: `docs/governance/adr-collaboration-constitution-v0.2-2026-04-19.md` §3.3 遷移步驟 #5-#8

@@ -120,7 +120,7 @@
   - 來源：`worklogs/code--v5-1-guardrail-retro-report-2026-04-19.md` §整體建議 1 + Cowork 審核結論分流
   - Cowork 沒有使用者級寫入權限，必須由 Code / Paul 執行
 
-- [ ] 🟡 v0.3 憲法實施方案落地（四軌）→ Code / Opus 4.6 (2026-04-20)
+- [x] 🟡 v0.3 憲法實施方案落地（四軌）→ Code / Opus 4.6 (2026-04-20) ✅ 完成 2026-04-20
   - 完整 ADR：`docs/governance/adr-constitution-v0.3-implementation-2026-04-20.md`
   - Migration Step 2: working-environment.md 加 `implements` frontmatter
   - Migration Step 3: CLAUDE.md 加「協作憲法」引用段 + 「Skill 同步」條款
