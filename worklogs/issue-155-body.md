@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-18（Cowork — 工作環境定義 rev2 落地 1100ccb + 0e3c43f，Exit Gate 5/5 PASS）
+最後更新：2026-04-20（Cowork — 協作憲法 v0.2 結案收尾：Issue #155 里程碑 + worklog 三維度 + DONE marker）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -30,6 +30,7 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-20 協作憲法 v0.2 結案三件事 ✅：Issue #155 governance 里程碑條目寫入 + worklog 4/19 三維度補完 + briefing v2 DONE marker。commit a6550f9（憲法 ADR + 四層盤點報告）+ 收尾 commit（worklog + DONE marker）Cowork
 - 04-19 17:10 v5.1 護欄 Retro 結案 ✅：Code 產出 retro 報告（`worklogs/code--v5-1-guardrail-retro-report-2026-04-19.md`），窗口內 🔴 0 / 🟡 4（皆低嚴重度，結論未擴散）。Cowork（被告）交叉重驗 4 案採信全數 🟡；Step 3「空中樓閣第 3 次」書面痕跡不存在，屬對話瞬時判斷。落地：SKILL.md v5.3 固化 C4 邊界（來源 vs 方式 🟢/🟡/🔴）+ CHANGELOG.md v5.3 條目 + PENDING.md 加使用者級 skill 同步待辦（🔴 Code/Paul 執行，方案 B 短期 / C 長期）。Cowork 新增 2 洞：N=3 樣本偏小應改語措、「對話瞬時判斷無書面痕跡」屬結構盲區記入 .auto-memory 備未來 C6/E1 候選。不升 E1、不觸發 v5.3 視窗 Code+Cowork
 - 04-19 14:37 Workspace 容量警示清理驗證 ✅：governance-metrics-collector + wiki-youtube-pull 產出已 commit (c905f2a, 7b81235, be49a9a)，Clean up 未掉資料；CET ad-hoc session Paul 確認結案。事後分析揭露 Chat handoff 偵察路徑未考慮 Cowork `scheduled-tasks` MCP 能力（~10× token 無效支出）。落地：L1 SKILL.md v5.2（Step 0 偵察項目加 MCP 工具為合法路徑，CHANGELOG.md 新增 v5.2 條目）+ L2 CLAUDE.md Rollback Protocol 加 `list_scheduled_tasks` 交叉引用 + L3 PENDING.md 新增 `wiki-youtube-ingest.cjs` tmpDir 清理待辦（待當前轉檔批次結束後由 Code 執行）Cowork+Chat
 - 04-18 session-handoff skill v5.1 三項 scope 全部落地 ✅：D 跨 Cowork 撞車 retro 歸檔（fdb4564）+ B 護欄編號系統首建 13 條 A/B/C/D 分組（f0154e4，SKILL.md 86-108 改寫 + 命名規則子節）+ E changelog 抽離獨立 CHANGELOG.md（e17d6f4，SKILL.md 頂部 10 段 → 一行指引）。skill-schema-lint 5/5 PASS，SKILL.md 最終 543 行（<§0 治理上界 900）。retrospective-2026-04-18-v5-1-closure.md 建立。**源頭事實規範 ROI 驗證 100 倍**：v5.0 事後抓 1.2 天 vs v5.1 事前抓 15 分鐘（rev3 §7 「17 條編號」空中樓閣）Cowork+Code
@@ -175,6 +176,16 @@ Corpus：219 頁 | Phase 0–4B ✅ 全完成 | 3 條自動化管線運行中
 **⚠️ 已知問題：**
 - [x] `governance-kv-seed.cjs` 第 20 行 `--remote` 參數在 CI 環境報錯 → ✅ 已修復 (be42206)
 - [ ] `governance-metrics-collector` 排程任務尚未首次執行（今天 10:33 首跑）
+
+### 2026-04-19 協作憲法 v0.2 落地
+
+commit [`a6550f9`](https://github.com/zarqarwi/paulkuo.tw/commit/a6550f9) — docs(governance)
+
+- 新增 `docs/governance/adr-collaboration-constitution-v0.2-2026-04-19.md`（5 條骨架 + v0.2 修正）
+- 新增 `docs/skill-storage-inventory-2026-04-19.md`（四層分裂盤點）
+- 憲法骨架：SSoT 原則 / 載體對等原則 / 權責分工原則（含剛性核查） / 記憶層次原則（含同層原子化補款）/ 記憶擴充原則
+- 背景：收斂 skill 四層分裂、空中樓閣、worklog 內部矛盾三個結構性痛點
+- 延伸排程：v0.3 會處理 session-handoff 雙樹合併、C 層 4 個 skill export schema、commit-msg hook for worklog 內部一致性
 
 ---
 
