@@ -5,6 +5,7 @@ import { PILLAR_MAP, SITE } from '../config';
 import CostAnalytics from '../components/CostAnalytics.astro';
 import TrafficAnalytics from '../components/TrafficAnalytics.astro';
 import { calcReadingTime } from '../utils/readingTime';
+import GlobeHeroBg from '../components/GlobeHeroBg.astro';
 
 // Always show latest 3 articles (no featured filter)
 const articles = (await getCollection('articles', ({ data, id }) => !data.draft && !id.startsWith('en/') && !id.startsWith('ja/') && !id.startsWith('zh-cn/')))
@@ -16,65 +17,7 @@ const articles = (await getCollection('articles', ({ data, id }) => !data.draft 
 
   <!-- HERO -->
   <section class="hero">
-    <!-- Globe background decoration -->
-    <div class="globe-hero-bg" aria-hidden="true">
-      <div class="globe-loader-stage">
-        <!-- Whirl layer (behind globe) -->
-        <svg viewBox="0 0 200 200" aria-hidden="true">
-          <defs>
-            <radialGradient id="gl-fade" cx="50%" cy="50%" r="50%">
-              <stop offset="55%" stop-color="#000" stop-opacity="0"/>
-              <stop offset="75%" stop-color="#000" stop-opacity="0.18"/>
-              <stop offset="100%" stop-color="#000" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
-          <g class="gl-whirl-ring gl-r1">
-            <circle cx="100" cy="100" r="95" fill="none"
-                    stroke="rgba(26,26,26,0.35)" stroke-width="1"
-                    stroke-dasharray="2 6 14 6 40 6 2 6 22 130"
-                    stroke-linecap="round" />
-          </g>
-          <g class="gl-whirl-ring gl-r2">
-            <circle cx="100" cy="100" r="84" fill="none"
-                    stroke="rgba(26,26,26,0.5)" stroke-width="1"
-                    stroke-dasharray="30 14 6 10 18 10 4 10 80 60"
-                    stroke-linecap="round" />
-          </g>
-          <g class="gl-whirl-ring gl-r3">
-            <circle cx="100" cy="100" r="76" fill="none"
-                    stroke="rgba(26,26,26,0.25)" stroke-width="0.75"
-                    stroke-dasharray="60 20 4 8 2 8 2 180"
-                    stroke-linecap="round" />
-          </g>
-          <g class="gl-whirl-particle gl-p1">
-            <circle cx="195" cy="100" r="1.6" fill="#1a1a1a"/>
-          </g>
-          <g class="gl-whirl-particle gl-p2">
-            <circle cx="15" cy="100"  r="1.2" fill="#1a1a1a"/>
-            <circle cx="100" cy="14"  r="0.9" fill="rgba(26,26,26,0.6)"/>
-          </g>
-          <g class="gl-whirl-particle gl-p3">
-            <circle cx="100" cy="182" r="1"   fill="rgba(26,26,26,0.7)"/>
-            <circle cx="176" cy="146" r="0.7" fill="rgba(26,26,26,0.5)"/>
-          </g>
-          <circle cx="100" cy="100" r="95" fill="url(#gl-fade)"/>
-        </svg>
-        <!-- Globe layer -->
-        <svg id="gl-globe" viewBox="0 0 200 200">
-          <defs>
-            <clipPath id="gl-globeClip">
-              <circle cx="100" cy="100" r="68"/>
-            </clipPath>
-          </defs>
-          <g clip-path="url(#gl-globeClip)">
-            <path class="gl-graticule" id="gl-graticule"/>
-            <g id="gl-countries"></g>
-          </g>
-          <circle class="gl-sphere" cx="100" cy="100" r="68"/>
-        </svg>
-      </div>
-    </div>
-
+    <GlobeHeroBg />
     <div class="hero-inner">
       <div class="hero-text">
         <h1 class="animate-in">Rebuilding <em>Order</em><br>in an Age of<br>Intelligence</h1>
@@ -527,64 +470,6 @@ const articles = (await getCollection('articles', ({ data, id }) => !data.draft 
     overflow: hidden;
   }
 
-  /* === Globe Hero Background === */
-  .globe-hero-bg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 580px;
-    height: 580px;
-    opacity: 0.13;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .globe-loader-stage {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    animation: gl-breath 4s ease-in-out infinite;
-  }
-
-  .globe-loader-stage svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-  }
-
-  .gl-whirl-ring,
-  .gl-whirl-particle {
-    transform-origin: 100px 100px;
-    transform-box: fill-box;
-  }
-
-  .gl-r1 { animation: gl-spin    3.2s linear infinite; }
-  .gl-r2 { animation: gl-spinRev 4.8s linear infinite; }
-  .gl-r3 { animation: gl-spin    6.4s linear infinite; }
-  .gl-p1 { animation: gl-spin    2.6s linear infinite; }
-  .gl-p2 { animation: gl-spinRev 3.4s linear infinite; }
-  .gl-p3 { animation: gl-spin    4.2s linear infinite; }
-
-  @keyframes gl-spin    { to { transform: rotate(360deg); } }
-  @keyframes gl-spinRev { to { transform: rotate(-360deg); } }
-  @keyframes gl-breath {
-    0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.02); }
-  }
-
-  .gl-sphere    { fill: none; stroke: #1a1a1a; stroke-width: 1.25; }
-  .gl-graticule { fill: none; stroke: rgba(26,26,26,0.18); stroke-width: 0.6; }
-  .gl-country   {
-    fill: #1a1a1a;
-    fill-opacity: 0.08;
-    stroke: #1a1a1a;
-    stroke-width: 0.5;
-    stroke-linejoin: round;
-  }
-
   /* === 手機版：右側疊到下方 === */
   @media (max-width: 768px) {
     .hero-inner {
@@ -603,58 +488,7 @@ const articles = (await getCollection('articles', ({ data, id }) => !data.draft 
     .hero-featured-card {
       display: none;
     }
-
-    .globe-hero-bg {
-      width: 320px;
-      height: 320px;
-      right: -15%;
-      opacity: 0.08;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .globe-hero-bg {
-      width: 260px;
-      height: 260px;
-      right: -20%;
-    }
   }
 </style>
-
-<!-- Globe: d3-geo + topojson -->
-<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" is:inline></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js" is:inline></script>
-<script is:inline>
-(async () => {
-  const svg = d3.select('#gl-globe');
-  if (!svg.node()) return;
-  const gCountries = svg.select('#gl-countries');
-  const gratiSel   = svg.select('#gl-graticule');
-
-  const projection = d3.geoOrthographic()
-    .scale(68).translate([100, 100])
-    .clipAngle(90).rotate([0, -18, 0]);
-  const path = d3.geoPath(projection);
-  const graticule = d3.geoGraticule10();
-
-  const url = 'https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json';
-  const topo = await fetch(url).then(r => r.json());
-  const countries = topojson.feature(topo, topo.objects.countries).features;
-
-  const sel = gCountries.selectAll('path')
-    .data(countries).enter()
-    .append('path').attr('class', 'gl-country');
-
-  const start = performance.now();
-  const degPerSec = 36;
-  (function tick(now) {
-    const t = (now - start) / 1000;
-    projection.rotate([(t * degPerSec) % 360, -18, 0]);
-    sel.attr('d', path);
-    gratiSel.attr('d', path(graticule));
-    requestAnimationFrame(tick);
-  })(performance.now());
-})();
-</script>
 
 </BaseLayout>
