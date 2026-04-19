@@ -116,6 +116,8 @@ bash scripts/install-hooks.sh
 
 回退後必須對每個受影響的子專案跑 smoke test（見 `docs/shared-file-impact-map.md`）。
 
+**Cowork workspace 警訊處理**：跳出容量警訊時，先跑 `list_scheduled_tasks` 區分排程 vs ad-hoc session；排程任務的 working files 可安全清除（產物已 commit 到 repo），ad-hoc session 需先確認 artifact 已匯出。
+
 ### 部署
 
 ```bash

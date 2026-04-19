@@ -5,6 +5,18 @@
 
 ---
 
+## v5.2（2026-04-19）
+
+**主題**：Handoff 偵察路徑必須考慮接手方 MCP 能力。
+
+- **Step 0 偵察項目擴充**：八區塊第 3 項「Step 0 偵察」明列 MCP 工具為合法偵察路徑（原本只寫 grep/PRAGMA），並要求產出方優先選接手方最低 token 路徑。
+
+**觸發事故**：2026-04-19 workspace 警訊處理事件。Chat 寫 handoff 時套用 grep/curl + Apple Notes + worklogs 三路偵察，但 Cowork 手上有 `scheduled-tasks` MCP 可一 call 命中答案（兩個閒置 session 其實是 scheduled tasks），導致 ~10× token 無效支出。診斷見 `worklogs/cowork--workspace-cleanup-diagnostic-2026-04-19.md`，工作流優化 handoff 見 `worklogs/chat--cowork-warning-workflow-optimization-2026-04-19.md`。對齊 v4.11 設計原則動機 3（Token 無效支出）。
+
+**Metrics**：未來 3 個月內跨 session handoff 未再出現「偵察路徑繞過接手方 MCP」即為有效。
+
+---
+
 ## v5.1（2026-04-18）
 
 **主題**：將已發生但未資產化的治理產物，收進正確位置。

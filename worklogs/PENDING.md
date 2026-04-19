@@ -14,11 +14,11 @@
 
 ## 待 Code 執行
 
-- [ ] 🟢 跑 `node scripts/governance-kv-seed.cjs` 補 Dashboard 數字 → Code / Sonnet (2026-04-18)
+- [x] 🟢 跑 `node scripts/governance-kv-seed.cjs` 補 Dashboard 數字 → ✅ 已完成 (2026-04-18)
   - 完整 handoff：`handoffs/cowork--governance-kv-reseed-2026-04-18.md`
-  - 背景：04-17 已補完 metrics 檔（commit `bf0705b`），但 KV 沒重 seed，Dashboard 數字錯
-  - 白沙屯零風險（Cowork 已偵查確認，只寫 `gov:*` prefix）
-  - 不需 redeploy Worker；完成後驗 `/governance/` 無痕視窗 hard refresh
+  - seed 結果：Projects: 6, Automation coverage: 70%
+  - KV 數字：paulkuo-main 461 / formosa-esg 78 / llm-wiki 53 / acp 3 / ai-ready 14 / agora 1
+  - 次要 follow-up：classifier 對 `.github/workflows/` 路徑分類待整理（paulkuo-main 461 vs 549、acp/ai-ready 數字偏移）
 
 - [x] 🟢 Commit design system 文件 + worklog 變更 → ✅ 已完成 (8363e60, 2026-04-14 18:11)
 
@@ -106,6 +106,12 @@
   - 等本機 backfill 跑完確認穩定後再 deploy Worker
   - `cd worker && wrangler deploy --config wrangler.toml`
 
+- [ ] 🟢 `scripts/wiki-youtube-ingest.cjs` 加中間檔清理邏輯 → Code / Sonnet 4.6 (2026-04-19)
+  - Whisper transcribe 完成後 `fs.rmSync(tmpDir, { recursive: true, force: true })`，再 commit markdown
+  - 目標：Cowork workspace 警訊時間間隔延長 3×（目前 wiki-youtube-pull 產出占 workspace 大宗）
+  - **前提**：當前轉檔批次跑完再動（Paul 2026-04-19 明示不要打斷進行中的轉檔）
+  - 來源：2026-04-19 workspace 警訊 L3 裁決 / `worklogs/cowork--workspace-cleanup-diagnostic-2026-04-19.md` 建議 A
+
 ## Scanner 自動產出（最新在上）
 
 - [x] 🟡 跨專案 smoke test 缺漏：cd2422a, e2fcd8f, 7d7e85d, c0b86b7, 8be165c → ✅ 2026-04-16 Cowork 補驗全部 200 OK（主站/Wiki/Formosa/ACP/TQEF）
@@ -113,3 +119,4 @@
 - [x] 🟡 跨專案 smoke test 缺漏：851dd58 governance Phase 3 → ✅ 已部署，Dashboard 200 OK，scanner daily audit 正常運行
 - [ ] 🟡 跨專案 smoke test 缺漏：5c58ee02（paulkuo-main, llm-wiki） → Code (auto-scanner 2026-04-17)
 - [ ] 🟡 跨專案 smoke test 缺漏：5c58ee02（paulkuo-main, llm-wiki） → Code (auto-scanner 2026-04-18)
+- [ ] 🟡 跨專案影響待驗：5c58ee0 動到 worker/src/youtube-ingest.js，需補驗 paulkuo-main、llm-wiki（掃描日期：2026-04-19）

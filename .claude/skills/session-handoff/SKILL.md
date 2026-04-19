@@ -419,7 +419,7 @@ Paul 看完對話訊息就能決定開哪個 Code session，不用打開 handoff
    Cowork 透過 GitHub MCP push 的檔案，Code 本機不會自動有。不寫這步 = Code 找不到 handoff 檔案。
    所有檔案引用都必須用絕對路徑（如 `~/Desktop/01_專案進行中/paulkuo.tw/worklogs/xxx.md`）。
 2. **背景**：為什麼要做這件事（一段話）
-3. **Step 0 偵察**：先查再改，列出 grep/PRAGMA 等偵察指令
+3. **Step 0 偵察**：先查再改，列出偵察指令——包含 grep、PRAGMA、curl、以及**接手方 session 可用的 MCP 工具**（如 `scheduled-tasks`、`github`、`figma` 等）。若有多條偵察路徑，優先選接手方的最低 token 路徑，並在 §2 末尾標注「本路線已考慮接手方 X MCP 能力」（v5.2 新增）
 4. **具體步驟**：每步有明確的指令和預期結果
 5. **驗證方式**：怎麼確認做完了
 6. **注意事項**：已知陷阱

@@ -30,6 +30,7 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-19 14:37 Workspace 容量警示清理驗證 ✅：governance-metrics-collector + wiki-youtube-pull 產出已 commit (c905f2a, 7b81235, be49a9a)，Clean up 未掉資料；CET ad-hoc session Paul 確認結案。事後分析揭露 Chat handoff 偵察路徑未考慮 Cowork `scheduled-tasks` MCP 能力（~10× token 無效支出）。落地：L1 SKILL.md v5.2（Step 0 偵察項目加 MCP 工具為合法路徑，CHANGELOG.md 新增 v5.2 條目）+ L2 CLAUDE.md Rollback Protocol 加 `list_scheduled_tasks` 交叉引用 + L3 PENDING.md 新增 `wiki-youtube-ingest.cjs` tmpDir 清理待辦（待當前轉檔批次結束後由 Code 執行）Cowork+Chat
 - 04-18 session-handoff skill v5.1 三項 scope 全部落地 ✅：D 跨 Cowork 撞車 retro 歸檔（fdb4564）+ B 護欄編號系統首建 13 條 A/B/C/D 分組（f0154e4，SKILL.md 86-108 改寫 + 命名規則子節）+ E changelog 抽離獨立 CHANGELOG.md（e17d6f4，SKILL.md 頂部 10 段 → 一行指引）。skill-schema-lint 5/5 PASS，SKILL.md 最終 543 行（<§0 治理上界 900）。retrospective-2026-04-18-v5-1-closure.md 建立。**源頭事實規範 ROI 驗證 100 倍**：v5.0 事後抓 1.2 天 vs v5.1 事前抓 15 分鐘（rev3 §7 「17 條編號」空中樓閣）Cowork+Code
 - 04-18 工作環境定義 rev2 落地 ✅（1100ccb + 0e3c43f）：Q-WE-1~9 全 9 題 Paul 拍板。docs/governance/working-environment.md Accepted，CLAUDE.md 加連結段落（245 行），session memory 建 project_working_environment.md。Exit Gate 5/5 PASS Cowork+Code
 - 04-18 session-handoff skill v5.0 主線 A+B 完工 ✅：路線 C''（不拆只整理），skill-schema-lint 5/5 PASS（ec71e17），retrospective-2026-04-18-v5-split-reversal.md 建立（78d3ec8）— 止「1085 vs 522」跨視窗錯誤數字傳遞踩坑 Code+Cowork
