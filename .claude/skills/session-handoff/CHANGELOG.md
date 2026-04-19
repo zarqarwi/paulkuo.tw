@@ -5,6 +5,20 @@
 
 ---
 
+## v5.3（2026-04-19）
+
+**主題**：C4 邊界固化（來源 vs 方式），收斂「空中樓閣第 3 次」類事故的誤判區間。
+
+- **SKILL.md 新增「C4 邊界」子節**（約 L82-L92）：明列「來源 = 系統/工具層級」「方式 = 同系統不同查詢策略」，並以 🟢 / 🟡 / 🔴 三段及格線替歧義收尾。
+- **典型 🔴 案例固化**：Cowork 只從 sandbox snapshot 查 `~/.claude/skills/`，單一來源 + 單一方式 + 絕對結論 → 明確違反，寫入 SKILL.md 備日後 retro 比對。
+- **alignment 階段歧義 1**（Code handoff §4.4「來源 vs 方式」）由 Paul 2026-04-19 裁決：換 keyword 同系統 = 🟡 上限、不算免責；同系統再多查詢策略也不能取代跨來源驗證。
+
+**觸發事故**：2026-04-19「空中樓閣第 3 次」——Cowork 僅憑 sandbox snapshot 下「v5.1 護欄不存在」陰性結論，Paul 要求走方案 B 偵察後反轉。Retro 由 Code 產出 `worklogs/code--v5-1-guardrail-retro-report-2026-04-19.md`（🔴 0 / 🟡 4，皆低嚴重度），Cowork 審核確認分流後固化。
+
+**Metrics**：下次若 Cowork 再次 debate「X 是否存在」，偵察記錄須至少兩段（來源 1 + 來源 2），未達者於 retro 中記為 🔴。
+
+---
+
 ## v5.2（2026-04-19）
 
 **主題**：Handoff 偵察路徑必須考慮接手方 MCP 能力。
