@@ -106,7 +106,8 @@
   - 等本機 backfill 跑完確認穩定後再 deploy Worker
   - `cd worker && wrangler deploy --config wrangler.toml`
 
-- [ ] 🔴 使用者級 `~/.claude/skills/session-handoff/` 同步（v5.3 落地配套）→ Code 或 Paul / Sonnet 4.6 (2026-04-19)
+- [x] 🔴 使用者級 `~/.claude/skills/session-handoff/` 同步（v5.3 落地配套）→ Code 或 Paul / Sonnet 4.6 (2026-04-19)
+  - ✅ 2026-04-19 Code 執行完成（commit d5b0877），專案級與使用者級一致（diff -r 無輸出）
   - 背景：2026-04-19 「空中樓閣第 3 次」根因 = 使用者級 skill 為 stale v4.13，不含 C4/C5/v5.2/v5.3 新條款
   - 短期方案 B（Code retro §整體建議 1）：執行 `cp -r .claude/skills/session-handoff/ ~/.claude/skills/session-handoff/`，並在 `CLAUDE.md` §工程慣例新增「Skill 同步」條款，要求每次 SKILL.md 改動 commit 後立即 `cp`
   - 長期方案 C（待評估）：把 session-handoff skill 正本移到使用者級，paulkuo.tw 內留 symlink 或引用
