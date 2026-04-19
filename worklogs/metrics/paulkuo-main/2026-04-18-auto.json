@@ -1,0 +1,20 @@
+{
+  "$schema": "session-metrics-v1",
+  "project_id": "paulkuo-main",
+  "date": "2026-04-18",
+  "session_type": "auto",
+  "model": "n/a",
+  "size": "auto",
+  "outputs": {
+    "commits": 18,
+    "files_changed": 59,
+    "lines_added": 0,
+    "lines_removed": 0,
+    "deploys": 0,
+    "issues_closed": 0,
+    "handoff_produced": true
+  },
+  "custom": {},
+  "automation_changes": [],
+  "notes": "自動收集 by governance-metrics-collector"
+}
