@@ -120,6 +120,14 @@
   - 來源：`worklogs/code--v5-1-guardrail-retro-report-2026-04-19.md` §整體建議 1 + Cowork 審核結論分流
   - Cowork 沒有使用者級寫入權限，必須由 Code / Paul 執行
 
+- [ ] 🟡 v0.3 憲法實施方案落地（四軌）→ Code / Opus 4.6 (2026-04-20)
+  - 完整 ADR：`docs/governance/adr-constitution-v0.3-implementation-2026-04-20.md`
+  - Migration Step 2: working-environment.md 加 `implements` frontmatter
+  - Migration Step 3: CLAUDE.md 加「協作憲法」引用段 + 「Skill 同步」條款
+  - Migration Step 4-5: 驗證+複製 4 個 C 層 skill 到 repo A 層
+  - Migration Step 6-7: 擴充 commit-msg-hook.sh 加 worklog 原子化檢查
+  - Task Size：M（約 60-90 min，Step 2-3 快速、Step 4-5 視情況、Step 6-7 需寫 python parser）
+
 - [ ] 🟢 `scripts/wiki-youtube-ingest.cjs` 加中間檔清理邏輯 → Code / Sonnet 4.6 (2026-04-19)
   - Whisper transcribe 完成後 `fs.rmSync(tmpDir, { recursive: true, force: true })`，再 commit markdown
   - 目標：Cowork workspace 警訊時間間隔延長 3×（目前 wiki-youtube-pull 產出占 workspace 大宗）
