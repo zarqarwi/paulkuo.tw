@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-20（Cowork — 協作憲法 v0.2 結案收尾：Issue #155 里程碑 + worklog 三維度 + DONE marker）
+最後更新：2026-04-20（Cowork — 協作憲法 v0.3 四軌落地收尾：Issue #155 里程碑 + Code 執行結果記錄）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -30,6 +30,7 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-20 協作憲法 v0.3 四軌落地 ✅：Track 1 CLAUDE.md 憲法引用+Skill 同步(b0860dd) + Track 2 四 skill A 層落地(eb91a9e) + Track 3 hook worklog 原子化(6ed20f8) + Track 4 WE implements frontmatter(b0860dd)。收尾 commit 3c2f3a8。V1-V8 驗證全過。ADR Accepted。Cowork handoff → Code 執行 Cowork+Code
 - 04-20 協作憲法 v0.2 結案三件事 ✅：Issue #155 governance 里程碑條目寫入 + worklog 4/19 三維度補完 + briefing v2 DONE marker。commit a6550f9（憲法 ADR + 四層盤點報告）+ 收尾 commit（worklog + DONE marker）Cowork
 - 04-19 17:10 v5.1 護欄 Retro 結案 ✅：Code 產出 retro 報告（`worklogs/code--v5-1-guardrail-retro-report-2026-04-19.md`），窗口內 🔴 0 / 🟡 4（皆低嚴重度，結論未擴散）。Cowork（被告）交叉重驗 4 案採信全數 🟡；Step 3「空中樓閣第 3 次」書面痕跡不存在，屬對話瞬時判斷。落地：SKILL.md v5.3 固化 C4 邊界（來源 vs 方式 🟢/🟡/🔴）+ CHANGELOG.md v5.3 條目 + PENDING.md 加使用者級 skill 同步待辦（🔴 Code/Paul 執行，方案 B 短期 / C 長期）。Cowork 新增 2 洞：N=3 樣本偏小應改語措、「對話瞬時判斷無書面痕跡」屬結構盲區記入 .auto-memory 備未來 C6/E1 候選。不升 E1、不觸發 v5.3 視窗 Code+Cowork
 - 04-19 14:37 Workspace 容量警示清理驗證 ✅：governance-metrics-collector + wiki-youtube-pull 產出已 commit (c905f2a, 7b81235, be49a9a)，Clean up 未掉資料；CET ad-hoc session Paul 確認結案。事後分析揭露 Chat handoff 偵察路徑未考慮 Cowork `scheduled-tasks` MCP 能力（~10× token 無效支出）。落地：L1 SKILL.md v5.2（Step 0 偵察項目加 MCP 工具為合法路徑，CHANGELOG.md 新增 v5.2 條目）+ L2 CLAUDE.md Rollback Protocol 加 `list_scheduled_tasks` 交叉引用 + L3 PENDING.md 新增 `wiki-youtube-ingest.cjs` tmpDir 清理待辦（待當前轉檔批次結束後由 Code 執行）Cowork+Chat
@@ -186,6 +187,18 @@ commit [`a6550f9`](https://github.com/zarqarwi/paulkuo.tw/commit/a6550f9) — do
 - 憲法骨架：SSoT 原則 / 載體對等原則 / 權責分工原則（含剛性核查） / 記憶層次原則（含同層原子化補款）/ 記憶擴充原則
 - 背景：收斂 skill 四層分裂、空中樓閣、worklog 內部矛盾三個結構性痛點
 - 延伸排程：v0.3 會處理 session-handoff 雙樹合併、C 層 4 個 skill export schema、commit-msg hook for worklog 內部一致性
+
+### 2026-04-20 協作憲法 v0.3 四軌落地
+
+commits: [`b0860dd`](https://github.com/zarqarwi/paulkuo.tw/commit/b0860dd) → [`eb91a9e`](https://github.com/zarqarwi/paulkuo.tw/commit/eb91a9e) → [`6ed20f8`](https://github.com/zarqarwi/paulkuo.tw/commit/6ed20f8) → [`3c2f3a8`](https://github.com/zarqarwi/paulkuo.tw/commit/3c2f3a8)
+
+- Track 1：CLAUDE.md 加「協作憲法」引用段 + 「Skill 同步」條款（A→B 單向 cp）
+- Track 2：4 個 C 層 skill 複製到 repo A 層（paulkuo-writing 593行 / paulkuo-social 276行 / formosa-feedback 263行 / organize-downloads 93行）
+- Track 3：commit-msg hook 擴充 worklog 原子化檢查（狀態變更 vs 待辦快照矛盾偵測）
+- Track 4：working-environment.md frontmatter 加 `implements` 欄位（上位法+實施細則架構）
+- 實作偏差 2 項：hook 插入位置修正（Step 5 測試暴露）+ CLAUDE.md 269 行（超預期 260 但可接受）
+- ADR：`docs/governance/adr-constitution-v0.3-implementation-2026-04-20.md`（Status: Accepted）
+- V1-V8 驗證全過
 
 ---
 
