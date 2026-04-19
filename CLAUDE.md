@@ -154,6 +154,17 @@ npm run build && wrangler deploy && cd worker && wrangler deploy --config wrangl
 
 任何 fail 項目 → 當場修 → 重新 deploy → 再驗一次。不要留著等下次。
 
+### Skill 同步（v0.3 新增）
+
+每次 `.claude/skills/` 下任何 SKILL.md 有 commit，立即同步到使用者級：
+
+```bash
+cp -r .claude/skills/session-handoff/ ~/.claude/skills/session-handoff/
+```
+
+這是憲法第二條的實施配套——A 層（repo）是正本，B 層（使用者級）是下游 mirror。
+忘記 3 次以上 → 升級為 post-commit hook。
+
 ### Git
 
 - commit + push 要原子操作（避免與 cron 或其他 session 的 git 操作衝突）
@@ -245,3 +256,14 @@ Code 做事 → 自動寫 worklogs/ → Paul 開 Cowork → Cowork 讀 worklogs/
 任何 major version 規劃 / 跨 session 踩坑處理 / handoff 模板升級，以那份文件為準。
 
 ⚠️ 本檔（CLAUDE.md）目前 233 行，已超官方 200 行軟上限（見 working-environment.md §4.2 F4）。v5.1 視窗會檢視是否抽部分內容到 `docs/governance/` 獨立文件。
+
+---
+
+## 協作憲法（v0.2，2026-04-19）
+
+憲法全文：`docs/governance/adr-collaboration-constitution-v0.2-2026-04-19.md`
+實施細則：`docs/governance/working-environment.md`
+v0.3 實施 ADR：`docs/governance/adr-constitution-v0.3-implementation-2026-04-20.md`
+
+憲法五條：SSoT 原則 / 載體對等原則 / 權責分工原則（含剛性核查）/ 記憶層次原則（含同層原子化）/ 記憶擴充原則。
+治理 ADR 有疑義時，以憲法為上位法。

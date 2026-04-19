@@ -22,6 +22,12 @@ sources_of_truth_manifest: §7 附錄 A
 verified_by: Code-verified
 verification_date: 2026-04-18
 purpose: 定義三視窗職責邊界 + 規劃文件源頭事實規範 + handoff ADR 欄位，止 2026-04-18「1085 vs 522」踩坑的血
+implements: adr-collaboration-constitution-v0.2
+constitutional_mapping:
+  §1: "第三條（權責分工原則）"
+  §2: "第一條（SSoT 原則）實施細則"
+  §3: "第三條實施細則（Handoff ADR 欄位）"
+  §4: "獨立（長度管制，無直接對應條文）"
 ---
 
 # 工作環境定義 — Chat / Cowork / Code 三方職責與源頭事實規範（rev2）
