@@ -119,4 +119,4 @@
 - [x] 🟡 跨專案 smoke test 缺漏：851dd58 governance Phase 3 → ✅ 已部署，Dashboard 200 OK，scanner daily audit 正常運行
 - [ ] 🟡 跨專案 smoke test 缺漏：5c58ee02（paulkuo-main, llm-wiki） → Code (auto-scanner 2026-04-17)
 - [ ] 🟡 跨專案 smoke test 缺漏：5c58ee02（paulkuo-main, llm-wiki） → Code (auto-scanner 2026-04-18)
-- [ ] 🟡 跨專案影響待驗：5c58ee0 動到 worker/src/youtube-ingest.js，需補驗 paulkuo-main、llm-wiki（掃描日期：2026-04-19）
+- [ ] 🟡 跨專案 smoke test 缺漏：5c58ee02（paulkuo-main, llm-wiki） → Code (auto-scanner 2026-04-19)
