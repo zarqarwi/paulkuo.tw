@@ -8,6 +8,7 @@
 
 | 日期 | 檔案 | 方向 | 主題 | Status |
 |------|------|------|------|--------|
+| 2026-04-20 | [cowork--hygiene-task-ab-closeout-and-next-cowork-2026-04-20](./cowork--hygiene-task-ab-closeout-and-next-cowork-2026-04-20.md) | Cowork→Cowork | Task A+B+C 全結案 + 下輪開場交接 | Accepted |
 | 2026-04-20 | [cowork--hygiene-task-ab-sonnet-handoff-2026-04-20](./cowork--hygiene-task-ab-sonnet-handoff-2026-04-20.md) | Cowork→Cowork | Task A+B 執行（PENDING 瘦身 + Handoff INDEX）| Accepted |
 | 2026-04-20 | [cowork--governance-hygiene-and-v0.4-planning-2026-04-20](./cowork--governance-hygiene-and-v0.4-planning-2026-04-20.md) | Cowork→Cowork | 治理框架衛生清理 + v0.4 規劃 | Proposed（Task C 延 v5.2） |
 | 2026-04-20 | [cowork--v0.3-closeout-session-handoff-2026-04-20](./cowork--v0.3-closeout-session-handoff-2026-04-20.md) | Cowork→Cowork | v0.3 憲法四軌收尾 + 日常同步 | — |
