@@ -75,6 +75,72 @@ fi
 # ── 取得本次 commit 涉及的檔案 ──
 STAGED_FILES=$(git diff --cached --name-only)
 
+# ── worklog 同層原子化檢查（憲法第四條補款）──
+# staged 的 worklog：「狀態變更」說完成的項目不應在「待辦快照」仍掛 [ ]
+
+STAGED_WORKLOGS=$(echo "$STAGED_FILES" | grep '^worklogs/worklog-.*\.md$')
+
+if [[ -n "$STAGED_WORKLOGS" ]]; then
+  for wlog in $STAGED_WORKLOGS; do
+    CONTRADICTIONS=$(python3 -c "
+import re, sys
+
+try:
+    with open('$wlog') as f:
+        content = f.read()
+except:
+    sys.exit(0)
+
+status_section = re.search(r'## 狀態變更\n(.*?)(?=\n## |\Z)', content, re.DOTALL)
+if not status_section:
+    sys.exit(0)
+
+completed = set()
+for line in status_section.group(1).split('\n'):
+    m = re.match(r'^- (.+?)：.*(?:→\s*(?:已完成|✅|\[x\]|已解決|fixed))', line, re.IGNORECASE)
+    if m:
+        completed.add(m.group(1).strip())
+
+if not completed:
+    sys.exit(0)
+
+todo_section = re.search(r'## 待辦快照\n(.*?)(?=\n## |\Z)', content, re.DOTALL)
+if not todo_section:
+    sys.exit(0)
+
+contradictions = []
+for line in todo_section.group(1).split('\n'):
+    m = re.match(r'^- \[ \] (.+)', line)
+    if m:
+        item = m.group(1).strip()
+        for c in completed:
+            if c in item or item in c:
+                contradictions.append(f'{c} (狀態變更) vs {item} (待辦快照)')
+
+for c in contradictions:
+    print(c)
+" 2>/dev/null)
+
+    if [[ -n "$CONTRADICTIONS" ]]; then
+      echo ""
+      echo "╔══════════════════════════════════════════════════════════╗"
+      echo "║  ⚠️  worklog 原子化違反（憲法第四條補款）                   ║"
+      echo "╚══════════════════════════════════════════════════════════╝"
+      echo ""
+      echo "檔案：$wlog"
+      echo "以下項目在「狀態變更」標完成，但「待辦快照」仍掛著 [ ]："
+      echo "$CONTRADICTIONS" | while read -r line; do
+        echo "  - $line"
+      done
+      echo ""
+      echo "請同步更新兩個區塊，確保同一事實的表達一致。"
+      echo "（--no-verify 可跳過此檢查）"
+      echo ""
+      exit 1
+    fi
+  done
+fi
+
 TOUCHED_CRITICAL=()
 TOUCHED_SHARED=()
 AFFECTED_PROJECTS=()
