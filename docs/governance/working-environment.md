@@ -146,6 +146,8 @@ docs/decisions/**（若未來建立）
 
 ## §2 源頭事實清單（Sources of Truth Manifest）
 
+> 跨視窗速記：[constitution-v0.2-quick-reference.md](./constitution-v0.2-quick-reference.md)（含情境舉例，跨 session 開場可快速載入憲法五條）
+
 ### 2.1 什麼時候需要附
 
 **必附**：

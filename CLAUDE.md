@@ -194,6 +194,7 @@ Code 做事 → 自動寫 worklogs/ → Paul 開 Cowork → Cowork 讀 worklogs/
 憲法全文：`docs/governance/adr-collaboration-constitution-v0.2-2026-04-19.md`
 實施細則：`docs/governance/working-environment.md`
 v0.3 實施 ADR：`docs/governance/adr-constitution-v0.3-implementation-2026-04-20.md`
+跨視窗速記：`docs/governance/constitution-v0.2-quick-reference.md`（含情境舉例，適合跨 session 快速載入）
 
 憲法五條：SSoT 原則 / 載體對等原則 / 權責分工原則（含剛性核查）/ 記憶層次原則（含同層原子化）/ 記憶擴充原則。
 治理 ADR 有疑義時，以憲法為上位法。
