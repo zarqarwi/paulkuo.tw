@@ -5,6 +5,22 @@
 
 ---
 
+## v5.5（2026-04-20）
+
+**主題**：「ADR 指名 N 個項目」類話術剛性核查——空中樓閣第 3 類實例升格為正式護欄。
+
+- **SKILL.md 新增「引用 ADR 清單時的剛性核查」章節**（插入於「Cowork 驗證的已知盲區」之後）：定義觸發句型（話術含「ADR 指名 N 個 X」「某條款列出 Y 項」「規範中的 Z 個步驟」等）、強制流程（grep 原文 clause → 貼清單 → 比對 repo 現況 → 建議中必附 clause 編號 + 逐字引用 + 比對結果）、空中樓閣三次歷史實例（N=1 / N=2 / N=3）。
+- **Cowork 驗證盲區補一條**：「ADR 指名 N 個項目」類話術憑印象推測列為已知盲區第 N 項，交叉連結至下方剛性核查章節。
+- **配套產物**：`docs/governance/constitution-v0.2-quick-reference.md` rev1 新增情境 7（跨視窗速記版）+ 違憲自檢清單第 6 項；auto-memory `feedback_adr_clause_before_listing.md` 同步建立。
+
+**觸發事件**：2026-04-20 Cowork 治理盤點階段——處理「v0.3 ADR Track 2 A 層缺 4 個 skill」時，憑印象推測那 4 個是 Anthropic 使用者級 skill 常見的 `consolidate-memory / setup-cowork / schedule / skill-creator`，直接給 Paul cp 建議。實際上 ADR §2.2.1 明確指名的是 `paulkuo-writing / paulkuo-social / formosa-feedback / organize-downloads`（專案級 skill），且上輪 commit `eb91a9e` 已全部完成。Paul 拍板後觸發 sandbox 權限錯誤才被迫重查 ADR，已部分 cp 出的空目錄由 Paul 手動清理收場。此為空中樓閣第 3 次實例，N=3 達到升格正式護欄門檻（規則：N=4 升格為 E2，本次提前一次於治理盤點階段發生，由 Paul 裁定直接升格）。
+
+**對齊憲法**：第一條（SSoT）——ADR 原文是事實來源，記憶中「以為的清單」不是；第三條（權責分工，剛性核查）——行政對自己的前提事實也要先核查，不能拿推測當事實。
+
+**Metrics**：未來 3 個月內若再出現「ADR 指名 N 個項目」類憑印象推測的執行建議，視為本次護欄無效，升格為 commit-msg hook / skill-schema-lint 自動偵測層；反之若零發生，視為護欄已內化。
+
+---
+
 ## v5.4（2026-04-20）
 
 **主題**：新增「結案宣告 Close Protocol」——session 三層生命週期狀態管理。

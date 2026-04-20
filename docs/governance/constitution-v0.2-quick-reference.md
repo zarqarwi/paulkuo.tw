@@ -123,6 +123,37 @@ Code 收到後**先驗環境前提**再執行。
 
 ---
 
+### 情境 7：要引用「ADR 指名 N 個項目」做執行建議
+
+**觸發句型（只要話術含以下，就必須啟動核查）**：
+- 「ADR 指名 N 個 X」「某條款列出 Y 項」「規範中的 Z 個步驟」
+- 「v0.3 Track 2 的四個 skill」「Migration Step 第 N 步」
+- 任何「依 ADR 應該要有 N 個」類斷言
+
+**憲法依據**：第一條 SSoT（ADR 原文是事實來源，記憶中的「以為的清單」不是）+ 第三條剛性核查（行政對自己的前提事實也要核查）。
+
+**正確做法**：
+
+```
+行動前第一件事 grep 原文 clause：
+  $ grep -n "^###\|^####" docs/governance/adr-*.md   # 找到指名段落
+  $ sed -n 'START,ENDp' docs/governance/adr-XXX.md   # 貼原文
+
+建議中必須包含：
+  (a) ADR 原文 clause 編號（例：§2.2.1 / §4 Migration Step 5）
+  (b) 清單原文逐字引用
+  (c) 目前 repo 實況比對結果（ls / git log / grep）
+  (d) 若三者不一致 → 先停下來跟 Paul 對焦，不直接發執行建議
+```
+
+**歷史紀錄**（空中樓閣累積 N 計數，第 4 次升格為正式護欄 E2）：
+- N=1（2026-04-18 v5.0）：SKILL.md「1086 行」空中樓閣，Code 驗證時抓
+- N=2（2026-04-18 v5.1 rev3 §7）：「既有 15 條 #1-#15 編號系統」，實際只有 11 條
+- N=3（2026-04-20 Cowork）：「v0.3 Track 2 四個使用者級 skill」，實際是專案級 4 個，造成 A 層 4 空目錄污染
+- 對應 auto-memory：`feedback_adr_clause_before_listing.md`
+
+---
+
 ## 違憲自檢清單（開場 / 結案都跑一次）
 
 - [ ] 現在讀到的 SKILL.md / CLAUDE.md 是 git HEAD 版本嗎？（`git log --oneline -3`）
@@ -130,6 +161,7 @@ Code 收到後**先驗環境前提**再執行。
 - [ ] 我要轉述的是行政自述還是有獨立驗證？
 - [ ] 同層文件的多個區塊我有全部同步嗎？
 - [ ] 我用的新記憶載體是否已通過 ADR？
+- [ ] **我要引用「ADR 指名 N 個項目」類話術時，有先 grep 原文 clause 確認嗎？**（空中樓閣防護，見情境 7）
 
 ---
 
@@ -145,3 +177,4 @@ Code 收到後**先驗環境前提**再執行。
 ## 修訂紀錄
 
 - 2026-04-20：初版，Cowork session 產出，補 2026-04-20 考試暴露的 Chat/Cowork 死角
+- 2026-04-20 rev1（當日晚）：新增情境 7「ADR 指名 N 個項目」剛性核查 + 違憲自檢清單第 6 項。觸發事件：同日 Cowork 空中樓閣 N=3（T-3 誤判事件，auto-memory `feedback_adr_clause_before_listing.md`）。N=4 升格正式護欄 E2
