@@ -1,12 +1,13 @@
 ---
 title: 工作環境定義 — Chat / Cowork / Code 三方職責與源頭事實規範
-version: rev2.1
+version: rev2.2
 date: 2026-04-18
 author: Cowork
-status: Accepted（Paul 拍板 Q-WE-1 ~ Q-WE-9，rev2.1 為實戰補註非新決策）
+status: Accepted（Paul 拍板 Q-WE-1 ~ Q-WE-9，rev2.1 / rev2.2 為實戰補註非新決策）
 supersedes: rev1（未 commit，2026-04-18 同日）
 amendments:
   - rev2.1 (2026-04-18 同日實戰補註)：§1.2 表格拆分 repo 記憶 / session 記憶 / PENDING.md 三列；新增 §1.3.1「兩層記憶系統路徑區分」。補註依據：本日 handoff §2.3 誤寫 `.auto-memory/`，Code 落地時才發現應指 session memory 路徑。屬實戰踩坑補邊角案例，非推翻 Q-WE-1 ~ Q-WE-9 任何拍板。
+  - rev2.2 (2026-04-20 T-3 事故配套)：§1.2 表格新增「物理寫入 `.claude/skills/**` / `scripts/**` / `worker/src/**`」一列（Cowork 物理寫不到）；新增 §1.3.2「Cowork sandbox 寫入邊界」——明確列出 sandbox 物理寫不到的路徑、錯誤流程對照（T-3 事故）、未來候選硬檢查。補註依據：2026-04-20 T-3 事故（空中樓閣 N=3 + sandbox 寫入邊界誤判）第二個 root cause 的護欄，配套於 session-handoff v5.5 + auto-memory `feedback_adr_clause_before_listing.md`。屬實戰踩坑補邊角案例，非推翻任何拍板。
 upstream:
   - docs/governance/retrospective-2026-04-18-v5-split-reversal.md
   - handoffs/cowork--session-handoff-v5-split-reassessment-2026-04-18.md
@@ -30,7 +31,7 @@ constitutional_mapping:
   §4: "獨立（長度管制，無直接對應條文）"
 ---
 
-# 工作環境定義 — Chat / Cowork / Code 三方職責與源頭事實規範（rev2）
+# 工作環境定義 — Chat / Cowork / Code 三方職責與源頭事實規範（rev2.2）
 
 ## 0. 為什麼有這份文件
 
@@ -74,7 +75,8 @@ constitutional_mapping:
 | 驗 git 實際狀態（wc / grep / git log） | ❌ | ✅（sandbox 副本） | ✅（本機 ground truth） |
 | 下「事實判定」結論 | ❌ | ⚠️（涉及量化指標需 Code 第三方驗證） | ✅ |
 | 寫 commit / push | ❌ | ⚠️（僅白名單路徑，見 §1.5） | ✅ |
-| 動 skill / 腳本 / schema | ❌ | ❌ | ✅ |
+| 動 skill / 腳本 / schema | ❌ | ❌（意圖層） | ✅ |
+| 物理寫入 `.claude/skills/**` / `scripts/**` / `worker/src/**` | ❌ | ❌（sandbox 物理寫不到，見 §1.3.2） | ✅ |
 | 寫 worklog 三維度 | ❌ | ✅（結 session 時） | ✅（Code 日報） |
 | 更新 repo MEMORY.md（`.auto-memory/`）| ❌ | ✅ | ⚠️（可寫但 Cowork 為主） |
 | 更新 session memory（Code session 記憶）| ❌ | ❌（無法寫入 Mac 本機）| ✅ |
@@ -118,6 +120,52 @@ constitutional_mapping:
 - 兩者都要 → handoff 分兩步寫清楚
 
 **本輪踩坑**：`handoffs/cowork--working-environment-deployment-2026-04-18.md` §2.3 原寫 `.auto-memory/` 但 Code 發現那應該寫 session memory 路徑（因為目的是讓 Code 跨對話記住），Code 在本機自行修正。未來寫類似 handoff 時明確寫「session memory」或「repo .auto-memory」，不要只寫「MEMORY.md」。
+
+### 1.3.2 Cowork sandbox 寫入邊界（2026-04-20 T-3 事故配套）
+
+§1.2「動 skill / 腳本 / schema」把 Cowork 列 ❌ 是**意圖層**的規範（憲法第三條權責分工）。但 Cowork sandbox 還有**物理層**的寫入邊界——即使 Cowork 想寫、或受指示 cp 檔案，sandbox 也會拒絕。這兩層是分開的，不要混。
+
+#### Cowork sandbox 可寫 vs 物理寫不到
+
+| 路徑範圍 | Cowork 可寫？ | 備註 |
+|---|:---:|---|
+| `worklogs/**` | ✅ | §1.5 白名單 |
+| `handoffs/**` | ✅ | §1.5 白名單 |
+| `docs/governance/**` | ✅ | §1.5 白名單 |
+| `docs/decisions/**` | ✅ | §1.5 白名單（若未來建立） |
+| `.auto-memory/**` | ✅ | Cowork sandbox 原生可寫區，同步走 Claude.ai 雲端 |
+| `.claude/skills/**` | ❌ | **物理寫不到**——sandbox 對 repo 下 `.claude/` 目錄僅讀 |
+| `scripts/**` | ❌ | **物理寫不到** |
+| `worker/src/**` | ❌ | **物理寫不到** |
+| `src/**`（前端原始碼）| ❌ | **物理寫不到** |
+| `.git/**` | ❌ | **物理寫不到**——commit/push 必須 Paul 跑 |
+
+⚠️ 實務觀察：`cp -r` / `mkdir` 類操作若目標在物理寫不到的路徑，會出現「部分成功」的半成品（空目錄建出來但內容 cp 不進去），Cowork 甚至可能誤判為「已完成」。**cp 完必須驗內容**，不要只看指令 exit code。
+
+#### 應對流程（當 Cowork 需要改動物理寫不到的路徑時）
+
+**正確流程**：
+1. Cowork 確認議題需要動 `.claude/skills/` / `scripts/` / `worker/src/` 等路徑
+2. 產出 handoff → 寫進 `worklogs/PENDING.md` 「待 Code 執行」區塊
+3. 交給 Paul 在 Claude Code CLI / 終端機直接執行
+4. **不要**在 Cowork 裡直接 `cp -r`、`mv`、`rm -rf` 這些路徑，即使指令「看起來成功」
+
+**錯誤流程**（T-3 事故模式）：
+1. Cowork 誤判需要新增 4 個 skill 到 A 層（憑印象推測 ADR 指名，見 `feedback_adr_clause_before_listing.md`）
+2. 直接給 Paul cp 指令建議
+3. Paul 拍板 → 執行觸發 sandbox 權限錯誤 / 部分失敗（空目錄殘留）
+4. Paul 手動 `rm -rf` 清理，才收場
+
+#### 為何不直接把白名單做成 sandbox hard check
+
+目前 sandbox 的寫入邊界是 Cowork infra 層決定，Cowork session 內無法自我檢查「這個路徑我能不能寫」——只能事後從錯誤訊息反推。短期靠這份文件 + `feedback_adr_clause_before_listing.md` 的護欄並行防禦；長期若再發生 2 次以上類似事故，考慮在 session-handoff skill 裡加一條「Cowork 動 cp/mv/rm 前必須先 `test -w` 目標路徑」的硬檢查（候選 v5.6 升級）。
+
+#### 關聯
+
+- 憲法第三條（權責分工）：意圖層規範，動 skill/schema 屬 Code 主責
+- `feedback_adr_clause_before_listing.md`（auto-memory）：空中樓閣第 3 類，T-3 事故的第一個 root cause
+- session-handoff SKILL.md v5.5「引用 ADR 清單時的剛性核查」：第一個 root cause 的護欄
+- **本節（§1.3.2）**：T-3 事故的第二個 root cause「不知道沙盒寫不到哪裡」的護欄
 
 ---
 
