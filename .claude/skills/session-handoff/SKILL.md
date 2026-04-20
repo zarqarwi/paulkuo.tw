@@ -262,6 +262,7 @@ Worklog 是上游事實來源，記憶是下游快取。
 
 - 如果 worklog 提到需要 Paul 手動操作（deploy、設定變更等），主動提醒
 - 如果有卡住的項目，標記並討論
+- **檢查前一 session 是否有結案宣告**（v5.4 新增）：若最後一篇 worklog 沒有 `🏁 Session 狀態` 行，主動問 Paul 該 session 現在是 Dormant 還是 Archived，更新到 worklog 尾端
 
 ---
 
@@ -312,6 +313,48 @@ Worklog 必須涵蓋三個維度，缺一不可：
 ```
 
 重點：間接解決的副作用也要標記，不要只記直接完成的任務。
+
+---
+
+## 結案宣告 Close Protocol（v5.4 新增）
+
+每個 session 結束時，必須明確宣告生命週期狀態，避免 session 永遠停在「可能還會回來」的半開狀態，導致 Cowork workspace 磁碟爆量（每個 inactive session 佔 ~178 MB working files）。
+
+### 三層 Session 狀態
+
+| 狀態 | 定義 | 處置 |
+|------|------|------|
+| **Active** 🟢 | 正在用，或預計 48 小時內會回來 | 保留 working files，維持 session 完整狀態 |
+| **Dormant** 🟡 | 工作未結案但暫時擱置（>48h 沒動） | working files 可清，留 handoff + worklog 即可 |
+| **Archived** 🔴 | 工作已結案，產出已進 git / worklog / Issue #155 | Session 可完全刪除，不再佔空間 |
+
+### 結案時必須回答的三個問題
+
+Session 結束前（不管是 Code 還是 Cowork），強制走一次：
+
+1. **產出去哪了？** — 有沒有進 git commit / worklog / Issue #155？沒有就補。
+2. **跨 session 待辦？** — 有 → 寫進 `worklogs/PENDING.md`；沒有就明講「無」。
+3. **宣告狀態？** — Active / Dormant / Archived，三選一，不能留空。
+
+### Cowork 交付訊息必備欄位（補充 v4 既有模板）
+
+在對話中結案時，訊息尾端加一行：
+
+```
+🏁 Session 狀態：{Active / Dormant / Archived}
+理由：{一句話}
+```
+
+範例：
+- `🏁 Session 狀態：Archived（所有產出已進 git，Issue #155 已同步，無跨 session 待辦）`
+- `🏁 Session 狀態：Dormant（等 Paul 確認 ADR 方向後再繼續，PENDING.md 已記）`
+- `🏁 Session 狀態：Active（預計今晚繼續 v0.3 實施）`
+
+### 為什麼需要這條
+
+2026-04-20 Cowork workspace 磁碟警訊事件：9.7 GB 配額只剩 381 MB free，三個 178 MB inactive session 全部卡在 Active 和 Archived 之間——事情做完了但沒人宣告結案。治理工程深化會讓 session 數量只增不減，這是配套的「session 衛生」機制。
+
+對齊憲法第三條（權責分工）：session 的生命週期狀態由產出方主動宣告，不是等 Cowork 開場盤點時被動判斷。
 
 ---
 

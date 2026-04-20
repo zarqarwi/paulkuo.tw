@@ -5,6 +5,22 @@
 
 ---
 
+## v5.4（2026-04-20）
+
+**主題**：新增「結案宣告 Close Protocol」——session 三層生命週期狀態管理。
+
+- **SKILL.md 新增「結案宣告 Close Protocol」章節**（插入於「Worklog 格式 → 狀態變更範例」之後、「記憶寫法慣例」之前）：定義 Active 🟢 / Dormant 🟡 / Archived 🔴 三層狀態、結案時必答的三個問題、Cowork 交付訊息必備的 `🏁 Session 狀態` 欄位。
+- **Cowork 開場 Checklist 第 5 步補一條**：開場時主動檢查前一 session 是否有結案宣告，缺失則問 Paul 補上。
+- **skill 歸屬層級議題未處理**：「session-handoff 是 repo 專屬還是使用者級 skill」這個架構問題本次未動，另開 ADR 草稿（v0.4 候選議題）處理。
+
+**觸發事件**：2026-04-20 Cowork workspace 磁碟警訊事件——9.7 GB 配額剩 381 MB free，三個 178 MB inactive session 卡在「事情做完但沒宣告結案」的半開狀態。Paul 決策繼續深化治理工程，因此配套引入 session 衛生機制，避免 session 數量增長吃掉磁碟。
+
+**對齊憲法**：第三條（權責分工）——session 生命週期由產出方主動宣告，不是等 Cowork 開場盤點時被動判斷。
+
+**Metrics**：未來 4 週內新產出的 worklog 若有 70% 以上包含 `🏁 Session 狀態` 行、且 Cowork workspace 磁碟警訊不再觸發，即視為有效。
+
+---
+
 ## v5.3（2026-04-19）
 
 **主題**：C4 邊界固化（來源 vs 方式），收斂「空中樓閣第 3 次」類事故的誤判區間。
