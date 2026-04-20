@@ -155,7 +155,21 @@ function run() {
 
   // ── 6. 彙總 summary ────────────────────────────────────────────
   const missing_tags = flagged.filter(f => !f.has_tag).length;
-  const missing_smoke_tests = flagged.filter(f => !f.has_smoke_test).length;
+
+  // 讀 skip list（供 summary 計算與 PENDING.md 去重共用）
+  const SKIP_LIST_PATH = path.join(PROJECT_ROOT, 'worklogs', 'governance', 'smoke-skip.json');
+  function loadSkipSet() {
+    try {
+      if (!fs.existsSync(SKIP_LIST_PATH)) return new Set();
+      const data = JSON.parse(fs.readFileSync(SKIP_LIST_PATH, 'utf-8'));
+      return new Set(Object.keys(data.entries || {}));
+    } catch (e) {
+      console.error('[scanner] smoke-skip.json 解析失敗（忽略）：', e.message);
+      return new Set();
+    }
+  }
+  const skipSet = loadSkipSet();
+  const missing_smoke_tests = flagged.filter(f => !f.has_smoke_test && !skipSet.has(f.hash)).length;
   const by_risk_level = {};
   for (const risk of riskCategories) {
     by_risk_level[risk] = flagged.filter(f => f.risk_level === risk).length;
@@ -200,27 +214,40 @@ function run() {
     process.exit(0);
   }
 
-  // ── 9. 追加 PENDING.md（如有 missing_smoke_tests）──────────────
+  // ── 9. 追加 PENDING.md（如有 missing_smoke_tests，hash 級別去重）──
   if (missing_smoke_tests > 0) {
     try {
-      const missingItems = flagged
-        .filter(f => !f.has_smoke_test)
-        .map(f => `${f.hash}（${f.affected_projects.slice(0, 3).join(', ')}）`)
-        .join(', ');
-      const pendingLine = `- [ ] 🟡 跨專案 smoke test 缺漏：${missingItems} → Code (auto-scanner ${today})\n`;
-
-      if (fs.existsSync(PENDING_PATH)) {
+      // 讀 PENDING.md 已存在的 commit hash（7-8 字元十六進位）
+      let existingHashes = new Set();
+      const pendingExists = fs.existsSync(PENDING_PATH);
+      if (pendingExists) {
         const existing = fs.readFileSync(PENDING_PATH, 'utf-8');
-        // 避免重複追加同一天的記錄
-        if (!existing.includes(`auto-scanner ${today}`)) {
-          fs.appendFileSync(PENDING_PATH, pendingLine, 'utf-8');
-          console.log('[scanner] ✓ 追加 PENDING.md');
-        } else {
-          console.log('[scanner] PENDING.md 已有今日記錄，跳過');
-        }
+        const matches = [...existing.matchAll(/\b([0-9a-f]{7,8})\b/g)];
+        existingHashes = new Set(matches.map(m => m[1]));
+      }
+
+      // 過濾：缺 smoke test & 不在 skip list & hash 不在 PENDING.md
+      const newCandidates = flagged.filter(f =>
+        !f.has_smoke_test &&
+        !skipSet.has(f.hash) &&
+        !existingHashes.has(f.hash)
+      );
+
+      if (newCandidates.length === 0) {
+        console.log('[scanner] 無新的 missing smoke test（已在 PENDING.md 或 skip list）');
       } else {
-        fs.writeFileSync(PENDING_PATH, `## 待 Code 執行\n${pendingLine}`, 'utf-8');
-        console.log('[scanner] ✓ 建立 PENDING.md');
+        const missingItems = newCandidates
+          .map(f => `${f.hash}（${f.affected_projects.slice(0, 3).join(', ')}）`)
+          .join(', ');
+        const pendingLine = `- [ ] 🟡 跨專案 smoke test 缺漏：${missingItems} → Code (auto-scanner ${today})\n`;
+
+        if (pendingExists) {
+          fs.appendFileSync(PENDING_PATH, pendingLine, 'utf-8');
+          console.log(`[scanner] ✓ 追加 PENDING.md（${newCandidates.length} 個新 commit）`);
+        } else {
+          fs.writeFileSync(PENDING_PATH, `## 待 Code 執行\n${pendingLine}`, 'utf-8');
+          console.log('[scanner] ✓ 建立 PENDING.md');
+        }
       }
     } catch (e) {
       console.error('[scanner] 寫入 PENDING.md 失敗：', e.message);

@@ -2,7 +2,7 @@
   "$schema": "audit-result-v1",
   "date": "2026-04-20",
   "scan_range": "2026-04-17 ~ 2026-04-20",
-  "total_commits_scanned": 67,
+  "total_commits_scanned": 70,
   "flagged": [],
   "summary": {
     "total_flagged": 0,

@@ -1,0 +1,11 @@
+{
+  "$schema": "smoke-skip-v1",
+  "description": "scanner 判定為缺 Smoke Test 但實質不需要驗的 commit 白名單。每筆必填 reason / skipped_at / skipped_by。",
+  "entries": {
+    "5c58ee02": {
+      "reason": "YouTube transcript pipeline 修復（worker/src/youtube-ingest.js），Worker 端後端任務，前端無直接依賴；實際驗證走本機 node scripts/wiki-youtube-ingest.cjs --backfill，已完成 4/23 sources",
+      "skipped_at": "2026-04-20",
+      "skipped_by": "Paul (via Cowork handoff)"
+    }
+  }
+}

@@ -72,5 +72,3 @@
 
 ## Scanner 自動產出（最新在上）
 
-- [ ] 🟡 跨專案 smoke test 缺漏：5c58ee02（paulkuo-main, llm-wiki）（scanner 連續 3 天重複偵測，2026-04-17/18/19 各產出一筆）
-      → 待 Code 補驗或標記 skip；根治靠 scanner 去重機制（v5.2 候選）
