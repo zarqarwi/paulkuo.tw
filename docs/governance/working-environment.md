@@ -8,6 +8,7 @@ supersedes: rev1（未 commit，2026-04-18 同日）
 amendments:
   - rev2.1 (2026-04-18 同日實戰補註)：§1.2 表格拆分 repo 記憶 / session 記憶 / PENDING.md 三列；新增 §1.3.1「兩層記憶系統路徑區分」。補註依據：本日 handoff §2.3 誤寫 `.auto-memory/`，Code 落地時才發現應指 session memory 路徑。屬實戰踩坑補邊角案例，非推翻 Q-WE-1 ~ Q-WE-9 任何拍板。
   - rev2.2 (2026-04-20 T-3 事故配套)：§1.2 表格新增「物理寫入 `.claude/skills/**` / `scripts/**` / `worker/src/**`」一列（Cowork 物理寫不到）；新增 §1.3.2「Cowork sandbox 寫入邊界」——明確列出 sandbox 物理寫不到的路徑、錯誤流程對照（T-3 事故）、未來候選硬檢查。補註依據：2026-04-20 T-3 事故（空中樓閣 N=3 + sandbox 寫入邊界誤判）第二個 root cause 的護欄，配套於 session-handoff v5.5 + auto-memory `feedback_adr_clause_before_listing.md`。屬實戰踩坑補邊角案例，非推翻任何拍板。
+  - rev2.2 (2026-04-20 R3 CLAUDE.md 上限策略)：§4.2 F-ID 表格更新為 rev2.2（F1 621 行 / F4 200 行 / F5 181 行 新增）；§4.3 擴充「新規則該寫哪裡判斷樹」—— 3 問樹 + 反例 + 正例 + 抽離候選清單。CLAUDE.md L188 過時警告（「~220 行」）修正為當前 200 行 + 指向 §4.3 判斷樹 hyperlink。補註依據：CLAUDE.md 剛好卡 200 行軟上限，前置攔截勝於被動處置。屬維運補邊角案例，非推翻任何拍板。
 upstream:
   - docs/governance/retrospective-2026-04-18-v5-split-reversal.md
   - handoffs/cowork--session-handoff-v5-split-reassessment-2026-04-18.md
@@ -315,18 +316,74 @@ rev2 前的既有 handoff 不回頭補（成本過高）。新規則從 rev2 com
 | 內部觸發點 | 800 行 | 觸發「是否拆分」討論 procedure（不自動拆） |
 | 硬界 | 900 行 | 強制啟動拆分，不得拖延 |
 
-### 4.2 當前狀態（F-ID 化）
+### 4.2 當前狀態（F-ID 化，rev2.2 更新 2026-04-20）
 
-- session-handoff SKILL.md：553 行（F1）——超官方軟上限 176%，距內部觸發點 69%
-- CLAUDE.md（根目錄）：233 行（F4）——超官方軟上限 16%
-- 其他 skill 待掃描：wiki-ingest 148 行、wiki-lint 99 行（均在軟上限內）
+| F-ID | 檔案 | 行數 | 軟上限 200 相對值 | 內部觸發 800 相對值 | 備註 |
+|---|---|---|---|---|---|
+| F1 | `.claude/skills/session-handoff/SKILL.md` | **621** | 310% | 77% | 逼近觸發點，下次 major 升級前評估拆分 |
+| F4 | `CLAUDE.md`（根目錄） | **200** | 100%（剛好卡線） | — | 剛好卡在軟上限，新規則不再往內塞（見 §4.3 判斷樹） |
+| F5 | `docs/governance/constitution-v0.2-quick-reference.md` | 181 | 91% | — | 速記卡 rev1（含情境 7），接近軟上限 |
+| — | 其他 skill（wiki-ingest / wiki-lint 等） | < 200 | — | — | 軟上限內，免觀察 |
 
-### 4.3 CLAUDE.md 越界處置
+⚠️ F1 = 621 行（77% 達觸發點）是近期最需監控的對象。v5.5 commit `3f457f0` 後新增「引用 ADR 清單時的剛性核查」章節，預計 v5.6/v5.7 仍有增長壓力——若再加兩個等量章節就會觸發 800 行拆分討論。
 
-CLAUDE.md 已超官方軟上限。rev2 落地後：
-- **短期（本週）**：worklog 記錄「已達預警」，暫不動
-- **中期（v5.1 視窗）**：檢視是否有可抽離到 `docs/governance/*.md` 的內容（例：Rollback Protocol、部署指令可獨立成 runbook）
-- **長期**：若持續長大，觸發 skill 等級的 progressive disclosure
+### 4.3 CLAUDE.md 越界處置與「新規則該寫哪裡」判斷樹（rev2.2 擴充）
+
+#### 現況（2026-04-20）
+
+CLAUDE.md 目前 200 行剛好卡軟上限。與其等「越界 → 被動處置」，不如前置攔截：**新規則入檔前先跑判斷樹**，從源頭控制增長。
+
+#### 判斷樹：新規則該進 CLAUDE.md 還是子文件？
+
+```
+新規則 / 新段落
+  │
+  ├─ 問 1：是否為「Claude Code 開 repo 的第一層必讀指令」？
+  │     （例：commit message 格式、部署指令、Smoke Test 必做）
+  │     │
+  │     YES → 考慮 CLAUDE.md，但先問 2
+  │     NO  → 直接進 docs/governance/ 或 skill，**不進 CLAUDE.md**
+  │
+  ├─ 問 2：是否超過 5 行才講得清楚？
+  │     YES → 寫 docs/governance/{topic}.md，CLAUDE.md 放一行 hyperlink
+  │     NO  → 可進 CLAUDE.md（但仍走問 3）
+  │
+  └─ 問 3：是否已經有可擴寫的相鄰子文件？
+        （例：憲法、WE、rollback-protocol、speed reference）
+        │
+        YES → 併入相鄰子文件，CLAUDE.md 不重複
+        NO  → 可進 CLAUDE.md（最後防線）
+```
+
+#### 反例（禁止寫進 CLAUDE.md）
+
+- ❌ 「某次事故的 retro 與對策」→ 進 `docs/governance/retrospective-*.md` 或 skill
+- ❌ 「某個護欄的詳細觸發條件 + 歷史 N 計數」→ 進 `session-handoff SKILL.md` / 速記卡
+- ❌ 「某個規範的完整選項比較」→ 進 ADR
+- ❌ 「某個功能的工程細節 > 3 行」→ 進子專案 CLAUDE.md / runbook
+
+#### 正例（可進 CLAUDE.md）
+
+- ✅ 「新 clone 後必跑 `bash scripts/install-hooks.sh`」（1 行指令 + 1 行理由）
+- ✅ 「部署指令必帶 `--config wrangler.toml`」（一行陷阱警告）
+- ✅ 「跨層引用：憲法全文見 X，實施細則見 Y」（hyperlink 導覽）
+
+#### 何時反悔重構 CLAUDE.md
+
+- 觸發 1：CLAUDE.md 越過 200 行 → 啟動「抽離候選清單」（見下方）
+- 觸發 2：同一主題在 CLAUDE.md 和子文件都有（違憲第四條同層原子化）
+- 觸發 3：下次 major version 規劃時順手盤點
+
+#### 抽離候選清單（當 CLAUDE.md 真的越界時優先抽離）
+
+依優先序（越前面越容易搬走、越獨立）：
+
+1. 「Rollback Protocol」一行（L47-L49）→ 已有 `docs/governance/rollback-protocol.md`，CLAUDE.md 該段已是 hyperlink，無可抽
+2. 「部署」指令塊（L51-L62）→ 可抽成 `docs/runbooks/deploy.md`，CLAUDE.md 留一行
+3. 「部署後驗證」規則（L64-L86）→ 可抽成 `docs/runbooks/smoke-test.md`
+4. 「D1 / KV」「Wrangler 陷阱」「Astro 陷阱」「CDN」（L104-L125）→ 可抽成 `docs/engineering-pitfalls.md`
+
+**預估**：把第 2-4 抽離約可瘦身 50-70 行，CLAUDE.md 降到 130-150 行舒適區。目前 200 行還沒越界，不急做，列為候選。
 
 ### 4.4 為何不照官方 200 硬拆
 

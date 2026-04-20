@@ -185,7 +185,7 @@ Code 做事 → 自動寫 worklogs/ → Paul 開 Cowork → Cowork 讀 worklogs/
 
 任何 major version 規劃 / 跨 session 踩坑處理 / handoff 模板升級，以那份文件為準。
 
-⚠️ 本檔（CLAUDE.md）目前 ~220 行，超官方 200 行軟上限（見 working-environment.md §4.2 F4）。v5.2 視窗持續監控。
+⚠️ 本檔（CLAUDE.md）目前 200 行，剛好卡官方軟上限。**新規則入檔前先跑 [working-environment.md §4.3 判斷樹](docs/governance/working-environment.md)**，能進子文件的一律不進 CLAUDE.md。
 
 ---
 
