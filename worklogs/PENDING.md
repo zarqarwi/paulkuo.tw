@@ -43,7 +43,27 @@
 
 ## 待 Cowork 執行
 
-（目前無待辦）
+- [ ] 🟡 H3：auto-memory 跨視窗不對稱寫入 working-environment.md §1.2 → Cowork 司法 (2026-04-20)
+  - 問題：Cowork 能寫 `.auto-memory/`，但 Chat 視窗不掛載這個路徑，R1 護欄在 Chat 穿透率 = 0
+  - 動作：在 working-environment.md §1.2「跨視窗能力矩陣」明示「auto-memory 只對 Cowork 生效，Chat 不讀」
+  - 歸屬：Cowork 司法，工程上無法單邊解決（Chat 不支援 Cowork sandbox 路徑）
+
+- [ ] 🟡 H4：Cowork 新 session 剛性核查補強 → Cowork 司法 (2026-04-20)
+  - 問題：Cowork 新 session 答 v4.13，讀 sandbox C 層 mirror 就信，沒觸發憲法第三條剛性核查去 A 層驗
+  - 動作：session-handoff SKILL.md「Cowork 驗證盲區」新增一條——版本號/行數/清單項數類問題即使從 sandbox 讀到答案，仍須跑 A 層 git HEAD 核查
+  - 歸屬：Cowork 司法（v5.6 已部分處理 R1 觸發句型擴充，但 H4 需要在開場 checklist 也加強制步驟）
+
+## 待 Chat 立法
+
+- [ ] 🔴 H1：憲法第二條 C 層同步機制缺失 → Chat 立法 (2026-04-20)
+  - 問題：C 層（Claude.ai Personal Skill）從 2026-04-17 冷凍在 v4.13，repo 已到 v5.5/v5.6。憲法第二條「C 層永遠是下游 mirror」無配套同步機制
+  - 建議產出：新 ADR「A→C Personal Skill 同步協議」——誰按 commit / 同步頻率 / 驗證方式 / C2 雲端記憶不可控時的治理原則
+  - Cowork 不處理原因：觸及憲法層級立法，Chat 主責
+
+- [ ] 🔴 H2：Chat 視窗精確事實查詢結構性上限 → Chat 立法 (2026-04-20)
+  - 問題：Chat 三模型（Opus 4.7 / Sonnet 4.6 / Opus 4.6）同答 v4.7，比 C 層更舊。版本號/行數/commit hash/清單項數/時序狀態類精確事實在 Chat 系統性不可靠
+  - 建議產出：憲法實施細則新增——Chat 不回答此類精確事實問題，應引導用 Cowork 查 A 層或 Code Read 核查
+  - Cowork 不處理原因：觸及憲法層級立法，Chat 主責
 
 ## 跨專案備忘
 

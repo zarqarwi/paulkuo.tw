@@ -1,5 +1,5 @@
 # 🎛️ 專案狀態儀表板
-最後更新：2026-04-20（Cowork — 協作憲法 v0.3 四軌落地收尾：Issue #155 里程碑 + Code 執行結果記錄）
+最後更新：2026-04-20（Cowork — 跨載體事實同步實戰驗收 + session-handoff v5.6 + H1~H5 五議題歸檔）
 
 > **本 Issue 是 paulkuo.tw 專案的單一事實來源。**
 > Code / Cowork session 完成工作後在此更新狀態。
@@ -30,6 +30,8 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-20 跨載體事實同步實戰驗收 🔴：同一問題跨 8 查詢點得 5 答案（Code 唯一正確）。session-handoff v5.6 升級（R1 觸發句型擴充：版本號/清單/時序狀態）。H1~H5 五議題（C 層同步缺失/Chat 精確事實上限/auto-memory 不對稱/Cowork 繞過剛性核查/R1 擴充）。H5 當場完成，H1-H4 進 PENDING.md Cowork
+- 04-20 R1/R2/R3 三軌 commit + push ✅：R1 空中樓閣護欄 v5.5 + R2 Cowork sandbox 寫入邊界 + R3 CLAUDE.md 200 行上限前置攔截 Chat→Code
 - 04-20 協作憲法 v0.3 四軌落地 ✅：Track 1 CLAUDE.md 憲法引用+Skill 同步(b0860dd) + Track 2 四 skill A 層落地(eb91a9e) + Track 3 hook worklog 原子化(6ed20f8) + Track 4 WE implements frontmatter(b0860dd)。收尾 commit 3c2f3a8。V1-V8 驗證全過。ADR Accepted。Cowork handoff → Code 執行 Cowork+Code
 - 04-20 協作憲法 v0.2 結案三件事 ✅：Issue #155 governance 里程碑條目寫入 + worklog 4/19 三維度補完 + briefing v2 DONE marker。commit a6550f9（憲法 ADR + 四層盤點報告）+ 收尾 commit（worklog + DONE marker）Cowork
 - 04-19 17:10 v5.1 護欄 Retro 結案 ✅：Code 產出 retro 報告（`worklogs/code--v5-1-guardrail-retro-report-2026-04-19.md`），窗口內 🔴 0 / 🟡 4（皆低嚴重度，結論未擴散）。Cowork（被告）交叉重驗 4 案採信全數 🟡；Step 3「空中樓閣第 3 次」書面痕跡不存在，屬對話瞬時判斷。落地：SKILL.md v5.3 固化 C4 邊界（來源 vs 方式 🟢/🟡/🔴）+ CHANGELOG.md v5.3 條目 + PENDING.md 加使用者級 skill 同步待辦（🔴 Code/Paul 執行，方案 B 短期 / C 長期）。Cowork 新增 2 洞：N=3 樣本偏小應改語措、「對話瞬時判斷無書面痕跡」屬結構盲區記入 .auto-memory 備未來 C6/E1 候選。不升 E1、不觸發 v5.3 視窗 Code+Cowork
