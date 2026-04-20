@@ -5,6 +5,23 @@
 
 ---
 
+## C 層 v1.0（2026-04-20，對齊 A 層 v5.6）
+
+**主題**：C 層（Claude.ai Personal Skill）從 v4.13 冷凍版獨立裁切為 Chat 專用 adaptation。
+
+- **產出**：`docs/governance/c-layer-snapshot.md`（621 行），Paul 手動貼到 Claude.ai Personal Skill。
+- **設計原則**：自足性（Chat 不依賴子檔案）、角色邊界明確（只放 Chat 需要的規則）、更新韌性（≥2 minor version 未同步觸發警告）、版本透明（獨立版本線 + 對齊標注）。
+- **三方審查**：Chat 5 題 + Code 4 題，共 9 項決策全部達成共識後動手。
+- **從 v4.13 搬回**：設計原則（四動機 + 兩目標 + 三錨點）、術語定義、版本號規則、三元角色對比表、Learned Preferences。
+- **從 v5.6 新增搬入**：治理複雜度上界、護欄主題碼命名、C5 SSoT 重驗、剛性核查完整版（類別 A+B）、憲法五條 inline 速記。
+- **Chat 審查新增**：版本警告觸發規則（≥2 minor）、Chat 否決條件速查表、handoff 完整命名範例。
+- **Code 審查新增**：A 層 SKILL.md 頭部 C 層說明、snapshot 存 `docs/governance/` 用 git diff 追蹤。
+- **刪掉不放**：護欄 #14/#15 完整執行程序、Cowork 開場 Checklist 完整版、Metrics SOP、Worklog 分層歸檔、Close Protocol 完整版。
+
+**對齊憲法**：第二條（載體對等）——C 層是下游 adaptation 不逆流；第四條（記憶層次）——inline 憲法速記帶 `[派生]` 標注，SSoT 在 ADR。
+
+---
+
 ## v5.6（2026-04-20）
 
 **主題**：R1 剛性核查觸發句型擴充——從「ADR 清單類」擴展到「版本號 / 清單 / 時序狀態」全類精確事實。
