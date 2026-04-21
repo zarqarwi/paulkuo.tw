@@ -3,35 +3,65 @@
 
 const CF_GRAPHQL_ENDPOINT = 'https://api.cloudflare.com/client/v4/graphql';
 
-// ── AI/Bot Crawler 分類 ──
+// ── Bot 分類：三軌 Agentic SEO 體系 ──
 
-const AI_CRAWLERS = [
+// LLM Crawler：大型語言模型的抓取（訓練資料、線上檢索、Agentic browsing）
+const LLM_CRAWLERS = [
   { pattern: /GPTBot/i, name: 'GPTBot' },
   { pattern: /ChatGPT-User/i, name: 'ChatGPT' },
+  { pattern: /OAI-SearchBot/i, name: 'OAI-SearchBot' },
   { pattern: /ClaudeBot/i, name: 'ClaudeBot' },
   { pattern: /Claude-Web/i, name: 'Claude' },
   { pattern: /anthropic-ai/i, name: 'Anthropic' },
-  { pattern: /Google-Extended/i, name: 'Google-Extended' },
-  { pattern: /Googlebot/i, name: 'Googlebot' },
-  { pattern: /Bingbot/i, name: 'Bingbot' },
-  { pattern: /Bytespider/i, name: 'Bytespider' },
-  { pattern: /PetalBot/i, name: 'PetalBot' },
-  { pattern: /Applebot/i, name: 'Applebot' },
   { pattern: /PerplexityBot/i, name: 'PerplexityBot' },
+  { pattern: /Perplexity-User/i, name: 'Perplexity-User' },
+  { pattern: /Bytespider/i, name: 'Bytespider' },
   { pattern: /Cohere-ai/i, name: 'Cohere' },
   { pattern: /Meta-ExternalAgent/i, name: 'Meta' },
   { pattern: /CCBot/i, name: 'CCBot' },
-  { pattern: /DataForSeoBot/i, name: 'DataForSeo' },
+  { pattern: /Google-Extended/i, name: 'Google-Extended' },
+  { pattern: /Applebot-Extended/i, name: 'Applebot-Extended' },
+  { pattern: /Amazonbot/i, name: 'Amazonbot' },
+  { pattern: /YouBot/i, name: 'YouBot' },
+  { pattern: /Diffbot/i, name: 'Diffbot' },
+];
+
+// Search Engine：傳統搜尋引擎爬蟲（Applebot-Extended 必須在 LLM 先匹配，此處安全）
+const SEARCH_CRAWLERS = [
+  { pattern: /Googlebot/i, name: 'Googlebot' },
+  { pattern: /Bingbot/i, name: 'Bingbot' },
+  { pattern: /Applebot/i, name: 'Applebot' },
+  { pattern: /DuckDuckBot/i, name: 'DuckDuckBot' },
+  { pattern: /Baiduspider/i, name: 'Baidu' },
+  { pattern: /YandexBot/i, name: 'Yandex' },
+  { pattern: /PetalBot/i, name: 'PetalBot' },
+  { pattern: /Sogou/i, name: 'Sogou' },
+];
+
+// SEO Tools：第三方 SEO / 行銷分析工具（背景雜訊，不算入 LLM KPI）
+const SEO_TOOLS = [
   { pattern: /AhrefsBot/i, name: 'Ahrefs' },
   { pattern: /SemrushBot/i, name: 'Semrush' },
+  { pattern: /DataForSeoBot/i, name: 'DataForSeo' },
+  { pattern: /MJ12bot/i, name: 'Majestic' },
+  { pattern: /MegaIndex/i, name: 'MegaIndex' },
+  { pattern: /BLEXBot/i, name: 'BLEXBot' },
+  { pattern: /serpstatbot/i, name: 'Serpstat' },
 ];
 
 const GENERIC_BOT_RE = /bot|crawler|spider|scraper|curl|wget|python|go-http|headless|phantom|selenium/i;
 
 function classifyBot(ua) {
   if (!ua || ua === 'unknown') return { isBot: true, type: 'unknown', name: 'unknown' };
-  for (const c of AI_CRAWLERS) {
-    if (c.pattern.test(ua)) return { isBot: true, type: 'ai', name: c.name };
+  // 順序重要：LLM 先（含 Applebot-Extended、Google-Extended）→ Search → SEO Tools
+  for (const c of LLM_CRAWLERS) {
+    if (c.pattern.test(ua)) return { isBot: true, type: 'llm', name: c.name };
+  }
+  for (const c of SEARCH_CRAWLERS) {
+    if (c.pattern.test(ua)) return { isBot: true, type: 'search', name: c.name };
+  }
+  for (const c of SEO_TOOLS) {
+    if (c.pattern.test(ua)) return { isBot: true, type: 'seo_tool', name: c.name };
   }
   if (GENERIC_BOT_RE.test(ua)) return { isBot: true, type: 'generic', name: 'other' };
   return { isBot: false, type: 'human', name: null };
@@ -655,12 +685,14 @@ export async function handleVisitBeacon(request, env, corsHeadersFn) {
     let botData;
     try {
       const raw = await env.TICKER_KV.get(botKey);
-      botData = raw ? JSON.parse(raw) : { total: 0, ai: 0, generic: 0, byName: {} };
-    } catch { botData = { total: 0, ai: 0, generic: 0, byName: {} }; }
+      botData = raw ? JSON.parse(raw) : { total: 0, llm: 0, search: 0, seo_tool: 0, generic: 0, ai: 0, byName: {} };
+    } catch { botData = { total: 0, llm: 0, search: 0, seo_tool: 0, generic: 0, ai: 0, byName: {} }; }
 
     botData.total += 1;
-    if (botInfo.type === 'ai') botData.ai += 1;
-    else botData.generic += 1;
+    if (botInfo.type === 'llm')           { botData.llm = (botData.llm || 0) + 1; botData.ai = (botData.ai || 0) + 1; }
+    else if (botInfo.type === 'search')   { botData.search = (botData.search || 0) + 1; }
+    else if (botInfo.type === 'seo_tool') { botData.seo_tool = (botData.seo_tool || 0) + 1; }
+    else                                  { botData.generic = (botData.generic || 0) + 1; }
     botData.byName[botInfo.name] = (botData.byName[botInfo.name] || 0) + 1;
 
     await env.TICKER_KV.put(botKey, JSON.stringify(botData), { expirationTtl: 86400 * 35 });
@@ -774,7 +806,7 @@ export async function fetchZoneUniqueVisitors(env) {
 export async function aggregateBotAnalytics(env) {
   const now = new Date();
   const daily = [];
-  let total30d = { total: 0, ai: 0, generic: 0 };
+  let total30d = { total: 0, llm: 0, search: 0, seo_tool: 0, generic: 0, ai: 0 };
   const byNameAll = {};
 
   for (let i = 0; i < 31; i++) {
@@ -785,33 +817,42 @@ export async function aggregateBotAnalytics(env) {
       const raw = await env.TICKER_KV.get(`analytics:bot-visits:${dateStr}`);
       if (raw) {
         const parsed = JSON.parse(raw);
-        daily.unshift({ date: dateStr, total: parsed.total, ai: parsed.ai, generic: parsed.generic, estimated: parsed.estimated || 0, backfilled: !!parsed.backfilled });
+        daily.unshift({ date: dateStr, total: parsed.total, llm: parsed.llm || 0, search: parsed.search || 0, seo_tool: parsed.seo_tool || 0, generic: parsed.generic || 0, ai: parsed.ai || 0, estimated: parsed.estimated || 0, backfilled: !!parsed.backfilled, byName: parsed.byName || {} });
         total30d.total += parsed.total;
-        total30d.ai += parsed.ai;
-        total30d.generic += parsed.generic;
+        total30d.llm += parsed.llm || 0;
+        total30d.search += parsed.search || 0;
+        total30d.seo_tool += parsed.seo_tool || 0;
+        total30d.generic += parsed.generic || 0;
+        total30d.ai += parsed.ai || 0;
         if (parsed.byName) {
           for (const [name, count] of Object.entries(parsed.byName)) {
             byNameAll[name] = (byNameAll[name] || 0) + count;
           }
         }
       } else {
-        daily.unshift({ date: dateStr, total: 0, ai: 0, generic: 0 });
+        daily.unshift({ date: dateStr, total: 0, llm: 0, search: 0, seo_tool: 0, generic: 0, ai: 0 });
       }
     } catch {}
   }
 
+  const classifiedTotal = Object.values(byNameAll).reduce((a, b) => a + b, 0);
   const topCrawlers = Object.entries(byNameAll)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15)
     .map(([name, count]) => ({
       name,
       count,
-      percent: total30d.total > 0 ? +(count / total30d.total * 100).toFixed(1) : 0,
+      percent: classifiedTotal > 0 ? +(count / classifiedTotal * 100).toFixed(1) : 0,
     }));
 
   const sum = (arr) => arr.reduce((acc, d) => ({
-    total: acc.total + d.total, ai: acc.ai + d.ai, generic: acc.generic + d.generic
-  }), { total: 0, ai: 0, generic: 0 });
+    total:    acc.total    + d.total,
+    llm:      acc.llm      + (d.llm      || 0),
+    search:   acc.search   + (d.search   || 0),
+    seo_tool: acc.seo_tool + (d.seo_tool || 0),
+    generic:  acc.generic  + (d.generic  || 0),
+    ai:       acc.ai       + (d.ai       || 0),
+  }), { total: 0, llm: 0, search: 0, seo_tool: 0, generic: 0, ai: 0 });
 
   const total7d = sum(daily.slice(-7));
   const total1d = sum(daily.slice(-1));
@@ -886,8 +927,9 @@ export async function handleBotBackfill(request, env, corsHeadersFn) {
 
     const botData = {
       total: botTotal,
+      llm: 0, search: 0, seo_tool: 0,
+      generic: botTotal,  // 歷史推估無法辨別類型，全算 generic 避免污染 LLM KPI
       ai: 0,
-      generic: 0,
       estimated: botTotal,
       byName: {},
       backfilled: true,
@@ -912,6 +954,69 @@ export async function handleBotBackfill(request, env, corsHeadersFn) {
     skipped,
     details: results,
   }), {
+    headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) }
+  });
+}
+
+/**
+ * 一次性歷史回填：重讀每日 bucket 的 byName，用新三軌分類規則重算計數。
+ * GET /analytics/reclass?key=FORMOSA_ADMIN_TOKEN
+ */
+export async function handleReclassify(request, env, corsHeadersFn) {
+  const url = new URL(request.url);
+  const key = url.searchParams.get('key');
+  if (key !== env.FORMOSA_ADMIN_TOKEN) {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 403, headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) }
+    });
+  }
+
+  const nameToType = {};
+  for (const c of LLM_CRAWLERS)    nameToType[c.name] = 'llm';
+  for (const c of SEARCH_CRAWLERS) nameToType[c.name] = 'search';
+  for (const c of SEO_TOOLS)       nameToType[c.name] = 'seo_tool';
+
+  const now = new Date();
+  const results = [];
+
+  for (let i = 0; i < 35; i++) {
+    const d = new Date(now);
+    d.setUTCDate(d.getUTCDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const bucketKey = `analytics:bot-visits:${dateStr}`;
+
+    try {
+      const raw = await env.TICKER_KV.get(bucketKey);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+
+      if (parsed.backfilled) {
+        results.push({ date: dateStr, skipped: 'backfilled', total: parsed.total });
+        continue;
+      }
+
+      const byName = parsed.byName || {};
+      let llm = 0, search = 0, seo_tool = 0, generic = 0;
+      for (const [name, count] of Object.entries(byName)) {
+        const type = nameToType[name];
+        if      (type === 'llm')      llm      += count;
+        else if (type === 'search')   search   += count;
+        else if (type === 'seo_tool') seo_tool += count;
+        else                          generic  += count;
+      }
+
+      const updated = { ...parsed, llm, search, seo_tool, generic, ai: llm };
+      await env.TICKER_KV.put(bucketKey, JSON.stringify(updated), { expirationTtl: 86400 * 35 });
+
+      results.push({ date: dateStr, total: parsed.total, llm, search, seo_tool, generic, sumClasses: llm + search + seo_tool + generic });
+    } catch (e) {
+      results.push({ date: dateStr, error: e.message });
+    }
+  }
+
+  await aggregateBotAnalytics(env);
+
+  return new Response(JSON.stringify({ ok: true, reclassified: results.length, results }, null, 2), {
     headers: { 'Content-Type': 'application/json', ...corsHeadersFn(request) }
   });
 }

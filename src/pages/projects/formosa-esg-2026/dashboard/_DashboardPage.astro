@@ -600,9 +600,14 @@ const linkPrefix = prefix;
       }
     });
 
-    // Crown: prefer sedan position, fallback to front
+    // Crown: prefer sedan → front → all-points median (#173)
     var crownPos = clusterData.sedan || clusterData.front;
-    if (crownPos) {
+    if (!crownPos && window._mapPoints && window._mapPoints.length > 0) {
+      var mLats = window._mapPoints.map(function(p){return p.lat;}).sort(function(a,b){return a-b;});
+      var mLngs = window._mapPoints.map(function(p){return p.lng;}).sort(function(a,b){return a-b;});
+      crownPos = { lat: mLats[Math.floor(mLats.length/2)], lng: mLngs[Math.floor(mLngs.length/2)] };
+    }
+    if (crownPos && crownPos.lat && crownPos.lng) {
       var crownPopupText = clusterData.sedan
         ? _t.mazuPopup.replace('{count}', clusterData.sedan.activeSedan)
         : _t.mazuPopupFallback;
@@ -690,8 +695,8 @@ const linkPrefix = prefix;
       crownLng = sedan.lng;
       crownPopup = _t.mazuPopup.replace('{count}', sedan.activeSedan);
       crownLabel = _t.mazuLabel.replace('{count}', sedan.activeSedan);
-    } else if (front && tail) {
-      // Fallback: median of all GPS points
+    } else {
+      // #173: Fallback to all-points median — don't require both front AND tail
       var allLats = [], allLngs = [];
       (window._mapPoints || []).forEach(function(p) { allLats.push(p.lat); allLngs.push(p.lng); });
       if (allLats.length > 0) {
