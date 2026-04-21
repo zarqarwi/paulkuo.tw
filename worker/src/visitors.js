@@ -156,12 +156,12 @@ export async function fetchAnalyticsOverview(env, { force = false } = {}) {
     return null;
   }
 
-  // 節流：6 小時內不重複查（force 時跳過）
+  // 節流：3 小時內不重複查（force 時跳過）
   if (!force) {
     const lastFetch = await env.TICKER_KV.get('analytics:lastFetch');
     if (lastFetch) {
       const elapsed = Date.now() - new Date(lastFetch).getTime();
-      if (elapsed < 6 * 3600 * 1000) {
+      if (elapsed < 3 * 3600 * 1000) {
         console.log(`analytics: skip, last fetch ${Math.round(elapsed / 60000)}min ago`);
         return null;
       }

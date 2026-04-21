@@ -437,7 +437,7 @@ async function initRoi() {
 
     var clicks = (gsc && gsc.analytics && gsc.analytics.clicks) || 0;
     var impressions = (gsc && gsc.analytics && gsc.analytics.impressions) || 0;
-    var visitors = (analytics && analytics.overview && (analytics.overview.visits || analytics.overview.humanVisits)) || 0;
+    var visitors = (analytics && analytics.overview && analytics.overview.total30d && analytics.overview.total30d.visits) || 0;
 
     document.getElementById('roiClicks').textContent = clicks.toLocaleString();
     document.getElementById('roiImpressions').textContent = impressions.toLocaleString();
