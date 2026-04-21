@@ -7,10 +7,27 @@
  * so the Pages Function in functions/ handles this instead. This worker is kept
  * in sync as a fallback for wrangler deploy mode.
  */
+const WELL_KNOWN = {
+  '/mcp.json': `{"name":"paulkuo.tw","description":"Paul Kuo's personal brand website with AI-accessible content tools","url":"https://paulkuo.tw","transport":"client-side","tools":[{"name":"get_paul_profile","description":"Returns Paul Kuo's detailed profile including background, expertise, and social links","inputSchema":{"type":"object","properties":{},"required":[]}},{"name":"search_articles","description":"Search articles by keyword, filter by content pillar, with configurable result limit","inputSchema":{"type":"object","properties":{"query":{"type":"string","description":"Search keyword"},"pillar":{"type":"string","description":"Content pillar filter"},"limit":{"type":"number","description":"Max results (default 10)"}},"required":[]}},{"name":"get_expertise_areas","description":"Browse five content pillars. When pillar is specified, also returns recent articles in that pillar.","inputSchema":{"type":"object","properties":{"pillar":{"type":"string","description":"Optional specific pillar to browse"}},"required":[]}},{"name":"get_project_portfolio","description":"Returns Paul's active projects and tools","inputSchema":{"type":"object","properties":{},"required":[]}},{"name":"contact_paul","description":"Returns contact information and opens email client","inputSchema":{"type":"object","properties":{},"required":[]}}]}`,
+  '/agent-card.json': `{"name":"paulkuo.tw","description":"Paul Kuo 的個人品牌網站。內容涵蓋 AI 與秩序、循環經濟、文明與人性、創造與實踐、反思與記憶五大支柱。提供文章搜尋、作者資訊查詢、專案作品集瀏覽等 AI 互動功能。","url":"https://paulkuo.tw","provider":{"organization":"Paul Kuo","url":"https://paulkuo.tw"},"version":"1.0.0","capabilities":{"streaming":false,"pushNotifications":false},"defaultInputModes":["text/plain"],"defaultOutputModes":["application/json","text/plain"],"skills":[{"id":"get_paul_profile","name":"Author profile","description":"Get Paul Kuo's background, expertise areas, and social profiles"},{"id":"search_articles","name":"Article search","description":"Search articles by keyword or content pillar, with limit control"},{"id":"get_expertise_areas","name":"Expertise and content pillars","description":"Browse Paul's five content pillars with optional article listings per pillar"},{"id":"get_project_portfolio","name":"Project portfolio","description":"View Paul's active projects and tools including Agora Plaza and CircleFlow"},{"id":"contact_paul","name":"Contact","description":"Get Paul's contact information and open email"}]}`,
+};
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const ua = request.headers.get('user-agent') || '';
+
+    // Serve .well-known/ files directly (Cloudflare Assets doesn't serve dot-directories)
+    if (url.pathname.startsWith('/.well-known/')) {
+      const key = url.pathname.replace('/.well-known', '');
+      const body = WELL_KNOWN[key];
+      if (body) {
+        return new Response(body, {
+          status: 200,
+          headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+        });
+      }
+    }
 
     // Only intercept social crawlers on tracker page with ?u= param
     if (
