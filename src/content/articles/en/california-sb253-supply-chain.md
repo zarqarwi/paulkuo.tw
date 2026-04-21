@@ -188,6 +188,30 @@ This is also why I believe Taiwan companies shouldn't treat SB 253 as "yet anoth
 
 ---
 
+## SB 253 FAQ for Taiwan Suppliers
+
+**Q1: I'm just a Taiwan supplier — will SB 253 really affect me?**
+
+Yes, but not because California regulators will come knocking on your door directly. The reach comes through your customers' procurement contracts and supplier requirements. If your key customers include companies that operate in California with global annual revenue ≥ $1 billion, they are likely covered by SB 253 — which means you'll be pulled into their Scope 3 data collection.
+
+**Q2: What's the timeline? How much time do I have to prepare?**
+
+SB 253 requires covered companies to disclose Scope 1 and 2 emissions starting in 2026, with full Scope 3 value chain emissions added in 2027. CARB has set the first hard deadline: the initial Scope 1 and 2 reports must be submitted by August 2026, with Scope 3 phased in after that. In practical terms, suppliers have roughly two to three fiscal years to build their capabilities.
+
+**Q3: What data will my customers actually ask for? Will it get demanding right away?**
+
+Initially, most customers will start with rougher information: spend data by category, basic product-level carbon estimates, and standardized questionnaires. But as 2026 and 2027 reporting years approach — and as third-party assurance requirements tighten — more brands will start requesting specific product line carbon footprints, process energy consumption data, and raw material and logistics information, often specifying that calculation methods must conform to GHG Protocol, ISO 14064/14067, or similar international standards.
+
+**Q4: What's the worst that can happen if I don't provide data?**
+
+SB 253 doesn't directly penalize Taiwan suppliers — it penalizes the covered companies in California. But in practice, if you persistently can't provide the carbon data your customers need, or if your data quality is consistently poor, your risk rating in their supplier assessments will climb. Short-term: you get flagged as a "high uncertainty" supplier. Long-term: during contract renewals or new procurement cycles, you may find yourself quietly replaced by a competitor whose carbon data is more mature — without anyone saying it out loud. That's worse than a fine.
+
+**Q5: So what's the first step I should actually take?**
+
+Don't try to produce a perfect carbon footprint report for all your products in one shot. A more realistic starting point: get your existing energy, materials, and logistics data into a state where it can actually be found and calculated; pick one or two product lines most important to your key customers and run a complete pilot inventory from start to finish; and check whether any of your existing accountants, inspection bodies, or consultants already work on GHG inventories or SB 253/IFRS S2 — and schedule a conversation. Get these three things done, and when customers start sending SB 253/Scope 3 questionnaires and templates between 2025 and 2027, you won't be the supplier who can only respond with "I'll look into it."
+
+---
+
 ## Further Reading
 
 - [Dutta, S., Hwang, J. & Patatoukas, P.N. (2026). Full emissions disclosure under California Senate Bill 253 could change carbon evaluations and redirect investment. *Communications Sustainability* 1, 42.](https://doi.org/10.1038/s44458-026-00051-9)
