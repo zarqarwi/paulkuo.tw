@@ -73,6 +73,28 @@ const wikiSchema = z.object({
   raw_source_path: z.string().optional(),
   raw_source_type: z.string().optional(),
   raw_note_id: z.string().optional(),
+  // Enrichment fields (populated by wiki-enrich.cjs)
+  enriched_at: z.string().optional(),
+  enriched_by: z.string().optional(),
+  summary: z.string().optional(),
+  key_points: z.array(z.string()).optional(),
+  quotes: z.array(z.object({
+    text: z.string(),
+    timestamp: z.string(),
+  })).optional(),
+  chapters: z.array(z.object({
+    title: z.string(),
+    start: z.string(),
+    summary: z.string(),
+  })).optional(),
+  concept_links: z.object({
+    matched: z.array(z.string()),
+    candidates: z.array(z.object({
+      slug_zh: z.string(),
+      title: z.string(),
+      reason: z.string(),
+    })),
+  }).optional(),
 });
 
 const wiki_concepts = defineCollection({
