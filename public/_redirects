@@ -1,3 +1,6 @@
+/.well-known/mcp.json /.well-known/mcp.json 200
+/.well-known/agent-card.json /.well-known/agent-card.json 200
+
 # Cloudflare Pages rewrites for dynamic client-side routes
 /tools/builders-scorecard/eval/  /tools/builders-scorecard/eval/index/index.html  200
 
