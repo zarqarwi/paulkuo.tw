@@ -221,3 +221,64 @@ E2 批次時用 `--force` 覆寫這支，方便對比修正前後的 matched 差
 - **為何選項 A 勝出**：frontmatter 風格一致，其他字串欄位（如 `enriched_by: haiku-4.5`）Code 這次也有加引號嗎？如果沒有，順便一起補。統一風格對未來人眼維護友善。
 - **為何堅持重跑驗收**：prompt 改完沒實測 = 不知道 matched 真的有收斂。只有 25 支可以試錯，每支都寶貴。
 - **為何保留驗收樣本**：對比修正前後的 diff 是 prompt engineering 的最好證據。Code 也能從中學到 Haiku 放任模式長什麼樣。
+---
+
+## Code 回報（2026-04-21，commit `8741187`）
+
+### 批次統計
+
+| 指標 | 數值 |
+|------|------|
+| 總處理 | 29 支（實際比 handoff 估計多 5 支，為近期新增來源） |
+| ✓ 成功 | **26 支** |
+| ✗ 失敗 | **3 支**（見下方） |
+| Token in | 201,591 |
+| Token out | 55,323 |
+| 估算成本 | ~$0.04（Haiku 4.5 定價） |
+
+### 驗收樣本前後對比：`youtube-8pncy425QqQ-ai`
+
+| | E1 寫入（修正前） | E2 寫入（修正後） |
+|--|-----------------|-----------------|
+| matched 數量 | 6 個 | **3 個** |
+| matched 內容 | ai-embodiment, human-ai-collaboration, build-for-models, enterprise-ai-adoption, one-person-team, learning-as-meta-skill | ai-embodiment, human-ai-collaboration, build-for-models |
+| enriched_at 引號 | ❌ 無引號 → build 失敗 | ✅ `"2026-04-21"` |
+| enriched_by 引號 | ❌ 無引號 | ✅ `"haiku-4.5"` |
+
+備注：`build-for-models` 仍保留（影片確實有討論 AI 驅動的空間智能建模工具），`one-person-team` 與 `learning-as-meta-skill` 成功移入 candidates reason。
+
+### 3 支隨機抽樣品質確認
+
+**[1] `youtube-TUwxkihxHVE-aihermes-agent`（Hermes Agent 開源框架）**
+- summary：約 310 字，凝練完整 ✅
+- matched：`[one-person-team, human-ai-collaboration, ai-agent-economy]` — 核心 3 個 ✅
+- slug 命名：candidates 全英文 kebab-case（`gepa-framework`, `multi-agent-orchestration`）✅
+
+**[2] `youtube-fX3r2Bor-NQ-gemma-4-ai`（Gemma 4 本地 AI）**
+- summary：約 305 字 ✅
+- matched：`[build-for-models, one-person-team, enterprise-ai-adoption]` ✅
+- slug 命名：英文術語正確 ✅
+
+**[3] `youtube-g-pQROZs2bM-aiagi`（Hassabis AGI 訪談）**
+- summary：約 295 字，論點結構清晰 ✅
+- matched：`[ai-capabilities-benchmark, ai-medical-biotech, harness-engineering]` ✅
+- slug 命名：`digital-twin-drug-discovery`, `international-ai-safety-framework` 皆英文 ✅
+
+### 失敗案例（3 支）
+
+| slug | 原因 |
+|------|------|
+| `youtube-PNtZ9GqCXA8-opus-47-mythos` | Transcript too short or missing（< 50 chars） |
+| `youtube-PloqQhjxzDc-30b6000-ai` | Transcript too short or missing |
+| `youtube-Po6xqJsCook-claude-mem-ai-agent` | Transcript too short or missing |
+
+三支均為空 stub（總檔案 < 900 bytes），為 ingest 階段尚未填入逐字稿的未完成來源。建議 E3 前先補逐字稿，再重跑 enrichment。
+
+### 新增說明（非預期發現）
+
+- **`raw_source_type` 缺失導致 getnote 被誤撈**：getnote 系列來源無 `raw_source_type` 欄位，CLI 原 default 為 `youtube`，導致 `--type=youtube` 也掃到 getnote。已修正為：`raw_source_type` → `source_type` → 無 default（改為空字串不匹配）。
+- **實際批次 29 支**：handoff 估計 24 支，近期新增 5 支 YouTube 來源，正常。
+
+### 狀態
+
+E2 全部完成，build ✅ 548 頁，push `8741187`。Cowork 可抽查品質後決定是否進 E3。
