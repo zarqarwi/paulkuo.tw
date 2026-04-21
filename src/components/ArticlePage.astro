@@ -14,7 +14,6 @@ import { calcReadingTime } from '../utils/readingTime';
 import { getArticleEntities } from '../utils/entities';
 import ArticleCost from '../components/ArticleCost.astro';
 import ArticleComments from '../components/ArticleComments.tsx';
-import { personSchema, websiteSchema } from '../data/siteSchema';
 
 interface Props {
   article: any;
@@ -78,8 +77,8 @@ const mobileLangLinks = {
 const schemaJson = JSON.stringify({
   "@context": "https://schema.org",
   "@graph": [
-    personSchema,
-    websiteSchema,
+    { "@id": `${SITE.url}/#person` },
+    { "@id": `${SITE.url}/#website` },
     {
       "@type": "BlogPosting",
       "@id": `${articleUrl}#article`,

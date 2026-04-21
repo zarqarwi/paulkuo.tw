@@ -8,7 +8,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLAR_MAP, SITE } from '../config';
 import { LANGUAGES, type LangKey } from '../i18n';
 import { calcReadingTime } from '../utils/readingTime';
-import { personSchema, websiteSchema } from '../data/siteSchema';
 
 interface Props {
   lang: LangKey;
@@ -30,8 +29,8 @@ const basePath = L.pathPrefix || '';
 const blogSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@graph": [
-    personSchema,
-    websiteSchema,
+    { "@id": `${SITE.url}/#person` },
+    { "@id": `${SITE.url}/#website` },
     {
       "@type": "CollectionPage",
       "@id": `${SITE.url}${basePath}/blog#page`,
