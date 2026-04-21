@@ -1900,11 +1900,11 @@
     }
   },
   "california-sb253-supply-chain.md": {
-    "sourceHash": "22b875411b33",
+    "sourceHash": "5a7882d851bc",
     "translations": {
       "en": {
-        "hash": "f8bbd9b0b11d",
-        "translatedAt": "2026-04-21T05:36:26.663Z",
+        "hash": "0ed4e768f7c0",
+        "translatedAt": "2026-04-21T05:59:40.817Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
