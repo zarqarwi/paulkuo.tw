@@ -67,13 +67,16 @@ node scripts/wiki-enrich.cjs --force --source youtube-OxJzRU-6tuk-OxJzRU-6tuk
 
 ---
 
-## Code 回報區塊（待填）
+## Code 回報區塊
 
 ```
-驗收時間：
-commit sha：
+驗收時間：2026-04-22
+commit sha：ad73e0b（rebase 後 push sha，原始 commit 3bd2128）
 睡眠影片結果：
-  matched: 
-  wrong_pillar_suspected: 
-對照組（群核 AI）matched：
+  matched: []  ✅
+  wrong_pillar_suspected: true  ✅
+  candidates: sleep-science-chronobiology（首項說明「主題與現有 concept 清單無核心對齊」）✅
+對照組（群核 AI youtube-8pncy425QqQ-ai）matched：[ai-embodiment, build-for-models] ✅ 無退步
 ```
+
+**結論**：E2.5.1 驗收通過，請 Cowork 放行全量 batch rerun（`--force` 重跑全部 26 支）。

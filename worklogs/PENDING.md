@@ -14,13 +14,7 @@
 
 ## 待 Code 執行
 
-- [ ] 🔴 Formosa Post-Event Issues 批次修復 → Code / Opus 4.6 (2026-04-16)
-  - 完整 handoff：`worklogs/code--formosa-post-event-batch-2026-04-16.md`
-  - Batch 1: #175 auto-close.yml injection (P2, 30min)
-  - Batch 2: #177 GPS 彰化以南 + #178 LIFF 常駐 (P1, 90min)
-  - Batch 3: #173 Dashboard 定位 + #174 AuthGate + #179 拍照 (P1+P2, 90min)
-  - ⚠️ 前提：Formosa 活動已結束或 Paul 確認可 deploy
-  - Task Size：L（3-4 hr，分三批獨立 commit + deploy + 驗證）
+- [x] ✅ Formosa Post-Event Issues 批次修復 → 已完成（2026-04-21 merge commit `530b270`，#173/#174/#177/#178/#179 全 closed）
 
 - [ ] 🟡 YouTube transcript Whisper backfill（19/23 影片）→ Code / Opus 4.6 (2026-04-16)
   - 前提：Paul 提供 `GROQ_API_KEY` 到本機環境（`export GROQ_API_KEY=xxx`）
@@ -40,6 +34,18 @@
   - 目標：Cowork workspace 警訊時間間隔延長 3×（目前 wiki-youtube-pull 產出占 workspace 大宗）
   - **前提**：當前轉檔批次跑完再動（Paul 2026-04-19 明示不要打斷進行中的轉檔）
   - 來源：2026-04-19 workspace 警訊 L3 裁決 / `worklogs/cowork--workspace-cleanup-diagnostic-2026-04-19.md` 建議 A
+
+- [ ] 🟡 AI Ready JSON-LD 缺口（+8）→ Code / Sonnet (2026-04-21)
+  - 問題 A：eval-worker 抽樣 /articles，但 /articles 301 redirect 到 /blog，eval 不追蹤 redirect → 0 schemas
+  - 問題 B：Article property_completeness 顯示 0/0（沒有文章頁被抽樣）
+  - 選項 A：讓 eval-worker 改為直接抽樣 /blog（而非 /articles）→ 改 eval-worker/src/index.ts
+  - 選項 B：在 /articles/ 直接加 CollectionPage schema（而非 redirect），讓 eval 能抽到
+  - 建議先確認 eval-worker 抽樣的 URL 清單再決定
+
+- [ ] 🟡 AI Ready AI Comprehension Q3 精度修正（+2）→ Code / Sonnet (2026-04-21)
+  - Q3「content pillars 數量」在 eval 標記為錯誤
+  - 確認 llms.txt 目前描述 paulkuo 有幾個 content pillars，和 benchmark_questions.yaml 的答案是否一致
+  - 如有不一致：更新 llms.txt 或 benchmark_questions.yaml 答案
 
 ## 待 Cowork 執行
 

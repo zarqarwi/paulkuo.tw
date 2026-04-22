@@ -1,17 +1,18 @@
 {
-  "updated": "2026-04-14T14:10:03+08:00",
+  "updated": "2026-04-22T14:10:04+08:00",
   "source": "timing-sqlite-direct",
   "method": "SQLite DB + bundleIdentifier/path/title matching",
   "api_version": "v4",
   "month_summary": {
     "period": "2026-04",
-    "total_ai_hours": 58.9,
-    "active_days": 14,
-    "avg_daily": 4.2,
+    "total_ai_hours": 85.9,
+    "active_days": 22,
+    "avg_daily": 3.9,
     "platform_breakdown": {
-      "Claude": 54.73,
-      "ChatGPT": 3.1,
-      "Gemini": 1.09
+      "Claude": 79.73,
+      "ChatGPT": 4.59,
+      "Gemini": 1.57,
+      "Perplexity": 0.0
     }
   },
   "daily": [
@@ -134,6 +135,77 @@
       "breakdown": {
         "Claude": 1.59,
         "ChatGPT": 0.09
+      }
+    },
+    {
+      "date": "2026-04-15",
+      "ai_hours": 2.32,
+      "breakdown": {
+        "Claude": 1.93,
+        "ChatGPT": 0.27,
+        "Gemini": 0.12
+      }
+    },
+    {
+      "date": "2026-04-16",
+      "ai_hours": 4.09,
+      "breakdown": {
+        "Claude": 3.82,
+        "ChatGPT": 0.18,
+        "Gemini": 0.08
+      }
+    },
+    {
+      "date": "2026-04-17",
+      "ai_hours": 5.36,
+      "breakdown": {
+        "Claude": 5.29,
+        "Gemini": 0.04,
+        "ChatGPT": 0.03
+      }
+    },
+    {
+      "date": "2026-04-18",
+      "ai_hours": 3.92,
+      "breakdown": {
+        "Claude": 3.69,
+        "Gemini": 0.13,
+        "ChatGPT": 0.1
+      }
+    },
+    {
+      "date": "2026-04-19",
+      "ai_hours": 4.62,
+      "breakdown": {
+        "Claude": 4.29,
+        "ChatGPT": 0.33
+      }
+    },
+    {
+      "date": "2026-04-20",
+      "ai_hours": 4.5,
+      "breakdown": {
+        "Claude": 4.17,
+        "ChatGPT": 0.32,
+        "Perplexity": 0.0,
+        "Gemini": 0.0
+      }
+    },
+    {
+      "date": "2026-04-21",
+      "ai_hours": 1.21,
+      "breakdown": {
+        "Claude": 1.0,
+        "ChatGPT": 0.11,
+        "Gemini": 0.11
+      }
+    },
+    {
+      "date": "2026-04-22",
+      "ai_hours": 0.96,
+      "breakdown": {
+        "Claude": 0.81,
+        "ChatGPT": 0.15
       }
     }
   ]
