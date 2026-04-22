@@ -5,11 +5,12 @@ pillar: life
 visibility: internal
 created: 2026-04-05
 updated: 2026-04-06
-source_count: 10
+source_count: 20
 confidence: medium
 tags: [情緒管理, 心理學, 自我認知, 存在感, 耦合理論]
 links_to: [human-judgment-in-ai-era, skill-development, narrative-power]
-linked_from: [article-addiction-economy-lonely-generation, article-burnout-society-self-exploitation, article-cioran-on-suffering-and-clarity, article-dharma-instrument-mother-grace, article-eq-group-education, article-homeschool-gentle-resistance, article-life-you-envy-is-miracle, article-quiet-edge-thirteen-notes, getnote-050928-death-education-yin-ye, getnote-113736-sdt-agency-guide]
+linked_from: [getnote-910880-emotional-self-awareness, getnote-349784-cognitive-decoupling-conflict, article-homeschool-gentle-resistance, getnote-107776-midlife-growth-social-health, getnote-580464-growth-through-adversity, article-eq-group-education, article-addiction-economy-lonely-generation, getnote-017472-three-selves, getnote-842472-fortune-telling-psychology, youtube-clFpi7_BDf8-clFpi7_BDf8, getnote-113736-sdt-agency-guide, getnote-379272-cognitive-decoupling-emotion-mgmt, article-cioran-on-suffering-and-clarity, getnote-051360-cognitive-decoupling-note, article-quiet-edge-thirteen-notes, article-burnout-society-self-exploitation, article-life-you-envy-is-miracle, getnote-050928-death-education-yin-ye, clip-ncstate-growth-mindset-entrepreneurs, article-dharma-instrument-mother-grace]
+paul_perspective: ""
 ---
 
 ## 摘要

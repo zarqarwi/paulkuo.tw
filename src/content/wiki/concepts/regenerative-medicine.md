@@ -5,11 +5,12 @@ pillar: ai
 visibility: internal
 created: 2026-04-05
 updated: 2026-04-05
-source_count: 3
+source_count: 0
 confidence: medium
 tags: [幹細胞, 外泌體, 再生醫療, 自動化培養, 國際合作]
 links_to: [ai-medical-biotech, enterprise-ai-adoption]
-linked_from: [ai-medical-biotech]
+linked_from: []
+paul_perspective: ""
 ---
 
 ## 摘要

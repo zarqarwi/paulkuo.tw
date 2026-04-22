@@ -10,6 +10,7 @@ confidence: low
 tags: [去增長, 共有財, 齋藤幸平, UBI, 資本主義批判, 生態經濟]
 links_to: [circular-economy-practice, human-judgment-in-ai-era]
 linked_from: [getnote-171560-saito-kohei-anthropocene-capital]
+paul_perspective: ""
 ---
 
 ## 摘要

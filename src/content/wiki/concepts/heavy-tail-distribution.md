@@ -5,11 +5,12 @@ pillar: life
 visibility: public
 created: 2026-04-05
 updated: 2026-04-06
-source_count: 11
+source_count: 14
 confidence: medium
 tags: [重尾分布, 冪次法則, 馬太效應, 極端值, 正向反饋]
 links_to: [ai-agent-economy, one-person-team, steady-state-survival-trap]
-linked_from: [getnote-874728-heavy-tail-extreme-values, getnote-566200-100year-life, getnote-292096-wanweigang-thinking-tools-intro, getnote-817040-2028-ai-slaughterhouse, article-ai-slaughterhouse-2028-crisis-scenario, article-falsification-market-crisis, article-financial-crisis-market-humility, article-market-crash-humility, article-pandemic-liquid-world, article-riding-wave-or-drowning, clip-long-tail-of-ai-contrary]
+linked_from: [clip-heavy-tails-entrepreneurship-power-law, article-ai-slaughterhouse-2028-crisis-scenario, getnote-221528-uncertainty-as-meaning-fuel, article-riding-wave-or-drowning, getnote-597672-narrative-storytelling, getnote-487488-agency-vs-steady-state, article-pandemic-liquid-world, getnote-874728-heavy-tail-extreme-values, article-market-crash-humility, article-financial-crisis-market-humility, clip-long-tail-of-ai-contrary, article-falsification-market-crisis, clip-nature-competitive-endeavors-heavy-tails, getnote-495048-steady-state-survival-trap]
+paul_perspective: ""
 ---
 
 ## 摘要

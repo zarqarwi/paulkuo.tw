@@ -5,11 +5,12 @@ pillar: circular
 visibility: internal
 created: 2026-04-05
 updated: 2026-04-06
-source_count: 14
+source_count: 19
 confidence: high
 tags: [循環經濟, 回收模式, ESG, 物資再利用, 環保創新]
 links_to: [enterprise-ai-adoption]
-linked_from: [getnote-043024-secondhand-recycling-logistics, getnote-479752-taiwan-environmental-projects, getnote-705576-rockwool-recycling, getnote-838824-circular-economy-decluttering, getnote-384168-circular-economy-recycling-models, getnote-482512-organizer-lecture-business, getnote-963240-material-substitution-fire, getnote-866496-environmental-innovation-npo, article-formosa-esg-2026-low-carbon-pilgrimage, article-taiwan-semiconductor-tenfold-leap, article-world-outlook-2030, clip-taiwan-circular-economy-2050-roadmap, clip-taiwan-semiconductor-water-sustainability, clip-pcb-circular-economy-profitability, degrowth-commons]
+linked_from: [clip-pcb-circular-economy-profitability, clip-taiwan-circular-economy-2050-roadmap, article-taiwan-semiconductor-tenfold-leap, getnote-043024-secondhand-recycling-logistics, getnote-963240-material-substitution-fire, getnote-479752-taiwan-environmental-projects, article-world-outlook-2030, clip-taiwan-insight-water-nexus, getnote-174608-employee-health-longterm-care, getnote-705576-rockwool-recycling, clip-top10-carbon-accounting-platforms-2026, article-kevin-kelly-mirror-world-third-information-revolution, getnote-482512-organizer-lecture-business, getnote-270152-tech-sports-platform-collab, getnote-838824-circular-economy-decluttering, getnote-384168-circular-economy-recycling-models, article-formosa-esg-2026-low-carbon-pilgrimage, clip-taiwan-semiconductor-water-sustainability, getnote-866496-environmental-innovation-npo]
+paul_perspective: ""
 ---
 
 ## 摘要

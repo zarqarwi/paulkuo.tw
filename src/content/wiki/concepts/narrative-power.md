@@ -5,11 +5,12 @@ pillar: life
 visibility: public
 created: 2026-04-05
 updated: 2026-04-06
-source_count: 13
+source_count: 19
 confidence: medium
 tags: [敘事力, 第一性原理, 意義建構, 溝通理性, 故事思維]
 links_to: [human-judgment-in-ai-era, human-ai-collaboration, skill-development]
-linked_from: [getnote-311832-narrative-first-principle, getnote-597672-narrative-storytelling, getnote-285216-habermas-communicative-rationality, article-addiction-economy-lonely-generation, article-ai-slaughterhouse-2028-crisis-scenario, article-china-cultural-discourse-power, article-digital-colonialism-platforms, article-facebook-algorithm-humanity, article-reformation-printing-politics, article-traffic-beyond-currency, getnote-050928-death-education-yin-ye, getnote-443632-hard-constraints-ai-interaction, getnote-218984-constraint-respect-action, content-moat]
+linked_from: [getnote-311832-narrative-first-principle, article-negentropy-humanistic-practice, article-elite-arrogance-youth, article-ai-slaughterhouse-2028-crisis-scenario, getnote-077512-wanweigang-qa-constraints, clip-cambridge-ai-certainty-trap, article-addiction-economy-lonely-generation, getnote-842472-fortune-telling-psychology, getnote-597672-narrative-storytelling, article-china-cultural-discourse-power, getnote-817040-2028-ai-slaughterhouse, clip-time-pope-leo-name-warning, article-agi-becoming-complete-human, getnote-218984-constraint-respect-action, article-facebook-algorithm-humanity, article-traffic-beyond-currency, getnote-187800-value-monetization, clip-nature-competitive-endeavors-heavy-tails, getnote-050928-death-education-yin-ye]
+paul_perspective: ""
 ---
 
 ## 摘要

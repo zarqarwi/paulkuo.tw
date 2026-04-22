@@ -5,11 +5,12 @@ pillar: ai
 visibility: public
 created: 2026-04-16
 updated: 2026-04-16
-source_count: 2
+source_count: 7
 confidence: high
 tags: [注意力經濟, AI生產力, 人月神話, 工作範式]
 links_to: [one-person-team, human-judgment-in-ai-era]
-linked_from: [getnote-343376-attention-time-paradigm, getnote-800608-attention-time-li-ning]
+linked_from: [getnote-343376-attention-time-paradigm, getnote-699320-tech-progress-paradox, article-addiction-economy-lonely-generation, article-nudity-as-language-algorithm, getnote-707232-kazike-wechat-claw-plugin, getnote-800608-attention-time-li-ning, article-social-media-value-spectrum]
+paul_perspective: ""
 ---
 
 ## 摘要

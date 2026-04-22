@@ -5,11 +5,12 @@ pillar: faith
 visibility: public
 created: 2026-04-07
 updated: 2026-04-07
-source_count: 8
+source_count: 10
 confidence: medium
 tags: [信仰與AI, 道成肉身, 具身性, AI倫理, 神學反思, 教宗]
 links_to: [human-ai-collaboration, human-judgment-in-ai-era, narrative-power]
-linked_from: [article-incarnation-ai-embodiment, article-pope-leo-xiv-ai-homily, article-reformation-printing-politics, article-god-beyond-definition, clip-ai-theology-absolute-vulnerability, clip-notre-dame-ai-faith-summit, clip-pope-leo-xiv-balanced-view-ai, article-faith-collapse-rebuild, ai-embodiment]
+linked_from: [getnote-040232-ai-incarnation-logos, article-faith-collapse-rebuild, article-faith-no-immunity, clip-ai-theology-absolute-vulnerability, clip-time-pope-leo-name-warning, article-pope-leo-xiv-ai-homily, clip-pope-leo-xiv-balanced-view-ai, clip-notre-dame-ai-faith-summit, article-incarnation-ai-embodiment, article-dharma-instrument-mother-grace]
+paul_perspective: ""
 ---
 
 ## 摘要

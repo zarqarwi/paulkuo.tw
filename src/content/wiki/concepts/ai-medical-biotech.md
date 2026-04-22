@@ -5,11 +5,12 @@ pillar: ai
 visibility: internal
 created: 2026-04-05
 updated: 2026-04-05
-source_count: 1
+source_count: 9
 confidence: medium
 tags: [醫療AI, 藥物開發, 再生醫療, 生技, 邊緣運算]
 links_to: [enterprise-ai-adoption, human-ai-collaboration, regenerative-medicine]
-linked_from: [article-personal-health-data-infrastructure]
+linked_from: [getnote-006336-stem-cell-exosome-automation, getnote-221560-japan-regenerative-medicine, getnote-898432-ai-drug-design-biotech, getnote-870072-2025-tech-of-year, getnote-286224-stanford-merlin-3d-ct-ai, getnote-782928-preventive-medicine-ai-drug, youtube-g-pQROZs2bM-aiagi, getnote-066168-ai-drug-discovery, getnote-123160-cervical-cancer-medical-data]
+paul_perspective: ""
 ---
 
 ## 摘要

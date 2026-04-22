@@ -5,11 +5,12 @@ pillar: ai
 visibility: public
 created: 2026-04-10
 updated: 2026-04-10
-source_count: 1
+source_count: 6
 confidence: low
 tags: [AI具身化, 人形機器人, 道成肉身, Logos, 感知化]
 links_to: [human-ai-collaboration, agentic-web, faith-technology-dialogue]
-linked_from: [getnote-040232-ai-incarnation-logos]
+linked_from: [getnote-040232-ai-incarnation-logos, youtube-fX3r2Bor-NQ-gemma-4-ai, clip-ai-theology-absolute-vulnerability, youtube-mphCYsZg89A-ai, youtube-8pncy425QqQ-ai, article-incarnation-ai-embodiment]
+paul_perspective: ""
 ---
 
 ## 摘要

@@ -97,6 +97,7 @@ const wikiSchema = z.object({
   }).optional(),
   wrong_pillar_suspected: z.boolean().optional(),
   enrichment_notes: z.string().optional(),
+  paul_perspective: z.string().optional(),
 });
 
 const wiki_concepts = defineCollection({

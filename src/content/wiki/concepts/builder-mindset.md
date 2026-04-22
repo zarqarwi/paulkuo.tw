@@ -5,11 +5,12 @@ pillar: startup
 visibility: public
 created: 2026-04-07
 updated: 2026-04-07
-source_count: 10
+source_count: 15
 confidence: medium
 tags: [建構者, 創業心態, 行動力, 個人品牌, 斜槓, Stepping Stones]
 links_to: [one-person-team, skill-development, steady-state-survival-trap, narrative-power]
-linked_from: [article-builders-scorecard-story, article-personal-strategy-in-ai-storm, article-refuse-follower-be-builder, article-slash-career-discipline, article-overcome-fear-start-ugly, article-why-greatness-cannot-be-planned, article-traffic-beyond-currency, getnote-005824-yu-kunun-personal-ip, getnote-187800-value-monetization, getnote-171424-supply-side-positive-sum]
+linked_from: [getnote-661768-business-project-meeting, article-elite-arrogance-youth, article-slash-career-discipline, article-claude-usage-nyan-chrome-extension, article-overcome-fear-start-ugly, getnote-949040-musk-first-principles-engineer, article-builders-scorecard-story, article-why-greatness-cannot-be-planned, getnote-666072-elite-not-painful-grind, article-refuse-follower-be-builder, article-digital-colonialism-platforms, youtube-9yvP7PAunYs-openai-sora, getnote-850688-overcoming-fear-breakthrough, article-shiseido-gic-style-over-trend, getnote-799912-three-decision-formulas]
+paul_perspective: ""
 ---
 
 ## 摘要

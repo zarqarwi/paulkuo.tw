@@ -5,11 +5,12 @@ pillar: startup
 visibility: public
 created: 2026-04-16
 updated: 2026-04-16
-source_count: 3
+source_count: 9
 confidence: medium
 tags: [個人影響力, 內容創作, AI時代, 個人品牌, 第二次文藝復興]
 links_to: [one-person-team, narrative-power]
-linked_from: [getnote-732352-content-moat-inauguration, getnote-005824-yu-kunun-personal-ip, getnote-896696-saas-collapse-anthropic-trends]
+linked_from: [getnote-005824-yu-kunun-personal-ip, getnote-862976-lecture-method, getnote-406952-personal-website-ai-tools, getnote-732352-content-moat-inauguration, article-digital-colonialism-platforms, article-shiseido-gic-style-over-trend, article-traffic-beyond-currency, getnote-187800-value-monetization, article-social-media-value-spectrum]
+paul_perspective: ""
 ---
 
 ## 摘要
