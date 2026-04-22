@@ -12,6 +12,52 @@ links_to: []
 linked_from: []
 raw_source_path: "src/content/articles/moral-person-immoral-society.md"
 raw_source_type: article
+enriched_at: "2026-04-22"
+enriched_by: "haiku-4.5"
+summary: "本文反思尼布爾 1932 年經典著作《道德的人與不道德的社會》，以創業與宗教雙重視角探討結構性的罪。核心洞見：個人可擁有高度道德感，但群體——企業、國家、政黨——的行為幾乎必然自利。這非因壞人太多，而是制度邏輯系統性壓倒個人良心。好人進入壞系統不會改變系統，反而被系統改造。改革社會需要重新設計制度框架，而非寄望於道德教育或個人品格提升。該論述超越政治領域，普遍適用於企業組織與宗教團體的集體決策困境。"
+key_points:
+  - "群體不道德非源於壞人，而是制度邏輯系統性勝過個人良心"
+  - "好人進入壞系統將被系統改造，難以維持個人道德立場"
+  - "改變社會需優先改造制度框架，而非提升個人道德修養"
+  - "結構性的罪普遍存在於企業、國家、政黨等集體組織"
+  - "個人道德與群體行為存在根本脫節，需制度性設計介入"
+quotes:
+  - text: "群體的不道德不是因為壞人太多，而是因為制度的自利邏輯會系統性地壓過個人的良心——改變社會需要的不只是好人，而是好的制度"
+    timestamp: ""
+  - text: "一個好人進入壞系統，不會改變系統——系統會改變他"
+    timestamp: ""
+  - text: "個人可以有道德感，但群體——企業、國家、政黨——的行為幾乎必然自私"
+    timestamp: ""
+chapters:
+  - title: "尼布爾著作背景與核心洞見"
+    start: ""
+    summary: "介紹尼布爾 1932 年經典之作及其對個人道德與群體行為矛盾的深刻觀察"
+  - title: "結構性的罪：制度邏輯勝於個人良心"
+    start: ""
+    summary: "分析制度自利邏輯如何系統性壓倒個人道德，導致群體必然自利的現象"
+  - title: "好人無法改變壞系統的困境"
+    start: ""
+    summary: "探討道德個人進入不良制度時無力改變現狀反遭同化的悖論"
+  - title: "跨領域適用：企業、國家、宗教團體"
+    start: ""
+    summary: "論證結構性罪不限於政治領域，普遍存在於各類集體組織決策中"
+  - title: "制度改革的優先性"
+    start: ""
+    summary: "主張改變社會需優先設計良好制度框架，而非單純依賴個人道德提升"
+concept_links:
+  matched: []
+  candidates:
+    - slug_zh: "faith-technology-dialogue"
+      title: "信仰與科技的對話：從道成肉身到 AI 倫理"
+      reason: "本 source 主題與現有 concept 清單無核心對齊。該文聚焦神學倫理（尼布爾的結構性罪理論）與組織道德，屬於信仰與社會制度的交叉領域，但未涉及 AI、技術或數位時代議題。雖 faith-technology-dialogue 名稱含『信仰』，其主軸描述指向『AI 倫理』，與本文的制度倫理學問題存在本質錯位。建議獨立建立『結構性道德困境』或『制度倫理學與組織心理』之新 concept。"
+    - slug_zh: "emotional-self-awareness"
+      title: "情緒認知與自我覺察"
+      reason: "僅沾邊提及。文中涉及個人道德感與集體行為的心理脫節，但主軸非情緒管理或自我覺察實踐，而是制度結構性對道德的壓制，故歸為沾邊。"
+    - slug_zh: "enterprise-ai-adoption"
+      title: "Enterprise AI Adoption"
+      reason: "無關。文章不涉及 AI 導入企業的技術或管理問題，雖提及企業組織行為，但脈絡完全不同。"
+wrong_pillar_suspected: true
+enrichment_notes: "本 source 主題與 concept 清單無對齊，建議人工審查 pillar 分類"
 ---
 
 ## 原文摘要

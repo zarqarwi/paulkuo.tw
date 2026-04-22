@@ -12,6 +12,50 @@ links_to: []
 linked_from: []
 raw_source_path: "src/content/articles/social-media-value-spectrum.md"
 raw_source_type: article
+enriched_at: "2026-04-22"
+enriched_by: "haiku-4.5"
+summary: "Paul 從日常社群觀察整理出四種讓人停下手指的內容特質：求真的知識、向善的激勵、對美的欣賞、帶梗的幽默，光譜另一端是無止盡的自我膨脹與噪音。核心論點：演算法決定誰看到你的時代，每個人在無意識中透過選擇生產什麼內容而定義數位人格。文章關鍵洞察在於從資訊消費者到生產者的角色轉換——你的社群貼文不是單純的表達，而是在數位世界留下的軌跡與人設。這反映了注意力經濟下，內容的價值不再由發布者單獨決定，而是由演算法篩選與受眾共同建構。"
+key_points:
+  - "社群內容從知識、激勵、審美、幽默跨越到自我膨脹，形成明確的價值光譜"
+  - "每個人的貼文選擇無意識地定義了自己在數位世界的人格輪廓與影響力"
+  - "注意力經濟中，演算法決定內容可見度，內容生產者需要自覺其選擇的意義"
+  - "從被動消費者到主動生產者的轉換，要求個人對自己的數位足跡負責"
+  - "社群動態牆映照人類心理需求，內容品質直接反映生產者的價值觀與品味"
+quotes:
+  - text: "社群動態牆是人類心理需求的投射器，而你選擇生產什麼內容，就在定義你的數位人格。"
+    timestamp: ""
+  - text: "光譜的一端是求真的知識、向善的激勵、對美的欣賞、帶梗的幽默；另一端是無止盡的自我膨脹和噪音。"
+    timestamp: ""
+  - text: "在演算法決定誰看到你的時代，你選擇留下什麼軌跡？"
+    timestamp: ""
+chapters:
+  - title: "社群觀察的四種價值"
+    start: ""
+    summary: "整理讓人停下手指的四種內容特質：求真知識、向善激勵、審美欣賞、幽默梗圖"
+  - title: "價值光譜的兩個極端"
+    start: ""
+    summary: "從有意義的內容光譜另一端，到無止盡的自我膨脹與演算法噪音的對比"
+  - title: "角色轉換：從消費到生產"
+    start: ""
+    summary: "每個人從被動消費者轉為主動生產者，無意識中建構自己的數位人格與軌跡"
+  - title: "演算法時代的自我定義"
+    start: ""
+    summary: "核心問題：在演算法決定可見度的時代，你選擇留下什麼軌跡、定義什麼樣的數位人設"
+concept_links:
+  matched: [content-moat, attention-time]
+  candidates:
+    - slug_zh: "personal-knowledge-system"
+      title: "Personal Knowledge System"
+      reason: "文章強調個人選擇生產什麼內容來定義數位人格，但並未直接論述知識組織、擷取、檢索的基礎設施建設。該 concept 在此為沾邊提及而非核心軸線。"
+    - slug_zh: "narrative-power"
+      title: "敘事力：意義建構的核心能力"
+      reason: "文章涉及如何透過內容選擇建構自己的故事與人設，但論述重點在於內容價值光譜與注意力經濟，而非敘事技能本身的發展方法論，屬於橫向相關而非縱向驅動。"
+    - slug_zh: "human-judgment-in-ai-era"
+      title: "Human Judgment in AI Era"
+      reason: "演算法如何決定內容可見度的討論有涉及，但文章重點不在人類如何判斷 AI 輸出或決策，而在個人如何在演算法環境下做出內容生產選擇。"
+    - slug_zh: "數位人格建構"
+      title: "Digital Identity and Self-Presentation"
+      reason: "本文核心主軸是『選擇什麼內容就定義什麼樣的數位人格』，但提供的 concept 清單中缺乏此主題的直接對應，建議作為候選主題獨立列出。"
 ---
 
 ## 原文摘要
