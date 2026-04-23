@@ -1500,11 +1500,11 @@
     }
   },
   "kevin-kelly-mirror-world-third-information-revolution.md": {
-    "sourceHash": "e1fc1baf23da",
+    "sourceHash": "b98445fce64e",
     "translations": {
       "en": {
-        "hash": "9f40c7457ff4",
-        "translatedAt": "2026-03-02T00:52:37.021Z",
+        "hash": "28022bd201a8",
+        "translatedAt": "2026-04-23T11:39:06.451Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
