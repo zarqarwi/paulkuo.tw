@@ -52,7 +52,7 @@ Let me break down this process. Data exists in three forms: structured, semi-str
 
 What platforms and algorithms can handle perfectly extends basically only to structured data. Give it a table, and it can help you sort, filter, find outliers, and plot trend charts. This is useful, but it's still far from "decision-making."
 
-Because decision-making isn't the sum of data compilation. Decision-making is a subjective cognitive leap.
+Because decision-making is a subjective cognitive leap—data cannot supply the final step.
 
 You've read ten market reports, all data pointing toward direction A. But at yesterday's dinner, you heard an industry veteran casually mention something that made you vaguely feel direction B was right. You can't quantify the weight of that comment, can't even explain to your team why you "feel" B is better. But you made the decision in that instant.
 
