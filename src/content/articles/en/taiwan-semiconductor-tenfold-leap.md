@@ -47,9 +47,9 @@ Global semiconductor competition is often simplified to a race of process nodes�
 
 ## The Nature of Cluster Advantages
 
-The value of industrial clusters doesn't lie in "agglomeration," but in the speed of problem-solving, the density of information transmission, and the reduction of trust costs. When equipment vendors, material suppliers, design companies, and manufacturers are geographically concentrated, innovative iteration becomes routine.
+The value of industrial clusters lies in: the speed of problem-solving, the density of information transmission, and the reduction of trust costs. "Agglomeration" is the result—these are the causes. When equipment vendors, material suppliers, design companies, and manufacturers are geographically concentrated, innovative iteration becomes routine.
 
-Taiwan semiconductor's success isn't because we have the most resources, but because we allocate resources most efficiently. This is a rare structural condition: highly concentrated supply chains, a rapid-response engineering culture, and efficient flow between capital and technology. It's not coincidence—it's accumulated order over time.
+Taiwan semiconductor's success comes from resource allocation efficiency. Not necessarily having the most resources, but knowing exactly where to deploy them. This is a rare structural condition: highly concentrated supply chains, a rapid-response engineering culture, and efficient flow between capital and technology. This is accumulated order over time.
 
 ## A 10x Leap Isn't Scaling Up
 
@@ -57,7 +57,7 @@ Many people imagine growth as more production lines, more capital, more capacity
 
 **Resource efficiency optimization.** When costs rise across the board, efficiency becomes the new competitive core. Waste recovery, material reuse, energy optimization—these are no longer decorative elements in ESG reports, but economic conditions directly affecting profit margins. What I see daily at my company is exactly this—circular economy is moving from the periphery into core cost structures.
 
-**Deepening cross-border collaboration.** Global supply chains are reorganizing. Taiwan-Japan cooperation, U.S. subsidies, Southeast Asian manufacturing shifts—all are changing the industry map. Future advantages won't come from isolated competition, but from cross-border system integration capabilities. Whoever can coordinate technology, capital, and policy will define the new order.
+**Deepening cross-border collaboration.** Global supply chains are reorganizing. Taiwan-Japan cooperation, U.S. subsidies, Southeast Asian manufacturing shifts—all are changing the industry map. Future advantages lie in cross-border system integration capabilities. Whoever can coordinate technology, capital, and policy will define the new order.
 
 **Embedded intelligent decision-making.** AI is entering manufacturing floors, from yield analysis and predictive equipment maintenance to supply chain optimization. When decision models are embedded in production lines, competition is no longer just at the wafer level, but at the data level. I discussed in "[The Always-On Economy in the AI Era](/articles/ai-always-on-economy)" how when AI agents begin participating in decision-making, the basic rhythm of the economy gets compressed to frequencies humans can't react to—semiconductor manufacturing is at the forefront of this trend.
 
@@ -65,14 +65,14 @@ Many people imagine growth as more production lines, more capital, more capacity
 
 If we only look at process nodes, Taiwan's lead has time limits. But if we look at overall ecosystem efficiency, the advantage is enormous.
 
-The real battlefield isn't 2nm itself, but whether materials are renewable, whether energy can be optimized, whether supply chains are resilient, and whether capital can be allocated long-term. When these elements integrate, a 10x leap becomes possible.
+The battlefield goes deeper than 2nm: whether materials are renewable, whether energy can be optimized, whether supply chains are resilient, whether capital can be allocated long-term. When these elements integrate, a 10x leap becomes possible.
 
-In the semiconductor industry, resource consumption is massive—water, electricity, chemicals, rare metals. If recovery efficiency improves by 5%, the impact on overall profit structure far exceeds cutting 1% in personnel costs. Circularity isn't a moral proposition—it's a structural proposition. When resource reallocation becomes core capability, industry competitiveness gets rewritten.
+In the semiconductor industry, resource consumption is massive—water, electricity, chemicals, rare metals. If recovery efficiency improves by 5%, the impact on overall profit structure far exceeds cutting 1% in personnel costs. This is a structural proposition. When resource reallocation becomes core capability, industry competitiveness gets rewritten.
 
 ## Taiwan's Critical Choice
 
 Over the next decade, Taiwan has two paths: defend process advantages, or upgrade to become a system integration hub.
 
-Process advantages are moats, but also ceilings. If we only defend contract manufacturing, when AI value chains tilt toward applications and energy, moats become islands. But if we can combine manufacturing capability, intelligent capability, and circular capability, Taiwan won't just be a chip foundry hub, but a critical node in global semiconductor order.
+Process advantages are moats, but also ceilings. If we only defend contract manufacturing, when AI value chains tilt toward applications and energy, moats become islands. But if we can combine manufacturing capability, intelligent capability, and circular capability, Taiwan's opportunity is to upgrade from chip foundry hub to a critical node in global semiconductor order.
 
 A 10x leap won't happen naturally. It requires designing order.
