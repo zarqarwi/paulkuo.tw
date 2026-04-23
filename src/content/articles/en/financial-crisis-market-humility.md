@@ -81,7 +81,7 @@ Until it wasn't.
 
 The week Lehman Brothers collapsed, the global financial system nearly imploded within forty-eight hours. Those sophisticated models didn't predict this scenario because the "normal market conditions" they assumed were themselves an illusion. Market behavior under extreme conditions is completely different from normal conditions—and extreme conditions are precisely when you need models to help most.
 
-This isn't mocking those financial engineers. They were indeed brilliant, and their models were indeed effective most of the time. But "effective most of the time" and "effective at critical moments" are two different things. And markets only determine life and death at critical moments.
+This isn't mocking those financial engineers—they were indeed brilliant, and their models were indeed effective most of the time. But "effective most of the time" and "effective at critical moments" are two different things. And markets only determine life and death at critical moments.
 
 ---
 
@@ -97,7 +97,7 @@ This is why I increasingly distrust predictions and increasingly trust preparati
 
 ---
 
-I'm not saying "do nothing." Inaction isn't humility—it's surrender.
+I'm not saying "do nothing"—inaction isn't humility, it's surrender.
 
 What I mean is: true wisdom isn't knowing the answers, but admitting you don't know—then making the best preparations under the premise of not knowing.
 
