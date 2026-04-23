@@ -40,7 +40,7 @@ I admit, the title of this article might make some people uncomfortable.
 
 The word "nudity" in our culture automatically connects to eroticism, moral judgment, or political declarations of bodily liberation. But that's not what I want to discuss. I want to talk about a colder question: **In algorithm-dominated platforms, why is nudity so effective?**
 
-I'm not asking "Is nudity right or wrong?"—that's a moral question. I'm asking "Why does nudity get chosen by algorithms?"—this is a structural question.
+I'm not asking "Is nudity right or wrong?"—that's a moral question—I'm asking "Why does nudity get chosen by algorithms?"—a structural one.
 
 ## To Be Seen Is to Exist
 
@@ -54,7 +54,7 @@ What is an algorithm's job? To maximize user engagement time. What content keeps
 
 So algorithms don't "prefer" nudity. They prefer content that "makes people stop and look." And nudity happens to be one of the most efficient triggers for stopping.
 
-Within this structure, nudity transforms from "personal choice" into "survival strategy." For many creators, displaying their bodies isn't because they want to—but because if they don't, algorithms won't push their content. No push means no visibility. No visibility means no income.
+Within this structure, nudity transforms from "personal choice" into "survival strategy." For many creators, displaying their bodies isn't because they want to—but because if they don't, algorithms won't push their content. No push means no visibility, and no visibility means no income.
 
 This is a systemic reward mechanism. It won't explicitly tell you "take off your clothes," but it tells you through reach and revenue: undress, and the numbers look good.
 
@@ -66,7 +66,7 @@ On social media platforms, bodies aren't "people"—bodies are "interfaces." The
 
 What does this mean? It means the relationship between humans and algorithms is no longer just "user" and "tool." It's more like symbiosis.
 
-You feed the algorithm with your body (providing high-engagement content). The algorithm rewards you with reach and revenue. You adjust your content strategy based on the reward (more body display, specific angles, specific clothing). The algorithm continues optimizing recommendations based on your adjustments.
+You feed the algorithm with your body (providing high-engagement content). The algorithm rewards you with reach and revenue. You adjust your content strategy based on the reward (more body display, specific angles, specific clothing), and the algorithm continues optimizing recommendations based on your adjustments.
 
 This is a feedback loop. And within this loop, "what you want to express" becomes increasingly irrelevant. "What the algorithm wants" increasingly dominates everything.
 
