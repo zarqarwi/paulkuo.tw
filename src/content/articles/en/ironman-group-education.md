@@ -36,7 +36,7 @@ reading_context: |
 
 After the Meihua Lake triathlon relay ended, I lay on the grass, my entire body aching, but my mind unusually clear.
 
-I wasn't reminiscing about the thrill of the race—though it was indeed thrilling. I was pondering a question: why did this relay give me a deeper understanding of "team" than any corporate training I'd previously attended?
+I wasn't reminiscing about the thrill of the race—though it was indeed thrilling—I was pondering a question: why did this relay give me a deeper understanding of "team" than any corporate training I'd previously attended?
 
 The answer lies in the rules. The triathlon relay rules are simple and brutal: **Three people, responsible for swimming, cycling, and running respectively. If any one person withdraws, the entire team's results don't count.**
 
@@ -90,7 +90,7 @@ When leading teams, I've noticed that people with varsity sports experience gene
 
 In an era where one must "create their own work," the value of diplomas is rapidly depreciating. What are the core abilities replacing them?
 
-The ability to identify and solve problems. The ability to utilize resources and collaborate with people from different professions. The ability to clearly express one's ideas. The ability to read interpersonal nuances and know when to advance and when to retreat in human interactions.
+The ability to identify and solve problems. The ability to utilize resources and collaborate with people from different professions. The ability to clearly express one's ideas. And one that's hard to name but most useful in the field—reading interpersonal nuances, knowing when to push forward and when to hold back.
 
 These abilities share one common trait: **they can all only be learned in environments with other people.**
 
