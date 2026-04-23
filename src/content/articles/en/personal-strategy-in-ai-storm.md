@@ -49,9 +49,9 @@ This is the position I found in the AI storm.
 
 When generative AI exploded, many people's first reaction was anxiety. Writing gets replaced, code gets generated, reports get automated. As if all the skills we spent time practicing suddenly lost their scarcity overnight.
 
-But the real question isn't "will I be replaced," but rather: what is your original value built upon? If value comes from repetitive output, then yes, it will be compressed. But if value comes from structural design and judgment capability, the situation is completely different.
+What's worth asking instead: what is your original value actually built upon? If value comes from repetitive output, then yes, it will be compressed. But if value comes from structural design and judgment capability, the situation is completely different.
 
-Many people, faced with AI, choose to learn more tools, subscribe to more platforms, chase more updates. This is speed anxiety. But tools will always update, models will always upgrade. If competition is built on proficiency, you'll never catch up to algorithms. What truly needs to change isn't your skill list, but your role positioning.
+Many people, faced with AI, choose to learn more tools, subscribe to more platforms, chase more updates. This is speed anxiety. But tools will always update, models will always upgrade. If competition is built on proficiency, you'll never catch up to algorithms. Role positioning is what truly needs to change.
 
 ## From Executor to Orchestrator
 
@@ -77,10 +77,10 @@ The key isn't which model is better, but how you orchestrate them. As I wrote in
 
 Facing the storm, I chose to do one thing: draw my own strategy map.
 
-Three questions: Which capabilities will be compressed? Which capabilities will be amplified? Which capabilities can only I integrate?
+Three questions: Which capabilities will be compressed? Which will be amplified? The hardest one—which are only I can integrate?
 
-For me, writing speed will be compressed, but cross-domain integration won't. Data analysis will be compressed, but the intuition from ten years of industry experience won't. Individual skills will be compressed, but the ability to connect theological training, entrepreneurial practice, and technical understanding won't.
+For me, what gets compressed: writing speed, data analysis, individual skills. What doesn't: cross-domain integration, the intuition ground from ten years of industry experience, and that ability to connect theological training, entrepreneurial practice, and technical understanding.
 
-This isn't skill inventory—it's positioning reconstruction. No longer pursuing faster execution, but thinking about how to design better order.
+This is positioning reconstruction. The question shifts from "how to execute faster" to "how to design better order."
 
-Every technological revolution brings elimination, but what's usually eliminated isn't people—it's old division-of-labor logic. If you still define yourself by old order, you'll feel squeezed. If you start designing new order, you'll see the space is much larger than imagined.
+Every technological revolution takes away old division-of-labor logic, not people. If you still define yourself by old order, you'll feel squeezed. If you start designing new order, you'll see the space is much larger than imagined.
