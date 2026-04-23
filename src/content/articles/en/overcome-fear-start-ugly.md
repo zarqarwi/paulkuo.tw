@@ -81,4 +81,4 @@ This is the same as entrepreneurship. In circular economy, there's a concept cal
 
 This is even more true in the AI era. Something you spend three months planning might see the world turn thirty times over. Taking action first isn't a compromise—it's the only rational strategy.
 
-Correcting in motion is a hundred times more effective than planning in stillness. Seeing through fear's underlying logic—it's outdated survival programming, not your actual circumstances—is the opening move for breakthrough.
+Correcting in motion is a hundred times more effective than planning in stillness. Seeing through the real reason fear exists—it's outdated survival programming, not your actual circumstances—is the opening move for breakthrough.
