@@ -1700,11 +1700,11 @@
     }
   },
   "life-database-engineering.md": {
-    "sourceHash": "195afc298cf3",
+    "sourceHash": "68d43b62ea64",
     "translations": {
       "en": {
-        "hash": "014398aa50a3",
-        "translatedAt": "2026-03-12T01:11:13.377Z",
+        "hash": "2f5c568b2325",
+        "translatedAt": "2026-04-23T11:43:01.140Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
