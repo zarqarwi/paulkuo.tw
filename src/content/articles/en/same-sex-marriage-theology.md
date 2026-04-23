@@ -39,7 +39,7 @@ In November 2016, Taiwan's Legislative Yuan began deliberating on same-sex marri
 
 On one side: rainbow flags, equality slogans, declarations of "Love is love." On the other: church mobilizations, prayer chains, campaigns to "protect families." Both sides were loud. Both sides were certain they were right. And I sat in the middle, deeply uncomfortable.
 
-The discomfort wasn't because I lacked a position. It was because I saw too many people rushing to pick sides without having done their homework.
+The discomfort wasn't because I lacked a position—it was because I saw too many people rushing to pick sides without having done their homework.
 
 ## Instant Noodle Faith
 
@@ -99,7 +99,7 @@ This doesn't mean we don't need to take positions. But it means our positions sh
 
 ## What the Church Can Be
 
-I've always believed that the church's greatest value in public discourse isn't to loudly announce "the right answer." It's to model [a different way of having conversations](/articles/fundamentalist-faith-arrogance).
+I've always believed that the church's greatest value in public discourse isn't to loudly announce "the right answer"—it's to model [a different way of having conversations](/articles/fundamentalist-faith-arrogance).
 
 In an age when everyone is shouting slogans, the church can be a place willing to slow down, listen carefully, and understand different perspectives with love. Not because "anything goes," but because we believe truth is strong enough that it doesn't need volume to sustain it.
 
