@@ -8,10 +8,10 @@ date: 2025-04-21
 updated: 2026-03-03
 pillar: ai
 tags:
-  - AI經濟
-  - 全天候運作
-  - 組織重構
-  - 人機協作
+  - AI Economy
+  - Always-On Operations
+  - Organizational Restructuring
+  - Human-AI Collaboration
   - MCP
 cover: "/images/covers/ai-always-on-economy-restructure.jpg"
 featured: false

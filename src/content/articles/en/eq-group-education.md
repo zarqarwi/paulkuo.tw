@@ -8,11 +8,11 @@ date: 2017-10-23
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 情緒教育
-  - 群育
-  - 世代觀察
-  - 同理心
-  - 教育哲學
+  - Emotional Education
+  - Social Education
+  - Generational Observation
+  - Empathy
+  - Educational Philosophy
 cover: "/images/covers/eq-group-education.jpg"
 featured: false
 draft: false

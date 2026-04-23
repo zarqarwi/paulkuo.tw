@@ -8,11 +8,11 @@ date: 2018-01-14
 updated: 2026-03-02
 pillar: ai
 tags:
-  - 數位殖民
-  - 演算法調整
-  - 平台霸權
-  - 資源依賴
-  - 商業反思
+  - Digital Colonization
+  - Algorithm Adjustment
+  - Platform Hegemony
+  - Resource Dependency
+  - Business Reflection
 cover: "/images/covers/digital-colonialism-platforms.jpg"
 featured: false
 draft: false

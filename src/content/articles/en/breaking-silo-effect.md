@@ -8,11 +8,11 @@ date: 2018-01-26
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 穀倉效應
-  - 組織僵化
-  - 業務開發
-  - 跨界溝通
-  - 資訊通透
+  - Silo Effect
+  - Organizational Rigidity
+  - Business Development
+  - Cross-Boundary Communication
+  - Information Transparency
 cover: "/images/covers/breaking-silo-effect.jpg"
 featured: false
 draft: false

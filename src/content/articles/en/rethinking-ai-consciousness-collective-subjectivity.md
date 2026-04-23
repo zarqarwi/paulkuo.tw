@@ -7,10 +7,10 @@ abstract: |
 date: 2025-06-22
 pillar: ai
 tags:
-  - AI意識
-  - 主體性
-  - 人工主體性
-  - 哲學
+  - AI Consciousness
+  - Subjectivity
+  - Artificial Subjectivity
+  - Philosophy
   - Manovich
 cover: "/images/covers/rethinking-ai-consciousness-collective-subjectivity.jpg"
 featured: false

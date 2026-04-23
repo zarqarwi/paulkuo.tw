@@ -8,11 +8,11 @@ date: 2018-01-13
 updated: 2026-03-03
 pillar: ai
 tags:
-  - 社群演算法
-  - 數位行銷
-  - 品牌價值
-  - 科技倫理
-  - 商業轉型
+  - Social Media Algorithm
+  - Digital Marketing
+  - Brand Value
+  - Technology Ethics
+  - Business Transformation
 cover: "/images/covers/facebook-algorithm-humanity.jpg"
 featured: false
 draft: false

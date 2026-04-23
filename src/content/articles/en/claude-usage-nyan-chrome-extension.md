@@ -10,8 +10,8 @@ pillar: ai
 tags:
   - Chrome Extension
   - Claude
-  - AI 協作開發
-  - 開發紀實
+  - AI-Assisted Development
+  - Development Log
 cover: "/images/covers/claude-usage-nyan-chrome-extension.jpg"
 featured: false
 draft: false

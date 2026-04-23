@@ -16,12 +16,12 @@ updated: 2026-04-16
 pillar: circular
 tags:
   - SB 253
-  - 加州碳揭露法
-  - 範疇三
-  - 供應鏈碳足跡
+  - California Carbon Disclosure Law
+  - Scope 3
+  - Supply Chain Carbon Footprint
   - GHG Protocol
-  - 循環經濟
-  - 台灣 ESG
+  - Circular Economy
+  - Taiwan ESG
 cover: "/images/covers/california-sb253-supply-chain.jpg"
 featured: true
 draft: false

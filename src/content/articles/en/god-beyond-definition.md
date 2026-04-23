@@ -8,11 +8,11 @@ date: 2024-04-12
 updated: 2026-03-03
 pillar: faith
 tags:
-  - 否定神學
-  - 語言的局限
-  - 信仰反思
-  - 敬畏
-  - 神學思考
+  - Apophatic Theology
+  - Limits of Language
+  - Faith Reflection
+  - Reverence
+  - Theological Thinking
 cover: "/images/covers/god-beyond-definition.jpg"
 featured: false
 draft: false

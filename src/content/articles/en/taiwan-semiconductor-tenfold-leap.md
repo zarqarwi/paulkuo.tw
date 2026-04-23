@@ -8,11 +8,11 @@ date: 2025-11-20
 updated: 2026-02-28
 pillar: circular
 tags:
-  - 半導體
-  - 台日合作
-  - 循環經濟
-  - 產業聚落
-  - 資源再配置
+  - Semiconductor
+  - Taiwan-Japan Cooperation
+  - Circular Economy
+  - Industrial Cluster
+  - Resource Reallocation
   - ESG
 featured: true
 draft: false

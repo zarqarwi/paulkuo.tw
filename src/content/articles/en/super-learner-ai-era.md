@@ -8,11 +8,11 @@ date: 2026-02-28
 updated: 2026-02-28
 pillar: ai
 tags:
-  - 超級個體
-  - AI 學習
-  - 成長系統
-  - 遷移思維
-  - 提問能力
+  - Super Individual
+  - AI Learning
+  - Growth Systems
+  - Transfer Thinking
+  - Questioning Ability
 cover: "/images/covers/super-learner-ai-era.jpg"
 featured: false
 draft: false

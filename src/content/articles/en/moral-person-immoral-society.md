@@ -8,11 +8,11 @@ date: 2022-10-27
 updated: 2026-03-02
 pillar: faith
 tags:
-  - 尼布爾
-  - 社會倫理
-  - 群體心理
-  - 組織行為
-  - 結構性的罪
+  - Niebuhr
+  - Social Ethics
+  - Group Psychology
+  - Organizational Behavior
+  - Structural Sin
 cover: "/images/covers/moral-person-immoral-society.jpg"
 featured: false
 draft: false

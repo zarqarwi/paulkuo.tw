@@ -8,10 +8,10 @@ date: 2025-05-23
 updated: 2026-03-02
 pillar: life
 tags:
-  - 社群比較
-  - 感恩
-  - 文明紅利
-  - 個人定位
+  - Social Media Comparison
+  - Gratitude
+  - Civilization Dividend
+  - Personal Positioning
   - Kevin Kelly
 cover: "/images/covers/life-you-envy-is-miracle.jpg"
 featured: false

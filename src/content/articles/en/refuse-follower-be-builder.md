@@ -8,11 +8,11 @@ date: 2022-06-26
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 產業角色
-  - 建構者
-  - 媒體識讀
-  - 消費主義
-  - 永續生活
+  - Industry Role
+  - Builder
+  - Media Literacy
+  - Consumerism
+  - Sustainable Living
 cover: "/images/covers/refuse-follower-be-builder.jpg"
 featured: false
 draft: false

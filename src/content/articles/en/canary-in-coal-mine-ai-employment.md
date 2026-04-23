@@ -8,12 +8,12 @@ date: 2025-10-05
 updated: 2026-02-24
 pillar: ai
 tags:
-  - AI就業衝擊
-  - 生成式AI
-  - 人機協作
-  - 勞動市場
-  - 教育轉型
-  - 史丹佛研究
+  - AI Employment Impact
+  - Generative AI
+  - Human-AI Collaboration
+  - Labor Market
+  - Educational Transformation
+  - Stanford Research
 cover: "/images/covers/canary-in-coal-mine-ai-employment.jpg"
 featured: true
 draft: false

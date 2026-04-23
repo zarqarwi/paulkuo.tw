@@ -8,12 +8,12 @@ date: 2026-02-26
 updated: 2026-02-28
 pillar: startup
 tags:
-  - 心理素質
-  - 恐懼
-  - 行動力
-  - 精神獨立
-  - 最小可行循環
-  - 創業心態
+  - Psychological Resilience
+  - Fear
+  - Agency
+  - Spiritual Independence
+  - Minimum Viable Loop
+  - Entrepreneurial Mindset
 featured: false
 draft: false
 cover: "/images/covers/overcome-fear-start-ugly.jpg"

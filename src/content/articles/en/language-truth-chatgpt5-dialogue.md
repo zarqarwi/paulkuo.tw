@@ -7,11 +7,11 @@ abstract: |
 date: 2025-11-08
 pillar: faith
 tags:
-  - 語言哲學
+  - Philosophy of Language
   - ChatGPT
-  - AI對話
-  - 真實
-  - 矛盾
+  - AI Dialogue
+  - Authenticity
+  - Contradiction
 cover: "/images/covers/language-truth-chatgpt5-dialogue.jpg"
 featured: false
 draft: false

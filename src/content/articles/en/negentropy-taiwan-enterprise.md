@@ -8,11 +8,11 @@ date: 2025-04-29
 updated: 2026-03-03
 pillar: ai
 tags:
-  - 熵與負熵
-  - 中美博弈
-  - 台灣企業
-  - 秩序選擇
-  - 地緣策略
+  - Entropy and Negentropy
+  - US-China Competition
+  - Taiwan Business
+  - Order Selection
+  - Geostrategy
 cover: "/images/covers/negentropy-taiwan-enterprise.jpg"
 featured: false
 draft: false

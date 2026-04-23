@@ -8,11 +8,11 @@ date: 2026-03-12
 updated: 2026-03-12
 pillar: life
 tags:
-  - 數位記憶
-  - AI 協作
-  - 超級個體
+  - Digital Memory
+  - AI Collaboration
+  - Super Individual
   - Metadata
-  - 生命軌跡
+  - Life Trajectory
 cover: "/images/covers/life-database-engineering.jpg"
 featured: false
 draft: false

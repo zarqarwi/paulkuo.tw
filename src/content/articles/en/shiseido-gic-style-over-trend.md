@@ -8,11 +8,11 @@ date: 2019-06-28
 updated: 2026-03-02
 pillar: life
 tags:
-  - 品牌哲學
-  - 資生堂
-  - 日本企業
-  - 風格
-  - 個人品牌
+  - Brand Philosophy
+  - Shiseido
+  - Japanese Business
+  - Style
+  - Personal Brand
 cover: "/images/covers/shiseido-gic-style-over-trend.jpg"
 featured: false
 draft: false

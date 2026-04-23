@@ -8,11 +8,11 @@ date: 2020-02-20
 updated: 2026-03-02
 pillar: life
 tags:
-  - 疫情衝擊
-  - 時代浪潮
-  - 資產輕量化
-  - 社會流動
-  - 歷史轉折
+  - Pandemic Impact
+  - Tide of the Times
+  - Asset Optimization
+  - Social Mobility
+  - Historical Turning Point
 cover: "/images/covers/riding-wave-or-drowning.jpg"
 featured: false
 draft: false

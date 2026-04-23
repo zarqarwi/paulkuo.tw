@@ -10,8 +10,8 @@ pillar: ai
 tags:
   - AI-Ready
   - autoresearch
-  - 網站優化
-  - 持續優化迴圈
+  - Website Optimization
+  - Continuous Optimization Loop
   - AEO
 cover: "/images/covers/ai-ready-continuous-optimization.jpg"
 featured: true

@@ -8,11 +8,11 @@ date: 2026-02-26
 updated: 2026-02-28
 pillar: ai
 tags:
-  - AI趨勢
+  - AI Trends
   - OpenAI
-  - 地緣政治
+  - Geopolitics
   - AGI
-  - 產業分析
+  - Industry Analysis
 cover: "/images/covers/us-ai-three-year-countdown.jpg"
 featured: false
 draft: false

@@ -8,11 +8,11 @@ date: 2018-01-15
 updated: 2026-03-01
 pillar: ai
 tags:
-  - 演算法治理
-  - 平台勞動
-  - 評分系統
-  - 數位監控
-  - 人的量化
+  - Algorithm Governance
+  - Platform Labor
+  - Scoring System
+  - Digital Surveillance
+  - Quantifying People
 cover: "/images/covers/algorithm-as-judge.jpg"
 featured: false
 draft: false

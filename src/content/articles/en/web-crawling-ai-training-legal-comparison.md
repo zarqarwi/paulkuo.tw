@@ -7,11 +7,11 @@ abstract: |
 date: 2025-06-29
 pillar: ai
 tags:
-  - 著作權
-  - AI訓練
-  - 網路爬蟲
+  - Copyright
+  - AI Training
+  - Web Scraping
   - TDM
-  - 台灣法律
+  - Taiwan Law
 cover: "/images/covers/web-crawling-ai-training-legal-comparison.jpg"
 featured: false
 draft: false

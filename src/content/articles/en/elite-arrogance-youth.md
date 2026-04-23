@@ -8,11 +8,11 @@ date: 2022-12-16
 updated: 2026-03-03
 pillar: faith
 tags:
-  - 菁英主義
-  - 社會正義
-  - 桑德爾
-  - 青年
-  - 公平
+  - Elitism
+  - Social Justice
+  - Michael Sandel
+  - Youth
+  - Fairness
 cover: "/images/covers/elite-arrogance-youth.jpg"
 featured: false
 draft: false

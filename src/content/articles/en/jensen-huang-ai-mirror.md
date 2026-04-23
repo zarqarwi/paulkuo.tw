@@ -8,11 +8,11 @@ date: 2025-05-23
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 黃仁勳
-  - AI 教育
-  - 人機協作
-  - 職場轉型
-  - 思維訓練
+  - Jensen Huang
+  - AI Education
+  - Human-AI Collaboration
+  - Workplace Transformation
+  - Mental Training
 cover: "/images/covers/jensen-huang-ai-mirror.jpg"
 featured: false
 draft: false

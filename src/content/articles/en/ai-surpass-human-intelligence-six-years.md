@@ -9,9 +9,9 @@ pillar: ai
 tags:
   - AGI
   - Grok-2
-  - AI 能力
-  - 基準測試
-  - 人類智慧
+  - AI Capability
+  - Benchmark Testing
+  - Human Intelligence
 cover: "/images/covers/ai-surpass-human-intelligence-six-years.jpg"
 featured: false
 draft: false

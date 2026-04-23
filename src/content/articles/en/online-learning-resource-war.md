@@ -8,11 +8,11 @@ date: 2020-03-08
 updated: 2026-03-03
 pillar: life
 tags:
-  - 遠距教學
-  - 停課不停學
-  - 教育資源
-  - 自主管理
-  - 疫情反思
+  - Remote Teaching
+  - Continuous Learning
+  - Educational Resources
+  - Self-Management
+  - Pandemic Reflection
 cover: "/images/covers/online-learning-resource-war.jpg"
 featured: false
 draft: false

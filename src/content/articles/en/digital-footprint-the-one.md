@@ -8,11 +8,11 @@ date: 2017-01-22
 updated: 2026-03-03
 pillar: ai
 tags:
-  - AI應用
-  - 數位軌跡
-  - 數據監控
-  - 隱私邊界
-  - 典範轉移
+  - AI Applications
+  - Digital Footprint
+  - Data Surveillance
+  - Privacy Boundaries
+  - Paradigm Shift
 cover: "/images/covers/digital-footprint-the-one.jpg"
 featured: false
 draft: false

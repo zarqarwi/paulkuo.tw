@@ -9,10 +9,10 @@ updated: 2026-02-28
 pillar: startup
 tags:
   - AI Agent
-  - 自動化
-  - 流程設計
-  - 風險管理
-  - 模組化
+  - Automation
+  - Process Design
+  - Risk Management
+  - Modularization
   - Multi-Agent
 draft: false
 cover: "/images/covers/ai-agent-planning-guide.jpg"

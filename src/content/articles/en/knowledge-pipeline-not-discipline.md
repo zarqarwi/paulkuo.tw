@@ -8,11 +8,11 @@ date: 2026-03-29
 updated: 2026-03-29
 pillar: ai
 tags:
-  - 知識管理
-  - 自動化
+  - Knowledge Management
+  - Automation
   - API
   - AI Skill
-  - 管線思維
+  - Pipeline Thinking
 cover: "/images/covers/knowledge-pipeline-not-discipline.jpg"
 featured: false
 draft: false

@@ -8,12 +8,12 @@ date: 2025-05-25
 updated: 2026-02-28
 pillar: life
 tags:
-  - 2030展望
+  - 2030 Outlook
   - AGI
-  - 量子計算
-  - 氣候韌性
-  - 未來預測
-  - 循環經濟
+  - Quantum Computing
+  - Climate Resilience
+  - Future Prediction
+  - Circular Economy
 draft: false
 cover: "/images/covers/world-outlook-2030.jpg"
 readingTime: 5

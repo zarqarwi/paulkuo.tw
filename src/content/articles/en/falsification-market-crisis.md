@@ -8,11 +8,11 @@ date: 2020-02-23
 updated: 2026-03-03
 pillar: life
 tags:
-  - 風險管理
-  - 否證主義
-  - 投資思維
-  - 危機意識
-  - 謙卑
+  - Risk Management
+  - Falsificationism
+  - Investment Thinking
+  - Crisis Awareness
+  - Humility
 cover: "/images/covers/falsification-market-crisis.jpg"
 featured: false
 draft: false

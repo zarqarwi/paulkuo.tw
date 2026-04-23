@@ -8,11 +8,11 @@ date: 2020-05-15
 updated: 2026-03-02
 pillar: life
 tags:
-  - 疫情反思
-  - 液態現代性
-  - 包曼
-  - 社會觀察
-  - 不確定性
+  - Pandemic Reflection
+  - Liquid Modernity
+  - Bauman
+  - Social Observation
+  - Uncertainty
 cover: "/images/covers/pandemic-liquid-world.jpg"
 featured: false
 draft: false

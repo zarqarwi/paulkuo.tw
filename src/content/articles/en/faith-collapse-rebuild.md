@@ -8,11 +8,11 @@ date: 2016-02-13
 updated: 2026-03-02
 pillar: faith
 tags:
-  - 信仰反思
-  - 神學
-  - 集體焦慮
-  - 宗教批判
-  - 台灣教會
+  - Faith Reflection
+  - Theology
+  - Collective Anxiety
+  - Religious Critique
+  - Taiwan Church
 draft: false
 cover: "/images/covers/faith-collapse-rebuild.jpg"
 featured: false

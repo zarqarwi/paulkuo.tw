@@ -8,11 +8,11 @@ date: 2025-05-23
 updated: 2026-03-01
 pillar: startup
 tags:
-  - AI素養
-  - 人機協作
-  - 教育轉型
-  - 黃仁勳
-  - 提問力
+  - AI Literacy
+  - Human-AI Collaboration
+  - Educational Transformation
+  - Jensen Huang
+  - Questioning Ability
 cover: "/images/covers/jensen-huang-learn-ai.jpg"
 featured: false
 draft: false

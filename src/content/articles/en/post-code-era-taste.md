@@ -8,11 +8,11 @@ date: 2025-05-24
 updated: 2026-03-02
 pillar: startup
 tags:
-  - 後程式碼時代
-  - 品味
+  - Post-Code Era
+  - Aesthetic Sensibility
   - Vibe Coding
-  - 人文素養
-  - AI協作
+  - Humanistic Education
+  - AI Collaboration
 draft: false
 cover: "/images/covers/post-code-era-taste.jpg"
 featured: false

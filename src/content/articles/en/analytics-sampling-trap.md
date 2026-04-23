@@ -9,10 +9,10 @@ updated: 2026-03-23
 pillar: ai
 tags:
   - Cloudflare Analytics
-  - 網站流量分析
+  - Website Analytics
   - adaptive sampling
-  - 個人品牌網站
-  - 超級個體
+  - Personal Brand Website
+  - Super Individual
 cover: "/images/covers/analytics-sampling-trap.jpg"
 featured: true
 draft: false

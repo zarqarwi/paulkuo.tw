@@ -8,11 +8,11 @@ date: 2017-03-03
 updated: 2026-03-03
 pillar: ai
 tags:
-  - AI 決策
-  - 演算法崇拜
-  - 資訊不對稱
-  - 人性判斷
-  - 科技批判
+  - AI Decision Making
+  - Algorithm Worship
+  - Information Asymmetry
+  - Human Judgment
+  - Technology Critique
 cover: "/images/covers/algorithm-cannot-replace-decisions.jpg"
 featured: false
 draft: false

@@ -8,11 +8,11 @@ date: 2025-05-23
 updated: 2026-03-03
 pillar: ai
 tags:
-  - AI 治理
-  - 技術主權
-  - 民主決策
-  - 公民慢審
-  - 節奏權
+  - AI Governance
+  - Technological Sovereignty
+  - Democratic Decision-Making
+  - Deliberative Democracy
+  - Pace Control
 cover: "/images/covers/safer-4-ai-governance.jpg"
 featured: false
 draft: false

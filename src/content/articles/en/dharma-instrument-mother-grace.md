@@ -8,11 +8,11 @@ date: 2025-12-07
 updated: 2026-03-02
 pillar: life
 tags:
-  - 生死
-  - 母親
-  - 恩典
-  - 信仰
-  - 愛與失去
+  - Life and Death
+  - Motherhood
+  - Grace
+  - Faith
+  - Love and Loss
 cover: "/images/covers/dharma-instrument-mother-grace.jpg"
 featured: false
 draft: false

@@ -8,11 +8,11 @@ date: 2018-01-04
 updated: 2026-03-01
 pillar: ai
 tags:
-  - 演算力
-  - 能源本位
-  - 知識經濟
-  - 數位貨幣
-  - 價值重定義
+  - Computational Power
+  - Energy Standard
+  - Knowledge Economy
+  - Digital Currency
+  - Redefining Value
 cover: "/images/covers/computation-as-currency.jpg"
 featured: false
 draft: false

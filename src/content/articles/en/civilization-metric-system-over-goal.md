@@ -8,11 +8,11 @@ date: 2022-06-26
 updated: 2026-03-03
 pillar: life
 tags:
-  - 文明指標
-  - 風險管理
-  - 系統思維
-  - 幸福定義
-  - 永續生活
+  - Civilization Indicators
+  - Risk Management
+  - Systems Thinking
+  - Definition of Happiness
+  - Sustainable Living
 cover: "/images/covers/civilization-metric-system-over-goal.jpg"
 featured: false
 draft: false

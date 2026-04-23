@@ -8,11 +8,11 @@ date: 2026-03-03
 updated: 2026-03-03
 pillar: faith
 tags:
-  - 教宗良十四世
-  - AI與信仰
-  - 講道
-  - 效率主義
-  - 人類學
+  - Pope Leo XIV
+  - AI and Faith
+  - Preaching
+  - Efficiency Obsession
+  - Anthropology
 cover: "/images/covers/pope-leo-xiv-ai-homily.jpg"
 featured: false
 draft: false

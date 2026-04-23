@@ -10,8 +10,8 @@ pillar: ai
 tags:
   - Sam Altman
   - Sora
-  - 能源
-  - AI 基礎設施
+  - Energy
+  - AI Infrastructure
   - AGI
 cover: "/images/covers/sam-altman-sora-energy-ai.jpg"
 featured: false

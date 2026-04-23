@@ -3,10 +3,10 @@ title: "Slaughterhouse 2028: An AI Collapse Scenario That Kept Wall Street Awake
 description: "Citrini Research uses five-link chain analysis to predict systemic financial crisis triggered by AI—Wall Street turbulence is just the prelude."
 pillar: ai
 tags:
-  - AI經濟衝擊
-  - 金融危機
-  - 白領失業
-  - 敘事經濟學
+  - AI Economic Impact
+  - Financial Crisis
+  - White-Collar Unemployment
+  - Narrative Economics
   - Citrini Research
 date: 2026-02-27
 cover: /images/covers/ai-slaughterhouse-2028-crisis-scenario.jpg

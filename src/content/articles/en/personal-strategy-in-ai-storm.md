@@ -8,11 +8,11 @@ date: 2025-12-01
 updated: 2026-02-28
 pillar: startup
 tags:
-  - AI轉型
-  - 個人戰略
-  - 角色定位
-  - 工作流設計
-  - 判斷力
+  - AI Transformation
+  - Personal Strategy
+  - Role Positioning
+  - Workflow Design
+  - Judgment
   - Multi-Agent
 featured: true
 draft: false

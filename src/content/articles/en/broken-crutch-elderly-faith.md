@@ -8,11 +8,11 @@ date: 2018-02-19
 updated: 2026-03-03
 pillar: faith
 tags:
-  - 世代差異
-  - 信仰反思
-  - 心理寄託
-  - 家庭關係
-  - 謙卑
+  - Generational Differences
+  - Faith Reflection
+  - Psychological Anchor
+  - Family Relationships
+  - Humility
 cover: "/images/covers/broken-crutch-elderly-faith.jpg"
 featured: false
 draft: false

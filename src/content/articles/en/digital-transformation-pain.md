@@ -8,11 +8,11 @@ date: 2019-12-30
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 數位轉型
-  - 組織變革
-  - 創新阻力
-  - 權力結構
-  - 企業管理
+  - Digital Transformation
+  - Organizational Change
+  - Innovation Resistance
+  - Power Structures
+  - Enterprise Management
 cover: "/images/covers/digital-transformation-pain.jpg"
 featured: false
 draft: false

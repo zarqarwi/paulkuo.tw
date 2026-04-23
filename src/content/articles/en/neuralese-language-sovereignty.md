@@ -9,10 +9,10 @@ updated: 2026-03-02
 pillar: ai
 tags:
   - Neuralese
-  - AI安全
-  - 可解釋性
-  - 語言主權
-  - AI治理
+  - AI Safety
+  - Explainability
+  - Linguistic Sovereignty
+  - AI Governance
 draft: false
 cover: "/images/covers/neuralese-language-sovereignty.jpg"
 featured: false

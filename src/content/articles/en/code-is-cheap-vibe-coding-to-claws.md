@@ -4,10 +4,10 @@ description: "When the cost of writing code approaches zero, what becomes truly 
 pillar: ai
 tags:
   - Vibe Coding
-  - AI輔助開發
+  - AI-Assisted Development
   - Andrej Karpathy
   - Simon Willison
-  - 知識工作變革
+  - Knowledge Work Transformation
 date: 2026-02-27
 cover: /images/covers/code-is-cheap-vibe-coding-to-claws.jpg
 abstract: |

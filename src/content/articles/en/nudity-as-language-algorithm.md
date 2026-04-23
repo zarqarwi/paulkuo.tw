@@ -8,11 +8,11 @@ date: 2025-05-24
 updated: 2026-03-03
 pillar: faith
 tags:
-  - 裸露語言
-  - 演算法
-  - 注意力經濟
-  - 身體主權
-  - 媒體素養
+  - Raw Language
+  - Algorithm
+  - Attention Economy
+  - Bodily Sovereignty
+  - Media Literacy
 cover: "/images/covers/nudity-as-language-algorithm.jpg"
 featured: false
 draft: false

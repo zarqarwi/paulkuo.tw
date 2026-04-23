@@ -8,11 +8,11 @@ date: 2018-09-24
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 群育
-  - 團隊合作
-  - 鐵人三項
-  - 教育反思
-  - 組織協作
+  - Social Education
+  - Teamwork
+  - Triathlon
+  - Education Reflection
+  - Organizational Collaboration
 cover: "/images/covers/ironman-group-education.jpg"
 featured: false
 draft: false

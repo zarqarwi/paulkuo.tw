@@ -8,11 +8,11 @@ date: 2024-06-19
 updated: 2026-03-01
 pillar: faith
 tags:
-  - 基要主義
-  - 信仰反思
-  - 神學
-  - 謙卑
-  - 宗教批判
+  - Fundamentalism
+  - Faith Reflection
+  - Theology
+  - Humility
+  - Religious Critique
 cover: "/images/covers/fundamentalist-faith-arrogance.jpg"
 featured: false
 draft: false

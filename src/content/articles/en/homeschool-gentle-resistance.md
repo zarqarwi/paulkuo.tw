@@ -8,11 +8,11 @@ date: 2023-05-27
 updated: 2026-03-03
 pillar: life
 tags:
-  - 自學教育
-  - 教育哲學
-  - 家長角色
-  - 溫和對抗
-  - 批判思維
+  - Self-Directed Learning
+  - Educational Philosophy
+  - Parenting Role
+  - Gentle Resistance
+  - Critical Thinking
 cover: "/images/covers/homeschool-gentle-resistance.jpg"
 featured: false
 draft: false

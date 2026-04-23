@@ -8,11 +8,11 @@ date: 2025-10-05
 updated: 2026-02-28
 pillar: ai
 tags:
-  - 社會智能
+  - Social Intelligence
   - ChatGPT
-  - 心理學
-  - 人機協作
-  - AI倫理
+  - Psychology
+  - Human-AI Collaboration
+  - AI Ethics
 featured: false
 draft: false
 cover: "/images/covers/ai-social-intelligence-psychologist.jpg"

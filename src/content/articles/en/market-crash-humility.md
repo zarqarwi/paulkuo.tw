@@ -8,11 +8,11 @@ date: 2020-03-13
 updated: 2026-03-01
 pillar: ai
 tags:
-  - 黑天鵝
-  - 否證論
-  - 知識邊界
-  - 市場崩盤
-  - 認知謙卑
+  - Black Swan
+  - Falsificationism
+  - Knowledge Boundaries
+  - Market Crash
+  - Cognitive Humility
 cover: "/images/covers/market-crash-humility.jpg"
 featured: false
 draft: false

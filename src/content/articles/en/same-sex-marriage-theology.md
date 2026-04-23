@@ -8,11 +8,11 @@ date: 2016-11-27
 updated: 2026-03-01
 pillar: faith
 tags:
-  - 神學反思
-  - 同婚
-  - 教會倫理
-  - 聖經詮釋
-  - 公共神學
+  - Theological Reflection
+  - Same-Sex Marriage
+  - Church Ethics
+  - Biblical Interpretation
+  - Public Theology
 cover: "/images/covers/same-sex-marriage-theology.jpg"
 featured: false
 draft: false

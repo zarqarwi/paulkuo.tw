@@ -8,11 +8,11 @@ date: 2025-05-24
 updated: 2026-03-03
 pillar: ai
 tags:
-  - 主權 AI
-  - 數位主權
-  - 技術自主
-  - AI 治理
-  - 地緣政治
+  - Sovereign AI
+  - Digital Sovereignty
+  - Technological Autonomy
+  - AI Governance
+  - Geopolitics
 cover: "/images/covers/sovereign-ai-digital-autonomy.jpg"
 featured: false
 draft: false

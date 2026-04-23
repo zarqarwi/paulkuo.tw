@@ -13,10 +13,10 @@ date: 2026-03-19
 updated: 2026-03-19
 pillar: startup
 tags:
-  - 產品評估
-  - 超級個體
-  - AI協作
-  - 開發紀錄
+  - Product Evaluation
+  - Super Individual
+  - AI Collaboration
+  - Development Record
   - Builder
 cover: "/images/covers/builders-scorecard-story.jpg"
 featured: true

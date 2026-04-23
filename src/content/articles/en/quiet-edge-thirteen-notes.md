@@ -8,11 +8,11 @@ date: 2025-05-25
 updated: 2026-03-03
 pillar: life
 tags:
-  - 自我修煉
-  - 人際關係
-  - 自律
-  - 識人
-  - 生活哲學
+  - Self-Cultivation
+  - Interpersonal Relationships
+  - Self-Discipline
+  - Character Assessment
+  - Life Philosophy
 cover: "/images/covers/quiet-edge-thirteen-notes.jpg"
 featured: false
 draft: false

@@ -8,15 +8,15 @@ date: 2026-04-08
 updated: 2026-04-08
 pillar: ai
 tags:
-  - AI 生產力
-  - 人月神話
+  - AI Productivity
+  - Mythical Man-Month
   - AI Collaboration Portfolio
   - Anthropic Economic Index
-  - 五維框架
-  - 超級個體
-  - AI 協作
-  - 績效衡量
-  - 企業人才評估
+  - Five-Dimension Framework
+  - Super Individual
+  - AI Collaboration
+  - Performance Measurement
+  - Talent Assessment
 cover: "/images/covers/beyond-man-days.jpg"
 featured: true
 draft: false

@@ -8,11 +8,11 @@ date: 2022-06-22
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 流量變現
-  - 信任經濟
-  - 社會影響力
-  - 品牌定調
-  - 網路生態
+  - Traffic Monetization
+  - Trust Economy
+  - Social Impact
+  - Brand Positioning
+  - Web Ecosystem
 cover: "/images/covers/traffic-beyond-currency.jpg"
 featured: false
 draft: false

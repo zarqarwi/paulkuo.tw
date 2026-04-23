@@ -7,12 +7,12 @@ abstract: |
 date: 2025-07-14
 pillar: ai
 tags:
-  - 鏡像世界
-  - 數位孿生
+  - Mirror World
+  - Digital Twin
   - Kevin Kelly
-  - 第三次資訊革命
+  - Third Information Revolution
   - AR
-  - 循環經濟
+  - Circular Economy
 cover: "/images/covers/kevin-kelly-mirror-world-third-information-revolution.jpg"
 featured: false
 draft: false

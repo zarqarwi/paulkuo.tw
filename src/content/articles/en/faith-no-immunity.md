@@ -8,11 +8,11 @@ date: 2020-02-23
 updated: 2026-03-01
 pillar: faith
 tags:
-  - 宗教群聚
-  - 神學反思
-  - 社會理性
-  - 信仰邊界
-  - 疫情啟示
+  - Religious Community
+  - Theological Reflection
+  - Social Rationality
+  - Faith Boundaries
+  - Pandemic Insights
 cover: "/images/covers/faith-no-immunity.jpg"
 featured: false
 draft: false

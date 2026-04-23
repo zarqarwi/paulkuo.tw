@@ -8,14 +8,14 @@ date: 2026-02-25
 updated: 2026-02-25
 pillar: ai
 tags:
-  - AI協作
-  - 超級個體
+  - AI Collaboration
+  - Super Individual
   - Claude
-  - 程式開發
-  - 個人品牌
-  - 人機協作
-  - 自動化
-  - 案例研究
+  - Software Development
+  - Personal Brand
+  - Human-AI Collaboration
+  - Automation
+  - Case Study
 cover: "/images/covers/super-individual-case-study.jpg"
 featured: true
 draft: false

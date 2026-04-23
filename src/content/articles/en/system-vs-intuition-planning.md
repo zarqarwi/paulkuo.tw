@@ -8,11 +8,11 @@ date: 2018-08-09
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 認知科學
-  - 專案管理
-  - 商業企劃
-  - 教育實踐
-  - 系統思考
+  - Cognitive Science
+  - Project Management
+  - Business Planning
+  - Educational Practice
+  - Systems Thinking
 cover: "/images/covers/system-vs-intuition-planning.jpg"
 featured: false
 draft: false

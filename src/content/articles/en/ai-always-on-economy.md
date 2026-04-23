@@ -9,12 +9,12 @@ updated: 2026-02-28
 pillar: ai
 tags:
   - AI
-  - 組織轉型
-  - 經濟結構
-  - 文明轉折
+  - Organizational Transformation
+  - Economic Structure
+  - Civilization Turning Point
   - Agent
-  - 全天候經濟
-  - 秩序設計
+  - Always-On Economy
+  - Order Design
 featured: true
 draft: false
 cover: "/images/covers/ai-always-on-economy.jpg"

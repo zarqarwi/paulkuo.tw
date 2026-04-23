@@ -8,11 +8,11 @@ date: 2020-02-14
 updated: 2026-03-03
 pillar: startup
 tags:
-  - 遠距工作
-  - 專案管理
-  - 人性考驗
-  - 數位協作
-  - 紀律
+  - Remote Work
+  - Project Management
+  - Test of Character
+  - Digital Collaboration
+  - Discipline
 cover: "/images/covers/remote-work-cruel-truth.jpg"
 featured: false
 draft: false

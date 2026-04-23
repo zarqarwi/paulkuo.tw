@@ -8,11 +8,11 @@ date: 2017-02-05
 updated: 2026-03-03
 pillar: faith
 tags:
-  - 宗教改革
-  - 歷史脈絡
-  - 權力結構
-  - 科技推力
-  - 去神話化
+  - Reformation
+  - Historical Context
+  - Power Structures
+  - Technology Push
+  - Demystification
 cover: "/images/covers/reformation-printing-politics.jpg"
 featured: false
 draft: false

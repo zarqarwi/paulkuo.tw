@@ -9,11 +9,10 @@ updated: 2026-02-25
 pillar: ai
 tags:
   - AGI
-  - 通用人工智慧
-  - 人機協作
-  - 凱文凱利
-  - 具身智慧
-  - 意義建構
+  - Human-AI Collaboration
+  - Kevin Kelly
+  - Embodied Intelligence
+  - Sense-Making
   - Google DeepMind
 cover: "/images/covers/agi-becoming-complete-human.jpg"
 featured: true

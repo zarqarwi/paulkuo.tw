@@ -8,12 +8,12 @@ date: 2025-05-21
 updated: 2026-02-26T13:00:00+08:00
 pillar: ai
 tags:
-  - 文化話語權
-  - 中國品牌
-  - 台灣文化策略
-  - 地緣政治
-  - 敘事框架
-  - 品牌國際化
+  - Cultural Discourse Power
+  - Chinese Brands
+  - Taiwan Cultural Strategy
+  - Geopolitics
+  - Narrative Framework
+  - Brand Internationalization
 cover: "/images/covers/china-cultural-discourse-power.jpg"
 featured: false
 draft: false

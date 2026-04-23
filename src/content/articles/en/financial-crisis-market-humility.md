@@ -8,11 +8,11 @@ date: 2017-10-31
 updated: 2026-03-02
 pillar: life
 tags:
-  - 金融海嘯
-  - 市場觀察
-  - 投資心理
-  - 總體經濟
-  - 謙卑
+  - Financial Crisis
+  - Market Observation
+  - Investment Psychology
+  - Macroeconomics
+  - Humility
 cover: "/images/covers/financial-crisis-market-humility.jpg"
 featured: false
 draft: false

@@ -8,13 +8,13 @@ date: 2026-04-01
 updated: 2026-04-02
 pillar: circular
 tags:
-  - 碳足跡
-  - 白沙屯媽祖
+  - Carbon Footprint
+  - Baishatun Mazu
   - ESG
-  - GPS 追蹤
-  - 永續行動
+  - GPS Tracking
+  - Sustainable Action
   - Cloudflare Workers
-  - 遊戲化設計
+  - Gamification
 cover: "/images/covers/formosa-esg-2026-low-carbon-pilgrimage.jpg"
 featured: true
 draft: false

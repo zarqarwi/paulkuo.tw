@@ -8,12 +8,12 @@ date: 2025-05-26
 updated: 2026-02-26T13:00:00+08:00
 pillar: life
 tags:
-  - 人文負熵
-  - 意義建構
-  - AI時代
-  - 跨域思考
-  - 存在主義
-  - 秩序重建
+  - Humanistic Negentropy
+  - Sense-Making
+  - AI Era
+  - Cross-Domain Thinking
+  - Existentialism
+  - Order Reconstruction
 cover: "/images/covers/negentropy-humanistic-practice.jpg"
 featured: true
 draft: false

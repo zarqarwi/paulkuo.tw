@@ -8,11 +8,11 @@ date: 2025-10-05
 updated: 2026-02-28
 pillar: life
 tags:
-  - 成癮經濟
-  - 孤獨世代
-  - 演算法
-  - 能量主權
-  - 平台設計
+  - Addiction Economy
+  - Lonely Generation
+  - Algorithm
+  - Energy Sovereignty
+  - Platform Design
 cover: "/images/covers/addiction-economy-lonely-generation.jpg"
 featured: false
 draft: false

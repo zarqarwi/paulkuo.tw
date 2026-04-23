@@ -8,11 +8,11 @@ date: 2025-12-15
 updated: 2026-03-03
 pillar: life
 tags:
-  - 閱讀筆記
-  - 存在主義
-  - 苦難
-  - 自我反思
-  - 齊奧朗
+  - Reading Notes
+  - Existentialism
+  - Suffering
+  - Self-Reflection
+  - Cioran
 cover: "/images/covers/cioran-on-suffering-and-clarity.jpg"
 featured: true
 draft: false

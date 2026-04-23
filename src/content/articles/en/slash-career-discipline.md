@@ -8,11 +8,11 @@ date: 2018-09-02
 updated: 2026-03-01
 pillar: startup
 tags:
-  - 斜槓
-  - 自我管理
-  - 紀律
-  - 時間管理
-  - 創業心態
+  - Slash Career
+  - Self-Management
+  - Discipline
+  - Time Management
+  - Entrepreneurial Mindset
 cover: "/images/covers/slash-career-discipline.jpg"
 featured: false
 draft: false

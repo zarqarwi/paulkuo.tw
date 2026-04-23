@@ -8,13 +8,13 @@ date: 2025-04-27
 updated: 2026-02-28T20:00:00+08:00
 pillar: ai
 tags:
-  - 微軟
-  - 工作趨勢指數
-  - AI代理
-  - 前沿公司
-  - 台灣產業
-  - 人機協作
-  - 組織轉型
+  - Microsoft
+  - Work Trend Index
+  - AI Agent
+  - Frontier Company
+  - Taiwan Industry
+  - Human-AI Collaboration
+  - Organizational Transformation
 cover: "/images/covers/work-trend-index-2025-taiwan.jpg"
 featured: false
 draft: false

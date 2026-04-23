@@ -8,11 +8,11 @@ date: 2017-10-27
 updated: 2026-03-01
 pillar: life
 tags:
-  - 社群觀察
-  - 知識焦慮
-  - 資訊消費
-  - 數位人格
-  - 價值判斷
+  - Social Media Observation
+  - Knowledge Anxiety
+  - Information Consumption
+  - Digital Identity
+  - Value Judgment
 cover: "/images/covers/social-media-value-spectrum.jpg"
 featured: false
 draft: false
