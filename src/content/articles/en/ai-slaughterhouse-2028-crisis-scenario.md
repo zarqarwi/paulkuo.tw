@@ -33,7 +33,7 @@ February 23, 2026, Wall Street weathered an unusual Monday. IBM plummeted 13% af
 
 The report's title was blunt to the point of provocation: [*The 2028 Global Intelligence Crisis*](https://www.citriniresearch.com/p/2028gic). Chinese circles were even more direct, with Yu Yingzheng calling it "The 2028 AI Slaughterhouse" in social media posts.
 
-This is what's unsettling. Not Goldman Sachs, not Morgan Stanley, but a small firm with virtually no brand moat used a thought experiment to move markets. This shows the market's nerves aren't just taut—they're inflamed, where any stimulus could trigger spasms. Fear needs no authoritative endorsement, only a sufficiently complete storyline.
+This is what's unsettling. Not Goldman Sachs, not Morgan Stanley, but a small firm with virtually no brand moat used a thought experiment to move markets. The market's nerves have moved past taut into inflamed—any stimulus now risks a spasm. Fear needs no authoritative endorsement, only a sufficiently complete storyline.
 
 Citrini's storyline is a five-link chain, each link gripping the next, forming a pathway from prosperity to collapse.
 
@@ -51,7 +51,7 @@ The report predicts U.S. unemployment will touch 10.2% in June 2028, with the S&
 
 Here, most people would start choosing sides—do you find this report credible or alarmist? But I'm more concerned with something else.
 
-Report co-author Alap Shah openly admits his strategy is "short the story, long the trend": shorting companies disrupted by AI while holding beneficiary semiconductor stocks. If his prophecy comes true, he profits directly. This isn't neutral analysis—this is narrative with positions.
+Report co-author Alap Shah openly admits his strategy is "short the story, long the trend": shorting companies disrupted by AI while holding beneficiary semiconductor stocks. If his prophecy comes true, he profits directly. He was arguing with skin in the game.
 
 And this is precisely what 2013 Nobel Economics laureate Robert Shiller described. His "narrative economics" indicates: narratives precede reality and shape reality. Economic fluctuations aren't driven purely by fundamentals—they're driven by easily transmissible stories. George Soros's reflexivity theory says the same thing—participants' beliefs change the observed object itself.
 
@@ -59,9 +59,7 @@ So this report's most alarming aspect isn't whether its five-link analysis is co
 
 For Taiwan, every link in this chain deserves comparative self-examination. Our semiconductors and hardware manufacturing sit on AI's beneficiary side, but what about our service industries, financial sector, intermediary industries? Taiwan's white-collar density is no lower than America's, our insurance industry similarly invests heavily in fixed-income products. If the first two links of this chain occur in America, the fourth link's shockwaves won't bypass the Pacific.
 
-No one knows if 2028 will become a slaughterhouse. But that Monday, February 23, 2026, already told us one thing:
-
-Markets are never crushed by facts. They're crushed by a good enough story.
+No one knows if 2028 will become a slaughterhouse. But that Monday, February 23, 2026, already told us: the weapon that crushes markets is a good enough story.
 
 ---
 
