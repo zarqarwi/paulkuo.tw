@@ -94,7 +94,7 @@ Manage YouTube? That's Google's, algorithms change there too.
 Build your own website? Your traffic is still choked by Google's search algorithm.
 Switch to Line@? Platforms change at will.
 
-This is the dilemma of digital colonialism: you can change colonial masters, but you can't escape the colonial structure. Because in today's internet ecosystem, all traffic allocation power is held by a few giant platforms.
+This is the dilemma of digital colonialism: you can change colonial masters, but you can't escape the colonial structure. Because in today's internet landscape, all traffic allocation power is held by a few giant platforms.
 
 In running my company, I've deeply experienced this reality. We help clients manage communities, do content marketing, run ads. Every strategy's foundation is built on platform rules. And these rules can suddenly change when you're completely unprepared.
 
@@ -102,9 +102,7 @@ Once, we spent a month crafting a Facebook content strategy for a client. Two we
 
 ## What to Do After Awakening
 
-So what then? Give up?
-
-No. Replan with clarity.
+So what then? Give up? Not that—replan with clarity.
 
 First, build your own assets. Email lists, owned websites, LINE official accounts—these are channels for directly reaching your audience, [not controlled by any single platform's algorithm](/articles/algorithm-as-judge). They grow slowly, but they're yours.
 
