@@ -70,7 +70,7 @@ Efficiency. Efficiency. Efficiency.
 
 Cioran showed me this system's blind spot: **If all pain must be fixed, we lose the ability to understand pain.**
 
-This doesn't mean pain is good, doesn't encourage suffering. Rather, it means pain contains something you can't see when rushing to fix it. Like taking film from a darkroom and hastily exposing it—the image is ruined. Some things need to develop slowly in darkness.
+Pain contains something you can't see when you're rushing to fix it. Like taking film from a darkroom and hastily exposing it—the image is ruined. Some things need to develop slowly in darkness.
 
 ## The Clarity of Despair
 
@@ -102,7 +102,7 @@ Observing myself and surrounding entrepreneurs and managers, I found a common ph
 
 This is what I call "inner deficit." Your external systems run well, but the person inside has accumulated massive debt—need for meaning, need for quiet, need to "just exist without doing anything."
 
-Cioran's book continues being read in our efficiency-obsessed age because it hits this deficit. It provides no action plans for Notion. It simply says: your pain is real. Your emptiness isn't a bug, it's a signal.
+Cioran's book continues being read in our efficiency-obsessed age because it hits this deficit. It provides no action plans for Notion. It simply says: your pain is real. Your emptiness is sending a signal—it's not a bug to be cleared.
 
 ## Suffering as Developer
 
@@ -114,7 +114,7 @@ During my entrepreneurial journey, I experienced several painful failures. Once 
 
 This question stopped me. Because it revealed something I didn't want to admit: I had tied self-worth to business achievement. Not consciously tied, but unconsciously. And suffering—the pain of failure—was the only thing that could show me this rope.
 
-Cioran would say: exactly. Not because pain is good, but because pain is real. It's existence's developer. Those things fuzzy in good times—what you truly fear, what you truly depend on, where your values actually stand—only become clear in pain's chemical reaction.
+Cioran would say: exactly. Pain's meaning comes from its reality—whether it's good has nothing to do with it. It's existence's developer. Those things fuzzy in good times—what you truly fear, what you truly depend on, where your values actually stand—only become clear in pain's chemical reaction.
 
 In "[Faith Gives You No Immunity](/articles/faith-no-immunity)," I discussed similar experiences: faith doesn't exempt you from suffering, but helps you not lose direction within suffering. Cioran trusts no religion, but his observations of suffering overlap with theology's understanding of suffering—both refuse to reduce suffering to a problem requiring elimination.
 
@@ -124,7 +124,7 @@ Many ask: how to emerge from low points?
 
 Cioran might counter-ask: why the rush to get out?
 
-This isn't encouraging wallowing. Rather, it's saying: low points have their own things to tell you. If you rush to escape, fix, return to "normal state," you might miss scenery only visible in valleys.
+Low points have their own things to tell you. If you rush to escape, desperate to return to normal, you might miss scenery only visible in valleys.
 
 I later developed a habit: during low points, giving myself "no rush to fix" time. Maybe an afternoon, maybe a whole day. Not analyzing causes, not making plans, not seeking comfort from others. Just letting that feeling exist. Seeing how it wants to move.
 
@@ -136,10 +136,10 @@ I wouldn't recommend everyone read Cioran. His words are too dense, too heavy, t
 
 But he taught me one thing: **don't rush to light false lamps in darkness.**
 
-What are false lamps? Things used to quickly eliminate uncomfortable feelings—inspirational quotes, positive energy slogans, empty assurances that "everything will be fine." These aren't completely useless, but they often don't illuminate darkness—they make you pretend darkness doesn't exist.
+What are false lamps? Things used to quickly eliminate uncomfortable feelings—inspirational quotes, positive energy slogans, empty assurances that "everything will be fine." These sometimes get you through the moment, but more often their job is to make you pretend darkness doesn't exist—not truly illuminate it.
 
 True light comes after staying in darkness long enough for your eyes to adapt and begin seeing faint outlines. Those outlines might be your real desires, your suppressed questions, choices you've been avoiding. They're dark, unclear, but they're real.
 
-All external order design—technology, institutions, industries, civilization—ultimately builds upon human inner structure. If the interior is chaotic, the most perfect systems will collapse. If the interior is stable, even in environmental turbulence, you can stand.
+We spend enormous effort building external systems—technology, institutions, industries. But without a stable interior, all of this is architecture suspended in air. Where is the foundation? Inside the person making the decisions.
 
-Opening eyes at the heights of despair isn't to remain there. It's to walk more steadily and see more clearly when descending. Because you already know what darkness looks like. It's not as terrifying as you imagined.
+Opening eyes at the heights of despair is to walk more steadily and see more clearly when descending. Because you already know what darkness looks like. It's not as terrifying as you imagined.
