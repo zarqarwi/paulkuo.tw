@@ -34,16 +34,54 @@ async function fetchGitHubProfile(username, env) {
   const reposResp = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated&type=owner`, { headers });
   const repos = reposResp.ok ? await reposResp.json() : [];
 
-  // 3. Recent push events (proxy for commits in past 6 months)
-  const eventsResp = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/events?per_page=100`, { headers });
-  const events = eventsResp.ok ? await eventsResp.json() : [];
-
-  // Compute metrics
+  // 3. Commits in past 6 months — GraphQL ContributionsCollection (accurate),
+  //    fallback to REST events (90-day window, undercounts monorepo pushes)
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  const pushEvents = events.filter(e => e.type === 'PushEvent');
-  const recentCommits = pushEvents.reduce((sum, e) => sum + (e.payload?.commits?.length || 0), 0);
+  let recentCommits = 0;
+  let commits_6m_source = 'none';
+
+  if (env.GITHUB_PAT) {
+    try {
+      const gqlQuery = `
+        query ($login: String!, $from: DateTime!, $to: DateTime!) {
+          user(login: $login) {
+            contributionsCollection(from: $from, to: $to) {
+              totalCommitContributions
+            }
+          }
+        }
+      `;
+      const gqlResp = await fetch('https://api.github.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Authorization': `bearer ${env.GITHUB_PAT}`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'ACP/1.0',
+        },
+        body: JSON.stringify({
+          query: gqlQuery,
+          variables: { login: username, from: sixMonthsAgo.toISOString(), to: new Date().toISOString() },
+        }),
+      });
+      const gqlData = await gqlResp.json();
+      const total = gqlData?.data?.user?.contributionsCollection?.totalCommitContributions;
+      if (typeof total === 'number') {
+        recentCommits = total;
+        commits_6m_source = 'graphql';
+      }
+    } catch { /* fall through to REST */ }
+  }
+
+  // REST fallback (public push events, last ~90 days only)
+  if (commits_6m_source === 'none') {
+    const eventsResp = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/events?per_page=100`, { headers });
+    const events = eventsResp.ok ? await eventsResp.json() : [];
+    const pushEvents = events.filter(e => e.type === 'PushEvent');
+    recentCommits = pushEvents.reduce((sum, e) => sum + (e.payload?.commits?.length || 0), 0);
+    commits_6m_source = 'events_fallback';
+  }
 
   const totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
 
@@ -79,6 +117,7 @@ async function fetchGitHubProfile(username, env) {
     followers: user.followers,
     // Mapped to ACP questions
     commits_6m: recentCommits,                    // → d1
+    commits_6m_source,                            // 'graphql' | 'events_fallback' | 'none'
     active_repos: activeRepos.length,             // → d2, l1
     total_repos: repos.length,                    // → d4
     stars_total: totalStars,                      // → i1
