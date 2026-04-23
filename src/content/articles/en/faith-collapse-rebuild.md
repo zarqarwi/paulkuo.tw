@@ -70,13 +70,13 @@ I spent many years afterward thinking about what went wrong. It wasn't just "fai
 
 My conclusion: because their faith had never undergone reflection.
 
-Accepting "the world is about to be destroyed" is the easiest faith choice. It saves the pain of thinking. It saves the trouble of dialoguing with different viewpoints. It even gives people a kind of spiritual superiority—"I know the truth while you're still in the dark."
+Accepting "the world is about to be destroyed" is the easiest faith choice. It saves the pain of thinking and the trouble of dialoguing with different viewpoints. It even gives people a kind of spiritual superiority—"I know the truth while you're still in the dark."
 
 I call this "instant noodle faith." Tear open the package, add hot water, ready in three minutes. Simple, fast, with immediate satisfaction. But no nutrition. And eating too much causes problems.
 
 The characteristics of instant noodle faith: it doesn't require you to understand anything. You don't need to understand the historical context of the Bible, the literary characteristics of prophetic literature, two thousand years of theological debate about eschatology, or Taiwan's geopolitical realities. You only need to "believe"—believe what some authority figure tells you, then act accordingly.
 
-This isn't faith. This is dependency. And dependency is the most fragile thing when facing fear.
+This isn't faith—it's dependency. And dependency is the most fragile thing when facing fear.
 
 ## Theology Is Not a Luxury
 
@@ -108,11 +108,11 @@ True faith courage isn't "I know what God will do," but "I don't know, but I sti
 
 ## Reconstruction After Collapse
 
-I'm not trying to negate faith. Quite the opposite.
+I'm not trying to negate faith—quite the opposite.
 
 The leap month incident took me so many years to process not because it made me doubt God, but because it forced me to seriously confront a question: what exactly is my faith built on?
 
-If it's built on "what some pastor said," then when the pastor is wrong, faith collapses. If it's built on "the world is about to end so hurry up and believe," then when the world doesn't end, faith becomes meaningless. If it's built on the utilitarian exchange of "believe in Jesus for peace and safety," then when we encounter insecurity, faith goes bankrupt.
+If it's built on "what some pastor said," then when the pastor is wrong, faith collapses. If it's built on "the world is about to end so hurry up and believe," then when the world doesn't end, faith becomes meaningless. The utilitarian "believe in Jesus for peace and safety" works the same way—the day peace disappears, faith goes bankrupt too.
 
 These are all sandy foundations.
 
