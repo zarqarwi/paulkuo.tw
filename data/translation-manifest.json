@@ -740,11 +740,11 @@
     }
   },
   "moral-person-immoral-society.md": {
-    "sourceHash": "5a9e35e96e36",
+    "sourceHash": "07adc967d385",
     "translations": {
       "en": {
-        "hash": "02eb28abde92",
-        "translatedAt": "2026-03-02T00:54:11.631Z",
+        "hash": "a96b170e3f0a",
+        "translatedAt": "2026-04-23T11:48:09.044Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
