@@ -1,34 +1,37 @@
 {
-  "total_pages": 250,
+  "total_pages": 339,
   "by_type": {
-    "concept": 26,
-    "source": 237,
+    "concept": 38,
+    "source": 300,
     "entity": 1
   },
   "by_pillar": {
-    "circular": 2,
-    "ai": 21,
-    "life": 4,
-    "startup": 3,
-    "faith": 1
+    "ai": 179,
+    "life": 65,
+    "startup": 48,
+    "circular": 26,
+    "faith": 21
   },
   "by_visibility": {
-    "internal": 69,
-    "unknown": 9,
-    "public": 169
+    "public": 255,
+    "internal": 69
   },
   "by_source_type": {
+    "concept": 38,
     "article": 93,
-    "getnote": 124,
-    "concept": 26,
-    "clip": 8,
+    "clip": 25,
+    "getnote": 123,
+    "get_note": 17,
+    "source": 12,
+    "youtube": 30,
     "entity": 1
   },
   "graph": {
-    "nodes": 250,
-    "edges": 487
+    "nodes": 254,
+    "edges": 516
   },
-  "generated": "2026-04-16",
+  "generated_at": "2026-04-23T14:24:16.401Z",
+  "generated": "2026-04-23",
   "total_nodes": 254,
   "total_edges": 516
 }
