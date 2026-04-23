@@ -84,13 +84,13 @@ Previously, "knowing how to code" meant starting from a blank file and building 
 
 I still can't write a Python script from scratch. But I can spot problems in Claude's code, which architectural decisions will create future pitfalls, which CSS will break on mobile. This isn't programming ability—it's engineering judgment "intuition." And this ability came from intensive practice during the New Year period.
 
-**Second, AI won't replace your judgment, but it will amplify your judgment.**
+**Second, AI is an amplifier of your judgment.**
 
 I cut half of Claude's first article draft. I overturned its suggested database architecture twice. I rejected and redid its cover images.
 
-AI's value isn't in being always right, but in compressing the time from "idea to implementation" from three months to three days. What's compressed isn't quality, but the repetitive, mechanical, automatable steps in between. Judgment is still your job.
+AI's value is in compressing the time from "idea to implementation" from three months to three days. It doesn't need to always be right. What's compressed is the repetitive, mechanical, automatable steps in between—not quality. Judgment is still your job.
 
-**Third, a super individual isn't someone who knows everything, but someone who knows how to orchestrate.**
+**Third, the key capability of a super individual is knowing how to orchestrate.**
 
 I used Claude for coding, DALL-E for images, OneUp for post scheduling, GitHub Actions for automation. I'm not proficient in any single technology. But I know how they can be connected.
 
