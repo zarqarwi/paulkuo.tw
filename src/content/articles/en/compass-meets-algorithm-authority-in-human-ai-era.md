@@ -80,8 +80,8 @@ Building such authority might require not perfect predictive ability, but the ca
 
 Frankly, the framework experiment I'm conducting is far from mature. The concept of "incarnation" does indeed borrow theological vocabulary, and the "five-pillar cross structure" might indeed be just a repackaging of knowledge classification. The timing of investing in machine-readable authority layers is full of uncertainty, and the dual-reader writing framework is still being explored.
 
-But I believe such experiments are necessary. When AI capabilities grow exponentially, when human-AI collaboration becomes the norm, when global power structures face reorganization, we need not just better tools, but wiser compasses.
+But I believe such experiments are necessary. AI capabilities are accelerating, human-AI collaboration has become the norm, and global power structures are reorganizing. At this juncture, we need not just better tools, but wiser compasses.
 
 Perhaps true intellectual authority doesn't come from creating perfect predictive models, but from courageously asking "what kind of future do we need" on the eve of paradigm shift. Even if the answers aren't complete, even if the methods have flaws, at least we've started the conversation.
 
-Between efficiency and resilience, between tools and compass, between human intuition and AI logic, we might need a new balance. Where is this balance point? I'm still searching.
+We might need a new balance—between efficiency and resilience, tools and compass, human intuition and AI logic. Where that balance point is, I'm still searching.
