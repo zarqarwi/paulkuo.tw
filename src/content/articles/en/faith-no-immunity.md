@@ -52,7 +52,7 @@ This sounds like stating the obvious. But you'd be surprised how many religious 
 
 South Korea's Shincheonji Church continued to hold large gatherings because the church leader claimed believers had spiritual protection. American pastors announced on television that they would "blow away the virus with faith." Religious gatherings in India drew hundreds of thousands of people because organizers believed the sacred river water could purify everything.
 
-The common thread in these cases isn't "which religion is more foolish." It's a cross-religious, cross-cultural cognitive error: treating religious belief as physical protection.
+The common thread in these cases isn't "which religion is more foolish," but a cross-religious, cross-cultural cognitive error: treating religious belief as physical protection.
 
 ## Two Forms of Rationality Collide
 
@@ -64,7 +64,7 @@ But faith cannot tell you that "gatherings won't transmit viruses." That belongs
 
 Where's the problem? It's when some faith communities infinitely expand the authority of religious rationality, extending it into domains where it doesn't belong. They respond to "please maintain social distance" with "God will protect us." They counter "science" with "faith."
 
-This isn't faith. This is overreach. And it's dangerous overreach—because your overreach affects not just yourself, but everyone you encounter.
+This isn't faith—it's overreach, and dangerous overreach at that, because it affects not just yourself but everyone you encounter.
 
 ## It's Not Just "Their" Problem
 
@@ -74,7 +74,7 @@ But if you're honest, you'll admit: Shincheonji exaggerated the problem to extre
 
 In the church circles I belong to, the early stages of the pandemic involved similar struggles. Some argued that "the church is God's temple and won't be invaded by viruses." Others questioned whether suspending in-person gatherings showed a "lack of faith in God." Some felt wearing masks to church was "not trusting God's protection."
 
-These voices weren't as extreme as Shincheonji's, but the underlying logic was identical—treating faith as a talisman to escape physical reality.
+These voices weren't as extreme as Shincheonji's, but the underlying reasoning was identical—treating faith as a talisman to escape physical reality.
 
 At that time, I said something in my church small group that sparked considerable debate. I said: "If you truly believe God created this world, then you should also believe God created the physical laws governing virus transmission. Respecting these laws is not disbelief in God—it is respecting the order God created."
 
@@ -96,7 +96,7 @@ The tragedy of Shincheonji is that they infinitely magnified the first responsib
 
 So what's the greatest value of this situation?
 
-It's not to give us another target for criticism. Rather, it compels every faith community to conduct a deep examination of itself: [does our faith divorce itself from reality?](/articles/fundamentalist-faith-arrogance)
+It's not to give us another target for criticism, but to compel every faith community to conduct a deep examination of itself: [does our faith divorce itself from reality?](/articles/fundamentalist-faith-arrogance)
 
 Can our theological discourse address real-world problems? Or can it only offer self-comfort within church walls?
 
