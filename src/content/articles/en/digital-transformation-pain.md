@@ -50,7 +50,7 @@ If we compare transformation to labor, those five stages on the slide represent 
 
 The biggest lie about digital transformation is: "Let's implement some new tools."
 
-It's not about tools. It's about minds.
+It's not about tools—it's about minds.
 
 Reading inspiring transformation articles is completely different from actually driving change within an organization. It's like watching medical documentaries versus performing surgery.
 
@@ -118,4 +118,4 @@ I'm not sure we're living in the best of times. But I can be certain this is an 
 
 Environmental progress is ruthless and rapid. But people in organizations, when facing change, have the same fears and resistance as our ancestors thousands of years ago.
 
-This contradiction is the eternal labor pain of digital transformation. It won't disappear because of technological progress. Because the problem was never technology. The problem is people. And people are the hardest system in the world to upgrade.
+This contradiction is the eternal labor pain of digital transformation. It won't disappear because of technological progress—because the problem was never technology. The problem is people, and people are the hardest system in the world to upgrade.
