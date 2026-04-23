@@ -68,13 +68,13 @@ My experience at the company is: once systems start making decisions automatical
 
 AI Agents don't belong to any department. They span finance, supply chain, manufacturing, customer service, marketing. In traditional organizations, departments are units of power and responsibility. But in data-flow-driven environments, decisions result from cross-module collaboration.
 
-Future enterprises may not be collections of departments, but networks of algorithmic nodes. When organizational structure gives way to model architecture, power shifts from "position" to "architecture design." Whoever designs the system's logic effectively controls the organization. This aligns with the trend I discussed in "[The Canary in the Coal Mine of AI Employment](/articles/canary-in-coal-mine-ai-employment)"—what's being replaced isn't specific positions, but the entire logic of organizational operation.
+Future enterprises may not be collections of departments, but networks of algorithmic nodes. When organizational structure gives way to model architecture, power shifts from "position" to "architecture design." Whoever designs the system's logic effectively controls the organization. This aligns with the trend I discussed in "[The Canary in the Coal Mine of AI Employment](/articles/canary-in-coal-mine-ai-employment)"—the entire logic of how organizations operate is what's actually being rewritten.
 
 ## The Civilizational Problem of Accountability
 
 When AI participates in decision-making, how is responsibility defined? Is the model responsible? The data? The engineers? Or the enterprise?
 
-In always-on systems, responsibility is no longer clearly assignable. This isn't just a legal problem—civilization's core lies in traceable accountability. When decisions are made by non-human agents, we're entering an unprecedented form of responsibility.
+In always-on systems, responsibility is no longer clearly assignable. Traceable accountability—to a human—is civilization's baseline. Law is one way to enforce it, but the baseline comes first. When decisions are made by non-human agents, we're entering an unprecedented form of responsibility.
 
 Returning to my 3 AM example: the system automatically adjusted parameters and the production line returned to normal, but what if it had adjusted incorrectly? Who bears the loss? I didn't give the command, but I designed the rules that allowed it to auto-adjust. This gray area of "indirect responsibility" will grow larger as the always-on economy expands.
 
@@ -84,6 +84,6 @@ The Industrial Revolution amplified mechanical force, the Digital Revolution amp
 
 But efficiency maximization doesn't equal correct direction. The always-on economy pursues optimization, but civilization must answer: optimization for whom? Without a value framework, AI will only amplify existing inequities. Without order design, automation will only accelerate deviation.
 
-Human roles won't disappear, but will transform from operators, executors, and sustainers to designers, calibrators, and judges. Future competitive advantage won't lie in who can work longer, but who can define order.
+Human roles won't disappear, but will transform from operators, executors, and sustainers to designers, calibrators, and judges. Lasting longer isn't a competitive edge anymore—being able to see what the system is optimizing for, and deciding whether that's what you want, is.
 
-Technology enables the economy to operate around the clock. But only civilization can decide for whom it operates.
+Technology has already compressed the rhythm. As for who ultimately gets billed by a system running this fast—that question can't be answered by engineers alone.
