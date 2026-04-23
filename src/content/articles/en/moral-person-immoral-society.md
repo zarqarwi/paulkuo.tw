@@ -85,7 +85,7 @@ Niebuhr's greatest insight for me was this: you can't solve institutional proble
 
 Every election cycle in Taiwan, everyone searches for "good candidates." Find someone with a good image and good reputation, and feel like there's hope. But Niebuhr would tell you: when a good person enters a bad system, the most likely outcome isn't that the good person changes the system, but that the system changes the good person.
 
-Not because good people lack resolve. But because the system's pressure is comprehensive, continuous, and backed by powerful incentive structures. Asking someone to rely on personal willpower to fight against an entire system's inertia is fundamentally unfair.
+Not because good people lack resolve, but because the system's pressure is comprehensive, continuous, and backed by powerful incentive structures. Asking someone to rely on personal willpower to fight against an entire system's inertia is fundamentally unfair.
 
 What can truly change society isn't more good people. It's better institutions—institutions with checks and balances, transparency, and accountability mechanisms.
 
@@ -105,9 +105,9 @@ Niebuhr, as a theologian, was particularly clear-eyed about this. He never belie
 
 So was Niebuhr a pessimist?
 
-No. He was a "clear-eyed actor."
+No—he was a "clear-eyed actor."
 
-His message wasn't "human nature is too corrupt, give up." It was "human nature has its limitations, so we need something better than naivety." That something better is institutions—thoughtfully designed institutions with self-correcting capabilities.
+His message wasn't "human nature is too corrupt, give up"—it was "human nature has its limitations, so we need something better than naivety." That something better is institutions—thoughtfully designed institutions with self-correcting capabilities.
 
 What does this mean for individuals?
 
