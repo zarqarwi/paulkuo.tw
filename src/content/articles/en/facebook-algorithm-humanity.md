@@ -60,7 +60,7 @@ A platform that makes users increasingly unhappy is committing suicide in the lo
 
 Zuckerberg's post essentially acknowledged this. His decision was: better to sacrifice short-term usage time and ad revenue than to pull the platform back to "meaningful social interaction."
 
-This wasn't charity. This was business judgment. And extremely farsighted business judgment.
+This wasn't charity—it was extremely farsighted business judgment.
 
 ## Consumers Are People First
 
