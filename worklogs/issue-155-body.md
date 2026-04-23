@@ -30,6 +30,7 @@
 ---
 
 ## 完成日誌（最新在上）
+- 04-23 ACP 第二輪迭代開始：en frontmatter tags 在地化 ✅（e083134）+ tsx 拆檔評估 ✅（8120d98，建議 Tier 1 局部拆分）。Influence override / RWD / GraphQL 遷移進行中 Code
 - 04-20 跨載體事實同步實戰驗收 🔴：同一問題跨 8 查詢點得 5 答案（Code 唯一正確）。session-handoff v5.6 升級（R1 觸發句型擴充：版本號/清單/時序狀態）。H1~H5 五議題（C 層同步缺失/Chat 精確事實上限/auto-memory 不對稱/Cowork 繞過剛性核查/R1 擴充）。H5 當場完成，H1-H4 進 PENDING.md Cowork
 - 04-20 R1/R2/R3 三軌 commit + push ✅：R1 空中樓閣護欄 v5.5 + R2 Cowork sandbox 寫入邊界 + R3 CLAUDE.md 200 行上限前置攔截 Chat→Code
 - 04-20 協作憲法 v0.3 四軌落地 ✅：Track 1 CLAUDE.md 憲法引用+Skill 同步(b0860dd) + Track 2 四 skill A 層落地(eb91a9e) + Track 3 hook worklog 原子化(6ed20f8) + Track 4 WE implements frontmatter(b0860dd)。收尾 commit 3c2f3a8。V1-V8 驗證全過。ADR Accepted。Cowork handoff → Code 執行 Cowork+Code
@@ -121,9 +122,21 @@
 **Layer 2+3 ✅** GitHub Auto-Fetch + AI Verification
 **UX/A11y ✅** (dbc0666) | **D1 備份 ✅** (#154)
 
+### 2026-04-23 第二輪迭代
+
+**體驗優化 + 技術債清理（進行中）**
+
+| Task | 說明 | 狀態 |
+|------|------|------|
+| en frontmatter 在地化 | 84 篇 en 文章 tags 翻譯（340 個中文標籤→英文） | ✅ e083134 |
+| tsx 拆檔評估 | `AICollabPortfolio.tsx` 1268 行評估報告，建議 Tier 1 局部拆分 | ✅ 8120d98 |
+| Influence reach override | `blog_monthly_traffic` + `social_followers` 覆蓋欄位（BUG-5） | ⏳ 進行中 |
+| 手機 RWD 驗證報告 | puppeteer 3 viewport × 4 target 截圖報告 | ⏳ 待做 |
+| tsx Tier 1 拆分 | 5 個純 UI 元件提取（RadarChart / ScoreBar / WeightSlider / Tooltip / EvidenceBadge） | ⏳ 待做（依評估建議） |
+| Delivery GraphQL 遷移 | commits_6m 改用 GraphQL ContributionsCollection（BUG-4） | ⏳ 待做（最高風險，壓後） |
+
 **待辦：**
 - [ ] beyond-man-days en 版本 — Paul 另外討論
-- [ ] ACP 視覺審查（手機 RWD、雙層雷達圖）
 - [ ] ACP 社群推廣
 
 ---
