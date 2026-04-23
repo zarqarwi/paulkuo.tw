@@ -37,7 +37,7 @@ reading_context: |
 
 This is Google Chirp 3's character error rate when recognizing a TSMC semiconductor technical explanation video. The same audio file fed to Groq Whisper yielded an error rate of 36.5%. One nearly word-perfect, the other missing every third word.
 
-This wasn't some carefully controlled lab experiment. Just a random Japanese explanation video from YouTube, first three minutes, run through two engines. The gap in results was so large it made me rethink something fundamental: what exactly is our trust in "free AI tools" built upon?
+This wasn't some carefully controlled lab experiment—just a random Japanese explanation video from YouTube, first three minutes, run through two engines. The gap in results was so large it made me rethink something fundamental: what exactly is our trust in "free AI tools" built upon?
 
 ## Why I Ran This Test
 
