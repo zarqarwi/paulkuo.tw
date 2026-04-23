@@ -88,7 +88,7 @@ It was later, in theological seminary, that my certainty began to shake. Not mak
 
 These discoveries didn't destroy my faith. Instead they transformed my faith from a "certainty-about-everything" flat structure into one that "acknowledges complexity and accepts tension" in a [three-dimensional way](/articles/same-sex-marriage-theology).
 
-My faith now is not more "certain" than before. But I believe it's more honest, deeper, and more capable of breathing.
+My faith now is not more "certain" than before, but I believe it's more honest, deeper, and more capable of breathing.
 
 ## Living Faith vs. Frozen Faith
 
@@ -100,7 +100,7 @@ If they're still asking "Are we missing something?" "Could this text be understo
 
 If they've stopped asking, if every answer is locked in place, if any doubt is treated as "faithlessness"—then this faith is frozen. It looks solid, but solidity and death are sometimes separated by only a thin line.
 
-The problem with fundamentalism isn't faith itself. It's that it freezes faith.
+The problem with fundamentalism isn't faith itself—it's that it freezes faith.
 
 True living faith can breathe. It questions, it cries, it searches in darkness. It's not afraid of "I'm uncertain," because it knows [certainty is not faith's goal—faithfulness is](/articles/god-beyond-definition).
 
