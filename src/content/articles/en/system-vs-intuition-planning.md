@@ -38,7 +38,7 @@ During summer break, I led an entrepreneurship education class project. The miss
 
 Four days passed. Most students' websites had only one page, and it was nearly empty.
 
-It wasn't because they were slacking—they were genuinely working. But they didn't know what to put on it. They opened their website editors and got stuck. Like a writer sitting before a blank Word document, cursor blinking, unable to write a single word.
+It wasn't because they were slacking—they were genuinely working—but they didn't know what to put on it. They opened their website editors and got stuck. Like a writer sitting before a blank Word document, cursor blinking, unable to write a single word.
 
 ## The Comfort Zone of System 1
 
