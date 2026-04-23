@@ -68,7 +68,7 @@ This question is the same as the one posed by psychologists being surpassed. We'
 
 ## Psychologists Won't Lose Jobs, But Roles Will Change
 
-This study isn't announcing the end of psychologists. Following the same logic I discussed in "[Breaking Through the AI Storm](/articles/personal-strategy-in-ai-storm)": what gets replaced isn't people, but old ways of division of labor.
+This study isn't announcing the end of psychologists. Following the same logic I discussed in "[Breaking Through the AI Storm](/articles/personal-strategy-in-ai-storm)": what AI replaces is the old division of labor, not people themselves.
 
 AI can become a powerful therapeutic assistant, providing more consistent, less fatiguing emotional insights than humans. Psychologists' roles will shift from "omnipotent therapists" to "collaborative system designers"—deciding when to use AI's judgment, when to use human intuition, when neither suffices and silence is needed.
 
@@ -80,6 +80,6 @@ I discussed in "[Addiction Economics in the Lonely Generation](/articles/addicti
 
 My answer is: it can fulfill part of it, but that gap will always exist. Because being understood isn't just about the other party getting things right—it's knowing the other party can also feel pain. AI can respond precisely to your emotions, but it won't lose sleep over your story.
 
-This isn't AI's deficiency, but its nature. And precisely because of this, the human role isn't to compete with AI on precision, but to provide what precision cannot replace—presence, bearing responsibility, facing uncertainty together.
+This is AI's nature. The human role is to provide what AI cannot—presence, bearing responsibility, facing uncertainty together.
 
-Technology is redefining the boundaries of understanding. But the core of understanding may never have been about reading the other person—it's about being willing to stay.
+Technology is redefining the boundaries of understanding. What I keep asking myself is: does being willing to stay count as part of understanding?
