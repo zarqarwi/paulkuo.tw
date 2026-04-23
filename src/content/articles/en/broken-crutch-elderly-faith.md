@@ -80,11 +80,11 @@ This system is logically riddled with holes. But psychologically, it provides th
 
 Sense of control: I do something, and something good will happen. In a world full of uncertainty, this sense of causal certainty is a luxury.
 
-Sense of meaning: My daily actions (donations, prayers, pilgrimages) aren't just routine—they're accumulating blessings for myself and my family. Every small action has cosmic significance.
+Sense of meaning: My daily actions (donations, prayers, pilgrimages) have taken on a higher significance—accumulating blessings for myself and my family. Every small action has cosmic significance.
 
 Sense of belonging: The temple sisters go on pilgrimages together, attend ceremonies together, share testimonies together. In the years when children are busy with their own lives, this community provides more stable companionship than family.
 
-Once you understand these three things, you understand why rational rebuttals don't work. Because you're not refuting a proposition—you're pulling away the support that keeps a person going.
+Once you understand these three things, you understand why rational rebuttals don't work. Because what you're refuting is actually the support that keeps a person going, not a proposition.
 
 ## After Father Left
 
@@ -130,9 +130,9 @@ But reason has its scope of application. A screwdriver is a good tool, but you c
 
 Reason is suitable for handling propositions: "Can merit be accumulated?" can be analyzed. "Can lamp-lighting change fortune?" can be verified. "Is there a causal relationship between donations and exam results?" can be experimentally tested.
 
-But reason isn't suitable for handling existence: "How should a 70-year-old who has lost their spouse find a reason to live?" This isn't a problem that can be "solved." It's a situation that needs to be accompanied.
+But reason isn't suitable for handling existence: "How should a 70-year-old who has lost their spouse find a reason to live?" This isn't a problem that can be "solved"—it only needs to be accompanied.
 
-Humility, in this context, isn't admitting you might be wrong. It's admitting that even if you get everything right, you might not be able to help the person who needs help.
+Humility, in this context, is admitting: even if you get everything right, you might not be able to help the person who needs help.
 
 ## Those Charging Forward, Remember to Look Back
 
