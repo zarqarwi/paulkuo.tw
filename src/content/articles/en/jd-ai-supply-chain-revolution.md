@@ -67,7 +67,7 @@ The first signal: AI supply chain capabilities are moving from "build" to "rent.
 
 The second signal: explainability determines whether AI can truly land. JD invested enormous effort in "making business units understand AI decisions"—this isn't a technical problem, it's a trust problem. Many Taiwanese companies' AI implementations fail not because models are inaccurate, but because frontline people don't trust or dare follow AI recommendations.
 
-The third signal: supply chain competitive dimensions are changing. Previously, competition was about "whose logistics is faster, cheaper." Now it's about "whose predictions are more accurate, reactions faster, anomaly handling more automated." When JD's AI system can automatically reallocate routes the instant a warehouse fails, this isn't an efficiency advantage—it's a structural advantage.
+The third signal: the nature of supply chain competition is changing. Previously, competition was about "whose logistics is faster, cheaper." Now it's about "whose predictions are more accurate, reactions faster, anomaly handling more automated." When JD's AI system can automatically reallocate routes the instant a warehouse fails, this isn't an efficiency advantage—it's a structural advantage.
 
 For Taiwan's manufacturing and supply chain service providers, the real question is: when your customers start interfacing with you using AI-driven supply chains while you're still managing inventory with Excel, you're not "slower"—you're speaking different languages.
 
