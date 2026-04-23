@@ -140,11 +140,11 @@
     }
   },
   "algorithm-cannot-replace-decisions.md": {
-    "sourceHash": "6429efcd07e9",
+    "sourceHash": "e3b73008b123",
     "translations": {
       "en": {
-        "hash": "5a488a3e87aa",
-        "translatedAt": "2026-03-02T22:07:41.016Z",
+        "hash": "70ce1c086831",
+        "translatedAt": "2026-04-23T10:44:53.684Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
