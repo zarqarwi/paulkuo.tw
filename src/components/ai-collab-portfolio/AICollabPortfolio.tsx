@@ -729,6 +729,47 @@ function AccordionSection({ dim, answers, onAnswer, isOpen, onToggle, dimScore, 
               </div>
             );
           })}
+
+          {/* Influence reach override — optional blog/social inputs */}
+          {dim.id === 'influence' && (
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.cardBorder}` }}>
+              <div style={{ fontSize: 12, color: C.muted, marginBottom: 12, padding: '10px 14px', background: 'rgba(245,158,11,0.06)', borderRadius: 8, borderLeft: `2px solid ${C.warning}44`, lineHeight: 1.6 }}>
+                <strong style={{ color: C.warning }}>Expand your reach score (optional):</strong> If you have a blog or social media presence, add those numbers here. GitHub followers alone may undercount your actual reach.
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={S.label}>Blog monthly page views</label>
+                  <input
+                    type="number"
+                    min={0}
+                    aria-label="Monthly blog page views (optional)"
+                    value={answers['blog_monthly_traffic'] ?? ''}
+                    onChange={e => onAnswer('blog_monthly_traffic', e.target.value)}
+                    placeholder="e.g., 5000 (optional)"
+                    style={S.input}
+                  />
+                </div>
+                <div>
+                  <label style={S.label}>Social followers</label>
+                  <input
+                    type="number"
+                    min={0}
+                    aria-label="Total social media followers (X, Threads, LinkedIn, etc.) — optional"
+                    value={answers['social_followers'] ?? ''}
+                    onChange={e => onAnswer('social_followers', e.target.value)}
+                    placeholder="e.g., 1200 (optional)"
+                    style={S.input}
+                  />
+                  <div style={{ fontSize: 10, color: C.dimmed, marginTop: 4 }}>X + Threads + LinkedIn + total</div>
+                </div>
+              </div>
+              {(answers['blog_monthly_traffic'] || answers['social_followers']) && (
+                <div style={{ marginTop: 8, fontSize: 11, color: C.success }}>
+                  Combined reach: {(Number(answers['blog_monthly_traffic'] || 0) + Number(answers['social_followers'] || 0) + Number(answers['i2'] || 0)).toLocaleString()} — applied to reach score
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -802,9 +843,18 @@ export default function AICollabPortfolio() {
 
   /* Compute dim scores */
   const dimScores: Record<string, number> = {};
+  const blogTraffic = Number(answers['blog_monthly_traffic'] || 0);
+  const socialFollowers = Number(answers['social_followers'] || 0);
+  const hasReachOverride = blogTraffic > 0 || socialFollowers > 0;
   DIMS.forEach(dim => {
     const qs = QUESTIONS[dim.id];
-    const scores = qs.map(q => scoreQuestion(q, answers[q.id]));
+    const scores = qs.map(q => {
+      if (q.id === 'i2' && hasReachOverride && q.scorer) {
+        const githubFollowers = Number(answers['i2'] || 0);
+        return q.scorer(blogTraffic + socialFollowers + githubFollowers);
+      }
+      return scoreQuestion(q, answers[q.id]);
+    });
     const answered = scores.filter((_, i) => answers[qs[i].id] !== undefined && answers[qs[i].id] !== '');
     if (answered.length === 0) { dimScores[dim.id] = 0; return; }
     dimScores[dim.id] = Math.round(scores.reduce((a, b) => a + b, 0) / qs.length);
