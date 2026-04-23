@@ -86,7 +86,7 @@ I shared my experience in "[Faith Collapse and Rebuilding](/articles/faith-colla
 
 ## The Courage of Not Knowing
 
-Apophatic theology is neither skepticism nor agnosticism. It's a different form of faith.
+Apophatic theology is neither skepticism nor agnosticism—it's a different form of faith.
 
 Skepticism says: "Since we can't be certain, let's not believe." Apophatic theology says: "Precisely because God transcends all my understanding, I revere Him even more."
 
@@ -96,7 +96,7 @@ It took me a long time to reach this stage in my faith journey. When I was young
 
 But as I grew older, experienced more, read more, thought more, I found those certain answers beginning to loosen. Not because faith became weaker, but because I began to realize: those answers were just fingers, not the moon. They pointed in a direction, but what lay at the end of that direction, I increasingly dared not claim to know.
 
-And strangely, **this "not knowing" didn't weaken my faith. Instead, it deepened it.**
+And strangely, **this "not knowing" didn't weaken my faith—instead, it deepened it.**
 
 Because when you let go of "I know what God is," you begin to truly face God. Not facing the defined image of God in your mind, but facing that existence you cannot define, cannot grasp, cannot even fully articulate.
 
@@ -106,14 +106,14 @@ That is reverence.
 
 The most practical revelation of apophatic theology might be this: **Sometimes, in God's presence, the best response is to be silent.**
 
-Not because there's nothing to say. But because we know—some things, once spoken, are already off track.
+Not because there's nothing to say, but because we know—some things, once spoken, are already off track.
 
 In an age where every denomination claims to possess truth, where every preacher confidently explains God's intentions, choosing silence requires greater courage than loud proclamation.
 
-I'm not saying teaching and preaching aren't important. Of course they are. But teaching and preaching should carry fundamental humility—"I'm using finite language to speak of infinite God, so every word I say might not be completely right."
+I'm not saying teaching and preaching aren't important—of course they are. But teaching and preaching should carry fundamental humility—"I'm using finite language to speak of infinite God, so every word I say might not be completely right."
 
 This humility doesn't weaken faith. It protects faith from becoming idolatry—worshipping not God, but our own definitions of God.
 
-God transcends definition. This isn't the end of faith. This is faith's true beginning. And the posture at the beginning isn't loudly declaring "I know," but quietly acknowledging: "Before You, my language is insufficient."
+God transcends definition—this isn't the end of faith, this is faith's true beginning. And the posture at the beginning isn't loudly declaring "I know," but quietly acknowledging: "Before You, my language is insufficient."
 
 This silence is closer to worship than any theological discourse.
