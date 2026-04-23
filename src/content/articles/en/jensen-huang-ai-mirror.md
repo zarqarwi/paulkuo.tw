@@ -54,7 +54,7 @@ This is why I say AI is a mirror of thinking.
 
 I've deeply experienced this in my own work. Every time I'm dissatisfied with AI's output, looking back carefully, the problem almost always lies in my questioning—not that AI isn't smart enough, but that I haven't thought things through clearly.
 
-So the first layer meaning of "learning AI" isn't learning technology. It's learning how to organize your thinking clearly. This is a fundamental skill of thinking that should be learned regardless of whether AI exists. It's just that AI makes this need more urgent and inescapable.
+So the first layer meaning of "learning AI" isn't learning technology—it's learning how to organize your thinking clearly. This is a fundamental skill of thinking that should be learned regardless of whether AI exists. It's just that AI makes this need more urgent and inescapable.
 
 ## Second Layer: AI Collaboration is the Entry Ticket
 
@@ -70,7 +70,7 @@ A designer who uses AI might have three to five times the output speed of one wh
 
 What does this mean? **If your competitors use AI and you don't, the gap between you isn't 10% or 20%—it could be three to ten times.**
 
-This isn't a "bonus point." This is an entry ticket. Just like learning to type on computers thirty years ago, learning to search online twenty years ago, and learning to use smartphones ten years ago. You can choose not to learn, but you must be prepared to accept marginalization.
+This isn't a "bonus point"—it's an entry ticket. Just like learning to type on computers thirty years ago, learning to search online twenty years ago, and learning to use smartphones ten years ago. You can choose not to learn, but you must be prepared to accept marginalization.
 
 I discussed in "[AI Never Sleeps: The Economic Orders Being Restructured](/articles/ai-always-on-economy-restructure)" how AI is restructuring the operating logic of the entire economy. In this new logic, people who can't collaborate with AI are like riding bicycles on highways—it's not that you're not working hard, it's that you're on a track that doesn't belong to you.
 
@@ -82,11 +82,11 @@ When AI can summarize a book in seconds, answer knowledge questions, and generat
 
 If schools' value lies primarily in "transmitting knowledge," then AI already does it better than most teachers. Faster, more comprehensive, more patient, and available 24/7.
 
-But schools' value shouldn't only be in transmitting knowledge. It should be in cultivating **judgment**—distinguishing what's important and what's not among massive information. It should be in cultivating **questioning ability**—knowing what questions to ask is more important than knowing answers. It should be in cultivating **the ability to dialogue with intelligence**—not accepting AI's answers, but interacting with AI, questioning, correcting, and iterating.
+But schools' value shouldn't only be in transmitting knowledge. It should be in cultivating **judgment**—distinguishing what's important and what's not among massive information. It should be in cultivating **questioning ability**—knowing what questions to ask is more important than knowing answers. Most fundamentally, it's **the ability to dialogue with intelligence**—not accepting AI's answers, but interacting with AI, questioning, correcting, and iterating.
 
 I discussed in "[Super Learners: The Learning Revolution in the AI Era](/articles/super-learner-ai-era)" that learning isn't a one-time event, but a continuously operating system. Education in the AI era needs to cultivate not "people who know many things," but "people who know how to dialogue with intelligence."
 
-This is a fundamental turn. From teaching "answers" to teaching "questions." From teaching "knowledge" to teaching "judgment." From teaching "memory" to teaching "thinking."
+This is a fundamental turn. From teaching "answers" to teaching "questions," from teaching "knowledge" to teaching "judgment." Lastly, from teaching "memory" to teaching "thinking."
 
 ## What We Should Really Worry About
 
@@ -100,6 +100,6 @@ I explored AI's "structural dishonesty" in "[On Language, Truth, and Contradicti
 
 Jensen Huang says learn AI. But the second half he didn't say might be more important: **Learn AI, but don't hand your brain over to AI.**
 
-The future belongs to those who can walk alongside non-human intelligence while maintaining their own judgment. Not because they're smarter than AI—they're not. But because they know where AI's boundaries are, know when to trust AI, when to question it, and when to turn it off and think for themselves.
+The future belongs to those who can walk alongside non-human intelligence while maintaining their own judgment. Not because they're smarter than AI (they're not), but because they know where AI's boundaries are, know when to trust AI, when to question it, and when to turn it off and think for themselves.
 
 No AI course can teach you this ability. You need to practice it yourself.
