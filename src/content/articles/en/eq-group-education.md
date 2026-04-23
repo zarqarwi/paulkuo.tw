@@ -80,11 +80,11 @@ It's like pulling fish out of water, then asking why they can't swim.
 
 Why has group education been eliminated? Because the generation controlling parenting discourse has a deep-rooted belief: **my child is most important.**
 
-This isn't meant as criticism. It's a structural observation.
+This isn't meant as criticism—it's a structural observation.
 
 Psychologist Jean Twenge's research shows that starting in the 1970s, Western society (and East Asian societies influenced by it) entered what's called the "Me Generation." This generation grew up in an environment of rising individualism, believing personal feelings are paramount and self-actualization is life's highest value.
 
-When this generation becomes parents, their parenting logic naturally becomes: the child's individual development above all else. Grades matter more than socializing. Personal competitiveness matters more than teamwork. "Being yourself" matters more than "accommodating others."
+When this generation becomes parents, their parenting logic naturally becomes: the child's individual development above all else. Grades matter more than socializing, personal competitiveness matters more than teamwork. "Being yourself" matters more than "accommodating others"—this became the unspoken supreme rule.
 
 So they don't see teaching children to accommodate others as learning. They see it as wasted time—even unfair to the child.
 
