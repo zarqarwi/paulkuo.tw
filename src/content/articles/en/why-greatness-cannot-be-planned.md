@@ -109,7 +109,7 @@ Stanley uses a metaphor: goal-oriented people are measuring tapes. They know whe
 
 Innovators are treasure hunters. They have curiosity, adventurous spirit. They don't know where treasure is, but walking along, they discover better things.
 
-This doesn't mean having no goals. Rather: **the best goals often come from possibilities accidentally discovered in the process, not predetermined at the starting point.**
+This doesn't mean having no goals—rather: **the best goals often come from possibilities accidentally discovered in the process, not predetermined at the starting point.**
 
 In the circular economy field, what I'm doing now—urban mining digitization, material flow tracking, carbon footprint visualization—no one said ten years ago "this will change the world." These all emerged through interaction with actual cases, failure, correction, exploration.
 
