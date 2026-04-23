@@ -43,7 +43,7 @@ The chart maps the AI usage of 8.1 billion people into a mosaic of color-coded b
 
 The most important thing about this chart isn't just the staggering disparity. It forces you to face a few questions: Which color block are you in right now? How do you plan to move to the next one? Which block are your customers in? Are you ready for this extreme world?
 
-This isn't just an AI market infographic. It's a capability map.
+The more accurate reading of this chart: it's a capability map.
 
 ## The Spectator's World
 
@@ -89,7 +89,7 @@ Following the same logic to adjust Taiwan's overall AI adoption landscape: "neve
 
 Taiwan has indeed entered the AI era earlier than the global average. But those truly standing at the frontier of the tool chain, possessing foundational creative capabilities—whether 30,000 or 60,000—remain a minority.
 
-If you're already on this path, don't stop. If you haven't started yet, it's not too late—but wait much longer, and what you're chasing isn't distance, it's version gap.
+If you're already on this path, don't stop. If you haven't started yet, it's not too late—but wait much longer, and by the time you catch up, you may find you're looking at a completely different version of the world.
 
 To all the business owners, entrepreneurs, Chief Digital Officers, and department heads out there—how do you see your enterprise's transformation? If the knowledge gap required for transformation keeps growing wider, how do you plan to respond?
 
