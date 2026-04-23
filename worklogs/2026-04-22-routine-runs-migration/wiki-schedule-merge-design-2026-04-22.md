@@ -112,6 +112,12 @@ Step 4 — 彙整今日報告
   ## 建議行動: ...（若 K > 0，建議開 session 批次處理）
 - 最後回報給 Paul：數量摘要 + 是否需要介入
 
+Step 5 — Stats refresh（2026-04-23 新增）
+- 本機執行：`node scripts/wiki-stats-refresh.cjs`（掃 concepts/sources/entities 目錄 + 讀 graph.json，更新 src/content/wiki/stats.json）
+- 雲端（Phase C 後）：直接呼叫 GitHub API 列三個目錄的檔案數，計算 totals，透過 GitHub API commit stats.json
+- commit message：`[wiki-daily] stats: refresh to {N} pages`
+- 失敗不中斷管線，標記在報告「Stats refresh 失敗」並繼續
+
 回報規則：
 - 每步失敗要標記並繼續下一步，不中斷整條管線
 - 若某步 API rate limit，記錄到報告末端「明日重試清單」

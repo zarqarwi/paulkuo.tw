@@ -74,3 +74,41 @@
 
 - YouTube ingest（KV 讀取需 Cloudflare MCP 連接）
 - Brave search 因 rate limit 未搜索 Claude/Anthropic 最新消息，明日補搜
+
+---
+
+## [追加] Pipeline 漏洞補修 — 2026-04-23 下午
+
+> 執行時間：2026-04-23（Code session handoff）
+> 執行者：Claude Code
+
+### 補修項目 1：stats.json 刷新
+
+- **問題**：stats.json 停在 2026-04-16，total_pages=250，無任何 pipeline 步驟自動更新
+- **修法**：新增 `scripts/wiki-stats-refresh.cjs`，掃 concepts/sources/entities 目錄 + graph.json，重新計算並寫回 stats.json
+- **結果**：total_pages 250→339，concepts 26→38，sources 237→300，generated_at = ISO timestamp
+- **commit** `0beedd5`
+
+### 補修項目 2：pillar keywords 檔
+
+- **問題**：`data/wiki-pillar-keywords.json` 不存在，pipeline 使用推算分類
+- **修法**：從 300 支 source 的 frontmatter tags 反推高頻詞，人工篩選 13-15 個/pillar
+- **結果**：`data/wiki-pillar-keywords.json` 建立，5 個 pillar 各有關鍵字清單
+- **commit** `99d03ab`
+
+### 補修項目 3：Issue #157 口徑修正
+
+- **問題**：Issue body 寫「19（13 原有 + 6 新建）」但實際 38 concept 頁（KV seed 也是 38）
+- **修法**：更新 Issue #157 body — Concept 頁 19→38，總計 320→339，已完成欄位同步，長期待辦同步
+- **結果**：Issue #157 已更新，https://github.com/zarqarwi/paulkuo.tw/issues/157
+
+### 補修項目 4：Stats refresh 接進 daily pipeline 設計
+
+- **問題**：daily pipeline 沒有 stats refresh 步驟
+- **修法**：在 `worklogs/2026-04-22-routine-runs-migration/wiki-schedule-merge-design-2026-04-22.md` 的 Prompt 草稿加入 Step 5（stats refresh）
+- **決策原因**：pipeline 是 scheduled task prompt，不是 script，Step 5 定義本機與雲端兩種執行方式
+
+### 踩坑
+
+- `node` 環境沒有 `gray-matter`，改用 wiki-kv-seed.cjs 既有的 parseFrontmatter 邏輯
+- `entities` → `type.replace(/s$/, '')` = `entitie`（BUG），改用 typeKey map 修復
