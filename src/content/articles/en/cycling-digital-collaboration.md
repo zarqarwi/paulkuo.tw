@@ -81,7 +81,7 @@ I've spent a lot of time explaining this principle to clients. Some understood; 
 
 ## Cooperation Isn't Virtue, It's Efficiency
 
-I want to emphasize something: cooperation in the digital age isn't a "moral choice" or some utopian vision of "mutual benefit." It's cold, hard efficiency calculation.
+I want to emphasize something: cooperation in the digital age isn't a "moral choice" or some utopian vision of "mutual benefit"—it's cold, hard efficiency calculation.
 
 How many people, how much money, how much time does a company need to build a complete user experience from scratch? If that experience can be assembled in two weeks by integrating three existing services, then "doing it yourself" isn't just slow—it's wasteful.
 
@@ -89,7 +89,7 @@ This is why today's most successful companies often aren't those that "do everyt
 
 Assembly capability is the new core competitiveness.
 
-And the prerequisite for assembly is openness. You must be willing to expose part of yourself to partners and trust that they'll expose their best parts to you. This requires not technology, but vision.
+And the prerequisite for assembly is openness. You must be willing to expose part of yourself to partners and trust that they'll expose their best parts to you. This requires not technical capability, but a genuinely open mindset.
 
 ## Insights From a Cycling Trip
 
