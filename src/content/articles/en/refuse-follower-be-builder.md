@@ -36,7 +36,7 @@ reading_context: |
 
 I have an observation habit: every time I enter a new industry or circle, I first look around and distinguish what type of person each individual belongs to.
 
-Not by looking at titles—titles are the most unreliable classification. Rather, I look at behavioral patterns. How they make decisions, what their sources of profit are, what they truly care about.
+Not by looking at titles—titles are the most unreliable classification—rather, I look at behavioral patterns. How they make decisions, what their sources of profit are, what they truly care about.
 
 After observing for a while, I've discovered that regardless of the industry, the people within can be roughly divided into five types.
 
@@ -56,7 +56,7 @@ Which one are you?
 
 ## Seeing Through Agendas
 
-Understanding these five roles doesn't mean you should "judge" who's good or bad. Rather, you need to understand each role's **internal agenda**, so you won't be brainwashed.
+Understanding these five roles doesn't mean you should "judge" who's good or bad—rather, you need to understand each role's **internal agenda**, so you won't be brainwashed.
 
 When a commentator tells you "this industry is doomed"—they don't necessarily believe it, but this headline generates traffic. Traffic is their income. Their agenda is attention.
 
