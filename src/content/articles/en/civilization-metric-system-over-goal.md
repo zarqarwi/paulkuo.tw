@@ -108,7 +108,7 @@ The beauty of systems: you don't need to wait for "achievement" to start enjoyin
 
 In managing my own life, I increasingly lean toward systems rather than goals. I no longer set goals like "read X books this year" but establish systems of "setting aside daily reading time." I don't set goals like "write X articles this year" but establish systems of "regularly writing down thoughts." As I discussed in "[Super Learners: The Learning Revolution in the AI Era](/articles/super-learner-ai-era)," learning isn't a goal—it's a continuously operating system.
 
-The difference is subtle but profoundly impactful. Goals make you live in the future; systems make you live in the present. Goals risk failure; systems only risk interruption. Goals create emptiness after achievement; systems accumulate daily.
+The difference is subtle but profoundly impactful. Goals make you live in the future; systems make you live in the present. Goals risk failure; systems only risk interruption. And a system that accumulates daily means you'll never face that "now what?" void.
 
 ## Warning from Fossil Civilization
 
@@ -116,13 +116,13 @@ Let me finally pull the perspective back to civilization.
 
 Chen Zhiwu's viewpoint deserves renewed reading today because we're witnessing a civilization overly dependent on "productivity" metrics beginning to hit walls.
 
-Over-reliance on fossil fuels created GDP miracles but also brought climate crises. Over-pursuing economic growth made societies wealthier but also widened wealth gaps to dangerous levels. Over-emphasizing efficiency enabled rapid technological progress but also pushed human mental health problems to historic highs.
+Over-reliance on fossil fuels created GDP miracles but also brought climate crises. Over-pursuing economic growth made societies wealthier but also widened wealth gaps to dangerous levels. And the historic highs in mental health problems are efficiency worship's most uncomfortable bill to pay.
 
-These aren't separate problems—they're different facets of the same issue: **The ruler we use to measure progress is missing crucial dimensions.**
+These aren't separate problems—they're different facets of the same issue: **The ruler we use to measure progress is missing crucial aspects.**
 
-We need new civilizational metrics that measure not just what we've created, but what we've protected. Not just how fast we've traveled, but whether we can stand up after falling.
+We need new civilizational metrics—measuring creation and protection, looking at speed and looking at whether we can stand up after falling.
 
-Similarly, we need new personal happiness metrics. Not just how many goals you've achieved, but what kind of systems you've built. Not just your paper numbers, but your resilience when facing storms.
+Similarly, we need new personal happiness metrics: not just asking what you've achieved, but what systems you've built, and how much resilience you carry into storms.
 
 When you do meaningful work every day, operating your systems with full energy—you don't need to wait for some endpoint to tell you you've succeeded. Because you're succeeding every single day.
 
