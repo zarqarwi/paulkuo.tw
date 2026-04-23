@@ -87,7 +87,7 @@ But he honestly adds: "good code" remains expensive. Functional correctness, edg
 
 The logic of "code becoming cheap" doesn't only apply to software development. Replace "code" with any knowledge work output—drafts, reports, analyses, design mockups—the same cost structure change is occurring.
 
-Writing: AI can quickly generate drafts, but judging which viewpoints deserve development and which paragraphs should be deleted still requires humans. Design: AI can produce a hundred proposals, but discerning which proposal truly solves user problems still requires humans. Data analysis: AI can run all models, but deciding to ask the right questions and questioning unreasonable conclusions still requires humans.
+Writing: AI can quickly generate drafts, but judging which viewpoints deserve development and which paragraphs should be deleted still requires humans. Design: AI can produce a hundred proposals, but discerning which proposal truly solves user problems still requires humans. Data analysis is the same story—AI can run every model, but whether you asked the right question in the first place, it can't tell you.
 
 Former Uber engineer Gergely Orosz summarizes core capabilities in the AI era into three: judgment—distinguishing good from bad AI output; strategic thinking—knowing what to do, not how to do it; domain expertise—verifying the accuracy of AI-generated content.
 
@@ -103,6 +103,6 @@ This sentence is an endgame prophecy. The future isn't teaching everyone to writ
 
 From Vibe Coding to Claws, Karpathy used two words to trace a trajectory: first humans and AI write code together, then AI manages the entire system itself, with humans only responsible for stating what they want.
 
-The question is no longer "can you write code?" The question is "do you know what problems to solve?"
+The question is no longer "can you write code?"—it's "do you know what problems to solve?"
 
 And that question was never cheap.
