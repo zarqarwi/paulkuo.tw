@@ -113,9 +113,9 @@ Complaining is okay. Anxiety is normal. Wanting a better life is human nature.
 
 But before you set out to pursue a better life, first look down at the ground beneath your feet.
 
-You have clean water to drink. You have stable electricity. You have freedom of choice. You can read anything you want to read, including this article.
+You have clean water to drink. You have stable electricity. You have freedom of choice—including the freedom to read anything you want.
 
-This isn't the "basic package." This is a miracle.
+This isn't the "basic package"—this is a miracle.
 
 Not because you did something special to earn it—but because you happened to be born in this era, in this corner of the world. This luck isn't for self-congratulation—it's to remind you: you're already standing in a position that most people dream of.
 
