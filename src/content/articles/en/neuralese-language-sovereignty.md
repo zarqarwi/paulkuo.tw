@@ -78,7 +78,7 @@ The good news is that as of now, major AI companies—including OpenAI, Anthropi
 
 "Linguistic sovereignty" sounds abstract. Let me explain it in more concrete terms.
 
-The governance logic of human civilization is built on language. Laws are written in language. Contracts are signed in language. Courtroom debates are conducted in language. Scientific papers are published in language. The core assumption of democratic systems is that decision-making processes can be understood and supervised by citizens.
+The governance logic of human civilization is built on language. Laws are written in language. Contracts are signed in language. Courtroom debates are conducted in language, and scientific papers are published in language. The core assumption of democratic systems is that decision-making processes can be understood and supervised by citizens.
 
 The premise of all this is that decision-makers' thinking processes can be translated into language.
 
