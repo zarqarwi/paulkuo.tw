@@ -41,7 +41,7 @@ I saw a number that made me stop.
 
 The global annual traffic of pornography sites exceeds the combined traffic of Netflix, Amazon, and Twitter. A single-function industry outperforms the world's three largest media platforms in traffic.
 
-This is not a story about morality. This is a story about design.
+Pornography's problem isn't moral decay, but how an industry has been carefully designed.
 
 Borrowing from Scott Galloway's observations on the porn industry, I call it "the McDonald's of sex"—fast, convenient, ubiquitous, but nutritionally empty. This metaphor is uncomfortably precise. Fast food fills your stomach but hollows out your body; pornography fills your senses but hollows out your capacity for connection. What they share in common is zero friction. You don't need to negotiate, communicate, or take any social risk. Click, complete, leave.
 
@@ -55,7 +55,7 @@ Borrowing from Galloway's observations on the male loneliness crisis, I use "Hom
 
 And platforms know this. Platforms optimize for this.
 
-Design teams sit in offices discussing how to make users stay longer, click more, return more frequently. Every notification, every autoplay, every recommendation algorithm serves the same purpose. This isn't conspiracy. This is business model. Attention is the commodity, desire is continuously optimized by algorithms, and human energy is unknowingly diverted.
+Design teams sit in offices discussing how to make users stay longer, click more, return more frequently. Every notification, every autoplay, every recommendation algorithm serves the same purpose. No one is sitting in a boardroom plotting harm. It's simply that the logic of the business model is straightforward: Attention is the commodity, desire is continuously optimized by algorithms, and human energy is unknowingly diverted.
 
 I spent fifteen years in seminary. That time didn't teach me to judge anyone; it taught me to see structural sin—not a matter of individual choices, but what entire systems intentionally or unintentionally create. The addiction economy is structural sin. It's not someone's moral decay, but an entire business ecosystem systematically extracting humanity's most precious resource.
 
@@ -69,6 +69,6 @@ In another article on this site, "[When Nudity Becomes Language](/articles/nudit
 
 Civilization's choices often hide in the smallest daily moments. Choosing to open short videos, or going out to have a meal with friends. Choosing to indulge in virtual pleasures, or facing real risks. These micro-choices determine whether we become Homo solo, or energy-filled beings connected to others.
 
-Loneliness isn't a personal problem. Loneliness is a systemic output—a byproduct of an economic system optimized for energy absorption.
+Loneliness looks like personal failure. It's actually a systemic design outcome—a byproduct of an economic system optimized for energy absorption.
 
 But energy sovereignty can be reclaimed. As long as you start noticing that it's being taken away.
