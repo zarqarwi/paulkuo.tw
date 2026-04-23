@@ -18,7 +18,7 @@ async function checkDailyLimit(ip, env, prefix, max) {
 
 const GH_HEADERS = (env) => {
   const h = { 'User-Agent': 'ACP/1.0', 'Accept': 'application/vnd.github.v3+json' };
-  if (env.GITHUB_PAT) h['Authorization'] = `token ${env.GITHUB_PAT}`;
+  if (env.GITHUB_PAT) h['Authorization'] = `bearer ${env.GITHUB_PAT}`;
   return h;
 };
 
@@ -66,12 +66,18 @@ async function fetchGitHubProfile(username, env) {
         }),
       });
       const gqlData = await gqlResp.json();
+      if (gqlData?.errors) {
+        console.error('ACP GraphQL errors:', gqlData.errors);
+      }
       const total = gqlData?.data?.user?.contributionsCollection?.totalCommitContributions;
       if (typeof total === 'number') {
         recentCommits = total;
         commits_6m_source = 'graphql';
       }
-    } catch { /* fall through to REST */ }
+    } catch (err) {
+      console.error('ACP GraphQL commits fetch failed:', err);
+      /* fall through to REST */
+    }
   }
 
   // REST fallback (public push events, last ~90 days only)
@@ -117,7 +123,7 @@ async function fetchGitHubProfile(username, env) {
     followers: user.followers,
     // Mapped to ACP questions
     commits_6m: recentCommits,                    // → d1
-    commits_6m_source,                            // 'graphql' | 'events_fallback' | 'none'
+    commits_6m_source,                            // 'graphql' | 'events_fallback'
     active_repos: activeRepos.length,             // → d2, l1
     total_repos: repos.length,                    // → d4
     stars_total: totalStars,                      // → i1
