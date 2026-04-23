@@ -55,9 +55,7 @@ Reading this in 2000, you might have thought it was intellectual pessimism. Re-r
 
 ---
 
-What the pandemic did was not break a solid world.
-
-It tore away the illusion that "this world is solid."
+What the pandemic did was not break a solid world—it tore away the illusion that "this world is solid."
 
 My company's experience at the time was very concrete. Before the pandemic, our business model heavily relied on face-to-face workshops and on-site consulting services. Clients were accustomed to "seeing people" to feel work was being done; we were accustomed to "being present" to feel we were delivering value. This wasn't just an operational model—it was an entire belief system about "what constitutes effective work."
 
@@ -71,7 +69,7 @@ In the third week, a strange kind of clarity emerged.
 
 I began to realize that those things "interrupted by the pandemic" were never as solid as I thought. Clients would pause projects because their commitment to the collaboration was always conditional—conditional on "normal circumstances," and "normal circumstances" was itself an assumption, not a fact.
 
-The client relationships we thought were solid were actually liquid. The income sources we thought were stable were actually liquid. The work methods we thought would never change were actually liquid.
+The client relationships we thought were solid were actually liquid. The income sources we thought were stable, and the work methods we thought would never change—all were actually liquid.
 
 Bauman was right. Everything is liquid. It's just that normal temperatures make it appear solid.
 
@@ -105,9 +103,9 @@ But I haven't returned to my 2019 state. I don't want to go back, and I can't go
 
 What the pandemic taught me is simple but hard to live: accept the liquid, but don't be drowned by it.
 
-Don't pretend the world is solid—that's self-deception. Don't abandon all effort because the world is liquid—that's nihilism. Instead, carry the awareness that "everything can change" while choosing things worth your investment—even if they too are liquid.
+Don't pretend the world is solid (that's self-deception), and don't abandon all effort because the world is liquid (that's nihilism)—instead, carry the awareness that "everything can change" while choosing things worth your investment, even if they too are liquid.
 
-Because liquid doesn't mean unworthy. Flowers will wither, but you still plant flowers. Relationships will change, but you still invest in relationships. Jobs will disappear, but you still work seriously.
+Because liquid doesn't mean unworthy. Flowers will wither, but you still plant flowers. Relationships will change and jobs will disappear—but you still invest in both, and still work seriously.
 
 The only difference is you no longer pretend they're eternal. And this non-pretending actually makes you more serious about the present.
 
