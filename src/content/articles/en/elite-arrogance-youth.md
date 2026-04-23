@@ -126,4 +126,4 @@ The real way forward isn't making everyone compete for National Taiwan Universit
 
 This goal sounds distant. But its starting point is close: **every person who realizes their success isn't entirely self-earned is the beginning of change.**
 
-Elite arrogance isn't a personal problem, it's a systemic problem. But systemic change requires individuals to first let go of arrogance. Starting from acknowledging luck's role. Starting from respecting different forms of contribution. Starting from stopping telling young people "you just don't work hard enough."
+Elite arrogance isn't a personal problem, it's a systemic problem. But systemic change requires individuals to first let go of arrogance. Starting from acknowledging luck's role, starting from respecting different forms of contribution. And one more thing: stop telling young people "you just don't work hard enough."
