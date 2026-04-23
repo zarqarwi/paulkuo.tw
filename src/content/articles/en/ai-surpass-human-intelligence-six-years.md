@@ -108,16 +108,14 @@ But Grok-2 surpassing GPT-4 on some benchmarks doesn't mean it's closer to AGI.
 
 It just means Grok-2 is better optimized for that particular test.
 
-And AGI, if it truly exists, would be a qualitative transformation. Not getting 2% more points on MMLU, but being able to self-improve, set its own goals, and understand human values.
+And AGI, if it truly exists, would be a qualitative transformation—self-improvement, self-directed goals, genuine understanding of human values. That's a different category from getting 2% more points on MMLU.
 
 ## Conclusion: Waiting for the Next Breakthrough
 
-I'm not saying AGI will never come. I'm just saying that based on current trends, the six-year timeline is too optimistic.
+What I'm saying is: based on current trends, the six-year timeline is too optimistic. AGI might still come—just not by this math.
 
 AI will continue to improve. But improvement might follow an S-curve, not an exponential curve. We may have passed the rapid growth phase and are now in the plateau.
 
 True AGI might require a new technological breakthrough—perhaps a new algorithm, new hardware, or a new understanding of intelligence itself.
 
-Until then, we should enjoy AI's progress on specific tasks while remaining vigilant not to be fooled by benchmark numbers.
-
-Surpassing human intelligence is not a numbers game.
+Until then, enjoy AI's progress on specific tasks. Just don't let a benchmark score replace your own judgment about AGI.
