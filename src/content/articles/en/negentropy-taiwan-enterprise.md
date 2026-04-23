@@ -50,7 +50,7 @@ In 1944, physicist Erwin Schrödinger published "What Is Life?" This book contai
 
 Entropy is a concept in physics that describes the degree of disorder. The second law of thermodynamics tells us: in a closed system, entropy only increases, never decreases. That is, any system without external energy input will naturally move toward chaos and decay.
 
-Rooms become messy without cleaning. Code rots without maintenance. Relationships drift apart without nurturing. Companies decline without innovation.
+Rooms become messy without cleaning. Code rots without maintenance. Relationships drift apart without nurturing, and companies decline without innovation.
 
 This is all entropy increase.
 
@@ -68,7 +68,7 @@ What characterizes the American system? Institutional transparency, predictable 
 
 What about the Chinese system? It's attempting to establish its own order—its own technical standards, its own payment systems, its own supply chain ecosystem. This ambition is enormous. But in the process of transformation, it simultaneously bears enormous "entropy increase pressure": high policy uncertainty, frequent regulatory changes, opaque rules for foreign investment entry and exit, adaptation costs from technological blockades.
 
-I'm not making value judgments about which system is "good" or "bad." I'm making order assessments: **Which system is currently creating order, and which system is currently bearing chaos?**
+I'm not making value judgments about which system is "good" or "bad"—I'm making order assessments: **Which system is currently creating order, and which system is currently bearing chaos?**
 
 ## Choose Sides Based on Order, Not Politics
 
@@ -98,6 +98,6 @@ Some work modes make you feel more systematic the more you do them. Some work mo
 
 Anti-entropy people have one characteristic: wherever they go, things become more stable. Not because they're particularly capable, but because every choice they make asks: "Does this make things more orderly or more chaotic?"
 
-In this turbulent era, choosing to approach the world of negentropy isn't just business strategy. It's a survival posture.
+In this turbulent era, choosing to approach the world of negentropy isn't just business strategy—it's a survival posture.
 
-Chaos degrades people. Order helps people live longer. And the ability to choose between chaos and order is your most important judgment in this era.
+Chaos degrades people, and order helps people live longer—the ability to choose between the two is your most important judgment in this era.
