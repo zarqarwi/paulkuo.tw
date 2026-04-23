@@ -77,7 +77,7 @@ Those organizations with massive physical structures, extensive fixed assets, an
 
 Conversely, lightweight, flexible small teams with elastic asset allocation could redeploy within days. That's what we did—converted all services online within two weeks, not because we had foresight, but because we were small enough, light enough that the cost of pivoting was low.
 
-This isn't bragging about small company advantages. Rather, it's stating a more fundamental observation: in environments of massive change, large physical structures aren't assets—they're liabilities.
+This isn't bragging about small company advantages—rather, it's stating a more fundamental observation: in environments of massive change, large physical structures aren't assets—they're liabilities.
 
 ---
 
