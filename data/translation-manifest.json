@@ -260,11 +260,11 @@
     }
   },
   "compass-meets-algorithm-authority-in-human-ai-era.md": {
-    "sourceHash": "095d7740444f",
+    "sourceHash": "582f45a2cb24",
     "translations": {
       "en": {
-        "hash": "cb4ca72a3f0f",
-        "translatedAt": "2026-02-24T00:19:40.132Z",
+        "hash": "c8fc1e2d407e",
+        "translatedAt": "2026-04-23T11:01:59.414Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
