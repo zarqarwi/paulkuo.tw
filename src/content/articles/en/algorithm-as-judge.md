@@ -41,7 +41,7 @@ This morning in a taxi, the driver glanced at me at a red light, hesitated, then
 
 His tone wasn't polite request—it was genuine pleading. Because if his average rating drops below 4.6, the system prioritizes trips for higher-rated drivers. For him, every star translates to actual money. I wasn't sure how to respond. Not because the request was unreasonable, but because I suddenly realized—sitting in the backseat, my finger tapping the screen for that one second would determine how many rides he could take today, how much money he could earn.
 
-This isn't just one taxi driver's story. This is the epitome of an entire era.
+This scene is the epitome of an entire era.
 
 ## From Merit Books to Real-Time Judgment
 
