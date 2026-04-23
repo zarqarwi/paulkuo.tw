@@ -98,7 +98,7 @@ I explored the impact of algorithms on human behavior in "[Facebook Algorithms a
 
 When I first wrote about this in 2017, I used the metaphor of a "boiling frog." Nine years later, the water is very hot, but we're still in the pot.
 
-Not because we don't know the water is heating up. It's because the cost of jumping out is too high—not use smartphones? Not use social media? Not use wearable devices? Not use any digital services? In today's society, this is almost equivalent to withdrawing from civilization.
+Not because we don't know the water is heating up—but because the cost of jumping out is too high. Not use smartphones? Not use social media? Not use wearable devices? Not use any digital services? In today's society, this is almost equivalent to withdrawing from civilization.
 
 Moreover, the system does provide real value. My Apple Watch once alerted me to an abnormal heart rate, prompting me to get checked, and we discovered a condition that needed attention. Without that alert, I might have ignored it. AI-recommended articles have genuinely broadened my horizons. Navigation apps genuinely prevent me from getting lost in unfamiliar cities.
 
@@ -110,7 +110,7 @@ I don't have answers. Really, I don't.
 
 But I have a stance: **Use consciously, rather than being used numbly.**
 
-This means several things. Know what you're giving up—every time you install an app, agree to privacy terms, what data are you handing over, to whom, for what purpose? Know what the system is doing to you—why is the algorithm recommending this content to you? What is it optimizing? What does it assume you want? Occasionally break patterns deliberately—intentionally search for things you wouldn't search for, read viewpoints you wouldn't read, go places you wouldn't go. Confuse the system a bit.
+This means several things. Know what you're giving up—every time you install an app, agree to privacy terms, what data are you handing over, to whom, for what purpose? Know what the system is doing to you—why is the algorithm recommending this content to you? What is it optimizing? What does it assume you want? Then, occasionally give the system a surprise: search for things you normally wouldn't, read viewpoints you'd skip, and confuse it a little.
 
 We may not be able to escape from this web. But we can at least choose: inside the web, are we conscious beings, or passive data sources?
 
