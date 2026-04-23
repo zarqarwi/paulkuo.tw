@@ -44,7 +44,7 @@ I asked him back: "Do you want a tool that automatically runs reports, or a syst
 
 He was stunned for a moment: "Aren't those the same thing?"
 
-No. And confusing these two comes at a high cost.
+Fundamentally different. And confusing the two comes at a high cost.
 
 ## Same Word, Two Completely Different Things
 
@@ -58,7 +58,7 @@ The difference, in metaphor: An AI Agent is an excellent executor—you tell it 
 
 ## Why This Distinction Matters
 
-This isn't academic nitpicking. Choose the wrong architecture, and the entire system breaks from the foundation up.
+Choosing the wrong architecture is far more than academic—the entire system will break from the foundation up.
 
 I stepped into this trap when building my automated publishing pipeline. Initially, I designed it in an Agentic style—letting the system decide when to post, what content to publish, what images to use. It sounded cool, but the result was the system making bizarre decisions every few days: posting long articles at 3 AM, pairing a serious circular economy piece with a colorful abstract painting, even taking the liberty to change post hashtags.
 
@@ -98,4 +98,4 @@ This doesn't sound as flashy as "comprehensive AI transformation," doesn't have 
 
 Autonomous agents are rising, and this direction won't reverse. But rising doesn't mean every scenario needs agency. The best system design often uses Agent reliability in the right places, unleashes Agentic agency in the right places—and designs precise reins between them.
 
-Tools and partners aren't a hierarchy. They're about fit. Figure out what kind of problem you're facing, and the answer emerges.
+The difference between tools and partners isn't hierarchical, but about fit in different contexts. Figure out what kind of problem you're facing, and the answer emerges.
