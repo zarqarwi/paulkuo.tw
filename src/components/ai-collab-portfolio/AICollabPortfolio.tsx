@@ -1,32 +1,10 @@
 import { useState } from 'react';
-
-/* ── Color palette ── */
-const C = {
-  bg: '#0d0d1a',
-  card: '#13132a',
-  cardBorder: '#2a2a4a',
-  primary: '#4A90D9',
-  purple: '#8B5CF6',
-  accent: '#38bdf8',
-  text: '#e2e8f0',
-  muted: '#94a3b8',
-  dimmed: '#475569',
-  success: '#10b981',
-  warning: '#f59e0b',
-  danger: '#ef4444',
-  white: '#ffffff',
-};
-
-/* ── Styles ── */
-const S = {
-  card: { background: C.card, border: `1px solid ${C.cardBorder}`, borderRadius: 14, padding: 24, marginBottom: 16 } as React.CSSProperties,
-  label: { fontSize: 12, fontWeight: 600, color: C.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' as const, letterSpacing: '0.05em' } as React.CSSProperties,
-  input: { width: '100%', padding: '10px 14px', background: '#1a1a35', border: `1px solid ${C.cardBorder}`, borderRadius: 8, color: C.text, fontSize: 15, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const } as React.CSSProperties,
-  btnPrimary: { padding: '13px 32px', background: `linear-gradient(135deg, ${C.primary}, ${C.purple})`, color: '#fff', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: 'pointer', width: '100%' } as React.CSSProperties,
-  btnSecondary: { padding: '10px 20px', background: 'transparent', border: `1px solid ${C.cardBorder}`, color: C.muted, borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: 'pointer' } as React.CSSProperties,
-  sectionTitle: { fontSize: 18, fontWeight: 700, color: C.white, margin: 0 } as React.CSSProperties,
-  questionLabel: { fontSize: 14, color: C.text, marginBottom: 10, lineHeight: 1.5 } as React.CSSProperties,
-};
+import { C, S } from './constants';
+import { RadarChart } from './RadarChart';
+import { ScoreBar } from './ScoreBar';
+import { WeightSlider } from './WeightSlider';
+import { Tooltip } from './Tooltip';
+import { EvidenceBadge } from './EvidenceBadge';
 
 const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost'
   ? 'https://api.paulkuo.tw'
@@ -209,115 +187,6 @@ function scoreQuestion(q: Question, val: string | number | undefined): number {
     const opt = q.options!.find(o => o.label === val);
     return opt ? opt.score : 0;
   }
-}
-
-/* ── Radar Chart (SVG, 5-axis) ── */
-function RadarChart({ scores, verifiedScores }: { scores: Record<string, number>; verifiedScores?: Record<string, number> }) {
-  const size = 280;
-  const cx = size / 2, cy = size / 2, maxR = 100;
-  const n = DIMS.length;
-
-  const pt = (i: number, r: number): [number, number] => {
-    const a = (Math.PI * 2 * i) / n - Math.PI / 2;
-    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
-  };
-
-  const dataPoints = DIMS.map((d, i) => pt(i, (scores[d.id] / 100) * maxR));
-  const pathD = dataPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ') + 'Z';
-
-  let verifiedPathD = '';
-  let verifiedPoints: [number, number][] = [];
-  if (verifiedScores) {
-    verifiedPoints = DIMS.map((d, i) => pt(i, ((verifiedScores[d.id] || 0) / 100) * maxR));
-    verifiedPathD = verifiedPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ') + 'Z';
-  }
-
-  return (
-    <svg viewBox={`0 0 ${size} ${size}`} style={{ width: '100%', maxWidth: 280, margin: '0 auto', display: 'block' }}>
-      {/* Grid rings */}
-      {[20, 40, 60, 80, 100].map(lv => {
-        const pts = Array.from({ length: n }, (_, i) => pt(i, (lv / 100) * maxR));
-        const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ') + 'Z';
-        return <path key={lv} d={d} fill="none" stroke={lv === 100 ? 'rgba(74,144,217,0.25)' : 'rgba(74,144,217,0.1)'} strokeWidth={lv === 100 ? 1 : 0.5} />;
-      })}
-      {/* Axes */}
-      {DIMS.map((d, i) => {
-        const [lx, ly] = pt(i, maxR);
-        return <line key={d.id} x1={cx} y1={cy} x2={lx} y2={ly} stroke="rgba(74,144,217,0.15)" strokeWidth={0.5} />;
-      })}
-      {/* Labels */}
-      {DIMS.map((d, i) => {
-        const [tx, ty] = pt(i, maxR + 26);
-        return (
-          <g key={d.id}>
-            <text x={tx} y={ty - 8} textAnchor="middle" fontSize="16">{d.emoji}</text>
-            <text x={tx} y={ty + 8} textAnchor="middle" fontSize="9" fontWeight="700" fill={d.color}>{d.label.toUpperCase()}</text>
-          </g>
-        );
-      })}
-      {/* AI-verified polygon (behind) */}
-      {verifiedPathD && (
-        <>
-          <path d={verifiedPathD} fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.5)" strokeWidth={1.5} strokeLinejoin="round" strokeDasharray="4 3" />
-          {verifiedPoints.map((p, i) => (
-            <circle key={`v${i}`} cx={p[0]} cy={p[1]} r={3} fill={C.success} stroke={C.card} strokeWidth={1.5} opacity={0.6} />
-          ))}
-        </>
-      )}
-      {/* Self-reported polygon */}
-      <path d={pathD} fill="rgba(74,144,217,0.15)" stroke="rgba(74,144,217,0.8)" strokeWidth={2} strokeLinejoin="round" />
-      {dataPoints.map((p, i) => (
-        <circle key={i} cx={p[0]} cy={p[1]} r={4} fill={DIMS[i].color} stroke={C.card} strokeWidth={2} />
-      ))}
-    </svg>
-  );
-}
-
-/* ── Dimension Score Bar ── */
-function ScoreBar({ label, emoji, score, color, verifiedScore }: { label: string; emoji: string; score: number; color: string; verifiedScore?: number }) {
-  return (
-    <div style={{ marginBottom: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-        <span style={{ fontSize: 13, color: C.text, fontWeight: 600 }}>{emoji} {label}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color, fontFamily: "'JetBrains Mono', monospace" }}>{score}</span>
-          {verifiedScore !== undefined && (
-            <span style={{ fontSize: 12, color: C.success, fontFamily: "'JetBrains Mono', monospace" }} title="AI-verified score">
-              ({verifiedScore})
-            </span>
-          )}
-        </div>
-      </div>
-      <div style={{ height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden', position: 'relative' as const }}>
-        <div style={{ height: '100%', width: `${score}%`, background: `linear-gradient(90deg, ${color}99, ${color})`, borderRadius: 3, transition: 'width 0.6s ease' }} />
-        {verifiedScore !== undefined && (
-          <div style={{
-            position: 'absolute' as const, top: 0, left: `${verifiedScore}%`,
-            width: 2, height: '100%', background: C.success, borderRadius: 1,
-            transition: 'left 0.6s ease',
-          }} />
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ── Weight Slider ── */
-function WeightSlider({ dim, value, onChange }: { dim: typeof DIMS[0]; value: number; onChange: (v: number) => void }) {
-  return (
-    <div style={{ marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-        <span style={{ fontSize: 13, color: C.text }}>{dim.emoji} {dim.label}</span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: dim.color, fontFamily: "'JetBrains Mono', monospace" }}>{value}%</span>
-      </div>
-      <input
-        type="range" min={5} max={50} step={1}
-        value={value}
-        onChange={e => onChange(Number(e.target.value))}
-        style={{ width: '100%', accentColor: dim.color, cursor: 'pointer' }}
-      />
-    </div>
-  );
 }
 
 /* ── GitHub Connect (Layer 2) ── */
@@ -557,44 +426,6 @@ function VerificationPanel({ verification }: { verification: any }) {
       )}
     </div>
   );
-}
-
-/* ── Tooltip ── */
-function Tooltip({ text }: { text: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span style={{ position: 'relative' as const, display: 'inline-flex', alignItems: 'center' }}>
-      <span
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        onClick={() => setShow(!show)}
-        style={{ width: 16, height: 16, borderRadius: '50%', background: C.cardBorder, color: C.muted, fontSize: 10, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'help', flexShrink: 0 }}
-      >?</span>
-      {show && (
-        <span style={{
-          position: 'absolute' as const, bottom: '100%', left: '50%', transform: 'translateX(-50%)',
-          padding: '8px 12px', background: '#1a1a35', border: `1px solid ${C.cardBorder}`, borderRadius: 8,
-          fontSize: 12, color: C.text, lineHeight: 1.5, width: 240, zIndex: 10,
-          marginBottom: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.4)', pointerEvents: 'none' as const,
-        }}>{text}</span>
-      )}
-    </span>
-  );
-}
-
-/* ── Evidence Source Badge ── */
-function EvidenceBadge({ type }: { type: 'auto' | 'evidenced' | 'self' }) {
-  if (type === 'auto') return (
-    <span style={{ fontSize: 10, padding: '2px 8px', background: C.success + '22', color: C.success, borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap' as const }}>
-      Auto-filled from GitHub
-    </span>
-  );
-  if (type === 'evidenced') return (
-    <span style={{ fontSize: 10, padding: '2px 8px', background: C.accent + '22', color: C.accent, borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap' as const }}>
-      Evidenced
-    </span>
-  );
-  return null;
 }
 
 /* ── Accordion Section ── */
@@ -1022,7 +853,7 @@ export default function AICollabPortfolio() {
 
           {/* Radar chart */}
           <div style={{ ...S.card, padding: 24 }}>
-            <RadarChart scores={dimScores} verifiedScores={verifiedDimScores} />
+            <RadarChart scores={dimScores} verifiedScores={verifiedDimScores} dims={DIMS} />
             {verifiedDimScores && (
               <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: C.muted }}>
