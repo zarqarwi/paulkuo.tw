@@ -53,7 +53,7 @@ When ChatGPT can answer calculus problems that took you a semester to understand
 
 It's being replaced by another ability: Can you ask a good question?
 
-This isn't rhetoric. This is a very concrete technical threshold. Using the same AI, someone who knows how to break down problems, provide context, and set constraints can produce output quality ten times better than someone who only knows how to type "help me write a report."
+This isn't rhetoric—it's a very concrete technical threshold. Using the same AI, someone who knows how to break down problems, provide context, and set constraints can produce output quality ten times better than someone who only knows how to type "help me write a report."
 
 When Jensen Huang talks about "learning AI," I don't think he means everyone should learn to write CUDA programs. What he's saying is: the ability to collaborate with AI will become the foundation of all abilities.
 
@@ -77,7 +77,7 @@ In the early years as a digital transformation consultant, the most valuable peo
 
 But starting in 2023, this logic began to loosen. After AI tools became widely available, tasks that previously required specialized knowledge could now be completed by a smart intern paired with an AI assistant in one-third the time, achieving seventy to eighty percent of the quality.
 
-This doesn't mean specialized knowledge is no longer important. Quite the opposite—it means "having only specialized knowledge" is no longer enough. You also need to know how to combine your expertise with AI capabilities to produce results better than either operating alone.
+This doesn't mean specialized knowledge is no longer important—quite the opposite, it means "having only specialized knowledge" is no longer enough. You also need to know how to combine your expertise with AI capabilities to produce results better than either operating alone.
 
 I observed a very clear divide in my team: people who could adapt quickly usually weren't those with the strongest technical skills, but rather "people who were best at asking questions." They knew how to break down vague client requirements into five sub-tasks that could be fed to AI, then reassemble AI's output into insightful deliverables.
 
@@ -91,7 +91,7 @@ Most Taiwanese university curricula still center on "disciplinary knowledge tran
 
 But when AI can complete basic accounting analysis, legal document summaries, and market research reports in seconds, the first half of this assembly line loses its moat. The capability gap between a freshly graduated accounting major and a non-accounting background worker using AI assistance is rapidly shrinking.
 
-This isn't about negating the value of professional education. It's saying that professional education needs a new foundation layer: how to collaborate with AI.
+This isn't about negating the value of professional education—it's saying that professional education needs a new foundation layer: how to collaborate with AI.
 
 Jensen Huang's suggestion is essentially saying: regardless of what major you study, AI literacy should be mandatory. Not elective, not a citizenship workshop, not something superficial like "digital citizenship." It should be a foundational ability that permeates all disciplines from the ground up, like English.
 
@@ -106,7 +106,7 @@ This is why I say AI literacy isn't a "tool skill" but rather "cognitive infrast
 In the past, capable people were "people who knew many things."
 In the future, capable people will be "people who can mobilize AI to solve complex problems."
 
-The gap between these two types of people isn't a difference in degree—it's a difference in dimension.
+The gap between these two types of people isn't a difference in degree—it's a difference in kind.
 
 ## Your First Step
 
