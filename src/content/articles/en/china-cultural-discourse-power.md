@@ -102,7 +102,7 @@ Our warmth, resilience, diverse inclusivity—these truly exist, but they remain
 
 ## It's Not About Volume
 
-The competition for cultural discourse power isn't about who shouts loudest. It's about who can establish a narrative order that others willingly adopt.
+Cultural discourse power isn't won by shouting louder—it's won by establishing a narrative order that others willingly adopt.
 
 China uses state power plus commercial machinery—a path Taiwan can't and shouldn't take. But we have another path: using authenticity to replace scale. In an era flooded with misinformation and collapsing trust, "real" itself is the scarcest currency.
 
