@@ -540,11 +540,11 @@
     }
   },
   "fundamentalist-faith-arrogance.md": {
-    "sourceHash": "e27f8cf80bcc",
+    "sourceHash": "e6788366e5e3",
     "translations": {
       "en": {
-        "hash": "b8265370a9ee",
-        "translatedAt": "2026-02-23T18:02:34.096Z",
+        "hash": "d65aec5458e6",
+        "translatedAt": "2026-04-23T11:23:41.067Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
