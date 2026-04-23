@@ -133,9 +133,9 @@ Three products, three completely different radar chart shapes. Scores were discr
 
 ## The Score Isn't the Point
 
-In 2026, one person plus AI can indeed push an idea from concept to a truly live tool within days. But speed was never the point.
+In 2026, one person plus AI can indeed push an idea from concept to a truly live tool within days. Shipping fast doesn't mean what shipped deserved to exist.
 
-In post-AI society, the barriers to building tools are rapidly lowering. More and more people can become builders, and creating tools is no longer the exclusive domain of a few technologists. But the real problem starts exactly here: Are the tools we create truly suitable for human use? Do they actually solve problems?
+In post-AI society, the barriers to building tools are rapidly lowering. More and more people can become builders. But the question surfaces right here: Are the tools we create truly suitable for human use? Do they actually solve problems?
 
 When an idea first emerges, or when a product is halfway done, do we have the ability to keep moving forward while stopping to check: Is this something worth creating? Does it serve human needs, or does it only satisfy our impulse to "be able to build it"?
 
