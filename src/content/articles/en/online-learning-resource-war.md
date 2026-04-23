@@ -42,7 +42,7 @@ Because I knew what was coming. Not a pleasant extended holiday, but a war we we
 
 ## Concerts Cannot Be Replaced by Music Videos
 
-Let me start with a basic fact: online learning is not a "more convenient way to attend classes." It's a compromise. A compromise we had to accept for epidemic prevention.
+Let me start with a basic fact: online learning is not a "more convenient way to attend classes"—it's a compromise we had to accept for epidemic prevention.
 
 It's like buying tickets to a Mayday concert, only to have the organizers tell you: "Watching music videos at home has nearly the same effect!" If online could truly replace offline, why would Andy Lau cancel over ten concerts and bear enormous financial losses?
 
@@ -54,7 +54,7 @@ Those who advocate "online learning is better than in-person" either don't have 
 
 ## A Naked Resource Game
 
-The most brutal aspect of "school closure, not learning closure" isn't declining learning quality—that's just surface level. What's truly brutal is how it overnight exposed all family resource gaps that were previously masked by the school system.
+The most brutal aspect of "school closure, not learning closure" isn't declining learning quality—that's just surface level—what's truly brutal is how it overnight exposed all family resource gaps that were previously masked by the school system.
 
 **Hardware costs.** Online learning requires stable internet and functional devices. If your family only has one aging laptop and two children's class schedules overlap, what do you do? When internet is unstable, it's like diving without an oxygen tank—you know you should breathe, but you can't.
 
@@ -100,7 +100,7 @@ In "[The End of Solo Performers: Seeing the Real Battlefield of Group Education 
 
 The pandemic will eventually pass. But the problems it exposed won't automatically disappear.
 
-Online learning isn't a scourge, but it's definitely not some educational utopia of the future. It's a tool—one requiring extensive supporting systems to function. And those supporting systems—hardware, space, logistics, parents' time and energy—are essentially all resources.
+Online learning isn't a scourge, and it's definitely not some educational utopia of the future—it's a tool, one requiring extensive supporting systems to function. And those supporting systems—hardware, space, logistics, parents' time and energy—are essentially all resources.
 
 If the future world has children learning online from home half the time, parents must develop early awareness about their attitude toward education and environmental arrangements.
 
