@@ -78,7 +78,7 @@ The paper's most crucial finding lies in the third data set.
 
 When companies use AI to "automate" entire processes, young people's employment rates drop most severely. But when companies use AI to "augment" human work—what researchers call the "centaur mode," letting humans and AI each play to their strengths—young people's employment rates actually rise fastest.
 
-The same technology, two completely different outcomes. The difference isn't in AI itself, but in who designs the human-machine interface.
+The same technology, two completely different outcomes. What determines the outcome is who designs the human-machine interface.
 
 This reminds me of experiences in manufacturing. Junior engineers willing to learn grow fastest. They no longer need three years to accumulate "intuition"—AI clarifies the pattern recognition part, allowing them to enter the "judgment" level more quickly.
 
@@ -92,19 +92,19 @@ But I want to turn this metaphor one more layer.
 
 Canaries die first not because they're "weaker." It's because their metabolism is faster, their exposure more direct. Young people's situation in the AI wave is similar—they're not lacking ability, but the abilities they've been trained in happen to stand directly in AI's crosshairs.
 
-What does this mean? It means what really needs to change isn't young people, but the system that trained them this way.
+What does this mean? The system that trained them this way is what needs to be held accountable.
 
 Our education—from universities to vocational training—spent twenty years molding people into "carriers of standardized knowledge." Able to memorize, test well, execute according to SOPs. This logic was correct in the industrial age because companies needed predictable, replaceable human units.
 
 But now, the most predictable, most replaceable parts are precisely what AI excels at.
 
-This isn't a technical problem. It's our definition of "what constitutes valuable knowledge" being fundamentally overturned.
+Our definition of "what constitutes valuable knowledge" is being fundamentally overturned—this is a civilization-level question.
 
 ## After the Canaries
 
 For young people currently in the workplace, the paper's data actually points to a clear path: stop accumulating "codifiable skills" and start practicing what AI can't handle. Critical thinking, problem definition, cross-contextual communication, decision-making under uncertainty. But most importantly—learn to collaborate with AI, making it your leverage rather than your replacement.
 
-For companies, this research is really saying: using AI to cut personnel costs is the most short-sighted strategy. Real efficiency comes from redesigning human-AI collaborative processes, letting AI empower employees rather than eliminate them. The former brings organizational upgrades; the latter only brings one-time cost savings and long-term talent gaps.
+For companies, this research is really saying: using AI to cut personnel costs is the most short-sighted strategy. Real efficiency comes from redesigning human-AI collaborative processes—pushing each employee's capability ceiling upward. Using AI to slash headcount: one-time savings, long-term talent gaps. Redesigning human-AI workflows: organizational upgrade.
 
 For education systems—this is the heaviest warning bell. When your graduates enter the workplace on day one and discover that four years of learning has been replaced by an AI Agent, this isn't the students' problem. This is a structural challenge for the entire knowledge system.
 
