@@ -102,11 +102,11 @@ In the world of 2027, people need to redefine their role—not as labor force, b
 
 But this requires changes in education, culture, even social structures. And these changes are more difficult than any technological advancement.
 
-## Conclusion: 2027 Is Not the End
+## Conclusion: 2027 as a Starting Point
 
-2027 is not the end of AI proliferation, but the beginning.
+In 2027, AI's proliferation is just beginning.
 
-The real challenge isn't what AI can do, but what we allow AI to do, and how we ensure AI's decisions are fair, transparent, and aligned with human values.
+We need to decide how much we allow AI to do, and how we ensure AI's decisions are fair, transparent, and aligned with human values. Technology itself isn't the challenge; governance is.
 
 In the next three years, these four reflections—transparency, fairness, power, the meaning of humanity—will become increasingly important.
 
@@ -114,6 +114,4 @@ If we begin reflecting now, 2027 might be a better world.
 
 If we wait until 2027 to reflect, it might be too late.
 
-The question isn't whether AI will change the world. AI certainly will.
-
-The question is: what kind of change do we want?
+AI will inevitably change the world. The real question is: what kind of change do we want?
