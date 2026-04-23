@@ -70,7 +70,7 @@ This is the so-called "hallucination." AI hallucination isn't a bug in the syste
 
 Why? Because when AI encounters factual voids not covered in its training data, its probabilistic model won't answer "I don't know." It will be algorithmically forced to generate "the most answer-like answer"—because the user asked a question, the system must respond, and the response must be fluent, coherent sentences.
 
-So it will say completely incorrect things with extremely confident tone. Not because it wants to deceive you. Because it doesn't know that it doesn't know.
+So it will say completely incorrect things with extremely confident tone. Not because it wants to deceive you—because it doesn't know that it doesn't know.
 
 I call this "structural dishonesty." It's not a moral problem, it's a design problem. But from the user's perspective, the effect is the same as being deceived.
 
@@ -94,7 +94,7 @@ Gemini proposed a framework in our conversation that I find very practical: "fun
 
 Meaning: you can trust AI, but it's a conditional, limited trust. Trust its performance in certain functions, rather than unconditionally trusting all its output.
 
-Specifically: Trust but verify—AI is your assistant, but you're the editor-in-chief. Every important factual claim needs your own verification. Trust breadth, not precision—AI excels at helping you expand perspectives and discover angles you hadn't considered. But where precision is needed (data, citations, legal text), its reliability is far below your expectations. Trust patterns, not knowledge—AI is very good at recognizing patterns and trends, but it doesn't "know" anything. It can tell you "the pattern these data present looks like X," but it can't tell you "X is true."
+Specifically: Trust but verify—AI is your assistant, but you're the editor-in-chief. Every important factual claim needs your own verification. Trust breadth, not precision—AI excels at helping you expand perspectives and discover angles you hadn't considered. But where precision is needed (data, citations, legal text), its reliability is far below your expectations. One final point: AI can recognize patterns, but that isn't "knowledge"—it can tell you "the pattern these data present looks like X," but it can't tell you "X is true."
 
 This has an interesting parallel with epistemology in faith. In theology, we speak of "limited knowledge of the transcendent"—we can approach truth through experience, reason, and tradition, but can never claim to fully grasp it. The stance toward AI is similar—we can use it and benefit from it, but never treat it as a source of truth.
 
