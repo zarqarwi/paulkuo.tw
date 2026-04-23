@@ -58,7 +58,7 @@ How to collect company pay while maximizing personal time? Time your response de
 
 In short: being fake with skill, without getting caught.
 
-I'm writing this not because I'm proud of it—quite the opposite. But because if even someone like me with self-discipline could find so many ways to slack off, what about those with even lower self-control?
+I'm writing this not because I'm proud of it—quite the opposite—but because if even someone like me with self-discipline could find so many ways to slack off, what about those with even lower self-control?
 
 ## Don't Underestimate Human Nature
 
@@ -80,7 +80,7 @@ In "[Breaking Silo Effect](/articles/breaking-silo-effect)" I discussed how info
 
 Because I'm so familiar with how to slack off, the solutions aren't hard to figure out. Through my years of managing remote teams, I've developed four basic management mechanisms:
 
-**Work Records.** Daily work content must be documented. Not writing reports—reports are formalistic garbage. But leaving records in shared tools (whether Notion, Asana, or simple Google Sheets) of "what I did today, what problems I encountered, what I plan to do tomorrow." Only recorded work can be managed. Work without records doesn't exist.
+**Work Records.** Daily work content must be documented. Not writing reports—reports are formalistic garbage—but leaving records in shared tools (whether Notion, Asana, or simple Google Sheets) of "what I did today, what problems I encountered, what I plan to do tomorrow." Only recorded work can be managed. Work without records doesn't exist.
 
 **Clear Progress Milestones.** "Complete by end of month" is too vague. "Complete first draft by Wednesday, finish revisions by Friday, submit final version by next Monday"—that's trackable progress. The clearer the milestones, the smaller the ambiguous space.
 
