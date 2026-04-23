@@ -52,7 +52,7 @@ The purpose of these questions wasn't prediction—prediction is impossible. The
 
 The difference between prediction and rehearsal is enormous. Prediction means saying "I think it will rise" and then betting on it. Rehearsal means saying "if it falls, rises, or consolidates, here's what I'll do in each case" and then establishing corresponding plans.
 
-Prediction requires you to be right to survive. Rehearsal lets you survive even when you're wrong.
+Prediction requires you to be right to survive; rehearsal lets you survive even when you're wrong.
 
 This habit later extended from trading to every aspect of my life. When I saw pandemic numbers jumping, I wouldn't think "it probably won't be too serious"—I would think "if it's more serious than everyone expects, what will I do?"
 
@@ -90,7 +90,7 @@ The core of falsification thinking is: always assume you might be wrong, then pr
 
 COVID-19 was a global-scale falsification event.
 
-It falsified the assumption that "globalization only has benefits." It falsified confidence that "advanced countries' public health systems can handle anything." It falsified expectations that "the economy will continue steady growth." It falsified the imagination that "large-scale lockdowns are impossible in modern society."
+It falsified the assumption that "globalization only has benefits." It falsified confidence that "advanced countries' public health systems can handle anything." It falsified expectations that "the economy will continue steady growth." And the idea that large-scale lockdowns were impossible in modern society—that fell too.
 
 In the early stages of the pandemic, many people (including many experts) reacted with: "it probably won't be too serious." This judgment wasn't based on analysis, but on comfort—admitting "it might be serious" would bring too much uncertainty, and the human brain doesn't like uncertainty.
 
@@ -98,7 +98,7 @@ But falsification thinking requires you to do the opposite: when everyone is say
 
 I did several things early in the pandemic: reduced non-essential cash expenditures, confirmed the company's remote work capabilities, assessed survival time under worst-case scenarios. These actions seemed like "overreactions" at the time. Three months later, many companies and individuals who hadn't made these preparations found themselves in extremely passive situations.
 
-Not because I was smarter than others. Because falsification thinking made me habitually ask "what if the worst-case scenario comes true?"—rather than assume the worst-case scenario wouldn't happen.
+Not because I was smarter than others, but because falsification thinking made me habitually ask "what if the worst-case scenario comes true?"—rather than assume the worst-case scenario wouldn't happen.
 
 ## Living with Uncertainty
 
