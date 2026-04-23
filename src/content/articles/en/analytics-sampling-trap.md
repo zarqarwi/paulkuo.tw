@@ -99,7 +99,7 @@ My engineering principle with AI Agents is reconnaissance before action, but AI 
 
 Initially I treated bot traffic as noise to be excluded. But paulkuo.tw has [AI-Ready architectural design](/articles/ai-ready-continuous-optimization)—llms.txt lets AI systems understand site structure, JSON-LD provides structured knowledge, MCP protocol lets AI agents directly interact. So having AI bots read content isn't noise, it's also part of influence.
 
-So the correct question becomes not "how to exclude bots" but "how to see the complete 'reading audience.'"
+So the right question became: how do you see the complete "reading audience"?
 
 I need two independent metrics:
 
@@ -120,6 +120,6 @@ If your website uses Cloudflare Web Analytics free plan and has daily visitors i
 
 This doesn't mean Cloudflare isn't good. Its CDN, DNS, and security protection are industry-leading. Web Analytics Dashboard UI numbers are accurate. But if you want to pull data via API to your own dashboard, in low-traffic scenarios, you need to verify once yourself. Cross-check API returned numbers with Dashboard—five minutes will give you the answer.
 
-When data discrepancies are too large, website operators might need to return to more direct methods, establishing precise visit counting mechanisms themselves. This isn't because Cloudflare isn't trustworthy, but because sampling is inherently prone to inaccuracy when traffic scale is still small. As audience scale expands, sampling precision naturally improves gradually. But it's precisely during the growth stage when traffic is still growing that precise numbers are most indispensable, because that's the critical moment for judging direction and adjusting strategy.
+When the gap is too large, the straightforward move is to count it yourself—build your own precise visit counting mechanism. Cloudflare itself is trustworthy; the problem is that sampling is inherently prone to inaccuracy when traffic is still small. As your audience grows, sampling precision improves naturally—but it's precisely during that growth stage that every number matters for direction decisions.
 
-Website management can't rely solely on feelings—data is like a health checkup report. If you can't accurately grasp even the most basic reach numbers, it's like knowing nothing about your weight, body fat, and physiological indicators. So-called improvement and growth becomes difficult to build on clear, evidence-based judgment.
+Website management can't run on feelings alone. Five minutes: cross-check your API numbers against the Dashboard. If the gap exceeds reasonable error, you'll know what to do next.
