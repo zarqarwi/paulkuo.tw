@@ -1000,11 +1000,11 @@
     }
   },
   "riding-wave-or-drowning.md": {
-    "sourceHash": "4344873c548c",
+    "sourceHash": "2e7246f5605a",
     "translations": {
       "en": {
-        "hash": "d36b4f077932",
-        "translatedAt": "2026-03-02T00:55:46.483Z",
+        "hash": "ce738a16ef1f",
+        "translatedAt": "2026-04-23T12:12:21.239Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
