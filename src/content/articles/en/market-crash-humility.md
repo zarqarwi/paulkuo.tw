@@ -69,7 +69,7 @@ Honestly, during those days in March 2020, I did something few people in investm
 
 Not false modesty, but genuinely not knowing what would happen next.
 
-I didn't know how long it would take to develop vaccines (the most optimistic prediction then was 18 months, with most experts thinking it impossible). I didn't know how long lockdowns would last. I didn't know whether central banks' massive quantitative easing would trigger inflation. I didn't know whether global supply chains would break down.
+I didn't know how long it would take to develop vaccines (the most optimistic prediction then was 18 months, with most experts thinking it impossible). I didn't know how long lockdowns would last. I didn't know whether central banks' massive quantitative easing would trigger inflation, or whether global supply chains would break down.
 
 Each "I don't know" made me more lucid.
 
