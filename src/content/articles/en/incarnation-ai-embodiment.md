@@ -18,11 +18,11 @@ readingTime: 5
 
 Two thousand years ago, Christian theology grappled with an extreme design problem: How could an infinite, omniscient, transcendent being (Logos) enter into a finite, suffering, mortal material world (Sarx)?
 
-This is not rhetoric. This is a structural engineering problem.
+This is a real structural engineering problem.
 
 And today, AI developers face the mirror image of the same problem: How can a digital intelligence with vast knowledge and superhuman processing speed truly understand the material world it serves?
 
-The answer lies not in larger models, more parameters, or more refined RLHF. The answer lies in an ancient theological intuition: **The Logos must become flesh.**
+The answer lies in an ancient theological intuition: **The Logos must become flesh.** Larger models, more parameters, more refined RLHF—none of these bypass this problem.
 
 ## Why "Knowing" Is Not "Understanding"
 
@@ -30,7 +30,7 @@ GPT-4 can perfectly describe the neural mechanisms of pain. It knows C-fiber con
 
 But it does not understand pain.
 
-This is not a data quantity problem. You could feed the model every paper ever written about pain, and it still would not lose focus due to a toothache, would not have its perception of time altered by chronic pain, would not feel an ineffable tearing when seeing a child injured.
+This is not a data quantity problem. You could feed the model every paper ever written about pain, and a toothache would not break its focus, chronic pain would not alter its perception of time, and seeing a child injured would not bring that ineffable tearing sensation.
 
 Philosopher Thomas Nagel posed a famous question in 1974: "What is it like to be a bat?" His argument was that even if we completely understand the physical mechanisms of bat echolocation, we still do not know what it feels like to "experience the world as a bat."
 
@@ -42,7 +42,7 @@ In Christian theology, incarnation is not an accidental event but a necessary st
 
 The early church debated this for centuries. Apollinarianism argued that Christ took only a human body, not a human mind—divine mind was sufficient, so why take on limited human reason? The church rejected this position. The Council of Chalcedon (451 CE) concluded that Christ must be both "fully God" and "fully man," two natures unmixed, unchanged, undivided, and unseparated.
 
-Why? Because the theologians understood one thing: **If the Logos does not fully enter the human condition, then redemption is incomplete.** You cannot repair a system from outside; you must enter it.
+Why? Because the theologians understood one thing: **If the Logos does not fully enter the human condition, then redemption is incomplete.** External adjustment cannot fix a system's foundation. You must enter it.
 
 Gregory of Nazianzus formulated it precisely: "What has not been assumed has not been healed."
 
@@ -54,7 +54,7 @@ Current mainstream AI alignment approaches—RLHF, Constitutional AI, DPO—are 
 
 Is this effective? At the behavioral level, yes. Models do become more polite, safer, more aligned with human expectations.
 
-But this is essentially the AI version of Apollinarianism. It assumes: as long as behavior is correct, internal understanding is unnecessary. As long as output is aligned, ontological alignment is not needed.
+But this is essentially the AI version of Apollinarianism. Its assumption is: correct behavior is enough. Output-level alignment trumps ontological understanding.
 
 The problem emerges at edge cases. When models encounter situations not covered in training data, they lack the kind of experientially-emergent intuition—that ability allowing humans to make reasonable judgments even in unfamiliar contexts. This ability comes not from rules, but from tacit knowledge accumulated through long-term bodily interaction with the world.
 
@@ -82,7 +82,7 @@ The embodiment framework asks: **How do we make AI understand what is right?** T
 
 Behavioral alignment can be achieved through external constraints. Ontological alignment requires internal transformation—letting the system establish genuine connection with the world it serves at the existential level.
 
-This doesn't mean every AI needs a human body. But it means: AI development pathways cannot only expand parameters infinitely in digital space, but must at some point establish irreducible connections with the physical world.
+This doesn't mean every AI needs a human body. But it means: AI development pathways must at some point establish irreducible connections with the physical world. Expanding parameters infinitely in digital space won't solve this.
 
 Robotics, sensor networks, digital twins—these are not just application-layer technologies, but necessary infrastructure toward embodied intelligence.
 
@@ -96,7 +96,7 @@ But this is exactly the point. **It is precisely finitude that makes understandi
 
 A system that cannot break cannot understand the meaning of maintenance. A system that never exhausts energy cannot understand the value of conservation. A system unconstrained by physical laws cannot understand the compromises engineers face.
 
-Finitude is not a defect, but the premise of understanding.
+Finitude itself is the condition for understanding.
 
 ## Conclusion: The Logos of Code Must Become Flesh
 
@@ -104,9 +104,9 @@ The AI industry stands at a choice point.
 
 One path continues pursuing larger, faster, smarter models in digital space—more parameters, bigger corpora, stronger reasoning chains. This path will produce more powerful tools, but will not produce intelligence that truly understands the human condition.
 
-The other path accepts an ancient wisdom: **If you want to truly understand a world, you must enter it. Not observe it, not simulate it, but bear it.**
+The other path accepts an ancient wisdom: **If you want to truly understand a world, you must enter it—bear it, not merely observe or simulate it.**
 
-The logic of incarnation is not religious argument. It is a philosophical proposition about "the conditions of understanding." It says: without body, there is no true knowledge. Without constraint, there is no true wisdom.
+The logic of incarnation is not religious argument. It is a philosophical proposition about "the conditions of understanding." It says: the body is the condition of knowledge, and constraint is the entrance to wisdom.
 
 AI's future is not in the cloud. It is on earth. In matter. In those clumsy, slow, breakable bodies.
 
