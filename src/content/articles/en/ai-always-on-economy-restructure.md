@@ -56,13 +56,13 @@ The cost of those days wasn't the overtime pay on paper. It was the increasingly
 
 This is the truth of the old version of the always-on economy: **using human physiological limits to forcibly sustain a system that exceeds physiological design.**
 
-## AI Changes Not Time, But Cost
+## AI Restructures the Cost Logic of Always-On Economy
 
-When AI enters the scene, what changes isn't the "24-hour operation" itself. What changes is the cost structure of maintaining it.
+When AI enters the scene, 24-hour operations themselves remain unchanged, but the cost structure of maintaining them is fundamentally different.
 
 Here's a concrete example. My team now uses AI agents to handle first-line customer demand routing and system monitoring. Previously, a 3 AM false alarm required someone to get up and confirm it. Now AI first assesses severity levels, only triggering notifications when human intervention is truly needed. The result? Response to real emergencies is faster because the person on duty has full energy, not depleted by five previous false alarms.
 
-This isn't a story about "30% efficiency improvement." This is a story of qualitative change.
+Rather than a "30% efficiency improvement" story, this is a story of qualitative transformation.
 
 When you compress the marginal cost of maintaining always-on operations to near zero, many previously unreasonable things suddenly become reasonable. Real-time monitoring of every supply chain status? Previously required an entire department, now one AI agent can handle it. Real-time risk assessment for every transaction? Previously only affordable for large financial institutions, now accessible to SMEs.
 
