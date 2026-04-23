@@ -97,9 +97,9 @@ Returning to the personal level.
 
 If computational power is the fundamental currency of the new era, then everyone needs to ask themselves: how much computational power can I mobilize?
 
-This isn't just about "whether you can use ChatGPT." It's about whether you can identify which problems are worth computing, whether you can design effective analytical frameworks, whether you can distinguish signal from noise in AI outputs.
+This isn't just about "whether you can use ChatGPT"—it's about whether you can identify which problems are worth computing, design effective analytical frameworks, and distinguish signal from noise in AI outputs.
 
-The point was never about how much computational power you own—GPUs can be rented, APIs can be purchased. The point is whether you have the ability to convert computational power into meaningful output.
+Computational power itself isn't the constraint—GPUs can be rented, APIs can be purchased. What's scarce is the ability to convert that power into meaningful output.
 
 Just like in the gold standard era, the point wasn't how much gold you had, but whether you could use gold to make valuable transactions. The computational power standard era is the same: energy itself isn't valuable, energy conversion efficiency is what's valuable.
 
