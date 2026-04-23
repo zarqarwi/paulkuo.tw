@@ -620,11 +620,11 @@
     }
   },
   "ironman-group-education.md": {
-    "sourceHash": "f2b1142fdcb2",
+    "sourceHash": "d7cb9be20cbc",
     "translations": {
       "en": {
-        "hash": "8298a7292b0b",
-        "translatedAt": "2026-03-02T22:33:18.574Z",
+        "hash": "f329255b758e",
+        "translatedAt": "2026-04-23T11:33:03.024Z",
         "model": "claude-sonnet-4"
       },
       "ja": {
