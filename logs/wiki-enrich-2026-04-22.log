@@ -1,0 +1,15 @@
+[2026-04-22T07:45:30.089Z] FAIL youtube-OxJzRU-6tuk-OxJzRU-6tuk: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T13:54:04.617Z] FAIL article-breaking-silo-effect: Unexpected non-whitespace character after JSON at position 1812 (line 64 column 1)
+[2026-04-22T13:54:19.521Z] FAIL article-broken-crutch-elderly-faith: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T14:02:48.413Z] FAIL article-moral-person-immoral-society: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T14:07:22.981Z] FAIL article-same-sex-marriage-theology: Unexpected non-whitespace character after JSON at position 2086 (line 75 column 1)
+[2026-04-22T14:36:08.527Z] FAIL getnote-558096-alien-life-civilization: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T14:36:43.429Z] FAIL getnote-584104-life-energy-management: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T14:37:24.471Z] FAIL getnote-617272-positive-sum-vs-zero-sum: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T14:41:31.619Z] FAIL getnote-780904-lab-facility-animal-research: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T14:47:09.918Z] FAIL getnote-896520-political-trust-collapse: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T14:51:18.715Z] FAIL youtube-0h3P7Ojn-3o-0h3P7Ojn-3o: wrong_pillar_suspected: matched=[] with no concept alignment
+[2026-04-22T14:55:08.686Z] FAIL youtube-PNtZ9GqCXA8-opus-47-mythos: Transcript too short or missing
+[2026-04-22T14:55:09.690Z] FAIL youtube-PloqQhjxzDc-30b6000-ai: Transcript too short or missing
+[2026-04-22T14:55:10.693Z] FAIL youtube-Po6xqJsCook-claude-mem-ai-agent: Transcript too short or missing
+[2026-04-22T15:00:10.012Z] FAIL youtube-j1V_C6qxT20-ai: wrong_pillar_suspected: matched=[] with no concept alignment

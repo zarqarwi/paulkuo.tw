@@ -1,0 +1,639 @@
+---
+name: session-handoff
+description: >
+  Paul 的多 session（Chat / Cowork / Code）協作狀態管理 SOP。當 Claude 在任何 session 完成工作、開場盤點、撰寫 handoff / worklog、處理 Cowork 交接時必須載入。也在 session 開場檢查儀表板避免重複執行時觸發。關鍵觸發詞：handoff、交接、結案、部署完成、驗證通過、開始新一輪、繼續上次、接手、狀態確認。
+---
+
+# 多 Session 協作狀態管理 SOP v5.6
+
+Paul 同時使用 Code 和 Cowork 兩種 session 協作。
+Code 是主力戰場（程式碼、部署、工程），Cowork 是管家中樞（管理決策、文件、同步、自動化）。
+這份 SOP 確保狀態不會在交接時遺失或重複。
+
+> **版本歷史**：完整版本歷史（v3 → v5.1）見 [CHANGELOG.md](./CHANGELOG.md)。
+
+---
+
+## 0. 治理複雜度上界（v5.0 新增）
+
+### 0.1 本 skill 的硬上限
+
+- 本文字數：≤ 900 行（附錄不計）
+- 達到 800 行時觸發拆分評估（core / guardrails / ops 三份架構已有雛形，見 handoffs/chat--session-handoff-v5-planning-2026-04-17-rev3.md §5）
+- 目前行數：639 行（2026-04-20 v5.6 驗證，達上限 71%，逼近 800 行觸發拆分評估線）
+
+### 0.2 退休觸發條件
+
+每次 major version 升級前，跑一次檢查：
+- 本 skill wc -l ≥ 800 → 啟動 v5.x 拆分 procedure
+- 連續 3 個月無觸發的護欄 → 評估退休
+- 6 個月累積 < 5 份檔案的分層 → 評估併入上層
+
+### 0.3 為什麼訂 800 行為觸發點而非 900 行上限
+
+留 100 行緩衝期。達到觸發點時不立刻拆，先在 Issue #155 宣告「下一個 major 要拆」，規劃週期約一個 major 版本。避免觸發即動刀造成倉促決策。
+
+### 0.4 本次拆分決策被推翻的教訓（2026-04-18）
+
+v5.0 原規劃拆三份，基於「1086 行」假設。實際驗證後源檔 522 行，拆分不必要。治理決策前必須驗源頭數字。見 docs/governance/retrospective-2026-04-18-v5-split-reversal.md。
+
+---
+
+## 狀態同步三原則（v4 新增）
+
+1. **Worklog 是上游，記憶是下游。** Code 寫 worklog → Cowork 消化 → 更新記憶 + 儀表板。資料只從上游往下流，不倒灌。
+2. **線上狀態才是真相。** 記憶是快取，API 回應 / 瀏覽器驗證 / git log 才是源頭。有衝突時信線上。
+3. **狀態變更要顯式宣告。** Code 的 worklog 要標記哪些 issue / 待辦因為這次工作而改變狀態，包括間接解決的副作用。
+
+---
+
+## Cowork 工作邊界（v3）
+
+### 鐵律
+
+護欄依主題分四組：**A 委託原則** / **B 工具失真** / **C 驗證原則** / **D Context 管理**。命名規則見本節末。
+
+#### A 委託原則
+
+1. **A1 — 程式碼修改一律交 Code。** Cowork 不直接改程式碼，超過 5KB 的 GitHub 檔案操作不碰。（2026-03-31 截斷事故教訓）
+
+2. **A2 — 含程式碼常數的文件，流程是 Code dump → Cowork 排版。** Cowork 不自己讀 code 來填常數。等級門檻、碳排係數、rate limit 數值等，一律由 Code 先匯出，Cowork 只負責排版成文件。如果必須引用常數，標註「待 Code 驗證」直到確認。
+
+#### B 工具失真
+
+3. **B1 — GitHub MCP 大檔案截斷意識。** Cowork 用 GitHub MCP 讀超過 1000 行的檔案可能被截斷。如果搜尋結果是「找不到」，不能判定為「不存在」，要標記為「未確認，需 Code 用本機 grep 驗證」。（2026-04-04 RFC #100 誤判事件教訓）
+
+4. **B2 — GitHub API 回傳結果要確認語義。** API 有回傳結果 ≠ 結果的意思是你想的。例如 `list_commits(path=某檔案)` 回傳的是「tree 包含該檔案的 commits」，不是「改動該檔案的 commits」。要確認因果關係，必須查 diff。（2026-04-05 事故教訓）
+
+5. **B3 — Sandbox ≠ Repo，涉及 repo 檔案一律用 filesystem MCP 讀 Paul 電腦。** Cowork 的 sandbox 掛載可能是 repo 的子集或過期快照。在開始任何涉及 repo 檔案的分析或編輯前，必須用 `mcp__filesystem__read_file` 或 `mcp__filesystem__list_directory` 讀取 Paul 電腦上的實際 repo（路徑見各專案 Project Instructions）。**絕對不要基於 sandbox 的檔案列表做判斷。**（2026-04-06 Wiki Phase 4 事故教訓：sandbox 只有 10 個 concept，repo 有 17 個，導致整份分析無效）
+
+6. **B4 — 絕對不使用 Apple Notes 存取任何專案狀態。** 儀表板已永久遷移至 GitHub Issue。Apple Notes MCP 僅在非專案用途（個人筆記）時才可使用。
+
+#### C 驗證原則
+
+7. **C1 — 任何「完成/未完成」的狀態判斷，一律現場查 git log，不從記憶回答。** Memory 只記「為什麼」和「怎麼做」，不記「做了沒有」。完成與否，每次現場查。
+
+8. **C2 — Cowork 不做自我驗證迴圈。** Cowork 產出的文件 A，不能拿文件 A 當基準去驗證文件 B。要驗就查原始碼或交 Code 驗。（2026-04-04 幻值事件根因）
+
+9. **C3 — 偵察先行，行動在後。** Cowork 開給 Code 的工單，第一步永遠是 Step 0 偵察（grep / git log / PRAGMA），不是直接改 code。
+
+10. **C4 — 陰性結果結論節制。（v5.1 新增）** 查無 ≠ 不存在。grep / search / list 回傳空結果時，不可直接下「X 不存在」結論，須交叉驗證（換工具 / 換關鍵字 / 換資料源）或標「未確認」。（2026-04-17 Wiki KV seed 誤判事件教訓）
+
+   **C4 邊界：來源 vs 方式（v5.3 固化，2026-04-19 Retro 裁決）**
+
+   - **來源**：系統/工具層級（git / filesystem MCP / GitHub MCP / curl API 等），不同來源各自有獨立盲區與快取策略。
+   - **方式**：同一來源內不同查詢策略（keyword / flag / endpoint / 路徑），共享同一系統的盲區。
+   - **及格線**：
+     - 🟢 合規：跨 ≥ 2 種**來源**（例：git log + filesystem Read）。
+     - 🟡 上限：同一來源內換 ≥ 2 種**方式**（例：GitHub MCP `get_file_contents` + `search_code`），結論仍須標「未確認」或降格措辭。
+     - 🔴 違反：單一來源 + 單一方式就下「X 不存在」的絕對結論。
+   - **典型案例（🔴）**：Cowork 只從 sandbox snapshot 查 `~/.claude/skills/`，看不到 C4/C5，即下「v5.1 護欄是空中樓閣」。單一來源、單一方式、絕對結論 → 明確違反。（2026-04-19 「空中樓閣第 3 次」事件）
+
+11. **C5 — SSoT 變更後下游重驗。（v5.1 新增）** Single Source of Truth 被修改後，所有依賴該 SSoT 的下游產物（報告、dashboard、衍生文件）必須重新驗證，不得沿用舊結論。（2026-04-17 SSoT 變更案教訓）
+
+#### D Context 管理
+
+12. **D1 — 對話超過 30-40 輪來回，或一次交叉比對超過 5 份文件，準備開新視窗。** Context 衰減會讓早期的精確資訊變模糊，增加幻覺風險。把結論寫進 worklog 或 memory，讓新視窗接手。
+
+13. **D2 — Cowork 視窗切換時必須持久化。** 收到 Code 的完成回報後，立刻寫進 worklog 或更新 memory。不能只在對話裡確認就算——下一個視窗看不到這個對話。
+
+#### 命名規則（v5.1 起生效）
+
+從 v5.1 起，新增或調整護欄編號必須遵循：
+
+- **主題碼開頭**：A / B / C / D 擇一；若開新主題（例如 E / F），須在本節先定義主題代碼與涵義
+- **序號遞增**：主題碼後接該主題當前最大序號 + 1
+- **不再使用流水號** `#N`（舊流水號已全面退休）
+- **退休編號不得回收**：若某條護欄失效，保留編號但標 `[retired]`，不得將該編號指派給新條目
+- **修訂不升編號**：同一條規則的內容調整不改變編號，只在 CHANGELOG.md 記錄修訂
+
+### Cowork 適合做的
+- 文件產出（但常數由 Code 提供）
+- 排程管理
+- GitHub Issue #155 同步（透過 `worklogs/issue-155-body.md` → push → sync-dashboard Action）
+- Chrome 瀏覽器驗證
+- 開工單給 Code
+- 盤點狀態（先查 git log 再回答）
+- 跨專案協調
+
+### Cowork 不適合做的
+- 直接修改程式碼
+- 超過 5KB 的 GitHub 檔案推送
+- 獨立填寫程式碼常數（沒經 Code 驗證的數值）
+- 用 Apple Notes 存取專案狀態
+
+### 灰色地帶
+- 技術參考文件 — 看起來像文件工作，但內容全是程式碼常數。正確流程：Code dump 常數 → Cowork 排版。
+
+---
+
+## 核心架構
+
+```
+Code 衝刺做事 → 自動寫 worklogs/ → ⭐ 收集 metrics → Paul 開 Cowork → Cowork 更新 issue-155-body.md → push → Action 自動同步 Issue #155
+```
+
+**單一事實來源**：GitHub Issue（paulkuo.tw 系列用 #155，Wiki 用 #157，各專案 Project Instructions 指定）。
+**Repo 內版本**：`worklogs/issue-155-body.md`（push 到 main 自動 PATCH Issue #155）。
+**中繼站**：repo 內 `worklogs/worklog-{date}.md`（Code 自動產出，Cowork 自動消化）。
+**跨 session 佇列**：`worklogs/PENDING.md`（Code ↔ Cowork 直接溝通 + 跨專案備忘）。
+**指標儲存**：`worklogs/metrics/{project_id}/{date}-{session_type}.json`（每次 session 自動產出）。
+**治理登記**：`worklogs/governance/projects.json`（6 專案）+ `worklogs/governance/automation-registry.json`（自動化覆蓋率）。
+
+---
+
+## Session 角色與分工
+
+| Session | 角色定位 | 核心能力 | 限制 |
+|---------|---------|---------|------|
+| Code | **主力戰場** | 大量程式碼修改、Git、測試、終端機、MCP、web search | 無法 wrangler deploy（網路限制） |
+| Cowork | **管家中樞（Opus 4.6）** | 管理決策、Issue #155 維護、Skills、排程任務、文件產出 | 不適合深度程式碼修改，GitHub MCP 有截斷風險 |
+
+### Code 的職責
+- 程式碼開發、修復、重構
+- Git commit / push / PR
+- 跑測試、lint、build
+- **自動產出 worklog**（寫到 `worklogs/worklog-{date}.md`），含「狀態變更」區塊
+- 需要 deploy 時，產出指令讓 Paul 在本機跑
+- **常數匯出**：Cowork 需要程式碼常數時，由 Code grep 匯出
+
+### Cowork 的職責
+- **開場同步**：讀 `worklogs/` + `PENDING.md` → reconcile 記憶 → 抽查 remote → 更新 `issue-155-body.md`
+- Issue #155 儀表板維護（編輯 `worklogs/issue-155-body.md` → push → Action 自動同步）
+- 文件類 skill（文章撰寫、社群貼文、簡報、PDF）
+- 排程任務管理
+- Chrome / AppleScript 自動化
+- 跨專案狀態盤點（透過 PENDING.md 跨專案備忘 section）
+
+---
+
+## 狀態驗證規則（v3）
+
+### 盤點任務時的三層比對
+
+Cowork 判斷任務狀態時，永遠不信任記憶快照，一律現場驗證：
+
+| 層級 | 驗證什麼 | 工具 | 判定 |
+|------|----------|------|------|
+| 1. 聲稱層 | Memory / worklog 說了什麼 | 讀 memory + worklogs/ | 這只是聲稱 |
+| 2. 程式碼層 | git log 有沒有對應 commit | `list_commits` / GitHub MCP | commit 在 main = 程式碼已寫 |
+| 3. 部署層 | 線上版本有沒有生效 | Chrome MCP / curl | 前端：commit 在 main 即部署（Pages auto-build）；Worker：需確認 Paul 已跑 wrangler deploy |
+
+只有三層都吻合，才標「✅ 已完成」。任何一層不吻合就標出差異，回報給 Paul。
+
+### Cowork 驗證的已知盲區
+
+- GitHub MCP 讀大檔案（>1000 行）可能截斷 → 搜尋「找不到」≠「不存在」
+- GitHub API `list_commits + path` 回傳語義可能誤導 → 要查 diff 才能確認因果（v4.1）
+- Worker 部署狀態 git 查不到 → 需看 worklog 或 curl API 驗
+- CDN 快取 max-age=3600 → 部署後最多 1 小時才生效
+- **「版本號 / 清單項數 / 時序狀態」類精確事實憑印象回答**（v5.5 新增，v5.6 擴充）→ 空中樓閣系列實例，詳見下方剛性核查
+
+遇到盲區時，標記「未確認」並交 Code 或 Paul 驗證，不自行下結論。
+
+### 引用版本號 / 清單 / 時序狀態時的剛性核查（v5.5 新增，v5.6 擴充）
+
+**觸發句型**（收到任何人講、或自己要講以下話術時強制啟動）：
+
+類別 A — ADR/規範清單類（v5.5 原有）：
+- 「ADR 指名 N 個 X」「某條款列出 Y 項」「規範中的 Z 個步驟」
+- 「v0.3 Track 2 的 4 個 skill」「Migration Step 第 N 步」
+- 「憲法第 X 條的 N 個要求」
+
+類別 B — 精確事實類（v5.6 新增）：
+- 「session-handoff 目前是 v X.Y」「SKILL.md 有 N 行」「CHANGELOG 有 N 個版本」
+- 「某檔案最後更新是 MM-DD」「某 commit 是幾天前的」
+- 「目前有 N 個 concept / source / entity」「KV 有 N 筆」
+
+**強制動作**：
+```
+類別 A：
+1. grep ADR 原文 clause：
+   $ grep -n "^###\|^####" docs/governance/adr-*.md
+2. 貼原文清單（逐字引用）
+3. 比對 repo 實況（ls / git log / grep）
+4. 若建議執行，必須附 (a) clause 編號 (b) 原文引用 (c) 實況差異
+
+類別 B：
+1. Read 目標檔案（不從記憶或 sandbox 快照回答）
+2. 用 git log -1 --format='%H %s' -- <file> 確認最新 commit
+3. 若 Cowork sandbox 讀到的版本與 A 層（Paul 電腦 / GitHub）不一致，以 A 層為準
+```
+
+**歷史 N 計數**（跨視窗共同追蹤）：
+
+主線（ADR 清單類）：
+- N=1（2026-04-18 v5.0）：「SKILL.md 1086 行」推測，實際不到
+- N=2（2026-04-18 v5.1 rev3 §7）：「既有 15 條編號系統」，實際 11 條無編號
+- N=3（2026-04-20 Cowork）：「v0.3 Track 2 四個使用者級 skill」，實際是專案級 4 個；造成 A 層 4 空目錄污染
+
+新類別（跨載體精確事實分裂）：
+- N=1（2026-04-20 實戰驗收）：「session-handoff 第幾版」跨 8 查詢點得 5 答案。Code 唯一正確（v5.5），Chat×3 答 v4.7（雲端記憶殘影），Cowork 答 v4.13（sandbox C 層 mirror），C 層冷凍 v4.13。根因：Chat 憑雲端記憶、Cowork 憑 sandbox 快照，均未觸發 A 層核查
+
+對應 auto-memory：`feedback_adr_clause_before_listing.md`。
+跨視窗速記：`docs/governance/constitution-v0.2-quick-reference.md` 情境 7。
+
+---
+
+## Cowork 開場 Checklist
+
+每次 Cowork session 開場或 Paul 提到「同步」「狀態確認」時，自動執行：
+
+### 0. 確認 repo 實際狀態（v4.2 新增）
+
+如果本次 session 會涉及 repo 的檔案（分析、編輯、盤點），先用 filesystem MCP 確認關鍵目錄的實際內容：
+
+```
+mcp__filesystem__list_directory → {repo_path}/src/content/  （或相關目錄）
+```
+
+比對 sandbox 掛載的內容。如果有差異 → 以 Paul 電腦上的版本為準，sandbox 版本不可信。
+如果本次 session 只做文件產出或 Issue #155 同步（不碰 repo 檔案），可跳過。
+
+### 1. 掃 worklogs/ + PENDING.md
+
+透過 GitHub MCP 讀取 repo 的 `worklogs/` 目錄，
+找出儀表板最後更新日期之後的所有 worklog 檔案。
+
+同時讀 `worklogs/PENDING.md`（用 `get_file_contents`），確認：
+- 有沒有待 Cowork 執行的項目
+- 跨專案備忘 section 有沒有新決策
+- 有沒有待 Code 執行的項目 → 彙整成一句話摘要，讓 Paul 直接貼給 Code
+
+### 2. 查 git log
+
+跑 `list_commits` 取得最近 20-30 筆 commit，比對 worklogs 和 memory 的聲稱。
+
+### 3. Reconcile：比對 worklog 與記憶（v4 新增）
+
+Worklog 是上游事實來源，記憶是下游快取。
+
+- 讀 worklog 的「狀態變更」區塊，比對 `.auto-memory/` 裡標為待辦的項目
+- 如果 worklog 標記某項為已完成 → 更新對應記憶，結案該待辦
+- 如果記憶裡有「待確認」項目附帶驗證指令 → 跑驗證（curl / API / 瀏覽器）
+- 沒有「狀態變更」區塊的舊 worklog → 用 git log + 線上驗證補判
+- **原則：有衝突時信線上，不信記憶。**
+
+完成後向 Paul 報告：哪些待辦被自動結案、哪些驗證通過/失敗、哪些需要人工確認。
+
+### 3.5 抽查 remote：worklog 聲稱的關鍵變更真的在 main 上嗎？（v4.1 新增）
+
+**Worklog 說「做完了」≠ 程式碼在 GitHub main 上。**
+
+只查**會影響 build 或 runtime 的關鍵變更**，不查 CSS 微調、文案修改等不影響建構的項目。需要抽查的類型：
+
+- **新增 import / export**：有 import 但 export 不存在 → build 直接炸（這次 RFC #100 就是這樣）
+- **新增檔案**：worklog 說建了 `sw.js`、`offline.html` → 確認檔案在 repo 裡
+- **Schema 變更**：D1 migration、KV key 格式改動 → 不在就 runtime error
+- **Worker 路由 / handler**：`handleScheduled`、新 API endpoint → 不在就 cron 或請求失敗
+
+用 `get_file_contents` 或 `search_code` 確認。驗不過 → 標記「⚠️ worklog 聲稱完成但 remote 未確認」，不直接標 ✅。
+
+> **為什麼加這步：** 2026-04-05 事故。RFC #100 worklog 寫「三項全完成」，Cowork 照抄標完成，
+> 結果 `handleFormosaHealthAlert` 從未 push 到 main，直到 wrangler deploy 失敗才發現。
+> Memory 有「線上狀態才是真相」的規則，但 checklist 沒有強制執行，導致知道卻沒做到。
+
+### 4. 同步到 Issue #155（透過 issue-155-body.md）
+
+- 編輯 `worklogs/issue-155-body.md`，將新的完成日誌條目插入「完成日誌」區塊（最新在上）
+- 根據 worklog 的待辦快照，更新對應專案的狀態區塊
+- 更新「最後更新」時間戳
+- **不需要手動 PATCH Issue**——push 到 main 後 `sync-dashboard` Action 自動同步
+- ⚠️ GitHub MCP 的 `get_issue`/`update_issue` 有 issue_number 型別 bug，讀 Issue 用 `search_issues`
+
+### 5. 狀態確認
+
+- 如果 worklog 提到需要 Paul 手動操作（deploy、設定變更等），主動提醒
+- 如果有卡住的項目，標記並討論
+- **檢查前一 session 是否有結案宣告**（v5.4 新增）：若最後一篇 worklog 沒有 `🏁 Session 狀態` 行，主動問 Paul 該 session 現在是 Dormant 還是 Archived，更新到 worklog 尾端
+
+---
+
+## Worklog 格式（Code 端產出）——三維度必填
+
+CLAUDE.md 已指示 Code 自動寫入 `worklogs/worklog-{YYYY-MM-DD}.md`。
+
+Worklog 必須涵蓋三個維度，缺一不可：
+- **做了什麼**（完成日誌 + 狀態變更）
+- **為什麼這樣決定**（決策紀錄）
+- **遇到什麼阻礙**（阻礙與踩坑）
+
+```markdown
+# Worklog {YYYY-MM-DD}
+
+## 完成日誌（最新在上）
+- {HH:MM} {做了什麼} ({commit hash}) Code
+
+## 狀態變更
+- {Issue/待辦名稱}：{之前狀態} → {現在狀態}（{原因}）
+
+## 決策紀錄
+- {決策}：{為什麼選 A 不選 B}（影響範圍：{哪些模組/專案}）
+
+## 阻礙與踩坑
+- {問題描述} → {怎麼解決的 / 還沒解決}
+
+## 待辦快照
+### 高優先 🔴
+- [ ] ...
+### 中優先 🟡
+- [ ] ...
+
+## 待 Paul 執行
+- [ ] {操作描述} → 驗證: {驗證方法或「問 Paul」}
+```
+
+**決策紀錄**：只記「有其他選項但我們選了這個」的情況。沒有特殊決策就寫「無特殊決策」，但不能省略。
+**阻礙與踩坑**：記已解決的（給未來參考）和未解決的（給下個 session 接手）。沒有阻礙就寫「無阻礙」，但不能省略。
+
+### 狀態變更範例
+
+```markdown
+## 狀態變更
+- Issue #90 mazu.today 根目錄 redirect：未完成 → 已解決（formosaRoutes 更新，Worker deploy 後生效）
+- Feedback #5 品牌名稱：等 Paul 定案 → fixed（已 PATCH 更新 admin_note）
+- FORMOSA_ALERT_USER_ID secret：待確認 → 已確認（Paul 確認 encrypted ✅）
+```
+
+重點：間接解決的副作用也要標記，不要只記直接完成的任務。
+
+---
+
+## 結案宣告 Close Protocol（v5.4 新增）
+
+每個 session 結束時，必須明確宣告生命週期狀態，避免 session 永遠停在「可能還會回來」的半開狀態，導致 Cowork workspace 磁碟爆量（每個 inactive session 佔 ~178 MB working files）。
+
+### 三層 Session 狀態
+
+| 狀態 | 定義 | 處置 |
+|------|------|------|
+| **Active** 🟢 | 正在用，或預計 48 小時內會回來 | 保留 working files，維持 session 完整狀態 |
+| **Dormant** 🟡 | 工作未結案但暫時擱置（>48h 沒動） | working files 可清，留 handoff + worklog 即可 |
+| **Archived** 🔴 | 工作已結案，產出已進 git / worklog / Issue #155 | Session 可完全刪除，不再佔空間 |
+
+### 結案時必須回答的三個問題
+
+Session 結束前（不管是 Code 還是 Cowork），強制走一次：
+
+1. **產出去哪了？** — 有沒有進 git commit / worklog / Issue #155？沒有就補。
+2. **跨 session 待辦？** — 有 → 寫進 `worklogs/PENDING.md`；沒有就明講「無」。
+3. **宣告狀態？** — Active / Dormant / Archived，三選一，不能留空。
+
+### Cowork 交付訊息必備欄位（補充 v4 既有模板）
+
+在對話中結案時，訊息尾端加一行：
+
+```
+🏁 Session 狀態：{Active / Dormant / Archived}
+理由：{一句話}
+```
+
+範例：
+- `🏁 Session 狀態：Archived（所有產出已進 git，Issue #155 已同步，無跨 session 待辦）`
+- `🏁 Session 狀態：Dormant（等 Paul 確認 ADR 方向後再繼續，PENDING.md 已記）`
+- `🏁 Session 狀態：Active（預計今晚繼續 v0.3 實施）`
+
+### 為什麼需要這條
+
+2026-04-20 Cowork workspace 磁碟警訊事件：9.7 GB 配額只剩 381 MB free，三個 178 MB inactive session 全部卡在 Active 和 Archived 之間——事情做完了但沒人宣告結案。治理工程深化會讓 session 數量只增不減，這是配套的「session 衛生」機制。
+
+對齊憲法第三條（權責分工）：session 的生命週期狀態由產出方主動宣告，不是等 Cowork 開場盤點時被動判斷。
+
+---
+
+## 記憶寫法慣例（v4 新增）
+
+### 「待確認」項目必須附驗證指令
+
+記憶裡標為「待確認」的項目，附上一個可執行的驗證方式，讓下次 session 開場時直接跑：
+
+```markdown
+**待確認：** FORMOSA_ALERT_USER_ID secret 是否已設定
+**驗證：** 問 Paul，或檢查 Cloudflare Dashboard → paulkuo-ticker → Settings → Variables
+```
+
+### 記憶只記「為什麼」和「怎麼做」
+
+完成與否的狀態不存記憶（會過時），每次現場查 git log / API。
+記憶記的是：決策理由、技術陷阱、工作流程規則。
+
+---
+
+## 儀表板格式標準
+
+每個專案區塊統一格式：
+
+```
+══════════════════════════════
+{專案名稱}
+══════════════════════════════
+- 關鍵資訊（URL、ID 等）
+
+Phase N ✅ {已完成的階段}
+Phase N ⏳ {進行中的階段}
+  - [x] 已完成項目
+  - [ ] 待辦項目
+
+Phase N 🟡 {未來階段}
+  - [ ] 待辦項目
+
+- {備註}
+```
+
+待辦直接寫在 Phase 的 `[ ]` 裡，不另外維護獨立清單。
+進度和待辦綁定在一起，不會散落各處。
+
+---
+
+## 完成日誌格式
+
+```
+- {MM-DD} {HH:MM} {做了什麼} ({commit hash 或驗證方式}) {session 類型}
+```
+
+範例：
+```
+- 03-25 03:37 碳足跡樹木換算公式統一 (414a30c) Code
+- 03-25 02:15 Dashboard 地圖重設計 (dbd1807) Code
+- 03-24 12:xx Formosa Phase 1 UX 重構 (e2d3855) Code
+```
+
+---
+
+## Cowork 交付訊息模板（對話中必須顯示）
+
+Cowork 產出 handoff 文件後，在對話中告訴 Paul 時，**必須在訊息裡直接寫出以下資訊**。
+Paul 不應該需要打開 handoff 檔案才能決定要開哪個 session、用什麼模型。
+
+### 必備欄位
+
+```
+📋 Handoff 準備好了
+
+🤖 建議模型：{Opus / Sonnet / Haiku}（原因：{一句話}）
+📁 專案：{專案名稱}
+📝 任務摘要：{一句話描述要做什麼}
+⏱️ 預估複雜度：{低 / 中 / 高}
+
+▶️ Code 開場指令（直接貼給 Code）：
+cd ~/Desktop/01_專案進行中/{專案資料夾} && git pull
+讀 worklogs/{handoff 檔名}
+```
+
+### 模型建議判斷原則
+
+| 情境 | 建議模型 |
+|------|----------|
+| 多檔案重構、架構變更、複雜 debug | Opus |
+| 單一功能開發、bug 修復、已有明確步驟 | Sonnet |
+| 簡單文字替換、格式調整、單行修改 | Haiku |
+
+Paul 看完對話訊息就能決定開哪個 Code session，不用打開 handoff 檔案。
+
+---
+
+## Handoff 文件（需要時才用）
+
+大多數情況下，worklog 自動流轉就夠了。
+只有工作**需要跨 session 精確接力**（例如 Cowork 規劃了多步驟方案要 Code 執行）時，
+才需要正式的 handoff 文件。
+
+### 檔案命名
+
+`{target}--{project}-{description}-{date}.md`
+
+- `code--` → 給 Code session
+- `cowork--` → 給 Cowork session
+
+### Handoff 文件必備區塊
+
+0. **建議模型**：`建議模型: Sonnet` 或 `建議模型: Opus`（寫在檔案最上方，這是硬規則，適用所有專案）
+1. **Step -1 環境準備**（handoff 文件第一個執行步驟，不可省略）：
+   ```bash
+   cd ~/Desktop/01_專案進行中/{專案資料夾} && git pull
+   ```
+   Cowork 透過 GitHub MCP push 的檔案，Code 本機不會自動有。不寫這步 = Code 找不到 handoff 檔案。
+   所有檔案引用都必須用絕對路徑（如 `~/Desktop/01_專案進行中/paulkuo.tw/worklogs/xxx.md`）。
+2. **背景**：為什麼要做這件事（一段話）
+3. **Step 0 偵察**：先查再改，列出偵察指令——包含 grep、PRAGMA、curl、以及**接手方 session 可用的 MCP 工具**（如 `scheduled-tasks`、`github`、`figma` 等）。若有多條偵察路徑，優先選接手方的最低 token 路徑，並在 §2 末尾標注「本路線已考慮接手方 X MCP 能力」（v5.2 新增）
+4. **具體步驟**：每步有明確的指令和預期結果
+5. **驗證方式**：怎麼確認做完了
+6. **注意事項**：已知陷阱
+7. **回報格式**：完成後要回報什麼（**必須包含驗證結果**，不要把驗證工作留給 Cowork）
+8. **本輪 metrics**：一行摘要，如 `5 commits, 12 files, +340/-87 lines, 1 deploy`
+9. **Integration Checklist**（涉及跨系統整合時必填）：
+   - **API base URL**：明確寫出要打的域名（本 repo 的 Worker API 是 `api.paulkuo.tw`，Pages 靜態站是 `paulkuo.tw`）
+   - **認證模式**：Bearer / Cookie / X-Admin-Token？首次使用新模式時標注對 CORS `Allow-Headers` 的影響
+   - **CORS 需求**：跨域回應是否需帶 `corsHeaders(request)`？建議用 `jsonResponse()` 以自動帶入，若用 `new Response()` 必須手動加
+   - **現有 pattern 參考**：指出「參考 `src/components/XXX` 或 `worker/src/YYY.js` 的寫法」，降低偏離現有慣例的機率
+
+### 模型選擇指引（v4.4 新增）
+
+| 場景 | 建議模型 |
+|------|----------|
+| 明確步驟的執行（commit、deploy、ingest、YAML 撰寫）| Sonnet |
+| 架構決策、複雜 debug、跨專案影響分析 | Opus |
+| 狀態確認、讀檔回報、簡單翻譯 | Haiku |
+
+Cowork session 本身一律 Opus 4.6，不需要在 handoff 裡標注。
+
+### Code 回報原則（v4.4 新增，v4.5 補充）
+
+**Code 回報時必須包含驗證結果，不要把驗證工作留給 Cowork。**
+
+Cowork 跑的是 Opus，每一輪對話都很貴。如果 Code 回報「push 完了，你去驗」，Cowork 還要花一輪 Opus 去跑 curl / 查 API——這些 Sonnet 或 Haiku 就能做的事不應該消耗 Opus token。
+
+正確的回報方式：Code 自己做完驗證，回報最終結果。
+
+❌ 不好：「5 commits pushed，請驗證 Action 是否成功」
+✅ 正確：「5 commits pushed，sync-dashboard Action 已觸發並成功，Issue #155 updated_at 已刷新為 07:59:06Z」
+
+**v4.5 補充：** 回報需包含 git stat 數據（commits 數、files changed、lines +/-），供 metrics 收集用。
+
+這個原則適用於所有 Cowork 專案，不限 paulkuo.tw。
+
+### 預估量級（v4.4 新增）
+
+Handoff 除了標建議模型，也標預估量級，讓 Paul 判斷是否值得為這件事開新 Code session：
+
+| 量級 | 定義 | Paul 的處理方式 |
+|------|------|----------------|
+| **S** | < 5 分鐘，純 git / 單檔修改 | 可攢幾個一起丟給 Code，不用每個開新 session |
+| **M** | 5–30 分鐘，值得獨立 session | 開一個 Code session 處理 |
+| **L** | 30 分鐘+，可能需要拆步驟或分 session | 拆成多份 handoff，或標注哪些步驟可以先做 |
+
+格式範例：
+```
+建議模型: Sonnet
+預估量級: S（< 5 分鐘，純 git 操作）
+```
+
+---
+
+## 防重複執行
+
+**黃金法則**：不確定某件事有沒有做過？先查，不要直接重做。
+
+| 查什麼 | 用什麼 |
+|--------|--------|
+| 線上版本 | `curl` |
+| DB schema | `PRAGMA table_info(...)` |
+| 程式碼狀態 | `grep -rn`（Code）或 GitHub MCP（Cowork，注意截斷風險） |
+| Git 歷史 | `git log --oneline -20` 或 `list_commits` |
+| 上次工作 | `worklogs/` 最新檔案 |
+| 任務完成狀態 | **一律查 git log，不從 memory 判斷** |
+
+---
+
+## Metrics 收集 SOP（v4.5 新增）
+
+每次 session 結束（handoff 時）必須收集指標，寫入 `worklogs/metrics/{project_id}/{date}-{session_type}.json`。
+
+### Code session 做法
+
+```bash
+# 在 handoff 前跑腳本（輸入：project_id、session_type、session 起始 commit hash）
+bash scripts/collect-session-metrics.sh paulkuo-main code abc1234
+
+# 腳本自動計算：commits、files_changed、lines_added、lines_removed
+# 以下欄位事後手動補（通常只需改 2-3 個數字）：
+# - deploys、issues_closed、custom、notes、model、size、handoff_produced
+```
+
+### Cowork session 做法
+
+Cowork 不跑 git，用不同方式收集：
+- `commits`、`files_changed`、`lines_added/removed`：從 Code 的回報提取（Code 回報原則已要求附帶）
+- `deploys`、`issues_closed`：Cowork 自己知道（是 Cowork 開工單給 Code 做的）
+- `custom`：根據本次 session 工作內容填入
+- Cowork 直接寫 JSON 到 `worklogs/metrics/{project_id}/{date}-{session_type}.json`
+
+### 跨專案 session
+
+一個 session 觸及多個專案（例如改共用模組），產出多份 metrics JSON，每個受影響的 `project_id` 各一份。
+
+### 檔名規則
+
+- 格式：`{YYYY-MM-DD}-{session_type}.json`（例：`2026-04-09-code.json`）
+- 同一天同類型多個 session：`{date}-{session_type}-2.json`（腳本自動處理）
+
+### Handoff 文件 metadata 格式（v4.5）
+
+```
+建議模型: Sonnet
+預估量級: M
+本輪 metrics: 5 commits, 12 files, +340/-87 lines, 1 deploy, 2 issues closed
+```
+
+---
+
+## 工程慣例速查
+
+- Worker deploy：`wrangler deploy --config worker/wrangler.toml`（**必須帶 --config**）
+- 前端 deploy：`git push` → CI/CD
+- D1 查詢：`wrangler d1 execute paulkuo-auth --remote --config worker/wrangler.toml --command "..."`
+- 部署前必查：`grep -rn "<<<<<<" worker/src/`
+- KV 操作必帶 `--remote`
+- commit + push 要原子操作（cron 每 10 分鐘跑 git stash/pop）
+- CDN 快取 max-age=3600，新部署最多等 1hr 生效
+- Semver: MAJOR=架構, MINOR=功能, PATCH=修復
