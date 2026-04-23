@@ -50,7 +50,7 @@ In "What Is Life?", Schrödinger proposed a concept: life can resist the univers
 
 When most people hear negative entropy, they think of organizing desks, building knowledge management systems, taking notes. But that's tool-level negative entropy, and AI does it a hundred times better than you.
 
-True humanistic negative entropy is something else—it's your ability to transform a fragmented experience into a meaningful story. It's your ability to recognize what's worth caring about among a pile of contradictory information. It's your ability to make a decision you're willing to bear the consequences of when facing a situation with no standard answer.
+True humanistic negative entropy is something else—the ability to transform a fragmented experience into a meaningful story; to recognize what's worth caring about among a pile of contradictory information; to make a decision you're willing to bear the consequences of when facing a situation with no standard answer.
 
 These abilities cannot be learned by any model's loss function.
 
@@ -64,11 +64,11 @@ This is very similar to entrepreneurship. You can never prove a business model w
 
 In the AI era, this ability to "act within uncertainty" has become even more critical. AI excels at providing optimal solutions in high-certainty domains. But life's important decisions—whether to divorce, whether to start a business, whether to abandon a stable position to pursue an uncertain vision—have no optimal solutions. Only your solutions.
 
-The first layer of humanistic negative entropy's meaning lies here: it doesn't make you know more, it enables you to act when you don't know.
+The first layer of humanistic negative entropy's meaning lies here: enabling you to act even when you don't know.
 
 ## Why "Efficiency" is Actually a Trap
 
-I spent ten years in the circular economy industry. The core logic of this industry is: what others see as waste, you see as resources. The key isn't that the thing itself changed, but that the framework through which you view it changed.
+I spent ten years in the circular economy industry. The core logic of this industry is: what others see as waste, you see as resources. The key is the framework. When the framework changes, the meaning of the thing changes.
 
 The same logic applies to knowledge.
 
@@ -88,10 +88,10 @@ Judgment. Taste. The decision of where you choose to spend your time. The intuit
 
 These things don't come from databases. They come from the books you've read, the people you've loved, the pits you've fallen into, the questions you've asked yourself at three in the morning.
 
-Meaning is not discovered, it's constructed. Every time you choose to go deep instead of scroll past, every time you choose to face instead of avoid, you're doing humanistic negative entropy. You're resisting the universe's tendency to push everything toward disorder.
+Meaning is not discovered, it's constructed. Every time you choose to go deep, every time you choose to face, you're doing humanistic negative entropy. You're resisting the universe's tendency to push everything toward disorder.
 
 ---
 
-Chaos is not the enemy. Chaos is raw material.
+Chaos is raw material.
 
 The tools you use to refine it into order determine what kind of person you become. AI is a good tool. But choosing what to refine and for whom—that's your business.
