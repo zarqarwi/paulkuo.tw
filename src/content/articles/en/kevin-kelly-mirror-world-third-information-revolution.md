@@ -123,9 +123,9 @@ Kevin Kelly's predicted 2049 is a completely different world.
 
 Not because machines have become smarter, but because our understanding of the world has become transparent, precise, and measurable.
 
-In the mirror world, there is no wasted resource—every object is tracked, evaluated, optimized. There are no hidden costs—every transaction is transparent. There is no impossible cycle—because every component knows its origin and destination.
+In the mirror world, there is no wasted resource—every object is tracked, evaluated, optimized. There are no hidden costs—every transaction is transparent. Even the "impossible cycle" is no longer impossible—every component knows its origin and destination.
 
-This is not science fiction. This is happening now.
+This is not science fiction—this is happening now.
 
 And in this transformation, the most critical figures are not those designing AI, but those who understand how to create value in this new world.
 
