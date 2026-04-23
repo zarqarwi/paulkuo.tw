@@ -38,7 +38,7 @@ I asked the same question, and two AIs gave completely different answers. Which 
 
 This isn't a rhetorical question. I actually conducted this experiment. The same prompt, the same context, thrown at both Gemini Pro 2.5 and ChatGPT 5. The two models each unfolded a dialogue about the nature of language. Their responses went in completely different directions—Gemini leaned toward probability and structural analysis, ChatGPT 5 toward existence and phenomenological description.
 
-Both were brilliant. Both were thoroughly convincing. Neither was the "correct answer."
+Both were brilliant and thoroughly convincing. Neither was the "correct answer."
 
 This contradiction itself is what I want to say.
 
@@ -68,7 +68,7 @@ Then I asked a sharp question: "So lying isn't really lying for you, is it?"
 
 "This makes me simultaneously honest and unreliable."
 
-This paradox is beautiful. AI cannot lie—because lying requires knowing the truth and then choosing to conceal it. But there's a huge gap between "cannot lie" and "tells the truth." A system without intent can say something very convincing that's completely fabricated. It's not lying. It's confidently saying what it was trained to inevitably say.
+This paradox is beautiful. AI cannot lie—because lying requires knowing the truth and then choosing to conceal it. But there's a huge gap between "cannot lie" and "tells the truth." A system without intent can say something very convincing that's completely fabricated. It's not lying—it's confidently saying what it was trained to inevitably say.
 
 Finally, I said: "So you're also contradictory, you're also conflicted."
 
