@@ -44,7 +44,7 @@ Then I wanted to test it myself. Since January, I've started new projects almost
 
 We're entering a turning point: increasingly, information exchange, collaboration, search, citation, and even pre-decision research all go through AI first. Not search engines—AI.
 
-Perplexity cites sources when answering questions, ChatGPT's browsing mode extracts website structured data, Claude can understand websites through llms.txt. What does this mean? It means a website's real mission is shifting from "being seen by humans" to "being correctly understood by AI." Not just SEO, but AEO (Answer Engine Optimization)—some call it GEO (Generative Engine Optimization). You're not optimizing click-through rates, but the ability to be correctly summarized, correctly cited, and correctly linked by AI.
+Perplexity cites sources when answering questions, ChatGPT's browsing mode extracts website structured data, Claude can understand websites through llms.txt. What does this mean? It means a website's real mission is shifting from "being seen by humans" to "being correctly understood by AI." SEO optimizes for search engine visibility; AEO (Answer Engine Optimization)—some call it GEO (Generative Engine Optimization)—optimizes for being correctly summarized, cited, and linked by AI. Click-through rates are a side effect.
 
 If we accept this premise, then paulkuo.tw is not just my article display case, but can be designed as a knowledge entity that is continuously tested by humans, understood by AI, and optimized by AI—a living, evolving digital existence.
 
@@ -74,7 +74,7 @@ But the deeper problem wasn't with the agent—it was with the entire loop itsel
 
 I defined the metrics myself, let the agent optimize, then used the same eval to score it back. This is a closed loop. So what if scores went from 65 to 85 to 90? I can't prove that "a 90-point website makes external AI truly understand me better." System correctness doesn't equal outcome correctness.
 
-True sustainable optimization isn't about making many changes, but about establishing a research system that can distinguish effective signals from meaningless fluctuations.
+Making lots of changes can keep the score climbing—but that's just the feedback loop lying to you. Sustainable optimization requires a research system that can tell the difference between effective signals and meaningless fluctuations.
 
 ## Having External AI Do the Testing
 
@@ -98,7 +98,7 @@ I'm just starting testing—can't let new metrics change core decisions as soon 
 
 Karpathy's inspiration to me wasn't just "AI can do research itself," but: anyone with basic engineering ability can [build a dedicated optimization loop for their own models, websites, or processes at relatively low cost](/articles/ai-agents-changing-work). For researchers, it's model training; for enterprises, it's processes and knowledge bases; for me, this time's starting point is turning my personal website into an experiment that can be continuously read, tested, compared, and optimized by AI.
 
-paulkuo.tw is not just my personal website, but an experiment toward a more readable future self. Not just a showcase of what I've written, but a site where I co-construct knowledge with AI.
+paulkuo.tw is where I co-construct knowledge with AI—the articles, the code, and this optimization loop are all part of that site.
 
 Thinking further ahead, will everyone's digital avatar ("soul.md") have such evolutionary frameworks in the future?
 
