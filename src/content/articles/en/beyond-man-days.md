@@ -53,17 +53,17 @@ Three AIs running simultaneously. One analyzes market data and produces entry st
 
 In the past, this would have required a cross-departmental team of five collaborating for three to four days. 15 to 20 man-days.
 
-This isn't the norm—it's a glimpse of what happens when boundaries are pushed to extremes. But the trend it foreshadows is structural: when AI dramatically lowers the execution threshold for standardized tasks, output is no longer determined solely by time invested, but by how the operator defines problems, allocates tasks, and ensures quality. This isn't about making humans disappear; it's about elevating human roles from "operators" to "curators."
+This isn't the norm—it's a glimpse of what happens when boundaries are pushed to extremes. But the trend it foreshadows is structural: when AI dramatically lowers the execution threshold for standardized tasks, output is no longer determined solely by time invested, but by how the operator defines problems, allocates tasks, and ensures quality. Humans remain—but the role shifts from "operator" to "curator."
 
 So what exactly does "man-days" measure here? It measures time, not value. When measurement methods lag behind reality, we're not measuring productivity—just whether people show up (attendance).
 
 [Anthropic's Economic Index released in January 2026](https://www.anthropic.com/research) provides empirical foundation. They analyzed over one million Claude conversations and found that instruction quality correlates with output quality at 0.92. The significance behind this data deserves reflection: in the AI era, "problem definition ability" directly equals "final performance." Tasks requiring college-level comprehension see 12x AI acceleration; high school level only 9x.
 
-AI doesn't uniformly strengthen everyone—it exponentially amplifies capability gaps.
+AI amplifies gaps—at an exponential rate.
 
 Two people's resumes both say "familiar with AI tools," but that might just be the same sentence corresponding to two completely different output capabilities.
 One person can ship a complete full-stack application over a weekend using AI, while another might only engage in multiple rounds of questioning, generate numerous summaries and NotebookLM notes, appear very busy, but ultimately produce no truly usable results.
-The problem isn't just the capability gap itself, but that we still have no systematic way to recognize, measure, or even name this gap.
+What's thornier: we still have no systematic way to recognize, measure, or even name this gap.
 
 ---
 
@@ -79,7 +79,7 @@ Such categorization is helpful, but "attention duration" is essentially still an
 
 The current problem is: the input side has "attention duration," the macro level has the [Anthropic Economic Index](https://www.anthropic.com/research) estimating AI's contribution to US labor productivity annual growth at approximately 1.0 percentage point; but at the individual level of output—the level where hiring decisions occur, where freelancers are evaluated—it's almost completely blank.
 
-The measurement vacuum isn't at the margins—it's at the center.
+The measurement vacuum sits right at the center.
 
 ---
 
@@ -141,13 +141,13 @@ Verification methods: user or traffic numbers, system stability, number of quali
 
 ### Influence (15%) | Solving "Strong Performers Can't Be Replicated" Dilemmas
 
-No matter how strong an individual is, if their methods only exist in their own head, organizational value has a ceiling. Influence measures: have your methods been learned or adopted by others? This is the transition from individual contributor to organizational enabler, and the highest-leverage form of value creation.
+No matter how strong an individual is, if their methods only exist in their own head, organizational value has a ceiling. Influence measures: have your methods been learned or adopted by others? This is the dividing line between individual contributors and those who accelerate the entire organization—the highest-leverage form of value creation.
 
 Verification methods: open source project interactions (stars, forks, contributors), workflow template adoption rates, educational content reach, external citations of methodologies.
 
 ### Relationships Between Dimensions
 
-To be honest: these five dimensions aren't completely independent. High Quality is often a precursor to Influence. A powerful automation pipeline (Leverage) is itself a form of Delivery. These five capabilities don't exist in isolation—they're mutually reinforcing value loops.
+To be honest: these five dimensions aren't completely independent. High Quality is often a precursor to Influence. A powerful automation pipeline (Leverage) is itself a form of Delivery. These five capabilities reinforce each other, forming a value loop.
 
 This is a design feature, not a flaw. Real value creation is inherently multi-dimensional and interwoven. Revenue, gross profit, and net profit in financial statements also have causal relationships, but we don't only look at one number because each number reveals different aspects. The five dimensions are five observation lenses, not five independent variables. The goal is richer observation, not perfect decomposition.
 
@@ -233,11 +233,11 @@ This framework also has boundaries. Three most important limitations need honest
 
 These aren't flaws to hide but research directions for next iteration rounds.
 
-But don't forget: the choice we face isn't "this framework" vs "a more perfect framework" but "having a framework" vs "having nothing." What does a world without frameworks look like? Just like now: enterprises screening people by resume keywords, making decisions based on interview impressions, yet completely unable to distinguish between "knows how to use AI" and "can use AI to single-handedly carry an entire team"—the massive gap between these.
+But don't forget: the choice we face is really just two options—use this framework, or keep having nothing. What does a world without frameworks look like? Just like now: enterprises screening people by resume keywords, making decisions based on interview impressions, yet completely unable to distinguish between "knows how to use AI" and "can use AI to single-handedly carry an entire team"—the massive gap between these.
 
-What gets quantified gets valued. What doesn't becomes invisible.
+What isn't measured is invisible in decisions—AI collaboration ability is currently in exactly that state.
 
-AI Collaboration Portfolio is an attempt to make the invisible visible. It's an imperfect map—but the alternative isn't a better map, it's running blindfolded in new territory.
+AI Collaboration Portfolio is an attempt to make the invisible visible. It's an imperfect map—but your other option is to keep running blindfolded in new territory.
 
 The current version targets individual users. Enterprise version supporting team dashboards, cross-departmental benchmark comparisons, and hiring process integration is the next development phase. If your organization is thinking about how to evaluate AI talent, welcome to start experiencing framework logic with the individual version.
 
