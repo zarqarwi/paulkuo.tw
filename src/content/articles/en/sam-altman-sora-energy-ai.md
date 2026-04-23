@@ -102,4 +102,4 @@ The greatest takeaway from Altman's interview for me wasn't any specific technic
 
 A thriving AI ecosystem needs stable, predictable, trustworthy platforms. This is an engineering of trust, not a technological arms race.
 
-Before dawn, the most important thing isn't predicting when the sun will fully rise. It's adjusting your position—ensuring that when the light comes through, you're standing on the side that welcomes it, rather than turning your back to it.
+Before dawn, the most important thing isn't predicting when the sun will fully rise—it's adjusting your position: ensuring that when the light comes through, you're standing on the side that welcomes it, rather than turning your back to it.
