@@ -78,7 +78,7 @@ Luther provided a perfect lever. Supporting Luther meant having a "legitimate re
 
 If Frederick III hadn't stepped in to protect Luther, the church's verdict would have been executed—Luther would very likely have been burned as a heretic like Jan Hus a century earlier. His Ninety-Five Theses would have become a footnote in history, not the starting point of reform.
 
-This isn't to say Luther's faith wasn't sincere. Rather, it's to say: sincere faith, without technological and political backing, might not even cause a ripple in history.
+This isn't to say Luther's faith wasn't sincere—rather, it's to say: sincere faith, without technological and political backing, might not even cause a ripple in history.
 
 ## The True Face of Indulgences
 
@@ -96,7 +96,7 @@ Luther opposed this over-marketing, as did many people within Catholicism itself
 
 Why do I "deconstruct" the Reformation this way?
 
-Not because I think reform isn't important—quite the opposite, I consider it extremely important. Rather, because I think we owe reform a more complete understanding.
+Not because I think reform isn't important—quite the opposite, I consider it extremely important—rather, because I think we owe reform a more complete understanding.
 
 Simplifying the Reformation to "one hero against one system" is like reducing any complex historical event to a good-versus-evil story—it feels satisfying, but loses the real lessons.
 
