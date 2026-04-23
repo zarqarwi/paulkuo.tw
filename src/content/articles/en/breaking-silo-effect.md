@@ -52,11 +52,11 @@ Gillian Tett, author of "The Silo Effect," uses "silos" to describe information 
 
 But I want to push her observation further: the problem isn't division of labor itself. Division of labor is the foundation of civilization—you can't expect one person to simultaneously understand finance, legal, technology, and marketing. The problem is that after division of labor, **the channels for information flow have been severed**.
 
-In more technical terms: the organizational problem isn't modularization, but that the interfaces between modules are poorly designed.
+In more technical terms: the organizational problem lies in poorly designed interfaces between modules.
 
 Each department has its own language, its own KPIs, its own priorities. Finance looks at cash flow and risk, sales looks at revenue and growth, legal looks at compliance and liability. They might be discussing the same project, but "is this project good" translates completely differently in each department.
 
-When these different translations cannot be integrated into a common judgment, the organization becomes paralyzed. Not because no one wants to get things done, but because no one has the ability to translate all departments' languages into the same story.
+When these different translations cannot be integrated into a common judgment, the organization becomes paralyzed. Because no one has the ability to translate all departments' languages into the same story.
 
 ## How I Learned to Identify Silos
 
@@ -116,4 +116,4 @@ There's no third option.
 
 Pushing hard against silos, you'll only become a consumable in their internal politics. Retreating from silos, you lose the meaning of business development's existence.
 
-The highest level of business development isn't selling things. It's enabling information to flow where it should flow, giving people who couldn't make decisions the ability to make decisions because of your presence.
+The highest level of business development is enabling information to flow where it should flow, giving people who couldn't make decisions the ability to make decisions because of your presence. Selling happens naturally after that.
