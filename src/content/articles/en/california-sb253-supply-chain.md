@@ -128,11 +128,11 @@ This is a significant number. When regulations mandate full-scope emission discl
 
 However, this paper has a limitation: the authors used **estimated data** from the S&P Global Sustainable1 database, not self-reported actual measurements from companies. Estimation itself heavily relies on industry average factors and statistical modeling, so specific numbers like "dropped X percentiles" have questionable precision.
 
-But the direction it reveals is correct. When SB 253 mandates full-scope disclosure, this reshuffling game will no longer be academic simulation but an actual occurrence.
+But the direction it reveals is correct. When SB 253 mandates full-scope disclosure, this reshuffling game moves from academic simulation to an actual occurrence.
 
 ## Five Ripple Circles: Why Does California Law Govern Small Factories in Bac Ninh Province, Vietnam?
 
-I think the most interesting aspect of SB 253 is that it's not "direct regulation," but rather **cross-border enforcement through market forces**.
+I think the most interesting aspect of SB 253 is that it bypasses direct regulation, using **market forces to complete cross-border enforcement**.
 
 Using an iPhone as an example, let's see how many circles this law's power extends:
 
@@ -176,15 +176,15 @@ For the past few decades, global climate governance has mainly relied on top-dow
 
 But carbon emissions haven't decreased as a result, nor has governance pressure disappeared—it's just changed handles.
 
-SB 253 demonstrates a bottom-up path: not relying on sovereign treaties, but on commercial contracts; not relying on national enforcement, but on multinational corporations' procurement power. This California law essentially "outsources" climate regulatory power to brand companies at the top of supply chains—Apple, Walmart, Microsoft—letting them use market forces for cross-border law enforcement. The medium of long-arm jurisdiction is data.
+SB 253 demonstrates a bottom-up path: from sovereign treaties to commercial contracts; from national enforcement to multinational corporations' procurement power. This California law essentially "outsources" climate regulatory power to brand companies at the top of supply chains—Apple, Walmart, Microsoft—letting them use market forces for cross-border law enforcement. The medium of long-arm jurisdiction is data.
 
 Following this logic, **Scope 3 will be the real battleground for the next decade**. And the core of Scope 3 is actually product carbon footprint.
 
-The biggest difficulty with carbon footprint has never been inability to measure, but **information asymmetry**—carbon emission information in supply chains doesn't flow between nodes, lacks transparency, and is difficult to verify. This is also the biggest structural obstacle to global climate governance for a long time. From this perspective, SB 253's essence is less a "carbon disclosure law" than **anti-carbon emission information asymmetry legislation**. It doesn't directly regulate how much you emit; it first transforms "how much you emit" into an unambiguous, accountable institutional object.
+The biggest difficulty with carbon footprint has always been **information asymmetry**—carbon emission information in supply chains doesn't flow between nodes, lacks transparency, and is difficult to verify. This is also the biggest structural obstacle to global climate governance for a long time. From this perspective, SB 253 is more like **anti-carbon emission information asymmetry legislation**. Its first step: transform "how much you emit" from a fuzzy estimate into a mandatory, auditable institutional question.
 
 Of course, I must be honest—the Nature paper cited earlier has flaws. It uses S&P Global Sustainable1's estimated data, not corporate actual measurements. The estimation itself relies on industry average factors and statistical modeling. Using such data to argue "ranking reshuffling by 35 percentiles" naturally has questionable precision.
 
-But **the direction the paper points to is correct**, and this is precisely what SB 253 aims to solve: when full-scope disclosure moves from "estimation" to "actual measurement + third-party assurance," ranking reshuffling will no longer be just academic simulation, but become the reality of the next round of capital markets.
+But **the direction the paper points to is correct**, and this is precisely what SB 253 aims to solve: when full-scope disclosure moves from "estimation" to "actual measurement + third-party assurance," ranking reshuffling moves from academic simulation into the reality of the next round of capital markets.
 
 This is also why I believe Taiwan companies shouldn't treat SB 253 as "yet another international regulation"—it's the first concrete sample of global climate governance route transformation. There will be second and third followers in the next decade. Whoever builds traceable carbon data capability first gains position in the new governance framework.
 
