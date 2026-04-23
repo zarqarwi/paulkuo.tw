@@ -126,6 +126,6 @@ The intersection of these two issues is taste.
 
 Taste determines what you let AI do (architecture design). Taste also determines how you judge whether AI's output meets standards (oversight capability). As AI becomes more powerful and autonomous, taste is humanity's last line of defense for maintaining participation rights.
 
-Not because AI lacks taste. But because the essence of taste is "judging what's right in a specific context," and context is always defined by humans. Who your users are, what resources you have, what your cultural background is, what you consider important—these constitute the coordinate system for taste judgment. AI can optimize within the coordinate system you define, but it cannot define the coordinate system itself for you.
+Not because AI lacks taste—but because the essence of taste is "judging what's right in a specific context," and context is always defined by humans. Who your users are, what resources you have, what your cultural background is, what you consider important—these constitute the coordinate system for taste judgment. AI can optimize within the coordinate system you define, but it cannot define the coordinate system itself for you.
 
 Code can be copied. Models can be trained. But your choice of what to build, what to abandon, and why—only you can answer that.
