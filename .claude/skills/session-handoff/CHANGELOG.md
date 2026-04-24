@@ -5,6 +5,17 @@
 
 ---
 
+## v5.7（2026-04-24）
+
+**主題**：Cowork 開場 Checklist 新增 -1 步驟——自動同步 repo skill 到 Cowork cache。
+
+- **觸發事件**：paulkuo-writing v2.4（cache）vs v2.7（repo）fork，差點把 Paul 手動精簡的 SDTI/CircleFlow 段改回冗長版。根因：cache 停在 v2.4，A 層已到 v2.7，兩邊沒有自動同步機制。
+- **建立 `scripts/sync-skills-to-cowork.sh`**：repo 正本（A 層）→ Cowork cache（Cache 層）單向同步，動態定位 plugin hash 目錄（抗 Cowork 升級）。
+- **四個 mirror skill 直推**：paulkuo-writing / paulkuo-social / formosa-feedback / organize-downloads。
+- **session-handoff 例外**：C 層為 Chat-adaptation，腳本只比對版本號不直推；A 層更版時腳本跳 🚨 警告，提醒人工裁切 C 層。
+- **實施層級**：Layer 2（自動化）——寫入 Cowork 開場 Checklist 的 -1 步驟，透過 `osascript` 在 host 跑 bash（sandbox 寫不到 cache）。
+- **為什麼放 -1 而不是 0**：skill 同步要在其他盤點步驟之前完成，否則本次 session 讀到的可能仍是舊 skill 內容。
+
 ## C 層 v1.0（2026-04-20，對齊 A 層 v5.6）
 
 **主題**：C 層（Claude.ai Personal Skill）從 v4.13 冷凍版獨立裁切為 Chat 專用 adaptation。
