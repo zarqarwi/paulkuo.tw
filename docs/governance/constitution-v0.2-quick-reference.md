@@ -154,6 +154,61 @@ Code 收到後**先驗環境前提**再執行。
 
 ---
 
+### 情境 8：`--force-with-lease` 被擋報 `stale info`
+
+**錯誤做法**：覺得麻煩，直接 `git push --force` 繞過。
+**憲法依據**：第一條 SSoT（git 寫入的事實來源是 remote HEAD，不是 local tracking ref cache）。
+**正確做法**（working-environment.md §5.2 強制 SOP）：
+
+```bash
+# 1. 直接問 remote
+git ls-remote origin refs/heads/<branch>
+
+# 2. tracking ref 缺失時顯式建立
+git fetch origin +refs/heads/<branch>:refs/remotes/origin/<branch>
+
+# 3. 確認差集無他人異動
+git log HEAD..origin/<branch>
+git log origin/<branch>..HEAD
+
+# 4. 再 force-push（先試 --force-with-lease）
+git push origin <branch> --force-with-lease
+```
+
+⚠️ 被擋是保護機制**正確啟動**，不是 bug。local 認知過期就修認知，不要繞保護。直接 `--force` 會在 remote 已有他人 push 時無聲覆蓋。
+
+**常見觸發場景**：
+- 多終端機視窗輪流操作（前一個視窗 push 了，這個視窗沒 fetch）
+- cherry-pick 後建新分支但沒 push
+- 曾經 `git fetch --prune` 清掉 tracking ref
+
+對應 auto-memory：`feedback_git_tracking_refs_incomplete.md`
+
+---
+
+### 情境 9：Cowork 偵查剪貼超過兩輪
+
+**錯誤做法**：繼續「Paul 貼結果 → Cowork 給下一步」乒乓下去。
+**憲法依據**：第三條權責分工（多邊偵查屬 Code 行政，Cowork 司法不該陷在操作層）。
+**觸發條件**（任一成立就該切，working-environment.md §5.1）：
+- 同一技術問題超過**兩輪**剪貼
+- 問題**分支超過兩條**（scenario A / B 都要處理）
+- 跨系統狀態（local / remote / CI）或跨時間點同時要確認
+- 錯誤訊息需要逐條解讀
+- 單條指令輸出超過一個螢幕高度還沒收斂
+
+**正確做法**：
+1. 停下指令剪貼
+2. 寫完整 Code handoff：當前狀態 + 三 phase（偵查/執行/驗證）+ 分支條件 SOP + 回報格式
+3. 寫進 `worklogs/PENDING.md` 讓 Code 接手
+4. Cowork 本輪收斂
+
+**為什麼**：對話式剪貼 latency 高，多邊分支在人類短期記憶維持超過 3-5 個會衰減，錯誤率隨分支數平方成長。Code handoff 把多邊任務攤在一份文件裡線性處理，比 N 輪剪貼快也安全。
+
+觸發事件：2026-04-24 skill commit 分離任務 git 偵查走到第三輪才切 handoff。
+
+---
+
 ## 違憲自檢清單（開場 / 結案都跑一次）
 
 - [ ] 現在讀到的 SKILL.md / CLAUDE.md 是 git HEAD 版本嗎？（`git log --oneline -3`）
@@ -162,6 +217,8 @@ Code 收到後**先驗環境前提**再執行。
 - [ ] 同層文件的多個區塊我有全部同步嗎？
 - [ ] 我用的新記憶載體是否已通過 ADR？
 - [ ] **我要引用「ADR 指名 N 個項目」類話術時，有先 grep 原文 clause 確認嗎？**（空中樓閣防護，見情境 7）
+- [ ] **做 git force-push 前，`git ls-remote` 核實過 remote 真實狀態嗎？被擋時有沒有直接 `--force` 繞保護？**（見情境 8）
+- [ ] **偵查剪貼超過兩輪或分支超過兩條時，我有主動切 Code handoff 嗎？**（見情境 9）
 
 ---
 
@@ -178,3 +235,4 @@ Code 收到後**先驗環境前提**再執行。
 
 - 2026-04-20：初版，Cowork session 產出，補 2026-04-20 考試暴露的 Chat/Cowork 死角
 - 2026-04-20 rev1（當日晚）：新增情境 7「ADR 指名 N 個項目」剛性核查 + 違憲自檢清單第 6 項。觸發事件：同日 Cowork 空中樓閣 N=3（T-3 誤判事件，auto-memory `feedback_adr_clause_before_listing.md`）。N=4 升格正式護欄 E2
+- 2026-04-24 rev2：新增情境 8「`--force-with-lease` 被擋」+ 情境 9「偵查剪貼超過兩輪」+ 違憲自檢清單第 7、8 項。觸發事件：2026-04-24 skill commit 分離任務 git 偵查事件（auto-memory `feedback_git_tracking_refs_incomplete.md` + `feedback_verify_premise_before_narrative.md`）。對應 working-environment.md §5.1 / §5.2

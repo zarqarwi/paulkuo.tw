@@ -14,6 +14,8 @@
 
 ## 待 Code 執行
 
+- [x] ✅ **Skill commit 分離偵查與收尾** → 已完成（2026-04-24，force-push `fix/acp-graphql-observability` 裁到 `9310c80`，兩分支驗收通過）
+
 - [x] ✅ Formosa Post-Event Issues 批次修復 → 已完成（2026-04-21 merge commit `530b270`，#173/#174/#177/#178/#179 全 closed）
 
 - [x] ✅ paulkuo.tw 文章 AI 味掃描 + 改寫 → 已完成（2026-04-23，featured articles 全部處理完畢）
@@ -94,6 +96,12 @@
   - 如有不一致：更新 llms.txt 或 benchmark_questions.yaml 答案
 
 ## 待 Cowork 執行
+
+- [x] ✅ Git 偵查事件衍生的治理待辦（A+B 兩項）→ 已完成（2026-04-24 Cowork session）
+  - working-environment.md rev2.3：新增 §5「操作 SOP」整章（§5.1 多邊偵查切換閾值 + §5.2 Git SSoT 規則），原 §5/§6/§7/§8 順延為 §6/§7/§8/§9
+  - constitution-v0.2-quick-reference.md rev2：新增情境 8（force-with-lease 被擋）+ 情境 9（偵查剪貼超兩輪）+ 違憲自檢清單第 7、8 項
+  - F5 行數表更新：速記卡 238 行已越軟上限，下次編修前評估抽離情境案例
+  - 待 Code：在下次 Code session commit + push 兩份 governance 文件（屬 Cowork 白名單路徑 `docs/governance/`，也可由 Paul 直接 commit）
 
 - [ ] 🟡 H3：auto-memory 跨視窗不對稱寫入 working-environment.md §1.2 → Cowork 司法 (2026-04-20)
   - 問題：Cowork 能寫 `.auto-memory/`，但 Chat 視窗不掛載這個路徑，R1 護欄在 Chat 穿透率 = 0

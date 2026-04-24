@@ -1,6 +1,6 @@
 ---
 title: 工作環境定義 — Chat / Cowork / Code 三方職責與源頭事實規範
-version: rev2.2
+version: rev2.3
 date: 2026-04-18
 author: Cowork
 status: Accepted（Paul 拍板 Q-WE-1 ~ Q-WE-9，rev2.1 / rev2.2 為實戰補註非新決策）
@@ -9,6 +9,7 @@ amendments:
   - rev2.1 (2026-04-18 同日實戰補註)：§1.2 表格拆分 repo 記憶 / session 記憶 / PENDING.md 三列；新增 §1.3.1「兩層記憶系統路徑區分」。補註依據：本日 handoff §2.3 誤寫 `.auto-memory/`，Code 落地時才發現應指 session memory 路徑。屬實戰踩坑補邊角案例，非推翻 Q-WE-1 ~ Q-WE-9 任何拍板。
   - rev2.2 (2026-04-20 T-3 事故配套)：§1.2 表格新增「物理寫入 `.claude/skills/**` / `scripts/**` / `worker/src/**`」一列（Cowork 物理寫不到）；新增 §1.3.2「Cowork sandbox 寫入邊界」——明確列出 sandbox 物理寫不到的路徑、錯誤流程對照（T-3 事故）、未來候選硬檢查。補註依據：2026-04-20 T-3 事故（空中樓閣 N=3 + sandbox 寫入邊界誤判）第二個 root cause 的護欄，配套於 session-handoff v5.5 + auto-memory `feedback_adr_clause_before_listing.md`。屬實戰踩坑補邊角案例，非推翻任何拍板。
   - rev2.2 (2026-04-20 R3 CLAUDE.md 上限策略)：§4.2 F-ID 表格更新為 rev2.2（F1 621 行 / F4 200 行 / F5 181 行 新增）；§4.3 擴充「新規則該寫哪裡判斷樹」—— 3 問樹 + 反例 + 正例 + 抽離候選清單。CLAUDE.md L188 過時警告（「~220 行」）修正為當前 200 行 + 指向 §4.3 判斷樹 hyperlink。補註依據：CLAUDE.md 剛好卡 200 行軟上限，前置攔截勝於被動處置。屬維運補邊角案例，非推翻任何拍板。
+  - rev2.3 (2026-04-24 Git 偵查事件配套)：新增 §5「操作 SOP」整章——§5.1 多邊偵查任務切換閾值（Cowork 剪貼乒乓超過兩輪 / 分支超過兩條 / 跨系統狀態時切 Code handoff）；§5.2 Git 狀態 SSoT 規則（GitHub remote 為唯一可信源，`--force-with-lease` 被擋時的強制 SOP，嚴禁降級 `--force`）。原 §5/§6/§7/§8 順延為 §6/§7/§8/§9。補註依據：2026-04-24 skill commit 分離任務 git 偵查事件（auto-memory `feedback_git_tracking_refs_incomplete.md` + `feedback_verify_premise_before_narrative.md`）。屬實戰踩坑補操作邊角案例，非推翻任何拍板。
 upstream:
   - docs/governance/retrospective-2026-04-18-v5-split-reversal.md
   - handoffs/cowork--session-handoff-v5-split-reassessment-2026-04-18.md
@@ -20,7 +21,7 @@ external_references:
   - https://docs.anthropic.com/en/docs/claude-code/memory
   - https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
   - https://sre.google/sre-book/postmortem-culture/
-sources_of_truth_manifest: §7 附錄 A
+sources_of_truth_manifest: §8 附錄 A
 verified_by: Code-verified
 verification_date: 2026-04-18
 purpose: 定義三視窗職責邊界 + 規劃文件源頭事實規範 + handoff ADR 欄位，止 2026-04-18「1085 vs 522」踩坑的血
@@ -30,6 +31,7 @@ constitutional_mapping:
   §2: "第一條（SSoT 原則）實施細則"
   §3: "第三條實施細則（Handoff ADR 欄位）"
   §4: "獨立（長度管制，無直接對應條文）"
+  §5: "第一條 SSoT 實施細則（Git 狀態）+ 第三條實施細則（偵查切換閾值）"
 ---
 
 # 工作環境定義 — Chat / Cowork / Code 三方職責與源頭事實規範（rev2.2）
@@ -51,9 +53,10 @@ constitutional_mapping:
 - §2 源頭事實清單規範（含硬編碼禁令）
 - §3 Handoff ADR 欄位升級
 - §4 Skill / CLAUDE.md 長度管制（對齊官方軟上限）
-- §5 外部共識對照表
-- §6 rev2 落地動作
-- §7 附錄（源頭事實清單、Exit Gate）
+- §5 操作 SOP（Git 狀態 SSoT + 多邊偵查切換閾值）
+- §6 外部共識對照表
+- §7 rev2 落地動作
+- §8 Exit Gate（含附錄：源頭事實清單、外部來源）
 
 ---
 
@@ -322,7 +325,7 @@ rev2 前的既有 handoff 不回頭補（成本過高）。新規則從 rev2 com
 |---|---|---|---|---|---|
 | F1 | `.claude/skills/session-handoff/SKILL.md` | **621** | 310% | 77% | 逼近觸發點，下次 major 升級前評估拆分 |
 | F4 | `CLAUDE.md`（根目錄） | **200** | 100%（剛好卡線） | — | 剛好卡在軟上限，新規則不再往內塞（見 §4.3 判斷樹） |
-| F5 | `docs/governance/constitution-v0.2-quick-reference.md` | 181 | 91% | — | 速記卡 rev1（含情境 7），接近軟上限 |
+| F5 | `docs/governance/constitution-v0.2-quick-reference.md` | 238 | 119% | — | 速記卡 rev2（含情境 7/8/9 + 自檢清單 8 項），已越軟上限；下次編修前評估抽離情境案例到獨立檔 |
 | — | 其他 skill（wiki-ingest / wiki-lint 等） | < 200 | — | — | 軟上限內，免觀察 |
 
 ⚠️ F1 = 621 行（77% 達觸發點）是近期最需監控的對象。v5.5 commit `3f457f0` 後新增「引用 ADR 清單時的剛性核查」章節，預計 v5.6/v5.7 仍有增長壓力——若再加兩個等量章節就會觸發 800 行拆分討論。
@@ -391,7 +394,111 @@ CLAUDE.md 目前 200 行剛好卡軟上限。與其等「越界 → 被動處置
 
 ---
 
-## §5 外部共識對照表
+## §5 操作 SOP（rev2.3，2026-04-24 新增）
+
+本節收納「跨視窗協作時的操作層 SOP」，與 §1-§4 的規範層互補：§1-§4 定義**權責邊界與文件規範**，§5 定義**遇到特定情境時該怎麼動**。
+
+### 5.1 多邊偵查任務的切換閾值
+
+#### 問題
+
+對話式剪貼（Cowork 給指令 → Paul 貼終端機輸出 → Cowork 給下一步）適合線性任務，但多邊分岔任務（同時要處理多個分支條件、跨系統狀態、歷史 vs 現在狀態）會超出人類短期記憶的整合能力。Cowork 有責任主動識別並切換模式，不能等 Paul 提醒。
+
+#### 觸發條件（任一成立就該切）
+
+- 同一個技術問題超過**兩輪**「Paul 貼結果 → Cowork 給下一步指令」
+- 問題**分支超過兩條**（例如 scenario A / scenario B 都要處理）
+- 跨系統狀態（local / remote / CI）、跨時間點（過去狀態 vs 現在狀態）同時需要確認
+- 回報內容包含**錯誤訊息需要逐條解讀**
+- Paul 提出的「某個指令的輸出」已超過一個螢幕高度還沒收斂
+
+#### 切換動作
+
+觸發後立刻停下指令剪貼，改走 Code handoff 流程：
+
+1. **停下指令剪貼**，不要再給 Paul 下一條指令
+2. **寫完整 Code handoff**，內容包含：
+   - 當前理解的狀態（對齊雙方認知）
+   - 三 phase：偵查 / 執行 / 驗證
+   - 分支條件下的 SOP（if scenario A do X, else do Y）
+   - 回報格式（給 Cowork 收尾用）
+3. **寫進 `worklogs/PENDING.md`** 讓 Code 在終端機 session 接手
+4. Cowork 本輪收斂，等 Code 回報
+
+#### 為什麼不繼續剪貼
+
+對話式剪貼的 latency 高（Cowork 要等 Paul 貼、Paul 要在終端機和對話框切換），多邊任務的分支在人類短期記憶裡維持超過 3-5 個會衰減，錯誤率隨分支數平方成長。Code handoff 能把多邊任務攤在一份文件裡線性處理，比 N 輪剪貼快也安全。
+
+#### 觸發事件
+
+2026-04-24 skill commit 分離任務：git 偵查走到第三輪剪貼才由 Paul 提醒該切 handoff。Paul 原話：「一次性的指令剪貼我可以，但是來回除錯偵查會讓事情沒效率且容易出錯。而且人類的記憶能力不擅長處理這種多邊分岔出去的任務」。
+
+#### 關聯
+
+- 憲法第三條（權責分工）：Cowork 司法 / Code 行政分工的實施細則
+- `feedback_verify_premise_before_narrative.md`：症狀到敘事要驗證前提——Cowork 誤判 iCloud 敘事就是在第二輪剪貼中發生的，如果當時就切 handoff，Code 跑一次 `git ls-remote` 就能否證前提
+
+---
+
+### 5.2 Git 狀態的 SSoT 規則
+
+#### 規則本文
+
+所有 git **寫入操作**（push、force-push、rebase onto origin、分支刪除）以 **GitHub remote 為唯一可信源**。任何單一終端機視窗看到的 local `refs/remotes/origin/` 都可能不完整或過期，不是事實來源。
+
+這是憲法第一條 SSoT 的自然推論：repo 的 git HEAD 是正本，而 remote 的 HEAD 是 repo 的正本，不是任何 local 視窗的 cache。
+
+#### 觸發場景
+
+以下任一出現時啟動本 SOP：
+
+- `--force-with-lease` 被擋，報 `stale info` / `rejected` / `non-fast-forward`
+- `git branch -r` 看起來不完整（少了剛建的分支）
+- 分支存在於 local 但不確定 remote 狀態
+- 多個終端機視窗輪流操作同一個 repo
+- 剛從另一個視窗切過來、還沒 fetch
+
+#### 強制 SOP
+
+```bash
+# 1. 直接問 remote（繞過 tracking ref cache）
+git ls-remote origin refs/heads/<branch>
+
+# 2. 如果 tracking ref 缺失，用顯式 refspec 補建
+git fetch origin +refs/heads/<branch>:refs/remotes/origin/<branch>
+
+# 3. 確認差集無他人異動
+git log HEAD..origin/<branch>
+git log origin/<branch>..HEAD
+
+# 4. 才進行 force-push（先試 --force-with-lease，擋下來再看情況）
+git push origin <branch> --force-with-lease
+```
+
+#### 嚴格禁令
+
+**不要繞過 `--force-with-lease` 的保護機制直接 `--force`。**
+
+被擋表示 local 認知過期——這是保護機制正確啟動，不是 bug。正確的做法是**修復 local 認知**（步驟 1-3），而不是繞過保護。直接 `--force` 會在 remote 已有其他人 push 的情況下無聲覆蓋他人工作，非常危險。
+
+唯一可以直接 `--force` 的情況：已跑完步驟 1-3，完全確認 remote 沒有意外變更，且 `--force-with-lease` 因為某種 tracking ref 狀態問題仍然拒絕。這時代價可接受，但必須在 commit message / worklog 記「已人工驗證差集，降級 --force」。
+
+#### 觸發事件
+
+2026-04-24 skill commit 分離任務：某個終端機視窗做 cherry-pick + reset 後 push ACP 分支時 `--force-with-lease` 被擋；另開視窗偵查發現 `git branch -r` 只有 `origin/main`、缺 `origin/fix/acp-*`。用 `+refs/heads/X:refs/remotes/origin/X` 顯式 refspec 建 tracking ref，結果發現 remote tip 其實**已經是目標狀態**——前一個視窗成功 push 了但這個視窗沒 fetch 到，根本不需要 force-push。
+
+初版誤判為「iCloud 同步 .git/」，Paul 更正：只有一台 Mac，多終端機視窗 fetch state 不同步是一般 git 行為。
+
+#### 關聯
+
+- 憲法第一條（SSoT）：git 寫入的 SSoT 是 remote HEAD，不是 local cache
+- `feedback_git_tracking_refs_incomplete.md`（auto-memory）：本節 SOP 的事件性版本
+- `feedback_verify_premise_before_narrative.md`（auto-memory）：初版誤判的教訓
+- §5.1 多邊偵查切換閾值：實戰中兩條常同時觸發——git 偵查 + 涉及跨視窗狀態
+
+---
+
+## §6 外部共識對照表
 
 | 共識 | 官方來源 (A) | 業界 (B) | 傳統工程 (C) | 已落入 rev2 哪一節 |
 |------|:-----------:|:--------:|:------------:|--------------------|
@@ -400,7 +507,7 @@ CLAUDE.md 目前 200 行剛好卡軟上限。與其等「越界 → 被動處置
 | Role 禁止事項 | A1 | B5 | C3 | §1.3 禁止事項 |
 | Skill 200 行軟上限 | A3 | — | — | §4.1 三層長度規則 |
 | CLAUDE.md 200 行軟上限 | A4 | — | — | §4.2 F4 驗證 |
-| Contributing Factors > Root Cause | — | — | C4 | §6.3 retro 模板改動 |
+| Contributing Factors > Root Cause | — | — | C4 | §7.3 retro 模板改動 |
 
 **不照抄**：AutoGen GroupChat（B 警告）、Judge LLM 自動 rev loop（B 警告）、RFC 10 天 FCP（C3）、ADR Alternatives Considered（C2）。
 
@@ -408,27 +515,27 @@ CLAUDE.md 目前 200 行剛好卡軟上限。與其等「越界 → 被動處置
 
 ---
 
-## §6 rev2 落地動作
+## §7 rev2 落地動作
 
-### 6.1 立即動作（本 session 完工前）
+### 7.1 立即動作（本 session 完工前）
 
-1. Cowork 將本文件 rev2 commit 到白名單路徑 `docs/governance/` → 交 Code（見 §6.4）
+1. Cowork 將本文件 rev2 commit 到白名單路徑 `docs/governance/` → 交 Code（見 §7.4）
 2. 更新 `worklogs/worklog-2026-04-18.md` 三維度
-3. 寫 Code handoff（§6.4）
+3. 寫 Code handoff（§7.4）
 
-### 6.2 短期動作（本週）
+### 7.2 短期動作（本週）
 
 1. 更新根目錄 `CLAUDE.md`：加一段「工作環境定義 → 見 `docs/governance/working-environment.md`」，並標注已達 200 行預警（F4）
 2. 更新 `.auto-memory/MEMORY.md` 加一條指向本文件
 3. 下一份 handoff（不論 Code / Cowork 寫）套用 §3 Status + Consequences 新欄位（實戰測試）
 
-### 6.3 中期動作（2 週內）
+### 7.3 中期動作（2 週內）
 
 1. 既有 retro 模板升級為 Contributing Factors 格式（C4）
 2. 檢視 CLAUDE.md 是否可抽部分內容獨立成 runbook
 3. v5.1 規劃啟動時，rev1 套用 §2.6 frontmatter 新欄位（實戰測試）
 
-### 6.4 Code handoff（本 session 產出）
+### 7.4 Code handoff（本 session 產出）
 
 本文件 rev2 commit 後，寫 `handoffs/cowork--working-environment-deployment-2026-04-18.md`，內容：
 - Cowork 已 commit `docs/governance/working-environment.md`（hash 由 Code 填）
@@ -437,7 +544,7 @@ CLAUDE.md 目前 200 行剛好卡軟上限。與其等「越界 → 被動處置
 
 ---
 
-## §7 本文件 Exit Gate
+## §8 本文件 Exit Gate
 
 rev2 拍板條件（Paul 已確認 Q-WE-1 ~ Q-WE-9 採納傾向）：
 
@@ -504,7 +611,7 @@ rev2 拍板條件（Paul 已確認 Q-WE-1 ~ Q-WE-9 採納傾向）：
 
 ---
 
-## §8 Consequences
+## §9 Consequences
 
 - **若決策正確**：後續 major version 規劃不再踩「1085 vs 522」類的無事實依據踩坑。handoff 有 Status 欄位後，rev 之間的取代關係清楚。CLAUDE.md 越界有警示機制。
 - **若決策錯誤的連鎖影響**：§2 硬編碼規則若過嚴，會讓規劃文件可讀性下降（到處是 `wc -l ...` 指令）。若 Cowork 白名單邊界不清，可能仍有模糊帶。Handoff 新欄位若工程上推不動，會形成兩套格式並存的混亂。
