@@ -1,0 +1,47 @@
+{
+  "date": "2026-04-24",
+  "window": {
+    "since": "2026-04-23T02:36:50Z",
+    "until": "2026-04-24T02:36:50Z"
+  },
+  "projects": {
+    "zarqarwi/paulkuo.tw": {
+      "commits_24h": 126,
+      "authors": {
+        "Paul Kuo": 88,
+        "zarqarwi": 21,
+        "github-actions[bot]": 16,
+        "ai-ready-bot": 1
+      },
+      "top3_messages": [
+        "[wiki-daily] report: 2026-04-24 完成",
+        "[wiki-daily] scanner: 2026-04-24 cloud-side 掃描完成（含 API 限制說明）",
+        "[wiki-daily] clips: 新增 1 則 (life pillar)"
+      ],
+      "issues_open": 83,
+      "issues_opened_24h": 1,
+      "issues_closed_24h": 0,
+      "prs_open": 2,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "success"
+    },
+    "zarqarwi/get-biji-notes": {
+      "commits_24h": 0,
+      "authors": {},
+      "top3_messages": [],
+      "issues_open": 0,
+      "issues_opened_24h": 0,
+      "issues_closed_24h": 0,
+      "prs_open": 0,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "unknown",
+      "note": "No activity in 24h window. Latest commit: 2026-04-22T15:55:57Z"
+    },
+    "zarqarwi/formosa-esg-2026": {
+      "note": "⚠️ 此 repo 不存在為獨立 repo。Formosa ESG 2026 為 paulkuo.tw monorepo 的子目錄 (src/pages/projects/formosa-esg-2026/)，其活動已併入 paulkuo.tw 統計。建議調整 governance-projects.json 清單。"
+    }
+  },
+  "note": "公開 API rate limit 受限；共用檔案逐 commit 比對僅掃描前 ~43 個 commits 即耗盡 quota。剩餘 commits 基於 message 模式判斷（大多為 fix(article) / wiki-daily clips / i18n-bot auto-translate 等，不涉及共用檔案）。"
+}
