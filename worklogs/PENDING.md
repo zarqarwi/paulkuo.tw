@@ -127,26 +127,58 @@
 
 ## 待 Chat 立法
 
-- [ ] 🔴 H1：憲法第二條 C 層同步機制缺失 → Chat 立法 (2026-04-20)
-  - 問題：C 層（Claude.ai Personal Skill）從 2026-04-17 冷凍在 v4.13，repo 已到 v5.5/v5.6。憲法第二條「C 層永遠是下游 mirror」無配套同步機制
-  - 建議產出：新 ADR「A→C Personal Skill 同步協議」——誰按 commit / 同步頻率 / 驗證方式 / C2 雲端記憶不可控時的治理原則
-  - Cowork 不處理原因：觸及憲法層級立法，Chat 主責
+- [>] 🔴 H1：cloud 層同步機制缺失 → 已授權 Cowork 起草 ADR（2026-04-24）
+  - 原議題：
+    - 問題：C 層（Claude.ai Personal Skill）從 2026-04-17 冷凍在 v4.13，repo 已到 v5.5/v5.6。憲法第二條「C 層永遠是下游 mirror」無配套同步機制
+    - 建議產出：新 ADR「A→C Personal Skill 同步協議」——誰按 commit / 同步頻率 / 驗證方式 / C2 雲端記憶不可控時的治理原則
+    - Cowork 不處理原因：觸及憲法層級立法，Chat 主責
+  - **裁決：Accept with specs（2026-04-24 Chat-Opus-4.7）**
+  - 理由：憲法第二條若無配套同步機制實質為死條文；目前靠人提醒是人治非法治；與 H2 事實觸達困難共享前提，需同步立法
+  - 後續動作：待 Cowork 起草 `adr-cloud-sync-protocol-2026-04-XX.md`
+    - 第一條 · 同步協議責任鏈：Code commit → Cowork 開場檢查（git log -20 + 比對 c-layer-snapshot）→ 通知 Paul → Paul 手動更新 cloud → Paul 回報 → Cowork 更新 snapshot
+    - 第二條 · 同步頻率：minor 累積 2 版觸發、major 立即、patch 不觸發
+    - 第三條 · 驗證方式：版本號比對 + 關鍵條款（護欄清單/四動機/三錨點）spot check，不採 verbatim diff
+    - 第四條 · Chat 側止血：讀到 snapshot 落後 ≥ 2 minor 時必須主動提示 Paul「本次裁決/討論可能受影響」
+    - 第五條 · 與 H2 口徑統一：cloud 層「版本回答規則」必須引用 H2 ADR 編號雙向綁定，避免邏輯衝突
 
-- [ ] 🔴 H2：Chat 視窗精確事實查詢結構性上限 → Chat 立法 (2026-04-20)
-  - 問題：Chat 三模型（Opus 4.7 / Sonnet 4.6 / Opus 4.6）同答 v4.7，比 C 層更舊。版本號/行數/commit hash/清單項數/時序狀態類精確事實在 Chat 系統性不可靠
-  - 建議產出：憲法實施細則新增——Chat 不回答此類精確事實問題，應引導用 Cowork 查 A 層或 Code Read 核查
-  - **2026-04-24 補充佐證（Cowork 發現）**：Chat 在 `cowork--governance-architecture-review-2026-04-24.md` 的「來源事實（F-ID）」section 引用 SKILL.md 639 行 / 速記卡 238 行 / 憲法 299 行等精確數字——但這些都是從 Cowork artifact 拷貝來的二手資訊，Chat 無法直接 Read 檔案核實。**Chat 在討論治理時，會不自覺地把二手數字當一手事實引用**，此現象本身應寫進 H2 的 ADR 當結構佐證
-  - **A3 併入**：Chat 原建議「開場貼 skill 摘要」違反「被動文件不等於主動防線」原則（依賴 Paul 每次手動貼，且 Chat 長對話仍會 context drift）。短期替代方案改為「Chat 收到治理類問題時，reflexively 先說『我的 skill 可能過時，請用 Cowork/Code 核實』」——此即 H2 立法本體
-  - Cowork 不處理原因：觸及憲法層級立法，Chat 主責
+- [>] 🔴 H2：Chat 精確事實查詢結構性上限（含 A3 併入） → 已授權 Cowork 起草 ADR（2026-04-24）
+  - 原議題：
+    - 問題：Chat 三模型（Opus 4.7 / Sonnet 4.6 / Opus 4.6）同答 v4.7，比 C 層更舊。版本號/行數/commit hash/清單項數/時序狀態類精確事實在 Chat 系統性不可靠
+    - 建議產出：憲法實施細則新增——Chat 不回答此類精確事實問題，應引導用 Cowork 查 A 層或 Code Read 核查
+    - **2026-04-24 補充佐證（Cowork 發現）**：Chat 在 `cowork--governance-architecture-review-2026-04-24.md` 的「來源事實（F-ID）」section 引用 SKILL.md 639 行 / 速記卡 238 行 / 憲法 299 行等精確數字——但這些都是從 Cowork artifact 拷貝來的二手資訊，Chat 無法直接 Read 檔案核實。**Chat 在討論治理時，會不自覺地把二手數字當一手事實引用**，此現象本身應寫進 H2 的 ADR 當結構佐證
+    - **A3 併入**：Chat 原建議「開場貼 skill 摘要」違反「被動文件不等於主動防線」原則（依賴 Paul 每次手動貼，且 Chat 長對話仍會 context drift）。短期替代方案改為「Chat 收到治理類問題時，reflexively 先說『我的 skill 可能過時，請用 Cowork/Code 核實』」——此即 H2 立法本體
+    - Cowork 不處理原因：觸及憲法層級立法，Chat 主責
+  - **裁決：Accept with specs（2026-04-24 Chat-Opus-4.7）**
+  - 理由：Chat 無 Read 工具為結構事實，需立法化；治理考試 77% 水位若不立法會永遠停留；A3 因違反「被動文件不等於主動防線」併入本條
+  - 後續動作：待 Cowork 起草 `adr-chat-factual-query-limit-2026-04-XX.md`，三處同步寫入（WE §X + 速記卡情境 10 + SKILL.md 段落）
+    - 第一條 · 觸發句型白名單：版本號、行數、commit hash、清單項數、時序狀態、檔案存在性（共 6 類，Chat 遇到必拒答並引導）
+    - 第二條 · 例外清單：憲法五條條文本身、對話內已出現事實、公開穩定外部事實、原則非可變量
+    - 第三條 · 標準回應模板：「此問題涉及 A 層精確事實，Chat 結構性不可靠（依 ADR §一）。建議 Cowork wc -l / Code Read / GitHub MCP 繞道（有 ~20KB 截斷風險）」
+    - 第四條 · 裁決層級特殊規則：結構性立法優先（立規則不立具體數字）；必須引用時標註「二手待核實」；絕不拿 Cowork artifact 當源頭
+    - 第五條 · GitHub MCP 地位：繞道非原生能力；明確承認；大檔警告 user；不取代 H1 cloud 同步機制
 
-- [ ] 🔴 H5：長度邊緣文件的拆分計畫 → Chat 立法 (2026-04-24)
-  - 問題：三份治理文件同時在長度邊緣——速記卡 rev2 已超軟上限（238/200，119%）、session-handoff SKILL.md 639/800（77%）、CLAUDE.md 200/200（卡軟上限）。WE §4 定義了 200/800/900 三層閾值，但「超軟上限自動開 ADR」規則尚未正式立法
-  - 建議產出：
-    1. 新建 `docs/governance/length-budget-status.md`（列當前行數 + 軟/硬上限 + 距離百分比）
-    2. 憲法實施細則新增「超過軟上限 X% 自動開拆分 ADR」觸發規則（X 由 Chat 決定，候選 10%/15%/20%）
-    3. 對三份文件各產出拆分方案草稿（SKILL.md 結構重組、速記卡情境分類拆檔、CLAUDE.md 強制走子文件）
-  - 來源：`cowork--governance-architecture-review-2026-04-24.md` A1
-  - Cowork 不處理原因：觸發規則設計屬立法層級，Chat 主責；Cowork 可在 Chat 裁決後協助起草拆分方案草稿
+- [ ] 🔴 H5：長度邊緣文件拆分計畫（Modified） → Chat 立法完成，執行層待 Cowork（2026-04-24）
+  - 原議題：
+    - 問題：三份治理文件同時在長度邊緣——速記卡 rev2 已超軟上限（238/200，119%）、session-handoff SKILL.md 639/800（77%）、CLAUDE.md 200/200（卡軟上限）。WE §4 定義了 200/800/900 三層閾值，但「超軟上限自動開 ADR」規則尚未正式立法
+    - 建議產出：
+      1. 新建 `docs/governance/length-budget-status.md`（列當前行數 + 軟/硬上限 + 距離百分比）
+      2. 憲法實施細則新增「超過軟上限 X% 自動開拆分 ADR」觸發規則（X 由 Chat 決定，候選 10%/15%/20%）
+      3. 對三份文件各產出拆分方案草稿（SKILL.md 結構重組、速記卡情境分類拆檔、CLAUDE.md 強制走子文件）
+    - 來源：`cowork--governance-architecture-review-2026-04-24.md` A1
+    - Cowork 不處理原因：觸發規則設計屬立法層級，Chat 主責；Cowork 可在 Chat 裁決後協助起草拆分方案草稿
+  - **裁決：Modify（2026-04-24 Chat-Opus-4.7）**
+  - 修改條目：
+    1. 規則層（Chat 立即立法）：三段式觸發線
+       - Soft limit 200 行（既有定義保留）
+       - 拆分 ADR 自動觸發線 = 軟上限 × 1.15 = 230 行
+       - 硬上限前 20% 警戒線：SKILL.md 640 行、CLAUDE.md 720 行
+       - 觸硬上限：凍結該文件寫入，所有新規則走子文件
+    2. 觸發後誰開 ADR：≥ 230 行 Cowork 兩週內；觸警戒線 Cowork 一週內並 handoff Chat；觸硬上限立即凍結
+    3. 建立 `docs/governance/length-budget-status.md`，pre-commit hook 自動更新；狀態符號：✅ 🟡 🔶 🔴 ⛔
+    4. 執行層（Delegate Cowork）：下次開場執行 `wc -l` 核實三份文件當前行數，依規則自動判斷是否起草各文件的拆分 ADR
+    5. **明確禁止**：Cowork 不可直接採用本 handoff/原議題記載的 238/639/200 二手數字起草 ADR，必須核實後使用當下真實行數
+  - 規則層後續：Cowork 寫入 WE §4（長度閾值條款）
+  - 執行層後續：Cowork 下次開場按規則自動判斷處置
 
 - [x] ✅ H6：A/B/C 命名衝突消歧 → 已解決（2026-04-24 β 方案採納）
   - 問題：paulkuo 體系內「A/B/C」有兩套意義並存（憲法三視窗映射 vs skill 儲存位置）
@@ -158,32 +190,61 @@
     - 治理架構 artifact 已同步更新
   - 影響範圍：衝突源頭僅 1 個 memory 檔，其他 40 個檔案（憲法、WE、速記卡、CLAUDE.md、SKILL.md 等）**無需改動**
 
-- [ ] 🟡 H7：違憲救濟機制補他律防線（governance-lint.sh） → Chat 立法 (2026-04-24)
-  - 問題：目前違憲救濟只有自律（速記卡自檢清單 8 項），缺他律（機器檢查）。配合 `project_guardrail_structural_hole.md` 記載的「對話瞬時判斷無書面痕跡」盲點，純自律在 N=1 時已失靈
-  - 建議產出：
-    1. 盤點憲法五條 + WE §1-§9 中「可機器化檢查」的條款（Handoff ADR Status/Consequences 欄位必填、F-ID 格式、skill frontmatter pillar 白名單等）
-    2. 產出 `scripts/governance-lint.sh`，整合成 pre-commit hook
-    3. 新增到 `install-hooks.sh`
-    4. WE §3 補註「檢查由 governance-lint.sh 強制」
-  - 需 Chat 決策：攔截策略——直接擋 commit 還是只警告？
-  - 來源：`cowork--governance-architecture-review-2026-04-24.md` A4
+- [>] 🟡 H7：governance-lint.sh 他律防線 → 已授權 Cowork 起草 ADR（2026-04-24）
+  - 原議題：
+    - 問題：目前違憲救濟只有自律（速記卡自檢清單 8 項），缺他律（機器檢查）。配合 `project_guardrail_structural_hole.md` 記載的「對話瞬時判斷無書面痕跡」盲點，純自律在 N=1 時已失靈
+    - 建議產出：
+      1. 盤點憲法五條 + WE §1-§9 中「可機器化檢查」的條款（Handoff ADR Status/Consequences 欄位必填、F-ID 格式、skill frontmatter pillar 白名單等）
+      2. 產出 `scripts/governance-lint.sh`，整合成 pre-commit hook
+      3. 新增到 `install-hooks.sh`
+      4. WE §3 補註「檢查由 governance-lint.sh 強制」
+    - 需 Chat 決策：攔截策略——直接擋 commit 還是只警告？
+    - 來源：`cowork--governance-architecture-review-2026-04-24.md` A4
+  - **裁決：Accept with specs（2026-04-24 Chat-Opus-4.7）**
+  - 理由：N=1 自律盲點已成既成事實（SB 253 教訓），他律必要；但須跟 H2 錯開避免重工
+  - 後續動作：待 Cowork 起草 `adr-governance-lint-he-lu-2026-04-XX.md`，Code 分 Phase 實作腳本
+    - 第一條 · 檢查 5 項:Handoff ADR 欄位完整性、F-ID 格式（F-{kebab}-{YYYY-MM-DD}）、skill pillar 白名單（ai|circular|faith|startup|life）、PENDING.md 五符號系統、length-budget-status.md 時效
+    - 明確排除：源頭事實跨載體一致性（需語義理解，機器做不到，硬做會產大量 false positive）
+    - 第二條 · 攔截策略（兩級制）：Strict 擋 commit（結構性錯誤：Handoff 欄位缺、pillar 違反、五符號違反）；Warning 允許但警告（時效性問題：length-budget 過期、F-ID 非致命格式錯）
+    - 第三條 · 掛載點：pre-commit hook 主要 + CI 次要（防 --no-verify 溜上 GitHub），不掛 commit-msg（避免與既有 hook 干擾）
+    - 第四條 · 跳過機制：Paul 可 --no-verify 跳過，但下次 commit message 須標 [skip-lint-recovery] 並在 worklog 寫明跳過原因 + 補救
+    - 第五條 · 實作 Phase：P0 Handoff 欄位+pillar / P1 F-ID+五符號 / P2 length-budget（待 H5 規則落地）
+    - 第六條 · 與 H2 邊界明文：H2 prompt-time（Chat 對話行為）vs H7 commit-time（檔案結構），兩者互補無重疊
 
-- [ ] 🟡 H8：Worklog 加第四維度「abandoned」 → Chat 立法 (2026-04-24)
-  - 問題：現行 worklog 三維度（做了什麼 / 決策 / 踩坑）缺「放棄了什麼 + 為什麼放棄」，導致被否決的方案無紀錄，容易重複提案
-  - 建議產出：
-    1. 修改 `docs/governance/worklog-format.md` 改為四維度（sub-sub-item 加 abandoned）
-    2. 更新 session-handoff SKILL.md 中 Worklog 說明段落
-    3. 更新速記卡 rev2 如有提到 worklog 的情境
-    4. CLAUDE.md「Worklog 自動記錄」段落同步
-  - 來源：`cowork--governance-architecture-review-2026-04-24.md` A5
+- [>] 🟡 H8：Worklog 加第四維度 abandoned → 已授權 Cowork 起草 ADR（2026-04-24）
+  - 原議題：
+    - 問題：現行 worklog 三維度（做了什麼 / 決策 / 踩坑）缺「放棄了什麼 + 為什麼放棄」，導致被否決的方案無紀錄，容易重複提案
+    - 建議產出：
+      1. 修改 `docs/governance/worklog-format.md` 改為四維度（sub-sub-item 加 abandoned）
+      2. 更新 session-handoff SKILL.md 中 Worklog 說明段落
+      3. 更新速記卡 rev2 如有提到 worklog 的情境
+      4. CLAUDE.md「Worklog 自動記錄」段落同步
+    - 來源：`cowork--governance-architecture-review-2026-04-24.md` A5
+  - **裁決：Accept（2026-04-24 Chat-Opus-4.7）**
+  - 理由：最便宜的改動最穩定的收益；避免重複提案 + 保留決策脈絡斷裂
+  - 後續動作：待 Cowork 起草 `adr-worklog-abandoned-dimension-2026-04-XX.md`
+    - 第一條 · 四維度：done / decisions / pitfalls / abandoned，皆必填（無則寫「無」）
+    - 第二條 · abandoned 範圍界定：納入本 session 放棄 + 跨 session Reject + 改優先級延後；排除閒聊未認真評估 + 已在 decisions 的反面選項
+    - 第三條 · 強制性：強制寫「無」（區分「忘寫」vs「確實沒有」，為未來語義檢索精度）；短 session 可用縮寫格式
+    - 第四條 · 格式範本寫進 `docs/governance/worklog-format.md`（SSoT）；同步引用位置：session-handoff SKILL.md、速記卡 rev2、CLAUDE.md 若有 worklog 段落
+    - 第五條 · 與 H7 綁定：worklog 四維度檢查作為 H7 Phase 2 增量項目（Warning 級，不擋 commit）
 
-- [ ] 🟢 H9：L3 操作 SOP 定位釐清 → Chat 立法 (2026-04-24)
-  - 問題：治理架構圖 L2 WE 與 L3 操作 SOP 內容重疊（WE §5 本身就是「操作 SOP」章節），歸屬模糊
-  - 建議產出：`adr-layer-3-positioning-2026-04-XX.md`，含三選項利弊分析：
-    - 選項 A：L3 併回 L2，五層治理架構改四層
-    - 選項 B：L2 拆成「原則篇」+「操作篇」兩份文件
-    - 選項 C：維持現狀，明確定義 L2/L3 寫作規則（L3 只收「跨三窗的操作流程」）
-  - 來源：`cowork--governance-architecture-review-2026-04-24.md` A6
+- [>] 🟢 H9：L3 操作 SOP 定位釐清 → 已授權 Cowork 起草 ADR（2026-04-24）
+  - 原議題：
+    - 問題：治理架構圖 L2 WE 與 L3 操作 SOP 內容重疊（WE §5 本身就是「操作 SOP」章節），歸屬模糊
+    - 建議產出：`adr-layer-3-positioning-2026-04-XX.md`，含三選項利弊分析：
+      - 選項 A：L3 併回 L2，五層治理架構改四層
+      - 選項 B：L2 拆成「原則篇」+「操作篇」兩份文件
+      - 選項 C：維持現狀，明確定義 L2/L3 寫作規則（L3 只收「跨三窗的操作流程」）
+    - 來源：`cowork--governance-architecture-review-2026-04-24.md` A6
+  - **裁決：Accept · 選項 C（2026-04-24 Chat-Opus-4.7）**
+  - 理由：選項 A 合併會讓 L2 踩 H5 新立 230 行觸發線（立法矛盾）；選項 B 拆分重構成本遠大於痛點；選項 C 治標但成本最低
+  - 後續動作：待 Cowork 起草 `adr-l3-positioning-2026-04-XX.md`
+    - 第一條 · L2/L3 定位差異表：L2 寫「為什麼 + 原則性怎麼做」（WE §1-§4、§6-§9）；L3 寫「跨三窗協作的具體步驟流程」（WE §5）
+    - 第二條 · 寫作判斷規則（三題測試）：(1)涉及 Chat/Cowork/Code 交接？ (2)是可執行步驟流程？ (3)離開這條下游會壞？ 三是 → L3；三否 → L2；混合 → 預設 L2（寬進嚴出）
+    - 第三條 · 架構圖呈現調整：明確標註「L3 是 L2 功能子集（§5），不是獨立檔案」，避免未來讀者誤以為 L3 是獨立文件
+    - 第四條 · 重新評估觸發條件：WE 超 H5 軟上限（230 行）/ 出現第三條跨三窗協作 SOP / 新 SOP 與 §5 衝突
+  - 主要修改位置：`docs/governance/working-environment.md` 開頭新增「L2/L3 寫作規則」段落
 
 ## 跨專案備忘
 
