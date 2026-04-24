@@ -70,3 +70,6 @@ backups/
 
 # 自動產生的 push timestamp
 scripts/.last_push_ts
+
+# 治理文件 PDF 快照（一次性產物，不進 git）
+docs/governance/*.pdf
