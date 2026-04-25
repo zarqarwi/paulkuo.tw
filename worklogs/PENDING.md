@@ -276,13 +276,15 @@
 以下項目來自 2026-04-25 治理研究 v2.0 / v2.1 兩份報告，經 Paul 裁決擱置兩個月，
 不預先立規則，兩個月後用實證決定是否動作。狀態統一為 `[-]`（暫緩）。
 
-- [-] v2.0 疏漏 1 · 修憲→handbook 變更 framing 切換
-- [-] v2.0 疏漏 3 · auto-memory 升格 ADR 觸發規則
-- [-] v2.0 疏漏 4 · cloud 層 snapshot 維護者明文化
-- [-] v2.0 疏漏 5 · H13 handoff 格式（含時間 budget metadata）
-- [-] v2.0 疏漏 6 · 月度 ADR 產出上限規則
-- [-] v2.0 疏漏 7 · Paul 在治理體系的明文位置
-- [-] Branch protection PR 閘門啟用（待 2026-06-25 用實例重議）
+> Tag 註記（2026-04-26 重審）：`platform-wait` = 依賴 Anthropic 平台原生 feature 出現後再評估，自搭恐踩 `feedback_avoid_reinventing_solved_problems`；`self-govern` = paulkuo.tw 內部治理流程議題，不會因平台進化自動消失，6/25 盤點主軸。
+
+- [-] v2.0 疏漏 1 · 修憲→handbook 變更 framing 切換 · tag:self-govern
+- [-] v2.0 疏漏 3 · auto-memory 升格 ADR 觸發規則 · tag:self-govern
+- [-] v2.0 疏漏 4 · cloud 層 snapshot 維護者明文化 · tag:platform-wait
+- [-] v2.0 疏漏 5 · H13 handoff 格式（含時間 budget metadata） · tag:self-govern
+- [-] v2.0 疏漏 6 · 月度 ADR 產出上限規則 · tag:self-govern
+- [-] v2.0 疏漏 7 · Paul 在治理體系的明文位置 · tag:self-govern
+- [-] Branch protection PR 閘門啟用（待 2026-06-25 用實例重議） · tag:self-govern
 
 ### 明確排除（不進觀察期）
 
