@@ -272,3 +272,115 @@ PENDING.md 同段附觀察指標：
 **產出者**：Cowork session
 **對應 handoff**：`/Users/apple/Library/Application Support/Claude/local-agent-mode-sessions/.../uploads/cowork--worklog-governance-exploration-2026-04-25.md`
 **狀態**：Draft（待 Paul 批准 commit + push）
+
+---
+
+## (c) ADR 起草階段補章 · 四維度（H8 格式）
+
+- **執行 handoff**：`cowork--c-phase-adr-drafting-2026-04-25`（Paul 授權 Cowork 代打 Step 1+2）
+- **產出時間**：2026-04-25 接續 (a) 階段同 session
+- **裁決基準**：handoff 三件需裁決事項已由 Paul 答覆 — Q1 全進 git / Q2 補但限定 D1-D4 / Q3 上限 2 份用滿配額
+
+### done
+
+- 產出 Step 1 議題萃取裁決矩陣：`worklogs/cowork--c-phase-issue-extraction-matrix-2026-04-25.md`
+  - 候選池 6 條（C1/C2/C3/C4 + Cowork 補充 C5a/C5b）
+  - 三維度評分：C3 + C5a Accept、C1/C2/C4/C5b Reject
+- 起草 ADR Draft #1：`docs/governance/adr-governance-research-git-discipline-2026-04-25.md`
+  - 編號 H10、status: Proposed
+  - 規範治理研究報告必須與 worklog 同 batch 進 git + Issue #155 同步紀律
+  - 綁定 H7 lint Phase 2 增量項
+- 起草 ADR Draft #2：`docs/governance/adr-zero-legislation-as-valid-outcome-2026-04-25.md`
+  - 編號 H11、status: Proposed
+  - 明文化「觀察期月度配額是上限不是 KPI」+「立法產量 0 是合法收尾」+「禁止為配額補位起草」
+- 同步更新 `docs/governance/ADR-INDEX.md`
+  - 總數 10 → 12（Accepted 9 / Draft 1 / Proposed 2）
+  - 快速導航表加 H10/H11 兩行
+  - 主題分組「憲法與治理框架」加 H10/H11
+  - 編號說明補一句說明 H10/H11 為新議題重新使用（v1.0/v2.0 曾以 H10-H13 編號討論不同主題後撤銷）
+  - 「尚未立法的議題」段補「2026-04-25 治理探索批次的明確排除」子段（C1/C2/C4/C5b 四條 Reject）
+- 同步更新 `worklogs/PENDING.md`「明確排除（不進觀察期）」段
+  - 加「2026-04-25 (c) ADR 階段裁決排除」子段，4 條 Reject 候選 + 理由 + memory 綁定
+  - 觀察指標 1 註明「已用 2 份」+ 配額已滿
+- 起草下一輪 Code session 用 handoff（D1-D4 落地檢查，限定範圍）— Step 7 進行中
+- 準備 Issue #155 dashboard 同步 comment 草稿 — Step 8 進行中
+
+### decisions
+
+- **C3 與 C5a 同批次立 2 份 ADR、用滿月度配額**
+  - 理由：兩條起草理由獨立——H10 解工程破洞（治理研究報告 untracked）+ H11 解管理迷思（配額誤讀），不是「為了用滿配額硬湊」
+  - 緩解 self-serving 風險：H11 由 Cowork 起草+受益者也是 Cowork，但 status: Proposed 等 Chat 裁決（憲法第三條）
+- **H10/H11 編號重新使用而非跳號到 H14**
+  - 理由：v2.0 自己撤銷 H10 但未產出 ADR、v2.1 建議「不立 H13」也未產出 ADR，因此 H10-H13 編號未實質佔用
+  - 跳號到 H14 反而加深「H10-H13 是禁忌」迷思
+  - 緩解：INDEX 編號說明補一句註明此事，未來 retro 可追溯
+- **裁決矩陣放 `worklogs/` 而非 `docs/governance/`**
+  - 理由：屬「過程稿」性質（裁決矩陣）非「規範稿」（ADR），放 worklogs 更合適
+  - 同時與 (a) 階段 worklog 並排好辨識（`worklog-2026-04-25-governance-exploration.md` ↔ `cowork--c-phase-issue-extraction-matrix-2026-04-25.md`）
+- **ADR status: Proposed 而非 Accepted**
+  - 理由：憲法第三條起草/裁決分離——Cowork 起草、status 預設 Proposed、ratified_by 留空，下一輪 Chat 裁決才升 Accepted
+  - 與 H8 模板（drafted_by: Cowork-Opus-4.6, ratified_by: Chat-Opus-4.7）一致
+
+### pitfalls
+
+- 無實質踩坑（本階段純文件產出，無 sandbox / git / 工程衝突）
+- handoff 「需裁決事項」Q1/Q2/Q3 設計到位，AskUserQuestion 一次取得三個答案，省去往返延遲
+
+### abandoned
+
+- **未自行裁決 C 系列議題的「不立法」改為「凍結」**
+  - 考慮過：是否把 C1/C4 從 Reject 改為「凍結待解凍門檻」（如 H3/H4 那樣）
+  - 放棄理由：handoff 「已知陷阱 §3 不替 v2.2 補軌」「§5 不超過月度 ADR 觀察指標」明確排除模糊處理；C1/C4 的 Reject 理由本身就是「無解定義戰」，沒有解凍門檻可寫
+  - 處置：直接 Reject + PENDING.md 「明確排除」段登記，不留凍結口袋
+- **未為 H11 加「補位 ADR」的回溯掃描機制**
+  - 考慮過：H11 §三禁止為配額補位起草，是否該加一條「對既有 ADR 做回溯掃描，找出符合補位判別的 ADR 並降級」
+  - 放棄理由：屬過度設計（既有 ADR 都已 Accepted 不該追溯）+ 工程成本（需重審所有 ADR）+ memory `feedback_incremental_fix_observe_before_automate` 的「先觀察再決定升級」原則
+  - 處置：H11 第六條觸發條件 1 已預備未來糾偏機制，不需現在加回溯
+- **未動 v2.0 疏漏 2 在 PENDING.md 缺漏的紀錄**
+  - 考慮過：本 session 順手把 (a) 階段 §5.2 標的「v2.0 疏漏 2」缺漏跟 PENDING.md 「明確排除」段已有的 v2.0 疏漏 2 處理對照清晰
+  - 放棄理由：(a) 階段 worklog 已含「事後處理紀錄」段落（line 126）說明 Paul 採選項 (B) 已處理；本階段不重複動作，避免兩處紀錄出現分歧
+  - 處置：保留現狀
+- **未撤稿 H11**
+  - 考慮過：H11 由 Cowork 起草+受益者也是 Cowork，是否該主動撤稿避免「越權」嫌疑
+  - 放棄理由：handoff §「需裁決事項」Q3 + Paul 「上限 2 份用滿配額」決策已含背書；status: Proposed 已是憲法第三條剛性核查的緩解；主動撤稿等於對 Paul 決策的二次質疑
+  - 處置：保留 Proposed status，等 Chat 裁決
+- **未自動執行 commit + push**
+  - 理由：handoff §「已知陷阱 §7」+ 憲法第二條 + memory `feedback_oneliner_for_paul_terminal` 明文要求 commit/push 必須走 Paul 本機
+  - 處置：本 session 結束時提供 oneliner 給 Paul
+
+---
+
+**(c) 階段產出者**：Cowork session（Sonnet 4.6）
+**(c) 階段對應 handoff**：`cowork--c-phase-adr-drafting-2026-04-25`
+**(c) 階段狀態**：Step 1+2 完成；Step 3 INDEX 同步完成；Step 4 worklog 補章完成（即本段）；Q2 Code handoff 起草中；Issue #155 同步 comment 起草中
+**下一步**：Paul 在本機跑 git oneliner（commit + push）+ Chat 裁決 H10/H11 是否升 Accepted
+
+---
+
+## [wiki-youtube] 本機 cron 設定 — Issue #186
+
+**時間**: 2026-04-25
+**Commit**: c6a2db4
+
+### 做了什麼
+
+1. `scripts/wiki-youtube-ingest.cjs` 加 `--write-log` 旗標：跑完寫 `worklogs/wiki-youtube-daily-YYYY-MM-DD.md`
+   - `pullPending()` return 值改為 `{ written, failed, remaining }`
+   - `triggerIngest()` 相應調整
+   - 加 log 寫出邏輯（只在 default pull 模式觸發）
+2. launchd plist 建立並載入：`~/Library/LaunchAgents/tw.paulkuo.wiki-youtube.plist`（每日 09:50，自動 commit + push）
+   - git commit 前加 `git diff --cached --quiet ||` 守衛，KV 空時不會失敗
+3. 手動驗證：KV 有 7 支 pending，全部寫完，log 正確輸出 `新增: 7 / 失敗: 0 / 剩餘: 0`
+
+### 決策原因
+
+CF MCP 無 KV key 操作導致 Cowork Step 2 連兩天阻塞，拆出走本機 wrangler 是 Paul 2026-04-25 拍板的解法。
+
+### 阻礙踩坑
+
+- 無。腳本本體完整，工作僅是加旗標 + 設排程。
+
+### 待辦（交 Paul 手動完成）
+
+- [ ] Cowork 端 SKILL.md 移除 Step 2，改為讀本機 log（git pull 後才有當日資料）
+- [ ] Issue #157 儀表板 Scheduled Tasks 表新增 wiki-youtube-local 一列
