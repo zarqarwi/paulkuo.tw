@@ -19,6 +19,11 @@ cp "$REPO_ROOT/scripts/commit-msg-hook.sh" "$HOOKS_DIR/commit-msg"
 chmod +x "$HOOKS_DIR/commit-msg"
 echo "  ✅ commit-msg hook（跨子專案影響偵測）"
 
+# Per H7 ADR §三：governance-lint pre-commit hook installation
+cp "$REPO_ROOT/scripts/governance-lint-pre-commit.sh" "$HOOKS_DIR/pre-commit"
+chmod +x "$HOOKS_DIR/pre-commit"
+echo "  ✅ pre-commit hook（governance-lint H7 Phase 1：check 1 + 3）"
+
 echo ""
 echo "完成！所有 hooks 已安裝到 .git/hooks/"
 echo "共用檔案清單來源：docs/shared-files.json"
