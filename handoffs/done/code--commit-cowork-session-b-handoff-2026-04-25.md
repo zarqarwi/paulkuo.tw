@@ -1,5 +1,5 @@
 ---
-status: Draft
+status: Accepted
 ---
 
 # Code Handoff · commit Cowork session B handoff（status: Accepted 升級 + 04-23 ACP fork 揭露）
@@ -118,12 +118,21 @@ push 成功後：
 
 ### 預期執行結果
 
-- [ ] cd 到 repo 根 + git status 確認範圍
-- [ ] grep `<<<<<<` 無衝突 marker
-- [ ] 1 commit + 1 push（單檔 batch）
-- [ ] git log -1 看到新 commit
-- [ ] lint 仍 0 / 0 / 95
-- [ ] 本 handoff 移 handoffs/done/（second commit）
+- [x] cd 到 repo 根 + git status 確認範圍
+- [x] grep `<<<<<<` 無衝突 marker
+- [x] 1 commit + 1 push（單檔 batch）— commit `9fdc6bb`
+- [x] git log -1 看到新 commit
+- [x] lint 仍 0 / 0 / 95
+- [x] 本 handoff 移 handoffs/done/（second commit `3d15834`）
+
+### 實際執行結果（Code session，2026-04-26）
+
+- index.lock 殘留（前一 session 未正常結束），`rm .git/index.lock` 後正常進行
+- Commit `9fdc6bb`：`handoffs/cowork--session-handoff-after-cleanup-pass-2-2026-04-25.md` 入 main，292 行新增
+- Commit `3d15834`：本 handoff 移 `handoffs/done/`
+- lint pre-commit hook 兩次均通過（0 / 0 / 95）
+- push 兩次均成功至 `remotes/origin/main`
+- 本 handoff frontmatter status: Draft → Accepted
 
 ### 對後續工作的影響
 
