@@ -292,9 +292,45 @@
   - 理由 3：v2.0 列的解法工程面已部分運作——憲法 v0.2 預設 Proposed 概念、v5.1 D 軌 verifier 二次審查（worklogs/code--v5-1-D-cross-cowork-retro-2026-04-18.md）、working-environment.md §1 起草／裁決分離、branch protection force-push 防護
   - 6/25 盤點時若 D4 議題有實例，與此項合併重議
 
+#### 2026-04-25 (c) ADR 階段裁決排除（不立法、不進觀察期）
+
+以下四條候選經 Cowork (c) 階段三維度評分後 Reject。完整裁決見 `worklogs/cowork--c-phase-issue-extraction-matrix-2026-04-25.md` §2。
+
+- **C1 · Chat 自我糾正流程的觸發條件與邊界** — Reject
+  - 理由：v2.1 §1 已質疑為「另一種修辭遷移」；立 ADR 等於用 ADR 把修辭制度化
+  - 緩解：靠憲法第三條剛性核查 + H7 lint + retro 累積 auto-memory，無需專屬 ADR
+  - 綁定 memory：`feedback_reject_symptomatic_workflow_suggestions`
+
+- **C2 · 多視角挑戰機制 + v2.2 缺軌補正規則** — Reject
+  - 理由：流程儀式制度化過度；frontmatter 自填欄位剛性核查近乎為零
+  - 緩解：Q2 Code handoff 限定 D1-D4 落地檢查（不再做 framing），個案紀律處理
+  - 綁定：本批次 Q2 Code handoff（`handoffs/code--q2-d1-d4-engineering-verification-2026-04-25.md`）
+
+- **C4 · 事實基礎報告 vs 修辭遷移的判別準則** — Reject
+  - 理由：屬定義戰無解題；制度化「Chat 主觀判斷」是無解題
+  - 緩解：靠 retro 案例累積成 auto-memory，已有 `feedback_avoid_reinventing_solved_problems`、`feedback_chat_secondhand_citation_blind_spot` 在處理
+
+- **C5b · Chat 模擬 X-session 視角的合法性判別準則** — Reject
+  - 理由：與 C2 同源（流程儀式制度化）；本批次 Code feedback 自承「Chat 於 Code 視角模擬」+ 標 Status: Feedback 即為揭露緩解
+  - 緩解：個案紀律 + 揭露機制，無需通用規則
+
+### 觀察期項目（2026-04-25 起，2026-06-25 盤點）· 補
+
+8. **跨 session 紀律遷移落差**
+   - 觀察事件：Chat 跟 Paul 在對話中達成的紀律共識（如「方向性判斷由 Paul」「起草/裁決分離」），是否會自動遷移到 Cowork/Code session
+   - 已知事件（2026-04-25）：
+     - Cowork 在前一輪自行越權產出 (c) 階段 handoff 設計流程
+     - Cowork 一條龍跑完 Step 1+2，原本 handoff 寫 Step 1 應由 Chat 主導
+     - Cowork 起草 H11 給 Cowork 自己鬆綁的規則（self-serving 風險）
+   - 預期：兩個月內這類事件 ≤ 1 次
+   - 觸發行動：若超過，考慮立 ADR / 改 handoff 模板 / 加其他剛性核查機制
+   - **本項目不立法、只觀察**
+
 ### 觀察指標（2026-06-25 盤點）
 
 1. 這兩個月新增幾份 ADR（預期 ≤ 2 份）
+   - **2026-04-25 已用 2 份**：H10（治理研究報告 git 紀律）+ H11（立法零產量合法收尾），皆 status: Proposed，等下一輪 Chat 裁決
+   - 配額已滿，6/25 前不再起草新 ADR（除緊急例外）
 2. 幾份 ADR 真的被後續 session 引用（預期 ≥ 50%）
 3. Chat 還會不會主動發類似 v3.0 的 meta-report（預期：不會）
 
