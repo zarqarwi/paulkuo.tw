@@ -1,0 +1,50 @@
+{
+  "date": "2026-04-25",
+  "projects": {
+    "zarqarwi/paulkuo.tw": {
+      "commits_24h": 45,
+      "commits_top3": [
+        "[wiki-daily] report: 2026-04-25 完成",
+        "[wiki-daily] scanner: 雲端部分掃描 — 02/03/05/08 列檔，01 列子目錄，04/06 待本機接手",
+        "docs(worklog): 追加 Code session handoff 收尾 + 歸檔紀錄（H8 四維度）"
+      ],
+      "authors": {
+        "Paul Kuo <paul@lasaas.com>": 20,
+        "zarqarwi <150495151+zarqarwi@users.noreply.github.com>": 23,
+        "github-actions[bot]": 1,
+        "ai-ready-bot <bot@paulkuo.tw>": 1
+      },
+      "issues_open": 84,
+      "issues_opened_24h": 1,
+      "issues_closed_24h": 0,
+      "prs_open": 4,
+      "prs_opened_24h": 2,
+      "prs_merged_24h": 0,
+      "last_ci_status": "unknown",
+      "notes": [
+        "last_ci_status 未取得：governance MCP 工具面不含 workflow_runs endpoint；旁證為 24h 內有 github-actions[bot] + ai-ready-bot 各 1 筆 commit，推斷 scheduled workflows 仍在運作",
+        "新開 issue #186 (2026-04-25 02:37Z)：把 YouTube ingest 從 wiki-daily-pipeline 拆出改本機 wrangler",
+        "新開 PR #184 (ACP GraphQL observability BUG-4)、PR #185 (Cowork cache sync + session-handoff v5.7)，均 open"
+      ]
+    },
+    "zarqarwi/formosa-esg-2026": {
+      "status": "repo_not_found",
+      "note": "此 repo 在 zarqarwi 名下不存在。Formosa ESG 是 paulkuo.tw 的子專案（/projects/formosa-esg-2026/ 路徑 + /api/formosa/* API），並非獨立 repo — 見 docs/shared-file-impact-map.md。建議更新預設監測清單或建立 data/governance-projects.json 覆寫。"
+    },
+    "zarqarwi/get-biji-notes": {
+      "commits_24h": 0,
+      "commits_top3": [],
+      "authors": {},
+      "issues_open": 0,
+      "issues_opened_24h": 0,
+      "issues_closed_24h": 0,
+      "prs_open": 0,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "unknown",
+      "notes": [
+        "最新 commit 為 2026-04-22T15:55:57Z (master branch)，24 小時內無活動"
+      ]
+    }
+  }
+}
