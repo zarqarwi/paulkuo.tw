@@ -326,6 +326,26 @@
    - 觸發行動：若超過，考慮立 ADR / 改 handoff 模板 / 加其他剛性核查機制
    - **本項目不立法、只觀察**
 
+9. **H7 lint 護欄實效 + grandfather 引用情況**
+   - 觀察事件 1：H7 governance-lint.sh Phase 1 通過後（commit `24d7a03`），pre-commit hook 是否真實攔截到違規 commit
+   - 觀察事件 2：`.governance-lint-grandfathered` 清單內的 95 份歷史 handoffs 是否還被當前 worklog/ADR 引用
+   - 觀察事件 3：Cowork 寫新 handoff 是否一次到位含 frontmatter `status` + `## Consequences`（依 cleanup-pass-2 立的紀律）
+   - 預期：
+     - 攔截觸發 ≥ 1 次（代表護欄真有用，否則設計需重審）
+     - 95 份歷史 grandfathered 引用率 ≤ 5 份（多數應是「已死檔案」，可永久 grandfather）
+     - Cowork 新 handoff 100% 合規（依 memory `feedback_cowork_handoff_template_h7_compliance`）
+   - 觸發行動：
+     - 若護欄 0 觸發 → 評估規則設計是否過嚴或實際需求低
+     - 若 grandfathered 仍頻繁被引用 → 該批次需補規範而非永久 grandfather
+     - 若 Cowork 新 handoff 違規 → 模板紀律失效，考慮 lint Phase 2 自動檢查
+   - **本項目不立法、只觀察**
+
+10. **iCloud 衝突副本清理**
+    - 觀察事件：handoffs/ 下 4 份檔名含「 [0-9].md」尾綴的衝突副本（依 memory `feedback_icloud_duplicate_files_not_git_issue`）
+    - 已 grandfather 進 lint 跳過清單，但屬技術債
+    - 觸發行動：等 Paul 評估原檔（不含尾綴版本）內容是否需保留 → Code session 處理刪除（憲法第二條）
+    - **本項目不立法、只觀察 + 待 Paul 排程清理**
+
 ### 觀察指標（2026-06-25 盤點）
 
 1. 這兩個月新增幾份 ADR（預期 ≤ 2 份）

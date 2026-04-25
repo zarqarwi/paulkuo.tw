@@ -1,3 +1,7 @@
+---
+status: Accepted
+---
+
 # Code Handoff · (c) ADR 階段 rev2 部署落地
 
 - **產出時間**：2026-04-25
@@ -337,3 +341,33 @@ memory `feedback_oneliner_for_paul_terminal` + 憲法第二條精神：commit/pu
 **handoff 產出者**：Cowork session (Sonnet 4.6)
 **對應任務**：(c) ADR 階段 rev2 部署落地
 **下一步**：Paul 開 Code session，餵此 handoff 給 Code 執行
+
+---
+
+## Consequences
+
+### 實際執行結果（Code session 2026-04-25）
+
+- ✅ Step 1-7 全綠，依序完成
+- ✅ Step 1.5 處理：`.git/index.lock` sandbox 殘留已刪
+- ✅ Batch 1 commit：`6c2a9a5`（H10 ratified Accepted + 4 份治理研究報告移 research-archive/）
+- ✅ Batch 2 commit：`520e2a3`（H11 demoted Draft + 移 _drafts/）
+- ✅ push 成功（rebase 整合 remote daily audit commit 後）
+- ✅ zip + session report 已 mv 到 ~/Desktop/
+- ✅ Issue #155 dashboard 同步：[comment #4319797935](https://github.com/zarqarwi/zarqarwi/paulkuo.tw/issues/155#issuecomment-4319797935)
+
+### 對後續工作的影響
+
+- 觸發後續 cleanup handoff（`code--c-phase-cleanup-2026-04-25.md`）處置 §5 五個未決事項
+- §5.A worklog 補章 → A2（commit 原貌）
+- §5.B matrix + Q2 handoff → 順手進 git
+- §5.C 歷史 4 份 untracked → 等 H7 lint Phase 2 觸發測試
+- §5.D 本 handoff 自身 → D3 mv handoffs/done/（已執行）
+- §5.E ADR-INDEX 算術 → 修為 12（Batch 4 處理）
+
+### 遵守紀律確認
+
+- 憲法第二條：commit/push 走 Paul 本機（Code 在 Paul terminal）✅
+- H10 §二第一款：兩個 commit 同 push batch ✅
+- H10 §二第二款：24 小時內 Issue #155 同步 ✅
+- 不擴大範圍：歷史 4 份 untracked / cleanup handoff 自己未動 ✅

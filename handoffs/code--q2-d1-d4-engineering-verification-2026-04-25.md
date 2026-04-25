@@ -1,3 +1,7 @@
+---
+status: Accepted
+---
+
 # Code Handoff · Q2 D1-D4 工程實況落地檢查
 
 - **產出時間**：2026-04-25
@@ -259,3 +263,30 @@ D1-D4 都是「資料是否在系統 log 裡」的工程驗證。如果驗證發
 **handoff 產出者**：Cowork session（Sonnet 4.6）
 **對應任務**：(c) ADR 階段 Q2 補軌
 **下一步**：Paul 開 Code session，餵此 handoff 給 Code 執行
+
+---
+
+## Consequences
+
+### 實際執行結果（Code session 2026-04-25）
+
+- ✅ D1 ADR 索引：覆蓋率 12=12，H10/H11 同步正確；速度量級差異 N/A（12 ADR 規模未到甜區，30+ 後才有優勢）
+- ✅ D2 Handoff archive：79 待歸 / 19 已歸，25 份超 7 天，2/3 抽查無 worklog 引用——archive 機制存在但執行嚴重滯後
+- 🚨 D3 Lint 護欄：揭露 `scripts/governance-lint.sh` 未實作——H7 ADR Accepted 但腳本本體不存在
+- ✅ D4 Race condition：5 條散落實例集中到 `worklogs/code--multi-session-race-audit-2026-04-25.md`，不立 ADR、不寫工具，PENDING.md 並發保護留觀察
+- ✅ 兩份輸出檔 + worklog 補章四維度寫入
+- ✅ commit `9bc60c5` push 成功
+
+### 對後續工作的影響
+
+- D3 揭露的 H7 ADR Accepted vs 實作不存在 = 真治理破洞，觸發後續 H7 lint Phase 1 補實作 handoff（`code--h7-lint-phase1-implementation-2026-04-25.md`）
+- D2 79 份待歸建議獨立 cleanup batch 處理（暫緩，待 Phase 1+2 落地後再排）
+- D4 不需新工具不立 ADR，集中盤點檔即為產出
+- D1 速度量級觀察：未來 ADR 增至 30+ 時再驗 INDEX 機制甜區
+
+### 遵守紀律確認
+
+- 憲法第二條：commit/push 走 Paul 本機 ✅
+- §3 不做 framing 修辭：未寫 v2.2、未挑戰 v2.0/v2.1、未立新 ADR ✅
+- §4 已知陷阱 §1：H10 §三 lint Phase 2 未實作，D3 baseline 紀錄未 fail ✅
+- 產出格式工程稽核風格（仿 branch-protection-audit）✅

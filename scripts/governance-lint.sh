@@ -19,6 +19,24 @@ MODE="${1:---pre-commit}"  # --pre-commit | --ci-mode | --manual
 # 結果計數
 STRICT_FAIL=0
 WARNING=0
+GRANDFATHERED_COUNT=0
+
+# Grandfather 清單（H7 通過前歷史 handoffs，manual 模式跳過）
+# 詳見 .governance-lint-grandfathered 檔案頂部 header
+GRANDFATHER_FILE="$REPO_ROOT/.governance-lint-grandfathered"
+
+is_grandfathered() {
+  local target="$1"
+  [[ ! -f "$GRANDFATHER_FILE" ]] && return 1
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    if [[ "$line" == "$target" ]]; then
+      return 0
+    fi
+  done < "$GRANDFATHER_FILE"
+  return 1
+}
 
 echo "🔍 governance-lint.sh — paulkuo.tw 治理規範檢查"
 echo "Mode: $MODE"
@@ -37,7 +55,16 @@ check_handoff_fields() {
   fi
   [[ -z "$files" ]] && return
 
-  for f in $files; do
+  # 用 while read 而非 for in $files 避免含空格檔名 word splitting bug
+  while IFS= read -r f; do
+    [[ -z "$f" ]] && continue
+
+    # Grandfather 跳過（H7 通過前歷史 handoffs）
+    if is_grandfathered "$f"; then
+      GRANDFATHERED_COUNT=$((GRANDFATHERED_COUNT + 1))
+      continue
+    fi
+
     # frontmatter status 欄位
     if ! head -20 "$f" | grep -qE '^status:\s*(Draft|Accepted|Superseded|Deprecated)\s*$'; then
       echo "❌ FAIL  $f"
@@ -50,7 +77,7 @@ check_handoff_fields() {
       echo "         → 缺 ## Consequences 章節"
       STRICT_FAIL=$((STRICT_FAIL + 1))
     fi
-  done
+  done <<< "$files"
 }
 
 # ─────────────────────────────
@@ -83,7 +110,9 @@ check_skill_pillar() {
 
   local valid_pillars="ai|circular|faith|startup|life|governance"
 
-  for f in $files; do
+  # 用 while read 而非 for in $files 避免含空格檔名 word splitting bug
+  while IFS= read -r f; do
+    [[ -z "$f" ]] && continue
     local pillar
     # python3 yaml 解析，ImportError 時 fallback 到 grep
     if python3 -c "import yaml" 2>/dev/null; then
@@ -110,7 +139,7 @@ print(p if p else '')
       echo "         → pillar '$pillar' 不在白名單（${valid_pillars//|/, }）"
       STRICT_FAIL=$((STRICT_FAIL + 1))
     fi
-  done
+  done <<< "$files"
 }
 
 # ─────────────────────────────
@@ -179,8 +208,11 @@ check_skill_pillar      # Strict
 
 echo ""
 echo "──────────────────────────────"
-echo "Strict fails: $STRICT_FAIL"
-echo "Warnings:     $WARNING"
+echo "Strict fails:    $STRICT_FAIL"
+echo "Warnings:        $WARNING"
+if [[ "$GRANDFATHERED_COUNT" -gt 0 ]]; then
+  echo "📦 Grandfathered: $GRANDFATHERED_COUNT (pre-H7 historical, see .governance-lint-grandfathered)"
+fi
 echo ""
 
 if [[ "$STRICT_FAIL" -gt 0 ]]; then

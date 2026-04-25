@@ -1,0 +1,132 @@
+# .governance-lint-grandfathered
+#
+# H7 ADR (governance-lint.sh) Phase 1 通過前（2026-04-25 前）的歷史 handoffs。
+# manual 模式 lint 跳過這些檔案。pre-commit 模式不受影響（pre-commit 只檢查
+# staged files，歷史檔案不會出現在 staged 範圍）。
+#
+# 格式：
+#   - 每行一個檔案 path（相對 repo root）
+#   - # 開頭為註解
+#   - 空行忽略
+#
+# 維護紀律：
+#   1. 規則生效後（2026-04-25）的新 handoff **不應**加進此清單，違規應修檔（補
+#      frontmatter status + 文末 ## Consequences 章節）
+#   2. 從清單移除某 path = 該檔恢復 lint 強制檢查
+#   3. 此清單由 cleanup-pass-2 (2026-04-25) 一次性產出，後續不應動態擴充
+#
+# 引用依據：
+#   - docs/governance/adr-governance-lint-he-lu-2026-04-25.md (H7) §第一條
+#   - handoffs/code--c-phase-cleanup-pass-2-2026-04-25.md (cleanup-pass-2 handoff)
+#   - worklogs/code--q2-d1-d4-engineering-verification-2026-04-25.md (D3 揭露)
+#
+# 觀察期至 2026-06-25（PENDING.md 觀察項目 9）：
+#   - 新 commit 是否被 pre-commit 攔截（≥ 1 = 護欄真有用）
+#   - grandfathered handoffs 是否還被 worklog/ADR 引用
+#     （若都不被引用 → 6/25 後可永久 grandfathered；
+#       若被引用 → 該檔需補規範，從清單移除）
+#
+# 已知議題（cleanup-pass-2 §5 等 Paul 裁決）：
+#   - 4 份 iCloud 衝突副本（檔名含「 [0-9].md」尾綴）暫時 grandfather，
+#     建議 Paul 評估後刪除（依 memory feedback_icloud_duplicate_files_not_git_issue）
+#
+# === 歷史 handoffs（H7 通過前產出，91 份）===
+handoffs/INDEX.md
+handoffs/chat--cron-improvement-plan-2026-04-06.md
+handoffs/chat--session-handoff-v5-planning-2026-04-17-rev3.md
+handoffs/chat--session-handoff-v5-planning-2026-04-17.md
+handoffs/code--ai-ready-jsonld-fix-2026-04-21.md
+handoffs/code--ai-ready-wellknown-fix-2026-04-21.md
+handoffs/code--batch-commit-accumulated-2026-04-14.md
+handoffs/code--commit-mcp-register-script-2026-04-14.md
+handoffs/code--design-system-doc-commit-2026-04-14.md
+handoffs/code--event-branding-mazu-today-2026-03-31.md
+handoffs/code--formosa-admin-data-reset-2026-04-10.md
+handoffs/code--formosa-ci-quality-gate-2026-04-02.md
+handoffs/code--formosa-daily-footprint-ui-2026-04-10.md
+handoffs/code--formosa-i18n-fix-2026-04-01.md
+handoffs/code--formosa-infra-doc-fix-2026-04-04.md
+handoffs/code--formosa-line-i18n-2026-03-31.md
+handoffs/code--formosa-push-broadcast-debug-2026-04-10.md
+handoffs/code--formosa-push-image-support-2026-04-05.md
+handoffs/code--governance-dashboard-redesign-phase-a-2026-04-14.md
+handoffs/code--governance-exam-files-consolidation-2026-04-20.md
+handoffs/code--governance-quick-fix-2026-04-14.md
+handoffs/code--mazu-seo-aio-faq-2026-04-04.md
+handoffs/code--mazu-uiux-handoff-2026-03-31.md
+handoffs/code--paulkuo-tw-fix-visitor-analytics-2026-04-21.md
+handoffs/code--paulkuo.tw-wiki-ingest-batch-2026-04-17.md
+handoffs/code--paulkuo.tw-wiki-ingest-kickoff-2026-04-17.md
+handoffs/code--scanner-dedup-mechanism-2026-04-20.md
+handoffs/code--session-handoff-v5-upgrade-2026-04-18.md
+handoffs/code--skill-commit-split-investigation-2026-04-24.md
+handoffs/code--skill-schema-lint-poc-2026-04-17.md
+handoffs/code--skill-source-verification-2026-04-18.md
+handoffs/code--stash-conflict-resolution-2026-04-15.md
+handoffs/code--tqef-stage-b-axis1-comet-bootstrap-2026-04-23.md
+handoffs/code--translator-dead-code-and-qwen-cost-fix-2026-04-23.md
+handoffs/code--v5-1-B-guardrail-numbering-2026-04-18.md
+handoffs/code--v5-1-D-cross-cowork-retro-2026-04-18.md
+handoffs/code--v5-1-E-changelog-extraction-2026-04-18.md
+handoffs/code--v5-1-closure-2026-04-18.md
+handoffs/code--v5-1-source-verification-2026-04-18.md
+handoffs/code--wiki-api-route-fix-2026-04-20.md
+handoffs/code--wiki-batch1-commit-kv-seed-2026-04-16.md
+handoffs/code--wiki-batch1.5-concept-extraction-2026-04-16.md
+handoffs/code--wiki-column-frontmatter-scanner-2026-04-16.md
+handoffs/code--wiki-column-scanner-fixes-2026-04-16.md
+handoffs/code--wiki-youtube-push-and-backfill-2026-04-19.md
+handoffs/cowork--constitution-v0.2-closeout-2026-04-20.md
+handoffs/cowork--formosa-feedback-triage-2026-04-07.md
+handoffs/cowork--gap-closure-2026-04-18.md
+handoffs/cowork--governance-exploration-c-adr-stage-2026-04-25.md
+handoffs/cowork--governance-followups-from-icloud-git-incident-2026-04-24.md
+handoffs/cowork--governance-hygiene-and-v0.4-planning-2026-04-20.md
+handoffs/cowork--governance-kv-reseed-2026-04-18.md
+handoffs/cowork--h3-h4-judicial-batch-2026-04-24.md
+handoffs/cowork--hygiene-task-ab-closeout-and-next-cowork-2026-04-20.md
+handoffs/cowork--hygiene-task-ab-sonnet-handoff-2026-04-20.md
+handoffs/cowork--project-audit-cleanup-batch-2026-04-23.md
+handoffs/cowork--session-closeout-2026-04-20-rev1.md
+handoffs/cowork--session-closeout-2026-04-20.md
+handoffs/cowork--session-handoff-v5-1-planning-rev1-2026-04-18.md
+handoffs/cowork--session-handoff-v5-1-planning-rev2-2026-04-18.md
+handoffs/cowork--session-handoff-v5-baseline-complete-2026-04-18.md
+handoffs/cowork--session-handoff-v5-split-reassessment-2026-04-18.md
+handoffs/cowork--session-opening-2026-04-21.md
+handoffs/cowork--skill-sync-long-term-plan-briefing-2026-04-19.DONE.md
+handoffs/cowork--skill-sync-long-term-plan-briefing-2026-04-19.md
+handoffs/cowork--v0.3-closeout-session-handoff-2026-04-20.md
+handoffs/cowork--v0.3-constitution-implementation-2026-04-20.md
+handoffs/cowork--v5-1-guardrail-retro-2026-04-19.md
+handoffs/cowork--v5-1-guardrail-retro-alignment-2026-04-19.md
+handoffs/cowork--v5-1-guardrail-retro-followup-2026-04-19.md
+handoffs/cowork--v5-3-commit-and-user-level-sync-2026-04-19.md
+handoffs/cowork--wiki-youtube-rate-limit-retry-2026-04-20.md
+handoffs/cowork--working-environment-deployment-2026-04-18.md
+handoffs/done/chat--h1-h9-legislative-batch-2026-04-24.md
+handoffs/done/chat--paulkuo-tw-insert-comparison-table-2026-03-22.md
+handoffs/done/code--acp-ux-fixes-2026-04-08.md
+handoffs/done/code--acp-v2-handoff-2026-04-08.md
+handoffs/done/code--adr-index-branch-protection-2026-04-25.md
+handoffs/done/code--agentic-seo-bot-dashboard-upgrade-2026-04-17.md
+handoffs/done/code--agentic-seo-three-tier-classification-2026-04-17.md
+handoffs/done/code--bot-classification-historical-reclass-2026-04-17.md
+handoffs/done/code--paulkuo-ai-collab-portfolio-mvp-20260407.md
+handoffs/done/code--paulkuo-tw-fix-comparison-table-position-2026-03-23.md
+handoffs/done/code--paulkuo-tw-insert-comparison-table-2026-03-22.md
+handoffs/done/code--paulkuo-tw-projects-title-change-2026-03-22.md
+handoffs/done/code--paulkuo-tw-publish-ai-ready-article-2026-03-22.md
+handoffs/done/code--repo-hygiene-icloud-residue-2026-04-24.md
+handoffs/done/cowork--paulkuo-ai-collab-portfolio-dashboard-20260407.md
+handoffs/done/cowork--paulkuo.tw-session-resume-2026-04-17.md
+handoffs/done/session-handoff-tqef-r3.md
+handoffs/done/session-handoff-v5.6-for-claude-app.md
+
+# === iCloud 衝突副本（4 份，暫時 grandfather）===
+# 建議處置：Paul 評估原檔（不含尾綴的版本）內容是否需保留，
+# 確認後刪除這些衝突副本。檔案系統操作交 Code session 處理（憲法第二條）。
+handoffs/code--governance-dashboard-redesign-phase-a-2026-04-14 2.md
+handoffs/code--governance-dashboard-redesign-phase-a-2026-04-14 3.md
+handoffs/code--governance-dashboard-redesign-phase-a-2026-04-14 4.md
+handoffs/code--governance-dashboard-redesign-phase-a-2026-04-14 5.md
