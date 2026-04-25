@@ -377,17 +377,23 @@ async function pullPending() {
 
   if (keys.length === 0) {
     console.log('No pending YouTube videos in KV.');
-    return 0;
+    return { written: 0, failed: 0, remaining: 0 };
   }
 
   let written = 0;
+  let failed = 0;
+
   for (const entry of keys) {
     const key = entry.name;
     const raw = kvGet(key);
-    if (!raw) continue;
+    if (!raw) { failed++; continue; }
 
     let data;
-    try { data = JSON.parse(raw); } catch { console.error(`  ✗ Bad JSON for ${key}`); continue; }
+    try { data = JSON.parse(raw); } catch {
+      console.error(`  ✗ Bad JSON for ${key}`);
+      failed++;
+      continue;
+    }
 
     const filename = `${data.slug}.md`;
     const filepath = path.join(SOURCES_DIR, filename);
@@ -407,14 +413,20 @@ async function pullPending() {
       }
     }
 
-    fs.writeFileSync(filepath, data.markdown, 'utf-8');
-    console.log(`  ✓ Written: ${filename} (${data.title})`);
-    kvDelete(key);
-    written++;
+    try {
+      fs.writeFileSync(filepath, data.markdown, 'utf-8');
+      console.log(`  ✓ Written: ${filename} (${data.title})`);
+      kvDelete(key);
+      written++;
+    } catch (e) {
+      console.error(`  ✗ Write failed for ${filename}: ${e.message}`);
+      failed++;
+    }
   }
 
+  const remaining = failed; // failed keys are not deleted from KV
   console.log(`\nWrote ${written} source file(s) to wiki/sources/`);
-  return written;
+  return { written, failed, remaining };
 }
 
 /** Inject transcript data into markdown content */
@@ -480,7 +492,8 @@ async function triggerIngest(videoUrl, options = {}) {
   console.log('');
 
   // Now pull the pending file
-  return pullPending();
+  const stats = await pullPending();
+  return stats.written;
 }
 
 // ── Seed channels JSON to KV ───────────────────────────────────────────
@@ -567,6 +580,7 @@ async function main() {
     else if (arg.startsWith('--pillar=')) options.pillar = arg.split('=')[1];
     else if (arg === '--force') options.force = true;
     else if (arg === '--backfill') options.backfill = true;
+    else if (arg === '--write-log') options.writeLog = true;
     else if (arg === '--seed-channels') { seedChannels(); return; }
     else if (arg === '--help' || arg === '-h') {
       console.log(`Usage:
@@ -581,6 +595,7 @@ Options:
   --force            Re-ingest even if already done
   --backfill         Scan existing sources, re-fetch empty transcripts
   --seed-channels    Seed data/youtube-channels.json to KV
+  --write-log        Write daily log to worklogs/wiki-youtube-daily-YYYY-MM-DD.md
 
 Environment:
   GROQ_API_KEY       Required for Whisper STT fallback (videos without captions)
@@ -590,12 +605,22 @@ Environment:
     else positional.push(arg);
   }
 
+  let stats = { written: 0, failed: 0, remaining: 0 };
+
   if (options.backfill) {
     await backfill(options);
   } else if (positional.length > 0) {
     await triggerIngest(positional[0], options);
   } else {
-    await pullPending();
+    stats = await pullPending();
+  }
+
+  if (options.writeLog) {
+    const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' });
+    const logPath = path.join(PROJECT_ROOT, 'worklogs', `wiki-youtube-daily-${today}.md`);
+    const summary = `# Wiki YouTube Ingest — ${today}\n\n- 新增: ${stats.written} 支\n- 失敗: ${stats.failed} 支\n- KV pending 剩餘: ${stats.remaining} 筆\n- 觸發來源: 本機 cron / launchd\n`;
+    fs.writeFileSync(logPath, summary, 'utf-8');
+    console.log(`\nLog written: ${logPath}`);
   }
 }
 
