@@ -284,6 +284,14 @@
 - [-] v2.0 疏漏 7 · Paul 在治理體系的明文位置
 - [-] Branch protection PR 閘門啟用（待 2026-06-25 用實例重議）
 
+### 明確排除（不進觀察期）
+
+- v2.0 疏漏 2「跨 session 衝突解決」**不進觀察期**
+  - 理由 1：與 Code feedback D4「多 session race condition」是同議題不同切面（疏漏 2 切治理流程，D4 切工程面 race condition）
+  - 理由 2：v2.0 提的解法（GitLab MR review、ADR 預設 Proposed）已被 v2.1 §1 質疑為「另一種修辭移植」，2026-06-25 前不重啟此 framing 爭論
+  - 理由 3：v2.0 列的解法工程面已部分運作——憲法 v0.2 預設 Proposed 概念、v5.1 D 軌 verifier 二次審查（worklogs/code--v5-1-D-cross-cowork-retro-2026-04-18.md）、working-environment.md §1 起草／裁決分離、branch protection force-push 防護
+  - 6/25 盤點時若 D4 議題有實例，與此項合併重議
+
 ### 觀察指標（2026-06-25 盤點）
 
 1. 這兩個月新增幾份 ADR（預期 ≤ 2 份）
