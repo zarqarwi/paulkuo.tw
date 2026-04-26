@@ -1394,13 +1394,6 @@
       "visibility": "internal"
     },
     {
-      "id": "getnote-780904-lab-facility-animal-research",
-      "title": "實驗室設施與動物實驗區域介紹",
-      "type": "source",
-      "pillar": "circular",
-      "visibility": "internal"
-    },
-    {
       "id": "getnote-782928-preventive-medicine-ai-drug",
       "title": "預防醫學服務設計與AI藥物開發的商業生態探討",
       "type": "source",
@@ -3103,10 +3096,6 @@
     {
       "source": "getnote-749536-partnership-project-planning",
       "target": "human-ai-collaboration"
-    },
-    {
-      "source": "getnote-780904-lab-facility-animal-research",
-      "target": "enterprise-ai-adoption"
     },
     {
       "source": "getnote-782928-preventive-medicine-ai-drug",

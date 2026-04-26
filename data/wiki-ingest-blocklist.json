@@ -80,6 +80,12 @@
       "added_at": "2026-04-26",
       "added_by": "cowork+paul",
       "title_at_delete": "材料替代與防火性能討論會議記錄"
+    },
+    "1901454756136780904": {
+      "reason": "drop — 場勘錄音含具名機構，content 本身低知識價值",
+      "added_at": "2026-04-26",
+      "added_by": "code+paul",
+      "title_at_delete": "實驗室設施與動物實驗區域介紹"
     }
   }
 }
