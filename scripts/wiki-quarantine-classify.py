@@ -18,6 +18,7 @@ Does NOT modify source files. Apply step is a separate handoff.
 """
 
 import re
+import sys
 import yaml
 from pathlib import Path
 from datetime import datetime
@@ -26,58 +27,14 @@ from collections import defaultdict
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SOURCES_DIR = PROJECT_ROOT / "src" / "content" / "wiki" / "sources"
 TODAY = datetime.now().strftime("%Y-%m-%d")
+RULES_FILE = PROJECT_ROOT / "data" / "wiki-quarantine-rules.yml"
 
-# === RULES ===
-# Order matters: first match wins. delete (most restrictive) listed first.
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from wiki_text_normalize import contains_normalized  # noqa: E402
 
-RULES = [
-    {
-        "outcome": "delete",
-        "description": "Named companies / business partner / deal terms — permanent removal",
-        "match": {
-            "title_or_content_any": [
-                "新医美学集团", "日本CET", "佳龙科技", "理事长合作",
-                "合作项目", "合作条件", "项目规划", "合作洽谈",
-                "海外市场拓展", "商业合作与项目推进",
-            ],
-        },
-    },
-    {
-        "outcome": "keep_internal",
-        "description": "Paul personal reflection / memorial — permanent internal",
-        "match": {
-            "title_any": ["庞牧师", "对...的怀念", "离世对我的影响", "怀念", "追思"],
-        },
-    },
-    {
-        "outcome": "restore_public",
-        "description": "Public-figure transcript / general knowledge — safe to publish",
-        "match": {
-            "title_or_tags_any": [
-                # Public figures
-                "马斯克", "辛顿", "Hinton", "芒格", "Munger", "Musk",
-                # Public research / concepts
-                "无免费午餐", "概率分布", "全息宇宙", "神经可塑性",
-                "Claude Skills", "决策公式",
-                # Circular-economy public knowledge
-                "循环经济", "二手回收", "岩棉回收", "材料替代",
-                # General methodology
-                "人生能量管理", "突破恐惧", "尖毛草定律", "复利",
-                "重尾", "结构性财富",
-            ],
-        },
-    },
-    {
-        "outcome": "redact_and_restore",
-        "description": "Publishable topic with embedded PII/business — redact then publish",
-        "match": {
-            "title_or_content_any": [
-                "醫療數據合作", "AI 醫療領域合作", "AI 藥物設計",
-                "預防醫學服務設計", "員工健康長照方案",
-            ],
-        },
-    },
-]
+with open(RULES_FILE, encoding="utf-8") as _f:
+    _rules_config = yaml.safe_load(_f)
+RULES = _rules_config["rules"]
 
 
 def load_source(path: Path):
@@ -103,11 +60,11 @@ def matches_rule(rule, fm, body):
 
     m = rule["match"]
     if "title_or_content_any" in m:
-        return any(kw in full for kw in m["title_or_content_any"])
+        return any(contains_normalized(full, kw) for kw in m["title_or_content_any"])
     if "title_any" in m:
-        return any(kw in title for kw in m["title_any"])
+        return any(contains_normalized(title, kw) for kw in m["title_any"])
     if "title_or_tags_any" in m:
-        return any(kw in title_and_tags for kw in m["title_or_tags_any"])
+        return any(contains_normalized(title_and_tags, kw) for kw in m["title_or_tags_any"])
     return False
 
 

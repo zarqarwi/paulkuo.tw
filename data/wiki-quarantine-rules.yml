@@ -1,0 +1,126 @@
+# Quarantine classifier rules
+# Order-sensitive: first match wins (delete most restrictive listed first)
+# Matching uses contains_normalized() from wiki_text_normalize — simplified/traditional handled automatically
+
+version: 2
+last_updated: "2026-04-26"
+
+rules:
+  - outcome: delete
+    description: "含具名公司/合作對象/商務洽談關鍵詞，永久下架"
+    match:
+      title_or_content_any:
+        - 新医美学集团
+        - 新醫美學集團
+        - 日本CET
+        - 佳龙科技
+        - 佳龍科技
+        - 理事长合作
+        - 理事長合作
+        - 合作项目
+        - 合作項目
+        - 合作条件
+        - 合作條件
+        - 合作条款
+        - 合作條款
+        - 项目规划
+        - 項目規劃
+        - 合作洽谈
+        - 合作洽談
+        - 海外市场拓展
+        - 海外市場拓展
+        - 商业合作与项目推进
+        - 商業合作與項目推進
+        - 业务拓展
+        - 業務拓展
+
+  - outcome: keep_internal
+    description: "Paul 私人感觸/追思，永久 internal"
+    match:
+      title_any:
+        - 庞牧师
+        - 龐牧師
+        - 怀念
+        - 懷念
+        - 追思
+        - 离世
+        - 離世
+        - 对...的影响
+        - 對...的影響
+
+  - outcome: restore_public
+    description: "公開人物觀點/演講轉錄/通用知識方法論，可恢復 public"
+    match:
+      title_or_tags_any:
+        - 马斯克
+        - 馬斯克
+        - 辛顿
+        - 辛頓
+        - Hinton
+        - 芒格
+        - Munger
+        - Musk
+        - 巴菲特
+        - 達利歐
+        - 达利欧
+        - 乔布斯
+        - 賈伯斯
+        - 无免费午餐
+        - 無免費午餐
+        - 概率分布
+        - 機率分布
+        - 全息宇宙
+        - 神经可塑性
+        - 神經可塑性
+        - Claude Skills
+        - 决策公式
+        - 決策公式
+        - AI预测
+        - AI預測
+        - AI 趋势
+        - AI 趨勢
+        - AGI
+        - 循环经济
+        - 循環經濟
+        - 二手回收
+        - 岩棉回收
+        - 材料替代
+        - 永续
+        - 永續
+        - 人生能量管理
+        - 突破恐惧
+        - 突破恐懼
+        - 尖毛草定律
+        - 复利
+        - 複利
+        - 重尾
+        - 结构性财富
+        - 結構性財富
+        - 系统思维
+        - 系統思維
+        - 第一性原理
+        - 心智模型
+        - 元认知
+        - 元認知
+        - 认知重评
+        - 認知重評
+        - 习惯
+        - 習慣
+        - 人性
+
+  - outcome: redact_and_restore
+    description: "題材公開但夾雜個人/合作元素，去識別化後可恢復"
+    match:
+      title_or_content_any:
+        - 医疗数据合作
+        - 醫療數據合作
+        - AI医疗领域合作
+        - AI醫療領域合作
+        - AI药物设计
+        - AI藥物設計
+        - 预防医学服务设计
+        - 預防醫學服務設計
+        - 员工健康长照方案
+        - 員工健康長照方案
+        - 长照服务模式
+        - 長照服務模式
