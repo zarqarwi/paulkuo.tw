@@ -9,6 +9,8 @@
 1. 既有 source 被反查發現含敏感屬性（如錄音、人名、合作條件）
 2. 新 ingest 的 source 命中 sensitivity detector（business_confidential / contains_pii）
 3. 系統規則變更後既有 corpus 需重新審查
+4. ingest 落檔的 source 命中「錄音 + 商務會議 + 兩人以上」三條件
+   → 直接走 delete outcome（不需要 review queue）
 
 ## 流程（5 階段）
 
@@ -64,7 +66,7 @@ Paul 對 `needs_human_review` 桶逐筆裁決，更新 overrides yaml：
 
 ### Stage 4: Apply — 套用 outcome
 
-跑 apply script（**Handoff B 範圍**，目前還沒實作）：
+跑 apply script（`scripts/wiki-quarantine-apply.py`，commit `7b9f79e`）：
 
 ```bash
 python3 scripts/wiki-quarantine-apply.py worklogs/incidents/quarantine-overrides-<date>.yml

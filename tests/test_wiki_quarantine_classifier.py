@@ -19,11 +19,30 @@ classifier = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(classifier)
 
 
-def _rule(outcome):
-    return next(r for r in classifier.RULES if r["outcome"] == outcome)
+def _rule(outcome, include_requires_all=False):
+    """Return first rule matching outcome. Skips requires_all rules by default (placeholder, never match)."""
+    return next(
+        r for r in classifier.RULES
+        if r["outcome"] == outcome and (include_requires_all or "requires_all" not in r)
+    )
 
 
-# === delete ===
+# === delete (requires_all rule — placeholder, always returns False) ===
+
+def test_requires_all_rule_never_matches_company():
+    rule = _rule("delete", include_requires_all=True)
+    assert "requires_all" in rule
+    fm = {"title": "新医美学集团业务介绍", "tags": []}
+    assert not classifier.matches_rule(rule, fm, "")
+
+
+def test_requires_all_rule_never_matches_meeting():
+    rule = _rule("delete", include_requires_all=True)
+    fm = {"title": "商務會議記錄討論", "tags": []}
+    assert not classifier.matches_rule(rule, fm, "")
+
+
+# === delete (match rule — company names / business terms) ===
 
 def test_delete_company_name_simplified():
     fm = {"title": "新医美学集团业务介绍", "tags": []}

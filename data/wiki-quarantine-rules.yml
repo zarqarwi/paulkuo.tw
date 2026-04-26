@@ -7,6 +7,22 @@ last_updated: "2026-04-26"
 
 rules:
   - outcome: delete
+    description: "錄音 + 商務會議 + 兩人以上討論 → 永久下架（Paul 規則 2026-04-26）"
+    requires_all:
+      - has_recording_tag: true
+      - business_meeting: true
+      - is_dialogue: true
+    notes: |
+      此規則需要三個條件全部成立才命中。
+      - has_recording_tag 由 wiki_visibility.py 提供
+      - business_meeting 判斷：資料夾 05_商務會議 OR title 含 [會議,討論,洽談,合作探討,項目規劃,合作框架,合作交流,商業拓展]
+      - is_dialogue 判斷：dialogue=true OR speakers.length>1 OR title 含 [會議記錄,討論會]
+
+      classifier 暫先用 title 字眼當 proxy（business_meeting check）；
+      is_dialogue 自動偵測待 ingest pipeline 補 marker 後啟用。
+      在那之前命中前兩條 → 標記 needs_human_review 而非自動 delete。
+
+  - outcome: delete
     description: "含具名公司/合作對象/商務洽談關鍵詞，永久下架"
     match:
       title_or_content_any:

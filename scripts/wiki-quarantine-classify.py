@@ -58,6 +58,12 @@ def matches_rule(rule, fm, body):
     title_and_tags = f"{title} {tags_str}"
     full = f"{title} {tags_str} {body}"
 
+    # requires_all rules need composite detection (recording tag + dialogue marker).
+    # Placeholder: never auto-match until ingest pipeline populates dialogue/speakers metadata.
+    # See data/wiki-quarantine-rules.yml notes for when to enable.
+    if "requires_all" in rule:
+        return False
+
     m = rule["match"]
     if "title_or_content_any" in m:
         return any(contains_normalized(full, kw) for kw in m["title_or_content_any"])

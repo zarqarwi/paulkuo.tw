@@ -85,6 +85,36 @@
 
 ---
 
+## Phase 2 Rule（2026-04-26 incident 後新增）
+
+**規則**：錄音內容 + 商務會議 + 兩人以上討論（非獨白）→ visibility=internal + outcome=delete
+
+判斷條件（任一缺失就不適用此規則）：
+
+1. **錄音內容**：system tag 含「录音」（`"录音" in tag.name`，涵蓋所有變體）
+2. **商務會議**：
+   - 資料夾為 `05_商務會議`，OR
+   - title 含商務會議字眼：「會議」「討論」「洽談」「合作探討」「項目規劃」「合作框架」「合作交流」「商業拓展」
+3. **兩人以上討論**（非獨白）：
+   - frontmatter 含 `dialogue: true` 或 `speakers: [...]`，OR
+   - transcript 內含明顯多 speaker 標記（例：`Speaker A:`、`說話者 1:`），OR
+   - title 含「會議記錄」「討論會」等明確多人字眼
+
+**動作**：
+- 移除 source 檔案
+- raw_note_id 加進 `data/wiki-ingest-blocklist.json` 防再 ingest
+
+**為什麼是 delete 而非 keep_internal**：
+- 商務會議含具名公司 / 合作條件，永久不對外
+- delete + blocklist 確保下次 scanner / re-ingest 流程改變後不會再撈
+- 仍可從 raw note source 找回原始錄音（不影響備份）
+
+**自動偵測待開發**：
+- 「兩人以上 vs 獨白」目前需人工或 dialogue marker 輔助
+- 未來 ingest pipeline 可加 transcript speaker 統計（不在本期範圍）
+
+---
+
 ## 04-26 Incident 教訓（為什麼有本文）
 
 1. **沒有 SSOT**：scanner 推測一次、ingest pipeline 強制一次、前端 filter 排除一次——三處規則散落，靠運氣對齊
