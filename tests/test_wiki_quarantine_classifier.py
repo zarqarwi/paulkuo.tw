@@ -27,19 +27,56 @@ def _rule(outcome, include_requires_all=False):
     )
 
 
-# === delete (requires_all rule — placeholder, always returns False) ===
+# === delete (requires_all rule — enabled, needs all 3 conditions) ===
 
-def test_requires_all_rule_never_matches_company():
+_RECORDING_TAG = {"name": "录音笔记", "type": "system"}
+
+
+def test_requires_all_rule_is_present():
     rule = _rule("delete", include_requires_all=True)
     assert "requires_all" in rule
-    fm = {"title": "新医美学集团业务介绍", "tags": []}
-    assert not classifier.matches_rule(rule, fm, "")
 
 
-def test_requires_all_rule_never_matches_meeting():
+def test_requires_all_misses_without_recording_tag():
     rule = _rule("delete", include_requires_all=True)
-    fm = {"title": "商務會議記錄討論", "tags": []}
+    fm = {"title": "商務會議記錄討論", "dialogue": True, "tags": []}
     assert not classifier.matches_rule(rule, fm, "")
+
+
+def test_requires_all_misses_without_dialogue():
+    # Title must not contain DIALOGUE_TITLE_KEYWORDS to isolate the dialogue=False case
+    rule = _rule("delete", include_requires_all=True)
+    fm = {"title": "商務洽談", "dialogue": False, "tags": [_RECORDING_TAG]}
+    assert not classifier.matches_rule(rule, fm, "")
+
+
+def test_requires_all_misses_without_business_meeting():
+    rule = _rule("delete", include_requires_all=True)
+    fm = {"title": "AI 趨勢研究", "dialogue": True, "tags": [_RECORDING_TAG]}
+    assert not classifier.matches_rule(rule, fm, "")
+
+
+def test_requires_all_matches_all_three_conditions():
+    rule = _rule("delete", include_requires_all=True)
+    fm = {
+        "title": "商務洽談討論紀錄",
+        "dialogue": True,
+        "dialogue_inference": "heuristic",
+        "speakers": ["主持人", "來賓"],
+        "tags": [_RECORDING_TAG],
+    }
+    assert classifier.matches_rule(rule, fm, "")
+
+
+def test_requires_all_matches_via_title_meeting_keyword():
+    """is_business_meeting triggers on title keyword even without folder."""
+    rule = _rule("delete", include_requires_all=True)
+    fm = {
+        "title": "合作探討初步方案",
+        "dialogue": True,
+        "tags": [_RECORDING_TAG],
+    }
+    assert classifier.matches_rule(rule, fm, "")
 
 
 # === delete (match rule — company names / business terms) ===
@@ -129,6 +166,6 @@ def test_no_rule_matches_unrelated():
 
 
 def test_no_rule_matches_generic_tech():
-    fm = {"title": "Python 非同步程式設計", "tags": ["coding"]}
+    fm = {"title": "Python 非同步程式設計", "tags": []}
     for rule in classifier.RULES:
         assert not classifier.matches_rule(rule, fm, "")
