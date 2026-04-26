@@ -74,6 +74,8 @@
 | `worker/src/translator.js` | Wiki + 主站 + TQEF | 翻譯 / STT 後處理 / 摘要 |
 | `worker/src/scorecard.js` | Formosa + 主站 | 評分卡 |
 | `worker/src/status.js` | 全部 | 健康檢查 |
+| `scripts/wiki_dialogue_lib.py` | LLM Wiki ingest pipeline | 上游：`wiki-dialogue-detect.py`（CLI）；下游：`wiki-pending-promote.py`、`wiki-quarantine-classify.py`、`tests/test_wiki_dialogue_lib.py`。純函數，無 I/O。 |
+| `scripts/wiki_visibility.py` | LLM Wiki ingest + quarantine | `has_recording_tag` 共用於 `wiki-quarantine-classify.py`；修改需同時驗證 quarantine rules 行為 |
 
 ---
 
