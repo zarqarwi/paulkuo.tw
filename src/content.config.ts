@@ -104,6 +104,9 @@ const wikiSchema = z.object({
   }).optional(),
   wrong_pillar_suspected: z.boolean().optional(),
   enrichment_notes: z.string().optional(),
+  dialogue: z.boolean().optional().default(false),
+  dialogue_inference: z.enum(['heuristic', 'llm', 'manual', 'none']).optional().default('none'),
+  speakers: z.array(z.string()).optional(),
   paul_perspective: z.string().optional(),
   quarantine: z.object({
     reason: z.string(),
