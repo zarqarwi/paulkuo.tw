@@ -1,0 +1,49 @@
+name: Wiki Visibility Consistency Check
+
+# Verify visibility logic across scanner / ingest / frontend / SSOT doc
+# stays in sync. See docs/wiki-visibility-rules.md.
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/build_wiki_ingest_report.py'
+      - 'scripts/wiki_visibility.py'
+      - 'scripts/wiki-*.py'
+      - 'scripts/wiki-*.cjs'
+      - 'src/content.config.ts'
+      - 'src/pages/wiki/**'
+      - 'docs/wiki-visibility-rules.md'
+      - 'tests/test_wiki_scanner.py'
+      - '.github/workflows/wiki-visibility-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_wiki_ingest_report.py'
+      - 'scripts/wiki_visibility.py'
+      - 'scripts/wiki-*.py'
+      - 'scripts/wiki-*.cjs'
+      - 'src/content.config.ts'
+      - 'src/pages/wiki/**'
+      - 'docs/wiki-visibility-rules.md'
+      - 'tests/test_wiki_scanner.py'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Run scanner unit tests
+        run: python3 -m pytest tests/test_wiki_scanner.py -v
+
+      - name: Run visibility consistency check
+        run: python3 scripts/wiki-consistency-check.py

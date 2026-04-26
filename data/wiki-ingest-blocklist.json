@@ -1,0 +1,12 @@
+{
+  "_comment": "raw_note_id listed here will NEVER be ingested by the wiki scanner. Includes notes decided to be permanently deleted, known noise, and duplicates.",
+  "_format": {
+    "raw_note_id": {
+      "reason": "delete_outcome | manual_skip | duplicate | noise",
+      "added_at": "ISO date",
+      "added_by": "Cowork | Code | Paul"
+    }
+  },
+  "_see_also": "docs/wiki-visibility-rules.md (SSOT for visibility & sensitivity)",
+  "blocklist": {}
+}

@@ -7,7 +7,9 @@
     "fetch-feed": "node scripts/fetch-feed.mjs",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test:wiki-scanner": "python3 -m pytest tests/test_wiki_scanner.py -v",
+    "check:wiki-visibility": "python3 scripts/wiki-consistency-check.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",

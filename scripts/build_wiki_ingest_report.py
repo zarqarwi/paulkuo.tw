@@ -6,10 +6,15 @@ Visibility & sensitivity rules: see docs/wiki-visibility-rules.md (SSOT).
 
 import os
 import re
+import sys
 import json
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
+
+# Visibility rules live in scripts/wiki_visibility.py — see docs/wiki-visibility-rules.md (SSOT).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wiki_visibility import determine_visibility
 
 # Get ingested note_ids from wiki sources
 wiki_sources_dir = Path("/Users/apple/Desktop/01_專案進行中/paulkuo.tw/src/content/wiki/sources")
@@ -25,57 +30,21 @@ for md_file in wiki_sources_dir.glob("*.md"):
 
 print(f"Found {len(ingested_ids)} ingested note IDs")
 
+# Load blocklist — raw_note_ids permanently excluded from scanner candidates.
+# Populated by quarantine apply (delete outcomes) and manual skips.
+blocklist_path = Path("/Users/apple/Desktop/01_專案進行中/paulkuo.tw/data/wiki-ingest-blocklist.json")
+blocklist = {}
+if blocklist_path.exists():
+    try:
+        blocklist = json.load(open(blocklist_path)).get("blocklist", {}) or {}
+    except Exception as e:
+        print(f"⚠️  blocklist load failed: {e}")
+print(f"Blocklist: {len(blocklist)} note(s) excluded")
+
 # Scan get_筆記 folders
 get_notes_dir = Path("/Users/apple/Desktop/01_專案進行中/get_筆記/notes")
 
-# Folder visibility rules — see docs/wiki-visibility-rules.md (SSOT).
-folder_visibility_rules = {
-    "01_專欄文章": "public",
-    "02_醫療健康": "internal",
-    "03_環保循環經濟": "public",
-    "04_AI與科技": "public",  # will be updated based on tags
-    "05_商務會議": "internal",  # will be updated based on tags
-    "06_個人成長與學習": "internal",
-    "07_生活雜記": "private",
-    "08_其他": "internal",
-    "09_會議錄音": "private",
-}
-
-RECORDING_TAG_KEYWORD = "录音"
-
-# Special handling for folders with conditional tags
-def determine_visibility(folder, tags):
-    """Determine visibility based on folder and tags."""
-
-    has_recording_tag = any(
-        RECORDING_TAG_KEYWORD in tag.get("name", "") and tag.get("type") == "system"
-        for tag in tags
-    )
-    
-    if folder == "01_專欄文章":
-        return "public" if not has_recording_tag else "public"
-    elif folder == "03_環保循環經濟":
-        return "public" if not has_recording_tag else "public"
-    elif folder == "04_AI與科技":
-        if has_recording_tag:
-            return "internal"
-        return "public"
-    elif folder == "02_醫療健康":
-        return "internal"
-    elif folder == "05_商務會議":
-        if has_recording_tag:
-            return "private"
-        return "internal"
-    elif folder == "06_個人成長與學習":
-        return "internal"
-    elif folder == "07_生活雜記":
-        return "private"
-    elif folder == "08_其他":
-        return "internal"
-    elif folder == "09_會議錄音":
-        return "private"
-    
-    return "internal"  # default
+# Visibility logic now lives in scripts/wiki_visibility.py (imported above).
 
 # Collect all notes
 pending_notes = defaultdict(list)  # visibility -> list of (folder, title, note_id)
@@ -118,6 +87,10 @@ for subfolder in sorted(get_notes_dir.iterdir()):
                 
                 # Skip if already ingested
                 if note_id in ingested_ids:
+                    continue
+
+                # Skip if in blocklist (delete outcome / manual exclude)
+                if note_id in blocklist:
                     continue
                 
                 # Determine visibility
