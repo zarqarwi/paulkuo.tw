@@ -32,6 +32,10 @@ PUBLIC_COMPANY_WHITELIST = frozenset({
     "Anthropic", "DeepMind", "Baidu", "Alibaba", "Tencent",
     "Qualcomm", "Broadcom", "MediaTek", "聯發科",
     "Cursor", "Notion", "Figma", "Stripe", "Shopify", "Airbnb", "Uber",
+    # 學術出版機構
+    "Nature", "Science", "Springer", "Elsevier", "Wiley",
+    # 泛型縮寫前綴：regex 第一條會抓到，但這些是概念詞非具名公司
+    "AI", "ML", "RI", "O2O", "IP", "B2B", "B2C", "C2C", "SaaS", "API", "ERP", "CRM",
 })
 
 PII_PATTERNS = [
@@ -43,11 +47,12 @@ BUSINESS_KEYWORDS = [
     # zh-TW
     "合作條件", "合作條款", "合約金額", "投資金額", "授權金",
     "合作項目", "合作洽談", "業務拓展", "商務會議",
-    "合作對象", "合作夥伴", "理事長",
+    "合作對象", "理事長",
     # zh-CN
     "合作条件", "合作条款", "合约金额", "投资金额", "授权金",
     "合作项目", "合作洽谈", "业务拓展", "商务会议",
-    "合作对象", "合作伙伴", "理事长",
+    "合作对象", "理事长",
+    # 已移除「合作夥伴／合作伙伴」：概念性文章中極常出現的泛用詞，誤判率高
 ]
 
 PERSONAL_REFLECTION_KEYWORDS = [
