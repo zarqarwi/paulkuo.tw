@@ -24,6 +24,16 @@ COMPANY_NAME_PATTERNS = [
     r"(新医美学|新醫美學|日本CET|佳龙科技|佳龍科技|台积电|台積電)",
 ]
 
+# 知名上市公司：出現在文章中不代表商業機密，跳過公司名稱旗標
+PUBLIC_COMPANY_WHITELIST = frozenset({
+    "OpenAI", "Google", "Apple", "Microsoft", "Meta", "Amazon", "NVIDIA",
+    "台積電", "台积电", "TSMC", "Synopsys", "ASML", "Intel", "AMD",
+    "Tesla", "Netflix", "Salesforce", "Oracle", "IBM", "Samsung",
+    "Anthropic", "DeepMind", "Baidu", "Alibaba", "Tencent",
+    "Qualcomm", "Broadcom", "MediaTek", "聯發科",
+    "Cursor", "Notion", "Figma", "Stripe", "Shopify", "Airbnb", "Uber",
+})
+
 PII_PATTERNS = [
     r"\d{4}[-\s]?\d{3,4}[-\s]?\d{3,4}",                      # phone (loose)
     r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}",        # email
@@ -47,6 +57,7 @@ PERSONAL_REFLECTION_KEYWORDS = [
 
 
 FRONTMATTER_RE = re.compile(r"^---\n.*?\n---\n", re.DOTALL)
+SOURCE_TRACE_MARKER = "\n## 來源追蹤"
 
 
 def strip_frontmatter(text):
@@ -54,19 +65,34 @@ def strip_frontmatter(text):
     return FRONTMATTER_RE.sub("", text, count=1)
 
 
+def strip_source_trace_section(text):
+    """Remove the '## 來源追蹤' section (end of getnote files).
+
+    This section contains raw_note_id (triggers phone regex) and metadata like
+    '商務會議筆記' (triggers business keyword). Neither is actual sensitive content.
+    """
+    idx = text.find(SOURCE_TRACE_MARKER)
+    if idx != -1:
+        return text[:idx]
+    return text
+
+
 def scan(text):
     """Return (suggested_sensitivity, flags) where flags is a list of (type, examples).
 
-    Frontmatter is stripped before pattern matching to avoid raw_note_id /
-    date / numeric-id false positives on the phone-number regex.
+    Frontmatter and '## 來源追蹤' section are stripped before pattern matching to
+    avoid raw_note_id / metadata false positives on phone-number and business-keyword regex.
     """
     text = strip_frontmatter(text)
+    text = strip_source_trace_section(text)
     flags = []
 
     for pat in COMPANY_NAME_PATTERNS:
-        matches = re.findall(pat, text)
-        if matches:
-            flags.append(("company_name", [str(m) for m in matches[:3]]))
+        # Use finditer to get full match text (not just captured group) for whitelist check
+        matches = [m.group(0) for m in re.finditer(pat, text)]
+        filtered = [m for m in matches if not any(w in m for w in PUBLIC_COMPANY_WHITELIST)]
+        if filtered:
+            flags.append(("company_name", filtered[:3]))
 
     for pat in PII_PATTERNS:
         matches = re.findall(pat, text)
