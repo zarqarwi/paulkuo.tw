@@ -1,0 +1,45 @@
+{
+  "date": "2026-04-26",
+  "generated_at_utc": "2026-04-26T02:36:14Z",
+  "window": "rolling 24h ending at generated_at_utc",
+  "projects": {
+    "zarqarwi/paulkuo.tw": {
+      "commits_24h": 20,
+      "author_distribution": {
+        "zarqarwi (Paul)": 18,
+        "github-actions[bot]": 1,
+        "ai-ready-bot": 1
+      },
+      "top_commits": [
+        "[wiki-daily] report: 2026-04-26 完成 (a84ad4e7)",
+        "[wiki-daily] scanner: 82 則待 ingest (48225c19)",
+        "[wiki-daily] clips: 新增 14 則 (b8b73a9c)"
+      ],
+      "issues_open": 83,
+      "issues_opened_24h": 1,
+      "issues_closed_24h": 1,
+      "prs_open": 4,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "unknown",
+      "ci_note": "GitHub Actions 狀態查詢 MCP 工具不在當前可呼叫工具集，標記為 unknown；需要的話可下次擴充 list_workflow_runs"
+    },
+    "zarqarwi/formosa-esg-2026": {
+      "status": "repo_not_found",
+      "note": "search_repositories 在 zarqarwi user 下找不到此 repo（可能是 private 或路徑變更），整段指標跳過"
+    },
+    "zarqarwi/get-biji-notes": {
+      "commits_24h": 0,
+      "author_distribution": {},
+      "top_commits": [],
+      "issues_open": 0,
+      "issues_opened_24h": 0,
+      "issues_closed_24h": 0,
+      "prs_open": 0,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "unknown",
+      "ci_note": "private notes repo, 預設無 CI workflow"
+    }
+  }
+}
