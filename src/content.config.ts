@@ -105,6 +105,23 @@ const wikiSchema = z.object({
   wrong_pillar_suspected: z.boolean().optional(),
   enrichment_notes: z.string().optional(),
   paul_perspective: z.string().optional(),
+  quarantine: z.object({
+    reason: z.string(),
+    observed_visibility: z.enum(['public', 'internal']),
+    quarantined_at: z.string(),
+    needs_review: z.boolean().default(true),
+    review_outcome: z.enum([
+      'pending',
+      'restore_public',
+      'keep_internal',
+      'delete',
+      'redact_and_restore',
+    ]).default('pending'),
+    reviewer: z.string().optional(),
+    reviewed_at: z.string().optional(),
+    reasoning: z.string().optional(),
+    re_review_after: z.string().optional(),
+  }).optional(),
 });
 
 const wiki_concepts = defineCollection({
