@@ -12,20 +12,6 @@
   matched_rule: 題材公開但夾雜個人/合作元素，去識別化後可恢復
   outcome: redact_and_restore
   title: 子宮頸癌治療探索與醫療數據合作討論
-'1900437610173749536':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-749536-partnership-project-planning.md
-  matched_rule: 含具名公司/合作對象/商務洽談關鍵詞，永久下架
-  outcome: delete
-  title: 健康生態系合作策略與項目規劃框架
-'1900443996787498792':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-498792-claude-skills-guide.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: Claude Skills 功能解析：任務自動化、工作流設計與實戰應用
 '1900480149674188584':
   auto_classified: true
   classified_at: '2026-04-26'
@@ -33,34 +19,6 @@
   matched_rule: Paul 私人感觸/追思，永久 internal
   outcome: keep_internal
   title: 對牧師的懷念與追思
-'1900525539962838824':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-838824-circular-economy-decluttering.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 循環經濟與斷舍離服務合作模式探討
-'1900710102223705576':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-705576-rockwool-recycling.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 岩棉回收處理與產品合作討論
-'1900713912933963240':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-963240-material-substitution-fire.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 材料替代與防火性能討論會議記錄
-'1900727090967384168':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-384168-circular-economy-recycling-models.md
-  matched_rule: 含具名公司/合作對象/商務洽談關鍵詞，永久下架
-  outcome: delete
-  title: 循環經濟回收商業模式合作探討
 '1901006869430898432':
   auto_classified: true
   classified_at: '2026-04-26'
@@ -68,27 +26,6 @@
   matched_rule: 題材公開但夾雜個人/合作元素，去識別化後可恢復
   outcome: redact_and_restore
   title: AI藥物設計與生命科學研究的跨界合作
-'1901285092044178104':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-178104-medical-aesthetics-overseas.md
-  matched_rule: 含具名公司/合作對象/商務洽談關鍵詞，永久下架
-  outcome: delete
-  title: 醫美集團業務與系統介紹及海外市場拓展討論
-'1901441776745593912':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-593912-human-nature-truths.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 人性真相68條分享
-'1901454140883221560':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-221560-japan-regenerative-medicine.md
-  matched_rule: 含具名公司/合作對象/商務洽談關鍵詞，永久下架
-  outcome: delete
-  title: 日本CET公司臺灣再生醫療合作項目洽談
 '1901473991147782928':
   auto_classified: true
   classified_at: '2026-04-26'
@@ -96,73 +33,3 @@
   matched_rule: 題材公開但夾雜個人/合作元素，去識別化後可恢復
   outcome: redact_and_restore
   title: 預防醫學服務設計與AI藥物開發的商業生態探討
-'1901548477691866496':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-866496-environmental-innovation-npo.md
-  matched_rule: 含具名公司/合作對象/商務洽談關鍵詞，永久下架
-  outcome: delete
-  title: 環保創新與公益事業合作交流
-'1901630702693315912':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-315912-hinton-ai-deception.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: AI 的欺騙性與不可馴化性：Geoffrey Hinton 對人類生存的警告
-'1901841819663161976':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-161976-ai-timeline-prediction.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: AI 能力演進的時間線預測：從專業替代到超級智慧
-'1902744775333850688':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-850688-overcoming-fear-breakthrough.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 擺脫恐懼，突破人生局限的終極密碼
-'1902744860159479752':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-479752-taiwan-environmental-projects.md
-  matched_rule: 含具名公司/合作對象/商務洽談關鍵詞，永久下架
-  outcome: delete
-  title: 台灣環保循環產業合作項目討論
-'1903301313976504720':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-504720-neuroplasticity.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 神經可塑性：大腦開發的科學方法與實踐指南
-'1903762369050584104':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-584104-life-energy-management.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 人生能量管理：從低電量到滿格狀態的指南
-'1905623892703216736':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-216736-spear-grass-growth-law.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 尖毛草定律與厚積薄發的人生成長
-'1905634836279874728':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-874728-heavy-tail-extreme-values.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 重尾：世界服從極端值
-'1905762531025888480':
-  auto_classified: true
-  classified_at: '2026-04-26'
-  file: getnote-888480-compound-interest-capital.md
-  matched_rule: 公開人物觀點/演講轉錄/通用知識方法論，可恢復 public
-  outcome: restore_public
-  title: 複利的真相：超越金錢的人生資本積累戰略
