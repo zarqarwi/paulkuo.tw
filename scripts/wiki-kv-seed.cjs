@@ -3,98 +3,19 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const matter = require('gray-matter');
 
 const PROJECT_ROOT = process.cwd();
 const WIKI_DIR = path.join(PROJECT_ROOT, 'src', 'content', 'wiki');
 const CONCEPTS_DIR = path.join(WIKI_DIR, 'concepts');
 const NAMESPACE_ID = 'c066a2fd7942494c8ead37cc518b191b';
 
-/**
- * Parse YAML frontmatter from markdown content
- * Returns { frontmatter: object, body: string }
- */
 function parseFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) {
-    throw new Error('Invalid frontmatter format');
-  }
-
-  const frontmatterStr = match[1];
-  const body = match[2].trim();
-
-  // Simple YAML parser for our specific use case
-  const frontmatter = {};
-  const lines = frontmatterStr.split('\n');
-  let currentKey = null;
-  let currentValue = [];
-  let isArray = false;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
-
-    if (!trimmed) {
-      // Save current key if it's an array
-      if (currentKey && isArray && currentValue.length > 0) {
-        frontmatter[currentKey] = currentValue;
-        currentKey = null;
-        currentValue = [];
-        isArray = false;
-      }
-      continue;
-    }
-
-    const colonIndex = line.indexOf(':');
-    if (colonIndex === -1) {
-      // Might be continuation of array
-      if (isArray && trimmed.startsWith('-')) {
-        const item = trimmed.slice(1).trim();
-        currentValue.push(item);
-      }
-      continue;
-    }
-
-    const key = line.substring(0, colonIndex).trim();
-    const valueStr = line.substring(colonIndex + 1).trim();
-
-    // Save previous key if it was an array
-    if (currentKey && isArray && currentValue.length > 0) {
-      frontmatter[currentKey] = currentValue;
-      currentKey = null;
-      currentValue = [];
-      isArray = false;
-    }
-
-    // Parse arrays [item1, item2] on single line
-    if (valueStr.startsWith('[') && valueStr.endsWith(']')) {
-      const arrayContent = valueStr.slice(1, -1);
-      frontmatter[key] = arrayContent
-        .split(',')
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
-    } else if (valueStr === 'true') {
-      frontmatter[key] = true;
-    } else if (valueStr === 'false') {
-      frontmatter[key] = false;
-    } else if (!isNaN(valueStr) && valueStr !== '') {
-      frontmatter[key] = parseInt(valueStr, 10);
-    } else if (valueStr === '') {
-      // Empty value might be start of array
-      currentKey = key;
-      currentValue = [];
-      isArray = true;
-    } else {
-      // Remove quotes if present
-      frontmatter[key] = valueStr.replace(/^["']|["']$/g, '');
-    }
-  }
-
-  // Save last key if it's an array
-  if (currentKey && isArray && currentValue.length > 0) {
-    frontmatter[currentKey] = currentValue;
-  }
-
-  return { frontmatter, body };
+  const parsed = matter(content);
+  return {
+    frontmatter: parsed.data,
+    body: parsed.content.trim(),
+  };
 }
 
 /**
