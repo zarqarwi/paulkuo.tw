@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "updated": "2026-04-26",
+  "description": "cross-project-governance scheduled task 的監測清單。優先讀 monitoring[]；archived[] 保留歷史不再掃描。",
+  "monitoring": [
+    {
+      "repo": "zarqarwi/paulkuo.tw",
+      "default_branch": "main",
+      "primary": true,
+      "description": "主站 + Wiki + Worker + ACP + AI Ready + TQEF。governance metrics 和報告 commit 寫回這個 repo。"
+    },
+    {
+      "repo": "zarqarwi/get-biji-notes",
+      "default_branch": "master",
+      "primary": false,
+      "description": "得到 App 筆記同步 private repo（注意預設分支是 master 不是 main），是 LLM Wiki 的 ingest 來源。"
+    }
+  ],
+  "archived": [
+    {
+      "repo": "zarqarwi/formosa-esg-2026",
+      "archived_on": "2026-04-26",
+      "reason": "Paul 2026-04-26 確認專案已結束，停止監測。"
+    }
+  ]
+}
