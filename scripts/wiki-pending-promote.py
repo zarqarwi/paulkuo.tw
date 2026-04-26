@@ -16,6 +16,7 @@ Visibility & sensitivity rules: see docs/wiki-visibility-rules.md (SSOT).
 """
 
 import re
+import sys
 import yaml
 from pathlib import Path
 
@@ -24,6 +25,9 @@ PENDING = PROJECT_ROOT / "src" / "content" / "wiki" / "sources_pending"
 SOURCES = PROJECT_ROOT / "src" / "content" / "wiki" / "sources"
 
 PENDING_FIELDS_TO_STRIP = ("pending_status", "pending_since", "review_notes")
+
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from wiki_dialogue_lib import detect_dialogue  # noqa: E402
 
 
 def split_frontmatter(text):
@@ -41,6 +45,23 @@ def strip_pending_fields(fm_text):
         ln for ln in lines
         if not any(ln.startswith(f"{k}:") for k in PENDING_FIELDS_TO_STRIP)
     )
+
+
+def inject_dialogue_fields(fm_text: str, result: dict) -> str:
+    """Append dialogue / dialogue_inference / speakers to raw YAML frontmatter text.
+
+    Operates on raw text to preserve existing field order and quoting style,
+    matching the same convention as strip_pending_fields.
+    """
+    lines = []
+    lines.append(f"dialogue: {str(result['dialogue']).lower()}")
+    lines.append(f"dialogue_inference: {result['dialogue_inference']}")
+    speakers = result.get('speakers') or []
+    if speakers:
+        lines.append("speakers:")
+        for sp in speakers:
+            lines.append(f"  - {sp}")
+    return fm_text + "\n" + "\n".join(lines)
 
 
 def main():
@@ -73,6 +94,12 @@ def main():
             if target.exists():
                 errors.append((path.name, f"target already in sources/: {target.name}"))
                 continue
+
+            # Inject dialogue fields before stripping pending markers (idempotent guard).
+            if "dialogue" not in fm:
+                dialogue_result = detect_dialogue(fm, body)
+                fm_text = inject_dialogue_fields(fm_text, dialogue_result)
+
             cleaned_fm = strip_pending_fields(fm_text)
             new_content = f"---\n{cleaned_fm}\n---\n{body}"
             target.write_text(new_content, encoding="utf-8")
