@@ -9,6 +9,7 @@ const PROJECT_ROOT = process.cwd();
 const WIKI_DIR = path.join(PROJECT_ROOT, 'src', 'content', 'wiki');
 const CONCEPTS_DIR = path.join(WIKI_DIR, 'concepts');
 const NAMESPACE_ID = 'c066a2fd7942494c8ead37cc518b191b';
+const isDryRun = process.argv.includes('--dry-run');
 
 function parseFrontmatter(content) {
   const parsed = matter(content);
@@ -75,8 +76,14 @@ function buildSearchIndex() {
  * Upload a single KV key using wrangler CLI
  */
 function uploadToKV(key, value) {
+  const jsonStr = typeof value === 'string' ? value : JSON.stringify(value);
+
+  if (isDryRun) {
+    console.log(`  [DRY-RUN] would upload ${key} (${Math.round(jsonStr.length / 1024)}KB)`);
+    return;
+  }
+
   try {
-    const jsonStr = typeof value === 'string' ? value : JSON.stringify(value);
     const tmpFile = path.join(require('os').tmpdir(), `kv-seed-${Date.now()}.json`);
     fs.writeFileSync(tmpFile, jsonStr, 'utf-8');
 
@@ -100,7 +107,9 @@ function uploadToKV(key, value) {
  * Main seeding logic
  */
 async function seed() {
-  console.log('=== Cloudflare KV Wiki Seeder ===\n');
+  console.log('=== Cloudflare KV Wiki Seeder ===');
+  if (isDryRun) console.log('=== DRY-RUN MODE — no actual KV writes ===');
+  console.log('');
 
   // Verify files exist
   if (!fs.existsSync(WIKI_DIR)) {
