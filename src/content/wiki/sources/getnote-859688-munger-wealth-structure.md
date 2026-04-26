@@ -1,69 +1,71 @@
 ---
-title: "財富的結構邏輯：勤奮的局限與現金流的放大"
+title: 財富的結構邏輯：勤奮的局限與現金流的放大
 type: source
 pillar: startup
-visibility: internal
-quarantine:
-  reason: "scanner_bug_2026_04_26_audit_recording_set_44"
-  observed_visibility: internal
-  quarantined_at: "2026-04-26"
-  needs_review: true
-  review_outcome: pending  # set by Cowork during phase-2 audit
+visibility: public
 created: 2026-04-05
 updated: 2026-04-05
 source_count: 1
 confidence: medium
-tags: [wealth-strategy, investment-philosophy, leverage, cash-flow]
-links_to: [enterprise-ai-adoption, steady-state-survival-trap]
+tags:
+- wealth-strategy
+- investment-philosophy
+- leverage
+- cash-flow
+links_to:
+- enterprise-ai-adoption
+- steady-state-survival-trap
 linked_from: []
-raw_source_path: "notes/06_個人成長與學習/芒格的财富智慧：结构而非勤奋决定财富上限_1900430189540859688.md"
+raw_source_path: notes/06_個人成長與學習/芒格的财富智慧：结构而非勤奋决定财富上限_1900430189540859688.md
 raw_source_type: getnote
-raw_note_id: "1900430189540859688"
-enriched_at: "2026-04-22"
-enriched_by: "haiku-4.5"
-summary: "文章重新審視財富積累的驅動力，論證勤奮有天花板，真正決定財富上限的是對世界運行方式的理解深度。核心論點：財富來自結構放大而非線性勞動堆積，結構的基礎是穩定現金流。文章並重新定義槓桿本質——把未來現金流提前折現到今天，伴隨等量風險。提出個人在認知不足時應遠離槓桿，現金的價值在於給予大機會來臨時的選擇權與判斷自由度。強調真正的大機會只在多數人焦慮恐懼時出現，能否參與取決於結構而非膽量。"
+raw_note_id: '1900430189540859688'
+enriched_at: '2026-04-22'
+enriched_by: haiku-4.5
+summary: 文章重新審視財富積累的驅動力，論證勤奮有天花板，真正決定財富上限的是對世界運行方式的理解深度。核心論點：財富來自結構放大而非線性勞動堆積，結構的基礎是穩定現金流。文章並重新定義槓桿本質——把未來現金流提前折現到今天，伴隨等量風險。提出個人在認知不足時應遠離槓桿，現金的價值在於給予大機會來臨時的選擇權與判斷自由度。強調真正的大機會只在多數人焦慮恐懼時出現，能否參與取決於結構而非膽量。
 key_points:
-  - "勤奮的線性勞動有明確天花板，約30～35年工作生涯無法指數級增長"
-  - "結構放大是財富倍增的核心機制，穩定現金流是所有結構的基礎"
-  - "槓桿本質是把未來現金流折現到今天，享受放大等同承擔未來風險"
-  - "認知不足時遠離槓桿是生存智慧，危險在於未形成勢能就一次性兌換未來"
-  - "現金代表選擇權，在周期反轉與大機會降臨時能否從容判斷的決定因素"
+- 勤奮的線性勞動有明確天花板，約30～35年工作生涯無法指數級增長
+- 結構放大是財富倍增的核心機制，穩定現金流是所有結構的基礎
+- 槓桿本質是把未來現金流折現到今天，享受放大等同承擔未來風險
+- 認知不足時遠離槓桿是生存智慧，危險在於未形成勢能就一次性兌換未來
+- 現金代表選擇權，在周期反轉與大機會降臨時能否從容判斷的決定因素
 quotes:
-  - text: "真正決定你財富上限的從來不是勤奋程度，而是你理解世界運行方式的深度。"
-    timestamp: ""
-  - text: "財富從來不是靠體力和意志一點一點堆出來的，財富是被結構放大的，而結構的核心是現金流。"
-    timestamp: ""
-  - text: "杠杆的本質是把未來現金流提前折現到今天。今天享受的放大伴隨著未來的風險。"
-    timestamp: ""
-  - text: "如果你沒有穩定現金流，就不該幻想靠投資翻身。不是因為你不聰明，而是因為你承受不起波動。"
-    timestamp: ""
-  - text: "現金是權利——在周期反轉時還能選擇不動的權利，在別人被迫出售時能從容判斷的權利。"
-    timestamp: ""
+- text: 真正決定你財富上限的從來不是勤奋程度，而是你理解世界運行方式的深度。
+  timestamp: ''
+- text: 財富從來不是靠體力和意志一點一點堆出來的，財富是被結構放大的，而結構的核心是現金流。
+  timestamp: ''
+- text: 杠杆的本質是把未來現金流提前折現到今天。今天享受的放大伴隨著未來的風險。
+  timestamp: ''
+- text: 如果你沒有穩定現金流，就不該幻想靠投資翻身。不是因為你不聰明，而是因為你承受不起波動。
+  timestamp: ''
+- text: 現金是權利——在周期反轉時還能選擇不動的權利，在別人被迫出售時能從容判斷的權利。
+  timestamp: ''
 chapters:
-  - title: "勤奋的局限與財富天花板"
-    start: ""
-    summary: "線性勞動有明確天花板，一人工作生涯約30～35年，結果無法指數級增長，所處軌道決定最遠能走多遠。"
-  - title: "結構放大機制與現金流基礎"
-    start: ""
-    summary: "財富來自結構放大而非勤奋堆積，結構的核心是穩定現金流。房地產、企業、穩定收益來源提供時間維度上的站樁能力。"
-  - title: "槓桿本質與風險認知"
-    start: ""
-    summary: "槓桿把未來現金流折現到今天，享受的放大伴隨等量未來風險。認知不足時遠離槓桿是生存智慧而非保守。"
-  - title: "現金的權利性與大機會時機"
-    start: ""
-    summary: "現金代表在周期反轉時的選擇權與判斷自由。真正大機會只在多數人焦慮恐懼時出現，能否參與取決於結構而非膽量。"
+- title: 勤奋的局限與財富天花板
+  start: ''
+  summary: 線性勞動有明確天花板，一人工作生涯約30～35年，結果無法指數級增長，所處軌道決定最遠能走多遠。
+- title: 結構放大機制與現金流基礎
+  start: ''
+  summary: 財富來自結構放大而非勤奋堆積，結構的核心是穩定現金流。房地產、企業、穩定收益來源提供時間維度上的站樁能力。
+- title: 槓桿本質與風險認知
+  start: ''
+  summary: 槓桿把未來現金流折現到今天，享受的放大伴隨等量未來風險。認知不足時遠離槓桿是生存智慧而非保守。
+- title: 現金的權利性與大機會時機
+  start: ''
+  summary: 現金代表在周期反轉時的選擇權與判斷自由。真正大機會只在多數人焦慮恐懼時出現，能否參與取決於結構而非膽量。
 concept_links:
-  matched: [steady-state-survival-trap]
+  matched:
+  - steady-state-survival-trap
   candidates:
-    - slug_zh: "working-capital-structure"
-      title: "工作資本結構與時間槓桿"
-      reason: "文章核心論點強調『結構的核心是現金流』、『穩定現金流的企業』是財富放大基礎，但現有 concept 清單中無『現金流結構』或『工作資本管理』相關議題。本文主軸並非 AI 或教育相關，而是財務結構邏輯，應獨立成 concept。"
-    - slug_zh: "leverage-risk-awareness"
-      title: "槓桿風險認知與認知邊界"
-      reason: "文章重點論述『杠杆的本質是把未來現金流提前折現』、『認知不足時遠離杠杆是生存智慧』，涉及個人認知邊界與風險承受能力，與現有清單無直接對應概念。"
-    - slug_zh: "market-cycle-optionality"
-      title: "市場周期與決策自由度"
-      reason: "文章強調『現金是權利——在周期反轉時還能選擇不動的權利』、『真正的大機會只在多數人焦慮恐懼時出現』，涉及周期認知與決策自由度，是獨立的財富思維主軸。"
+  - slug_zh: working-capital-structure
+    title: 工作資本結構與時間槓桿
+    reason: 文章核心論點強調『結構的核心是現金流』、『穩定現金流的企業』是財富放大基礎，但現有 concept 清單中無『現金流結構』或『工作資本管理』相關議題。本文主軸並非
+      AI 或教育相關，而是財務結構邏輯，應獨立成 concept。
+  - slug_zh: leverage-risk-awareness
+    title: 槓桿風險認知與認知邊界
+    reason: 文章重點論述『杠杆的本質是把未來現金流提前折現』、『認知不足時遠離杠杆是生存智慧』，涉及個人認知邊界與風險承受能力，與現有清單無直接對應概念。
+  - slug_zh: market-cycle-optionality
+    title: 市場周期與決策自由度
+    reason: 文章強調『現金是權利——在周期反轉時還能選擇不動的權利』、『真正的大機會只在多數人焦慮恐懼時出現』，涉及周期認知與決策自由度，是獨立的財富思維主軸。
 ---
 
 ## 原文摘要

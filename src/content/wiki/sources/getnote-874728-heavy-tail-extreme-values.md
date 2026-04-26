@@ -2,64 +2,61 @@
 title: 重尾：世界服從極端值
 type: source
 pillar: life
-visibility: internal
-quarantine:
-  reason: "scanner_bug_2026_04_26_audit_extended_audit_21"
-  observed_visibility: internal
-  quarantined_at: "2026-04-26"
-  needs_review: true
-  review_outcome: pending  # set by Cowork during phase-2 audit
+visibility: public
 source_count: 1
 confidence: low
 tags:
-  - statistics
-  - probability
-  - risk-analysis
-  - antifragility
+- statistics
+- probability
+- risk-analysis
+- antifragility
 links_to:
-  - black-swan-events
-  - risk-management
-  - uncertainty
+- black-swan-events
+- risk-management
+- uncertainty
 raw_source_path: /Users/apple/Desktop/01_專案進行中/get_筆記/notes/05_商務會議/重尾：世界服从极端值_1905634836279874728.md
 raw_source_type: get_note
 raw_note_id: '1905634836279874728'
-enriched_at: "2026-04-22"
-enriched_by: "haiku-4.5"
-summary: "本文探討重尾分布（Fat Tail）現象在現實世界的普遍性與深刻啟示。極端事件的發生頻率遠高於正態分佈預測，收入分佈、企業規模、自然災害等都呈現重尾特徵。關鍵洞察是少數極端事件決定整體結果，標準統計模型往往低估極端風險。文章強調風險管理不能依賴平均值決策，必須評估系統脆弱性並構建反脆弱性設計，同時重視被忽視的極端成功機會。常見誤區包括高估正態分佈適用性、忽視尾部風險、線性思維在非線性世界的失效。"
+enriched_at: '2026-04-22'
+enriched_by: haiku-4.5
+summary: 本文探討重尾分布（Fat Tail）現象在現實世界的普遍性與深刻啟示。極端事件的發生頻率遠高於正態分佈預測，收入分佈、企業規模、自然災害等都呈現重尾特徵。關鍵洞察是少數極端事件決定整體結果，標準統計模型往往低估極端風險。文章強調風險管理不能依賴平均值決策，必須評估系統脆弱性並構建反脆弱性設計，同時重視被忽視的極端成功機會。常見誤區包括高估正態分佈適用性、忽視尾部風險、線性思維在非線性世界的失效。
 key_points:
-  - "極端事件頻率遠高於正態分佈預測，現實世界普遍存在重尾特徵分布"
-  - "少數極端事件決定整體結果，標準統計模型低估極端風險"
-  - "風險管理必須考慮極端情景與系統脆弱性評估，不依賴平均值"
-  - "反脆弱性設計能使系統從波動與極端事件中獲益而非受損"
-  - "線性思維在非線性世界失效，需認識極端成功機會被系統忽視"
+- 極端事件頻率遠高於正態分佈預測，現實世界普遍存在重尾特徵分布
+- 少數極端事件決定整體結果，標準統計模型低估極端風險
+- 風險管理必須考慮極端情景與系統脆弱性評估，不依賴平均值
+- 反脆弱性設計能使系統從波動與極端事件中獲益而非受損
+- 線性思維在非線性世界失效，需認識極端成功機會被系統忽視
 quotes:
-  - text: "在一個重尾的世界裡，你要擔心的不是平均情景，而是那些看似不可能但會改變一切的事件。"
-    timestamp: ""
+- text: 在一個重尾的世界裡，你要擔心的不是平均情景，而是那些看似不可能但會改變一切的事件。
+  timestamp: ''
 chapters:
-  - title: "重尾的本質"
-    start: ""
-    summary: "闡述極端事件發生頻率遠高於正態分佈預測，現實世界收入、企業規模、自然災害等都呈重尾特徵，標準模型低估風險。"
-  - title: "極端值的影響"
-    start: ""
-    summary: "說明少數極端事件決定整體結果，非線性效應遠超預期，長期暴露於重尾風險必然產生破壞性事件。"
-  - title: "實踐啟示與風險應對"
-    start: ""
-    summary: "強調風險管理需考慮極端情景、評估系統脆弱性、構建反脆弱性設計、抓取極端成功機會等策略。"
-  - title: "常見誤區與線性思維陷阱"
-    start: ""
-    summary: "批評高估正態分佈適用性、忽視尾部風險、線性思維在非線性世界失效的認知錯誤。"
+- title: 重尾的本質
+  start: ''
+  summary: 闡述極端事件發生頻率遠高於正態分佈預測，現實世界收入、企業規模、自然災害等都呈重尾特徵，標準模型低估風險。
+- title: 極端值的影響
+  start: ''
+  summary: 說明少數極端事件決定整體結果，非線性效應遠超預期，長期暴露於重尾風險必然產生破壞性事件。
+- title: 實踐啟示與風險應對
+  start: ''
+  summary: 強調風險管理需考慮極端情景、評估系統脆弱性、構建反脆弱性設計、抓取極端成功機會等策略。
+- title: 常見誤區與線性思維陷阱
+  start: ''
+  summary: 批評高估正態分佈適用性、忽視尾部風險、線性思維在非線性世界失效的認知錯誤。
 concept_links:
-  matched: [heavy-tail-distribution]
+  matched:
+  - heavy-tail-distribution
   candidates:
-    - slug_zh: "risk-management"
-      title: "風險管理"
-      reason: "文章核心議題。原文明確指出『風險管理——不能依賴平均值進行決策，必須考慮極端情景』，風險管理是重尾分布應用的直接實踐領域，但該 concept 不在現有清單中，建議獨立列為候選主題。"
-    - slug_zh: "antifragility"
-      title: "反脆弱性"
-      reason: "文章明確論述『反脆弱性構建——設計能從波動中獲益的系統』，但該 concept 不在現有清單中，為重尾世界的策略應對核心概念，建議獨立列出。"
-    - slug_zh: "black-swan-events"
-      title: "黑天鵝事件"
-      reason: "文章隱喻層面涉及『看似不可能但會改變一切的事件』，與黑天鵝事件相關，但黑天鵝是重尾現象的具體案例表現，不是本文核心論述主軸。該 concept 不在現有清單中。"
+  - slug_zh: risk-management
+    title: 風險管理
+    reason: 文章核心議題。原文明確指出『風險管理——不能依賴平均值進行決策，必須考慮極端情景』，風險管理是重尾分布應用的直接實踐領域，但該 concept
+      不在現有清單中，建議獨立列為候選主題。
+  - slug_zh: antifragility
+    title: 反脆弱性
+    reason: 文章明確論述『反脆弱性構建——設計能從波動中獲益的系統』，但該 concept 不在現有清單中，為重尾世界的策略應對核心概念，建議獨立列出。
+  - slug_zh: black-swan-events
+    title: 黑天鵝事件
+    reason: 文章隱喻層面涉及『看似不可能但會改變一切的事件』，與黑天鵝事件相關，但黑天鵝是重尾現象的具體案例表現，不是本文核心論述主軸。該 concept
+      不在現有清單中。
 ---
 
 ## 概述

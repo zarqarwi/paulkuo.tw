@@ -8,5 +8,78 @@
     }
   },
   "_see_also": "docs/wiki-visibility-rules.md (SSOT for visibility & sensitivity)",
-  "blocklist": {}
+  "blocklist": {
+    "1901285092044178104": {
+      "reason": "含具名集團 + 海外市場拓展商務內容",
+      "added_at": "2026-04-26",
+      "added_by": "auto+paul",
+      "title_at_delete": "醫美集團業務與系統介紹及海外市場拓展"
+    },
+    "1901454140883221560": {
+      "reason": "含具名公司（日本CET）+ 合作洽談",
+      "added_at": "2026-04-26",
+      "added_by": "auto+paul",
+      "title_at_delete": "日本CET公司臺灣再生醫療合作項目洽談"
+    },
+    "1900727090967384168": {
+      "reason": "商業模式合作探討",
+      "added_at": "2026-04-26",
+      "added_by": "auto+paul",
+      "title_at_delete": "循環經濟回收商業模式合作探討"
+    },
+    "1902744860159479752": {
+      "reason": "合作項目討論",
+      "added_at": "2026-04-26",
+      "added_by": "auto+paul",
+      "title_at_delete": "台灣環保循環產業合作項目討論"
+    },
+    "1900437610173749536": {
+      "reason": "合作策略框架",
+      "added_at": "2026-04-26",
+      "added_by": "auto+paul",
+      "title_at_delete": "健康生態系合作策略與項目規劃框架"
+    },
+    "1901548477691866496": {
+      "reason": "合作交流",
+      "added_at": "2026-04-26",
+      "added_by": "auto+paul",
+      "title_at_delete": "環保創新與公益事業合作交流"
+    },
+    "1900528527112482512": {
+      "reason": "商業拓展",
+      "added_at": "2026-04-26",
+      "added_by": "cowork+paul",
+      "title_at_delete": "整理師公益講座運營模式與商業拓展"
+    },
+    "1901355621849661768": {
+      "reason": "商業會議",
+      "added_at": "2026-04-26",
+      "added_by": "cowork+paul",
+      "title_at_delete": "商業合作與專案推進會議討論"
+    },
+    "1900474137793714464": {
+      "reason": "合作框架",
+      "added_at": "2026-04-26",
+      "added_by": "cowork+paul",
+      "title_at_delete": "組織資源盤點與跨領域合作框架"
+    },
+    "1900710102223705576": {
+      "reason": "產品合作討論（商務性質）",
+      "added_at": "2026-04-26",
+      "added_by": "cowork+paul",
+      "title_at_delete": "岩棉回收處理與產品合作討論"
+    },
+    "1900525539962838824": {
+      "reason": "服務合作模式探討（商務性質）",
+      "added_at": "2026-04-26",
+      "added_by": "cowork+paul",
+      "title_at_delete": "循環經濟與斷舍離服務合作模式探討"
+    },
+    "1900713912933963240": {
+      "reason": "會議記錄（商務性質）",
+      "added_at": "2026-04-26",
+      "added_by": "cowork+paul",
+      "title_at_delete": "材料替代與防火性能討論會議記錄"
+    }
+  }
 }

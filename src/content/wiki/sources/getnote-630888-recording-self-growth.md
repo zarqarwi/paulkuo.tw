@@ -1,75 +1,80 @@
 ---
-title: "記錄：最低成本的自我進化系統"
+title: 記錄：最低成本的自我進化系統
 type: source
 pillar: life
-visibility: internal
-quarantine:
-  reason: "scanner_bug_2026_04_26_audit_recording_set_44"
-  observed_visibility: internal
-  quarantined_at: "2026-04-26"
-  needs_review: true
-  review_outcome: pending  # set by Cowork during phase-2 audit
+visibility: public
 created: 2026-04-05
 updated: 2026-04-05
 source_count: 1
 confidence: medium
-tags: [self-improvement, habit-formation, feedback-loops, personal-growth]
-links_to: [skill-development, one-person-team]
+tags:
+- self-improvement
+- habit-formation
+- feedback-loops
+- personal-growth
+links_to:
+- skill-development
+- one-person-team
 linked_from: []
-raw_source_path: "notes/06_個人成長與學習/记录是转运翻身最低成本的自我成长武器_1904033043258630888.md"
+raw_source_path: notes/06_個人成長與學習/记录是转运翻身最低成本的自我成长武器_1904033043258630888.md
 raw_source_type: getnote
-raw_note_id: "1904033043258630888"
-enriched_at: "2026-04-22"
-enriched_by: "haiku-4.5"
-summary: "本文論證記錄是最低成本的自我進化系統，而非普通日記。通過清晰記錄行動、結果與問題，建立反饋閉環，對抗人的遺忘與自我認知偏差。文章結合袁了凡、曾國藩等古典案例與當代實踐，論證堅持記錄能在一個月內看到變化，三個月內清晰感受改變，一年內改變人生軌跡。記錄的核心不在表達優美，而在真實具體地追蹤時間、知識、資源、心理四個維度，藉此照見真實自我，掌控人生方向。記錄本質是建立自我認知的反饋閉環，對抗人性中的遺忘、麻木與自欺。"
+raw_note_id: '1904033043258630888'
+enriched_at: '2026-04-22'
+enriched_by: haiku-4.5
+summary: 本文論證記錄是最低成本的自我進化系統，而非普通日記。通過清晰記錄行動、結果與問題，建立反饋閉環，對抗人的遺忘與自我認知偏差。文章結合袁了凡、曾國藩等古典案例與當代實踐，論證堅持記錄能在一個月內看到變化，三個月內清晰感受改變，一年內改變人生軌跡。記錄的核心不在表達優美，而在真實具體地追蹤時間、知識、資源、心理四個維度，藉此照見真實自我，掌控人生方向。記錄本質是建立自我認知的反饋閉環，對抗人性中的遺忘、麻木與自欺。
 key_points:
-  - "記錄建立反饋閉環，清晰呈現行動、結果、問題，明確改進方向"
-  - "記錄如同照鏡子，暴露自身拖延、懶惰，突破自我認知偏差"
-  - "堅持一個月見變化、三個月感改變、一年改軌跡的三層級進度"
-  - "記錄須追蹤時間、知識、金錢、情緒四維度，無需華麗只需真實"
-  - "記錄不為他人而為自清醒，開始記錄時即開始掌控人生"
+- 記錄建立反饋閉環，清晰呈現行動、結果、問題，明確改進方向
+- 記錄如同照鏡子，暴露自身拖延、懶惰，突破自我認知偏差
+- 堅持一個月見變化、三個月感改變、一年改軌跡的三層級進度
+- 記錄須追蹤時間、知識、金錢、情緒四維度，無需華麗只需真實
+- 記錄不為他人而為自清醒，開始記錄時即開始掌控人生
 quotes:
-  - text: "記錄才是一個人轉運翻身最低成本的武器。真正的記錄是一套完整的自我進化系統。"
-    timestamp: ""
-  - text: "記錄就是幫你照鏡子，他逼著你看清真實的自己。人不是沒時間記錄，而是不敢面對真實。"
-    timestamp: ""
-  - text: "過去的習慣定義了現在的你，正在養成的新習慣定義了未來想要成為的你。人想要改變，任何時候開始都不晚。"
-    timestamp: ""
-  - text: "記錄不是為了給別人看，是為了讓自己變清醒。當你開始頻繁大量記錄自己，你就開始掌控自己的人生。"
-    timestamp: ""
-  - text: "記錄是改命的第一步，也是最關鍵的一步。你不記錄，永遠不知道自己能走多遠。"
-    timestamp: ""
+- text: 記錄才是一個人轉運翻身最低成本的武器。真正的記錄是一套完整的自我進化系統。
+  timestamp: ''
+- text: 記錄就是幫你照鏡子，他逼著你看清真實的自己。人不是沒時間記錄，而是不敢面對真實。
+  timestamp: ''
+- text: 過去的習慣定義了現在的你，正在養成的新習慣定義了未來想要成為的你。人想要改變，任何時候開始都不晚。
+  timestamp: ''
+- text: 記錄不是為了給別人看，是為了讓自己變清醒。當你開始頻繁大量記錄自己，你就開始掌控自己的人生。
+  timestamp: ''
+- text: 記錄是改命的第一步，也是最關鍵的一步。你不記錄，永遠不知道自己能走多遠。
+  timestamp: ''
 chapters:
-  - title: "記錄的定義與本質"
-    start: ""
-    summary: "記錄非日記而是自我進化系統，通過建立反饋閉環來對抗遺忘與自我認知偏差"
-  - title: "自我認知偏差的困境"
-    start: ""
-    summary: "大多數人誤以為在進步實則原地踏步，記錄如照鏡子暴露真實的自己與時間浪費"
-  - title: "記錄的時間效應"
-    start: ""
-    summary: "一個月見變化、三個月感改變、一年改軌跡的漸進式蛻變過程"
-  - title: "可記錄的四個維度"
-    start: ""
-    summary: "追蹤時間、知識、金錢、情緒四個維度，涵蓋完整的自我監測系統"
-  - title: "記錄的非表達性特質"
-    start: ""
-    summary: "記錄無需文筆優美，只需真實具體，工具簡繁皆可，目的在於自我清醒"
-  - title: "古典與當代實踐案例"
-    start: ""
-    summary: "袁了凡、曾國藩等古代實踐者與當代社群直播、內容創作者的記錄經驗"
+- title: 記錄的定義與本質
+  start: ''
+  summary: 記錄非日記而是自我進化系統，通過建立反饋閉環來對抗遺忘與自我認知偏差
+- title: 自我認知偏差的困境
+  start: ''
+  summary: 大多數人誤以為在進步實則原地踏步，記錄如照鏡子暴露真實的自己與時間浪費
+- title: 記錄的時間效應
+  start: ''
+  summary: 一個月見變化、三個月感改變、一年改軌跡的漸進式蛻變過程
+- title: 可記錄的四個維度
+  start: ''
+  summary: 追蹤時間、知識、金錢、情緒四個維度，涵蓋完整的自我監測系統
+- title: 記錄的非表達性特質
+  start: ''
+  summary: 記錄無需文筆優美，只需真實具體，工具簡繁皆可，目的在於自我清醒
+- title: 古典與當代實踐案例
+  start: ''
+  summary: 袁了凡、曾國藩等古代實踐者與當代社群直播、內容創作者的記錄經驗
 concept_links:
-  matched: [skill-development, personal-knowledge-system, recursive-self-improvement]
+  matched:
+  - skill-development
+  - personal-knowledge-system
+  - recursive-self-improvement
   candidates:
-    - slug_zh: "self-awareness-through-feedback"
-      title: "反饋閉環的自我認知機制"
-      reason: "文章核心論證『清晰記錄做過的事、產生的結果、出現的問題，就能明確後續改進方向』建立反饋閉環，但現有 concept 清單中『skill-development』與『recursive-self-improvement』只涵蓋技能端與遞迴端，未充分涵蓋『通過記錄建立反饋-認知-改進循環』的獨特系統架構。本議題應作為獨立 concept。"
-    - slug_zh: "tacit-self-knowledge"
-      title: "隱性自我認知的可視化"
-      reason: "文章強調『人最大的成長敵人是自身的遺忘與麻木』、『記錄就是照鏡子，逼著你看清真實的自己』，這涉及將隱性的自我迷盲轉化為顯性認知的過程。雖然 concept 清單有『tacit-knowledge』，但該概念指『無法言說的人類智慧』，而本文重點是『無法察覺的自身盲點透過記錄系統化』，範疇不同。"
-    - slug_zh: "habit-record-economy"
-      title: "習慣記錄的個人經濟學"
-      reason: "文章提及『可記錄的內容』包括『花費在有價值事情上的時間、收支金額』，強調時間與資源的可見化是改變人生的基礎。這與『attention-time』概念相近但更具操作性——是『透過習慣記錄來量化與優化個人資源配置』，應作為獨立議題。"
+  - slug_zh: self-awareness-through-feedback
+    title: 反饋閉環的自我認知機制
+    reason: 文章核心論證『清晰記錄做過的事、產生的結果、出現的問題，就能明確後續改進方向』建立反饋閉環，但現有 concept 清單中『skill-development』與『recursive-self-improvement』只涵蓋技能端與遞迴端，未充分涵蓋『通過記錄建立反饋-認知-改進循環』的獨特系統架構。本議題應作為獨立
+      concept。
+  - slug_zh: tacit-self-knowledge
+    title: 隱性自我認知的可視化
+    reason: 文章強調『人最大的成長敵人是自身的遺忘與麻木』、『記錄就是照鏡子，逼著你看清真實的自己』，這涉及將隱性的自我迷盲轉化為顯性認知的過程。雖然
+      concept 清單有『tacit-knowledge』，但該概念指『無法言說的人類智慧』，而本文重點是『無法察覺的自身盲點透過記錄系統化』，範疇不同。
+  - slug_zh: habit-record-economy
+    title: 習慣記錄的個人經濟學
+    reason: 文章提及『可記錄的內容』包括『花費在有價值事情上的時間、收支金額』，強調時間與資源的可見化是改變人生的基礎。這與『attention-time』概念相近但更具操作性——是『透過習慣記錄來量化與優化個人資源配置』，應作為獨立議題。
 ---
 
 ## 原文摘要

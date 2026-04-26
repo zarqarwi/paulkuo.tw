@@ -1,67 +1,72 @@
 ---
-title: "發芽報告：領導力、信任與變革的歷史視角"
+title: 發芽報告：領導力、信任與變革的歷史視角
 type: source
 pillar: life
-visibility: internal
-quarantine:
-  reason: "scanner_bug_2026_04_26_audit_extended_audit_21"
-  observed_visibility: internal
-  quarantined_at: "2026-04-26"
-  needs_review: true
-  review_outcome: pending  # set by Cowork during phase-2 audit
+visibility: public
 created: 2026-04-05
 updated: 2026-04-05
 source_count: 1
 confidence: medium
-tags: [領導力, 信任資本, 商業史, 創新協作]
-links_to: [human-ai-collaboration, one-person-team]
+tags:
+- 領導力
+- 信任資本
+- 商業史
+- 創新協作
+links_to:
+- human-ai-collaboration
+- one-person-team
 linked_from: []
-raw_source_path: "notes/02_醫療健康/发芽报告 2026-03-10_1903909051847161424.md"
+raw_source_path: notes/02_醫療健康/发芽报告 2026-03-10_1903909051847161424.md
 raw_source_type: getnote
-raw_note_id: "1903909051847161424"
-enriched_at: "2026-04-22"
-enriched_by: "haiku-4.5"
-summary: "透過晉商票號、戰場指揮、科技新秀三個歷史案例，探討AI時代領導力、信任資本與人才格局的深層邏輯。指出真正的領導力來自親臨現場而非遠程指揮，信任是「刻在人心中的印記」而非合同條款，需要長期網絡積累。AI時代顛覆傳統人才評估：經驗可能成為負債，好奇心與快速學習能力才是核心資產。信任資本的建構基於「不負所托」的承諾本質，跨越時空共鳴，成為商業文明最珍貴的底色。"
+raw_note_id: '1903909051847161424'
+enriched_at: '2026-04-22'
+enriched_by: haiku-4.5
+summary: 透過晉商票號、戰場指揮、科技新秀三個歷史案例，探討AI時代領導力、信任資本與人才格局的深層邏輯。指出真正的領導力來自親臨現場而非遠程指揮，信任是「刻在人心中的印記」而非合同條款，需要長期網絡積累。AI時代顛覆傳統人才評估：經驗可能成為負債，好奇心與快速學習能力才是核心資產。信任資本的建構基於「不負所托」的承諾本質，跨越時空共鳴，成為商業文明最珍貴的底色。
 key_points:
-  - "親臨戰場的領導勝過遠程指揮，現場信任建立優於紙面授權"
-  - "信任資本需長期網絡積累與制度設計，非短期合同可替代"
-  - "AI時代經驗可能成負債，好奇心與快速適應成為新資產"
-  - "「不負所托」是商業文明底色，承諾本質跨越時空共鳴"
-  - "格局反轉：年輕世代技術敏感度優於資深人士經驗價值"
+- 親臨戰場的領導勝過遠程指揮，現場信任建立優於紙面授權
+- 信任資本需長期網絡積累與制度設計，非短期合同可替代
+- AI時代經驗可能成負債，好奇心與快速適應成為新資產
+- 「不負所托」是商業文明底色，承諾本質跨越時空共鳴
+- 格局反轉：年輕世代技術敏感度優於資深人士經驗價值
 quotes:
-  - text: "真正的領導力，不是在後方發號施令，而是和團隊一起站在戰壕裡。"
-    timestamp: ""
-  - text: "信任不是寫在合同裡的條款，而是刻在人心中的印記。"
-    timestamp: ""
-  - text: "在技術爆炸的時代，經驗可能是負債，好奇心才是資產。"
-    timestamp: ""
-  - text: "忠人之事，就是說會長有所請託，不要辜負他啦。"
-    timestamp: ""
+- text: 真正的領導力，不是在後方發號施令，而是和團隊一起站在戰壕裡。
+  timestamp: ''
+- text: 信任不是寫在合同裡的條款，而是刻在人心中的印記。
+  timestamp: ''
+- text: 在技術爆炸的時代，經驗可能是負債，好奇心才是資產。
+  timestamp: ''
+- text: 忠人之事，就是說會長有所請託，不要辜負他啦。
+  timestamp: ''
 chapters:
-  - title: "現場領導力的價值"
-    start: ""
-    summary: "對比遠程指揮（麥克阿瑟在東京）與一線指揮（韓先楚在戰壕），強調與團隊同處的領導價值與信任建立。"
-  - title: "信任資本的長期積累"
-    start: ""
-    summary: "晉商票號日升昌（1823年）案例，展示基於鄉土社會網絡的信用背書如何支撐商業信任，體現長期網絡優於短期合同。"
-  - title: "AI時代的人才格局反轉"
-    start: ""
-    summary: "以19歲高中生霍爾迪在DIY Drones社區快速成長為例，說明技術敏感度與好奇心成為新資產，經驗可能成負債。"
-  - title: "信任與承諾的哲學本質"
-    start: ""
-    summary: "深掘「不負所托」的承諾本質與信任的內在機制，闡述其如何超越時空成為商業文明的核心底色。"
+- title: 現場領導力的價值
+  start: ''
+  summary: 對比遠程指揮（麥克阿瑟在東京）與一線指揮（韓先楚在戰壕），強調與團隊同處的領導價值與信任建立。
+- title: 信任資本的長期積累
+  start: ''
+  summary: 晉商票號日升昌（1823年）案例，展示基於鄉土社會網絡的信用背書如何支撐商業信任，體現長期網絡優於短期合同。
+- title: AI時代的人才格局反轉
+  start: ''
+  summary: 以19歲高中生霍爾迪在DIY Drones社區快速成長為例，說明技術敏感度與好奇心成為新資產，經驗可能成負債。
+- title: 信任與承諾的哲學本質
+  start: ''
+  summary: 深掘「不負所托」的承諾本質與信任的內在機制，闡述其如何超越時空成為商業文明的核心底色。
 concept_links:
-  matched: [human-ai-collaboration, learning-as-meta-skill]
+  matched:
+  - human-ai-collaboration
+  - learning-as-meta-skill
   candidates:
-    - slug_zh: "leadership-trust-capital"
-      title: "領導力與信任資本"
-      reason: "本文核心主軸探討領導力（親臨現場 vs 遠程指揮）與信任資本建構（晉商票號案例），但現有 concept 清單未涵蓋此議題。matched 中的 human-ai-collaboration 於逐字稿中僅作標籤參考（「[[human-ai-collaboration]]」），並非直接論述主軸；learning-as-meta-skill 則對應「好奇心才是資產」的觀點——在技術爆炸時代，快速學習能力成為核心競爭力，符合「學習本身成為後設技能」的核心論述。建議將領導力與信任資本獨立為新 concept。"
-    - slug_zh: "generational-shift-in-talent"
-      title: "人才格局代際反轉"
-      reason: "逐字稿明確指出「年輕世代的技術敏感度與好奇心成為新資產」，並以霍爾迪案例說明，但現有 concept 未直接涵蓋代際轉換視角。此為 AI 時代人才評估範式轉變的重要議題，值得獨立概念化。"
-    - slug_zh: "tacit-knowledge"
-      title: "隱性知識：無法言說的人類智慧"
-      reason: "信任的本質（「刻在人心中的印記」）與不負所托的承諾涉及隱性知識層面，但逐字稿重點在領導力與信任資本結構，而非隱性知識本身的認識論探討，故列為候選而非核心 match。"
+  - slug_zh: leadership-trust-capital
+    title: 領導力與信任資本
+    reason: 本文核心主軸探討領導力（親臨現場 vs 遠程指揮）與信任資本建構（晉商票號案例），但現有 concept 清單未涵蓋此議題。matched
+      中的 human-ai-collaboration 於逐字稿中僅作標籤參考（「[[human-ai-collaboration]]」），並非直接論述主軸；learning-as-meta-skill
+      則對應「好奇心才是資產」的觀點——在技術爆炸時代，快速學習能力成為核心競爭力，符合「學習本身成為後設技能」的核心論述。建議將領導力與信任資本獨立為新 concept。
+  - slug_zh: generational-shift-in-talent
+    title: 人才格局代際反轉
+    reason: 逐字稿明確指出「年輕世代的技術敏感度與好奇心成為新資產」，並以霍爾迪案例說明，但現有 concept 未直接涵蓋代際轉換視角。此為 AI 時代人才評估範式轉變的重要議題，值得獨立概念化。
+  - slug_zh: tacit-knowledge
+    title: 隱性知識：無法言說的人類智慧
+    reason: 信任的本質（「刻在人心中的印記」）與不負所托的承諾涉及隱性知識層面，但逐字稿重點在領導力與信任資本結構，而非隱性知識本身的認識論探討，故列為候選而非核心
+      match。
 ---
 
 ## 原文摘要

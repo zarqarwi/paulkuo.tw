@@ -1,70 +1,72 @@
 ---
-title: "可能：不確定性是意義的燃料"
+title: 可能：不確定性是意義的燃料
 type: source
 pillar: ai
-visibility: internal
-quarantine:
-  reason: "scanner_bug_2026_04_26_audit_extended_audit_21"
-  observed_visibility: internal
-  quarantined_at: "2026-04-26"
-  needs_review: true
-  review_outcome: pending  # set by Cowork during phase-2 audit
+visibility: public
 created: 2026-04-05
 updated: 2026-04-05
 source_count: 1
 confidence: high
-tags: [不確定性, 混沌理論, 世界觀, 意義]
-links_to: [human-judgment-in-ai-era, heavy-tail-distribution]
+tags:
+- 不確定性
+- 混沌理論
+- 世界觀
+- 意義
+links_to:
+- human-judgment-in-ai-era
+- heavy-tail-distribution
 linked_from: []
-raw_source_path: "notes/06_個人成長與學習/可能：不确定性是意义的燃料_1905655190129221528.md"
+raw_source_path: notes/06_個人成長與學習/可能：不确定性是意义的燃料_1905655190129221528.md
 raw_source_type: getnote
-raw_note_id: "1905655190129221528"
-enriched_at: "2026-04-22"
-enriched_by: "haiku-4.5"
-summary: "影片系統性分析宇宙與人生中的五類不確定性：混沌、計算不可約性、量子隨機性、模型不確定性（奈特不確定性）與博弈不確定性。透過重尾分布實驗證實，財富集中在少數人手中，而這些最富有的人並非能力最強者，而是運氣最佳者——能力本身也是運氣的體現（基因、時代、關鍵機遇）。影片論證不確定性的深層意義：它是推動意義、創新與成長的燃料。人應從抗拒不確定性進階到接納、擁抱，最終學會主動制造策略性不確定性。解決越大的不確定性問題，回報越高，這正是財富與意義的真正來源。"
+raw_note_id: '1905655190129221528'
+enriched_at: '2026-04-22'
+enriched_by: haiku-4.5
+summary: 影片系統性分析宇宙與人生中的五類不確定性：混沌、計算不可約性、量子隨機性、模型不確定性（奈特不確定性）與博弈不確定性。透過重尾分布實驗證實，財富集中在少數人手中，而這些最富有的人並非能力最強者，而是運氣最佳者——能力本身也是運氣的體現（基因、時代、關鍵機遇）。影片論證不確定性的深層意義：它是推動意義、創新與成長的燃料。人應從抗拒不確定性進階到接納、擁抱，最終學會主動制造策略性不確定性。解決越大的不確定性問題，回報越高，這正是財富與意義的真正來源。
 key_points:
-  - "五類不確定性體系：混沌、計算不可約、量子隨機、模型缺陷、博弈反身性，各有不同機制"
-  - "重尾分布證實財富與能力脫鉤：最富有者是運氣最佳者，非能力最強者"
-  - "能力本身為運氣產物：基因、時代匹配、關鍵機遇決定個人成就"
-  - "從抗拒到擁抱：應視不確定性為機遇，主動制造與管理不確定性環境"
-  - "不確定性驅動意義：解決難度越高的不確定性問題，越能獲得回報與自我成長"
+- 五類不確定性體系：混沌、計算不可約、量子隨機、模型缺陷、博弈反身性，各有不同機制
+- 重尾分布證實財富與能力脫鉤：最富有者是運氣最佳者，非能力最強者
+- 能力本身為運氣產物：基因、時代匹配、關鍵機遇決定個人成就
+- 從抗拒到擁抱：應視不確定性為機遇，主動制造與管理不確定性環境
+- 不確定性驅動意義：解決難度越高的不確定性問題，越能獲得回報與自我成長
 quotes:
-  - text: "世界不會提供絕對確定，而是通過不確定性生成意義。"
-    timestamp: ""
-  - text: "最富有的人並非能力最強者，而是運氣最佳者。"
-    timestamp: ""
-  - text: "解決不確定性越大，回報越高——『風浪越大魚越貴』。"
-    timestamp: ""
-  - text: "能力本身也是運氣的體現——基因、時代匹配度、關鍵機遇的組合。"
-    timestamp: ""
+- text: 世界不會提供絕對確定，而是通過不確定性生成意義。
+  timestamp: ''
+- text: 最富有的人並非能力最強者，而是運氣最佳者。
+  timestamp: ''
+- text: 解決不確定性越大，回報越高——『風浪越大魚越貴』。
+  timestamp: ''
+- text: 能力本身也是運氣的體現——基因、時代匹配度、關鍵機遇的組合。
+  timestamp: ''
 chapters:
-  - title: "五類不確定性的系統框架"
-    start: ""
-    summary: "介紹混沌、計算不可約性、量子隨機性、模型不確定性與博弈不確定性，說明各類型的來源與特性"
-  - title: "重尾分布與運氣的現實"
-    start: ""
-    summary: "通過實驗數據對比財富分布（重尾）與能力分布（正態），論證最富有者是運氣最佳者的事實"
-  - title: "能力的運氣本質"
-    start: ""
-    summary: "分析基因、時代背景、關鍵機遇如何構成能力，揭示個人成就中的隱性運氣因素"
-  - title: "從抗拒到擁抱不確定性"
-    start: ""
-    summary: "提出四階段心態進化：從恐懼抗拒到接受、擁抱，最終主動制造策略性不確定性"
-  - title: "不確定性作為意義與成長的燃料"
-    start: ""
-    summary: "論證不確定性難題的解決能力與回報成正相關，解釋為何「風浪越大魚越貴」"
+- title: 五類不確定性的系統框架
+  start: ''
+  summary: 介紹混沌、計算不可約性、量子隨機性、模型不確定性與博弈不確定性，說明各類型的來源與特性
+- title: 重尾分布與運氣的現實
+  start: ''
+  summary: 通過實驗數據對比財富分布（重尾）與能力分布（正態），論證最富有者是運氣最佳者的事實
+- title: 能力的運氣本質
+  start: ''
+  summary: 分析基因、時代背景、關鍵機遇如何構成能力，揭示個人成就中的隱性運氣因素
+- title: 從抗拒到擁抱不確定性
+  start: ''
+  summary: 提出四階段心態進化：從恐懼抗拒到接受、擁抱，最終主動制造策略性不確定性
+- title: 不確定性作為意義與成長的燃料
+  start: ''
+  summary: 論證不確定性難題的解決能力與回報成正相關，解釋為何「風浪越大魚越貴」
 concept_links:
-  matched: [heavy-tail-distribution, human-judgment-in-ai-era]
+  matched:
+  - heavy-tail-distribution
+  - human-judgment-in-ai-era
   candidates:
-    - slug_zh: "recursive-self-improvement"
-      title: "遞迴自我改進"
-      reason: "影片強調『從抗拒→接受→擁抱→制造不確定性』的進階路徑，及『解決越大的不確定性問題，回報越高』的成長機制，與遞迴自我改進概念相關；但此影片主軸不在自我改進方法論，而在不確定性的本質與意義，故列為候選"
-    - slug_zh: "learning-as-meta-skill"
-      title: "Learning as Meta-Skill"
-      reason: "影片論證『人應學會管理而非拒絕不確定性』，涉及能力適應與持續學習的重要性；然核心主題是不確定性的本質與財富運氣關係，不是學習能力本身，故為沾邊提及"
-    - slug_zh: "narrative-power"
-      title: "敘事力：意義建構的核心能力"
-      reason: "影片論證『不確定性是推動意義的燃料』，涉及如何在不確定環境中構建意義；但敘事力重點在於透過故事架構建立影響力，不是本影片主軸，故列候選"
+  - slug_zh: recursive-self-improvement
+    title: 遞迴自我改進
+    reason: 影片強調『從抗拒→接受→擁抱→制造不確定性』的進階路徑，及『解決越大的不確定性問題，回報越高』的成長機制，與遞迴自我改進概念相關；但此影片主軸不在自我改進方法論，而在不確定性的本質與意義，故列為候選
+  - slug_zh: learning-as-meta-skill
+    title: Learning as Meta-Skill
+    reason: 影片論證『人應學會管理而非拒絕不確定性』，涉及能力適應與持續學習的重要性；然核心主題是不確定性的本質與財富運氣關係，不是學習能力本身，故為沾邊提及
+  - slug_zh: narrative-power
+    title: 敘事力：意義建構的核心能力
+    reason: 影片論證『不確定性是推動意義的燃料』，涉及如何在不確定環境中構建意義；但敘事力重點在於透過故事架構建立影響力，不是本影片主軸，故列候選
 ---
 
 ## 原文摘要
