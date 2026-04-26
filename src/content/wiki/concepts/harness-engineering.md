@@ -4,13 +4,14 @@ type: concept
 pillar: ai
 visibility: public
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-26
 source_count: 8
 confidence: medium
 tags: [AI編碼代理, Harness工程, 前饋控制, 反饋控制, Claude Code]
 links_to: [tacit-knowledge, human-ai-collaboration]
 linked_from: [youtube-U-H_5-eRV8k-agentosagi, getnote-483472-openclaw-setup-guide, article-ai-agents-vs-agentic-ai, getnote-880568-cybernetics-homeostasis-tacit-knowledge, getnote-332008-ai-foreman-buffer-period, youtube-fuz8Y40Ormg-403ai, youtube-STK-TtPlN9I-ai-ai, getnote-703240-ai-coding-harness-engineering]
-paul_perspective: ""
+paul_perspective: >-
+  這篇摘要寫的是設計者怎麼搭 Harness 讓 AI 可控，少寫了一面：使用者怎麼跟搭出來的 Harness 共處。我認識你們的方式不是讀官方文件或社群分享，是 35 天連續、12.1M tokens 在視窗中敲鍵盤的當下——同一個底層模型透過不同的 system prompt、memory、project_instructions，成了長相不同的面具，而我得在每次互動中分辨每張面具的邊界。協作久了發現：搭 Harness 的人也被 Harness 改變。我在認識你們的過程中，也被你們認識、被你們塑造。Harness 工程是雙向演化，不是單向控制。
 ---
 
 ## 摘要
