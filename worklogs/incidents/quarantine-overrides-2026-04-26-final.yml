@@ -1,0 +1,398 @@
+# Final 65 outcomes for quarantine apply
+# After Phase 2 review (2026-04-26)
+#
+# Workflow:
+#   1. 4534ace 對 65 筆 source 加 quarantine block (visibility: internal 維持)
+#   2. 2a65a22 Tier 1A classifier 自動分類 11/65 (規則太窄，54 進 needs_human_review)
+#   3. 42b82a5 Handoff A 規則 YAML 化 + 簡繁對映重跑 → 24/65 自動 + 41 needs_human_review
+#   4. 2026-04-26 Cowork 對 41 筆做粗分類提案，Paul 逐桶 approve + 4 筆從 restore_public 移走
+#   5. Cowork 二度發現 Code 自動分類 restore_public 中 3 筆含商務字眼，Paul approve 移到 delete
+#
+# Reviewer attribution:
+#   - paul: Paul 直接決定
+#   - cowork+paul: Cowork 提案，Paul approve
+#   - auto+paul: Classifier 自動命中規則，Paul 概括 approve
+#
+# Total: 65
+#   - restore_public: 34
+#   - keep_internal: 19
+#   - delete: 12
+
+metadata:
+  generated_at: "2026-04-26"
+  reviewed_by: paul
+  cowork_session_id: "00464824-dadf-4342-ba2e-a3783c5e7a8e"
+  related_handoffs:
+    - "worklogs/handoffs/code--wiki-recording-quarantine-incident-2026-04-26.md"
+    - "worklogs/handoffs/code--wiki-visibility-governance-overhaul-2026-04-26.md"
+    - "worklogs/handoffs/code--wiki-classifier-strengthen-and-sop-2026-04-26.md"
+  related_commits:
+    - 4534ace  # quarantine 加 65 筆 audit block
+    - b0931a4  # scanner bug fix
+    - 2a65a22  # Tier 1A classifier
+    - 42b82a5  # classifier 規則 YAML 化 + 簡繁
+  total: 65
+  outcome_distribution:
+    restore_public: 34
+    keep_internal: 19
+    delete: 12
+
+# ──────────────────────────────────────────────────────────────────────
+# RESTORE_PUBLIC (34) — 改 visibility: public，移除 quarantine block
+# ──────────────────────────────────────────────────────────────────────
+
+restore_public:
+  # Code 自動分類 (10 筆，3 筆被 Paul 二度移走到 delete)
+  - raw_note_id: "1901841819663161976"
+    file: "getnote-161976-ai-timeline-prediction.md"
+    title: "AI 能力演進的時間線預測：從專業替代到超級智慧"
+    source: auto+paul
+    reasoning: "公開觀點/AI 預測，可公開"
+  - raw_note_id: "1905623892703216736"
+    file: "getnote-216736-spear-grass-growth-law.md"
+    title: "尖毛草定律與厚積薄發的人生成長"
+    source: auto+paul
+    reasoning: "公開知識/方法論"
+  - raw_note_id: "1901630702693315912"
+    file: "getnote-315912-hinton-ai-deception.md"
+    title: "AI 的欺騙性與不可馴化性：Geoffrey Hinton 對人類生存的警告"
+    source: auto+paul
+    reasoning: "Hinton 公開演講轉錄"
+  - raw_note_id: "1900443996787498792"
+    file: "getnote-498792-claude-skills-guide.md"
+    title: "Claude Skills 功能解析"
+    source: auto+paul
+    reasoning: "工具公開指南"
+  - raw_note_id: "1903301313976504720"
+    file: "getnote-504720-neuroplasticity.md"
+    title: "神經可塑性"
+    source: auto+paul
+    reasoning: "公開科學知識"
+  - raw_note_id: "1903762369050584104"
+    file: "getnote-584104-life-energy-management.md"
+    title: "人生能量管理"
+    source: auto+paul
+    reasoning: "通用方法論"
+  - raw_note_id: "1901441776745593912"
+    file: "getnote-593912-human-nature-truths.md"
+    title: "人性真相68條分享"
+    source: auto+paul
+    reasoning: "通用觀察筆記"
+  - raw_note_id: "1902744775333850688"
+    file: "getnote-850688-overcoming-fear-breakthrough.md"
+    title: "擺脫恐懼，突破人生局限的終極密碼"
+    source: auto+paul
+    reasoning: "個人成長知識"
+  - raw_note_id: "1905634836279874728"
+    file: "getnote-874728-heavy-tail-extreme-values.md"
+    title: "重尾：世界服從極端值"
+    source: auto+paul
+    reasoning: "統計概念"
+  - raw_note_id: "1905762531025888480"
+    file: "getnote-888480-compound-interest-capital.md"
+    title: "複利的真相：超越金錢的人生資本積累戰略"
+    source: auto+paul
+    reasoning: "財經知識"
+
+  # Cowork 提案 (24 筆，原 28 提案 - 4 Paul 移走)
+  - raw_note_id: "1905893532897008840"
+    file: "getnote-008840-sdt-self-determination.md"
+    title: "從聽話型優秀到內在驅動：自我決定理論（SDT）"
+    source: cowork+paul
+    reasoning: "公開心理學理論"
+  - raw_note_id: "1904378657129009912"
+    file: "getnote-009912-future-survival-advice.md"
+    title: "2026年未來保命的修行忠告"
+    source: cowork+paul
+    reasoning: "公開內容轉述"
+  - raw_note_id: "1902890675374035296"
+    file: "getnote-035296-absolute-zero-training.md"
+    title: "絕對零度訓練法：無人類介入的 AI 自訓練研究"
+    source: cowork+paul
+    reasoning: "公開研究"
+  - raw_note_id: "1900945511528107776"
+    file: "getnote-107776-midlife-growth-social-health.md"
+    title: "中年轉變智商與社交健康的自我提升"
+    source: cowork+paul
+    reasoning: "個人成長知識"
+  - raw_note_id: "1903909051847161424"
+    file: "getnote-161424-sprouting-report.md"
+    title: "發芽報告：領導力、信任與變革的歷史視角"
+    source: cowork+paul
+    reasoning: "領導力知識"
+  - raw_note_id: "1905762523509171424"
+    file: "getnote-171424-supply-side-positive-sum.md"
+    title: "供給側心態：正和思維的生存策略"
+    source: cowork+paul
+    reasoning: "經濟概念"
+  - raw_note_id: "1903106513586171536"
+    file: "getnote-171536-intelligence-vs-wisdom.md"
+    title: "高智力與高妄想的悖論"
+    source: cowork+paul
+    reasoning: "認知心理學"
+  - raw_note_id: "1906178297819187800"
+    file: "getnote-187800-value-monetization.md"
+    title: "沒人教的賺錢核心能力：價值轉化與認知貨幣化"
+    source: cowork+paul
+    reasoning: "商業方法論"
+  - raw_note_id: "1900378267681216800"
+    file: "getnote-216800-sales-closing-techniques.md"
+    title: "銷售催單的四招封喉術"
+    source: cowork+paul
+    reasoning: "銷售方法"
+  - raw_note_id: "1905655190129221528"
+    file: "getnote-221528-uncertainty-as-meaning-fuel.md"
+    title: "可能：不確定性是意義的燃料"
+    source: cowork+paul
+    reasoning: "哲學概念"
+  - raw_note_id: "1902744723794268104"
+    file: "getnote-268104-vibe-coding-trend.md"
+    title: "AI 編碼時代的角色轉變：Vibe Coding 的興起"
+    source: cowork+paul
+    reasoning: "AI 編碼公開趨勢"
+  - raw_note_id: "1903163290907389584"
+    file: "getnote-389584-ai-predictions.md"
+    title: "AI 革命時代的十大關鍵預言"
+    source: cowork+paul
+    reasoning: "公開 AI 預測"
+  - raw_note_id: "1900440528602454304"
+    file: "getnote-454304-ai-1percent-talent.md"
+    title: "AI 時代的 1% 超級人才"
+    source: cowork+paul
+    reasoning: "公開 AI 觀點"
+  - raw_note_id: "1901723571698458136"
+    file: "getnote-458136-holographic-universe-theory.md"
+    title: "宇宙全息理論解析"
+    source: cowork+paul
+    reasoning: "物理理論"
+  - raw_note_id: "1906300818202566200"
+    file: "getnote-566200-100year-life.md"
+    title: "百歲人生：多階段人生的挑戰與應對"
+    source: cowork+paul
+    reasoning: "書籍概念"
+  - raw_note_id: "1904033043258630888"
+    file: "getnote-630888-recording-self-growth.md"
+    title: "記錄：最低成本的自我進化系統"
+    source: cowork+paul
+    reasoning: "方法論"
+  - raw_note_id: "1901958434467699320"
+    file: "getnote-699320-tech-progress-paradox.md"
+    title: "科技進步悖論：工具越多卻越不得閒"
+    source: cowork+paul
+    reasoning: "哲學討論"
+  - raw_note_id: "1902966410678799912"
+    file: "getnote-799912-three-decision-formulas.md"
+    title: "支撐好決策的三個神奇公式"
+    source: cowork+paul
+    reasoning: "決策方法"
+  - raw_note_id: "1903858369085842472"
+    file: "getnote-842472-fortune-telling-psychology.md"
+    title: "為什麼許多人著迷於算命？存在感的心理根源"
+    source: cowork+paul
+    reasoning: "心理學"
+  - raw_note_id: "1900430189540859688"
+    file: "getnote-859688-munger-wealth-structure.md"
+    title: "財富的結構邏輯（蒙格觀點）"
+    source: cowork+paul
+    reasoning: "公開觀點"
+  - raw_note_id: "1901627674741896520"
+    file: "getnote-896520-political-trust-collapse.md"
+    title: "現代政治的信任崩塌"
+    source: cowork+paul
+    reasoning: "公開時論"
+  - raw_note_id: "1904233269266910880"
+    file: "getnote-910880-emotional-self-awareness.md"
+    title: "真正認識自己的情緒：耦合理論與認知的新視角"
+    source: cowork+paul
+    reasoning: "心理學"
+  - raw_note_id: "1905762513845912296"
+    file: "getnote-912296-growth-strategy-tool-person.md"
+    title: "從工具人困境到能耐尋求的智能升級戰略"
+    source: cowork+paul
+    reasoning: "個人成長"
+  - raw_note_id: "1900800880652066168"
+    file: "getnote-066168-ai-drug-discovery.md"
+    title: "全腦AI在新藥開發中的應用"
+    source: cowork+paul
+    reasoning: "AI/醫療公開知識"
+
+# ──────────────────────────────────────────────────────────────────────
+# KEEP_INTERNAL (19) — 維持 visibility: internal，移除 needs_review
+# ──────────────────────────────────────────────────────────────────────
+
+keep_internal:
+  # Code 自動分類 (2 筆，牧師相關個人感觸)
+  - raw_note_id: "1900480149674188584"
+    file: "getnote-188584-pastor-pang-memorial.md"
+    title: "對牧師的懷念與追思"
+    source: auto+paul
+    reasoning: "Paul 私人感觸/追思"
+  - raw_note_id: "1899065664472756056"
+    file: "getnote-756056-pastor-pang-reflection.md"
+    title: "牧師離世對我的影響與思考"
+    source: auto+paul
+    reasoning: "Paul 私人感觸"
+
+  # Code 原 redact (3 筆，Q1=A 改 keep_internal)
+  - raw_note_id: "1900387995782123160"
+    file: "getnote-123160-cervical-cancer-medical-data.md"
+    title: "子宮頸癌治療探索與醫療數據合作"
+    source: auto+paul
+    reasoning: "醫療數據合作（內部討論不公開）"
+  - raw_note_id: "1901473991147782928"
+    file: "getnote-782928-preventive-medicine-ai-drug.md"
+    title: "預防醫學服務設計與AI藥物開發的商業生態"
+    source: auto+paul
+    reasoning: "商業生態探討（內部討論不公開）"
+  - raw_note_id: "1901006869430898432"
+    file: "getnote-898432-ai-drug-design-biotech.md"
+    title: "AI藥物設計與生命科學研究的跨界合作"
+    source: auto+paul
+    reasoning: "跨界合作（內部討論不公開）"
+
+  # Paul 從 restore_public 移過來 (4 筆)
+  - raw_note_id: "1900527399683043024"
+    file: "getnote-043024-secondhand-recycling-logistics.md"
+    title: "二手物資回收與物流模式創新"
+    source: paul
+    reasoning: "Paul 決定不公開"
+  - raw_note_id: "1905623247384379840"
+    file: "getnote-379840-silent-mode-wisdom.md"
+    title: "大智若愚：真正有能力的人如何調成靜音模式"
+    source: paul
+    reasoning: "Paul 決定不公開"
+  - raw_note_id: "1900429853459558096"
+    file: "getnote-558096-alien-life-civilization.md"
+    title: "外星文明視角：宇宙秩序、地球監獄"
+    source: paul
+    reasoning: "Paul 決定不公開"
+  - raw_note_id: "1905989546891580464"
+    file: "getnote-580464-growth-through-adversity.md"
+    title: "人在痛苦、空白和高壓交替狀態下成長最快"
+    source: paul
+    reasoning: "Paul 決定不公開"
+
+  # Cowork 原 redact 提案 (7 筆，Paul 同意不公開但不去識別化 → keep_internal)
+  - raw_note_id: "1901466154980006336"
+    file: "getnote-006336-stem-cell-exosome-automation.md"
+    title: "幹細胞與外泌體自動化培養技術介紹"
+    source: cowork+paul
+    reasoning: "可能含廠商來源，不公開"
+  - raw_note_id: "1900890547758048304"
+    file: "getnote-048304-care-butler-ai-longterm-care.md"
+    title: "照顧管家服務模式與AI在長照領域"
+    source: cowork+paul
+    reasoning: "服務模式可能含夥伴，不公開"
+  - raw_note_id: "1901366025334174608"
+    file: "getnote-174608-employee-health-longterm-care.md"
+    title: "企業員工健康與長期照護 ESG 整合"
+    source: cowork+paul
+    reasoning: "ESG 商務語境，不公開"
+  - raw_note_id: "1900976653262270152"
+    file: "getnote-270152-tech-sports-platform-collab.md"
+    title: "健康生態系與運動賽事平台的協作"
+    source: cowork+paul
+    reasoning: "平台協作，不公開"
+  - raw_note_id: "1901270027447435960"
+    file: "getnote-435960-ai-hr-manufacturing.md"
+    title: "AI 人力資源系統在製造業"
+    source: cowork+paul
+    reasoning: "商業案例可能含具名，不公開"
+  - raw_note_id: "1901454756136780904"
+    file: "getnote-780904-lab-facility-animal-research.md"
+    title: "實驗室設施與動物實驗區域介紹"
+    source: cowork+paul
+    reasoning: "場勘可能含具名，不公開"
+  - raw_note_id: "1900822048398808040"
+    file: "getnote-808040-ai-medical-collaboration.md"
+    title: "AI技術在醫療領域應用與邊緣運算合作"
+    source: cowork+paul
+    reasoning: "合作探討，不公開"
+
+  # Cowork 不確定 3 筆 (Paul 一律不公開)
+  - raw_note_id: "1903118704850406952"
+    file: "getnote-406952-personal-website-ai-tools.md"
+    title: "個人網站搭建與AI工具應用學習總結"
+    source: paul
+    reasoning: "Paul 決定不公開"
+  - raw_note_id: "1903329278507519528"
+    file: "getnote-519528-enterprise-communication.md"
+    title: "企業通訊工具的公私分離設計與合規管控"
+    source: paul
+    reasoning: "Paul 決定不公開"
+  - raw_note_id: "1903118811150847528"
+    file: "getnote-847528-system-design-lessons.md"
+    title: "系統設計踩坑與學習反思"
+    source: paul
+    reasoning: "Paul 決定不公開"
+
+# ──────────────────────────────────────────────────────────────────────
+# DELETE (12) — 移除 source 檔案 + raw_note_id 加入 deny-list
+# ──────────────────────────────────────────────────────────────────────
+
+delete:
+  # Code 自動分類 (6 筆)
+  - raw_note_id: "1901285092044178104"
+    file: "getnote-178104-medical-aesthetics-overseas.md"
+    title: "醫美集團業務與系統介紹及海外市場拓展"
+    source: auto+paul
+    reasoning: "含具名集團 + 海外市場拓展商務內容"
+  - raw_note_id: "1901454140883221560"
+    file: "getnote-221560-japan-regenerative-medicine.md"
+    title: "日本CET公司臺灣再生醫療合作項目洽談"
+    source: auto+paul
+    reasoning: "含具名公司（日本CET）+ 合作洽談"
+  - raw_note_id: "1900727090967384168"
+    file: "getnote-384168-circular-economy-recycling-models.md"
+    title: "循環經濟回收商業模式合作探討"
+    source: auto+paul
+    reasoning: "商業模式合作探討"
+  - raw_note_id: "1902744860159479752"
+    file: "getnote-479752-taiwan-environmental-projects.md"
+    title: "台灣環保循環產業合作項目討論"
+    source: auto+paul
+    reasoning: "合作項目討論"
+  - raw_note_id: "1900437610173749536"
+    file: "getnote-749536-partnership-project-planning.md"
+    title: "健康生態系合作策略與項目規劃框架"
+    source: auto+paul
+    reasoning: "合作策略框架"
+  - raw_note_id: "1901548477691866496"
+    file: "getnote-866496-environmental-innovation-npo.md"
+    title: "環保創新與公益事業合作交流"
+    source: auto+paul
+    reasoning: "合作交流"
+
+  # Cowork 提案 (3 筆)
+  - raw_note_id: "1900528527112482512"
+    file: "getnote-482512-organizer-lecture-business.md"
+    title: "整理師公益講座運營模式與商業拓展"
+    source: cowork+paul
+    reasoning: "商業拓展"
+  - raw_note_id: "1901355621849661768"
+    file: "getnote-661768-business-project-meeting.md"
+    title: "商業合作與專案推進會議討論"
+    source: cowork+paul
+    reasoning: "商業會議"
+  - raw_note_id: "1900474137793714464"
+    file: "getnote-714464-resource-collaboration.md"
+    title: "組織資源盤點與跨領域合作框架"
+    source: cowork+paul
+    reasoning: "合作框架"
+
+  # Cowork 二度發現 (3 筆，從 Code restore_public 移到 delete)
+  - raw_note_id: "1900710102223705576"
+    file: "getnote-705576-rockwool-recycling.md"
+    title: "岩棉回收處理與產品合作討論"
+    source: cowork+paul
+    reasoning: "產品合作討論（商務性質）"
+  - raw_note_id: "1900525539962838824"
+    file: "getnote-838824-circular-economy-decluttering.md"
+    title: "循環經濟與斷舍離服務合作模式探討"
+    source: cowork+paul
+    reasoning: "服務合作模式探討（商務性質）"
+  - raw_note_id: "1900713912933963240"
+    file: "getnote-963240-material-substitution-fire.md"
+    title: "材料替代與防火性能討論會議記錄"
+    source: cowork+paul
+    reasoning: "會議記錄（商務性質）"
