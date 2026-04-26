@@ -26,9 +26,15 @@ RECORDING_TAG_KEYWORD = "录音"
 
 
 def has_recording_tag(tags):
-    """True if any system-typed tag contains the recording keyword."""
+    """True if any system-typed tag contains the recording keyword.
+
+    Tags may be dicts (from raw ingest) or plain strings (from promoted sources).
+    Plain strings are never recording-type tags, so they return False safely.
+    """
     return any(
-        RECORDING_TAG_KEYWORD in (tag.get("name") or "") and tag.get("type") == "system"
+        isinstance(tag, dict)
+        and RECORDING_TAG_KEYWORD in (tag.get("name") or "")
+        and tag.get("type") == "system"
         for tag in (tags or [])
     )
 
