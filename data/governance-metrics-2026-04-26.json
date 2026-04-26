@@ -25,8 +25,8 @@
       "ci_note": "GitHub Actions 狀態查詢 MCP 工具不在當前可呼叫工具集，標記為 unknown；需要的話可下次擴充 list_workflow_runs"
     },
     "zarqarwi/formosa-esg-2026": {
-      "status": "repo_not_found",
-      "note": "search_repositories 在 zarqarwi user 下找不到此 repo（可能是 private 或路徑變更），整段指標跳過"
+      "status": "archived",
+      "note": "Paul 2026-04-26 確認專案已結束，停止監測。建議從 data/governance-projects.json 監測清單移除。"
     },
     "zarqarwi/get-biji-notes": {
       "commits_24h": 0,
