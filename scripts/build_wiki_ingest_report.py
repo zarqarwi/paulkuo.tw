@@ -38,13 +38,14 @@ folder_visibility_rules = {
     "09_會議錄音": "private",
 }
 
+RECORDING_TAG_KEYWORD = "录音"
+
 # Special handling for folders with conditional tags
 def determine_visibility(folder, tags):
     """Determine visibility based on folder and tags."""
-    
-    # Check if has 录音卡笔记 system tag
+
     has_recording_tag = any(
-        tag.get("name") == "录音卡笔记" and tag.get("type") == "system"
+        RECORDING_TAG_KEYWORD in tag.get("name", "") and tag.get("type") == "system"
         for tag in tags
     )
     
