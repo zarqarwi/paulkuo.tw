@@ -3,6 +3,8 @@
 /**
  * Wiki Enrichment CLI (Issue #157)
  *
+ * Visibility & sensitivity rules: see docs/wiki-visibility-rules.md (SSOT).
+ *
  * 把 YouTube source 從「原始稿」升級成「有結構知識節點」：
  *   summary / key_points / quotes / chapters / concept_links
  *

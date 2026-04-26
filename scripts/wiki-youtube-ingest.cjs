@@ -3,6 +3,8 @@
 /**
  * Wiki YouTube Ingest CLI (Issue #126)
  *
+ * Visibility & sensitivity rules: see docs/wiki-visibility-rules.md (SSOT).
+ *
  * Modes:
  *   1) Pull pending videos from KV → write to src/content/wiki/sources/
  *      $ node scripts/wiki-youtube-ingest.cjs

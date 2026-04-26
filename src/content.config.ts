@@ -61,7 +61,14 @@ const wikiSchema = z.object({
   slug: z.string().optional(),
   type: z.enum(['concept', 'entity', 'topic', 'source', 'comparison']),
   pillar: z.enum(['ai', 'circular', 'faith', 'startup', 'life']),
+  // Visibility & sensitivity rules: see docs/wiki-visibility-rules.md (SSOT).
   visibility: z.enum(['public', 'internal']).default('public'),
+  sensitivity: z.enum([
+    'safe',                    // default, no sensitive material
+    'contains_pii',            // names, phone, email
+    'business_confidential',   // company names, deal terms, amounts
+    'personal_reflection',     // Paul's private reflections / memorials
+  ]).optional().default('safe'),
   created: z.coerce.date().optional(),
   updated: z.coerce.date().optional(),
   last_updated: z.coerce.date().optional(),

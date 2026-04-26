@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build wiki ingest pending list report."""
+"""Build wiki ingest pending list report.
+
+Visibility & sensitivity rules: see docs/wiki-visibility-rules.md (SSOT).
+"""
 
 import os
 import re
@@ -25,7 +28,7 @@ print(f"Found {len(ingested_ids)} ingested note IDs")
 # Scan get_筆記 folders
 get_notes_dir = Path("/Users/apple/Desktop/01_專案進行中/get_筆記/notes")
 
-# Folder visibility rules
+# Folder visibility rules — see docs/wiki-visibility-rules.md (SSOT).
 folder_visibility_rules = {
     "01_專欄文章": "public",
     "02_醫療健康": "internal",
