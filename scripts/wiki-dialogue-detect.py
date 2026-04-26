@@ -11,7 +11,6 @@ Run:
     python3 scripts/wiki-dialogue-detect.py <slug>           # spot check one file
 """
 
-import re
 import sys
 from pathlib import Path
 
@@ -20,80 +19,14 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES_DIR = ROOT / "src" / "content" / "wiki" / "sources"
 
-# Title keywords that directly indicate dialogue (highest precision)
-TITLE_KEYWORDS = ['對談', '訪談', '會議記錄', '討論會', '對話', '座談']
-
-# Speaker label patterns — matched against line start
-SPEAKER_PATTERNS = [
-    r'^[A-Z]：',
-    r'^[Qq]：',
-    r'^Speaker\s*\d+[：:]',
-    r'^主持人[：:]',
-    r'^來賓[：:]',
-    r'^老師[：:]',
-    r'^學生[：:]',
-    r'^記者[：:]',
-    r'^回答者[：:]',
-    r'^提問者[：:]',
-]
-
-MIN_UNIQUE_SPEAKERS = 2
-MIN_TOTAL_MARKERS = 4
-
-
-def detect_dialogue(frontmatter: dict, body: str) -> dict:
-    """
-    Returns: {
-        'dialogue': bool,
-        'dialogue_inference': 'heuristic' | 'none',
-        'speakers': [str],   # only when inferred
-        'reason': str,
-    }
-    """
-    title = frontmatter.get('title', '')
-    for kw in TITLE_KEYWORDS:
-        if kw in title:
-            return {
-                'dialogue': True,
-                'dialogue_inference': 'heuristic',
-                'reason': f'title contains "{kw}"',
-            }
-
-    speaker_set = set()
-    total_markers = 0
-    for line in body.split('\n'):
-        line_stripped = line.strip()
-        if not line_stripped:
-            continue
-        for pattern in SPEAKER_PATTERNS:
-            m = re.match(pattern, line_stripped)
-            if m:
-                total_markers += 1
-                label = re.split(r'[：:]', line_stripped, 1)[0]
-                speaker_set.add(label)
-                break
-
-    if len(speaker_set) >= MIN_UNIQUE_SPEAKERS:
-        return {
-            'dialogue': True,
-            'dialogue_inference': 'heuristic',
-            'speakers': sorted(speaker_set),
-            'reason': f'{len(speaker_set)} unique speakers, {total_markers} markers',
-        }
-
-    if total_markers >= MIN_TOTAL_MARKERS and len(speaker_set) >= 1:
-        return {
-            'dialogue': True,
-            'dialogue_inference': 'heuristic',
-            'speakers': sorted(speaker_set),
-            'reason': f'{total_markers} markers (single speaker dominant)',
-        }
-
-    return {
-        'dialogue': False,
-        'dialogue_inference': 'none',
-        'reason': f'{total_markers} markers, {len(speaker_set)} unique speakers',
-    }
+sys.path.insert(0, str(ROOT / "scripts"))
+from wiki_dialogue_lib import (  # noqa: E402
+    detect_dialogue,
+    TITLE_KEYWORDS,
+    SPEAKER_PATTERNS,
+    MIN_UNIQUE_SPEAKERS,
+    MIN_TOTAL_MARKERS,
+)
 
 
 def parse_md(path: Path):
