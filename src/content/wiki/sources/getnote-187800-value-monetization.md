@@ -3,6 +3,12 @@ title: 沒人教的賺錢核心能力：價值轉化與認知貨幣化
 type: source
 pillar: startup
 visibility: internal
+quarantine:
+  reason: "scanner_bug_2026_04_26_audit_extended_audit_21"
+  observed_visibility: internal
+  quarantined_at: "2026-04-26"
+  needs_review: true
+  review_outcome: pending  # set by Cowork during phase-2 audit
 source_count: 1
 confidence: low
 tags:

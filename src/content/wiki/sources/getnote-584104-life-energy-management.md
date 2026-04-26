@@ -3,6 +3,12 @@ title: "人生能量管理：從低電量到滿格狀態的指南"
 type: source
 pillar: life
 visibility: internal
+quarantine:
+  reason: "scanner_bug_2026_04_26_audit_recording_set_44"
+  observed_visibility: internal
+  quarantined_at: "2026-04-26"
+  needs_review: true
+  review_outcome: pending  # set by Cowork during phase-2 audit
 created: 2026-04-05
 updated: 2026-04-05
 source_count: 1

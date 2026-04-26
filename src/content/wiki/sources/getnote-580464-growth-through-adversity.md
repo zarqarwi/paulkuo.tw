@@ -3,6 +3,12 @@ title: 人在痛苦、空白和高壓交替狀態下成長最快
 type: source
 pillar: life
 visibility: internal
+quarantine:
+  reason: "scanner_bug_2026_04_26_audit_extended_audit_21"
+  observed_visibility: internal
+  quarantined_at: "2026-04-26"
+  needs_review: true
+  review_outcome: pending  # set by Cowork during phase-2 audit
 source_count: 1
 confidence: low
 tags:

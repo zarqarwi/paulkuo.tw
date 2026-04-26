@@ -3,6 +3,12 @@ title: 複利的真相：超越金錢的人生資本積累戰略
 type: source
 pillar: life
 visibility: internal
+quarantine:
+  reason: "scanner_bug_2026_04_26_audit_extended_audit_21"
+  observed_visibility: internal
+  quarantined_at: "2026-04-26"
+  needs_review: true
+  review_outcome: pending  # set by Cowork during phase-2 audit
 source_count: 1
 confidence: low
 tags:

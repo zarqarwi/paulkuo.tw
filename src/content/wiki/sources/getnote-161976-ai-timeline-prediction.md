@@ -3,6 +3,12 @@ title: "AI 能力演進的時間線預測：從專業替代到超級智慧"
 type: source
 pillar: ai
 visibility: internal
+quarantine:
+  reason: "scanner_bug_2026_04_26_audit_recording_set_44"
+  observed_visibility: internal
+  quarantined_at: "2026-04-26"
+  needs_review: true
+  review_outcome: pending  # set by Cowork during phase-2 audit
 created: 2026-02-16
 updated: 2026-04-05
 source_count: 1
