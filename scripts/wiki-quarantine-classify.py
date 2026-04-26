@@ -31,6 +31,8 @@ RULES_FILE = PROJECT_ROOT / "data" / "wiki-quarantine-rules.yml"
 
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 from wiki_text_normalize import contains_normalized  # noqa: E402
+from wiki_dialogue_lib import is_dialogue_signal, is_business_meeting  # noqa: E402
+from wiki_visibility import has_recording_tag  # noqa: E402
 
 with open(RULES_FILE, encoding="utf-8") as _f:
     _rules_config = yaml.safe_load(_f)
@@ -58,11 +60,17 @@ def matches_rule(rule, fm, body):
     title_and_tags = f"{title} {tags_str}"
     full = f"{title} {tags_str} {body}"
 
-    # requires_all rules need composite detection (recording tag + dialogue marker).
-    # Placeholder: never auto-match until ingest pipeline populates dialogue/speakers metadata.
-    # See data/wiki-quarantine-rules.yml notes for when to enable.
     if "requires_all" in rule:
-        return False
+        # requires_all is a list of single-key dicts in YAML; merge to flat dict.
+        req = {k: v for item in rule["requires_all"] for k, v in item.items()}
+        checks = []
+        if req.get("has_recording_tag"):
+            checks.append(has_recording_tag(tags))
+        if req.get("business_meeting"):
+            checks.append(is_business_meeting(fm, folder=None))
+        if req.get("is_dialogue"):
+            checks.append(is_dialogue_signal(fm, body))
+        return bool(checks) and all(checks)
 
     m = rule["match"]
     if "title_or_content_any" in m:
