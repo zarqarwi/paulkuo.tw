@@ -131,6 +131,21 @@ const wiki_sources = defineCollection({
   schema: wikiSchema,
 });
 
+// Staging area for new ingest output. Frontend collections do NOT query this —
+// it is built only so Astro recognizes the schema. Promotion to wiki_sources
+// happens via scripts/wiki-pending-promote.py once pending_status === 'approved'.
+const wiki_sources_pending = defineCollection({
+  loader: glob({
+    base: 'src/content/wiki/sources_pending',
+    pattern: '*.md',
+  }),
+  schema: wikiSchema.extend({
+    pending_status: z.enum(['awaiting_review', 'approved', 'rejected']).default('awaiting_review'),
+    pending_since: z.string().optional(),
+    review_notes: z.string().optional(),
+  }),
+});
+
 export const collections = {
   articles,
   articles_en,
@@ -139,4 +154,5 @@ export const collections = {
   wiki_concepts,
   wiki_entities,
   wiki_sources,
+  wiki_sources_pending,
 };

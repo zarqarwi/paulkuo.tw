@@ -57,6 +57,10 @@ const PROJECT_ROOT = path.resolve(__dirname, '..');
 })();
 
 const SOURCES_DIR = path.join(PROJECT_ROOT, 'src', 'content', 'wiki', 'sources');
+// New ingests land in PENDING_DIR; promote via scripts/wiki-pending-promote.py.
+// Backfill mode (--backfill) still rewrites files in SOURCES_DIR — only the
+// "pull from KV → write" path uses staging.
+const PENDING_DIR = path.join(PROJECT_ROOT, 'src', 'content', 'wiki', 'sources_pending');
 const NAMESPACE_ID = 'c066a2fd7942494c8ead37cc518b191b';
 const API_BASE = 'https://api.paulkuo.tw';
 
@@ -398,9 +402,11 @@ async function pullPending() {
     }
 
     const filename = `${data.slug}.md`;
-    const filepath = path.join(SOURCES_DIR, filename);
+    // Skip if already promoted to sources/ OR already pending — both are dedup signals.
+    const sourcesPath = path.join(SOURCES_DIR, filename);
+    const pendingPath = path.join(PENDING_DIR, filename);
 
-    if (fs.existsSync(filepath)) {
+    if (fs.existsSync(sourcesPath) || fs.existsSync(pendingPath)) {
       console.log(`  ⊘ Already exists: ${filename}`);
       kvDelete(key);
       continue;
@@ -415,9 +421,13 @@ async function pullPending() {
       }
     }
 
+    // Land in PENDING_DIR with awaiting_review status. Promotion to SOURCES_DIR
+    // is the responsibility of scripts/wiki-pending-promote.py after human review.
+    const stagedMarkdown = injectPendingFields(data.markdown);
+
     try {
-      fs.writeFileSync(filepath, data.markdown, 'utf-8');
-      console.log(`  ✓ Written: ${filename} (${data.title})`);
+      fs.writeFileSync(pendingPath, stagedMarkdown, 'utf-8');
+      console.log(`  ✓ Staged: ${filename} (${data.title})`);
       kvDelete(key);
       written++;
     } catch (e) {
@@ -427,8 +437,23 @@ async function pullPending() {
   }
 
   const remaining = failed; // failed keys are not deleted from KV
-  console.log(`\nWrote ${written} source file(s) to wiki/sources/`);
+  console.log(`\nStaged ${written} source file(s) in wiki/sources_pending/`);
+  console.log(`Run scripts/wiki-pending-promote.py after review to promote to wiki/sources/.`);
   return { written, failed, remaining };
+}
+
+/**
+ * Inject `pending_status` + `pending_since` into the YAML frontmatter
+ * of an ingest payload. Idempotent — re-injection skipped if already present.
+ */
+function injectPendingFields(markdown) {
+  if (/^pending_status:/m.test(markdown)) return markdown;
+  const today = new Date().toISOString().slice(0, 10);
+  // Insert after the opening `---` line, before the first frontmatter field.
+  return markdown.replace(
+    /^---\n/,
+    `---\npending_status: awaiting_review\npending_since: "${today}"\n`
+  );
 }
 
 /** Inject transcript data into markdown content */
