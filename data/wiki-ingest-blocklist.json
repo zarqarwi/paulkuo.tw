@@ -1,10 +1,21 @@
 {
-  "_comment": "raw_note_id listed here will NEVER be ingested by the wiki scanner. Includes notes decided to be permanently deleted, known noise, and duplicates.",
+  "_comment": "Permanent ingest blocklists. IDs listed here will NEVER be ingested. Two separate spaces:",
   "_format": {
-    "raw_note_id": {
-      "reason": "delete_outcome | manual_skip | duplicate | noise",
-      "added_at": "ISO date",
-      "added_by": "Cowork | Code | Paul"
+    "blocklist (raw_note_id from get_筆記)": {
+      "<raw_note_id>": {
+        "reason": "delete_outcome | manual_skip | duplicate | noise",
+        "added_at": "ISO date",
+        "added_by": "Cowork | Code | Paul | combo (e.g. cowork+paul)",
+        "title_at_delete": "string"
+      }
+    },
+    "youtube_blocklist (YouTube video_id, 11-char alphanum)": {
+      "<youtube_id>": {
+        "reason": "off_topic | wrong_pillar_drop | duplicate | manual_skip",
+        "added_at": "ISO date",
+        "added_by": "Cowork | Code | Paul | combo",
+        "title_at_delete": "string"
+      }
     }
   },
   "_see_also": "docs/wiki-visibility-rules.md (SSOT for visibility & sensitivity)",
@@ -86,6 +97,14 @@
       "added_at": "2026-04-26",
       "added_by": "code+paul",
       "title_at_delete": "實驗室設施與動物實驗區域介紹"
+    }
+  },
+  "youtube_blocklist": {
+    "0h3P7Ojn-3o": {
+      "reason": "wrong_pillar_drop — 主題（中東地緣政治/金融）離 paulkuo.tw 主軸太遠，對 wiki 無增量；source 已於 04-26 刪除，blocklist 防止 ingest 撈回",
+      "added_at": "2026-04-27",
+      "added_by": "cowork+paul",
+      "title_at_delete": "youtube-0h3P7Ojn-3o（中東滯脹相關，wrong_pillar 9 支裁決 #8）"
     }
   }
 }
