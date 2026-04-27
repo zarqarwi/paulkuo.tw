@@ -39,6 +39,7 @@ def _load_script():
 
 _mod = _load_script()
 build_index = _mod.build_index
+load_source_visibility_map = _mod.load_source_visibility_map
 
 
 def _copy_fixtures(tmp_path: Path) -> tuple[Path, Path]:
@@ -78,11 +79,12 @@ def test_basic_zh_only(tmp_path):
     )
     (sources_dir / "source-1.md").write_text("---\ntitle: Source One\n---\n", encoding="utf-8")
 
-    index, total, with_derived, missing = build_index(articles_root, sources_dir, strict=False)
+    index, total, with_derived, missing, non_public = build_index(articles_root, sources_dir, strict=False)
 
     assert total == 1
     assert with_derived == 1
     assert missing == []
+    assert non_public == []
     assert "source-1" in index
     entries = index["source-1"]
     assert len(entries) == 1
@@ -101,7 +103,7 @@ def test_basic_zh_only(tmp_path):
 def test_multi_lang_same_source(tmp_path):
     """zh + en + ja articles all reference source-1 → three entries, each with correct lang."""
     articles_root, sources_dir = _copy_fixtures(tmp_path)
-    index, total, with_derived, missing = build_index(articles_root, sources_dir, strict=False)
+    index, total, with_derived, missing, _ = build_index(articles_root, sources_dir, strict=False)
 
     assert "source-1" in index
     entries = index["source-1"]
@@ -115,7 +117,7 @@ def test_multi_lang_same_source(tmp_path):
 def test_multi_lang_different_langs_correct(tmp_path):
     """Each lang subdir article gets the correct lang code in the index."""
     articles_root, sources_dir = _copy_fixtures(tmp_path)
-    index, _, _, _ = build_index(articles_root, sources_dir, strict=False)
+    index, _, _, _, _ = build_index(articles_root, sources_dir, strict=False)
 
     all_entries = [e for entries in index.values() for e in entries]
     lang_map = {e["article_slug"]: e["lang"] for e in all_entries}
@@ -133,7 +135,7 @@ def test_multi_lang_different_langs_correct(tmp_path):
 def test_multi_articles_same_source_sorted_desc(tmp_path):
     """Two zh articles referencing source-1 are sorted newest date first."""
     articles_root, sources_dir = _copy_fixtures(tmp_path)
-    index, _, _, _ = build_index(articles_root, sources_dir, strict=False)
+    index, _, _, _, _ = build_index(articles_root, sources_dir, strict=False)
 
     assert "source-1" in index
     zh_entries = [e for e in index["source-1"] if e["lang"] == "zh"]
@@ -165,7 +167,7 @@ def test_empty_or_missing_derived_from(tmp_path):
         encoding="utf-8",
     )
 
-    index, total, with_derived, _ = build_index(articles_root, sources_dir, strict=False)
+    index, total, with_derived, _, _ = build_index(articles_root, sources_dir, strict=False)
 
     assert total == 2
     assert with_derived == 0
@@ -224,6 +226,91 @@ def test_invalid_slug_non_strict_exits_0(tmp_path):
 # Test 7 (bonus): article with no date → entry included, date is empty string, sinks to bottom
 # ---------------------------------------------------------------------------
 
+def test_build_index_returns_5_tuple(tmp_path):
+    """build_index now returns a 5-tuple including non_public list."""
+    articles_root = tmp_path / "articles"
+    articles_root.mkdir()
+    sources_dir = tmp_path / "sources"
+    sources_dir.mkdir()
+    (sources_dir / "src.md").write_text("---\ntitle: S\nvisibility: public\n---\n", encoding="utf-8")
+    (articles_root / "art.md").write_text(
+        "---\ntitle: A\ndate: 2026-01-01\npillar: ai\nderived_from:\n  - src\n---\n",
+        encoding="utf-8",
+    )
+    result = build_index(articles_root, sources_dir, strict=False)
+    assert len(result) == 5  # index, total, with_derived, missing, non_public
+
+
+# ---------------------------------------------------------------------------
+# Test E1a: internal source slug NOT written to index
+# ---------------------------------------------------------------------------
+
+def test_build_index_skips_internal_source(tmp_path):
+    """Article referencing an internal source → slug does not appear in the index."""
+    articles_root = tmp_path / "articles"
+    articles_root.mkdir()
+    sources_dir = tmp_path / "sources"
+    sources_dir.mkdir()
+    (sources_dir / "pub.md").write_text("---\ntitle: Pub\nvisibility: public\n---\n", encoding="utf-8")
+    (sources_dir / "int.md").write_text("---\ntitle: Int\nvisibility: internal\n---\n", encoding="utf-8")
+    (articles_root / "art.md").write_text(
+        "---\ntitle: A\ndate: 2026-01-01\npillar: ai\nderived_from:\n  - int\n---\n",
+        encoding="utf-8",
+    )
+
+    index, total, with_derived, missing, non_public = build_index(articles_root, sources_dir, strict=False)
+
+    assert "int" not in index
+    assert len(non_public) == 1
+    assert non_public[0] == ("art", "int")
+    assert missing == []
+
+
+# ---------------------------------------------------------------------------
+# Test E1b: internal source + --strict → exit 1
+# ---------------------------------------------------------------------------
+
+def test_build_index_strict_fails_on_internal(tmp_path):
+    """Article with internal derived_from + --strict → exit 1, slug in stderr."""
+    articles_root = tmp_path / "articles"
+    articles_root.mkdir()
+    sources_dir = tmp_path / "sources"
+    sources_dir.mkdir()
+    (sources_dir / "int.md").write_text("---\ntitle: Int\nvisibility: internal\n---\n", encoding="utf-8")
+    (articles_root / "art.md").write_text(
+        "---\ntitle: A\ndate: 2026-01-01\npillar: ai\nderived_from:\n  - int\n---\n",
+        encoding="utf-8",
+    )
+    output = tmp_path / "out.json"
+    result = _run_cli("--strict", articles_root=articles_root, sources_dir=sources_dir, output=output)
+
+    assert result.returncode == 1
+    assert "int" in result.stderr
+
+
+# ---------------------------------------------------------------------------
+# Test E1c: public source with explicit visibility=public → included normally
+# ---------------------------------------------------------------------------
+
+def test_build_index_explicit_public_visibility_included(tmp_path):
+    """Source with explicit visibility=public is included in the index as normal."""
+    articles_root = tmp_path / "articles"
+    articles_root.mkdir()
+    sources_dir = tmp_path / "sources"
+    sources_dir.mkdir()
+    (sources_dir / "pub.md").write_text("---\ntitle: Pub\nvisibility: public\n---\n", encoding="utf-8")
+    (articles_root / "art.md").write_text(
+        "---\ntitle: A\ndate: 2026-04-01\npillar: ai\nderived_from:\n  - pub\n---\n",
+        encoding="utf-8",
+    )
+
+    index, _, _, missing, non_public = build_index(articles_root, sources_dir, strict=False)
+
+    assert "pub" in index
+    assert missing == []
+    assert non_public == []
+
+
 def test_date_missing_falls_to_bottom(tmp_path):
     """Article missing date field → entry still included, date='', sorted below dated entries."""
     articles_root = tmp_path / "articles"
@@ -241,7 +328,7 @@ def test_date_missing_falls_to_bottom(tmp_path):
         encoding="utf-8",
     )
 
-    index, _, _, _ = build_index(articles_root, sources_dir, strict=False)
+    index, _, _, _, _ = build_index(articles_root, sources_dir, strict=False)
     entries = index["source-1"]
     assert len(entries) == 2
     # dated entry comes first (descending); no-date entry has date=""

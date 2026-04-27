@@ -80,22 +80,37 @@ def known_source_slugs(sources_dir: Path) -> set[str]:
     return {p.stem for p in iter_source_paths(sources_dir)}
 
 
+def load_source_visibility_map(sources_dir: Path) -> dict[str, str]:
+    """Return slug → visibility for all wiki sources. Default visibility is 'public'."""
+    result: dict[str, str] = {}
+    if not sources_dir.is_dir():
+        return result
+    for p in iter_source_paths(sources_dir):
+        fm, _ = load_source(p)
+        visibility = (fm or {}).get("visibility", "public")
+        result[p.stem] = str(visibility)
+    return result
+
+
 def build_index(
     articles_root: Path,
     sources_dir: Path,
     strict: bool,
-) -> tuple[dict[str, list[dict]], int, int, list[tuple[str, str]]]:
+) -> tuple[dict[str, list[dict]], int, int, list[tuple[str, str]], list[tuple[str, str]]]:
     """Build and return the reverse index.
 
     Returns:
-        (index, articles_scanned, with_derived_from, missing_slugs)
-        missing_slugs: list of (article_slug, source_slug) for bad refs
+        (index, articles_scanned, with_derived_from, missing_slugs, non_public_slugs)
+        missing_slugs:    list of (article_slug, source_slug) for unknown refs
+        non_public_slugs: list of (article_slug, source_slug) for internal-visibility refs
     """
     valid_slugs = known_source_slugs(sources_dir)
+    source_visibility = load_source_visibility_map(sources_dir)
     index: dict[str, list[dict]] = {}
     articles_scanned = 0
     with_derived = 0
     missing: list[tuple[str, str]] = []
+    non_public: list[tuple[str, str]] = []
 
     for path, lang in iter_article_paths(articles_root):
         articles_scanned += 1
@@ -121,11 +136,17 @@ def build_index(
         for slug in derived:
             if slug not in valid_slugs:
                 missing.append((article_slug, slug))
-                if strict:
-                    continue
-                else:
+                if not strict:
                     print(f"⚠️  warning: unknown source slug '{slug}' in '{article_slug}'", file=sys.stderr)
-                    continue
+                continue
+            if source_visibility.get(slug, "public") != "public":
+                non_public.append((article_slug, slug))
+                if not strict:
+                    print(
+                        f"⚠️  warning: derived_from references internal source '{slug}' in '{article_slug}' (skipping)",
+                        file=sys.stderr,
+                    )
+                continue
             if slug not in index:
                 index[slug] = []
             index[slug].append(entry)
@@ -134,7 +155,7 @@ def build_index(
     for slug in index:
         index[slug].sort(key=lambda e: e["date"] or "", reverse=True)
 
-    return index, articles_scanned, with_derived, missing
+    return index, articles_scanned, with_derived, missing, non_public
 
 
 def main() -> None:
@@ -151,23 +172,28 @@ def main() -> None:
     sources_dir = parsed.sources_dir
     output = parsed.output
 
-    index, total, with_derived, missing = build_index(articles_root, sources_dir, strict)
+    index, total, with_derived, missing, non_public = build_index(articles_root, sources_dir, strict)
 
-    if missing and strict:
+    if strict and (missing or non_public):
         for article_slug, source_slug in missing:
             print(f"❌ missing source slug '{source_slug}' referenced by '{article_slug}'", file=sys.stderr)
+        for article_slug, source_slug in non_public:
+            print(f"❌ non-public source slug '{source_slug}' referenced by '{article_slug}'", file=sys.stderr)
         sys.exit(1)
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(index, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
 
-    valid_slugs = known_source_slugs(sources_dir)
+    source_visibility = load_source_visibility_map(sources_dir)
+    public_count = sum(1 for v in source_visibility.values() if v == "public")
+    internal_count = len(source_visibility) - public_count
     print("=== Build derived_from reverse index ===")
-    print(f"Articles scanned:  {total}")
-    print(f"With derived_from: {with_derived}")
-    print(f"Sources known:     {len(valid_slugs)}")
-    print(f"Index entries:     {len(index)}")
-    print(f"Output:            {output}")
+    print(f"Articles scanned:   {total}")
+    print(f"With derived_from:  {with_derived}")
+    print(f"Sources known:      {len(source_visibility)} (public: {public_count}, internal: {internal_count})")
+    print(f"Index entries:      {len(index)}")
+    print(f"Non-public skipped: {len(non_public)}")
+    print(f"Output:             {output}")
 
     sys.exit(0)
 
