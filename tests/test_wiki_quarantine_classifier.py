@@ -157,6 +157,54 @@ def test_redact_medical_collab_simplified():
     assert classifier.matches_rule(_rule("redact_and_restore"), fm, "")
 
 
+# === fast-path: existing review_outcome ===
+
+def test_fast_path_honours_keep_internal():
+    """Sources with review_outcome + needs_review=False bypass rule evaluation."""
+    fm = {
+        "title": "毫不相關的標題",
+        "tags": [],
+        "quarantine": {"review_outcome": "keep_internal", "needs_review": False},
+    }
+    outcome, reason = classifier.classify(fm, "")
+    assert outcome == "keep_internal"
+    assert "fast-path" in reason
+
+
+def test_fast_path_overrides_rule_match():
+    """Fast-path takes precedence even when a rule would fire a different outcome."""
+    fm = {
+        "title": "AI 醫療領域合作探討",  # would match redact_and_restore
+        "tags": [],
+        "quarantine": {"review_outcome": "keep_internal", "needs_review": False},
+    }
+    outcome, reason = classifier.classify(fm, "")
+    assert outcome == "keep_internal"
+    assert "fast-path" in reason
+
+
+def test_fast_path_skipped_when_needs_review_true():
+    """needs_review=True means not yet decided — must fall through to rules."""
+    fm = {
+        "title": "馬斯克最新十大預言",  # matches restore_public
+        "tags": [],
+        "quarantine": {"review_outcome": "keep_internal", "needs_review": True},
+    }
+    outcome, _ = classifier.classify(fm, "")
+    assert outcome == "restore_public"
+
+
+def test_fast_path_skipped_when_no_review_outcome():
+    """Missing review_outcome means classify normally."""
+    fm = {
+        "title": "馬斯克最新十大預言",
+        "tags": [],
+        "quarantine": {"needs_review": False},
+    }
+    outcome, _ = classifier.classify(fm, "")
+    assert outcome == "restore_public"
+
+
 # === no match → human review ===
 
 def test_no_rule_matches_unrelated():
