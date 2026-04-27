@@ -17,8 +17,9 @@
 
 'use strict';
 
-const fs   = require('fs');
-const path = require('path');
+const fs     = require('fs');
+const path   = require('path');
+const matter = require('gray-matter');
 
 const PROJECT_ROOT  = path.resolve(__dirname, '..');
 const SOURCES_DIR   = path.join(PROJECT_ROOT, 'src', 'content', 'wiki', 'sources');
@@ -71,39 +72,15 @@ if (!process.env.ANTHROPIC_API_KEY) {
   process.exit(1);
 }
 
-// ── Frontmatter helpers ───────────────────────────────────────────────────
-
-function splitFrontmatter(content) {
-  const m = content.match(/^(---\n)([\s\S]*?)(\n---\n)([\s\S]*)$/);
-  if (!m) throw new Error('No YAML frontmatter found');
-  return { openDelim: m[1], fmRaw: m[2], midDelim: m[3], body: m[4] };
-}
-
-function yamlGet(fmRaw, key) {
-  const re = new RegExp(`^${key}:\\s*(.*)`, 'm');
-  const m = fmRaw.match(re);
-  if (!m) return null;
-  let val = m[1].trim();
-  if ((val.startsWith('"') && val.endsWith('"')) ||
-      (val.startsWith("'") && val.endsWith("'"))) {
-    val = val.slice(1, -1);
-  }
-  return val || null;
-}
-
 // ── Concept loader ────────────────────────────────────────────────────────
 function loadConcepts() {
   const files = fs.readdirSync(CONCEPTS_DIR).filter(f => f.endsWith('.md'));
   return files.map(f => {
-    const raw   = fs.readFileSync(path.join(CONCEPTS_DIR, f), 'utf-8');
-    const cSlug = f.replace(/\.md$/, '');
-    let title   = cSlug;
-    const titleM = raw.match(/^title:\s*(.+)/m);
-    if (titleM) {
-      title = titleM[1].trim().replace(/^["']|["']$/g, '');
-    }
-    const bodyM = raw.match(/^---[\s\S]*?---\n([\s\S]*?)(\n##|$)/);
-    const description = bodyM ? bodyM[1].trim().slice(0, 120) : '';
+    const raw    = fs.readFileSync(path.join(CONCEPTS_DIR, f), 'utf-8');
+    const cSlug  = f.replace(/\.md$/, '');
+    const parsed = matter(raw);
+    const title  = parsed.data.title || cSlug;
+    const description = parsed.content.trim().slice(0, 120);
     return { slug: cSlug, title, description };
   });
 }
@@ -115,76 +92,56 @@ function extractTranscript(body) {
   return text.length > 8000 ? text.slice(0, 8000) + '\n[…逐字稿截斷]' : text;
 }
 
-// ── YAML serialiser ───────────────────────────────────────────────────────
-function yamlStr(s) {
-  if (typeof s !== 'string') s = String(s ?? '');
-  return '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"';
-}
+// ── Enrichment builder ────────────────────────────────────────────────────
+const ENRICHMENT_KEYS = [
+  'enriched_at', 'enriched_by', 'summary', 'key_points', 'quotes',
+  'chapters', 'concept_links', 'wrong_pillar_suspected', 'enrichment_notes',
+];
 
-function buildEnrichmentYaml(data) {
-  const lines = [];
-  // E2 fix: date and string fields must be quoted for Astro schema (z.string())
-  lines.push(`enriched_at: "${TODAY}"`);
-  lines.push(`enriched_by: "haiku-4.5"`);
-  lines.push(`summary: ${yamlStr(data.summary)}`);
-
-  lines.push('key_points:');
-  for (const kp of (data.key_points || [])) {
-    lines.push(`  - ${yamlStr(kp)}`);
-  }
-
-  lines.push('quotes:');
-  for (const q of (data.quotes || [])) {
-    lines.push(`  - text: ${yamlStr(q.text)}`);
-    lines.push(`    timestamp: ${yamlStr(q.timestamp || '')}`);
-  }
-
-  lines.push('chapters:');
-  for (const ch of (data.chapters || [])) {
-    lines.push(`  - title: ${yamlStr(ch.title)}`);
-    lines.push(`    start: ${yamlStr(ch.start || '')}`);
-    lines.push(`    summary: ${yamlStr(ch.summary)}`);
-  }
-
-  lines.push('concept_links:');
-  const matched = (data.concept_links?.matched || []);
-  lines.push(`  matched: [${matched.join(', ')}]`);
-  lines.push('  candidates:');
-  const candidates = (data.concept_links?.candidates || []);
-  for (const c of candidates) {
-    lines.push(`    - slug_zh: ${yamlStr(c.slug_zh || '')}`);
-    lines.push(`      title: ${yamlStr(c.title || '')}`);
-    lines.push(`      reason: ${yamlStr(c.reason || '')}`);
-  }
-
+function buildEnrichmentObject(result) {
+  const matched    = result.concept_links?.matched    || [];
+  const candidates = result.concept_links?.candidates || [];
+  const firstReason = candidates[0]?.reason || '';
   // E2.5: wrong_pillar detection — triggered when Haiku returns matched=[] and
   // the first candidate reason signals no alignment with the concept list
-  const firstReason = candidates[0]?.reason || '';
   const wrongPillar = matched.length === 0 && firstReason.includes('主題與現有 concept 清單無核心對齊');
+
+  const enrichmentData = {
+    enriched_at: TODAY,
+    enriched_by: 'haiku-4.5',
+    summary:     result.summary,
+    key_points:  result.key_points  || [],
+    quotes:      result.quotes      || [],
+    chapters:    result.chapters    || [],
+    concept_links: { matched, candidates },
+  };
+
   if (wrongPillar) {
-    lines.push('wrong_pillar_suspected: true');
-    lines.push(`enrichment_notes: "本 source 主題與 concept 清單無對齊，建議人工審查 pillar 分類"`);
+    enrichmentData.wrong_pillar_suspected = true;
+    enrichmentData.enrichment_notes = '本 source 主題與 concept 清單無對齊，建議人工審查 pillar 分類';
   }
 
-  return { yaml: lines.join('\n'), wrongPillar };
+  return { enrichmentData, wrongPillar };
 }
 
 // ── Write enrichment back to file ─────────────────────────────────────────
-function writeFrontmatter(sourcePath, content, enrichmentYaml) {
-  const { openDelim, fmRaw, midDelim, body } = splitFrontmatter(content);
+function writeFrontmatter(sourcePath, content, enrichmentData) {
+  const parsed = matter(content);
 
-  let cleanFmRaw = fmRaw;
-  if (fmRaw.includes('enriched_at:')) {
+  if ('enriched_at' in parsed.data) {
     if (!force) {
       console.warn('[wiki-enrich] Already enriched. Use --force to overwrite. Skipping.');
       return false;
     }
-    // Strip existing enrichment block (always appended at end of frontmatter)
     console.warn('[wiki-enrich] --force: overwriting existing enrichment.');
-    cleanFmRaw = fmRaw.replace(/\nenriched_at:[\s\S]*$/, '').trimEnd();
   }
 
-  const newContent = openDelim + cleanFmRaw + '\n' + enrichmentYaml + midDelim + body;
+  // Strip existing enrichment keys, then merge new enrichment at the end
+  const cleanData = Object.fromEntries(
+    Object.entries(parsed.data).filter(([k]) => !ENRICHMENT_KEYS.includes(k))
+  );
+  const newData    = { ...cleanData, ...enrichmentData };
+  const newContent = matter.stringify(parsed.content, newData);
   fs.writeFileSync(sourcePath, newContent, 'utf-8');
   return true;
 }
@@ -259,22 +216,22 @@ async function enrichOne(targetSlug, client, concepts) {
   }
 
   const content = fs.readFileSync(sourcePath, 'utf-8');
-  const { fmRaw, body } = splitFrontmatter(content);
+  const { data: fmData, content: body } = matter(content);
 
   // Guard: already enriched (skip unless --force)
-  if (!dryRun && !force && fmRaw.includes('enriched_at:')) {
+  if (!dryRun && !force && 'enriched_at' in fmData) {
     console.error(`[wiki-enrich] ${targetSlug}: already enriched, skipping (use --force to overwrite)`);
     return { skipped: true };
   }
-  if (force && fmRaw.includes('enriched_at:')) {
+  if (force && 'enriched_at' in fmData) {
     console.warn(`[wiki-enrich] ${targetSlug}: --force overwrite mode`);
   }
 
   const meta = {
-    title:           yamlGet(fmRaw, 'title') || targetSlug,
-    pillar:          yamlGet(fmRaw, 'pillar') || 'ai',
-    raw_note_id:     yamlGet(fmRaw, 'raw_note_id'),
-    raw_source_type: yamlGet(fmRaw, 'raw_source_type') || 'youtube',
+    title:           fmData.title           || targetSlug,
+    pillar:          fmData.pillar          || 'ai',
+    raw_note_id:     fmData.raw_note_id     || null,
+    raw_source_type: fmData.raw_source_type || 'youtube',
   };
 
   const transcript = extractTranscript(body);
@@ -298,11 +255,11 @@ async function enrichOne(targetSlug, client, concepts) {
   if (!rawText) throw new Error('Empty response from LLM');
 
   const result = extractJson(rawText);
-  const usage = response.usage;
+  const usage  = response.usage;
   console.error(`[wiki-enrich] ${targetSlug}: tokens in ${usage?.input_tokens} / out ${usage?.output_tokens}`);
 
-  const { yaml: enrichmentYaml, wrongPillar } = buildEnrichmentYaml(result);
-  const written = writeFrontmatter(sourcePath, content, enrichmentYaml);
+  const { enrichmentData, wrongPillar } = buildEnrichmentObject(result);
+  const written = writeFrontmatter(sourcePath, content, enrichmentData);
   if (written) {
     console.log(`[wiki-enrich] Written: ${sourcePath}`);
     if (wrongPillar) {
@@ -321,27 +278,27 @@ async function enrichOne(targetSlug, client, concepts) {
 
 // ── Batch discovery ───────────────────────────────────────────────────────
 function discoverSources() {
-  const files = fs.readdirSync(SOURCES_DIR).filter(f => f.endsWith('.md'));
+  const files   = fs.readdirSync(SOURCES_DIR).filter(f => f.endsWith('.md'));
   const sources = [];
 
   for (const f of files) {
     const fSlug = f.replace(/\.md$/, '');
     const raw   = fs.readFileSync(path.join(SOURCES_DIR, f), 'utf-8');
-    let fmRaw   = '';
+    let fmData;
     try {
-      ({ fmRaw } = splitFrontmatter(raw));
+      fmData = matter(raw).data;
     } catch {
       continue;
     }
 
     // raw_source_type takes precedence; fall back to source_type; no default assumption
-    const sourceType = yamlGet(fmRaw, 'raw_source_type') || yamlGet(fmRaw, 'source_type') || '';
-    const pillar     = yamlGet(fmRaw, 'pillar') || '';
-    const enriched   = fmRaw.includes('enriched_at:');
+    const sourceType = fmData.raw_source_type || fmData.source_type || '';
+    const pillar     = fmData.pillar || '';
+    const enriched   = 'enriched_at' in fmData;
 
-    if (typeArg && sourceType !== typeArg) continue;
-    if (pillarArg && pillar !== pillarArg) continue;
-    if (enriched && !force) continue;
+    if (typeArg   && sourceType !== typeArg)   continue;
+    if (pillarArg && pillar     !== pillarArg) continue;
+    if (enriched  && !force)                   continue;
 
     sources.push({ slug: fSlug, enriched });
   }
@@ -366,9 +323,9 @@ async function runSingle() {
   }
 
   const content = fs.readFileSync(sourcePath, 'utf-8');
-  const { fmRaw, body } = splitFrontmatter(content);
+  const { data: fmData, content: body } = matter(content);
 
-  if (!dryRun && !force && fmRaw.includes('enriched_at:')) {
+  if (!dryRun && !force && 'enriched_at' in fmData) {
     console.warn('[wiki-enrich] Already enriched. Use --force to overwrite. Exiting.');
     process.exit(0);
   }
@@ -394,32 +351,30 @@ async function runSingle() {
   const AnthropicClass = _sdk.default || _sdk;
   const client = new AnthropicClass({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+  const meta = {
+    title:           fmData.title           || slug,
+    pillar:          fmData.pillar          || 'ai',
+    raw_note_id:     fmData.raw_note_id     || null,
+    raw_source_type: fmData.raw_source_type || 'youtube',
+  };
+
   console.error(`[wiki-enrich] Calling ${MODEL_PRIMARY}…`);
   const response = await client.messages.create({
     model:      MODEL_PRIMARY,
     max_tokens: 4096,
     system:     SYSTEM_PROMPT,
-    messages:   [{ role: 'user', content: buildUserPrompt(
-      {
-        title:           yamlGet(fmRaw, 'title') || slug,
-        pillar:          yamlGet(fmRaw, 'pillar') || 'ai',
-        raw_note_id:     yamlGet(fmRaw, 'raw_note_id'),
-        raw_source_type: yamlGet(fmRaw, 'raw_source_type') || 'youtube',
-      },
-      concepts,
-      transcript,
-    ) }],
+    messages:   [{ role: 'user', content: buildUserPrompt(meta, concepts, transcript) }],
   });
 
   const rawText = response.content[0]?.text;
   if (!rawText) throw new Error('Empty response from LLM');
 
   const result = extractJson(rawText);
-  const usage = response.usage;
+  const usage  = response.usage;
   console.error(`[wiki-enrich] Tokens — in: ${usage?.input_tokens}, out: ${usage?.output_tokens}`);
 
-  const { yaml: enrichmentYaml, wrongPillar } = buildEnrichmentYaml(result);
-  const written = writeFrontmatter(sourcePath, content, enrichmentYaml);
+  const { enrichmentData, wrongPillar } = buildEnrichmentObject(result);
+  const written = writeFrontmatter(sourcePath, content, enrichmentData);
   if (written) {
     console.log(`[wiki-enrich] Written: ${sourcePath}`);
     if (wrongPillar) {
@@ -455,11 +410,11 @@ async function runBatch() {
   const concepts = loadConcepts();
   console.error(`[wiki-enrich] Loaded ${concepts.length} concepts`);
 
-  let successCount    = 0;
-  let failCount       = 0;
+  let successCount     = 0;
+  let failCount        = 0;
   let wrongPillarCount = 0;
-  let totalIn         = 0;
-  let totalOut        = 0;
+  let totalIn          = 0;
+  let totalOut         = 0;
 
   for (let i = 0; i < sources.length; i++) {
     const { slug: s } = sources[i];
