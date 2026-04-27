@@ -83,6 +83,20 @@ python3 scripts/wiki-derived-from-validate.py --strict
 
 如果要批次補（例如把 04-26 wrong_pillar 處理過的 enriched source 補進舊文章），手動編輯各 article frontmatter，再跑 validate script 確認 slug 都對。
 
+## visibility 限制
+
+`derived_from` slug 必須對應 **visibility=public** 的 wiki source：
+
+- `wiki/sources/[slug].astro` route 只 build visibility=public 的 source（getStaticPaths 過濾）
+- visibility=internal source 沒有獨立可瀏覽頁，UI 上「衍生自」section 會顯示 title 但**不連結**（避免讀者點擊 404）
+- 建議實作上由 author 自律避免指 internal source；Phase 4 Step E 會加 validator 強制檢查
+
+## Phase 4 路由變更
+
+Phase 4 Step C-prime（2026-04-28）新增 `src/pages/wiki/sources/[slug].astro` route，sources 從「附屬於 concept 頁的 embedded 資料」升級為「獨立可瀏覽頁面」，與 concept / entity 並列。
+
+URL pattern：`/wiki/sources/{slug}/`
+
 ## 不做的事（明確排除）
 
 - **不指 concept / entity**：避免雙標籤系統，validation 嚴格只 check `wiki/sources/`

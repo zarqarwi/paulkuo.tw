@@ -1,19 +1,20 @@
 ---
 /**
  * DerivedFromSection.astro — Article「衍生自 N 篇素材」section
- * Phase 4 Step B.
+ * Phase 4 Step B (initial) + Step C-prime (source URL added).
  *
  * Shows wiki sources that this article was derived from.
  * Hidden when sources array is empty.
- * Source title is shown as text (not linked) until source pages exist.
- * TODO i18n: section title for en/ja/zh-cn (Step E/F)
- * TODO: link source title to /wiki/{slug}/ once source pages are routable (Step C+)
+ * visibility=public  → linked to /wiki/sources/{slug}/
+ * visibility=internal → title shown as plain text (no 404 risk)
+ * TODO Step E: i18n section title for en/ja/zh-cn
  */
 
 interface SourceEntry {
   slug: string;
   title: string;
   summary: string;
+  visibility?: string;
 }
 
 interface Props {
@@ -21,20 +22,32 @@ interface Props {
 }
 
 const { sources } = Astro.props;
+
+function buildSourceUrl(slug: string, visibility?: string): string | null {
+  if (visibility === 'internal') return null;
+  return `/wiki/sources/${slug}/`;
+}
 ---
 
 {sources.length > 0 && (
   <section class="derived-from-section" aria-label={`衍生自 ${sources.length} 篇素材`}>
     <h3 class="derived-from-title">衍生自 {sources.length} 篇素材</h3>
     <ul class="derived-from-list">
-      {sources.map(src => (
-        <li class="derived-from-item">
-          <span class="derived-from-source-title">{src.title}</span>
-          {src.summary && (
-            <p class="derived-from-summary">{src.summary}</p>
-          )}
-        </li>
-      ))}
+      {sources.map(src => {
+        const url = buildSourceUrl(src.slug, src.visibility);
+        return (
+          <li class="derived-from-item">
+            {url ? (
+              <a href={url} class="derived-from-source-link">{src.title}</a>
+            ) : (
+              <span class="derived-from-source-title">{src.title}</span>
+            )}
+            {src.summary && (
+              <p class="derived-from-summary">{src.summary}</p>
+            )}
+          </li>
+        );
+      })}
     </ul>
   </section>
 )}
@@ -70,6 +83,17 @@ const { sources } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
+  }
+
+  .derived-from-source-link {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-accent, #6366f1);
+    text-decoration: none;
+  }
+
+  .derived-from-source-link:hover {
+    text-decoration: underline;
   }
 
   .derived-from-source-title {

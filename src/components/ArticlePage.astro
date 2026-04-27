@@ -68,7 +68,7 @@ const coverAltText = article.data.coverAlt || title;
 
 // === derived_from: resolve source objects from wiki_sources collection ===
 const derivedFromSlugs: string[] = article.data.derived_from || [];
-let derivedFromSources: { slug: string; title: string; summary: string }[] = [];
+let derivedFromSources: { slug: string; title: string; summary: string; visibility?: string }[] = [];
 if (derivedFromSlugs.length > 0) {
   const allWikiSources = await getCollection('wiki_sources');
   const sourceMap = new Map(allWikiSources.map(s => [s.id.replace(/\.md$/, ''), s]));
@@ -80,7 +80,7 @@ if (derivedFromSlugs.length > 0) {
     }
     const rawSummary = src.data.summary || '';
     const summary = rawSummary.length > 80 ? rawSummary.slice(0, 80) + '…' : rawSummary;
-    derivedFromSources.push({ slug, title: src.data.title || slug, summary });
+    derivedFromSources.push({ slug, title: src.data.title || slug, summary, visibility: src.data.visibility });
   }
 }
 

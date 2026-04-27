@@ -1,0 +1,119 @@
+---
+/**
+ * ReferencedByArticlesSection.astro — Source「被以下文章引用」section
+ * Phase 4 Step C-prime.
+ *
+ * Shows articles that reference this source via derived_from.
+ * Hidden when articles array is empty.
+ * TODO Step E: unify article URL builder with i18n router
+ */
+
+interface ReferencingArticle {
+  article_slug: string;
+  lang: string;
+  title: string;
+  date: string;
+  pillar: string;
+}
+
+interface Props {
+  articles: ReferencingArticle[];
+}
+
+const { articles } = Astro.props;
+
+function buildArticleUrl(slug: string, lang: string): string {
+  if (lang === 'en') return `/en/articles/${slug}/`;
+  if (lang === 'ja') return `/ja/articles/${slug}/`;
+  if (lang === 'zh-cn') return `/zh-cn/articles/${slug}/`;
+  return `/articles/${slug}/`;
+}
+
+function langDisplay(lang: string): string {
+  if (lang === 'en') return 'EN';
+  if (lang === 'ja') return '日';
+  if (lang === 'zh-cn') return '简';
+  return '中';
+}
+---
+
+{articles.length > 0 && (
+  <section class="referenced-by-section" aria-label={`被 ${articles.length} 篇文章引用`}>
+    <h2 class="referenced-by-title">被以下 {articles.length} 篇文章引用</h2>
+    <ul class="referenced-by-list">
+      {articles.map(a => (
+        <li class="referenced-by-item">
+          <a href={buildArticleUrl(a.article_slug, a.lang)} class="referenced-by-link">
+            {a.title}
+          </a>
+          <span class="referenced-by-meta">
+            {a.date}
+            <span class="lang-badge">{langDisplay(a.lang)}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .referenced-by-section {
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid var(--color-accent, #6366f1);
+    background: var(--color-surface-subtle, #f8f8f8);
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+  .referenced-by-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-muted, #6b7280);
+    margin: 0 0 0.75rem;
+  }
+
+  .referenced-by-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .referenced-by-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .referenced-by-link {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-accent, #6366f1);
+    text-decoration: none;
+  }
+
+  .referenced-by-link:hover {
+    text-decoration: underline;
+  }
+
+  .referenced-by-meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #6b7280);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .lang-badge {
+    display: inline-block;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.25rem;
+    background: var(--color-surface, #e5e7eb);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-muted, #6b7280);
+  }
+</style>

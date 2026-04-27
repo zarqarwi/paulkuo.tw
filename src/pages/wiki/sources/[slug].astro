@@ -1,0 +1,45 @@
+---
+/**
+ * /wiki/sources/[slug] — Wiki source 獨立頁
+ * Phase 4 Step C-prime.
+ *
+ * Only builds visibility=public sources.
+ * Reads referencingArticles from data/wiki-derived-index.json (built by Step A script).
+ * Falls back to [] if JSON is missing (dev without prebuild).
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SourcePage from '../../../components/SourcePage.astro';
+
+interface ReferencingArticle {
+  article_slug: string;
+  lang: string;
+  title: string;
+  date: string;
+  pillar: string;
+}
+
+export async function getStaticPaths() {
+  const sources = await getCollection('wiki_sources', ({ data }) => data.visibility === 'public');
+  return sources.map((source) => ({
+    params: { slug: source.id.replace(/\.md$/, '') },
+    props: { source },
+  }));
+}
+
+const { source } = Astro.props;
+const slug = source.id.replace(/\.md$/, '');
+
+let derivedIndex: Record<string, ReferencingArticle[]> = {};
+try {
+  derivedIndex = (await import('../../../../data/wiki-derived-index.json')).default as Record<string, ReferencingArticle[]>;
+} catch {
+  // JSON missing (dev without prebuild): graceful fallback
+}
+
+const referencingArticles: ReferencingArticle[] = derivedIndex[slug] ?? [];
+---
+
+<BaseLayout title={source.data.title} description={source.data.summary ?? ''}>
+  <SourcePage source={source} referencingArticles={referencingArticles} />
+</BaseLayout>
