@@ -1,13 +1,12 @@
 ---
 /**
  * DerivedFromSection.astro — Article「衍生自 N 篇素材」section
- * Phase 4 Step B (initial) + Step C-prime (source URL added).
+ * Phase 4 Step B (initial) + Step C-prime (source URL added) + Step E2 (i18n).
  *
  * Shows wiki sources that this article was derived from.
  * Hidden when sources array is empty.
  * visibility=public  → linked to /wiki/sources/{slug}/
  * visibility=internal → title shown as plain text (no 404 risk)
- * TODO Step E: i18n section title for en/ja/zh-cn
  */
 
 interface SourceEntry {
@@ -19,9 +18,22 @@ interface SourceEntry {
 
 interface Props {
   sources: SourceEntry[];
+  lang: 'zh-Hant' | 'en' | 'ja' | 'zh-cn';
 }
 
-const { sources } = Astro.props;
+const { sources, lang } = Astro.props;
+
+const translations = {
+  'zh-Hant': { heading: (n: number) => `衍生自 ${n} 篇素材` },
+  'en':      { heading: (n: number) => `Derived from ${n} ${n === 1 ? 'source' : 'sources'}` },
+  'ja':      { heading: (n: number) => `${n} 件の素材から派生` },
+  'zh-cn':   { heading: (n: number) => `衍生自 ${n} 篇素材` },
+};
+
+if (!(lang in translations)) {
+  console.warn(`DerivedFromSection: unknown lang '${lang}', falling back to zh-Hant`);
+}
+const t = translations[lang as keyof typeof translations] ?? translations['zh-Hant'];
 
 function buildSourceUrl(slug: string, visibility?: string): string | null {
   if (visibility === 'internal') return null;
@@ -30,8 +42,8 @@ function buildSourceUrl(slug: string, visibility?: string): string | null {
 ---
 
 {sources.length > 0 && (
-  <section class="derived-from-section" aria-label={`衍生自 ${sources.length} 篇素材`}>
-    <h3 class="derived-from-title">衍生自 {sources.length} 篇素材</h3>
+  <section class="derived-from-section" aria-label={t.heading(sources.length)}>
+    <h3 class="derived-from-title">{t.heading(sources.length)}</h3>
     <ul class="derived-from-list">
       {sources.map(src => {
         const url = buildSourceUrl(src.slug, src.visibility);
