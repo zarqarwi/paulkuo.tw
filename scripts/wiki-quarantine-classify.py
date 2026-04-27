@@ -83,6 +83,13 @@ def matches_rule(rule, fm, body):
 
 
 def classify(fm, body):
+    # Fast-path: honour an existing human review decision instead of re-classifying.
+    # Condition: quarantine.review_outcome is set AND quarantine.needs_review is explicitly False.
+    quarantine = fm.get("quarantine") or {}
+    if quarantine.get("review_outcome") and quarantine.get("needs_review") is False:
+        outcome = quarantine["review_outcome"]
+        return outcome, f"fast-path: existing review_outcome={outcome}"
+
     for rule in RULES:
         if matches_rule(rule, fm, body):
             return rule["outcome"], rule["description"]
