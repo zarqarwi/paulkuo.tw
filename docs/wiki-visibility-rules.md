@@ -1,6 +1,6 @@
 # Wiki Visibility 規則（單一真相源 / SSOT）
 
-> Last updated: 2026-04-26
+> Last updated: 2026-04-27
 > Authoritative source. 三組件（scanner / ingest pipeline / 前端）的 visibility 邏輯必須引用本文。
 > 任何規則修改先改本文，再同步三組件。違反者由 `scripts/wiki-consistency-check.py` 抓出。
 
@@ -68,17 +68,56 @@
 
 ---
 
+## Ingest Blocklist 機制（`data/wiki-ingest-blocklist.json`）
+
+ingest pipeline 永久排除清單。**兩個獨立區塊，依 source 種類各自維護**：
+
+| 區塊 | Key 形式 | 來源類型 | 寫入端 | 讀取端 |
+|------|---------|---------|--------|--------|
+| `blocklist` | `raw_note_id`（18 位數字雪花 ID） | get_筆記（Apple Notes / 得到 App） | `scripts/wiki-quarantine-apply.py`（delete outcome） | `scripts/build_wiki_ingest_report.py`（scanner 跳過候選） |
+| `youtube_blocklist` | `youtube_id`（11 位英數） | YouTube ingest | 手動或 future `wiki-youtube-quarantine` | `scripts/wiki-youtube-ingest.cjs`（pull / trigger 前阻擋） |
+
+**為什麼分兩區塊**：
+
+- ID space 形式不同（純數字 vs 英數混合，碰撞機率低但語意完全不同）
+- 寫入時機不同（quarantine apply / 人工 wrong_pillar drop）
+- 讀取組件不同（scanner / youtube ingest）
+
+**Schema**（兩區塊 entry 格式相同）：
+
+```json
+{
+  "<id>": {
+    "reason": "delete_outcome | wrong_pillar_drop | manual_skip | duplicate | noise",
+    "added_at": "ISO date",
+    "added_by": "Cowork | Code | Paul | combo (e.g. cowork+paul)",
+    "title_at_delete": "string"
+  }
+}
+```
+
+**新增 entry SOP**：
+
+1. 寫進 JSON（兩區塊都是 idempotent — 重複 key 直接覆蓋）
+2. commit message 寫清楚 reason + 來源 handoff
+3. 依 region 觸發對應 pipeline 重跑驗證（scanner 重掃 / youtube ingest dry-run）
+
+**未來擴充**：若新增第三類 source（如 web clip），可比照新增獨立區塊（如 `clip_blocklist`），不要混入既有兩區塊。
+
+---
+
 ## 規則執行位置
 
 | 組件 | 檔案 | 規則段落 | 引用本文方式 |
 |------|------|---------|------------|
-| Scanner | `scripts/build_wiki_ingest_report.py` | `determine_visibility()` | inline comment |
-| Ingest pipeline | `scripts/wiki-youtube-ingest.cjs`, `scripts/wiki-enrich.cjs` | 落檔/重寫 frontmatter 處 | inline comment |
+| Scanner | `scripts/build_wiki_ingest_report.py` | `determine_visibility()` + `blocklist` skip | inline comment |
+| Ingest pipeline | `scripts/wiki-youtube-ingest.cjs`, `scripts/wiki-enrich.cjs` | 落檔/重寫 frontmatter 處 + `youtube_blocklist` skip | inline comment |
 | 前端（index） | `src/pages/wiki/index.astro` | `visibility === 'public'` filter | inline comment |
 | 前端（slug） | `src/pages/wiki/[slug].astro` | `visibility === 'public'` filter | inline comment |
 | Schema | `src/content.config.ts` | `wikiSchema.visibility` + `wikiSchema.sensitivity` | inline comment |
 | KV seed | `scripts/wiki-kv-seed.cjs` | sources 不 seed；如未來改要對齊 | inline comment |
 | Sensitivity detector | `scripts/wiki-sensitivity-scan.py` | docstring + per-pattern comments | docstring |
+| Quarantine apply | `scripts/wiki-quarantine-apply.py` | 寫入 `blocklist` 區塊 | inline comment |
 | CI | `scripts/wiki-consistency-check.py` | 主動檢查所有上述位置 | self-referential |
 
 任何上述組件修改 visibility 邏輯必須同步更新本文，CI 會擋。
@@ -102,7 +141,7 @@
 
 **動作**：
 - 移除 source 檔案
-- raw_note_id 加進 `data/wiki-ingest-blocklist.json` 防再 ingest
+- raw_note_id 加進 `data/wiki-ingest-blocklist.json` `blocklist` 區塊防再 ingest
 
 **為什麼是 delete 而非 keep_internal**：
 - 商務會議含具名公司 / 合作條件，永久不對外
