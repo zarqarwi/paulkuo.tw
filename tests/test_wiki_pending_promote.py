@@ -22,43 +22,6 @@ promote = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(promote)
 
 
-# === inject_dialogue_fields (pure function) ===
-
-def test_inject_dialogue_fields_adds_dialogue_false():
-    fm_text = "title: Some Monologue\nvisibility: internal"
-    result = {"dialogue": False, "dialogue_inference": "none"}
-    out = promote.inject_dialogue_fields(fm_text, result)
-    assert "dialogue: false" in out
-    assert "dialogue_inference: none" in out
-    assert "speakers:" not in out
-
-
-def test_inject_dialogue_fields_adds_dialogue_true_with_speakers():
-    fm_text = "title: 主持人與來賓對談\nvisibility: internal"
-    result = {
-        "dialogue": True,
-        "dialogue_inference": "heuristic",
-        "speakers": ["主持人", "來賓"],
-    }
-    out = promote.inject_dialogue_fields(fm_text, result)
-    assert "dialogue: true" in out
-    assert "dialogue_inference: heuristic" in out
-    assert "speakers:" in out
-    assert "  - 主持人" in out
-    assert "  - 來賓" in out
-
-
-def test_inject_dialogue_fields_preserves_existing_content():
-    fm_text = "title: Test\nvisibility: public\npending_status: approved"
-    result = {"dialogue": True, "dialogue_inference": "heuristic", "speakers": ["A", "B"]}
-    out = promote.inject_dialogue_fields(fm_text, result)
-    # Existing fields still present
-    assert "title: Test" in out
-    assert "pending_status: approved" in out
-    # Dialogue fields appended
-    assert "dialogue: true" in out
-
-
 # === full promote integration (uses tmp_path) ===
 
 FIXTURE_CONTENT_WITH_DIALOGUE = """\

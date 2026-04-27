@@ -15,30 +15,23 @@ from collections import defaultdict
 # Visibility rules live in scripts/wiki_visibility.py — see docs/wiki-visibility-rules.md (SSOT).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_visibility import determine_visibility
+from wiki_corpus_lib import iter_source_paths, extract_raw_note_id, load_blocklists
 
 # Get ingested note_ids from wiki sources
 wiki_sources_dir = Path("/Users/apple/Desktop/01_專案進行中/paulkuo.tw/src/content/wiki/sources")
 ingested_ids = set()
 
-for md_file in wiki_sources_dir.glob("*.md"):
-    with open(md_file, "r", encoding="utf-8") as f:
-        content = f.read()
-        # Extract raw_note_id from frontmatter
-        match = re.search(r'raw_note_id:\s*"([^"]+)"', content)
-        if match:
-            ingested_ids.add(match.group(1))
+for _src_path in iter_source_paths(wiki_sources_dir):
+    _raw_id = extract_raw_note_id(_src_path)
+    if _raw_id:
+        ingested_ids.add(_raw_id)
 
 print(f"Found {len(ingested_ids)} ingested note IDs")
 
 # Load blocklist — raw_note_ids permanently excluded from scanner candidates.
 # Populated by quarantine apply (delete outcomes) and manual skips.
 blocklist_path = Path("/Users/apple/Desktop/01_專案進行中/paulkuo.tw/data/wiki-ingest-blocklist.json")
-blocklist = {}
-if blocklist_path.exists():
-    try:
-        blocklist = json.load(open(blocklist_path)).get("blocklist", {}) or {}
-    except Exception as e:
-        print(f"⚠️  blocklist load failed: {e}")
+blocklist, _ = load_blocklists(blocklist_path)
 print(f"Blocklist: {len(blocklist)} note(s) excluded")
 
 # Scan get_筆記 folders

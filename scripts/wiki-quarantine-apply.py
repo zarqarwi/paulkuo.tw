@@ -16,7 +16,6 @@ Usage:
 
 import argparse
 import json
-import re
 import sys
 import yaml
 from pathlib import Path
@@ -27,44 +26,17 @@ BLOCKLIST_PATH = Path("data/wiki-ingest-blocklist.json")
 OVERRIDES_DEFAULT = Path("worklogs/incidents/quarantine-overrides-2026-04-26-final.yml")
 TODAY = datetime.now().strftime("%Y-%m-%d")
 
-
-def load_source(path):
-    """Return (frontmatter_dict, body_str, raw_text)."""
-    with open(path) as f:
-        text = f.read()
-    m = re.match(r'^---\n(.*?)\n---\n(.*)', text, re.DOTALL)
-    if not m:
-        return None, "", text
-    fm = yaml.safe_load(m.group(1))
-    return fm, m.group(2), text
-
-
-def write_source(path, fm, body):
-    """Serialize frontmatter + body back to file."""
-    fm_yaml = yaml.safe_dump(fm, allow_unicode=True, sort_keys=False, default_flow_style=False)
-    new_text = "---\n" + fm_yaml + "---\n" + body
-    path.write_text(new_text)
-
-
-def find_source_by_id(raw_note_id, expected_filename=None):
-    """Find source file by raw_note_id (preferred) with filename hint."""
-    if expected_filename:
-        candidate = SOURCES_DIR / expected_filename
-        if candidate.exists():
-            fm, _, _ = load_source(candidate)
-            if fm and str(fm.get("raw_note_id", "")) == raw_note_id:
-                return candidate
-    # Fallback: scan all
-    for f in SOURCES_DIR.glob("*.md"):
-        fm, _, _ = load_source(f)
-        if fm and str(fm.get("raw_note_id", "")) == raw_note_id:
-            return f
-    return None
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wiki_corpus_lib import (  # noqa: E402
+    load_source,
+    write_source,
+    find_source_by_raw_note_id,
+)
 
 
 def apply_restore_public(source_path, entry, dry_run):
     """Flip visibility -> public, remove quarantine block."""
-    fm, body, _ = load_source(source_path)
+    fm, body = load_source(source_path)
     if not fm:
         return "skip:parse_error"
 
@@ -83,7 +55,7 @@ def apply_restore_public(source_path, entry, dry_run):
 
 def apply_keep_internal(source_path, entry, dry_run):
     """Set review_outcome, clear needs_review, keep visibility internal."""
-    fm, body, _ = load_source(source_path)
+    fm, body = load_source(source_path)
     if not fm:
         return "skip:parse_error"
 
@@ -177,7 +149,7 @@ def main():
                 source_path = SOURCES_DIR / expected_file if expected_file else None
                 status = apply_delete(source_path, entry, blocklist, args.dry_run)
             else:
-                source_path = find_source_by_id(raw_id, expected_file)
+                source_path = find_source_by_raw_note_id(SOURCES_DIR, raw_id, filename_hint=expected_file)
                 if not source_path:
                     results["errors"].append((bucket, raw_id, "file_not_found"))
                     print(f"  ❌ {raw_id}: file not found")

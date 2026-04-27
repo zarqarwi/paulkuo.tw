@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCES_DIR = ROOT / "src" / "content" / "wiki" / "sources"
 
 sys.path.insert(0, str(ROOT / "scripts"))
+from wiki_corpus_lib import load_source, write_source, iter_source_paths  # noqa: E402
 from wiki_dialogue_lib import (  # noqa: E402
     detect_dialogue,
     TITLE_KEYWORDS,
@@ -27,32 +28,6 @@ from wiki_dialogue_lib import (  # noqa: E402
     MIN_UNIQUE_SPEAKERS,
     MIN_TOTAL_MARKERS,
 )
-
-
-def parse_md(path: Path):
-    """Split markdown into (frontmatter_dict, body_str). Returns ({}, '') on parse error."""
-    text = path.read_text(encoding='utf-8')
-    if not text.startswith('---'):
-        return {}, text
-    parts = text.split('---', 2)
-    if len(parts) < 3:
-        return {}, text
-    try:
-        fm = yaml.safe_load(parts[1]) or {}
-    except yaml.YAMLError:
-        fm = {}
-    return fm, parts[2]
-
-
-def write_frontmatter(path: Path, fm: dict, result: dict):
-    """Merge dialogue fields into frontmatter and rewrite the file."""
-    _, body = parse_md(path)
-    fm['dialogue'] = result['dialogue']
-    fm['dialogue_inference'] = result['dialogue_inference']
-    if 'speakers' in result:
-        fm['speakers'] = result['speakers']
-    new_text = '---\n' + yaml.dump(fm, allow_unicode=True, sort_keys=False) + '---' + body
-    path.write_text(new_text, encoding='utf-8')
 
 
 def load_quarantine_rules():
@@ -64,11 +39,10 @@ def load_quarantine_rules():
         data = yaml.safe_load(rules_path.read_text(encoding='utf-8')) or {}
     except yaml.YAMLError:
         return set()
-    # Collect slugs from sources that have both tags
     recording_and_meeting = set()
-    sources_dir = SOURCES_DIR
-    for md_path in sources_dir.glob('*.md'):
-        fm, _ = parse_md(md_path)
+    for md_path in iter_source_paths(SOURCES_DIR):
+        fm, _ = load_source(md_path)
+        fm = fm or {}
         tags = fm.get('tags', []) or []
         if 'recording' in tags and 'business_meeting' in tags:
             recording_and_meeting.add(md_path.stem)
@@ -76,14 +50,15 @@ def load_quarantine_rules():
 
 
 def run_dry_run():
-    files = sorted(SOURCES_DIR.glob('*.md'))
+    files = list(iter_source_paths(SOURCES_DIR))
     total = len(files)
     print(f'=== Wiki Dialogue Marker Detector — DRY-RUN ===\n')
     print(f'Scanning {SOURCES_DIR.relative_to(ROOT)} ... {total} files\n')
 
     results = []
     for path in files:
-        fm, body = parse_md(path)
+        fm, body = load_source(path)
+        fm = fm or {}
         r = detect_dialogue(fm, body)
         results.append((path.stem, r))
 
@@ -127,7 +102,7 @@ def run_dry_run():
         print(f'\nTop 5 false positive candidates (title-only hit, manual review):')
         for slug, r in fp_candidates[:5]:
             fp_path = SOURCES_DIR / f'{slug}.md'
-            _, body = parse_md(fp_path)
+            _, body = load_source(fp_path)
             excerpt = body.strip()[:120].replace('\n', ' ')
             print(f'  - {slug} (reason: {r["reason"]}, excerpt: "{excerpt}...")')
 
@@ -144,12 +119,16 @@ def run_dry_run():
 
 
 def run_apply():
-    files = sorted(SOURCES_DIR.glob('*.md'))
     updated = 0
-    for path in files:
-        fm, body = parse_md(path)
+    for path in iter_source_paths(SOURCES_DIR):
+        fm, body = load_source(path)
+        fm = fm or {}
         r = detect_dialogue(fm, body)
-        write_frontmatter(path, fm, r)
+        fm['dialogue'] = r['dialogue']
+        fm['dialogue_inference'] = r['dialogue_inference']
+        if 'speakers' in r:
+            fm['speakers'] = r['speakers']
+        write_source(path, fm, body)
         updated += 1
     print(f'Applied dialogue fields to {updated} files.')
 
@@ -157,13 +136,13 @@ def run_apply():
 def run_spot(slug: str):
     path = SOURCES_DIR / f'{slug}.md'
     if not path.exists():
-        # try without extension
         candidates = list(SOURCES_DIR.glob(f'{slug}*'))
         if not candidates:
             print(f'ERROR: {slug} not found in {SOURCES_DIR}')
             sys.exit(1)
         path = candidates[0]
-    fm, body = parse_md(path)
+    fm, body = load_source(path)
+    fm = fm or {}
     r = detect_dialogue(fm, body)
     print(f'slug:               {path.stem}')
     print(f'title:              {fm.get("title", "(no title)")}')

@@ -17,7 +17,6 @@ Idempotent: re-running on same input produces same output.
 Does NOT modify source files. Apply step is a separate handoff.
 """
 
-import re
 import sys
 import yaml
 from pathlib import Path
@@ -30,6 +29,7 @@ TODAY = datetime.now().strftime("%Y-%m-%d")
 RULES_FILE = PROJECT_ROOT / "data" / "wiki-quarantine-rules.yml"
 
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from wiki_corpus_lib import load_source, is_quarantined, extract_raw_note_id  # noqa: E402
 from wiki_text_normalize import contains_normalized  # noqa: E402
 from wiki_dialogue_lib import is_dialogue_signal, is_business_meeting  # noqa: E402
 from wiki_visibility import has_recording_tag  # noqa: E402
@@ -37,20 +37,6 @@ from wiki_visibility import has_recording_tag  # noqa: E402
 with open(RULES_FILE, encoding="utf-8") as _f:
     _rules_config = yaml.safe_load(_f)
 RULES = _rules_config["rules"]
-
-
-def load_source(path: Path):
-    """Parse frontmatter + body. Returns (frontmatter_dict, body_str)."""
-    text = path.read_text(encoding="utf-8")
-    m = re.match(r"^---\n(.*?)\n---\n(.*)", text, re.DOTALL)
-    if not m:
-        return None, ""
-    try:
-        fm = yaml.safe_load(m.group(1))
-    except Exception as e:
-        print(f"⚠️  YAML parse error in {path.name}: {e}")
-        return None, ""
-    return fm, m.group(2)
 
 
 def matches_rule(rule, fm, body):
@@ -99,7 +85,7 @@ def classify(fm, body):
 def main():
     quarantine_files = sorted(
         f for f in SOURCES_DIR.glob("*.md")
-        if "quarantine:" in f.read_text(encoding="utf-8")
+        if is_quarantined(f.read_text(encoding="utf-8"))
     )
 
     print(f"Found {len(quarantine_files)} quarantined sources")
@@ -114,7 +100,7 @@ def main():
             continue
 
         outcome, reason = classify(fm, body)
-        raw_note_id = fm.get("raw_note_id", "") or ""
+        raw_note_id = extract_raw_note_id(fm) or ""
         title = fm.get("title", "") or ""
 
         if outcome:

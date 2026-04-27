@@ -21,6 +21,7 @@ SSOT_PATH = ROOT / "docs" / SSOT_NAME
 # Files that own visibility logic and must reference the SSOT.
 EXPECTED_REFS = [
     "scripts/build_wiki_ingest_report.py",
+    "scripts/wiki_corpus_lib.py",
     "scripts/wiki_visibility.py",
     "scripts/wiki-youtube-ingest.cjs",
     "scripts/wiki-enrich.cjs",
