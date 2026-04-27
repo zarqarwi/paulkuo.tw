@@ -4,8 +4,11 @@
   "version": "2.15.0",
   "scripts": {
     "dev": "astro dev",
+    "predev": "python3 scripts/wiki-build-derived-index.py",
     "fetch-feed": "node scripts/fetch-feed.mjs",
     "build": "astro build",
+    "prebuild": "python3 scripts/wiki-build-derived-index.py --strict",
+    "wiki:build-derived-index": "python3 scripts/wiki-build-derived-index.py",
     "preview": "astro preview",
     "astro": "astro",
     "test:wiki-scanner": "python3 -m pytest tests/test_wiki_scanner.py -v",
