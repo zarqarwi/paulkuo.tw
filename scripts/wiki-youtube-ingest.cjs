@@ -114,6 +114,20 @@ function kvPut(key, value) {
   }
 }
 
+// ── YouTube blocklist ──────────────────────────────────────────────────
+
+function loadYoutubeBlocklist() {
+  const blocklistPath = path.join(PROJECT_ROOT, 'data', 'wiki-ingest-blocklist.json');
+  try {
+    const raw = fs.readFileSync(blocklistPath, 'utf-8');
+    const data = JSON.parse(raw);
+    return data.youtube_blocklist || {};
+  } catch (err) {
+    console.warn(`[blocklist] Failed to load youtube_blocklist: ${err.message} — fail-open`);
+    return {};
+  }
+}
+
 // ── Transcript helpers ────────────────────────────────────────────────
 
 function decodeXmlEntities(str) {
@@ -386,6 +400,7 @@ async function pullPending() {
     return { written: 0, failed: 0, remaining: 0 };
   }
 
+  const youtubeBlocklist = loadYoutubeBlocklist();
   let written = 0;
   let failed = 0;
 
@@ -398,6 +413,13 @@ async function pullPending() {
     try { data = JSON.parse(raw); } catch {
       console.error(`  ✗ Bad JSON for ${key}`);
       failed++;
+      continue;
+    }
+
+    if (data.videoId && youtubeBlocklist[data.videoId]) {
+      const bl = youtubeBlocklist[data.videoId];
+      console.log(`  ⊘ Blocked (youtube_blocklist): ${data.videoId} — ${bl.reason}`);
+      kvDelete(key);
       continue;
     }
 
@@ -480,6 +502,22 @@ function injectTranscript(markdown, transcriptResult) {
 // ── Trigger single video ingest via API ────────────────────────────────
 
 async function triggerIngest(videoUrl, options = {}) {
+  // Resolve videoId from URL or bare ID
+  let videoId = videoUrl;
+  const matchV = videoUrl.match(/[?&]v=([A-Za-z0-9_-]{11})/);
+  const matchShort = videoUrl.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
+  if (matchV) videoId = matchV[1];
+  else if (matchShort) videoId = matchShort[1];
+
+  const youtubeBlocklist = loadYoutubeBlocklist();
+  if (youtubeBlocklist[videoId]) {
+    const bl = youtubeBlocklist[videoId];
+    console.error(`Error: ${videoId} is in youtube_blocklist — ingest blocked`);
+    console.error(`  Reason: ${bl.reason}`);
+    console.error(`  Added: ${bl.added_at} by ${bl.added_by}`);
+    process.exit(1);
+  }
+
   const adminToken = process.env.FORMOSA_ADMIN_TOKEN;
   if (!adminToken) {
     console.error('Error: FORMOSA_ADMIN_TOKEN env var required');
