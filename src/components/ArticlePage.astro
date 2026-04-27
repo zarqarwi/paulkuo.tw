@@ -14,6 +14,7 @@ import { calcReadingTime } from '../utils/readingTime';
 import { getArticleEntities } from '../utils/entities';
 import ArticleCost from '../components/ArticleCost.astro';
 import ArticleComments from '../components/ArticleComments.tsx';
+import DerivedFromSection from '../components/DerivedFromSection.astro';
 
 interface Props {
   article: any;
@@ -64,6 +65,24 @@ const articleEntities = getArticleEntities(tags || [], rawBody, pillar);
 
 // Cover image alt text: prefer explicit coverAlt, fallback to title
 const coverAltText = article.data.coverAlt || title;
+
+// === derived_from: resolve source objects from wiki_sources collection ===
+const derivedFromSlugs: string[] = article.data.derived_from || [];
+let derivedFromSources: { slug: string; title: string; summary: string }[] = [];
+if (derivedFromSlugs.length > 0) {
+  const allWikiSources = await getCollection('wiki_sources');
+  const sourceMap = new Map(allWikiSources.map(s => [s.id.replace(/\.md$/, ''), s]));
+  for (const slug of derivedFromSlugs) {
+    const src = sourceMap.get(slug);
+    if (!src) {
+      console.warn(`[ArticlePage] derived_from: unknown source slug '${slug}' in article '${currentSlug}'`);
+      continue;
+    }
+    const rawSummary = src.data.summary || '';
+    const summary = rawSummary.length > 80 ? rawSummary.slice(0, 80) + '…' : rawSummary;
+    derivedFromSources.push({ slug, title: src.data.title || slug, summary });
+  }
+}
 
 // Mobile language bar links (same logic as BaseLayout langSwitchLinks)
 const articlePath = `/articles/${slug}`;
@@ -238,6 +257,11 @@ const i = {
         }
       });
     </script>
+
+    {/* === Derived From Section (Step B) === */}
+    {derivedFromSources.length > 0 && (
+      <DerivedFromSection sources={derivedFromSources} />
+    )}
 
     {tags.length > 0 && (
       <footer class="article-tags" aria-label={lang === 'en' ? 'Tags' : lang === 'ja' ? 'タグ' : '標籤'}>

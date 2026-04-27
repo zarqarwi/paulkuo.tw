@@ -1,0 +1,87 @@
+---
+/**
+ * DerivedFromSection.astro — Article「衍生自 N 篇素材」section
+ * Phase 4 Step B.
+ *
+ * Shows wiki sources that this article was derived from.
+ * Hidden when sources array is empty.
+ * Source title is shown as text (not linked) until source pages exist.
+ * TODO i18n: section title for en/ja/zh-cn (Step E/F)
+ * TODO: link source title to /wiki/{slug}/ once source pages are routable (Step C+)
+ */
+
+interface SourceEntry {
+  slug: string;
+  title: string;
+  summary: string;
+}
+
+interface Props {
+  sources: SourceEntry[];
+}
+
+const { sources } = Astro.props;
+---
+
+{sources.length > 0 && (
+  <section class="derived-from-section" aria-label={`衍生自 ${sources.length} 篇素材`}>
+    <h3 class="derived-from-title">衍生自 {sources.length} 篇素材</h3>
+    <ul class="derived-from-list">
+      {sources.map(src => (
+        <li class="derived-from-item">
+          <span class="derived-from-source-title">{src.title}</span>
+          {src.summary && (
+            <p class="derived-from-summary">{src.summary}</p>
+          )}
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .derived-from-section {
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid var(--color-accent, #6366f1);
+    background: var(--color-surface-subtle, #f8f8f8);
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+  .derived-from-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.75rem;
+  }
+
+  .derived-from-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .derived-from-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .derived-from-source-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text, #1a1a1a);
+  }
+
+  .derived-from-summary {
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #6b7280);
+    margin: 0;
+    line-height: 1.5;
+  }
+</style>
