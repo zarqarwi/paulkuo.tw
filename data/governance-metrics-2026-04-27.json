@@ -1,0 +1,50 @@
+{
+  "date": "2026-04-27",
+  "since_utc": "2026-04-26T02:37:04Z",
+  "until_utc": "2026-04-27T02:37:04Z",
+  "projects": {
+    "zarqarwi/paulkuo.tw": {
+      "commits_24h": 72,
+      "authors_24h": {
+        "Paul Kuo": 38,
+        "zarqarwi": 32,
+        "github-actions[bot]": 1,
+        "ai-ready-bot": 1
+      },
+      "top_3_commit_msgs": [
+        "bf6b9d4 chore(wiki-classify): re-classify output + worklog + handoff (fast-path)",
+        "71b80b8 test(wiki-classify): 4 unit tests for fast-path rule",
+        "a058ca9 feat(wiki-classify): add fast-path for existing human review decisions"
+      ],
+      "issues_open": 83,
+      "issues_opened_24h": 0,
+      "issues_closed_24h": 0,
+      "prs_open": 4,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "success",
+      "last_ci_runs": [
+        {"name": "Publish to Social Media", "conclusion": "success", "at": "2026-04-27T02:32:59Z"},
+        {"name": "SEO Index Submit", "conclusion": "success", "at": "2026-04-27T02:32:59Z"},
+        {"name": "Build & Deploy", "conclusion": "success", "at": "2026-04-27T02:30:29Z"},
+        {"name": "Wiki Visibility Consistency Check", "conclusion": "success", "at": "2026-04-27T02:30:29Z"}
+      ]
+    },
+    "zarqarwi/get-biji-notes": {
+      "commits_24h": 0,
+      "authors_24h": {},
+      "top_3_commit_msgs": [],
+      "issues_open": 0,
+      "issues_opened_24h": 0,
+      "issues_closed_24h": 0,
+      "prs_open": 0,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "unknown",
+      "_note": "private repo, no GitHub Actions configured / not exposed"
+    }
+  },
+  "archived": [
+    {"repo": "zarqarwi/formosa-esg-2026", "archived_on": "2026-04-26"}
+  ]
+}
