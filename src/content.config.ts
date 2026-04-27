@@ -17,6 +17,9 @@ const articleSchema = z.object({
   medium_url: z.string().optional(),
   cover: z.string().optional(),
   coverAlt: z.string().optional(),
+  // L3 演化層：素材溯源（單向 article → wiki/sources/）
+  // 設計拍板與用法見 docs/article-derived-from.md
+  derived_from: z.array(z.string()).optional(),
 });
 
 // 繁體中文（主語系）

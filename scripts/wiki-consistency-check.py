@@ -30,6 +30,9 @@ EXPECTED_REFS = [
     "src/pages/wiki/index.astro",
     "src/pages/wiki/[slug].astro",
     "src/content.config.ts",
+    # Phase 3 — L3 演化層 derived_from（article → source）
+    "docs/article-derived-from.md",
+    "scripts/wiki-derived-from-validate.py",
 ]
 
 # Schema invariant — must remain a 2-value enum. No `private`.
