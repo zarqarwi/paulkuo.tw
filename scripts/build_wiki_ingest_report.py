@@ -5,9 +5,7 @@ Visibility & sensitivity rules: see docs/wiki-visibility-rules.md (SSOT).
 """
 
 import os
-import re
 import sys
-import json
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
@@ -15,7 +13,7 @@ from collections import defaultdict
 # Visibility rules live in scripts/wiki_visibility.py — see docs/wiki-visibility-rules.md (SSOT).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_visibility import determine_visibility
-from wiki_corpus_lib import iter_source_paths, extract_raw_note_id, load_blocklists
+from wiki_corpus_lib import iter_source_paths, extract_raw_note_id, load_blocklists, parse_frontmatter
 
 # Get ingested note_ids from wiki sources
 wiki_sources_dir = Path("/Users/apple/Desktop/01_專案進行中/paulkuo.tw/src/content/wiki/sources")
@@ -54,46 +52,34 @@ for subfolder in sorted(get_notes_dir.iterdir()):
         total_notes += 1
         
         try:
-            with open(md_file, "r", encoding="utf-8") as f:
-                content = f.read()
-                
-                # Extract note_id and title from frontmatter
-                note_id_match = re.search(r'note_id:\s*"([^"]+)"', content)
-                title_match = re.search(r'title:\s*"([^"]+)"', content)
-                tags_match = re.search(r'tags:\s*(\[.*?\])', content, re.DOTALL)
-                
-                if not note_id_match:
-                    continue
-                
-                note_id = note_id_match.group(1)
-                title = title_match.group(1) if title_match else md_file.stem
-                
-                # Parse tags
-                tags = []
-                if tags_match:
-                    try:
-                        tags_str = tags_match.group(1)
-                        # Simple JSON-like parsing
-                        tags = json.loads(tags_str)
-                    except:
-                        pass
-                
-                # Skip if already ingested
-                if note_id in ingested_ids:
-                    continue
+            content = md_file.read_text(encoding="utf-8")
+            fm, _ = parse_frontmatter(content)
+            if not fm:
+                continue
 
-                # Skip if in blocklist (delete outcome / manual exclude)
-                if note_id in blocklist:
-                    continue
-                
-                # Determine visibility
-                visibility = determine_visibility(subfolder.name, tags)
-                
-                pending_notes[visibility].append({
-                    "folder": subfolder.name,
-                    "title": title,
-                    "note_id": note_id
-                })
+            note_id = str(fm.get("note_id", "") or "")
+            if not note_id:
+                continue
+
+            title = str(fm.get("title", "") or "") or md_file.stem
+            tags = list(fm.get("tags", []) or [])
+
+            # Skip if already ingested
+            if note_id in ingested_ids:
+                continue
+
+            # Skip if in blocklist (delete outcome / manual exclude)
+            if note_id in blocklist:
+                continue
+
+            # Determine visibility
+            visibility = determine_visibility(subfolder.name, tags)
+
+            pending_notes[visibility].append({
+                "folder": subfolder.name,
+                "title": title,
+                "note_id": note_id
+            })
         except Exception as e:
             print(f"Error processing {md_file}: {e}")
 

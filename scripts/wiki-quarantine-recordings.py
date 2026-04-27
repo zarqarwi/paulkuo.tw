@@ -29,6 +29,9 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wiki_corpus_lib import load_source, iter_source_paths, extract_raw_note_id  # noqa: E402
+
 # 44 raw_note_ids from original handoff (scanner-bug recording set)
 RECORDING_SET_44 = """
 1899065664472756056
@@ -96,14 +99,12 @@ def build_block(reason_tag: str) -> str:
 def collect_internal_sources():
     """Return list of (path, raw_note_id) for every source with visibility: internal."""
     out = []
-    for f in sorted(SOURCES_DIR.glob("*.md")):
-        text = f.read_text(encoding="utf-8")
-        m_vis = re.search(r"^visibility:\s*(\S+)", text, re.MULTILINE)
-        if not m_vis or m_vis.group(1).strip() != "internal":
+    for path in iter_source_paths(SOURCES_DIR):
+        fm, _ = load_source(path)
+        if not fm or fm.get("visibility") != "internal":
             continue
-        m_id = re.search(r'^raw_note_id:\s*["\']?(\d+)["\']?', text, re.MULTILINE)
-        rid = m_id.group(1) if m_id else None
-        out.append((f, rid))
+        rid = extract_raw_note_id(fm)
+        out.append((path, rid))
     return out
 
 

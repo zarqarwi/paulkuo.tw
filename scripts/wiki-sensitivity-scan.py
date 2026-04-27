@@ -18,6 +18,9 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wiki_corpus_lib import parse_frontmatter  # noqa: E402
+
 
 COMPANY_NAME_PATTERNS = [
     # 最短前綴 4 字元（A + 3 more），消除 AI/IP/O2O/IBM 等泛縮寫誤判
@@ -60,13 +63,7 @@ PERSONAL_REFLECTION_KEYWORDS = [
 ]
 
 
-FRONTMATTER_RE = re.compile(r"^---\n.*?\n---\n", re.DOTALL)
 SOURCE_TRACE_MARKER = "\n## 來源追蹤"
-
-
-def strip_frontmatter(text):
-    """Remove YAML frontmatter so scanner doesn't false-positive on raw_note_id, dates, etc."""
-    return FRONTMATTER_RE.sub("", text, count=1)
 
 
 def strip_source_trace_section(text):
@@ -87,7 +84,7 @@ def scan(text):
     Frontmatter and '## 來源追蹤' section are stripped before pattern matching to
     avoid raw_note_id / metadata false positives on phone-number and business-keyword regex.
     """
-    text = strip_frontmatter(text)
+    _, text = parse_frontmatter(text)
     text = strip_source_trace_section(text)
     flags = []
 

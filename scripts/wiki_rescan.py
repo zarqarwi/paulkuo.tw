@@ -3,10 +3,10 @@
 import os
 import re
 import sys
-import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from wiki_visibility import has_recording_tag  # noqa: E402
+from wiki_corpus_lib import parse_frontmatter  # noqa: E402
 
 notes_dir = os.path.expanduser("~/Desktop/01_專案進行中/get_筆記/notes")
 sources_dir = os.path.expanduser("~/Desktop/01_專案進行中/paulkuo.tw/src/content/wiki/sources")
@@ -31,17 +31,12 @@ for root, dirs, files in os.walk(notes_dir):
         try:
             with open(filepath, "r", encoding="utf-8") as fh:
                 content = fh.read()
-            title_match = re.search(r'title:\s*"?([^"\n]+)"?', content)
-            title = title_match.group(1).strip() if title_match else f
+            fm_data, body = parse_frontmatter(content)
+            fm_data = fm_data or {}
+            title = str(fm_data.get("title", "") or "").strip() or f
             is_untitled = title.lower() == "untitled"
-            parts = content.split("---", 2)
-            body = parts[2] if len(parts) > 2 else ""
             is_empty = len(body.strip()) < 50
-            try:
-                fm_data = yaml.safe_load(parts[1]) if len(parts) > 2 else {}
-                tags = (fm_data or {}).get("tags", []) or []
-            except Exception:
-                tags = []
+            tags = fm_data.get("tags", []) or []
             is_recording = has_recording_tag(tags)
         except:
             is_recording = False
