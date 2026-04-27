@@ -73,3 +73,13 @@ scripts/.last_push_ts
 
 # 治理文件 PDF 快照（一次性產物，不進 git）
 docs/governance/*.pdf
+
+# Dynamic data files (updated by cron / runtime, not tracked)
+data/stock.json
+data/timing.json
+data/last-scan.json
+data/wiki-ingest-pending.md
+
+# Python cache
+__pycache__/
+*.pyc
