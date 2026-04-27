@@ -79,6 +79,7 @@ data/stock.json
 data/timing.json
 data/last-scan.json
 data/wiki-ingest-pending.md
+data/wiki-derived-index.json
 
 # Python cache
 __pycache__/
