@@ -1,35 +1,126 @@
 '1899065664472756056':
   auto_classified: true
-  classified_at: '2026-04-26'
+  classified_at: '2026-04-27'
   file: getnote-756056-pastor-pang-reflection.md
-  matched_rule: Paul 私人感觸/追思，永久 internal
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
   outcome: keep_internal
   title: 牧師離世對我的影響與思考
 '1900387995782123160':
   auto_classified: true
-  classified_at: '2026-04-26'
+  classified_at: '2026-04-27'
   file: getnote-123160-cervical-cancer-medical-data.md
-  matched_rule: 題材公開但夾雜個人/合作元素，去識別化後可恢復
-  outcome: redact_and_restore
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
   title: 子宮頸癌治療探索與醫療數據合作討論
+'1900429853459558096':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-558096-alien-life-civilization.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 外星文明視角：宇宙秩序、地球監獄與精神生命的本質
 '1900480149674188584':
   auto_classified: true
-  classified_at: '2026-04-26'
+  classified_at: '2026-04-27'
   file: getnote-188584-pastor-pang-memorial.md
-  matched_rule: Paul 私人感觸/追思，永久 internal
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
   outcome: keep_internal
   title: 對牧師的懷念與追思
+'1900527399683043024':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-043024-secondhand-recycling-logistics.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 二手物資回收與物流模式創新探討
+'1900822048398808040':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-808040-ai-medical-collaboration.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: AI技術在醫療領域的應用與邊緣運算合作探討
+'1900890547758048304':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-048304-care-butler-ai-longterm-care.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 照顧管家服務模式與AI工具在長照領域的應用探討
+'1900976653262270152':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-270152-tech-sports-platform-collab.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 健康生態系與運動賽事平台的協作
 '1901006869430898432':
   auto_classified: true
-  classified_at: '2026-04-26'
+  classified_at: '2026-04-27'
   file: getnote-898432-ai-drug-design-biotech.md
-  matched_rule: 題材公開但夾雜個人/合作元素，去識別化後可恢復
-  outcome: redact_and_restore
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
   title: AI藥物設計與生命科學研究的跨界合作
+'1901270027447435960':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-435960-ai-hr-manufacturing.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: AI 人力資源系統在製造業的應用：從履歷篩選到員工培訓
+'1901366025334174608':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-174608-employee-health-longterm-care.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 企業員工健康與長期照護服務的ESG整合
+'1901466154980006336':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-006336-stem-cell-exosome-automation.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 幹細胞與外泌體自動化培養技術介紹
 '1901473991147782928':
   auto_classified: true
-  classified_at: '2026-04-26'
+  classified_at: '2026-04-27'
   file: getnote-782928-preventive-medicine-ai-drug.md
-  matched_rule: 題材公開但夾雜個人/合作元素，去識別化後可恢復
-  outcome: redact_and_restore
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
   title: 預防醫學服務設計與AI藥物開發的商業生態探討
+'1903118704850406952':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-406952-personal-website-ai-tools.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 個人網站搭建與AI工具應用的學習總結
+'1903118811150847528':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-847528-system-design-lessons.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 系統設計踩坑與學習反思
+'1903329278507519528':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-519528-enterprise-communication.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 企業通訊工具的公私分離設計與合規管控
+'1905623247384379840':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-379840-silent-mode-wisdom.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 大智若愚：真正有能力的人如何調成靜音模式
+'1905989546891580464':
+  auto_classified: true
+  classified_at: '2026-04-27'
+  file: getnote-580464-growth-through-adversity.md
+  matched_rule: 'fast-path: existing review_outcome=keep_internal'
+  outcome: keep_internal
+  title: 人在痛苦、空白和高壓交替狀態下成長最快
