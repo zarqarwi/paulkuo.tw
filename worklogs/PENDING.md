@@ -107,6 +107,16 @@
   - 確認 llms.txt 目前描述 paulkuo 有幾個 content pillars，和 benchmark_questions.yaml 的答案是否一致
   - 如有不一致：更新 llms.txt 或 benchmark_questions.yaml 答案
 
+- [>] 🔴 Codex 工程診斷修復批次（3 項）→ Code / Sonnet 4.6 (2026-04-28)
+  - 來源：Paul 委託 OpenAI Codex 對 paulkuo.tw 做工程診斷，產出 4 份報告，Cowork 核實後判 3 項可動、1 項擱置
+  - Handoff：`handoffs/cowork--codex-engineering-fixes-2026-04-28.md`（H7 規範格式，含 frontmatter status + Consequences）
+  - 三項任務（按 P0 → P0 → P1 順序）：
+    1. **Issue #187**（P0 security）Worker `/analytics/backfill` `/analytics/reclass` GET ?key= → POST + Authorization Bearer，含 `FORMOSA_ADMIN_TOKEN` rotation
+    2. **Issue #188**（P0 security）`src/plugins/remark-wikilinks.mjs` raw HTML interpolation → mdast hast 結構（`data.hName` + `hProperties`）
+    3. **Issue #189**（P1 seo）`BaseLayout.astro:63` zhOnlyPrefixes 加 `/wiki`（短期解，等 Wiki 多語規劃再放開）
+  - 司法核查：Cowork 已對所有 file:line 重驗，與 Codex 報告一致；Code 收到 handoff 後仍應第三方驗證（憲法第三條）
+  - 完成後：Cowork 接手更新 Issue #155 dashboard + PENDING 狀態
+
 ## 待 Cowork 執行
 
 - [x] ✅ Git 偵查事件衍生的治理待辦（A+B 兩項）→ 已完成（2026-04-24 Cowork session）
@@ -347,6 +357,20 @@
     - 已 grandfather 進 lint 跳過清單，但屬技術債
     - 觸發行動：等 Paul 評估原檔（不含尾綴版本）內容是否需保留 → Code session 處理刪除（憲法第二條）
     - **本項目不立法、只觀察 + 待 Paul 排程清理**
+
+11. **Codex 工程診斷常態化（2026-04-28 N=1）**
+    - 觀察事件：Paul 委託 OpenAI Codex 對 paulkuo.tw 做工程診斷（XSS / GET secret / hreflang / search index 4 項），Cowork 核實後轉成 Issue #187/#188/#189 + handoff，Code 落地
+    - Cowork 觀察：Codex 報告水準中上（file:line 精準、性質分類「事實/推論/待驗證」乾淨、附 cross-validation prompt），但對 paulkuo.tw 既有治理體系無感（PENDING/Issue/worklog）+ 修法停在 high-level 不到 patch + 缺優先級排序
+    - 預期：兩個月內若再次引介外部 LLM 診斷源 ≥ 1 次，且 SOP 與本次相似 → 評估是否立 ADR 規範「第三方 LLM 診斷 → 內部閉環」協作 pattern（Cowork 核實 → Issue → handoff → Code 落地）
+    - 觸發行動：N=1 不立法；≥ 2 次且模式穩定再起草 ADR
+    - **本項目不立法、只觀察**
+
+12. **Codex 報告 #4 search index 多語覆蓋（結論偏，擱置）**
+    - 議題：Codex 指 `/api/articles.json` 與 `/api/search-index.json` 只讀主語系 collection，忽略 articles_en/ja/zhcn 三個翻譯 collection
+    - Cowork 評估：Codex 結論不完整——沒爬到 Wiki 有獨立的 `/api/wiki/search` Worker endpoint + KV seed pipeline，articles 與 wiki sources 是兩條索引線；articles.json 只收主語系是「翻譯文章曝光策略」的產品決策而非工程 bug
+    - 流量現狀：paulkuo.tw 主流量為中文，翻譯版納入 search-index 對 SEO/AI agent 探索的實質效益尚未驗證
+    - 觸發行動：等翻譯 pipeline 真的排上 roadmap（含 i18n 流量目標）再評估；本次主動拒絕修改
+    - **本項目不立法、只觀察**
 
 ### 觀察指標（2026-06-25 盤點）
 
