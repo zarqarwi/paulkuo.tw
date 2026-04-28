@@ -9,6 +9,11 @@ tags:
   - Simon Willison
   - 知識工作変革
 date: 2026-02-27
+derived_from:
+  - getnote-439768-talk-cheap-code-cheap
+  - getnote-268104-vibe-coding-trend
+  - getnote-072896-yang-tianrun-non-tech-claw-native
+  - clip-claude-agent-sdk-building-agents
 cover: /images/covers/code-is-cheap-vibe-coding-to-claws.jpg
 abstract: |
   Andrej Karpaथyは十年間で時代を定義する四つの術語を創造した。HallucinationからVibe Coding、そしてClawsまで、それぞれが人機関係の転換点を捉えている。Simon Willisonの「Code is cheap」という一言は、Linus Torvaldsの25年前の名言を覆した。これは効率の線形向上ではなく、コスト構造の相転移である——試行のコストがゼロに近づくとき、「やる価値がない」ことが突然やる価値のあることになった。

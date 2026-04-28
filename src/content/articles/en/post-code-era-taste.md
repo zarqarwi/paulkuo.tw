@@ -14,6 +14,10 @@ tags:
   - Humanistic Education
   - AI Collaboration
 draft: false
+derived_from:
+  - getnote-439768-talk-cheap-code-cheap
+  - getnote-268104-vibe-coding-trend
+  - getnote-077512-wanweigang-qa-constraints
 cover: "/images/covers/post-code-era-taste.jpg"
 featured: false
 readingTime: 7

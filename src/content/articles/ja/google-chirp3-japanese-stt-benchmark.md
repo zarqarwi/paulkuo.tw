@@ -13,6 +13,8 @@ tags:
   - 日文商務
   - STT
   - AI工具實測
+derived_from:
+  - getnote-703240-ai-coding-harness-engineering
 cover: "/images/covers/google-chirp3-japanese-stt-benchmark.jpg"
 featured: false
 draft: false

@@ -13,6 +13,10 @@ tags:
   - API
   - AI Skill
   - 管线思维
+derived_from:
+  - getnote-403816-lobster-talk-launch
+  - getnote-498792-claude-skills-guide
+  - getnote-077512-wanweigang-qa-constraints
 cover: "/images/covers/knowledge-pipeline-not-discipline.jpg"
 featured: false
 draft: false

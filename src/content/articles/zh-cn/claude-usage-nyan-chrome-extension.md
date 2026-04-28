@@ -12,6 +12,9 @@ tags:
   - Claude
   - AI 协作开发
   - 开发纪实
+derived_from:
+  - getnote-498792-claude-skills-guide
+  - getnote-918240-maltbot-ai-assistant
 cover: "/images/covers/claude-usage-nyan-chrome-extension.jpg"
 featured: false
 draft: false

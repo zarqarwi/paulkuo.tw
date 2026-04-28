@@ -9,6 +9,11 @@ tags:
   - Simon Willison
   - Knowledge Work Transformation
 date: 2026-02-27
+derived_from:
+  - getnote-439768-talk-cheap-code-cheap
+  - getnote-268104-vibe-coding-trend
+  - getnote-072896-yang-tianrun-non-tech-claw-native
+  - clip-claude-agent-sdk-building-agents
 cover: /images/covers/code-is-cheap-vibe-coding-to-claws.jpg
 abstract: |
   In ten years, Andrej Karpathy has created four era-defining terms, from Hallucination to Vibe Coding to Claws, each hitting a pivotal point in human-machine relationships. Simon Willison's declaration "Code is cheap" overturned Linus Torvalds' classic manifesto from twenty-five years ago. This isn't linear efficiency improvement, but a phase transition in cost structure—when the cost of experimentation approaches zero, everything that was "not worth doing" suddenly becomes worthwhile.

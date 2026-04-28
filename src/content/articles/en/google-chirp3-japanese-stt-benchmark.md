@@ -13,6 +13,8 @@ tags:
   - Japanese Business
   - STT
   - AI Tool Testing
+derived_from:
+  - getnote-703240-ai-coding-harness-engineering
 cover: "/images/covers/google-chirp3-japanese-stt-benchmark.jpg"
 featured: false
 draft: false

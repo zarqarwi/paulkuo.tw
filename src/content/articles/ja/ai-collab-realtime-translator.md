@@ -13,6 +13,10 @@ tags:
   - 即時翻譯
   - 語音辨識
   - AI素養
+derived_from:
+  - getnote-703240-ai-coding-harness-engineering
+  - getnote-072896-yang-tianrun-non-tech-claw-native
+  - getnote-439768-talk-cheap-code-cheap
 cover: "/images/covers/ai-collab-realtime-translator.jpg"
 featured: false
 draft: false

@@ -6,6 +6,10 @@ date: 2026-02-22
 pillar: ai
 tags: ["多模型协作", "WebMCP", "人机协作", "Claude", "Gemini", "语义化HTML", "知识管理"]
 draft: false
+derived_from:
+  - clip-claude-agent-sdk-building-agents
+  - getnote-918240-maltbot-ai-assistant
+  - getnote-072896-yang-tianrun-non-tech-claw-native
 cover: "/images/covers/multi-model-collab-website-rebuild.jpg"
 readingTime: 6
 ---
