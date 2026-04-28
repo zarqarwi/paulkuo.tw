@@ -1,7 +1,8 @@
 ---
 /**
  * ReferencedByArticlesSection.astro — Source「被以下文章引用」section
- * Phase 4 Step C-prime.
+ * Phase 4.5 Session 2: group multilang entries — 4 articles × 4 langs = 16 entries was
+ * misleadingly displayed as "16 篇文章"; now groups by article_slug so N = unique articles.
  *
  * Shows articles that reference this source via derived_from.
  * Hidden when articles array is empty.
@@ -14,6 +15,13 @@ interface ReferencingArticle {
   title: string;
   date: string;
   pillar: string;
+}
+
+interface ArticleGroup {
+  article_slug: string;
+  pillar: string;
+  primary: ReferencingArticle;
+  others: ReferencingArticle[];
 }
 
 interface Props {
@@ -35,20 +43,64 @@ function langDisplay(lang: string): string {
   if (lang === 'zh-cn') return '简';
   return '繁';
 }
+
+// 同一篇文章 4 語系算 1 篇，不算 4 篇 — primary lang 優先順序 zh → en → ja → zh-cn
+const LANG_PRIORITY = ['zh', 'en', 'ja', 'zh-cn'];
+
+function groupByArticle(items: ReferencingArticle[]): ArticleGroup[] {
+  const map = new Map<string, ReferencingArticle[]>();
+  for (const a of items) {
+    if (!map.has(a.article_slug)) map.set(a.article_slug, []);
+    map.get(a.article_slug)!.push(a);
+  }
+  const result: ArticleGroup[] = [];
+  for (const [slug, entries] of map) {
+    entries.sort((x, y) => {
+      const ix = LANG_PRIORITY.indexOf(x.lang);
+      const iy = LANG_PRIORITY.indexOf(y.lang);
+      return (ix === -1 ? 99 : ix) - (iy === -1 ? 99 : iy);
+    });
+    result.push({
+      article_slug: slug,
+      pillar: entries[0].pillar,
+      primary: entries[0],
+      others: entries.slice(1),
+    });
+  }
+  result.sort((a, b) => (b.primary.date || '').localeCompare(a.primary.date || ''));
+  return result;
+}
+
+const groups = groupByArticle(articles);
 ---
 
-{articles.length > 0 && (
-  <section class="referenced-by-section" aria-label={`被 ${articles.length} 篇文章引用`}>
-    <h2 class="referenced-by-title">被以下 {articles.length} 篇文章引用</h2>
+{groups.length > 0 && (
+  <section class="referenced-by-section" aria-label={`被 ${groups.length} 篇文章引用`}>
+    <h2 class="referenced-by-title">
+      被 {groups.length} 篇文章引用
+      {articles.length > groups.length && (
+        <span class="referenced-by-translation-count">（含 {articles.length - groups.length} 個翻譯版本）</span>
+      )}
+    </h2>
     <ul class="referenced-by-list">
-      {articles.map(a => (
+      {groups.map(g => (
         <li class="referenced-by-item">
-          <a href={buildArticleUrl(a.article_slug, a.lang)} class="referenced-by-link">
-            {a.title}
+          <a href={buildArticleUrl(g.primary.article_slug, g.primary.lang)} class="referenced-by-link">
+            {g.primary.title}
           </a>
           <span class="referenced-by-meta">
-            {a.date}
-            <span class="lang-badge">{langDisplay(a.lang)}</span>
+            {g.primary.date}
+            <span class="lang-badge primary-lang">{langDisplay(g.primary.lang)}</span>
+            {g.others.length > 0 && (
+              <span class="lang-badge-group" aria-label="其他語系版本">
+                {g.others.map(o => (
+                  <a href={buildArticleUrl(o.article_slug, o.lang)} class="lang-badge alt-lang"
+                     aria-label={`切換到${langDisplay(o.lang)}版`}>
+                    {langDisplay(o.lang)}
+                  </a>
+                ))}
+              </span>
+            )}
           </span>
         </li>
       ))}
@@ -115,5 +167,33 @@ function langDisplay(lang: string): string {
     font-size: 0.7rem;
     font-weight: 600;
     color: var(--text-secondary);
+  }
+
+  .referenced-by-translation-count {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: 0.4rem;
+  }
+
+  .lang-badge-group {
+    display: inline-flex;
+    gap: 0.25rem;
+    margin-left: 0.4rem;
+  }
+
+  .lang-badge.alt-lang {
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .lang-badge.alt-lang:hover {
+    background: var(--brand-navy);
+    color: #fff;
+    border-color: var(--brand-navy);
   }
 </style>
