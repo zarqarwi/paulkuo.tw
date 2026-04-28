@@ -33,7 +33,7 @@ function langDisplay(lang: string): string {
   if (lang === 'en') return 'EN';
   if (lang === 'ja') return '日';
   if (lang === 'zh-cn') return '简';
-  return '中';
+  return '繁';
 }
 ---
 
@@ -60,15 +60,15 @@ function langDisplay(lang: string): string {
   .referenced-by-section {
     margin: 2rem 0;
     padding: 1.25rem 1.5rem;
-    border-left: 3px solid var(--color-accent, #6366f1);
-    background: var(--color-surface-subtle, #f8f8f8);
+    border-left: 3px solid var(--brand-navy);
+    background: var(--bg-section);
     border-radius: 0 0.5rem 0.5rem 0;
   }
 
   .referenced-by-title {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--color-text-muted, #6b7280);
+    color: var(--text-secondary);
     margin: 0 0 0.75rem;
   }
 
@@ -91,7 +91,7 @@ function langDisplay(lang: string): string {
   .referenced-by-link {
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--color-accent, #6366f1);
+    color: var(--brand-navy);
     text-decoration: none;
   }
 
@@ -101,7 +101,7 @@ function langDisplay(lang: string): string {
 
   .referenced-by-meta {
     font-size: 0.8rem;
-    color: var(--color-text-muted, #6b7280);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -111,9 +111,9 @@ function langDisplay(lang: string): string {
     display: inline-block;
     padding: 0.1rem 0.35rem;
     border-radius: 0.25rem;
-    background: var(--color-surface, #e5e7eb);
+    background: var(--bg-section);
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--color-text-muted, #6b7280);
+    color: var(--text-secondary);
   }
 </style>
