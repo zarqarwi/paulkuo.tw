@@ -8,6 +8,11 @@ tags:
   - Andrej Karpathy
   - Simon Willison
   - 知識工作變革
+derived_from:
+  - getnote-439768-talk-cheap-code-cheap
+  - getnote-268104-vibe-coding-trend
+  - getnote-072896-yang-tianrun-non-tech-claw-native
+  - clip-claude-agent-sdk-building-agents
 date: 2026-02-27
 cover: /images/covers/code-is-cheap-vibe-coding-to-claws.jpg
 abstract: |

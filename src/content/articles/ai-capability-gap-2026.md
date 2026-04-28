@@ -13,6 +13,10 @@ tags:
   - K型分化
   - 超級個體
   - 台灣產業
+derived_from:
+  - getnote-201104-kazike-ai-three-year-insights
+  - getnote-403816-lobster-talk-launch
+  - getnote-072896-yang-tianrun-non-tech-claw-native
 cover: "/images/covers/ai-capability-gap-2026.jpg"
 featured: true
 draft: false

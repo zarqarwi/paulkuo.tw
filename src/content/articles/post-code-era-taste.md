@@ -13,6 +13,10 @@ tags:
   - Vibe Coding
   - 人文素養
   - AI協作
+derived_from:
+  - getnote-439768-talk-cheap-code-cheap
+  - getnote-268104-vibe-coding-trend
+  - getnote-077512-wanweigang-qa-constraints
 draft: false
 cover: "/images/covers/post-code-era-taste.jpg"
 featured: false

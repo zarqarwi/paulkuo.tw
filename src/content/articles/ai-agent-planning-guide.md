@@ -14,6 +14,10 @@ tags:
   - 風險管理
   - 模組化
   - Multi-Agent
+derived_from:
+  - getnote-703240-ai-coding-harness-engineering
+  - clip-claude-agent-sdk-building-agents
+  - getnote-918240-maltbot-ai-assistant
 draft: false
 cover: "/images/covers/ai-agent-planning-guide.jpg"
 readingTime: 5
