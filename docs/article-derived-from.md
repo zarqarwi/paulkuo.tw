@@ -97,6 +97,55 @@ Phase 4 Step C-prime（2026-04-28）新增 `src/pages/wiki/sources/[slug].astro`
 
 URL pattern：`/wiki/sources/{slug}/`
 
+## Phase 4 落地紀錄（2026-04-28）
+
+Phase 4 把 article ↔ source 的單向關係升級成雙向視圖：
+
+### 反向索引
+
+`scripts/wiki-build-derived-index.py`（Step A）掃所有 article 的 `derived_from`，產出 `data/wiki-derived-index.json`：
+
+```json
+{
+  "<source_slug>": [
+    {
+      "article_slug": "...",
+      "lang": "zh|en|ja|zh-cn",
+      "title": "...",
+      "date": "YYYY-MM-DD",
+      "pillar": "ai|startup|..."
+    }
+  ]
+}
+```
+
+JSON 在 `.gitignore`（prebuild 重生，不 commit），由 `package.json` 的 `prebuild` / `predev` hook 自動跑（Step D）。
+
+### 雙向 UI
+
+- **Article 頁**：`src/components/DerivedFromSection.astro` — 顯示「衍生自 N 篇素材」+ 各 source title 連 `/wiki/sources/{slug}/`（Step B）
+- **Source 頁**：`src/components/ReferencedByArticlesSection.astro` — 顯示「被以下 N 篇文章引用」+ article 連結（按 date 倒序）（Step C-prime）
+- 多語系 i18n：article 端標題隨 article lang 切換（zh-Hant / en / ja / zh-cn）；source 端保持繁中（wiki 路由本身沒 i18n）（Step E2）
+
+### 嚴格驗證
+
+`scripts/wiki-derived-from-validate.py --strict`（Step E1）擋三類錯：
+1. dangling slug（指向不存在的 source）
+2. 指向 visibility=internal 的 source（避免 UI 顯示但點擊 404）
+3. schema 型別錯誤
+
+### Step F backfill 紀錄
+
+| 批次 | 日期 | Articles | Entries | Unique Sources |
+|------|------|----------|---------|----------------|
+| Batch 1 | 2026-04-28 | 2 | 6 | 6 |
+| Batch 2 | 2026-04-28 | 7 | 19 | 10（含 batch 1 的 6）|
+| **累計** | — | **9** | **25** | **10** |
+
+最高密度 source：`getnote-072896-yang-tianrun-non-tech-claw-native` 被 4 篇 article 引用（驗證 N>1 UI 排序）。
+
+剩餘 ~80 篇 article 多數預期低引用密度，Batch 3 保留為 Phase 4.5 initiative，等有新文章或明確高密度 source 再啟動。
+
 ## 不做的事（明確排除）
 
 - **不指 concept / entity**：避免雙標籤系統，validation 嚴格只 check `wiki/sources/`
@@ -119,7 +168,7 @@ URL pattern：`/wiki/sources/{slug}/`
 ## Phase 規劃
 
 - [x] **Phase 3**：schema 加欄位 + validation script + SSOT（本文件）
-- [ ] **Phase 4**：反向索引（source → articles）+ Frontend「衍生自」section
+- [x] **Phase 4**：反向索引（source → articles）+ Frontend「衍生自」section（2026-04-28 完成）
 - [ ] **Phase 5**：KV index + Worker API endpoint
 - [ ] **Phase 6**：碰撞 visualization（article ↔ source ↔ concept 三層 graph）
 
