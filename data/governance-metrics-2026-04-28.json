@@ -1,0 +1,48 @@
+{
+  "date": "2026-04-28",
+  "generated_at": "2026-04-28T03:00:00Z",
+  "scope": {
+    "monitoring": ["zarqarwi/paulkuo.tw", "zarqarwi/get-biji-notes"],
+    "archived": ["zarqarwi/formosa-esg-2026"]
+  },
+  "projects": {
+    "zarqarwi/paulkuo.tw": {
+      "default_branch": "main",
+      "commits_24h": 48,
+      "authors_24h": {
+        "zarqarwi": 25,
+        "Paul Kuo": 17,
+        "github-actions[bot]": 5,
+        "ai-ready-bot": 1
+      },
+      "top_commit_messages": [
+        "handoff(code): Phase 4 Step F batch 1 — derived_from frontmatter 寫入",
+        "chore(seo): update indexed URLs list",
+        "handoff(cowork): Phase 4 Step F backfill batch — Cowork→Cowork 交接"
+      ],
+      "issues_open": 83,
+      "issues_opened_24h": 0,
+      "issues_closed_24h": 0,
+      "prs_open": 2,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "success",
+      "last_ci_workflow": "SEO Index Submit",
+      "last_ci_at": "2026-04-28T02:34:22Z"
+    },
+    "zarqarwi/get-biji-notes": {
+      "default_branch": "master",
+      "commits_24h": 0,
+      "authors_24h": {},
+      "top_commit_messages": [],
+      "issues_open": 0,
+      "issues_opened_24h": 0,
+      "issues_closed_24h": 0,
+      "prs_open": 0,
+      "prs_opened_24h": 0,
+      "prs_merged_24h": 0,
+      "last_ci_status": "unknown",
+      "note": "private repo — 24h 無活動，最近 commit 為 2026-04-22"
+    }
+  }
+}
